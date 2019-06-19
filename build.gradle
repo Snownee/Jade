@@ -1,0 +1,93 @@
+buildscript {
+    repositories {
+        jcenter()
+        maven { url = "http://files.minecraftforge.net/maven" }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+    }
+}
+apply plugin: 'net.minecraftforge.gradle.forge'
+//Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
+
+
+version = "${version_major}.${version_minor}.${version_patch}"
+group = "snownee.jade"
+archivesBaseName = "Jade"
+
+sourceCompatibility = targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+compileJava {
+    sourceCompatibility = targetCompatibility = '1.8'
+}
+
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+repositories {
+    maven {
+        name = "jei"
+        url = "http://dvs1.progwml6.com/files/maven"
+    }
+    maven {
+        name = 'tterrag maven'
+        url = "http://maven.tterrag.com/"
+    }
+    maven {
+        name = "jared"
+        url = "http://maven.blamejared.com"
+    }
+    maven {
+        name = "tehnut"
+        url = "http://tehnut.info/maven"
+    }
+
+    flatDir {
+        dirs 'libs'
+    }
+}
+
+minecraft {
+    version = "${minecraft_version}-${forge_version}"
+    runDir = "run"
+
+    mappings = "${mapping_version}"
+    useDepAts = true
+
+    replace "@VERSION_INJECT@", project.version
+}
+
+dependencies {
+	deobfCompile "mcp.mobius.waila:Hwyla:1.8.26-B41_1.12.2"
+}
+
+processResources {
+    // this will ensure that this task is redone when the versions change.
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+
+    // replace stuff in mcmod.info, nothing else
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info'
+                
+        // replace version and mcversion
+        expand 'version':project.version, 'mcversion':project.minecraft.version
+    }
+        
+    // copy everything else except the mcmod.info
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
+}
+
+jar {
+    exclude "**/*.bat"
+    exclude "**/*.psd"
+    exclude "**/*.d"
+    exclude "**/*.exe"
+    exclude "**/*.e"
+    exclude "**/*.txt"
+    manifest {
+        attributes 'Maven-Artifact': "${project.group}:${project.archivesBaseName}:${project.version}"
+        attributes 'Timestamp': System.currentTimeMillis()
+        attributes 'FMLAT': 'jade_at.cfg'
+    }
+}
