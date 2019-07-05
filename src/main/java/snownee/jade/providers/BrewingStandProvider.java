@@ -15,6 +15,8 @@ import net.minecraft.tileentity.TileEntityBrewingStand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import snownee.jade.Util;
 
 public class BrewingStandProvider implements IWailaDataProvider
@@ -22,6 +24,7 @@ public class BrewingStandProvider implements IWailaDataProvider
     public static final BrewingStandProvider INSTANCE = new BrewingStandProvider();
 
     @Override
+    @SideOnly(Side.CLIENT)
     public List<String> getWailaBody(ItemStack itemStack, List<String> tooltip, IWailaDataAccessor accessor, IWailaConfigHandler config)
     {
         if (!config.getConfig("jade.brewingstand") || !accessor.getNBTData().hasKey("BrewingStand", Constants.NBT.TAG_COMPOUND))

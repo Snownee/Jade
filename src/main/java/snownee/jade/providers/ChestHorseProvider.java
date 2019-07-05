@@ -9,12 +9,15 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.AbstractChestHorse;
 import net.minecraft.entity.passive.EntityLlama;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ChestHorseProvider implements IWailaEntityProvider
 {
     public static final ChestHorseProvider INSTANCE = new ChestHorseProvider();
 
     @Override
+    @SideOnly(Side.CLIENT)
     public List<String> getWailaBody(Entity entity, List<String> currenttip, IWailaEntityAccessor accessor, IWailaConfigHandler config)
     {
         if (!accessor.getPlayer().isSneaking() || !config.getConfig("jade.horsechest"))

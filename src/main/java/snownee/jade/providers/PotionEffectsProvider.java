@@ -18,12 +18,15 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class PotionEffectsProvider implements IWailaEntityProvider
 {
     public static final PotionEffectsProvider INSTANCE = new PotionEffectsProvider();
 
     @Override
+    @SideOnly(Side.CLIENT)
     public List<String> getWailaBody(Entity entity, List<String> currenttip, IWailaEntityAccessor accessor, IWailaConfigHandler config)
     {
         if (!accessor.getPlayer().isSneaking() || !config.getConfig("jade.potioneffects") || !accessor.getNBTData().hasKey("Potions"))

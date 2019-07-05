@@ -1,3 +1,8 @@
+option.general.showstates=Show states
+
+option.capability.inventoryinfo=Show inventory info
+jade.locked=Inventory is locked
+
 option.jade.horsestat=Horse stat
 jade.horseStat.jump=Jump height: %s
 jade.horseStat.speed=Speed: %s

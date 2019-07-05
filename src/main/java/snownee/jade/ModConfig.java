@@ -20,6 +20,7 @@ public class ModConfig
     @Config.RangeInt(min = 1)
     public static int inventoryShowItemPreLine = 9;
     public static String[] inventoryShowBlacklist = new String[] { "refinedstorage:disk_drive" };
+    public static boolean bypassLockedContainer = false;
 
     @SubscribeEvent
     public static void onConfigReload(ConfigChangedEvent.OnConfigChangedEvent event)

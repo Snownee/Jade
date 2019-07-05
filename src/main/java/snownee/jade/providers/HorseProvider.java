@@ -11,6 +11,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.passive.AbstractHorse;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class HorseProvider implements IWailaEntityProvider
 {
@@ -18,6 +20,7 @@ public class HorseProvider implements IWailaEntityProvider
     private static DecimalFormat dfCommas = new DecimalFormat("##.##");
 
     @Override
+    @SideOnly(Side.CLIENT)
     public List<String> getWailaBody(Entity entity, List<String> currenttip, IWailaEntityAccessor accessor, IWailaConfigHandler config)
     {
         if (!accessor.getPlayer().isSneaking() || !config.getConfig("jade.horsestat"))

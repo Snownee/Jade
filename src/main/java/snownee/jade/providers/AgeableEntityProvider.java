@@ -12,12 +12,15 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class AgeableEntityProvider implements IWailaEntityProvider
 {
     public static final AgeableEntityProvider INSTANCE = new AgeableEntityProvider();
 
     @Override
+    @SideOnly(Side.CLIENT)
     public List<String> getWailaBody(Entity entity, List<String> currenttip, IWailaEntityAccessor accessor, IWailaConfigHandler config)
     {
         if (!accessor.getPlayer().isSneaking() || !config.getConfig("jade.mobgrowth") || !accessor.getNBTData().hasKey("GrowingTime", Constants.NBT.TAG_INT))

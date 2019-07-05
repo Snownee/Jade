@@ -13,6 +13,7 @@ import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import mcp.mobius.waila.api.IWailaDataProvider;
 import mcp.mobius.waila.utils.InventoryUtils;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -22,8 +23,11 @@ import net.minecraft.tileentity.TileEntityEnderChest;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.ILockableContainer;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
@@ -41,12 +45,17 @@ public class ItemHandlerProvider implements IWailaDataProvider
 
     @Nonnull
     @Override
+    @SideOnly(Side.CLIENT)
     public List<String> getWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config)
     {
         if (!config.getConfig("capability.inventoryinfo") || accessor.getTileEntity() == null || accessor.getTileEntity().getClass() == TileEntityFurnace.class)
             return currenttip;
 
-        if (accessor.getNBTData().hasKey("handler"))
+        if (accessor.getNBTData().hasKey("locked") && accessor.getNBTData().getBoolean("locked"))
+        {
+            currenttip.add(I18n.format("jade.locked"));
+        }
+        else if (accessor.getNBTData().hasKey("handler"))
         {
             int handlerSize = accessor.getNBTData().getInteger("handlerSize");
             ItemStackHandler itemHandler = new ItemStackHandler();
@@ -103,7 +112,16 @@ public class ItemHandlerProvider implements IWailaDataProvider
             }
             tag.removeTag("Items"); // Should catch all inventories that do things the standard way. Keeps from duplicating the item list and doubling the packet size
             IItemHandler itemHandler = null;
-            if (te.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))
+            if (!ModConfig.bypassLockedContainer && !player.isCreative() && !player.isSpectator() && te instanceof ILockableContainer)
+            {
+                ILockableContainer ilockablecontainer = (ILockableContainer) te;
+                if (ilockablecontainer.isLocked() && !player.canOpen(ilockablecontainer.getLockCode()))
+                {
+                    tag.setBoolean("locked", true);
+                    return tag;
+                }
+            }
+            else if (te.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))
             {
                 itemHandler = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
             }

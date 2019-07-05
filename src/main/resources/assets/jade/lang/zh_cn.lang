@@ -1,3 +1,8 @@
+option.general.showstates=方块状态
+
+option.capability.inventoryinfo=物品容器
+jade.locked=容器已上锁
+
 option.jade.horsestat=马匹信息
 jade.horseStat.jump=跳跃高度：%s
 jade.horseStat.speed=速度：%s

@@ -12,12 +12,15 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BreedingProvider implements IWailaEntityProvider
 {
     public static final BreedingProvider INSTANCE = new BreedingProvider();
 
     @Override
+    @SideOnly(Side.CLIENT)
     public List<String> getWailaBody(Entity entity, List<String> currenttip, IWailaEntityAccessor accessor, IWailaConfigHandler config)
     {
         if (!accessor.getPlayer().isSneaking() || !config.getConfig("jade.mobbreeding") || !accessor.getNBTData().hasKey("BreedingCD", Constants.NBT.TAG_INT))
