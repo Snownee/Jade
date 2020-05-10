@@ -1,0 +1,21 @@
+{
+  "config.waila.plugin_jade": "Jade",
+  "config.waila.plugin_jade.inventory": "Inventory",
+  "jade.locked": "Inventory is locked",
+  "config.waila.plugin_jade.horse_stat": "Horse Stat",
+  "jade.horseStat.jump": "Jump height: %s",
+  "jade.horseStat.speed": "Speed: %s",
+  "config.waila.plugin_jade.effects": "Entity Effects",
+  "jade.potion": "%s %s (%s)",
+  "config.waila.plugin_jade.item_frame": "Item Frame",
+  "config.waila.plugin_jade.horse_inventory": "Llama Strength",
+  "jade.llamaStrength": "Strength: %s",
+  "config.waila.plugin_jade.mob_growth": "Mob Growth",
+  "jade.mobgrowth.time": "Growing time: %ss",
+  "config.waila.plugin_jade.mob_breeding": "Mob Breeding",
+  "jade.mobbreeding.time": "Breeding CD: %ss",
+  "config.waila.plugin_jade.brewing_stand": "Brewing Stand",
+  "jade.brewingStand.time": "Time: %ss",
+  "jade.brewingStand.fuel": "Fuel: %s",
+  "config.waila.plugin_jade.misc_entity": "Misc Entity Names"
+}

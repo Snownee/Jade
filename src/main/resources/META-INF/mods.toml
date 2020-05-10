@@ -1,0 +1,16 @@
+modLoader="javafml"
+loaderVersion="[31,)"
+[[mods]]
+modId="jade"
+version="${file.jarVersion}"
+displayName="Jade"
+authors="Snownee"
+displayURL="https://minecraft.curseforge.com/projects/jade"
+description="HWYLA addons"
+
+[[dependencies.everpotion]]
+    modId="hwyla"
+    mandatory=true
+    versionRange="[1.10.8, 2)"
+    ordering="BEFORE"
+    side="BOTH"
