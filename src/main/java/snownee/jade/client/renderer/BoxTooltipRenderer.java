@@ -2,6 +2,7 @@ package snownee.jade.client.renderer;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.List;
@@ -58,24 +59,16 @@ public class BoxTooltipRenderer implements ITooltipRenderer {
     public void draw(CompoundNBT nbt, ICommonAccessor accessor, int x, int y) {
         Tooltip tooltip = geTooltip(nbt);
         if (tooltip != null) {
-            Dimension size;
-            try {
-                size = (Dimension) FIELD_SIZE.get(tooltip);
-            } catch (IllegalArgumentException | IllegalAccessException e) {
-                e.printStackTrace();
-                return;
-            }
-            //int offsetX = 6;
+            Rectangle rect = tooltip.getPosition();
             RenderSystem.enableBlend();
             int color = Color.GRAY.getRGB();
-            //GlStateManager.translate(-x - offsetX, -y - ty, 0);
             RenderSystem.pushMatrix();
             RenderSystem.translatef(x, y, 0);
-            AbstractGui.fill(0, 0, 1, size.height, color);
-            AbstractGui.fill(0, 0, size.width, 1, color);
-            AbstractGui.fill(size.width, 0, size.width + 1, size.height, color);
-            AbstractGui.fill(0, size.height, size.width + 1, size.height + 1, color);
-            RenderSystem.translatef(-x, -2, 0);
+            AbstractGui.fill(0, 0, 1, rect.height, color);
+            AbstractGui.fill(0, 0, rect.width, 1, color);
+            AbstractGui.fill(rect.width, 0, rect.width + 1, rect.height, color);
+            AbstractGui.fill(0, rect.height, rect.width + 1, rect.height + 1, color);
+            RenderSystem.translatef(-x, -rect.y, 0);
             tooltip.draw();
             RenderSystem.popMatrix();
         }
@@ -85,7 +78,7 @@ public class BoxTooltipRenderer implements ITooltipRenderer {
         try {
             return cachedTooltips.get(nbt, () -> {
                 ListNBT tags = nbt.getList("in", Constants.NBT.TAG_STRING);
-                List<ITextComponent> components = tags.stream().map(tag -> ((HackyTextComponentNBT)tag).getTextComponent()).collect(Collectors.toList());
+                List<ITextComponent> components = tags.stream().map(tag -> ((HackyTextComponentNBT) tag).getTextComponent()).collect(Collectors.toList());
                 return new Tooltip(components, false);
             });
         } catch (ExecutionException e) {

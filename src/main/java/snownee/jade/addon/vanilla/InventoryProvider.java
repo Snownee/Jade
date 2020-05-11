@@ -45,7 +45,7 @@ public class InventoryProvider implements IComponentProvider, IServerDataProvide
         if (!config.get(JadePlugin.INVENTORY) || accessor.getTileEntity() == null || accessor.getTileEntity() instanceof AbstractFurnaceTileEntity)
             return;
 
-        if (accessor.getServerData().contains("jadeLocked") && accessor.getServerData().getBoolean("jadeLocked")) {
+        if (accessor.getServerData().contains("Locked") && accessor.getServerData().getBoolean("Locked")) {
             tooltip.add(new TranslationTextComponent("jade.locked"));
             return;
         }
@@ -99,12 +99,10 @@ public class InventoryProvider implements IComponentProvider, IServerDataProvide
             return;
         }
 
-        tag.remove("Items"); // Should catch all inventories that do things the standard way. Keeps from duplicating the item list and doubling the packet size
-
         if (!JadeCommonConfig.bypassLockedContainer && !player.isCreative() && !player.isSpectator() && te instanceof LockableTileEntity) {
             LockableTileEntity lockableTileEntity = (LockableTileEntity) te;
             if (!lockableTileEntity.canOpen(player)) {
-                tag.putBoolean("jadeLocked", true);
+                tag.putBoolean("Locked", true);
                 return;
             }
         }

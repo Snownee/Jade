@@ -2,9 +2,11 @@ package snownee.jade.addon.vanilla;
 
 import java.util.List;
 
+import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.IEntityAccessor;
 import mcp.mobius.waila.api.IEntityComponentProvider;
 import mcp.mobius.waila.api.IPluginConfig;
+import mcp.mobius.waila.utils.ModIdentification;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ArmorStandEntity;
@@ -14,7 +16,7 @@ import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.StringTextComponent;
 import snownee.jade.JadePlugin;
 
 public class MiscEntityNameProvider implements IEntityComponentProvider {
@@ -26,7 +28,18 @@ public class MiscEntityNameProvider implements IEntityComponentProvider {
         if (!tooltip.isEmpty() || shouldExclude(accessor.getEntity(), config)) {
             return;
         }
-        tooltip.add(accessor.getEntity().getDisplayName().applyTextStyle(TextFormatting.WHITE));
+        tooltip.add(new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getEntityName(), accessor.getEntity().getDisplayName().getFormattedText())));
+    }
+
+    @Override
+    public void appendTail(List<ITextComponent> tooltip, IEntityAccessor accessor, IPluginConfig config) {
+        if (config.get(JadePlugin.HIDE_MOD_NAME)) {
+            tooltip.clear();
+            return;
+        }
+        if (!shouldExclude(accessor.getEntity(), config) && !(accessor.getEntity() instanceof ArmorStandEntity)) {
+            tooltip.add(new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getModName(), ModIdentification.getModInfo(accessor.getEntity()).getName())));
+        }
     }
 
     @Override
