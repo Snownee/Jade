@@ -2,7 +2,7 @@
   "config.waila.plugin_jade": "Jade",
   "config.waila.plugin_jade.inventory": "Inventory",
   "jade.locked": "Inventory is locked",
-  "config.waila.plugin_jade.horse_stat": "Horse Stat",
+  "config.waila.plugin_jade.horse_stat": "Horse Stats",
   "jade.horseStat.jump": "Jump height: %d",
   "jade.horseStat.speed": "Speed: %d",
   "config.waila.plugin_jade.effects": "Entity Effects",
@@ -48,5 +48,6 @@
   "config.waila.plugin_jade.chicken_egg": "Chicken Egg",
   "jade.nextEgg": "Next Egg: %ds",
   "config.waila.plugin_jade.harvest_tool": "WIP",
+  "config.waila.plugin_jade.breaking_progress": "Breaking Progress",
   "config.waila.plugin_jade.command_block": "Command Block"
 }

@@ -68,6 +68,7 @@ public class JadePlugin implements IWailaPlugin {
     public static final ResourceLocation CHICKEN_EGG = RL("chicken_egg");
     public static final ResourceLocation HARVEST_TOOL = RL("harvest_tool");
     public static final ResourceLocation COMMAND_BLOCK = RL("command_block");
+    public static final ResourceLocation BREAKING_PROGRESS = RL("breaking_progress");
 
     @Override
     public void register(IRegistrar registrar) {
@@ -138,6 +139,8 @@ public class JadePlugin implements IWailaPlugin {
         registrar.registerComponentProvider(CommandBlockProvider.INSTANCE, TooltipPosition.BODY, CommandBlockBlock.class);
         registrar.registerBlockDataProvider(CommandBlockProvider.INSTANCE, CommandBlockBlock.class);
         registrar.addConfig(COMMAND_BLOCK, true);
+
+        registrar.addConfig(BREAKING_PROGRESS, true);
     }
 
 }
