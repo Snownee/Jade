@@ -85,10 +85,10 @@ repositories {
         name = "jei"
         url = "https://dvs1.progwml6.com/files/maven"
     }
-    maven {
-        name = "tehnut"
-        url = "http://tehnut.info/maven"
-    }
+    //maven {
+    //    name = "tehnut"
+    //    url = "http://tehnut.info/maven"
+    //}
 }
 
 dependencies {
@@ -99,7 +99,7 @@ dependencies {
 
     compile fg.deobf("mezz.jei:jei-${minecraft_version}:${jei_version}")
 	
-	compile fg.deobf("mcp.mobius.waila:Hwyla:1.10.8-B72_1.15.2")
+	compile files("Hwyla-1.10.8-B72_1.15.2.jar")
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..

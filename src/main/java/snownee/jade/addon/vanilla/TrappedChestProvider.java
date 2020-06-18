@@ -14,6 +14,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.registries.ForgeRegistries;
 import snownee.jade.JadePlugin;
 
@@ -23,7 +24,7 @@ public class TrappedChestProvider implements IComponentProvider {
 
     private static final Cache<Block, ITextComponent> CACHE = CacheBuilder.newBuilder().build();
 
-    private static final ITextComponent DEFAULT_NAME = Blocks.CHEST.getNameTextComponent();
+    private static final ITextComponent DEFAULT_NAME = new TranslationTextComponent(Blocks.CHEST.getTranslationKey());
 
     @Override
     public void appendHead(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {
