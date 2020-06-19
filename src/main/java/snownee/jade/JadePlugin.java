@@ -10,7 +10,6 @@ import net.minecraft.block.BrewingStandBlock;
 import net.minecraft.block.CommandBlockBlock;
 import net.minecraft.block.NoteBlock;
 import net.minecraft.block.TNTBlock;
-import net.minecraft.block.TrappedChestBlock;
 import net.minecraft.entity.AgeableEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -22,6 +21,7 @@ import net.minecraft.entity.passive.ChickenEntity;
 import net.minecraft.entity.passive.horse.AbstractChestedHorseEntity;
 import net.minecraft.entity.passive.horse.AbstractHorseEntity;
 import net.minecraft.util.ResourceLocation;
+import snownee.jade.addon.vanilla.AccurateNameProvider;
 import snownee.jade.addon.vanilla.AgeableEntityProvider;
 import snownee.jade.addon.vanilla.ArmorStandProvider;
 import snownee.jade.addon.vanilla.BeehiveProvider;
@@ -40,7 +40,6 @@ import snownee.jade.addon.vanilla.NoteBlockProvider;
 import snownee.jade.addon.vanilla.PaintingProvider;
 import snownee.jade.addon.vanilla.PotionEffectsProvider;
 import snownee.jade.addon.vanilla.TNTProvider;
-import snownee.jade.addon.vanilla.TrappedChestProvider;
 
 @WailaPlugin
 public class JadePlugin implements IWailaPlugin {
@@ -69,6 +68,7 @@ public class JadePlugin implements IWailaPlugin {
     public static final ResourceLocation HARVEST_TOOL = RL("harvest_tool");
     public static final ResourceLocation COMMAND_BLOCK = RL("command_block");
     public static final ResourceLocation BREAKING_PROGRESS = RL("breaking_progress");
+    public static final ResourceLocation ACCURATE_NAME = RL("accurate_name");
 
     @Override
     public void register(IRegistrar registrar) {
@@ -126,9 +126,6 @@ public class JadePlugin implements IWailaPlugin {
         registrar.registerComponentProvider(PaintingProvider.INSTANCE, TooltipPosition.TAIL, PaintingEntity.class);
         registrar.addConfig(PAINTING, true);
 
-        registrar.registerComponentProvider(TrappedChestProvider.INSTANCE, TooltipPosition.HEAD, TrappedChestBlock.class);
-        registrar.addConfig(TRAPPED_CHEST, true);
-
         registrar.registerComponentProvider(ChickenEggProvider.INSTANCE, TooltipPosition.BODY, ChickenEntity.class);
         registrar.registerEntityDataProvider(ChickenEggProvider.INSTANCE, ChickenEntity.class);
         registrar.addConfig(CHICKEN_EGG, true);
@@ -141,6 +138,10 @@ public class JadePlugin implements IWailaPlugin {
         registrar.addConfig(COMMAND_BLOCK, true);
 
         registrar.addConfig(BREAKING_PROGRESS, true);
+
+        registrar.registerComponentProvider(AccurateNameProvider.INSTANCE, TooltipPosition.HEAD, Block.class);
+        registrar.addConfig(ACCURATE_NAME, true);
+        registrar.addConfig(TRAPPED_CHEST, true);
     }
 
 }
