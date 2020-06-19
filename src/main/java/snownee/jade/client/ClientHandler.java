@@ -8,6 +8,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.multiplayer.PlayerController;
+import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ForgeHooks;
@@ -33,8 +34,10 @@ public final class ClientHandler {
         boolean canHarvest = ForgeHooks.canHarvestBlock(state, mc.player, mc.world, playerController.currentBlock);
         int color = canHarvest ? 0x88FFFFFF : 0x88FF4444;
         Rectangle rect = event.getPosition();
-        AbstractGui.fill(rect.x + 1, rect.height + 1, rect.x + 1 + (int) (rect.width * playerController.curBlockDamageMP), rect.height + 2, color);
-
+        float progress = state.getPlayerRelativeBlockHardness(mc.player, mc.player.world, playerController.currentBlock);
+        progress = playerController.curBlockDamageMP + mc.getRenderPartialTicks() * progress;
+        progress = MathHelper.clamp(progress, 0, 1);
+        AbstractGui.fill(rect.x + 1, rect.height + 1, rect.x + 1 + (int) (rect.width * progress), rect.height + 2, color);
     }
 
 }
