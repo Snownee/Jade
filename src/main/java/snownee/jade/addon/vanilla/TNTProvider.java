@@ -23,7 +23,7 @@ public class TNTProvider implements IComponentProvider {
         }
         BlockState state = accessor.getBlockState();
         if (state.get(TNTBlock.UNSTABLE)) {
-            tooltip.add(new TranslationTextComponent("jade.tnt.unstable").applyTextStyle(TextFormatting.RED));
+            tooltip.add(new TranslationTextComponent("jade.tnt.unstable").mergeStyle(TextFormatting.RED));
         }
     }
 

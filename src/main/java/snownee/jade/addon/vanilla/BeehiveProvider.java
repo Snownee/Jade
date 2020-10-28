@@ -28,8 +28,8 @@ public class BeehiveProvider implements IComponentProvider, IServerDataProvider<
             return;
         }
         BlockState state = accessor.getBlockState();
-        int level = state.get(BeehiveBlock.field_226873_c_); // 0~5
-        tooltip.add(new TranslationTextComponent("jade.beehive.honey", new TranslationTextComponent("jade.fraction", level, 5).applyTextStyle(level == 5 ? TextFormatting.GREEN : TextFormatting.WHITE)));
+        int level = state.get(BeehiveBlock.HONEY_LEVEL); // 0~5
+        tooltip.add(new TranslationTextComponent("jade.beehive.honey", new TranslationTextComponent("jade.fraction", level, 5).mergeStyle(level == 5 ? TextFormatting.GREEN : TextFormatting.WHITE)));
         if (accessor.getServerData().contains("Full")) {
             boolean full = accessor.getServerData().getBoolean("Full");
             int bees = accessor.getServerData().getByte("Bees");
@@ -41,8 +41,8 @@ public class BeehiveProvider implements IComponentProvider, IServerDataProvider<
     public void appendServerData(CompoundNBT tag, ServerPlayerEntity player, World world, TileEntity te) {
         tag.keySet().clear();
         BeehiveTileEntity beehive = (BeehiveTileEntity) te;
-        tag.putByte("Bees", (byte) beehive.func_226971_j_());
-        tag.putBoolean("Full", beehive.func_226970_h_());
+        tag.putByte("Bees", (byte) beehive.getBeeCount());
+        tag.putBoolean("Full", beehive.isFullOfBees());
     }
 
 }

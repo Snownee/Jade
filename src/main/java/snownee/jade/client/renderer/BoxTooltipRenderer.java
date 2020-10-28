@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import mcp.mobius.waila.api.ICommonAccessor;
@@ -58,20 +59,21 @@ public class BoxTooltipRenderer implements ITooltipRenderer {
     @Override
     public void draw(CompoundNBT nbt, ICommonAccessor accessor, int x, int y) {
         Tooltip tooltip = geTooltip(nbt);
-        if (tooltip != null) {
-            Rectangle rect = tooltip.getPosition();
-            RenderSystem.enableBlend();
-            int color = Color.GRAY.getRGB();
-            RenderSystem.pushMatrix();
-            RenderSystem.translatef(x, y, 0);
-            AbstractGui.fill(0, 0, 1, rect.height, color);
-            AbstractGui.fill(0, 0, rect.width, 1, color);
-            AbstractGui.fill(rect.width, 0, rect.width + 1, rect.height, color);
-            AbstractGui.fill(0, rect.height, rect.width + 1, rect.height + 1, color);
-            RenderSystem.translatef(-x, -rect.y, 0);
-            tooltip.draw();
-            RenderSystem.popMatrix();
+        if (tooltip == null) {
+            return;
         }
+        Rectangle rect = tooltip.getPosition();
+        RenderSystem.enableBlend();
+        int color = Color.GRAY.getRGB();
+        MatrixStack matrix = new MatrixStack();
+        matrix.translate(x, y, 0);
+        AbstractGui.fill(matrix, 0, 0, 1, rect.height, color);
+        AbstractGui.fill(matrix, 0, 0, rect.width, 1, color);
+        AbstractGui.fill(matrix, rect.width, 0, rect.width + 1, rect.height, color);
+        AbstractGui.fill(matrix, 0, rect.height, rect.width + 1, rect.height + 1, color);
+        matrix.translate(-x, -rect.y, 0);
+        tooltip.draw();
+        matrix.pop();
     }
 
     private Tooltip geTooltip(CompoundNBT nbt) {

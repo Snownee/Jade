@@ -31,7 +31,6 @@ import snownee.jade.addon.vanilla.ChestedHorseProvider;
 import snownee.jade.addon.vanilla.ChickenEggProvider;
 import snownee.jade.addon.vanilla.CommandBlockProvider;
 import snownee.jade.addon.vanilla.HarvestToolProvider;
-import snownee.jade.addon.vanilla.HideModNameProvider;
 import snownee.jade.addon.vanilla.HorseProvider;
 import snownee.jade.addon.vanilla.InventoryProvider;
 import snownee.jade.addon.vanilla.ItemFrameProvider;
@@ -68,7 +67,7 @@ public class JadePlugin implements IWailaPlugin {
     public static final ResourceLocation HARVEST_TOOL = RL("harvest_tool");
     public static final ResourceLocation COMMAND_BLOCK = RL("command_block");
     public static final ResourceLocation BREAKING_PROGRESS = RL("breaking_progress");
-    public static final ResourceLocation ACCURATE_NAME = RL("accurate_name");
+    //public static final ResourceLocation ACCURATE_NAME = RL("accurate_name");
 
     @Override
     public void register(IRegistrar registrar) {
@@ -119,7 +118,6 @@ public class JadePlugin implements IWailaPlugin {
         registrar.registerComponentProvider(ArmorStandProvider.INSTANCE, TooltipPosition.BODY, ArmorStandEntity.class);
         registrar.addConfig(ARMOR_STAND, true);
 
-        registrar.registerComponentProvider(HideModNameProvider.INSTANCE, TooltipPosition.TAIL, Block.class);
         registrar.addConfig(HIDE_MOD_NAME, false);
 
         registrar.registerComponentProvider(PaintingProvider.INSTANCE, TooltipPosition.BODY, PaintingEntity.class);
@@ -140,7 +138,7 @@ public class JadePlugin implements IWailaPlugin {
         registrar.addConfig(BREAKING_PROGRESS, true);
 
         registrar.registerComponentProvider(AccurateNameProvider.INSTANCE, TooltipPosition.HEAD, Block.class);
-        registrar.addConfig(ACCURATE_NAME, true);
+        //registrar.addConfig(ACCURATE_NAME, true);
         registrar.addConfig(TRAPPED_CHEST, true);
     }
 

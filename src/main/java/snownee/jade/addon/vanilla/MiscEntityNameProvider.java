@@ -28,7 +28,7 @@ public class MiscEntityNameProvider implements IEntityComponentProvider {
         if (!tooltip.isEmpty() || shouldExclude(accessor.getEntity(), config)) {
             return;
         }
-        tooltip.add(new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getEntityName(), accessor.getEntity().getDisplayName().getFormattedText())));
+        tooltip.add(new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getEntityName(), accessor.getEntity().getDisplayName().getString())));
     }
 
     @Override

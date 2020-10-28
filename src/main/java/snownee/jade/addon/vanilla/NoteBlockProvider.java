@@ -30,7 +30,7 @@ public class NoteBlockProvider implements IComponentProvider {
         String pitch = PITCH[note % PITCH.length];
         TextFormatting octave = OCTAVE[note / PITCH.length];
         NoteBlockInstrument instrument = state.get(NoteBlock.INSTRUMENT);
-        tooltip.add(new TranslationTextComponent("%s %s", new TranslationTextComponent("jade.instrument." + instrument.getName()), octave + pitch));
+        tooltip.add(new TranslationTextComponent("%s %s", new TranslationTextComponent("jade.instrument." + instrument.getString()), octave + pitch));
     }
 
 }

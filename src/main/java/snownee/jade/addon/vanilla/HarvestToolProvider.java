@@ -17,6 +17,7 @@ public class HarvestToolProvider implements IComponentProvider {
         if (!config.get(JadePlugin.HARVEST_TOOL)) {
             return;
         }
+        // TODO
     }
 
 }

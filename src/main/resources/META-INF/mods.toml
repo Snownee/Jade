@@ -1,5 +1,7 @@
 modLoader="javafml"
-loaderVersion="[31,)"
+loaderVersion="[34,)"
+license="CC BY-NC-SA 4.0"
+
 [[mods]]
 modId="jade"
 version="${file.jarVersion}"
@@ -8,9 +10,9 @@ authors="Snownee"
 displayURL="https://minecraft.curseforge.com/projects/jade"
 description="HWYLA addons"
 
-[[dependencies.everpotion]]
-    modId="hwyla"
-    mandatory=true
-    versionRange="[1.10.8, 2)"
-    ordering="BEFORE"
-    side="BOTH"
+[[mods]]
+modId="waila"
+version="${file.jarVersion}"
+displayName="Waila (Jade)"
+authors="Snownee, TehNut, ProfMobius"
+description="You are using Jade, a fork of Hwyla."

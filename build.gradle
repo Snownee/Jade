@@ -30,7 +30,7 @@ minecraft {
     // stable_#            Stables are built at the discretion of the MCP team.
     // Use non-default mappings at your own risk. they may not always work.
     // Simply re-run your setup task after changing the mappings to update your workspace.
-    mappings channel: 'snapshot', version: '20200304-1.15.1'
+    mappings channel: 'snapshot', version: '20200916-1.16.2'
 
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
@@ -85,10 +85,13 @@ repositories {
         name = "jei"
         url = "https://dvs1.progwml6.com/files/maven"
     }
-    //maven {
-    //    name = "tehnut"
-    //    url = "http://tehnut.info/maven"
-    //}
+    maven {
+        url = "https://www.cursemaven.com"
+    }
+    maven {
+        name = "tehnut"
+        url = "https://maven.tehnut.info"
+    }
 }
 
 dependencies {
@@ -99,7 +102,9 @@ dependencies {
 
     compile fg.deobf("mezz.jei:jei-${minecraft_version}:${jei_version}")
 	
-	compile files("Hwyla-1.10.8-B72_1.15.2.jar")
+	//compile fg.deobf("curse.maven:hwyla:3033593")
+	//compile files("Hwyla-1.10.8-B72_1.15.2.jar")
+    //compile fg.deobf("mcp.mobius.waila:Hwyla:forge-1.10.9-B76_1.16.1")
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..

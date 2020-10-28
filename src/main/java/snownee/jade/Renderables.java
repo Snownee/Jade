@@ -32,7 +32,7 @@ public final class Renderables {
     }
 
     public static RenderableTextComponent offsetText(ITextComponent s, int x, int y) {
-        return offsetText(s.getFormattedText(), x, y);
+        return offsetText(s.getString(), x, y);
     }
 
     public static RenderableTextComponent offsetText(String s, int x, int y) {

@@ -2,6 +2,8 @@ package snownee.jade.client.renderer;
 
 import java.awt.Dimension;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
+
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.ICommonAccessor;
 import mcp.mobius.waila.api.ITooltipRenderer;
@@ -30,7 +32,7 @@ public class StringTooltipRenderer implements ITooltipRenderer {
         String s = tag.getString("text");
         FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
         WailaConfig.ConfigOverlay.ConfigOverlayColor color = Waila.CONFIG.get().getOverlay().getColor();
-        fontRenderer.drawStringWithShadow(s, x + ox, y + oy, color.getFontColor());
+        fontRenderer.drawStringWithShadow(new MatrixStack(), s, x + ox, y + oy, color.getFontColor());
     }
 
 }

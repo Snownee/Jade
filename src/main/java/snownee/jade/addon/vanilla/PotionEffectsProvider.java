@@ -38,7 +38,7 @@ public class PotionEffectsProvider implements IEntityComponentProvider, IServerD
             TranslationTextComponent name = new TranslationTextComponent(compound.getString("Name"));
             TranslationTextComponent amplifier = new TranslationTextComponent("potion.potency." + compound.getInt("Amplifier"));
             TranslationTextComponent s = new TranslationTextComponent("jade.potion", name, amplifier, getPotionDurationString(duration));
-            lines[i] = s.applyTextStyle(compound.getBoolean("Bad") ? TextFormatting.RED : TextFormatting.GREEN);
+            lines[i] = s.mergeStyle(compound.getBoolean("Bad") ? TextFormatting.RED : TextFormatting.GREEN);
         }
         tooltip.add(Renderables.box(lines));
     }

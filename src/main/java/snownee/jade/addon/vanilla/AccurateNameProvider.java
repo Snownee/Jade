@@ -12,7 +12,6 @@ import mcp.mobius.waila.api.IPluginConfig;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.TrappedChestBlock;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -38,19 +37,19 @@ public class AccurateNameProvider implements IComponentProvider {
                         ResourceLocation chestName = new ResourceLocation(trappedName.getNamespace(), trappedName.getPath().substring(8));
                         Block block = ForgeRegistries.BLOCKS.getValue(chestName);
                         if (block != null) {
-                            return block.getNameTextComponent();
+                            return block.getTranslatedName();
                         }
                     }
                     return DEFAULT_NAME;
                 });
                 tooltip.clear();
-                tooltip.add(new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getBlockName(), name.getFormattedText())));
+                tooltip.add(new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getBlockName(), name.getString())));
             } catch (Exception e) {}
             return;
         }
-        if (!tooltip.isEmpty() && config.get(JadePlugin.ACCURATE_NAME)) {
-            tooltip.set(0, new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getBlockName(), I18n.format(accessor.getBlock().getTranslationKey()))));
-        }
+        //        if (!tooltip.isEmpty() && config.get(JadePlugin.ACCURATE_NAME)) {
+        //            tooltip.set(0, new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getBlockName(), I18n.format(accessor.getBlock().getTranslationKey()))));
+        //        }
     }
 
 }
