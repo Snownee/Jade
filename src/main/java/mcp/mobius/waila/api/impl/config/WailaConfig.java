@@ -155,9 +155,9 @@ public class WailaConfig {
         }
 
         public static class ConfigOverlayColor {
-            private int alpha = 80;
+            private int alpha = 50;
             private Map<ResourceLocation, HUDTheme> themes = Maps.newHashMap();
-            private ResourceLocation activeTheme = HUDTheme.VANILLA.getId();
+            private ResourceLocation activeTheme = HUDTheme.DARK.getId();
 
             public ConfigOverlayColor() {
                 themes.put(HUDTheme.VANILLA.getId(), HUDTheme.VANILLA);

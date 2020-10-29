@@ -6,6 +6,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.ITaggableList;
+import mcp.mobius.waila.api.RenderContext;
 import mcp.mobius.waila.api.RenderableTextComponent;
 import mcp.mobius.waila.api.event.WailaTooltipEvent;
 import mcp.mobius.waila.api.impl.DataAccessor;
@@ -69,7 +70,7 @@ public class Tooltip {
         position.width += hasItem() ? 24 : 4;
         position.y += 6;
 
-        MatrixStack matrixStack = new MatrixStack();
+        MatrixStack matrixStack = RenderContext.matrixStack;
 
         for (Line line : lines) {
             if (line.getComponent() instanceof RenderableTextComponent) {

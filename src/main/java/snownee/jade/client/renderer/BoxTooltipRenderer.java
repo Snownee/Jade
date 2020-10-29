@@ -17,6 +17,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import mcp.mobius.waila.api.ICommonAccessor;
 import mcp.mobius.waila.api.ITooltipRenderer;
+import mcp.mobius.waila.api.RenderContext;
 import mcp.mobius.waila.overlay.Tooltip;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.nbt.CompoundNBT;
@@ -65,12 +66,13 @@ public class BoxTooltipRenderer implements ITooltipRenderer {
         Rectangle rect = tooltip.getPosition();
         RenderSystem.enableBlend();
         int color = Color.GRAY.getRGB();
-        MatrixStack matrix = new MatrixStack();
+        MatrixStack matrix = RenderContext.matrixStack;
         matrix.translate(x, y, 0);
         AbstractGui.fill(matrix, 0, 0, 1, rect.height, color);
         AbstractGui.fill(matrix, 0, 0, rect.width, 1, color);
         AbstractGui.fill(matrix, rect.width, 0, rect.width + 1, rect.height, color);
         AbstractGui.fill(matrix, 0, rect.height, rect.width + 1, rect.height + 1, color);
+        matrix.push();
         matrix.translate(-x, -rect.y, 0);
         tooltip.draw();
         matrix.pop();

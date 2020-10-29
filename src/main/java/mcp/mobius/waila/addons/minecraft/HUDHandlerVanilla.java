@@ -30,7 +30,6 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.registries.ForgeRegistries;
-import snownee.jade.Jade;
 
 public class HUDHandlerVanilla implements IComponentProvider, IServerDataProvider<TileEntity> {
 

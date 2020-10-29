@@ -46,7 +46,7 @@ public class MessageRequestTile {
             server.execute(() -> {
                 ServerPlayerEntity player = context.get().getSender();
                 World world = player.world;
-                if (!world.isBlockLoaded(message.pos))
+                if (!world.isBlockPresent(message.pos))
                     return;
 
                 TileEntity tile = world.getTileEntity(message.pos);

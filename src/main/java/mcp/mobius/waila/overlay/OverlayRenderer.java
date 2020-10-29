@@ -6,6 +6,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.WailaClient;
 import mcp.mobius.waila.addons.core.PluginCore;
+import mcp.mobius.waila.api.RenderContext;
 import mcp.mobius.waila.api.event.WailaRenderEvent;
 import mcp.mobius.waila.api.impl.DataAccessor;
 import mcp.mobius.waila.api.impl.config.PluginConfig;
@@ -76,10 +77,11 @@ public class OverlayRenderer {
 
     public static void renderOverlay(Tooltip tooltip, MatrixStack matrixStack) {
         Minecraft.getInstance().getProfiler().startSection("Waila Overlay");
-        RenderSystem.pushMatrix();
+        RenderContext.matrixStack = matrixStack;
+        matrixStack.push();
         saveGLState();
 
-        RenderSystem.scalef(Waila.CONFIG.get().getOverlay().getOverlayScale(), Waila.CONFIG.get().getOverlay().getOverlayScale(), 1.0F);
+        matrixStack.scale(Waila.CONFIG.get().getOverlay().getOverlayScale(), Waila.CONFIG.get().getOverlay().getOverlayScale(), 1.0F);
 
         RenderSystem.disableRescaleNormal();
         RenderHelper.disableStandardItemLighting();
@@ -92,7 +94,7 @@ public class OverlayRenderer {
             RenderSystem.enableRescaleNormal();
             loadGLState();
             RenderSystem.enableDepthTest();
-            RenderSystem.popMatrix();
+            matrixStack.pop();
             return;
         }
 
@@ -119,7 +121,7 @@ public class OverlayRenderer {
 
         loadGLState();
         RenderSystem.enableDepthTest();
-        RenderSystem.popMatrix();
+        matrixStack.pop();
         Minecraft.getInstance().getProfiler().endSection();
     }
 

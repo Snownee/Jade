@@ -1,8 +1,8 @@
 package mcp.mobius.waila.api;
 
-import net.minecraft.nbt.CompoundNBT;
-
 import java.awt.Dimension;
+
+import net.minecraft.nbt.CompoundNBT;
 
 public interface ITooltipRenderer {
     /**
@@ -19,5 +19,6 @@ public interface ITooltipRenderer {
      * @param data     The data supplied by the provider
      * @param accessor A global accessor for TileEntities and Entities
      */
-    void draw( CompoundNBT data, ICommonAccessor accessor, int x, int y);
+    void draw(CompoundNBT data, ICommonAccessor accessor, int x, int y);
+
 }

@@ -10,7 +10,6 @@ import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.HangingEntity;
 import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
-import net.minecraft.entity.item.minecart.MinecartEntity;
 import net.minecraft.util.ResourceLocation;
 
 public class PluginCore implements IWailaPlugin {
