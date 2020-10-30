@@ -3,6 +3,8 @@ package mcp.mobius.waila.api.impl.config;
 import com.google.common.collect.Maps;
 import com.google.gson.*;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.MathHelper;
+
 import org.apache.commons.lang3.StringEscapeUtils;
 
 import java.lang.reflect.Type;
@@ -124,30 +126,48 @@ public class WailaConfig {
         private float overlayPosX = 0.5F;
         private float overlayPosY = 0.99F;
         private float overlayScale = 1.0F;
+        private float overlayAnchorX = 0.5F;
+        private float overlayAnchorY = 0F;
         private ConfigOverlayColor color = new ConfigOverlayColor();
 
         public void setOverlayPosX(float overlayPosX) {
-            this.overlayPosX = overlayPosX;
+            this.overlayPosX = MathHelper.clamp(overlayPosX, 0.0F, 1.0F);
         }
 
         public void setOverlayPosY(float overlayPosY) {
-            this.overlayPosY = overlayPosY;
+            this.overlayPosY = MathHelper.clamp(overlayPosY, 0.0F, 1.0F);
         }
 
         public void setOverlayScale(float overlayScale) {
             this.overlayScale = overlayScale;
         }
 
+        public void setOverlayAnchorX(float overlayAnchorX) {
+            this.overlayAnchorX = MathHelper.clamp(overlayAnchorX, 0.0F, 1.0F);
+        }
+
+        public void setOverlayAnchorY(float overlayAnchorY) {
+            this.overlayAnchorY = MathHelper.clamp(overlayAnchorY, 0.0F, 1.0F);
+        }
+
         public float getOverlayPosX() {
-            return Math.min(Math.max(overlayPosX, 0.0F), 1.0F);
+            return MathHelper.clamp(overlayPosX, 0.0F, 1.0F);
         }
 
         public float getOverlayPosY() {
-            return Math.min(Math.max(overlayPosY, 0.0F), 1.0F);
+            return MathHelper.clamp(overlayPosY, 0.0F, 1.0F);
         }
 
         public float getOverlayScale() {
             return overlayScale;
+        }
+
+        public float getOverlayAnchorX() {
+            return MathHelper.clamp(overlayAnchorX, 0.0F, 1.0F);
+        }
+
+        public float getOverlayAnchorY() {
+            return MathHelper.clamp(overlayAnchorY, 0.0F, 1.0F);
         }
 
         public ConfigOverlayColor getColor() {

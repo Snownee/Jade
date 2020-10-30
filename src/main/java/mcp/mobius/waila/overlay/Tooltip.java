@@ -13,6 +13,7 @@ import mcp.mobius.waila.api.impl.DataAccessor;
 import mcp.mobius.waila.api.impl.TaggableList;
 import mcp.mobius.waila.api.impl.TaggedTextComponent;
 import mcp.mobius.waila.api.impl.config.WailaConfig;
+import mcp.mobius.waila.api.impl.config.WailaConfig.ConfigOverlay;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
@@ -128,8 +129,10 @@ public class Tooltip {
 
     public Rectangle getPosition() {
         MainWindow window = Minecraft.getInstance().getMainWindow();
-        return new Rectangle((int) (window.getScaledWidth() * Waila.CONFIG.get().getOverlay().getOverlayPosX() - totalSize.width / 2), // Center it
-                (int) (window.getScaledHeight() * (1.0F - Waila.CONFIG.get().getOverlay().getOverlayPosY())), totalSize.width, totalSize.height);
+        ConfigOverlay overlay = Waila.CONFIG.get().getOverlay();
+        int x = (int) (window.getScaledWidth() * overlay.getOverlayPosX() - totalSize.width * overlay.getOverlayAnchorX());
+        int y = (int) (window.getScaledHeight() * (1.0F - overlay.getOverlayPosY()) - totalSize.height * overlay.getOverlayAnchorY());
+        return new Rectangle(x, y, totalSize.width, totalSize.height);
     }
 
     public static class Line {
