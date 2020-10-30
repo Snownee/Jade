@@ -47,8 +47,16 @@
   "config.waila.plugin_jade.trapped_chest": "Hide Trapped Chest",
   "config.waila.plugin_jade.chicken_egg": "Chicken Egg",
   "jade.nextEgg": "Next Egg: %ds",
-  "config.waila.plugin_jade.harvest_tool": "WIP",
   "config.waila.plugin_jade.breaking_progress": "Breaking Progress",
   "config.waila.plugin_jade.command_block": "Command Block",
   "config.waila.plugin_jade.hide_item_mod_name": "Hide Item Mod Name",
+  "config.waila.plugin_jade.harvest_tool": "Harvest Tool",
+  "jade.harvest_tool.fmt": "%s %s",
+  "jade.harvest_tool.pickaxe.0": "Stone",
+  "jade.harvest_tool.pickaxe.1": "Iron",
+  "jade.harvest_tool.pickaxe.2": "Diamond",
+  "jade.harvest_tool.pickaxe.3": "Obsidian",
+  "jade.harvest_tool.pickaxe": "\u26cf",
+  "jade.harvest_tool.axe": "\ud83e\ude93",
+  "jade.harvest_tool.cannot": "Can't break"
 }

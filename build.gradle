@@ -88,10 +88,10 @@ repositories {
     maven {
         url = "https://www.cursemaven.com"
     }
-    maven {
-        name = "tehnut"
-        url = "https://maven.tehnut.info"
-    }
+    //maven {
+    //    name = "tehnut"
+    //    url = "https://maven.tehnut.info"
+    //}
 }
 
 dependencies {
