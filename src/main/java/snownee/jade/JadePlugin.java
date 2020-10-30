@@ -68,6 +68,7 @@ public class JadePlugin implements IWailaPlugin {
     public static final ResourceLocation COMMAND_BLOCK = RL("command_block");
     public static final ResourceLocation BREAKING_PROGRESS = RL("breaking_progress");
     //public static final ResourceLocation ACCURATE_NAME = RL("accurate_name");
+    public static final ResourceLocation HIDE_ITEM_MOD_NAME = RL("hide_item_mod_name");
 
     @Override
     public void register(IRegistrar registrar) {
@@ -140,6 +141,8 @@ public class JadePlugin implements IWailaPlugin {
         registrar.registerComponentProvider(AccurateNameProvider.INSTANCE, TooltipPosition.HEAD, Block.class);
         //registrar.addConfig(ACCURATE_NAME, true);
         registrar.addConfig(TRAPPED_CHEST, true);
+
+        registrar.addConfig(HIDE_ITEM_MOD_NAME, false);
     }
 
 }
