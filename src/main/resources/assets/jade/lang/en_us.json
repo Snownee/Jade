@@ -58,5 +58,5 @@
   "jade.harvest_tool.pickaxe.3": "Obsidian",
   "jade.harvest_tool.pickaxe": "\u26cf",
   "jade.harvest_tool.axe": "\ud83e\ude93",
-  "jade.harvest_tool.cannot": "Can't break"
+  "jade.harvest_tool.unbreakable": "Can't break"
 }

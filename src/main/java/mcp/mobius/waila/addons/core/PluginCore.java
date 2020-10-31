@@ -26,6 +26,7 @@ public class PluginCore implements IWailaPlugin {
         registrar.registerComponentProvider(HUDHandlerBlocks.INSTANCE, TooltipPosition.HEAD, Block.class);
         registrar.registerComponentProvider(HUDHandlerBlocks.INSTANCE, TooltipPosition.BODY, Block.class);
         registrar.registerComponentProvider(HUDHandlerBlocks.INSTANCE, TooltipPosition.TAIL, Block.class);
+        registrar.registerBlockDataProvider(HUDHandlerBlocks.INSTANCE, Block.class);
 
         registrar.registerStackProvider(HUDHandlerFluids.INSTANCE, FlowingFluidBlock.class);
         registrar.registerComponentProvider(HUDHandlerFluids.INSTANCE, TooltipPosition.HEAD, FlowingFluidBlock.class);

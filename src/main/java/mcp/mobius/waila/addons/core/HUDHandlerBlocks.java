@@ -8,21 +8,27 @@ import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IDataAccessor;
 import mcp.mobius.waila.api.IPluginConfig;
+import mcp.mobius.waila.api.IServerDataProvider;
 import mcp.mobius.waila.api.ITaggableList;
 import mcp.mobius.waila.utils.ModIdentification;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.state.BooleanProperty;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
 import snownee.jade.JadePlugin;
 
-public class HUDHandlerBlocks implements IComponentProvider {
+public class HUDHandlerBlocks implements IComponentProvider, IServerDataProvider<TileEntity> {
 
-    static final IComponentProvider INSTANCE = new HUDHandlerBlocks();
+    static final HUDHandlerBlocks INSTANCE = new HUDHandlerBlocks();
     static final ResourceLocation OBJECT_NAME_TAG = new ResourceLocation(Waila.MODID, "object_name");
     static final ResourceLocation REGISTRY_NAME_TAG = new ResourceLocation(Waila.MODID, "registry_name");
     static final ResourceLocation MOD_NAME_TAG = new ResourceLocation(Waila.MODID, "mod_name");
@@ -32,11 +38,10 @@ public class HUDHandlerBlocks implements IComponentProvider {
         if (accessor.getBlockState().getMaterial().isLiquid())
             return;
 
-        String name = null;
-        if (accessor.getTileEntity() instanceof INamedContainerProvider) {
-            name = ((INamedContainerProvider) accessor.getTileEntity()).getDisplayName().getString();
-        }
-        if (name == null) {
+        String name;
+        if (accessor.getServerData().contains("givenName", Constants.NBT.TAG_STRING)) {
+            name = accessor.getServerData().getString("givenName");
+        } else {
             name = I18n.format(accessor.getBlock().getTranslationKey());
         }
         ((ITaggableList<ResourceLocation, ITextComponent>) tooltip).setTag(OBJECT_NAME_TAG, new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getBlockName(), name)));
@@ -64,6 +69,16 @@ public class HUDHandlerBlocks implements IComponentProvider {
         if (!Strings.isNullOrEmpty(modName)) {
             modName = String.format(Waila.CONFIG.get().getFormatting().getModName(), modName);
             ((ITaggableList<ResourceLocation, ITextComponent>) tooltip).setTag(MOD_NAME_TAG, new StringTextComponent(modName));
+        }
+    }
+
+    @Override
+    public void appendServerData(CompoundNBT data, ServerPlayerEntity player, World world, TileEntity t) {
+        if (t instanceof INamedContainerProvider) {
+            String name = ((INamedContainerProvider) t).getDisplayName().getString();
+            if (!Strings.isNullOrEmpty(name)) {
+                data.putString("givenName", name);
+            }
         }
     }
 }
