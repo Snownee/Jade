@@ -10,6 +10,7 @@ import net.minecraft.block.BrewingStandBlock;
 import net.minecraft.block.CommandBlockBlock;
 import net.minecraft.block.NoteBlock;
 import net.minecraft.block.TNTBlock;
+import net.minecraft.block.TrappedChestBlock;
 import net.minecraft.entity.AgeableEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -21,7 +22,6 @@ import net.minecraft.entity.passive.ChickenEntity;
 import net.minecraft.entity.passive.horse.AbstractChestedHorseEntity;
 import net.minecraft.entity.passive.horse.AbstractHorseEntity;
 import net.minecraft.util.ResourceLocation;
-import snownee.jade.addon.vanilla.AccurateNameProvider;
 import snownee.jade.addon.vanilla.AgeableEntityProvider;
 import snownee.jade.addon.vanilla.ArmorStandProvider;
 import snownee.jade.addon.vanilla.BeehiveProvider;
@@ -30,6 +30,7 @@ import snownee.jade.addon.vanilla.BrewingStandProvider;
 import snownee.jade.addon.vanilla.ChestedHorseProvider;
 import snownee.jade.addon.vanilla.ChickenEggProvider;
 import snownee.jade.addon.vanilla.CommandBlockProvider;
+import snownee.jade.addon.vanilla.EnchantmentPowerProvider;
 import snownee.jade.addon.vanilla.HarvestToolProvider;
 import snownee.jade.addon.vanilla.HorseProvider;
 import snownee.jade.addon.vanilla.InventoryProvider;
@@ -39,6 +40,7 @@ import snownee.jade.addon.vanilla.NoteBlockProvider;
 import snownee.jade.addon.vanilla.PaintingProvider;
 import snownee.jade.addon.vanilla.PotionEffectsProvider;
 import snownee.jade.addon.vanilla.TNTProvider;
+import snownee.jade.addon.vanilla.TrappedChestProvider;
 
 @WailaPlugin
 public class JadePlugin implements IWailaPlugin {
@@ -69,6 +71,8 @@ public class JadePlugin implements IWailaPlugin {
     public static final ResourceLocation BREAKING_PROGRESS = RL("breaking_progress");
     //public static final ResourceLocation ACCURATE_NAME = RL("accurate_name");
     public static final ResourceLocation HIDE_ITEM_MOD_NAME = RL("hide_item_mod_name");
+    public static final ResourceLocation ENCH_POWER = RL("ench_power");
+    public static final ResourceLocation TOTAL_ENCH_POWER = RL("total_ench_power");
 
     @Override
     public void register(IRegistrar registrar) {
@@ -138,9 +142,12 @@ public class JadePlugin implements IWailaPlugin {
 
         registrar.addConfig(BREAKING_PROGRESS, true);
 
-        registrar.registerComponentProvider(AccurateNameProvider.INSTANCE, TooltipPosition.HEAD, Block.class);
-        //registrar.addConfig(ACCURATE_NAME, true);
+        registrar.registerComponentProvider(TrappedChestProvider.INSTANCE, TooltipPosition.HEAD, TrappedChestBlock.class);
         registrar.addConfig(TRAPPED_CHEST, true);
+
+        registrar.registerComponentProvider(EnchantmentPowerProvider.INSTANCE, TooltipPosition.BODY, Block.class);
+        registrar.addConfig(ENCH_POWER, true);
+        registrar.addConfig(TOTAL_ENCH_POWER, true);
 
         registrar.addConfig(HIDE_ITEM_MOD_NAME, false);
     }

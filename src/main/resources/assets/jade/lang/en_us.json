@@ -58,5 +58,8 @@
   "jade.harvest_tool.pickaxe.3": "Obsidian",
   "jade.harvest_tool.pickaxe": "\u26cf",
   "jade.harvest_tool.axe": "\ud83e\ude93",
-  "jade.harvest_tool.unbreakable": "Can't break"
+  "jade.harvest_tool.unbreakable": "Can't break",
+  "config.waila.plugin_jade.ench_power": "Ench Power",
+  "config.waila.plugin_jade.total_ench_power": "Total Ench Power",
+  "jade.ench_power": "Ench Power: %s"
 }
