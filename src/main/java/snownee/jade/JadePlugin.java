@@ -4,6 +4,7 @@ import mcp.mobius.waila.api.IRegistrar;
 import mcp.mobius.waila.api.IWailaPlugin;
 import mcp.mobius.waila.api.TooltipPosition;
 import mcp.mobius.waila.api.WailaPlugin;
+import net.minecraft.block.AbstractSkullBlock;
 import net.minecraft.block.BeehiveBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BrewingStandBlock;
@@ -17,6 +18,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ArmorStandEntity;
 import net.minecraft.entity.item.ItemFrameEntity;
 import net.minecraft.entity.item.PaintingEntity;
+import net.minecraft.entity.merchant.villager.VillagerEntity;
+import net.minecraft.entity.monster.ZombieVillagerEntity;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.ChickenEntity;
 import net.minecraft.entity.passive.horse.AbstractChestedHorseEntity;
@@ -38,9 +41,11 @@ import snownee.jade.addon.vanilla.ItemFrameProvider;
 import snownee.jade.addon.vanilla.MiscEntityNameProvider;
 import snownee.jade.addon.vanilla.NoteBlockProvider;
 import snownee.jade.addon.vanilla.PaintingProvider;
+import snownee.jade.addon.vanilla.PlayerHeadProvider;
 import snownee.jade.addon.vanilla.PotionEffectsProvider;
 import snownee.jade.addon.vanilla.TNTProvider;
 import snownee.jade.addon.vanilla.TrappedChestProvider;
+import snownee.jade.addon.vanilla.VillagerProfessionProvider;
 
 @WailaPlugin
 public class JadePlugin implements IWailaPlugin {
@@ -73,6 +78,8 @@ public class JadePlugin implements IWailaPlugin {
     public static final ResourceLocation HIDE_ITEM_MOD_NAME = RL("hide_item_mod_name");
     public static final ResourceLocation ENCH_POWER = RL("ench_power");
     public static final ResourceLocation TOTAL_ENCH_POWER = RL("total_ench_power");
+    public static final ResourceLocation PLAYER_HEAD = RL("player_head");
+    public static final ResourceLocation PROFESSION = RL("profession");
 
     @Override
     public void register(IRegistrar registrar) {
@@ -150,6 +157,13 @@ public class JadePlugin implements IWailaPlugin {
         registrar.addConfig(TOTAL_ENCH_POWER, true);
 
         registrar.addConfig(HIDE_ITEM_MOD_NAME, false);
+
+        registrar.registerComponentProvider(PlayerHeadProvider.INSTANCE, TooltipPosition.HEAD, AbstractSkullBlock.class);
+        registrar.addConfig(PLAYER_HEAD, true);
+
+        registrar.registerComponentProvider(VillagerProfessionProvider.INSTANCE, TooltipPosition.BODY, VillagerEntity.class);
+        registrar.registerComponentProvider(VillagerProfessionProvider.INSTANCE, TooltipPosition.BODY, ZombieVillagerEntity.class);
+        registrar.addConfig(PROFESSION, true);
     }
 
 }

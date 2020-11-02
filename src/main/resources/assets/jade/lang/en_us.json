@@ -61,5 +61,7 @@
   "jade.harvest_tool.unbreakable": "Can't break",
   "config.waila.plugin_jade.ench_power": "Ench Power",
   "config.waila.plugin_jade.total_ench_power": "Total Ench Power",
-  "jade.ench_power": "Ench Power: %s"
+  "jade.ench_power": "Ench Power: %s",
+  "config.waila.plugin_jade.player_head": "Player Head",
+  "config.waila.plugin_jade.profession": "Villager Profession"
 }
