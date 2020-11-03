@@ -24,6 +24,7 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
+import snownee.jade.JadeCommonConfig;
 import snownee.jade.JadePlugin;
 
 public class HUDHandlerBlocks implements IComponentProvider, IServerDataProvider<TileEntity> {
@@ -74,7 +75,7 @@ public class HUDHandlerBlocks implements IComponentProvider, IServerDataProvider
 
     @Override
     public void appendServerData(CompoundNBT data, ServerPlayerEntity player, World world, TileEntity t) {
-        if (t instanceof INamedContainerProvider) {
+        if (t instanceof INamedContainerProvider && JadeCommonConfig.shouldShowCustomName(t)) {
             String name = ((INamedContainerProvider) t).getDisplayName().getString();
             if (!Strings.isNullOrEmpty(name)) {
                 data.putString("givenName", name);
