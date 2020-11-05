@@ -1,8 +1,14 @@
 package mcp.mobius.waila.overlay;
 
+import java.awt.Rectangle;
+
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
+
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.WailaClient;
 import mcp.mobius.waila.addons.core.PluginCore;
@@ -16,10 +22,6 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.ChatVisibility;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.common.MinecraftForge;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
-
-import java.awt.Rectangle;
 
 public class OverlayRenderer {
 
@@ -100,9 +102,11 @@ public class OverlayRenderer {
 
         Rectangle position = preEvent.getPosition();
         WailaConfig.ConfigOverlay.ConfigOverlayColor color = Waila.CONFIG.get().getOverlay().getColor();
-        WailaRenderEvent.Color colorEvent = new WailaRenderEvent.Color(color.getAlpha(), color.getBackgroundColor(), color.getGradientStart(), color.getGradientEnd());
-        MinecraftForge.EVENT_BUS.post(colorEvent);
-        drawTooltipBox(position.x, position.y, position.width, position.height, colorEvent.getBackground(), colorEvent.getGradientStart(), colorEvent.getGradientEnd());
+        if (color.getRawAlpha() > 0) {
+            WailaRenderEvent.Color colorEvent = new WailaRenderEvent.Color(color.getAlpha(), color.getBackgroundColor(), color.getGradientStart(), color.getGradientEnd());
+            MinecraftForge.EVENT_BUS.post(colorEvent);
+            drawTooltipBox(position.x, position.y, position.width, position.height, colorEvent.getBackground(), colorEvent.getGradientStart(), colorEvent.getGradientEnd());
+        }
 
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
