@@ -75,7 +75,8 @@ public class PluginConfig implements IPluginConfig {
             Map<String, Map<String, Boolean>> config;
             try (FileReader reader = new FileReader(configFile)) {
                 config = new Gson().fromJson(reader, new TypeToken<Map<String, Map<String, Boolean>>>(){}.getType());
-            } catch (IOException e) {
+            } catch (Exception e) {
+                e.printStackTrace();
                 config = Maps.newHashMap();
             }
 

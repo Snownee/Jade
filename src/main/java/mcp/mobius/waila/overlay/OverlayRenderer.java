@@ -105,7 +105,7 @@ public class OverlayRenderer {
         if (color.getRawAlpha() > 0) {
             WailaRenderEvent.Color colorEvent = new WailaRenderEvent.Color(color.getAlpha(), color.getBackgroundColor(), color.getGradientStart(), color.getGradientEnd());
             MinecraftForge.EVENT_BUS.post(colorEvent);
-            drawTooltipBox(position.x, position.y, position.width, position.height, colorEvent.getBackground(), colorEvent.getGradientStart(), colorEvent.getGradientEnd());
+            drawTooltipBox(position.x, position.y, position.width, position.height, colorEvent.getBackground(), colorEvent.getGradientStart(), colorEvent.getGradientEnd(), Waila.CONFIG.get().getOverlay().getOverlaySquare());
         }
 
         RenderSystem.enableBlend();
@@ -175,15 +175,16 @@ public class OverlayRenderer {
         RenderSystem.popAttributes();
     }
 
-    public static void drawTooltipBox(int x, int y, int w, int h, int bg, int grad1, int grad2) {
-        DisplayUtil.drawGradientRect(x + 1, y, w - 1, 1, bg, bg);
-        DisplayUtil.drawGradientRect(x + 1, y + h, w - 1, 1, bg, bg);
+    public static void drawTooltipBox(int x, int y, int w, int h, int bg, int grad1, int grad2, boolean square) {
         DisplayUtil.drawGradientRect(x + 1, y + 1, w - 1, h - 1, bg, bg);//center
-        DisplayUtil.drawGradientRect(x, y + 1, 1, h - 1, bg, bg);
-        DisplayUtil.drawGradientRect(x + w, y + 1, 1, h - 1, bg, bg);
+        if (!square) {
+            DisplayUtil.drawGradientRect(x + 1, y, w - 1, 1, bg, bg);
+            DisplayUtil.drawGradientRect(x + 1, y + h, w - 1, 1, bg, bg);
+            DisplayUtil.drawGradientRect(x, y + 1, 1, h - 1, bg, bg);
+            DisplayUtil.drawGradientRect(x + w, y + 1, 1, h - 1, bg, bg);
+        }
         DisplayUtil.drawGradientRect(x + 1, y + 2, 1, h - 3, grad1, grad2);
         DisplayUtil.drawGradientRect(x + w - 1, y + 2, 1, h - 3, grad1, grad2);
-
         DisplayUtil.drawGradientRect(x + 1, y + 1, w - 1, 1, grad1, grad1);
         DisplayUtil.drawGradientRect(x + 1, y + h - 1, w - 1, 1, grad2, grad2);
     }

@@ -28,11 +28,15 @@ public class JsonConfig<T> {
             }
             try (FileReader reader = new FileReader(configFile)) {
                 return gson.fromJson(reader, configClass);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
+                try {
+                    configFile.renameTo(new File(configFile.getPath() + ".invalid"));
+                } catch (Exception e1) {}
+                T def = defaultFactory.get();
+                write(def, false);
+                return def;
             }
-
-            return defaultFactory.get();
         });
     }
 

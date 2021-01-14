@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import com.google.gson.*;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceContext.FluidMode;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 
@@ -39,7 +40,7 @@ public class WailaConfig {
         private boolean enableTextToSpeech = false;
         private int maxHealthForRender = 40;
         private int maxHeartsPerLine = 10;
-        private boolean displayFluids;
+        private FluidMode fluldMode = FluidMode.NONE;
 
         public void setDisplayTooltip(boolean displayTooltip) {
             this.displayTooltip = displayTooltip;
@@ -77,8 +78,12 @@ public class WailaConfig {
             this.maxHeartsPerLine = maxHeartsPerLine;
         }
 
+        public void setDisplayFluids(FluidMode displayFluids) {
+            this.fluldMode = displayFluids;
+        }
+
         public void setDisplayFluids(boolean displayFluids) {
-            this.displayFluids = displayFluids;
+            this.fluldMode = displayFluids ? FluidMode.ANY : FluidMode.NONE;
         }
 
         public boolean shouldDisplayTooltip() {
@@ -118,7 +123,11 @@ public class WailaConfig {
         }
 
         public boolean shouldDisplayFluids() {
-            return displayFluids;
+            return fluldMode != FluidMode.NONE;
+        }
+
+        public FluidMode getDisplayFluids() {
+            return fluldMode;
         }
     }
 
@@ -128,6 +137,7 @@ public class WailaConfig {
         private float overlayScale = 1.0F;
         private float overlayAnchorX = 0.5F;
         private float overlayAnchorY = 0F;
+        private boolean overlaySquare = false;
         private ConfigOverlayColor color = new ConfigOverlayColor();
 
         public void setOverlayPosX(float overlayPosX) {
@@ -168,6 +178,14 @@ public class WailaConfig {
 
         public float getOverlayAnchorY() {
             return MathHelper.clamp(overlayAnchorY, 0.0F, 1.0F);
+        }
+        
+        public void setOverlaySquare(boolean overlaySquare) {
+            this.overlaySquare = overlaySquare;
+        }
+        
+        public boolean getOverlaySquare() {
+            return overlaySquare;
         }
 
         public ConfigOverlayColor getColor() {

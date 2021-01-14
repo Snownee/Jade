@@ -27,6 +27,9 @@
   "config.waila.display_tooltip_desc": "Collect data and render the tooltip",
   "config.waila.display_fluids": "Display Fluids",
   "config.waila.display_fluids_desc": "Try to show fluids",
+  "config.waila.display_fluids_source_only": "Source Only",
+  "config.waila.display_fluids_any": "Any",
+  "config.waila.display_fluids_none": "None",
   "config.waila.sneaky_details": "Sneaky Details",
   "config.waila.sneaky_details_desc": "Body text is hidden unless sneaking",
   "config.waila.display_mode": "Display Mode",
@@ -48,6 +51,7 @@
   "config.waila.overlay_scale": "Display Scale",
   "config.waila.overlay_anchor_x": "Horizontal Anchor",
   "config.waila.overlay_anchor_y": "Vertical Anchor",
+  "config.waila.overlay_square": "Square",
 
   "config.waila.overlay_color": "Color",
   "config.waila.overlay_alpha": "Alpha",
