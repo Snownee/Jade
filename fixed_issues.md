@@ -7,6 +7,8 @@
  - https://github.com/TehNut/HWYLA/issues/250
  - https://github.com/TehNut/HWYLA/issues/257
  - https://github.com/TehNut/HWYLA/issues/262
+ - https://github.com/TehNut/HWYLA/issues/264
+ - https://github.com/TehNut/HWYLA/issues/312
  - https://github.com/TehNut/HWYLA/pull/289
  - https://github.com/TehNut/HWYLA/pull/298
  - https://github.com/TehNut/HWYLA/pull/300
