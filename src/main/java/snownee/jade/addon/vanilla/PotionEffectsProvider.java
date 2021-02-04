@@ -44,7 +44,7 @@ public class PotionEffectsProvider implements IEntityComponentProvider, IServerD
     }
 
     public static String getPotionDurationString(int duration) {
-        if (duration == 32767) {
+        if (duration >= 32767) {
             return "**:**";
         } else {
             int i = MathHelper.floor(duration);
@@ -71,7 +71,8 @@ public class PotionEffectsProvider implements IEntityComponentProvider, IServerD
             CompoundNBT compound = new CompoundNBT();
             compound.putString("Name", effect.getEffectName());
             compound.putInt("Amplifier", effect.getAmplifier());
-            compound.putInt("Duration", effect.getDuration());
+            int duration = Math.min(32767, effect.getDuration());
+            compound.putInt("Duration", duration);
             compound.putBoolean("Bad", !effect.getPotion().isBeneficial());
             list.add(compound);
         }

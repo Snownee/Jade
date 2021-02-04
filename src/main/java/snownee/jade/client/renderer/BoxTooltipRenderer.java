@@ -67,12 +67,12 @@ public class BoxTooltipRenderer implements ITooltipRenderer {
         RenderSystem.enableBlend();
         int color = Color.GRAY.getRGB();
         MatrixStack matrix = RenderContext.matrixStack;
+        matrix.push();
         matrix.translate(x, y, 0);
         AbstractGui.fill(matrix, 0, 0, 1, rect.height, color);
         AbstractGui.fill(matrix, 0, 0, rect.width, 1, color);
         AbstractGui.fill(matrix, rect.width, 0, rect.width + 1, rect.height, color);
         AbstractGui.fill(matrix, 0, rect.height, rect.width + 1, rect.height + 1, color);
-        matrix.push();
         matrix.translate(-x, -rect.y, 0);
         tooltip.draw();
         matrix.pop();
