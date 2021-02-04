@@ -43,6 +43,9 @@ public class WailaTickHandler {
             return;
 
         Minecraft client = Minecraft.getInstance();
+        if (client.isGamePaused()) {
+            return;
+        }
         World world = client.world;
         PlayerEntity player = client.player;
 
