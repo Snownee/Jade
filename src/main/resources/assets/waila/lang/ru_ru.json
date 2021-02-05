@@ -10,7 +10,6 @@
   "tooltip.waila.state_on": "Вкл.",
   "tooltip.waila.state_off": "Выкл.",
   "tooltip.waila.power": "Энергия: %d",
-  "tooltip.waila.health": "%s/%s Жизней",
   "tooltip.waila.sneak_for_details":  "Присядьте для подробного описания",
   "tooltip.waila.villager_profession":  "Проффесия: %s",
 

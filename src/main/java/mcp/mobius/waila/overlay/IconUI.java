@@ -8,6 +8,9 @@ public enum IconUI {
     HEART(52, 0, 9, 9, 52, 9, 9, 9, "a"),
     HALF_HEART(61, 0, 9, 9, 52, 9, 9, 9, "b"),
     EMPTY_HEART(52, 9, 9, 9, "c"),
+    ARMOR(34, 9, 9, 9, 52, 9, 9, 9, "d"),
+    HALF_ARMOR(25, 9, 9, 9, 52, 9, 9, 9, "e"),
+    EMPTY_ARMOR(16, 9, 9, 9, "f"),
     EXPERIENCE_BUBBLE(25, 18, 9, 9, "x");
 
     private final static Map<String, IconUI> ELEMENTS = Maps.newHashMap();

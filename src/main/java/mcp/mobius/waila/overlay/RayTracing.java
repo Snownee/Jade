@@ -10,6 +10,7 @@ import mcp.mobius.waila.api.impl.config.PluginConfig;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.projectile.ProjectileHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.tileentity.TileEntity;
@@ -60,9 +61,17 @@ public class RayTracing {
         Vector3d lookVector = entity.getLook(partialTicks);
         Vector3d traceEnd = eyePosition.add(lookVector.x * playerReach, lookVector.y * playerReach, lookVector.z * playerReach);
 
+        World world = entity.getEntityWorld();
+        AxisAlignedBB bound = new AxisAlignedBB(eyePosition, traceEnd);
+        EntityRayTraceResult rayTraceResult = ProjectileHelper.rayTraceEntities(world, entity, eyePosition, traceEnd, bound, null);
+        if (rayTraceResult != null) {
+            return rayTraceResult;
+        }
+
         RayTraceContext.FluidMode fluidView = Waila.CONFIG.get().getGeneral().getDisplayFluids();
         RayTraceContext context = new RayTraceContext(eyePosition, traceEnd, RayTraceContext.BlockMode.OUTLINE, fluidView, entity);
-        return entity.getEntityWorld().rayTraceBlocks(context);
+        
+        return world.rayTraceBlocks(context);
     }
 
     public ItemStack getIdentifierStack() {

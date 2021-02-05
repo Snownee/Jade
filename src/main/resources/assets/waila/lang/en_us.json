@@ -10,7 +10,6 @@
   "tooltip.waila.state_on": "On",
   "tooltip.waila.state_off": "Off",
   "tooltip.waila.power": "Power: %d",
-  "tooltip.waila.health": "%s/%s Health",
   "tooltip.waila.sneak_for_details":  "Sneak for details",
   "tooltip.waila.villager_profession":  "Profession: %s",
 

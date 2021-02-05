@@ -168,7 +168,10 @@ public class WailaRegistrar implements IRegistrar {
     }
 
     public ITooltipRenderer getTooltipRenderer(ResourceLocation id) {
-        return this.tooltipRenderers.get(id);
+        ITooltipRenderer renderer = this.tooltipRenderers.get(id);
+        if (renderer == null)
+            throw new NullPointerException("TooltipRenderer " + id + " doesn't exist");
+        return renderer;
     }
 
     private  <T> Map<Integer, List<T>> getProviders(Object obj, Map<Class, List<T>> target) {

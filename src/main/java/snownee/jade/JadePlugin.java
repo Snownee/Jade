@@ -16,6 +16,7 @@ import net.minecraft.entity.AgeableEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ArmorStandEntity;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.item.ItemFrameEntity;
 import net.minecraft.entity.item.PaintingEntity;
 import net.minecraft.entity.merchant.villager.VillagerEntity;
@@ -38,6 +39,7 @@ import snownee.jade.addon.vanilla.HarvestToolProvider;
 import snownee.jade.addon.vanilla.HorseProvider;
 import snownee.jade.addon.vanilla.InventoryProvider;
 import snownee.jade.addon.vanilla.ItemFrameProvider;
+import snownee.jade.addon.vanilla.ItemTooltipProvider;
 import snownee.jade.addon.vanilla.MiscEntityNameProvider;
 import snownee.jade.addon.vanilla.NoteBlockProvider;
 import snownee.jade.addon.vanilla.PaintingProvider;
@@ -80,6 +82,7 @@ public class JadePlugin implements IWailaPlugin {
     public static final ResourceLocation TOTAL_ENCH_POWER = RL("total_ench_power");
     public static final ResourceLocation PLAYER_HEAD = RL("player_head");
     public static final ResourceLocation PROFESSION = RL("profession");
+    public static final ResourceLocation ITEM_TOOLTIP = RL("item_tooltip");
 
     @Override
     public void register(IRegistrar registrar) {
@@ -115,7 +118,7 @@ public class JadePlugin implements IWailaPlugin {
         registrar.registerComponentProvider(MiscEntityNameProvider.INSTANCE, TooltipPosition.HEAD, Entity.class);
         registrar.registerComponentProvider(MiscEntityNameProvider.INSTANCE, TooltipPosition.TAIL, Entity.class);
         registrar.registerEntityStackProvider(MiscEntityNameProvider.INSTANCE, Entity.class);
-        registrar.addConfig(MISC_ENTITY, true);
+        //        registrar.addConfig(MISC_ENTITY, true);
 
         registrar.registerComponentProvider(TNTProvider.INSTANCE, TooltipPosition.BODY, TNTBlock.class);
         registrar.addConfig(TNT_STABILITY, true);
@@ -164,6 +167,9 @@ public class JadePlugin implements IWailaPlugin {
         registrar.registerComponentProvider(VillagerProfessionProvider.INSTANCE, TooltipPosition.BODY, VillagerEntity.class);
         registrar.registerComponentProvider(VillagerProfessionProvider.INSTANCE, TooltipPosition.BODY, ZombieVillagerEntity.class);
         registrar.addConfig(PROFESSION, true);
+
+        registrar.registerComponentProvider(ItemTooltipProvider.INSTANCE, TooltipPosition.BODY, ItemEntity.class);
+        registrar.addConfig(ITEM_TOOLTIP, true);
     }
 
 }

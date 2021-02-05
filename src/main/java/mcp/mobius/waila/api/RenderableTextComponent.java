@@ -5,6 +5,8 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import mcp.mobius.waila.api.impl.WailaRegistrar;
 import net.minecraft.nbt.*;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.IFormattableTextComponent;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.common.util.Constants;
 
@@ -51,6 +53,11 @@ public class RenderableTextComponent extends StringTextComponent {
         } catch (CommandSyntaxException e) {
             return new CompoundNBT();
         }
+    }
+
+    @Override
+    public IFormattableTextComponent append(ITextComponent sibling) {
+        throw new UnsupportedOperationException();
     }
 
     private static String getRenderString(ResourceLocation id, CompoundNBT data) {
