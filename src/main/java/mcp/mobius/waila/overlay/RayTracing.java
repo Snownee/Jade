@@ -15,6 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.*;
+import net.minecraft.util.math.RayTraceResult.Type;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
@@ -58,14 +59,24 @@ public class RayTracing {
 
     public RayTraceResult rayTrace(Entity entity, double playerReach, float partialTicks) {
         Vector3d eyePosition = entity.getEyePosition(partialTicks);
-        Vector3d lookVector = entity.getLook(partialTicks);
-        Vector3d traceEnd = eyePosition.add(lookVector.x * playerReach, lookVector.y * playerReach, lookVector.z * playerReach);
+        Vector3d traceEnd;
+        if (mc.objectMouseOver != null && mc.objectMouseOver.getType() == Type.BLOCK) {
+            traceEnd = mc.objectMouseOver.getHitVec();
+        } else {
+            Vector3d lookVector = entity.getLook(partialTicks);
+            traceEnd = eyePosition.add(lookVector.x * playerReach, lookVector.y * playerReach, lookVector.z * playerReach);
+        }
 
         World world = entity.getEntityWorld();
         AxisAlignedBB bound = new AxisAlignedBB(eyePosition, traceEnd);
         EntityRayTraceResult rayTraceResult = ProjectileHelper.rayTraceEntities(world, entity, eyePosition, traceEnd, bound, null);
         if (rayTraceResult != null) {
             return rayTraceResult;
+        }
+
+        if (mc.objectMouseOver != null && mc.objectMouseOver.getType() == Type.BLOCK) {
+            Vector3d lookVector = entity.getLook(partialTicks);
+            traceEnd = eyePosition.add(lookVector.x * playerReach, lookVector.y * playerReach, lookVector.z * playerReach);
         }
 
         RayTraceContext.FluidMode fluidView = Waila.CONFIG.get().getGeneral().getDisplayFluids();
