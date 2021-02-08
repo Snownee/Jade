@@ -14,10 +14,10 @@ import mcp.mobius.waila.utils.ModIdentification;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.INameable;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -41,7 +41,8 @@ public class HUDHandlerBlocks implements IComponentProvider, IServerDataProvider
 
         String name;
         if (accessor.getServerData().contains("givenName", Constants.NBT.TAG_STRING)) {
-            name = accessor.getServerData().getString("givenName");
+            ITextComponent component = ITextComponent.Serializer.getComponentFromJson(accessor.getServerData().getString("givenName"));
+            name = component.getString();
         } else {
             name = I18n.format(accessor.getBlock().getTranslationKey());
         }
@@ -75,10 +76,10 @@ public class HUDHandlerBlocks implements IComponentProvider, IServerDataProvider
 
     @Override
     public void appendServerData(CompoundNBT data, ServerPlayerEntity player, World world, TileEntity t) {
-        if (t instanceof INamedContainerProvider && JadeCommonConfig.shouldShowCustomName(t)) {
-            String name = ((INamedContainerProvider) t).getDisplayName().getString();
-            if (!Strings.isNullOrEmpty(name)) {
-                data.putString("givenName", name);
+        if (t instanceof INameable && JadeCommonConfig.shouldShowCustomName(t)) {
+            INameable nameable = (INameable) t;
+            if (nameable.hasCustomName()) {
+                data.putString("givenName", ITextComponent.Serializer.toJson(nameable.getCustomName()));
             }
         }
     }
