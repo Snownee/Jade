@@ -14,6 +14,7 @@ import mcp.mobius.waila.utils.ModIdentification;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.tileentity.TileEntity;
@@ -44,7 +45,17 @@ public class HUDHandlerBlocks implements IComponentProvider, IServerDataProvider
             ITextComponent component = ITextComponent.Serializer.getComponentFromJson(accessor.getServerData().getString("givenName"));
             name = component.getString();
         } else {
-            name = I18n.format(accessor.getBlock().getTranslationKey());
+            String key = accessor.getBlock().getTranslationKey();
+            if (I18n.hasKey(key)) {
+                name = I18n.format(key);
+            } else {
+                ItemStack stack = accessor.getBlockState().getPickBlock(accessor.getHitResult(), accessor.getWorld(), accessor.getPosition(), accessor.getPlayer());
+                if (stack != null && !stack.isEmpty()) {
+                    name = stack.getDisplayName().getString();
+                } else {
+                    name = key;
+                }
+            }
         }
         ((ITaggableList<ResourceLocation, ITextComponent>) tooltip).setTag(OBJECT_NAME_TAG, new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getBlockName(), name)));
         if (config.get(PluginCore.CONFIG_SHOW_REGISTRY))
