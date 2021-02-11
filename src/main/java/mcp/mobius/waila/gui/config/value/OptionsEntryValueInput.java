@@ -91,5 +91,11 @@ public class OptionsEntryValueInput<T> extends OptionsEntryValue<T> {
             super.deleteWords(count);
             watcher.setValue(getText());
         }
+
+        @Override
+        public void setCursorPosition(int pos) {
+            super.setCursorPosition(pos);
+            watcher.setValue(getText());
+        }
     }
 }
