@@ -83,6 +83,9 @@ public class PluginConfig implements IPluginConfig {
             Set<ResourceLocation> found = Sets.newHashSet();
             config.forEach((namespace, subMap) -> subMap.forEach((path, value) -> {
                 ResourceLocation id = new ResourceLocation(namespace, path);
+                if (!configs.containsKey(id)) {
+                    return;
+                }
                 set(id, value);
                 found.add(id);
             }));

@@ -115,8 +115,8 @@ public class JadePlugin implements IWailaPlugin {
         registrar.registerEntityDataProvider(BreedingProvider.INSTANCE, AnimalEntity.class);
         registrar.addConfig(MOB_BREEDING, true);
 
-        registrar.registerComponentProvider(MiscEntityNameProvider.INSTANCE, TooltipPosition.HEAD, Entity.class);
-        registrar.registerComponentProvider(MiscEntityNameProvider.INSTANCE, TooltipPosition.TAIL, Entity.class);
+        //        registrar.registerComponentProvider(MiscEntityNameProvider.INSTANCE, TooltipPosition.HEAD, Entity.class);
+        //        registrar.registerComponentProvider(MiscEntityNameProvider.INSTANCE, TooltipPosition.TAIL, Entity.class);
         registrar.registerEntityStackProvider(MiscEntityNameProvider.INSTANCE, Entity.class);
         //        registrar.addConfig(MISC_ENTITY, true);
 

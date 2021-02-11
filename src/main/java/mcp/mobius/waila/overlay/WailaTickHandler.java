@@ -43,7 +43,7 @@ public class WailaTickHandler {
             return;
 
         Minecraft client = Minecraft.getInstance();
-        if (client.isGamePaused()) {
+        if (client.isGamePaused() || client.currentScreen != null) {
             return;
         }
         World world = client.world;
