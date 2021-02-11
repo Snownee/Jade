@@ -72,14 +72,16 @@ public class GuiConfigWaila extends GuiOptions {
                     options.add(new OptionsEntryValueInput<>(Util.makeTranslationKey("config", new ResourceLocation(Waila.MODID, "overlay_scale")), Waila.CONFIG.get().getOverlay().getOverlayScale(), val ->
                             Waila.CONFIG.get().getOverlay().setOverlayScale(Math.min(2.0F, Math.max(0.1F, val)))
                             , OptionsEntryValueInput.FLOAT));
-                    options.add(new OptionsEntryValueInput<>(Util.makeTranslationKey("config", new ResourceLocation(Waila.MODID, "overlay_anchor_x")), Waila.CONFIG.get().getOverlay().getOverlayAnchorX(), val ->
-                            Waila.CONFIG.get().getOverlay().setOverlayAnchorX(val)
+                    options.add(new OptionsEntryValueInput<>(Util.makeTranslationKey("config", new ResourceLocation(Waila.MODID, "overlay_anchor_x")), Waila.CONFIG.get().getOverlay().getAnchorX(), val ->
+                            Waila.CONFIG.get().getOverlay().setAnchorX(val)
                             , OptionsEntryValueInput.FLOAT));
-                    options.add(new OptionsEntryValueInput<>(Util.makeTranslationKey("config", new ResourceLocation(Waila.MODID, "overlay_anchor_y")), Waila.CONFIG.get().getOverlay().getOverlayAnchorY(), val ->
-                            Waila.CONFIG.get().getOverlay().setOverlayAnchorY(val)
+                    options.add(new OptionsEntryValueInput<>(Util.makeTranslationKey("config", new ResourceLocation(Waila.MODID, "overlay_anchor_y")), Waila.CONFIG.get().getOverlay().getAnchorY(), val ->
+                            Waila.CONFIG.get().getOverlay().setAnchorY(val)
                             , OptionsEntryValueInput.FLOAT));
-                    options.add(new OptionsEntryValueBoolean(Util.makeTranslationKey("config", new ResourceLocation(Waila.MODID, "overlay_square")), Waila.CONFIG.get().getOverlay().getOverlaySquare(), val ->
-                            Waila.CONFIG.get().getOverlay().setOverlaySquare(val)));
+                    options.add(new OptionsEntryValueBoolean(Util.makeTranslationKey("config", new ResourceLocation(Waila.MODID, "overlay_square")), Waila.CONFIG.get().getOverlay().getSquare(), val ->
+                            Waila.CONFIG.get().getOverlay().setSquare(val)));
+                    options.add(new OptionsEntryValueBoolean(Util.makeTranslationKey("config", new ResourceLocation(Waila.MODID, "flip_main_hand")), Waila.CONFIG.get().getOverlay().getFlipMainHand(), val ->
+                            Waila.CONFIG.get().getOverlay().setFlipMainHand(val)));
                     options.add(new OptionsEntryButton(Util.makeTranslationKey("config", new ResourceLocation(Waila.MODID, "overlay_color")), new Button(0, 0, 100, 20, new StringTextComponent(""), w -> {
                         minecraft.displayGuiScreen(new GuiOptions(GuiConfigWaila.this, new TranslationTextComponent(Util.makeTranslationKey("config", new ResourceLocation(Waila.MODID, "overlay_color")))) {
                             @Override

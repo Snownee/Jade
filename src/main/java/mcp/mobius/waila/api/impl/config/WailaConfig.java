@@ -2,6 +2,9 @@ package mcp.mobius.waila.api.impl.config;
 
 import com.google.common.collect.Maps;
 import com.google.gson.*;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.HandSide;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceContext.FluidMode;
@@ -138,6 +141,7 @@ public class WailaConfig {
         private float overlayAnchorX = 0.5F;
         private float overlayAnchorY = 0F;
         private boolean overlaySquare = false;
+        private boolean flipMainHand = false;
         private ConfigOverlayColor color = new ConfigOverlayColor();
 
         public void setOverlayPosX(float overlayPosX) {
@@ -152,11 +156,11 @@ public class WailaConfig {
             this.overlayScale = overlayScale;
         }
 
-        public void setOverlayAnchorX(float overlayAnchorX) {
+        public void setAnchorX(float overlayAnchorX) {
             this.overlayAnchorX = MathHelper.clamp(overlayAnchorX, 0.0F, 1.0F);
         }
 
-        public void setOverlayAnchorY(float overlayAnchorY) {
+        public void setAnchorY(float overlayAnchorY) {
             this.overlayAnchorY = MathHelper.clamp(overlayAnchorY, 0.0F, 1.0F);
         }
 
@@ -172,19 +176,33 @@ public class WailaConfig {
             return overlayScale;
         }
 
-        public float getOverlayAnchorX() {
+        public float getAnchorX() {
             return MathHelper.clamp(overlayAnchorX, 0.0F, 1.0F);
         }
 
-        public float getOverlayAnchorY() {
+        public float getAnchorY() {
             return MathHelper.clamp(overlayAnchorY, 0.0F, 1.0F);
         }
         
-        public void setOverlaySquare(boolean overlaySquare) {
+        public void setFlipMainHand(boolean overlaySquare) {
+            this.flipMainHand = overlaySquare;
+        }
+        
+        public boolean getFlipMainHand() {
+            return flipMainHand;
+        }
+        
+        public float tryFlip(float f) {
+            if (Minecraft.getInstance().gameSettings.mainHand == HandSide.LEFT)
+                f = 1 - f;
+            return f;
+        }
+
+        public void setSquare(boolean overlaySquare) {
             this.overlaySquare = overlaySquare;
         }
         
-        public boolean getOverlaySquare() {
+        public boolean getSquare() {
             return overlaySquare;
         }
 

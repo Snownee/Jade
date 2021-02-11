@@ -105,7 +105,7 @@ public class OverlayRenderer {
         if (color.getRawAlpha() > 0) {
             WailaRenderEvent.Color colorEvent = new WailaRenderEvent.Color(color.getAlpha(), color.getBackgroundColor(), color.getGradientStart(), color.getGradientEnd());
             MinecraftForge.EVENT_BUS.post(colorEvent);
-            drawTooltipBox(position.x, position.y, position.width, position.height, colorEvent.getBackground(), colorEvent.getGradientStart(), colorEvent.getGradientEnd(), Waila.CONFIG.get().getOverlay().getOverlaySquare());
+            drawTooltipBox(position.x, position.y, position.width, position.height, colorEvent.getBackground(), colorEvent.getGradientStart(), colorEvent.getGradientEnd(), Waila.CONFIG.get().getOverlay().getSquare());
         }
 
         RenderSystem.enableBlend();
