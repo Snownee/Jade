@@ -93,4 +93,9 @@ public abstract class GuiOptions extends Screen {
     }
 
     public abstract OptionsListWidget getOptions();
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+        return options.mouseScrolled(mouseX, mouseY, delta);
+    }
 }
