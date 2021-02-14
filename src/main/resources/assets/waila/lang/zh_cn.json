@@ -25,7 +25,10 @@
   "config.waila.display_tooltip": "显示提示",
   "config.waila.display_tooltip_desc": "收集数据并显示工具提示",
   "config.waila.display_fluids": "显示流体",
-  "config.waila.display_fluids_desc": "显示流体数据",
+  "config.waila.display_fluids_desc": "显示流体相关信息",
+  "config.waila.display_fluids_source_only": "仅显示源块",
+  "config.waila.display_fluids_any": "显示所有",
+  "config.waila.display_fluids_none": "不显示",
   "config.waila.sneaky_details": "潜行显示",
   "config.waila.sneaky_details_desc": "仅当潜行时显示正文",
   "config.waila.display_mode": "显示模式",
@@ -45,6 +48,10 @@
   "config.waila.overlay_pos_x": "水平比例",
   "config.waila.overlay_pos_y": "垂直比例",
   "config.waila.overlay_scale": "显示缩放",
+  "config.waila.overlay_anchor_x": "水平锚",
+  "config.waila.overlay_anchor_y": "垂直锚",
+  "config.waila.overlay_square": "无圆角边框",
+  "config.waila.flip_main_hand": "翻转主手",
 
   "config.waila.overlay_color": "颜色",
   "config.waila.overlay_alpha": "不透明度",
@@ -59,7 +66,7 @@
 
   "config.waila.plugin_minecraft": "Minecraft",
   "config.waila.plugin_minecraft.display_furnace_contents": "熔炉物品",
-  "config.waila.plugin_minecraft.hide_infestations": "隐藏虫蚀方块",
+  "config.waila.plugin_minecraft.hide_infestations": "隐藏被虫蚀的方块",
   "config.waila.plugin_minecraft.spawner_type": "刷怪笼类型",
   "config.waila.plugin_minecraft.crop_progress": "作物生长进度",
   "config.waila.plugin_minecraft.lever": "拉杆状态",
@@ -76,5 +83,7 @@
   "config.waila.plugin_waila.show_states": "显示状态",
 
   "entity.minecraft.villager.none": "无业",
-  "entity.minecraft.villager.nitwit": "傻子"
+  "entity.minecraft.villager.nitwit": "傻子",
+
+  "command.dump.success": "成功导出"
 }
