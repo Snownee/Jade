@@ -27,11 +27,11 @@ public class MessageRequestEntity {
     }
 
     public static MessageRequestEntity read(PacketBuffer buffer) {
-        return new MessageRequestEntity(buffer.readInt());
+        return new MessageRequestEntity(buffer.readVarInt());
     }
 
     public static void write(MessageRequestEntity message, PacketBuffer buffer) {
-        buffer.writeInt(message.entityId);
+        buffer.writeVarInt(message.entityId);
     }
 
     public static class Handler {

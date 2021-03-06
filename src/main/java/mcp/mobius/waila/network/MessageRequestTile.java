@@ -29,11 +29,11 @@ public class MessageRequestTile {
     }
 
     public static MessageRequestTile read(PacketBuffer buffer) {
-        return new MessageRequestTile(BlockPos.fromLong(buffer.readLong()));
+        return new MessageRequestTile(buffer.readBlockPos());
     }
 
     public static void write(MessageRequestTile message, PacketBuffer buffer) {
-        buffer.writeLong(message.pos.toLong());
+        buffer.writeBlockPos(message.pos);
     }
 
     public static class Handler {
