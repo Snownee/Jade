@@ -17,14 +17,20 @@ public final class Renderables {
 
     static final ResourceLocation OFFSET_TEXT = new ResourceLocation(Jade.MODID, "text");
     static final ResourceLocation BORDER = new ResourceLocation(Jade.MODID, "border");
+    static final ResourceLocation SUB = new ResourceLocation(Jade.MODID, "sub");
 
     public static RenderableTextComponent item(ItemStack stack) {
+        return item(stack, 1);
+    }
+
+    public static RenderableTextComponent item(ItemStack stack, float scale) {
         if (!stack.isEmpty()) {
             CompoundNBT tag = new CompoundNBT();
             tag.putString("id", stack.getItem().getRegistryName().toString());
             tag.putInt("count", stack.getCount());
             if (stack.hasTag())
                 tag.putString("nbt", stack.getTag().toString());
+            tag.putFloat("scale", scale);
             return new RenderableTextComponent(ITEM, tag);
         } else {
             return spacer(18, 0);
@@ -57,6 +63,12 @@ public final class Renderables {
             renderData.add(new HackyTextComponentNBT(component));
         tag.put("in", renderData);
         return new HackyRenderableTextComponent(BORDER, tag);
+    }
+
+    public static RenderableTextComponent sub(String text) {
+        CompoundNBT tag = new CompoundNBT();
+        tag.putString("text", text);
+        return new RenderableTextComponent(SUB, tag);
     }
 
     public static RenderableTextComponent of(RenderableTextComponent... components) {

@@ -1,19 +1,30 @@
 package mcp.mobius.waila.overlay;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import mcp.mobius.waila.utils.WailaExceptionHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.ItemRenderer;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.texture.AtlasTexture;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.World;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -25,19 +36,62 @@ public class DisplayUtil {
     private static final int MAX_LENGTH = 4;
     private static final Minecraft CLIENT = Minecraft.getInstance();
 
-    public static void renderStack(int x, int y, ItemStack stack) {
+    public static void renderStack(int x, int y, ItemStack stack, float scale) {
         enable3DRender();
         try {
-            CLIENT.getItemRenderer().renderItemIntoGUI(stack, x, y);
+            MatrixStack matrixStack = new MatrixStack();
+            if (scale != 1)
+                matrixStack.scale(scale, scale, scale);
+            renderItemIntoGUI(stack, x, y, scale);
             ItemStack overlayRender = stack.copy();
             overlayRender.setCount(1);
             CLIENT.getItemRenderer().renderItemOverlayIntoGUI(CLIENT.fontRenderer, overlayRender, x, y, null);
-            renderStackSize(new MatrixStack(), CLIENT.fontRenderer, stack, x, y);
+            renderStackSize(matrixStack, CLIENT.fontRenderer, stack, x, y);
         } catch (Exception e) {
             String stackStr = stack != null ? stack.toString() : "NullStack";
             WailaExceptionHandler.handleErr(e, "renderStack | " + stackStr, null);
         }
         enable2DRender();
+    }
+
+    public static void renderItemIntoGUI(ItemStack stack, int x, int y, float scale) {
+        ItemRenderer renderer = CLIENT.getItemRenderer();
+        renderItemModelIntoGUI(stack, x, y, renderer.getItemModelWithOverrides(stack, (World) null, (LivingEntity) null), scale);
+    }
+
+    protected static void renderItemModelIntoGUI(ItemStack stack, int x, int y, IBakedModel bakedmodel, float scale) {
+        ItemRenderer renderer = CLIENT.getItemRenderer();
+        TextureManager textureManager = CLIENT.textureManager;
+        RenderSystem.pushMatrix();
+        textureManager.bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
+        textureManager.getTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE).setBlurMipmapDirect(false, false);
+        RenderSystem.enableRescaleNormal();
+        RenderSystem.enableAlphaTest();
+        RenderSystem.defaultAlphaFunc();
+        RenderSystem.enableBlend();
+        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.translatef((float) x, (float) y, 100.0F + renderer.zLevel);
+        RenderSystem.translatef(8.0F * scale, 8.0F * scale, 0.0F * scale);
+        RenderSystem.scalef(scale, -scale, scale);
+        RenderSystem.scalef(16.0F, 16.0F, 16.0F);
+        MatrixStack matrixstack = new MatrixStack();
+        IRenderTypeBuffer.Impl irendertypebuffer$impl = Minecraft.getInstance().getRenderTypeBuffers().getBufferSource();
+        boolean flag = !bakedmodel.isSideLit();
+        if (flag) {
+            RenderHelper.setupGuiFlatDiffuseLighting();
+        }
+
+        renderer.renderItem(stack, ItemCameraTransforms.TransformType.GUI, false, matrixstack, irendertypebuffer$impl, 15728880, OverlayTexture.NO_OVERLAY, bakedmodel);
+        irendertypebuffer$impl.finish();
+        RenderSystem.enableDepthTest();
+        if (flag) {
+            RenderHelper.setupGui3DDiffuseLighting();
+        }
+
+        RenderSystem.disableAlphaTest();
+        RenderSystem.disableRescaleNormal();
+        RenderSystem.popMatrix();
     }
 
     public static void renderStackSize(MatrixStack matrixStack, FontRenderer fr, ItemStack stack, int xPosition, int yPosition) {

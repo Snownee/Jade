@@ -15,18 +15,20 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IDataAccessor;
 import mcp.mobius.waila.api.IPluginConfig;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.resources.IResourceManager;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
@@ -36,6 +38,7 @@ import net.minecraftforge.resource.IResourceType;
 import net.minecraftforge.resource.ISelectiveResourceReloadListener;
 import net.minecraftforge.resource.VanillaResourceType;
 import snownee.jade.JadePlugin;
+import snownee.jade.Renderables;
 
 public class HarvestToolProvider implements IComponentProvider, ISelectiveResourceReloadListener {
 
@@ -44,17 +47,23 @@ public class HarvestToolProvider implements IComponentProvider, ISelectiveResour
     public static final Cache<TestCase, String> toolNames = CacheBuilder.newBuilder().build();
     public static final Cache<BlockState, TestCase> resultCache = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
     public static final List<TestCase> testTools = Lists.newLinkedList();
-    private static final Map<ToolType, TestCase> toolTypeMap = Maps.newHashMap();
+    public static final Map<ToolType, TestCase> toolTypeMap = Maps.newHashMap();
 
     private static final TestCase NO_TOOL = new TestCase(ItemStack.EMPTY, "no_tool", null);
     private static final TestCase UNBREAKABLE = new TestCase(ItemStack.EMPTY, "unbreakable", null);
 
     static {
-        registerTool(new ItemStack(Items.WOODEN_PICKAXE), "pickaxe", ToolType.PICKAXE);
+        /* off */
+        registerTool(new ItemStack(Items.WOODEN_PICKAXE), "pickaxe", ToolType.PICKAXE)
+            .addTool(Items.STONE_PICKAXE)
+            .addTool(Items.IRON_PICKAXE)
+            .addTool(Items.DIAMOND_PICKAXE)
+            .addTool(Items.NETHERITE_PICKAXE);
         registerTool(new ItemStack(Items.WOODEN_AXE), "axe", ToolType.AXE);
         registerTool(new ItemStack(Items.WOODEN_SHOVEL), "shovel", ToolType.SHOVEL);
         registerTool(new ItemStack(Items.WOODEN_HOE), "hoe", ToolType.HOE);
         registerTool(new ItemStack(Items.SHEARS), "shears", null);
+        /* on */
     }
 
     public static String getToolName(TestCase testCase) {
@@ -101,12 +110,13 @@ public class HarvestToolProvider implements IComponentProvider, ISelectiveResour
         return NO_TOOL;
     }
 
-    public static synchronized void registerTool(ItemStack stack, String name, ToolType toolType) {
+    public static synchronized TestCase registerTool(ItemStack stack, String name, @Nullable ToolType toolType) {
         TestCase testCase = new TestCase(stack, name, toolType);
         testTools.add(testCase);
         if (toolType != null) {
             toolTypeMap.put(toolType, testCase);
         }
+        return testCase;
     }
 
     @Override
@@ -129,20 +139,34 @@ public class HarvestToolProvider implements IComponentProvider, ISelectiveResour
             return;
         }
         int level = state.getHarvestLevel();
+        ItemStack tool = testCase.toolMap.get(level);
         String name = "";
-        name = getToolName(testCase);
-        boolean canHarvest = ForgeHooks.canHarvestBlock(accessor.getBlockState(), accessor.getPlayer(), accessor.getWorld(), accessor.getPosition());
-        if (level > 0) {
-            String levelStr = "jade.harvest_tool." + testCase.name + "." + level;
-            if (I18n.hasKey(levelStr)) {
-                levelStr = I18n.format(levelStr);
-            } else {
-                levelStr = String.valueOf(level);
+        if (tool == null) {
+            tool = testCase.stack;
+            if (level > 0) {
+                name = " " + level;
             }
-            tooltip.add(new TranslationTextComponent("jade.harvest_tool.fmt", name, levelStr).mergeStyle(canHarvest ? TextFormatting.GREEN : TextFormatting.DARK_RED));
-        } else {
-            tooltip.add(new StringTextComponent(name).mergeStyle(canHarvest ? TextFormatting.GREEN : TextFormatting.DARK_RED));
         }
+        boolean canHarvest = ForgeHooks.canHarvestBlock(accessor.getBlockState(), accessor.getPlayer(), accessor.getWorld(), accessor.getPosition());
+        String sub = canHarvest ? "§a✔" : "§4✕";
+        if (name.isEmpty()) {
+            tooltip.add(Renderables.of(Renderables.item(tool, 0.75f), Renderables.sub(sub)));
+        } else {
+            tooltip.add(Renderables.of(Renderables.item(tool, 0.75f), Renderables.sub(sub), Renderables.offsetText(name, 3, 3)));
+        }
+        //        name = getToolName(testCase);
+        //        boolean canHarvest = ForgeHooks.canHarvestBlock(accessor.getBlockState(), accessor.getPlayer(), accessor.getWorld(), accessor.getPosition());
+        //        if (level > 0) {
+        //            String levelStr = "jade.harvest_tool." + testCase.name + "." + level;
+        //            if (I18n.hasKey(levelStr)) {
+        //                levelStr = I18n.format(levelStr);
+        //            } else {
+        //                levelStr = String.valueOf(level);
+        //            }
+        //            tooltip.add(new TranslationTextComponent("jade.harvest_tool.fmt", name, levelStr).mergeStyle(canHarvest ? TextFormatting.GREEN : TextFormatting.DARK_RED));
+        //        } else {
+        //            tooltip.add(new StringTextComponent(name).mergeStyle(canHarvest ? TextFormatting.GREEN : TextFormatting.DARK_RED));
+        //        }
     }
 
     @Override
@@ -153,13 +177,30 @@ public class HarvestToolProvider implements IComponentProvider, ISelectiveResour
         }
     }
 
-    private static class TestCase {
+    public static class TestCase {
         private final ItemStack stack;
         private final String name;
+        private final ToolType toolType;
+        private final Int2ObjectMap<ItemStack> toolMap = new Int2ObjectOpenHashMap<>();
 
-        public TestCase(ItemStack stack, String name, ToolType toolType) {
+        public TestCase(ItemStack stack, String name, @Nullable ToolType toolType) {
             this.stack = stack;
             this.name = name;
+            this.toolType = toolType;
+            addTool(stack);
+        }
+
+        public TestCase addTool(Item tool) {
+            return addTool(new ItemStack(tool));
+        }
+
+        public TestCase addTool(ItemStack stack) {
+            int level = 0;
+            if (toolType != null) {
+                level = stack.getHarvestLevel(toolType, null, null);
+            }
+            toolMap.put(level, stack);
+            return this;
         }
     }
 

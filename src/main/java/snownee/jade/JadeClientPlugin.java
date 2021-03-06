@@ -9,6 +9,7 @@ import net.minecraftforge.fml.loading.FMLEnvironment;
 import snownee.jade.addon.vanilla.HarvestToolProvider;
 import snownee.jade.client.renderer.BoxTooltipRenderer;
 import snownee.jade.client.renderer.StringTooltipRenderer;
+import snownee.jade.client.renderer.SubStringTooltipRenderer;
 
 @WailaPlugin
 public class JadeClientPlugin implements IWailaPlugin {
@@ -19,6 +20,7 @@ public class JadeClientPlugin implements IWailaPlugin {
             ((IReloadableResourceManager) Minecraft.getInstance().getResourceManager()).addReloadListener(HarvestToolProvider.INSTANCE);
             registrar.registerTooltipRenderer(Renderables.BORDER, new BoxTooltipRenderer());
             registrar.registerTooltipRenderer(Renderables.OFFSET_TEXT, new StringTooltipRenderer());
+            registrar.registerTooltipRenderer(Renderables.SUB, new SubStringTooltipRenderer());
         }
     }
 

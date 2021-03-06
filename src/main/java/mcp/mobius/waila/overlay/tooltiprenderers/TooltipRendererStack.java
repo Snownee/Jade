@@ -18,7 +18,11 @@ public class TooltipRendererStack implements ITooltipRenderer {
 
     @Override
     public Dimension getSize(CompoundNBT tag, ICommonAccessor accessor) {
-        return new Dimension(18, 18);
+        float scale = tag.getFloat("scale");
+        if (scale == 0)
+            scale = 1;
+        int size = (int) (18 * scale);
+        return new Dimension(size, size);
     }
 
     @Override
@@ -42,7 +46,10 @@ public class TooltipRendererStack implements ITooltipRenderer {
         if (stackTag != null)
             stack.setTag(stackTag);
 
-        DisplayUtil.renderStack(x, y, stack);
+        float scale = tag.getFloat("scale");
+        if (scale == 0)
+            scale = 1;
+        DisplayUtil.renderStack(x, y, stack, scale);
     }
 
 }

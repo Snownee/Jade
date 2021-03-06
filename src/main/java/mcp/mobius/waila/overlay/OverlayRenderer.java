@@ -121,7 +121,7 @@ public class OverlayRenderer {
             if (tooltip.identifierStack == null) {
                 tooltip.identifierStack = RayTracing.INSTANCE.getIdentifierStack();
             }
-            DisplayUtil.renderStack(position.x + 5, position.y + position.height / 2 - 8, tooltip.identifierStack);
+            DisplayUtil.renderStack(position.x + 5, position.y + position.height / 2 - 8, tooltip.identifierStack, 1);
         }
 
         WailaRenderEvent.Post postEvent = new WailaRenderEvent.Post(position);
