@@ -71,6 +71,14 @@ minecraft {
     }
 }
 
+task apiJar(type: Jar) {
+    classifier = 'api'
+    include 'mcp/mobius/waila/api/**/*'
+    exclude 'mcp/mobius/waila/api/impl/**/*'
+    from sourceSets.main.allSource
+    from sourceSets.main.output
+}
+
 task deobfJar(type: Jar) {
     from(sourceSets.main.output)
     archiveName = "${archivesBaseName}-${version}-deobf.${extension}"
@@ -78,6 +86,7 @@ task deobfJar(type: Jar) {
 
 artifacts {
     archives deobfJar
+    archives apiJar
 }
 
 repositories {
