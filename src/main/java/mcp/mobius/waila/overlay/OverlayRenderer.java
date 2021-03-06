@@ -117,8 +117,12 @@ public class OverlayRenderer {
             enableGUIStandardItemLighting();
 
         RenderSystem.enableRescaleNormal();
-        if (tooltip.hasItem())
-            DisplayUtil.renderStack(position.x + 5, position.y + position.height / 2 - 8, RayTracing.INSTANCE.getIdentifierStack());
+        if (tooltip.hasItem()) {
+            if (tooltip.identifierStack == null) {
+                tooltip.identifierStack = RayTracing.INSTANCE.getIdentifierStack();
+            }
+            DisplayUtil.renderStack(position.x + 5, position.y + position.height / 2 - 8, tooltip.identifierStack);
+        }
 
         WailaRenderEvent.Post postEvent = new WailaRenderEvent.Post(position);
         MinecraftForge.EVENT_BUS.post(postEvent);

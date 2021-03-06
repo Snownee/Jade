@@ -239,6 +239,8 @@ public class WailaRegistrar implements IRegistrar {
     }
 
     private <T> boolean hasProviders(Object obj, Map<Class, List<T>> target) {
+        if (obj == null)
+            return false;
         for (Class clazz : target.keySet())
             if (clazz.isInstance(obj))
                 return true;

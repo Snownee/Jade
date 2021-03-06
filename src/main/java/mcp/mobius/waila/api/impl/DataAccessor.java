@@ -35,6 +35,7 @@ public class DataAccessor implements ICommonAccessor, IDataAccessor, IEntityAcce
     public long timeLastUpdate = System.currentTimeMillis();
     public double partialFrame;
     public ItemStack stack = ItemStack.EMPTY;
+    public boolean serverConnected;
 
     public void set(World world, PlayerEntity player, RayTraceResult hit) {
         this.set(world, player, hit, null, 0.0);
@@ -49,12 +50,22 @@ public class DataAccessor implements ICommonAccessor, IDataAccessor, IEntityAcce
             this.pos = ((BlockRayTraceResult) this.hitResult).getPos();
             this.state = this.world.getBlockState(this.pos);
             this.block = this.state.getBlock();
-            this.tileEntity = this.world.getTileEntity(this.pos);
+            TileEntity tileEntity = this.world.getTileEntity(this.pos);
+            if (this.tileEntity != tileEntity) {
+                this.tileEntity = tileEntity;
+                this.serverData = null;
+                this.timeLastUpdate = System.currentTimeMillis() - MetaDataProvider.rateLimiter;
+            }
             this.entity = null;
             this.blockRegistryName = block.getRegistryName();
             this.stack = block.getPickBlock(state, hitResult, world, pos, player);
         } else if (this.hitResult.getType() == RayTraceResult.Type.ENTITY) {
-            this.entity = ((EntityRayTraceResult) this.hitResult).getEntity();
+            Entity entity = ((EntityRayTraceResult) this.hitResult).getEntity();
+            if (this.entity != entity) {
+                this.entity = entity;
+                this.serverData = null;
+                this.timeLastUpdate = System.currentTimeMillis() - MetaDataProvider.rateLimiter;
+            }
             this.pos = new BlockPos(entity.getPositionVec());
             this.state = Blocks.AIR.getDefaultState();
             this.block = Blocks.AIR;
@@ -139,7 +150,7 @@ public class DataAccessor implements ICommonAccessor, IDataAccessor, IEntityAcce
 
     private boolean isTagCorrectTileEntity(CompoundNBT tag) {
         if (tag == null) {
-            this.timeLastUpdate = System.currentTimeMillis() - 250;
+            this.timeLastUpdate = System.currentTimeMillis() - MetaDataProvider.rateLimiter;
             return false;
         }
 
@@ -151,14 +162,14 @@ public class DataAccessor implements ICommonAccessor, IDataAccessor, IEntityAcce
         if (x == hitPos.getX() && y == hitPos.getY() && z == hitPos.getZ())
             return true;
         else {
-            this.timeLastUpdate = System.currentTimeMillis() - 250;
+            this.timeLastUpdate = System.currentTimeMillis() - MetaDataProvider.rateLimiter;
             return false;
         }
     }
 
     private boolean isTagCorrectEntity(CompoundNBT tag) {
         if (tag == null || !tag.contains("WailaEntityID")) {
-            this.timeLastUpdate = System.currentTimeMillis() - 250;
+            this.timeLastUpdate = System.currentTimeMillis() - MetaDataProvider.rateLimiter;
             return false;
         }
 
@@ -167,7 +178,7 @@ public class DataAccessor implements ICommonAccessor, IDataAccessor, IEntityAcce
         if (id == this.entity.getEntityId())
             return true;
         else {
-            this.timeLastUpdate = System.currentTimeMillis() - 250;
+            this.timeLastUpdate = System.currentTimeMillis() - MetaDataProvider.rateLimiter;
             return false;
         }
     }

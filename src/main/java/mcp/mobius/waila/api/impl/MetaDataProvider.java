@@ -1,12 +1,9 @@
 package mcp.mobius.waila.api.impl;
 
-import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IEntityComponentProvider;
 import mcp.mobius.waila.api.TooltipPosition;
 import mcp.mobius.waila.api.impl.config.PluginConfig;
-import mcp.mobius.waila.network.MessageRequestEntity;
-import mcp.mobius.waila.network.MessageRequestTile;
 import mcp.mobius.waila.utils.WailaExceptionHandler;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
@@ -30,12 +27,6 @@ public class MetaDataProvider {
 
     public void gatherBlockComponents(DataAccessor accessor, List<ITextComponent> tooltip, TooltipPosition position) {
         Block block = accessor.getBlock();
-
-        if (accessor.getTileEntity() != null && accessor.isTimeElapsed(rateLimiter) && Waila.CONFIG.get().getGeneral().shouldDisplayTooltip()) {
-            accessor.resetTimer();
-            if (WailaRegistrar.INSTANCE.hasNBTProviders(block) || WailaRegistrar.INSTANCE.hasNBTProviders(accessor.getTileEntity()))
-                Waila.NETWORK.sendToServer(new MessageRequestTile(accessor.getTileEntity()));
-        }
 
         headBlockProviders.clear();
         bodyBlockProviders.clear();
@@ -105,13 +96,6 @@ public class MetaDataProvider {
     }
 
     public void gatherEntityComponents(Entity entity, DataAccessor accessor, List<ITextComponent> tooltip, TooltipPosition position) {
-        if (accessor.getEntity() != null && accessor.isTimeElapsed(rateLimiter)) {
-            accessor.resetTimer();
-
-            if (WailaRegistrar.INSTANCE.hasNBTEntityProviders(accessor.getEntity()))
-                Waila.NETWORK.sendToServer(new MessageRequestEntity(accessor.getEntity()));
-        }
-
         headEntityProviders.clear();
         bodyEntityProviders.clear();
         tailEntityProviders.clear();

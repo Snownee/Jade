@@ -12,6 +12,9 @@ import mcp.mobius.waila.api.impl.DataAccessor;
 import mcp.mobius.waila.api.impl.MetaDataProvider;
 import mcp.mobius.waila.api.impl.TaggableList;
 import mcp.mobius.waila.api.impl.TaggedTextComponent;
+import mcp.mobius.waila.api.impl.WailaRegistrar;
+import mcp.mobius.waila.network.MessageRequestEntity;
+import mcp.mobius.waila.network.MessageRequestTile;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -61,9 +64,24 @@ public class WailaTickHandler {
             List<ITextComponent> currentTipBody = new TaggableList<>(TaggedTextComponent::new);
             List<ITextComponent> currentTipTail = new TaggableList<>(TaggedTextComponent::new);
 
-            if (target != null && target.getType() == RayTraceResult.Type.BLOCK) {
+            if (target == null)
+                return;
+            if (target.getType() == RayTraceResult.Type.BLOCK) {
                 DataAccessor accessor = DataAccessor.INSTANCE;
                 accessor.set(world, player, target);
+
+                if (accessor.serverConnected && accessor.getTileEntity() != null && Waila.CONFIG.get().getGeneral().shouldDisplayTooltip()) {
+                    if (accessor.isTimeElapsed(MetaDataProvider.rateLimiter)) {
+                        accessor.resetTimer();
+                        if (WailaRegistrar.INSTANCE.hasNBTProviders(accessor.getBlock()) || WailaRegistrar.INSTANCE.hasNBTProviders(accessor.getTileEntity()))
+                            Waila.NETWORK.sendToServer(new MessageRequestTile(accessor.getTileEntity()));
+                    }
+                    if (DataAccessor.INSTANCE.serverData == null) {
+                        if (WailaRegistrar.INSTANCE.hasNBTProviders(accessor.getBlock()) || WailaRegistrar.INSTANCE.hasNBTProviders(accessor.getTileEntity()))
+                            return;
+                    }
+                }
+
                 ItemStack targetStack = RayTracing.INSTANCE.getTargetStack(); // Here we get either the proper stack or the override
                 accessor.stack = targetStack;
 
@@ -76,10 +94,22 @@ public class WailaTickHandler {
 
                 tooltip = new Tooltip(currentTip, !targetStack.isEmpty());
                 //}
-            } else if (target != null && target.getType() == RayTraceResult.Type.ENTITY) {
+            } else if (target.getType() == RayTraceResult.Type.ENTITY) {
                 DataAccessor accessor = DataAccessor.INSTANCE;
                 accessor.set(world, player, target);
 
+                if (accessor.serverConnected && accessor.getEntity() != null && Waila.CONFIG.get().getGeneral().shouldDisplayTooltip()) {
+                    if (accessor.isTimeElapsed(MetaDataProvider.rateLimiter)) {
+                        accessor.resetTimer();
+                        if (WailaRegistrar.INSTANCE.hasNBTEntityProviders(accessor.getEntity()))
+                            Waila.NETWORK.sendToServer(new MessageRequestEntity(accessor.getEntity()));
+                    }
+                    if (DataAccessor.INSTANCE.serverData == null) {
+                        if (WailaRegistrar.INSTANCE.hasNBTEntityProviders(accessor.getEntity()))
+                            return;
+                    }
+                }
+                
                 Entity targetEnt = RayTracing.INSTANCE.getTargetEntity(); // This need to be replaced by the override check.
 
                 if (targetEnt != null) {

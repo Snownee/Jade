@@ -1,5 +1,6 @@
 package mcp.mobius.waila;
 
+import mcp.mobius.waila.api.impl.DataAccessor;
 import mcp.mobius.waila.api.impl.config.PluginConfig;
 import mcp.mobius.waila.api.impl.config.WailaConfig;
 import mcp.mobius.waila.gui.GuiConfigHome;
@@ -11,6 +12,7 @@ import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.extensions.IForgeKeybinding;
 import net.minecraftforge.client.settings.KeyConflictContext;
@@ -83,5 +85,10 @@ public class WailaClient {
     public static void onClientTick(TickEvent.ClientTickEvent event) {
         if (event.phase == TickEvent.Phase.END)
             WailaTickHandler.instance().tickClient();
+    }
+
+    @SubscribeEvent
+    public static void onPlayerLeave(ClientPlayerNetworkEvent.LoggedOutEvent event) {
+        DataAccessor.INSTANCE.serverConnected = false;
     }
 }

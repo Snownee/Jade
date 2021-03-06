@@ -18,6 +18,7 @@ import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.MinecraftForge;
@@ -32,6 +33,7 @@ public class Tooltip {
     private final List<Line> lines;
     private final boolean showItem;
     private final Dimension totalSize;
+    ItemStack identifierStack;
 
     public Tooltip(List<ITextComponent> components, boolean showItem) {
         WailaTooltipEvent event = new WailaTooltipEvent(components, DataAccessor.INSTANCE);
