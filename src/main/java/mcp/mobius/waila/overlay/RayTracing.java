@@ -22,6 +22,7 @@ import net.minecraft.world.World;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class RayTracing {
 
@@ -69,7 +70,12 @@ public class RayTracing {
 
         World world = entity.getEntityWorld();
         AxisAlignedBB bound = new AxisAlignedBB(eyePosition, traceEnd);
-        EntityRayTraceResult rayTraceResult = ProjectileHelper.rayTraceEntities(world, entity, eyePosition, traceEnd, bound, null);
+        Entity riding = entity.getRidingEntity();
+        Predicate<Entity> predicate = null;
+        if (riding != null) {
+            predicate = e -> e != riding;
+        }
+        EntityRayTraceResult rayTraceResult = ProjectileHelper.rayTraceEntities(world, entity, eyePosition, traceEnd, bound, predicate);
         if (rayTraceResult != null) {
             return rayTraceResult;
         }
