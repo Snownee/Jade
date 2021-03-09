@@ -68,7 +68,7 @@ public class HUDHandlerBlocks implements IComponentProvider, IServerDataProvider
             BlockState state = accessor.getBlockState();
             state.getProperties().forEach(p -> {
                 Comparable<?> value = state.get(p);
-                ITextComponent valueText = new StringTextComponent(value.toString()).mergeStyle(p instanceof BooleanProperty ? value == Boolean.TRUE ? TextFormatting.GREEN : TextFormatting.RED : TextFormatting.RESET);
+                ITextComponent valueText = new StringTextComponent(" " + value.toString()).mergeStyle(p instanceof BooleanProperty ? value == Boolean.TRUE ? TextFormatting.GREEN : TextFormatting.RED : TextFormatting.WHITE);
                 tooltip.add(new StringTextComponent(p.getName() + ":").append(valueText));
             });
         }

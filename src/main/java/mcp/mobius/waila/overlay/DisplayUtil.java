@@ -3,6 +3,8 @@ package mcp.mobius.waila.overlay;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+
+import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.utils.WailaExceptionHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
@@ -21,6 +23,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -32,14 +35,16 @@ import java.util.List;
 
 public class DisplayUtil {
 
-    private static final String[] NUM_SUFFIXES = new String[]{"", "k", "m", "b", "t"};
+    private static final String[] NUM_SUFFIXES = new String[] { "", "k", "m", "b", "t" };
     private static final int MAX_LENGTH = 4;
     private static final Minecraft CLIENT = Minecraft.getInstance();
 
-    public static void renderStack(int x, int y, ItemStack stack, float scale) {
+    public static void renderStack(MatrixStack matrixStack, int x, int y, ItemStack stack, float scale) {
+        matrixStack.push();
         enable3DRender();
         try {
-            MatrixStack matrixStack = new MatrixStack();
+            //MatrixStack matrixStack = new MatrixStack();
+            //scale *= Waila.CONFIG.get().getOverlay().getOverlayScale();
             if (scale != 1)
                 matrixStack.scale(scale, scale, scale);
             renderItemIntoGUI(stack, x, y, scale);
@@ -52,6 +57,7 @@ public class DisplayUtil {
             WailaExceptionHandler.handleErr(e, "renderStack | " + stackStr, null);
         }
         enable2DRender();
+        matrixStack.pop();
     }
 
     public static void renderItemIntoGUI(ItemStack stack, int x, int y, float scale) {
@@ -131,8 +137,9 @@ public class DisplayUtil {
         RenderSystem.disableDepthTest();
     }
 
-    public static void drawGradientRect(int left, int top, int right, int bottom, int startColor, int endColor) {
+    public static void drawGradientRect(MatrixStack matrixStack, int left, int top, int right, int bottom, int startColor, int endColor) {
         float zLevel = 0.0F;
+        Matrix4f matrix = matrixStack.getLast().getMatrix();
 
         float f = (startColor >> 24 & 255) / 255.0F;
         float f1 = (startColor >> 16 & 255) / 255.0F;
@@ -150,10 +157,10 @@ public class DisplayUtil {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
         buffer.begin(7, DefaultVertexFormats.POSITION_COLOR);
-        buffer.pos(left + right, top, zLevel).color(f1, f2, f3, f).endVertex();
-        buffer.pos(left, top, zLevel).color(f1, f2, f3, f).endVertex();
-        buffer.pos(left, top + bottom, zLevel).color(f5, f6, f7, f4).endVertex();
-        buffer.pos(left + right, top + bottom, zLevel).color(f5, f6, f7, f4).endVertex();
+        buffer.pos(matrix, left + right, top, zLevel).color(f1, f2, f3, f).endVertex();
+        buffer.pos(matrix, left, top, zLevel).color(f1, f2, f3, f).endVertex();
+        buffer.pos(matrix, left, top + bottom, zLevel).color(f5, f6, f7, f4).endVertex();
+        buffer.pos(matrix, left + right, top + bottom, zLevel).color(f5, f6, f7, f4).endVertex();
         tessellator.draw();
         RenderSystem.shadeModel(7424);
         RenderSystem.disableBlend();
@@ -161,17 +168,18 @@ public class DisplayUtil {
         RenderSystem.enableTexture();
     }
 
-    public static void drawTexturedModalRect(int x, int y, int textureX, int textureY, int width, int height, int tw, int th) {
+    public static void drawTexturedModalRect(MatrixStack matrixStack, int x, int y, int textureX, int textureY, int width, int height, int tw, int th) {
+        Matrix4f matrix = matrixStack.getLast().getMatrix();
         float f = 0.00390625F;
         float f1 = 0.00390625F;
         float zLevel = 0.0F;
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
         buffer.begin(7, DefaultVertexFormats.POSITION_TEX);
-        buffer.pos(x, y + height, zLevel).tex( ((textureX) * f), ((textureY + th) * f1)).endVertex();
-        buffer.pos(x + width, y + height, zLevel).tex( ((textureX + tw) * f), ((textureY + th) * f1)).endVertex();
-        buffer.pos(x + width, y, zLevel).tex( ((textureX + tw) * f), ((textureY) * f1)).endVertex();
-        buffer.pos(x, y, zLevel).tex( ((textureX) * f), ((textureY) * f1)).endVertex();
+        buffer.pos(matrix, x, y + height, zLevel).tex(((textureX) * f), ((textureY + th) * f1)).endVertex();
+        buffer.pos(matrix, x + width, y + height, zLevel).tex(((textureX + tw) * f), ((textureY + th) * f1)).endVertex();
+        buffer.pos(matrix, x + width, y, zLevel).tex(((textureX + tw) * f), ((textureY) * f1)).endVertex();
+        buffer.pos(matrix, x, y, zLevel).tex(((textureX) * f), ((textureY) * f1)).endVertex();
         tessellator.draw();
     }
 
@@ -195,7 +203,7 @@ public class DisplayUtil {
         return namelist;
     }
 
-    public static void renderIcon(int x, int y, int sx, int sy, IconUI icon) {
+    public static void renderIcon(MatrixStack matrixStack, int x, int y, int sx, int sy, IconUI icon) {
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         CLIENT.getTextureManager().bindTexture(AbstractGui.GUI_ICONS_LOCATION);
 
@@ -204,8 +212,8 @@ public class DisplayUtil {
 
         RenderSystem.enableAlphaTest();
         if (icon.bu != -1)
-            DisplayUtil.drawTexturedModalRect(x, y, icon.bu, icon.bv, sx, sy, icon.bsu, icon.bsv);
-        DisplayUtil.drawTexturedModalRect(x, y, icon.u, icon.v, sx, sy, icon.su, icon.sv);
+            DisplayUtil.drawTexturedModalRect(matrixStack, x, y, icon.bu, icon.bv, sx, sy, icon.bsu, icon.bsv);
+        DisplayUtil.drawTexturedModalRect(matrixStack, x, y, icon.u, icon.v, sx, sy, icon.su, icon.sv);
         RenderSystem.disableAlphaTest();
     }
 }

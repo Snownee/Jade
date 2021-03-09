@@ -69,9 +69,9 @@ public class Tooltip {
         Rectangle position = getPosition();
         WailaConfig.ConfigOverlay.ConfigOverlayColor color = Waila.CONFIG.get().getOverlay().getColor();
 
-        position.x += hasItem() ? 26 : 6;
+        int x = position.x + (hasItem() ? 26 : 6);
         position.width += hasItem() ? 24 : 4;
-        position.y += 6;
+        int y = position.y + 6;
 
         MatrixStack matrixStack = RenderContext.matrixStack;
 
@@ -81,16 +81,16 @@ public class Tooltip {
                 int xOffset = 0;
                 for (RenderableTextComponent.RenderContainer container : component.getRenderers()) {
                     Dimension size = container.getRenderer().getSize(container.getData(), DataAccessor.INSTANCE);
-                    container.getRenderer().draw(container.getData(), DataAccessor.INSTANCE, position.x + xOffset, position.y);
+                    container.getRenderer().draw(container.getData(), DataAccessor.INSTANCE, x + xOffset, y);
                     xOffset += size.width;
                 }
             } else {
                 RenderSystem.enableAlphaTest();
                 IRenderTypeBuffer.Impl irendertypebuffer$impl = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
-                client.fontRenderer.func_238416_a_(line.getComponent().func_241878_f(), position.x, position.y, color.getFontColor(), true, matrixStack.getLast().getMatrix(), irendertypebuffer$impl, false, 0, 15728880);
+                client.fontRenderer.func_238416_a_(line.getComponent().func_241878_f(), x, y, color.getFontColor(), true, matrixStack.getLast().getMatrix(), irendertypebuffer$impl, false, 0, 15728880);
                 irendertypebuffer$impl.finish();
             }
-            position.y += line.size.height;
+            y += line.size.height;
         }
     }
 

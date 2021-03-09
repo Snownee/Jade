@@ -30,7 +30,7 @@ public class ArmorStandProvider implements IEntityComponentProvider {
         for (int i = itemHandler.getSlots() - 1; i >= 0; i--) {
             ItemStack stack = itemHandler.getStackInSlot(i);
             if (!stack.isEmpty())
-                tooltip.add(Renderables.of(Renderables.item(stack), Renderables.offsetText(stack.getDisplayName(), 0, 4)));
+                tooltip.add(Renderables.of(Renderables.item(stack, 0.75f), Renderables.offsetText(stack.getDisplayName(), 0, 2)));
         }
     }
 

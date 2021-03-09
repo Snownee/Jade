@@ -27,6 +27,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -83,7 +84,7 @@ public class HUDHandlerVanilla implements IComponentProvider, IServerDataProvide
 
         if (config.get(PluginMinecraft.CONFIG_REPEATER) && accessor.getBlock() == Blocks.REPEATER) {
             int delay = accessor.getBlockState().get(BlockStateProperties.DELAY_1_4);
-            tooltip.add(new TranslationTextComponent("tooltip.waila.delay", delay));
+            tooltip.add(new TranslationTextComponent("tooltip.waila.delay", TextFormatting.WHITE.toString() + delay));
             return;
         }
 
@@ -94,7 +95,7 @@ public class HUDHandlerVanilla implements IComponentProvider, IServerDataProvide
         }
 
         if (config.get(PluginMinecraft.CONFIG_REDSTONE) && accessor.getBlock() == Blocks.REDSTONE_WIRE) {
-            tooltip.add(new TranslationTextComponent("tooltip.waila.power", accessor.getBlockState().get(BlockStateProperties.POWER_0_15)));
+            tooltip.add(new TranslationTextComponent("tooltip.waila.power", TextFormatting.WHITE.toString() + accessor.getBlockState().get(BlockStateProperties.POWER_0_15)));
             return;
         }
 

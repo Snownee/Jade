@@ -8,6 +8,7 @@ import mcp.mobius.waila.api.IPluginConfig;
 import net.minecraft.block.EnchantingTableBlock;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import snownee.jade.Jade;
@@ -45,7 +46,7 @@ public class EnchantmentPowerProvider implements IComponentProvider {
             power = getPower(world, pos);
         }
         if (power > 0) {
-            tooltip.add(new TranslationTextComponent("jade.ench_power", Jade.dfCommas.format(power)));
+            tooltip.add(new TranslationTextComponent("jade.ench_power", TextFormatting.WHITE + Jade.dfCommas.format(power)));
         }
     }
 

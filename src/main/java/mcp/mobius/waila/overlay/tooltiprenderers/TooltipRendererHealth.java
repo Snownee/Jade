@@ -3,6 +3,7 @@ package mcp.mobius.waila.overlay.tooltiprenderers;
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.ICommonAccessor;
 import mcp.mobius.waila.api.ITooltipRenderer;
+import mcp.mobius.waila.api.RenderContext;
 import mcp.mobius.waila.overlay.DisplayUtil;
 import mcp.mobius.waila.overlay.IconUI;
 import net.minecraft.nbt.CompoundNBT;
@@ -35,17 +36,17 @@ public class TooltipRendererHealth implements ITooltipRenderer {
         int xOffset = 0;
         for (int i = 1; i <= heartCount; i++) {
             if (i <= MathHelper.floor(health)) {
-                DisplayUtil.renderIcon(x + xOffset, y, 8, 8, IconUI.HEART);
+                DisplayUtil.renderIcon(RenderContext.matrixStack, x + xOffset, y, 8, 8, IconUI.HEART);
                 xOffset += 8;
             }
 
             if ((i > health) && (i < health + 1)) {
-                DisplayUtil.renderIcon(x + xOffset, y, 8, 8, IconUI.HALF_HEART);
+                DisplayUtil.renderIcon(RenderContext.matrixStack, x + xOffset, y, 8, 8, IconUI.HALF_HEART);
                 xOffset += 8;
             }
 
             if (i >= health + 1) {
-                DisplayUtil.renderIcon(x + xOffset, y, 8, 8, IconUI.EMPTY_HEART);
+                DisplayUtil.renderIcon(RenderContext.matrixStack, x + xOffset, y, 8, 8, IconUI.EMPTY_HEART);
                 xOffset += 8;
             }
 

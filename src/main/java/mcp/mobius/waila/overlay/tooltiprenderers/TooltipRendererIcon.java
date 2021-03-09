@@ -2,6 +2,7 @@ package mcp.mobius.waila.overlay.tooltiprenderers;
 
 import mcp.mobius.waila.api.ICommonAccessor;
 import mcp.mobius.waila.api.ITooltipRenderer;
+import mcp.mobius.waila.api.RenderContext;
 import mcp.mobius.waila.overlay.DisplayUtil;
 import mcp.mobius.waila.overlay.IconUI;
 import net.minecraft.nbt.CompoundNBT;
@@ -24,7 +25,7 @@ public class TooltipRendererIcon implements ITooltipRenderer {
 
     @Override
     public void draw(CompoundNBT tag, ICommonAccessor accessor, int x, int y) {
-        DisplayUtil.renderIcon(x, y, size, size, IconUI.bySymbol(type));
+        DisplayUtil.renderIcon(RenderContext.matrixStack, x, y, size, size, IconUI.bySymbol(type));
     }
 
 }

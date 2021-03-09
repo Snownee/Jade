@@ -3,6 +3,7 @@ package mcp.mobius.waila.overlay.tooltiprenderers;
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.ICommonAccessor;
 import mcp.mobius.waila.api.ITooltipRenderer;
+import mcp.mobius.waila.api.RenderContext;
 import mcp.mobius.waila.overlay.DisplayUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundNBT;
@@ -26,13 +27,13 @@ public class TooltipRendererProgressBar implements ITooltipRenderer {
         Minecraft.getInstance().getTextureManager().bindTexture(SHEET);
 
         // Draws the "empty" background arrow
-        DisplayUtil.drawTexturedModalRect(x + 2, y, 0, 16, 22, 16, 22, 16);
+        DisplayUtil.drawTexturedModalRect(RenderContext.matrixStack, x + 2, y, 0, 16, 22, 16, 22, 16);
 
         int maxValue = tag.getInt("total");
         if (maxValue > 0) {
             int progress = (currentValue * 22) / maxValue;
             // Draws the "full" foreground arrow based on the progress
-            DisplayUtil.drawTexturedModalRect(x + 2, y, 0, 0, progress + 1, 16, progress + 1, 16);
+            DisplayUtil.drawTexturedModalRect(RenderContext.matrixStack, x + 2, y, 0, 0, progress + 1, 16, progress + 1, 16);
         }
     }
 }

@@ -3,6 +3,7 @@ package mcp.mobius.waila.overlay.tooltiprenderers;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import mcp.mobius.waila.api.ICommonAccessor;
 import mcp.mobius.waila.api.ITooltipRenderer;
+import mcp.mobius.waila.api.RenderContext;
 import mcp.mobius.waila.overlay.DisplayUtil;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -49,7 +50,7 @@ public class TooltipRendererStack implements ITooltipRenderer {
         float scale = tag.getFloat("scale");
         if (scale == 0)
             scale = 1;
-        DisplayUtil.renderStack(x, y, stack, scale);
+        DisplayUtil.renderStack(RenderContext.matrixStack, x, y, stack, scale);
     }
 
 }
