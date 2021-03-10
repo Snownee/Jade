@@ -36,7 +36,7 @@ public class VillagerProfessionProvider implements IEntityComponentProvider {
         }
         int level = data.getLevel();
         ResourceLocation profName = data.getProfession().getRegistryName();
-        tooltip.add(new TranslationTextComponent(EntityType.VILLAGER.getTranslationKey() + '.' + (!"minecraft".equals(profName.getNamespace()) ? profName.getNamespace() + '.' : "") + profName.getPath()).append(field_243352_C).append(new TranslationTextComponent("merchant.level." + level)));
+        tooltip.add(new TranslationTextComponent(EntityType.VILLAGER.getTranslationKey() + '.' + (!"minecraft".equals(profName.getNamespace()) ? profName.getNamespace() + '.' : "") + profName.getPath()).appendSibling(field_243352_C).appendSibling(new TranslationTextComponent("merchant.level." + level)));
     }
 
 }

@@ -38,7 +38,7 @@ public class TextTooltipRenderer implements ITooltipRenderer {
         FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
         WailaConfig.ConfigOverlay.ConfigOverlayColor color = Waila.CONFIG.get().getOverlay().getColor();
         IRenderTypeBuffer.Impl irendertypebuffer$impl = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
-        fontRenderer.func_238416_a_(component.func_241878_f(), x, y, color.getFontColor(), true, new MatrixStack().getLast().getMatrix(), irendertypebuffer$impl, false, 0, 15728880);
+        fontRenderer.drawEntityText(component.func_241878_f(), x, y, color.getFontColor(), true, new MatrixStack().getLast().getMatrix(), irendertypebuffer$impl, false, 0, 15728880);
         irendertypebuffer$impl.finish();
     }
 

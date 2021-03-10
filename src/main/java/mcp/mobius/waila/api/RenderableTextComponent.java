@@ -65,7 +65,7 @@ public class RenderableTextComponent extends StringTextComponent {
     }
 
     @Override
-    public IFormattableTextComponent append(ITextComponent sibling) {
+    public IFormattableTextComponent appendSibling(ITextComponent sibling) {
         throw new UnsupportedOperationException();
     }
 

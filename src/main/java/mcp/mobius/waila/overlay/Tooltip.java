@@ -85,9 +85,9 @@ public class Tooltip {
                     xOffset += size.width;
                 }
             } else {
-                RenderSystem.enableAlphaTest();
+                RenderSystem.enableAlphaTest(); // Snownee: why?
                 IRenderTypeBuffer.Impl irendertypebuffer$impl = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
-                client.fontRenderer.func_238416_a_(line.getComponent().func_241878_f(), x, y, color.getFontColor(), true, matrixStack.getLast().getMatrix(), irendertypebuffer$impl, false, 0, 15728880);
+                client.fontRenderer.drawEntityText(line.getComponent().func_241878_f(), x, y, color.getFontColor(), true, matrixStack.getLast().getMatrix(), irendertypebuffer$impl, false, 0, 15728880);
                 irendertypebuffer$impl.finish();
             }
             y += line.size.height;
