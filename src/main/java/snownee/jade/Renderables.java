@@ -10,7 +10,8 @@ import snownee.jade.util.HackyRenderableTextComponent;
 import snownee.jade.util.HackyTextComponentNBT;
 
 public final class Renderables {
-    private Renderables() {}
+    private Renderables() {
+    }
 
     static final ResourceLocation ITEM = new ResourceLocation("item");
     static final ResourceLocation SPACER = new ResourceLocation("spacer");
@@ -20,10 +21,10 @@ public final class Renderables {
     static final ResourceLocation SUB = new ResourceLocation(Jade.MODID, "sub");
 
     public static RenderableTextComponent item(ItemStack stack) {
-        return item(stack, 1);
+        return item(stack, 1, 0);
     }
 
-    public static RenderableTextComponent item(ItemStack stack, float scale) {
+    public static RenderableTextComponent item(ItemStack stack, float scale, int offsetY) {
         if (!stack.isEmpty()) {
             CompoundNBT tag = new CompoundNBT();
             tag.putString("id", stack.getItem().getRegistryName().toString());
@@ -31,6 +32,7 @@ public final class Renderables {
             if (stack.hasTag())
                 tag.putString("nbt", stack.getTag().toString());
             tag.putFloat("scale", scale);
+            tag.putInt("offsetY", offsetY);
             return new RenderableTextComponent(ITEM, tag);
         } else {
             return spacer(18, 0);
@@ -71,7 +73,7 @@ public final class Renderables {
         return new RenderableTextComponent(SUB, tag);
     }
 
-    public static RenderableTextComponent of(RenderableTextComponent... components) {
+    public static RenderableTextComponent of(ITextComponent... components) {
         return new RenderableTextComponent(components);
     }
 

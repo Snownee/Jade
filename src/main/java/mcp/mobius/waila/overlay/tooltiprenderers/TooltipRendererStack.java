@@ -11,6 +11,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.awt.Dimension;
@@ -22,8 +23,9 @@ public class TooltipRendererStack implements ITooltipRenderer {
         float scale = tag.getFloat("scale");
         if (scale == 0)
             scale = 1;
-        int size = (int) (18 * scale);
-        return new Dimension(size, size);
+        int size = MathHelper.floor(18 * scale);
+        int offsetY = tag.getInt("offsetY");
+        return new Dimension(size, size + offsetY);
     }
 
     @Override
@@ -50,7 +52,8 @@ public class TooltipRendererStack implements ITooltipRenderer {
         float scale = tag.getFloat("scale");
         if (scale == 0)
             scale = 1;
-        DisplayUtil.renderStack(RenderContext.matrixStack, x, y, stack, scale);
+        int offsetY = tag.getInt("offsetY");
+        DisplayUtil.renderStack(RenderContext.matrixStack, x, y + offsetY, stack, scale);
     }
 
 }

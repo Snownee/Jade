@@ -30,10 +30,10 @@ import snownee.jade.JadePlugin;
 
 public class HUDHandlerBlocks implements IComponentProvider, IServerDataProvider<TileEntity> {
 
-    static final HUDHandlerBlocks INSTANCE = new HUDHandlerBlocks();
-    static final ResourceLocation OBJECT_NAME_TAG = new ResourceLocation(Waila.MODID, "object_name");
-    static final ResourceLocation REGISTRY_NAME_TAG = new ResourceLocation(Waila.MODID, "registry_name");
-    static final ResourceLocation MOD_NAME_TAG = new ResourceLocation(Waila.MODID, "mod_name");
+    public static final HUDHandlerBlocks INSTANCE = new HUDHandlerBlocks();
+    public static final ResourceLocation OBJECT_NAME_TAG = new ResourceLocation(Waila.MODID, "object_name");
+    public static final ResourceLocation REGISTRY_NAME_TAG = new ResourceLocation(Waila.MODID, "registry_name");
+    public static final ResourceLocation MOD_NAME_TAG = new ResourceLocation(Waila.MODID, "mod_name");
 
     @Override
     public void appendHead(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {

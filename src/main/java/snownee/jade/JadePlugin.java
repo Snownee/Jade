@@ -74,6 +74,8 @@ public class JadePlugin implements IWailaPlugin {
     public static final ResourceLocation PAINTING = RL("painting");
     public static final ResourceLocation CHICKEN_EGG = RL("chicken_egg");
     public static final ResourceLocation HARVEST_TOOL = RL("harvest_tool");
+    public static final ResourceLocation HARVEST_TOOL_NEW_LINE = RL("harvest_tool_new_line");
+    public static final ResourceLocation EFFECTIVE_TOOL = RL("effective_tool");
     public static final ResourceLocation COMMAND_BLOCK = RL("command_block");
     public static final ResourceLocation BREAKING_PROGRESS = RL("breaking_progress");
     //public static final ResourceLocation ACCURATE_NAME = RL("accurate_name");
@@ -143,8 +145,11 @@ public class JadePlugin implements IWailaPlugin {
         registrar.registerEntityDataProvider(ChickenEggProvider.INSTANCE, ChickenEntity.class);
         registrar.addConfig(CHICKEN_EGG, true);
 
+        registrar.registerComponentProvider(HarvestToolProvider.INSTANCE, TooltipPosition.HEAD, Block.class);
         registrar.registerComponentProvider(HarvestToolProvider.INSTANCE, TooltipPosition.BODY, Block.class);
         registrar.addConfig(HARVEST_TOOL, true);
+        registrar.addConfig(HARVEST_TOOL_NEW_LINE, false);
+        registrar.addConfig(EFFECTIVE_TOOL, true);
 
         registrar.registerComponentProvider(CommandBlockProvider.INSTANCE, TooltipPosition.BODY, CommandBlockBlock.class);
         registrar.registerBlockDataProvider(CommandBlockProvider.INSTANCE, CommandBlockBlock.class);

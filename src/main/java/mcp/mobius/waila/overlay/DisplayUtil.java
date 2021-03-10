@@ -78,7 +78,7 @@ public class DisplayUtil {
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.translatef((float) x, (float) y, 100.0F + renderer.zLevel);
-        RenderSystem.translatef(8.0F * scale, 8.0F * scale, 0.0F * scale);
+        RenderSystem.translatef(8.0F * scale, 8.0F * scale, 0.0F);
         RenderSystem.scalef(scale, -scale, scale);
         RenderSystem.scalef(16.0F, 16.0F, 16.0F);
         MatrixStack matrixstack = new MatrixStack();

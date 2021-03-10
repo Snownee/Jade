@@ -18,15 +18,18 @@ import com.google.common.collect.Maps;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import mcp.mobius.waila.Waila;
+import mcp.mobius.waila.addons.core.HUDHandlerBlocks;
 import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IDataAccessor;
 import mcp.mobius.waila.api.IPluginConfig;
+import mcp.mobius.waila.api.ITaggableList;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.resources.IResourceManager;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -51,6 +54,8 @@ public class HarvestToolProvider implements IComponentProvider, ISelectiveResour
 
     private static final TestCase NO_TOOL = new TestCase(ItemStack.EMPTY, "no_tool", null);
     private static final TestCase UNBREAKABLE = new TestCase(ItemStack.EMPTY, "unbreakable", null);
+
+    private static final ITextComponent UNBREAKABLE_TEXT = new TranslationTextComponent("jade.harvest_tool.unbreakable").mergeStyle(TextFormatting.DARK_RED);;
 
     static {
         /* off */
@@ -87,9 +92,6 @@ public class HarvestToolProvider implements IComponentProvider, ISelectiveResour
         if (hardness < 0) {
             return UNBREAKABLE;
         }
-        if (!state.getRequiresTool()) {
-            return NO_TOOL;
-        }
         ToolType toolType = state.getHarvestTool();
         if (toolType != null) {
             TestCase testCase = toolTypeMap.get(toolType);
@@ -99,12 +101,14 @@ public class HarvestToolProvider implements IComponentProvider, ISelectiveResour
             }
             return testCase;
         }
-        for (TestCase testCase : testTools) {
-            if (testCase.stack.isEmpty()) {
-                continue;
-            }
-            if (testCase.stack.canHarvestBlock(state)) {
-                return testCase;
+        if (state.getRequiresTool()) {
+            for (TestCase testCase : testTools) {
+                if (testCase.stack.isEmpty()) {
+                    continue;
+                }
+                if (testCase.stack.canHarvestBlock(state)) {
+                    return testCase;
+                }
             }
         }
         return NO_TOOL;
@@ -120,40 +124,80 @@ public class HarvestToolProvider implements IComponentProvider, ISelectiveResour
     }
 
     @Override
-    public void appendBody(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {
-        if (!config.get(JadePlugin.HARVEST_TOOL)) {
+    public void appendHead(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {
+        if (config.get(JadePlugin.HARVEST_TOOL_NEW_LINE)) {
             return;
+        }
+        ITextComponent text = getText(accessor, config);
+        if (text == null || text == UNBREAKABLE_TEXT) {
+            return;
+        }
+        ITaggableList<ResourceLocation, ITextComponent> taggableList = (ITaggableList<ResourceLocation, ITextComponent>) tooltip;
+        ITextComponent component = taggableList.getTag(HUDHandlerBlocks.OBJECT_NAME_TAG);
+        if (component != null) {
+            taggableList.setTag(HUDHandlerBlocks.OBJECT_NAME_TAG, Renderables.of(component, text));
+        }
+    }
+
+    @Override
+    public void appendBody(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {
+        ITextComponent text = getText(accessor, config);
+        if (text != UNBREAKABLE_TEXT) {
+            if (!config.get(JadePlugin.HARVEST_TOOL_NEW_LINE)) {
+                return;
+            }
+            if (text == null) {
+                return;
+            }
+        }
+        tooltip.add(0, text);
+    }
+
+    public ITextComponent getText(IDataAccessor accessor, IPluginConfig config) {
+        if (!config.get(JadePlugin.HARVEST_TOOL)) {
+            return null;
         }
         BlockState state = accessor.getBlockState();
         TestCase testCase = NO_TOOL;
+        resultCache.invalidateAll();
         try {
             testCase = resultCache.get(state, () -> getTool(state, accessor.getWorld(), accessor.getPosition()));
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
-        if (testCase == NO_TOOL) {
-            return;
-        }
         if (testCase == UNBREAKABLE) {
-            tooltip.add(new TranslationTextComponent("jade.harvest_tool.unbreakable").mergeStyle(TextFormatting.DARK_RED));
-            return;
+            return UNBREAKABLE_TEXT;
+        }
+        if (testCase == NO_TOOL) {
+            return null;
+        }
+        if (!state.getRequiresTool() && !config.get(JadePlugin.EFFECTIVE_TOOL)) {
+            return null;
         }
         int level = state.getHarvestLevel();
-        ItemStack tool = testCase.toolMap.get(level);
         String name = "";
+        ItemStack tool = testCase.toolMap.get(level);
         if (tool == null) {
             tool = testCase.stack;
             if (level > 0) {
                 name = " " + level;
             }
         }
-        boolean canHarvest = ForgeHooks.canHarvestBlock(accessor.getBlockState(), accessor.getPlayer(), accessor.getWorld(), accessor.getPosition());
-        String sub = canHarvest ? "§a✔" : "§4✕";
-        if (name.isEmpty()) {
-            tooltip.add(Renderables.of(Renderables.item(tool, 0.75f), Renderables.sub(sub)));
+        boolean canHarvest = ForgeHooks.canHarvestBlock(state, accessor.getPlayer(), accessor.getWorld(), accessor.getPosition());
+        String sub;
+        if (state.getRequiresTool()) {
+            sub = canHarvest ? "§a✔" : "§4✕";
         } else {
-            tooltip.add(Renderables.of(Renderables.item(tool, 0.75f), Renderables.sub(sub), Renderables.offsetText(name, 3, 3)));
+            ItemStack held = accessor.getPlayer().getHeldItemMainhand();
+            sub = (canHarvest && ForgeHooks.isToolEffective(accessor.getWorld(), accessor.getPosition(), held)) ? "§a✔" : "";
         }
+        int offsetY = config.get(JadePlugin.HARVEST_TOOL_NEW_LINE) ? 0 : -3;
+        if (name.isEmpty()) {
+            return Renderables.of(Renderables.item(tool, 0.75f, offsetY), Renderables.sub(sub));
+        } else {
+            return Renderables.of(Renderables.item(tool, 0.75f, offsetY), Renderables.sub(sub), Renderables.offsetText(name, 3, offsetY + 3));
+        }
+
         //        name = getToolName(testCase);
         //        boolean canHarvest = ForgeHooks.canHarvestBlock(accessor.getBlockState(), accessor.getPlayer(), accessor.getWorld(), accessor.getPosition());
         //        if (level > 0) {

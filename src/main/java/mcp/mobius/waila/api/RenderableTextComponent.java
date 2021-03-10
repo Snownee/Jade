@@ -1,16 +1,21 @@
 package mcp.mobius.waila.api;
 
+import java.util.List;
+
 import com.google.common.collect.Lists;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+
+import mcp.mobius.waila.addons.core.PluginCore;
 import mcp.mobius.waila.api.impl.WailaRegistrar;
-import net.minecraft.nbt.*;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.JsonToNBT;
+import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.StringNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.common.util.Constants;
-
-import java.util.List;
 
 public class RenderableTextComponent extends StringTextComponent {
 
@@ -19,6 +24,10 @@ public class RenderableTextComponent extends StringTextComponent {
     }
 
     public RenderableTextComponent(RenderableTextComponent... components) {
+        this((ITextComponent[]) components);
+    }
+
+    public RenderableTextComponent(ITextComponent... components) {
         super(getRenderString(components));
     }
 
@@ -67,13 +76,32 @@ public class RenderableTextComponent extends StringTextComponent {
         return renderData.toString();
     }
 
-    private static String getRenderString(RenderableTextComponent... components) {
+    private static String getRenderString(ITextComponent... components) {
         CompoundNBT container = new CompoundNBT();
         ListNBT renderData = new ListNBT();
-        for (RenderableTextComponent component : components)
-            renderData.add(StringNBT.valueOf(component.getString()));
+        for (ITextComponent component : components) {
+            if (component instanceof RenderableTextComponent) {
+                CompoundNBT data = ((RenderableTextComponent) component).getData();
+                if (data.contains("renders")) {
+                    renderData.addAll(data.getList("renders", Constants.NBT.TAG_STRING));
+                } else {
+                    renderData.add(StringNBT.valueOf(component.getString()));
+                }
+            } else {
+                renderData.add(StringNBT.valueOf(getNormalString(component)));
+            }
+        }
         container.put("renders", renderData);
         return container.toString();
+    }
+
+    private static String getNormalString(ITextComponent component) {
+        CompoundNBT data = new CompoundNBT();
+        data.putString("text", ITextComponent.Serializer.toJson(component));
+        CompoundNBT renderData = new CompoundNBT();
+        renderData.putString("id", PluginCore.RENDER_TEXT.toString());
+        renderData.put("data", data);
+        return renderData.toString();
     }
 
     public static class RenderContainer {

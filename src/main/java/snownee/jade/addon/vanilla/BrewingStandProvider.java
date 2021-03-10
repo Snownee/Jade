@@ -31,10 +31,10 @@ public class BrewingStandProvider implements IComponentProvider, IServerDataProv
         CompoundNBT tag = accessor.getServerData().getCompound("BrewingStand");
         int fuel = tag.getInt("fuel");
         int time = tag.getInt("time");
-        RenderableTextComponent stack = Renderables.item(new ItemStack(Items.BLAZE_POWDER), 0.75f);
+        RenderableTextComponent stack = Renderables.item(new ItemStack(Items.BLAZE_POWDER), 0.75f, 0);
         RenderableTextComponent fuelText = Renderables.offsetText(new TranslationTextComponent("jade.brewingStand.fuel", fuel), 0, 3);
         if (time > 0) {
-            tooltip.add(Renderables.of(stack, fuelText, Renderables.spacer(5, 0), Renderables.item(new ItemStack(Items.CLOCK), 0.75f), Renderables.offsetText(new TranslationTextComponent("jade.brewingStand.time", time / 20), 0, 3)));
+            tooltip.add(Renderables.of(stack, fuelText, Renderables.spacer(5, 0), Renderables.item(new ItemStack(Items.CLOCK), 0.75f, 0), Renderables.offsetText(new TranslationTextComponent("jade.brewingStand.time", time / 20), 0, 3)));
         } else {
             tooltip.add(Renderables.of(stack, fuelText));
         }
