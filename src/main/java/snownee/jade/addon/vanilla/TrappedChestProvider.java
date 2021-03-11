@@ -1,14 +1,14 @@
 package snownee.jade.addon.vanilla;
 
-import java.util.List;
-
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
 import mcp.mobius.waila.Waila;
+import mcp.mobius.waila.addons.core.CorePlugin;
 import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IDataAccessor;
 import mcp.mobius.waila.api.IPluginConfig;
+import mcp.mobius.waila.api.ITooltip;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.ResourceLocation;
@@ -26,7 +26,7 @@ public class TrappedChestProvider implements IComponentProvider {
     private static final ITextComponent DEFAULT_NAME = new TranslationTextComponent(Blocks.CHEST.getTranslationKey());
 
     @Override
-    public void appendHead(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {
+    public void append(ITooltip tooltip, IDataAccessor accessor, IPluginConfig config) {
         if (!config.get(JadePlugin.TRAPPED_CHEST)) {
             return;
         }
@@ -42,9 +42,10 @@ public class TrappedChestProvider implements IComponentProvider {
                 }
                 return DEFAULT_NAME;
             });
-            tooltip.clear();
-            tooltip.add(new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getBlockName(), name.getString())));
-        } catch (Exception e) {}
+            tooltip.remove(CorePlugin.TAG_OBJECT_NAME);
+            tooltip.add(0, new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getBlockName(), name.getString())), CorePlugin.TAG_OBJECT_NAME);
+        } catch (Exception e) {
+        }
     }
 
 }

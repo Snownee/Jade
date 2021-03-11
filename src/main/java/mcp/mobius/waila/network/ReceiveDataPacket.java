@@ -7,25 +7,25 @@ import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class MessageReceiveData {
+public class ReceiveDataPacket {
 
     public CompoundNBT tag;
 
-    public MessageReceiveData(CompoundNBT tag) {
+    public ReceiveDataPacket(CompoundNBT tag) {
         this.tag = tag;
     }
 
-    public static MessageReceiveData read(PacketBuffer buffer) {
-        return new MessageReceiveData(buffer.readCompoundTag());
+    public static ReceiveDataPacket read(PacketBuffer buffer) {
+        return new ReceiveDataPacket(buffer.readCompoundTag());
     }
 
-    public static void write(MessageReceiveData message, PacketBuffer buffer) {
+    public static void write(ReceiveDataPacket message, PacketBuffer buffer) {
         buffer.writeCompoundTag(message.tag);
     }
 
     public static class Handler {
 
-        public static void onMessage(MessageReceiveData message, Supplier<NetworkEvent.Context> context) {
+        public static void onMessage(ReceiveDataPacket message, Supplier<NetworkEvent.Context> context) {
             context.get().enqueueWork(() -> {
                 DataAccessor.INSTANCE.setServerData(message.tag);
             });

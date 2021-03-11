@@ -9,9 +9,11 @@ import com.google.common.collect.Sets;
 
 import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IDataAccessor;
+import mcp.mobius.waila.api.IElement;
+import mcp.mobius.waila.api.IElementHelper;
 import mcp.mobius.waila.api.IPluginConfig;
 import mcp.mobius.waila.api.IServerDataProvider;
-import mcp.mobius.waila.api.RenderableTextComponent;
+import mcp.mobius.waila.api.ITooltip;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -20,7 +22,6 @@ import net.minecraft.tileentity.AbstractFurnaceTileEntity;
 import net.minecraft.tileentity.EnderChestTileEntity;
 import net.minecraft.tileentity.LockableTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.LazyOptional;
@@ -31,7 +32,6 @@ import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 import snownee.jade.JadeCommonConfig;
 import snownee.jade.JadePlugin;
-import snownee.jade.Renderables;
 
 public class InventoryProvider implements IComponentProvider, IServerDataProvider<TileEntity> {
 
@@ -41,7 +41,7 @@ public class InventoryProvider implements IComponentProvider, IServerDataProvide
     public static final Set<String> INVENTORY_IGNORE = Collections.synchronizedSet(Sets.newHashSet());
 
     @Override
-    public void appendBody(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {
+    public void append(ITooltip tooltip, IDataAccessor accessor, IPluginConfig config) {
         if (!config.get(JadePlugin.INVENTORY) || accessor.getTileEntity() == null || accessor.getTileEntity() instanceof AbstractFurnaceTileEntity)
             return;
 
@@ -65,26 +65,28 @@ public class InventoryProvider implements IComponentProvider, IServerDataProvide
                 }
             }
             boolean showName = realSize < 5;
-            List<RenderableTextComponent> components = Lists.newArrayList();
+            IElementHelper helper = tooltip.getElementHelper();
+            List<IElement> elements = Lists.newArrayList();
             for (int i = 0; i < itemHandler.getSlots(); i++) {
                 ItemStack stack = itemHandler.getStackInSlot(i);
                 if (stack.isEmpty())
                     break;
                 if (i > 0 && (showName || drawnCount >= JadeCommonConfig.inventoryShowItemPreLine)) {
-                    tooltip.add(Renderables.of(components.toArray(new RenderableTextComponent[0])));
-                    components.clear();
+                    tooltip.add(elements);
+                    elements.clear();
                     drawnCount = 0;
                 }
 
-                components.add(Renderables.item(stack));
+                elements.add(helper.item(stack));
                 if (showName) {
-                    components.add(Renderables.offsetText(stack.getDisplayName(), 0, 4));
+                    elements.add(helper.text(stack.getDisplayName()).translate(0, 4));
+                    //elements.add(helper.text(stack.getDisplayName(), 0, 4));
                 }
                 drawnCount += 1;
             }
 
-            if (!components.isEmpty())
-                tooltip.add(Renderables.of(components.toArray(new RenderableTextComponent[0])));
+            if (!elements.isEmpty())
+                tooltip.add(elements);
         }
     }
 

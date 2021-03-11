@@ -1,14 +1,13 @@
 package snownee.jade.addon.vanilla;
 
-import java.util.List;
-
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.IEntityAccessor;
 import mcp.mobius.waila.api.IEntityComponentProvider;
 import mcp.mobius.waila.api.IPluginConfig;
+import mcp.mobius.waila.api.ITooltip;
+import mcp.mobius.waila.api.TooltipPosition;
 import mcp.mobius.waila.utils.ModIdentification;
 import net.minecraft.entity.item.PaintingEntity;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import snownee.jade.JadePlugin;
 
@@ -16,8 +15,12 @@ public class PaintingProvider implements IEntityComponentProvider {
     public static final PaintingProvider INSTANCE = new PaintingProvider();
 
     @Override
-    public void appendBody(List<ITextComponent> tooltip, IEntityAccessor accessor, IPluginConfig config) {
+    public void append(ITooltip tooltip, IEntityAccessor accessor, IPluginConfig config) {
         if (!config.get(JadePlugin.PAINTING)) {
+            return;
+        }
+        if (accessor.getTooltipPosition() == TooltipPosition.HEAD) {
+            appendTail(tooltip, accessor, config);
             return;
         }
         PaintingEntity painting = (PaintingEntity) accessor.getEntity();
@@ -25,9 +28,8 @@ public class PaintingProvider implements IEntityComponentProvider {
         tooltip.add(new StringTextComponent(name));
     }
 
-    @Override
-    public void appendTail(List<ITextComponent> tooltip, IEntityAccessor accessor, IPluginConfig config) {
-        if (config.get(JadePlugin.HIDE_MOD_NAME) || !config.get(JadePlugin.PAINTING)) {
+    public void appendTail(ITooltip tooltip, IEntityAccessor accessor, IPluginConfig config) {
+        if (config.get(JadePlugin.HIDE_MOD_NAME)) {
             return;
         }
         PaintingEntity painting = (PaintingEntity) accessor.getEntity();

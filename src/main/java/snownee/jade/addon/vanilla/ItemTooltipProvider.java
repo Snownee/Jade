@@ -5,6 +5,7 @@ import java.util.List;
 import mcp.mobius.waila.api.IEntityAccessor;
 import mcp.mobius.waila.api.IEntityComponentProvider;
 import mcp.mobius.waila.api.IPluginConfig;
+import mcp.mobius.waila.api.ITooltip;
 import net.minecraft.client.util.ITooltipFlag.TooltipFlags;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
@@ -18,7 +19,7 @@ public class ItemTooltipProvider implements IEntityComponentProvider {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendBody(List<ITextComponent> tooltip, IEntityAccessor accessor, IPluginConfig config) {
+    public void append(ITooltip tooltip, IEntityAccessor accessor, IPluginConfig config) {
         if (!config.get(JadePlugin.ITEM_TOOLTIP)) {
             return;
         }

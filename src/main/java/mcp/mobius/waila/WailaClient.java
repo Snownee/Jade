@@ -3,7 +3,7 @@ package mcp.mobius.waila;
 import mcp.mobius.waila.api.impl.DataAccessor;
 import mcp.mobius.waila.api.impl.config.PluginConfig;
 import mcp.mobius.waila.api.impl.config.WailaConfig;
-import mcp.mobius.waila.gui.GuiConfigHome;
+import mcp.mobius.waila.gui.HomeConfigScreen;
 import mcp.mobius.waila.overlay.OverlayRenderer;
 import mcp.mobius.waila.overlay.WailaTickHandler;
 import mcp.mobius.waila.utils.ModIdentification;
@@ -35,7 +35,7 @@ public class WailaClient {
     public static IForgeKeybinding toggleLiquid;
 
     public static void initClient() {
-        ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.CONFIGGUIFACTORY, () -> ((minecraft, screen) -> new GuiConfigHome(screen)));
+        ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.CONFIGGUIFACTORY, () -> ((minecraft, screen) -> new HomeConfigScreen(screen)));
 
         WailaClient.openConfig = new KeyBinding("key.waila.config", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputMappings.Type.KEYSYM.getOrMakeInput(320), Waila.NAME);
         WailaClient.showOverlay = new KeyBinding("key.waila.show_overlay", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputMappings.Type.KEYSYM.getOrMakeInput(321), Waila.NAME);
@@ -52,7 +52,7 @@ public class WailaClient {
             return;
 
         while (openConfig.getKeyBinding().isPressed()) {
-            Minecraft.getInstance().displayGuiScreen(new GuiConfigHome(null));
+            Minecraft.getInstance().displayGuiScreen(new HomeConfigScreen(null));
         }
 
         while (showOverlay.getKeyBinding().isPressed()) {

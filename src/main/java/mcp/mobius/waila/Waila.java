@@ -12,11 +12,11 @@ import mcp.mobius.waila.api.WailaPlugin;
 import mcp.mobius.waila.api.impl.WailaRegistrar;
 import mcp.mobius.waila.api.impl.config.PluginConfig;
 import mcp.mobius.waila.api.impl.config.WailaConfig;
-import mcp.mobius.waila.command.CommandDumpHandlers;
-import mcp.mobius.waila.network.MessageReceiveData;
-import mcp.mobius.waila.network.MessageRequestEntity;
-import mcp.mobius.waila.network.MessageRequestTile;
-import mcp.mobius.waila.network.MessageServerPing;
+import mcp.mobius.waila.command.DumpHandlersCommand;
+import mcp.mobius.waila.network.ReceiveDataPacket;
+import mcp.mobius.waila.network.RequestEntityPacket;
+import mcp.mobius.waila.network.RequestTilePacket;
+import mcp.mobius.waila.network.ServerPingPacket;
 import mcp.mobius.waila.utils.JsonConfig;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.ResourceLocation;
@@ -67,10 +67,10 @@ public class Waila {
 
     @SubscribeEvent
     public void setup(FMLCommonSetupEvent event) {
-        NETWORK.registerMessage(0, MessageReceiveData.class, MessageReceiveData::write, MessageReceiveData::read, MessageReceiveData.Handler::onMessage);
-        NETWORK.registerMessage(1, MessageServerPing.class, MessageServerPing::write, MessageServerPing::read, MessageServerPing.Handler::onMessage);
-        NETWORK.registerMessage(2, MessageRequestEntity.class, MessageRequestEntity::write, MessageRequestEntity::read, MessageRequestEntity.Handler::onMessage);
-        NETWORK.registerMessage(3, MessageRequestTile.class, MessageRequestTile::write, MessageRequestTile::read, MessageRequestTile.Handler::onMessage);
+        NETWORK.registerMessage(0, ReceiveDataPacket.class, ReceiveDataPacket::write, ReceiveDataPacket::read, ReceiveDataPacket.Handler::onMessage);
+        NETWORK.registerMessage(1, ServerPingPacket.class, ServerPingPacket::write, ServerPingPacket::read, ServerPingPacket.Handler::onMessage);
+        NETWORK.registerMessage(2, RequestEntityPacket.class, RequestEntityPacket::write, RequestEntityPacket::read, RequestEntityPacket.Handler::onMessage);
+        NETWORK.registerMessage(3, RequestTilePacket.class, RequestTilePacket::write, RequestTilePacket::read, RequestTilePacket.Handler::onMessage);
     }
 
     @SubscribeEvent
@@ -106,12 +106,12 @@ public class Waila {
 
     @SubscribeEvent
     public void registerCommands(RegisterCommandsEvent event) {
-        CommandDumpHandlers.register(event.getDispatcher());
+        DumpHandlersCommand.register(event.getDispatcher());
     }
 
     @SubscribeEvent
     public void playerJoin(PlayerEvent.PlayerLoggedInEvent event) {
         LOGGER.info("Syncing config to {} ({})", event.getPlayer().getGameProfile().getName(), event.getPlayer().getGameProfile().getId());
-        NETWORK.sendTo(new MessageServerPing(PluginConfig.INSTANCE), ((ServerPlayerEntity) event.getPlayer()).connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
+        NETWORK.sendTo(new ServerPingPacket(PluginConfig.INSTANCE), ((ServerPlayerEntity) event.getPlayer()).connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
     }
 }

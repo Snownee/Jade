@@ -1,5 +1,6 @@
 package mcp.mobius.waila.api;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
@@ -31,7 +32,7 @@ public interface IRegistrar {
      * @param dataProvider The data provider instance
      * @param block The highest level class to apply to
      */
-    void registerStackProvider(IComponentProvider dataProvider, Class block);
+    void registerStackProvider(IComponentProvider dataProvider, Class<? extends Block> block);
 
     /**
      * Registers an {@link IComponentProvider} instance for appending {@link net.minecraft.util.text.ITextComponent} to
@@ -42,7 +43,7 @@ public interface IRegistrar {
      * @param position The position on the tooltip this applies to
      * @param block The highest level class to apply to
      */
-    void registerComponentProvider(IComponentProvider dataProvider, TooltipPosition position, Class block);
+    void registerComponentProvider(IComponentProvider dataProvider, TooltipPosition position, Class<? extends Block> block);
 
     /**
      * Registers an {@link IServerDataProvider<TileEntity>} instance for data syncing purposes.
@@ -51,7 +52,7 @@ public interface IRegistrar {
      * @param dataProvider The data provider instance
      * @param block The highest level class to apply to
      */
-    void registerBlockDataProvider(IServerDataProvider<TileEntity> dataProvider, Class block);
+    void registerBlockDataProvider(IServerDataProvider<TileEntity> dataProvider, Class<? extends TileEntity> block);
 
     /**
      * Registers an {@link IEntityComponentProvider} instance to allow overriding the entity being displayed.
@@ -59,7 +60,7 @@ public interface IRegistrar {
      * @param dataProvider The data provider instance
      * @param entity The highest level class to apply to
      */
-    void registerOverrideEntityProvider(IEntityComponentProvider dataProvider, Class entity);
+    void registerOverrideEntityProvider(IEntityComponentProvider dataProvider, Class<? extends Entity> entity);
 
     /**
      * Registers an {@link IEntityComponentProvider} instance to allow displaying an item next to the entity name.
@@ -67,7 +68,7 @@ public interface IRegistrar {
      * @param dataProvider The data provider instance
      * @param entity The highest level class to apply to
      */
-    void registerEntityStackProvider(IEntityComponentProvider dataProvider, Class entity);
+    void registerEntityStackProvider(IEntityComponentProvider dataProvider, Class<? extends Entity> entity);
 
     /**
      * Registers an {@link IEntityComponentProvider} instance for appending {@link net.minecraft.util.text.ITextComponent}
@@ -77,7 +78,7 @@ public interface IRegistrar {
      * @param position The position on the tooltip this applies to
      * @param entity The highest level class to apply to
      */
-    void registerComponentProvider(IEntityComponentProvider dataProvider, TooltipPosition position, Class entity);
+    void registerComponentProvider(IEntityComponentProvider dataProvider, TooltipPosition position, Class<? extends Entity> entity);
 
     /**
      * Registers an {@link IEntityComponentProvider} instance for data syncing purposes.
@@ -85,14 +86,6 @@ public interface IRegistrar {
      * @param dataProvider The data provider instance
      * @param entity The highest level class to apply to
      */
-    void registerEntityDataProvider(IServerDataProvider<Entity> dataProvider, Class entity);
+    void registerEntityDataProvider(IServerDataProvider<Entity> dataProvider, Class<? extends Entity> entity);
 
-    /**
-     * Registers an {@link ITooltipRenderer} to allow passing a data string as a component to be rendered as a graphic
-     * instead.
-     *
-     * @param id The ResourceLocation for lookup
-     * @param renderer The renderer instance
-     */
-    void registerTooltipRenderer(ResourceLocation id, ITooltipRenderer renderer);
 }

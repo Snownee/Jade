@@ -7,11 +7,11 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.text.TranslationTextComponent;
 
-public class GuiConfigHome extends Screen {
+public class HomeConfigScreen extends Screen {
 
     private final Screen parent;
 
-    public GuiConfigHome(Screen parent) {
+    public HomeConfigScreen(Screen parent) {
         super(new TranslationTextComponent("gui.waila.configuration"));
 
         this.parent = parent;
@@ -20,10 +20,10 @@ public class GuiConfigHome extends Screen {
     @Override
     protected void init() {
         addButton(new Button(width / 2 - 105, height / 2 - 10, 100, 20, new TranslationTextComponent("gui.waila.waila_settings", Waila.NAME), w -> {
-            minecraft.displayGuiScreen(new GuiConfigWaila(GuiConfigHome.this));
+            minecraft.displayGuiScreen(new WailaConfigScreen(HomeConfigScreen.this));
         }));
         addButton(new Button(width / 2 + 5, height / 2 - 10, 100, 20, new TranslationTextComponent("gui.waila.plugin_settings"), w -> {
-            minecraft.displayGuiScreen(new GuiConfigPlugins(GuiConfigHome.this));
+            minecraft.displayGuiScreen(new PluginsConfigScreen(HomeConfigScreen.this));
         }));
         addButton(new Button(width / 2 - 50, height / 2 + 20, 100, 20, new TranslationTextComponent("gui.done"), w -> {
             Waila.CONFIG.save();

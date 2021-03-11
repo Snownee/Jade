@@ -1,6 +1,10 @@
 package mcp.mobius.waila.network;
 
+import java.util.List;
+import java.util.function.Supplier;
+
 import mcp.mobius.waila.Waila;
+import mcp.mobius.waila.api.IServerDataProvider;
 import mcp.mobius.waila.api.impl.WailaRegistrar;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -12,31 +16,29 @@ import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
-import java.util.function.Supplier;
-
-public class MessageRequestEntity {
+public class RequestEntityPacket {
 
     public int entityId;
 
-    public MessageRequestEntity(Entity entity) {
+    public RequestEntityPacket(Entity entity) {
         this.entityId = entity.getEntityId();
     }
 
-    private MessageRequestEntity(int entityId) {
+    private RequestEntityPacket(int entityId) {
         this.entityId = entityId;
     }
 
-    public static MessageRequestEntity read(PacketBuffer buffer) {
-        return new MessageRequestEntity(buffer.readVarInt());
+    public static RequestEntityPacket read(PacketBuffer buffer) {
+        return new RequestEntityPacket(buffer.readVarInt());
     }
 
-    public static void write(MessageRequestEntity message, PacketBuffer buffer) {
+    public static void write(RequestEntityPacket message, PacketBuffer buffer) {
         buffer.writeVarInt(message.entityId);
     }
 
     public static class Handler {
 
-        public static void onMessage(final MessageRequestEntity message, Supplier<NetworkEvent.Context> context) {
+        public static void onMessage(final RequestEntityPacket message, Supplier<NetworkEvent.Context> context) {
             final MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
             if (server == null)
                 return;
@@ -50,15 +52,18 @@ public class MessageRequestEntity {
                     return;
 
                 CompoundNBT tag = new CompoundNBT();
-                if (WailaRegistrar.INSTANCE.hasNBTEntityProviders(entity)) {
-                    WailaRegistrar.INSTANCE.getNBTEntityProviders(entity).values().forEach(l -> l.forEach(p -> p.appendServerData(tag, player, world, entity)));
+                List<IServerDataProvider<Entity>> providers = WailaRegistrar.INSTANCE.getEntityNBTProviders(entity);
+                if (!providers.isEmpty()) {
+                    for (IServerDataProvider<Entity> provider : providers) {
+                        provider.appendServerData(tag, player, world, entity);
+                    }
                 } else {
                     entity.writeWithoutTypeId(tag);
                 }
 
                 tag.putInt("WailaEntityID", entity.getEntityId());
 
-                Waila.NETWORK.sendTo(new MessageReceiveData(tag), player.connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
+                Waila.NETWORK.sendTo(new ReceiveDataPacket(tag), player.connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
             });
             context.get().setPacketHandled(true);
         }

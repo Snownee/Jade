@@ -1,6 +1,11 @@
 package mcp.mobius.waila.addons.minecraft;
 
-import mcp.mobius.waila.api.*;
+import mcp.mobius.waila.api.IComponentProvider;
+import mcp.mobius.waila.api.IDataAccessor;
+import mcp.mobius.waila.api.IElementHelper;
+import mcp.mobius.waila.api.IPluginConfig;
+import mcp.mobius.waila.api.IServerDataProvider;
+import mcp.mobius.waila.api.ITooltip;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -8,23 +13,20 @@ import net.minecraft.nbt.ListNBT;
 import net.minecraft.tileentity.AbstractFurnaceTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
-
-import java.util.List;
 
 public class FurnaceProvider implements IComponentProvider, IServerDataProvider<TileEntity> {
 
     static final FurnaceProvider INSTANCE = new FurnaceProvider();
 
     @Override
-    public void appendBody(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {
+    public void append(ITooltip tooltip, IDataAccessor accessor, IPluginConfig config) {
         if (!config.get(MinecraftPlugin.CONFIG_DISPLAY_FURNACE))
             return;
 
-        int progressInt = accessor.getServerData().getInt("progress");
-        if (progressInt == 0)
+        int progress = accessor.getServerData().getInt("progress");
+        if (progress == 0)
             return;
 
         ListNBT furnaceItems = accessor.getServerData().getList("furnace", Constants.NBT.TAG_COMPOUND);
@@ -32,13 +34,13 @@ public class FurnaceProvider implements IComponentProvider, IServerDataProvider<
         for (int i = 0; i < furnaceItems.size(); i++)
             inventory.set(i, ItemStack.read(furnaceItems.getCompound(i)));
 
-        CompoundNBT progress = new CompoundNBT();
-        progress.putInt("progress", progressInt);
-        progress.putInt("total", accessor.getServerData().getInt("total"));
+        IElementHelper helper = tooltip.getElementHelper();
+        int total = accessor.getServerData().getInt("total");
 
-        RenderableTextComponent renderables = new RenderableTextComponent(getRenderable(inventory.get(0)), getRenderable(inventory.get(1)), new RenderableTextComponent(MinecraftPlugin.RENDER_FURNACE_PROGRESS, progress), getRenderable(inventory.get(2)));
-
-        tooltip.add(renderables);
+        tooltip.add(helper.item(inventory.get(0)));
+        tooltip.append(helper.item(inventory.get(1)));
+        tooltip.append(helper.progress((float) progress / total));
+        tooltip.append(helper.item(inventory.get(2)));
     }
 
     @Override
@@ -54,18 +56,4 @@ public class FurnaceProvider implements IComponentProvider, IServerDataProvider<
         data.putInt("total", furnaceTag.getInt("CookTimeTotal")); // smh
     }
 
-    private static RenderableTextComponent getRenderable(ItemStack stack) {
-        if (!stack.isEmpty()) {
-            CompoundNBT tag = new CompoundNBT();
-            tag.putString("id", stack.getItem().getRegistryName().toString());
-            tag.putInt("count", stack.getCount());
-            if (stack.hasTag())
-                tag.putString("nbt", stack.getTag().toString());
-            return new RenderableTextComponent(MinecraftPlugin.RENDER_ITEM, tag);
-        } else {
-            CompoundNBT spacerTag = new CompoundNBT();
-            spacerTag.putInt("width", 18);
-            return new RenderableTextComponent(MinecraftPlugin.RENDER_SPACER, spacerTag);
-        }
-    }
 }

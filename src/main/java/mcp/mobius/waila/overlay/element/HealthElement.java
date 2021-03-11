@@ -1,36 +1,37 @@
-package mcp.mobius.waila.overlay.tooltiprenderers;
+package mcp.mobius.waila.overlay.element;
+
+import com.mojang.blaze3d.matrix.MatrixStack;
 
 import mcp.mobius.waila.Waila;
-import mcp.mobius.waila.api.ICommonAccessor;
-import mcp.mobius.waila.api.ITooltipRenderer;
-import mcp.mobius.waila.api.RenderContext;
+import mcp.mobius.waila.api.Size;
+import mcp.mobius.waila.api.Element;
 import mcp.mobius.waila.overlay.DisplayUtil;
 import mcp.mobius.waila.overlay.IconUI;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.MathHelper;
 
-import java.awt.Dimension;
+public class HealthElement extends Element {
 
-public class TooltipRendererArmor implements ITooltipRenderer {
+    private final float maxHealth;
+    private final float health;
+
+    public HealthElement(float maxHealth, float health) {
+        this.maxHealth = maxHealth;
+        this.health = health;
+    }
 
     @Override
-    public Dimension getSize(CompoundNBT tag, ICommonAccessor accessor) {
+    public Size getSize() {
         float maxHearts = Waila.CONFIG.get().getGeneral().getMaxHeartsPerLine();
-        float maxHealth = maxHearts;
 
         int heartsPerLine = (int) (Math.min(maxHearts, Math.ceil(maxHealth)));
         int lineCount = (int) (Math.ceil(maxHealth / maxHearts));
 
-        return new Dimension(8 * heartsPerLine, 10 * lineCount);
+        return new Size(8 * heartsPerLine, 10 * lineCount);
     }
 
     @Override
-    public void draw(CompoundNBT tag, ICommonAccessor accessor, int x, int y) {
+    public void render(MatrixStack matrixStack, int x, int y) {
         float maxHearts = Waila.CONFIG.get().getGeneral().getMaxHeartsPerLine();
-        float health = tag.getFloat("armor");
-        if (health == -1)
-            maxHearts = health = 1;
-        float maxHealth = maxHearts;
 
         int heartCount = MathHelper.ceil(maxHealth);
         int heartsPerLine = (int) (Math.min(maxHearts, Math.ceil(maxHealth)));
@@ -38,17 +39,17 @@ public class TooltipRendererArmor implements ITooltipRenderer {
         int xOffset = 0;
         for (int i = 1; i <= heartCount; i++) {
             if (i <= MathHelper.floor(health)) {
-                DisplayUtil.renderIcon(RenderContext.matrixStack, x + xOffset, y, 8, 8, IconUI.ARMOR);
+                DisplayUtil.renderIcon(matrixStack, x + xOffset, y, 8, 8, IconUI.HEART);
                 xOffset += 8;
             }
 
             if ((i > health) && (i < health + 1)) {
-                DisplayUtil.renderIcon(RenderContext.matrixStack, x + xOffset, y, 8, 8, IconUI.HALF_ARMOR);
+                DisplayUtil.renderIcon(matrixStack, x + xOffset, y, 8, 8, IconUI.HALF_HEART);
                 xOffset += 8;
             }
 
             if (i >= health + 1) {
-                DisplayUtil.renderIcon(RenderContext.matrixStack, x + xOffset, y, 8, 8, IconUI.EMPTY_ARMOR);
+                DisplayUtil.renderIcon(matrixStack, x + xOffset, y, 8, 8, IconUI.EMPTY_HEART);
                 xOffset += 8;
             }
 

@@ -1,17 +1,15 @@
 package snownee.jade.addon.vanilla;
 
-import java.util.List;
-
 import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IDataAccessor;
 import mcp.mobius.waila.api.IPluginConfig;
 import mcp.mobius.waila.api.IServerDataProvider;
+import mcp.mobius.waila.api.ITooltip;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.CommandBlockLogic;
 import net.minecraft.tileentity.CommandBlockTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 import snownee.jade.JadePlugin;
@@ -21,7 +19,7 @@ public class CommandBlockProvider implements IComponentProvider, IServerDataProv
     public static final CommandBlockProvider INSTANCE = new CommandBlockProvider();
 
     @Override
-    public void appendBody(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {
+    public void append(ITooltip tooltip, IDataAccessor accessor, IPluginConfig config) {
         if (!config.get(JadePlugin.COMMAND_BLOCK) || !accessor.getServerData().contains("Command")) {
             return;
         }

@@ -1,15 +1,15 @@
 package mcp.mobius.waila.addons.core;
 
-import java.util.List;
-
 import com.google.common.base.Strings;
 
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IDataAccessor;
+import mcp.mobius.waila.api.IElementHelper;
 import mcp.mobius.waila.api.IPluginConfig;
 import mcp.mobius.waila.api.IServerDataProvider;
-import mcp.mobius.waila.api.ITaggableList;
+import mcp.mobius.waila.api.ITooltip;
+import mcp.mobius.waila.api.TooltipPosition;
 import mcp.mobius.waila.utils.ModIdentification;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.resources.I18n;
@@ -19,7 +19,6 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.INameable;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -31,12 +30,20 @@ import snownee.jade.JadePlugin;
 public class BaseBlockProvider implements IComponentProvider, IServerDataProvider<TileEntity> {
 
     public static final BaseBlockProvider INSTANCE = new BaseBlockProvider();
-    public static final ResourceLocation OBJECT_NAME_TAG = new ResourceLocation(Waila.MODID, "object_name");
-    public static final ResourceLocation REGISTRY_NAME_TAG = new ResourceLocation(Waila.MODID, "registry_name");
-    public static final ResourceLocation MOD_NAME_TAG = new ResourceLocation(Waila.MODID, "mod_name");
 
     @Override
-    public void appendHead(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {
+    public void append(ITooltip tooltip, IDataAccessor accessor, IPluginConfig config) {
+        TooltipPosition position = accessor.getTooltipPosition();
+        if (position == TooltipPosition.HEAD) {
+            appendHead(tooltip, accessor, config);
+        } else if (position == TooltipPosition.BODY) {
+            appendBody(tooltip, accessor, config);
+        } else if (position == TooltipPosition.TAIL) {
+            appendTail(tooltip, accessor, config);
+        }
+    }
+
+    public void appendHead(ITooltip tooltip, IDataAccessor accessor, IPluginConfig config) {
         if (accessor.getBlockState().getMaterial().isLiquid())
             return;
 
@@ -57,13 +64,12 @@ public class BaseBlockProvider implements IComponentProvider, IServerDataProvide
                 }
             }
         }
-        ((ITaggableList<ResourceLocation, ITextComponent>) tooltip).setTag(OBJECT_NAME_TAG, new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getBlockName(), name)));
+        tooltip.add(new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getBlockName(), name)), CorePlugin.TAG_OBJECT_NAME);
         if (config.get(CorePlugin.CONFIG_SHOW_REGISTRY))
-            ((ITaggableList<ResourceLocation, ITextComponent>) tooltip).setTag(REGISTRY_NAME_TAG, new StringTextComponent(accessor.getBlock().getRegistryName().toString()).mergeStyle(TextFormatting.GRAY));
+            tooltip.add(new StringTextComponent(accessor.getBlock().getRegistryName().toString()).mergeStyle(TextFormatting.GRAY), CorePlugin.TAG_REGISTRY_NAME);
     }
 
-    @Override
-    public void appendBody(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {
+    public void appendBody(ITooltip tooltip, IDataAccessor accessor, IPluginConfig config) {
         if (config.get(CorePlugin.CONFIG_SHOW_STATES)) {
             BlockState state = accessor.getBlockState();
             state.getProperties().forEach(p -> {
@@ -74,14 +80,14 @@ public class BaseBlockProvider implements IComponentProvider, IServerDataProvide
         }
     }
 
-    @Override
-    public void appendTail(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {
+    public void appendTail(ITooltip tooltip, IDataAccessor accessor, IPluginConfig config) {
         if (config.get(JadePlugin.HIDE_MOD_NAME))
             return;
-        String modName = ModIdentification.getModInfo(accessor.getStack()).getName();
+        String modName = ModIdentification.getModInfo(accessor.getPickedResult()).getName();
         if (!Strings.isNullOrEmpty(modName)) {
             modName = String.format(Waila.CONFIG.get().getFormatting().getModName(), modName);
-            ((ITaggableList<ResourceLocation, ITextComponent>) tooltip).setTag(MOD_NAME_TAG, new StringTextComponent(modName));
+            IElementHelper helper = tooltip.getElementHelper();
+            tooltip.add(helper.text(new StringTextComponent(modName)).tag(CorePlugin.TAG_MOD_NAME));
         }
     }
 

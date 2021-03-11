@@ -1,13 +1,12 @@
 package mcp.mobius.waila.addons.minecraft;
 
-import java.util.List;
-
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IDataAccessor;
 import mcp.mobius.waila.api.IPluginConfig;
 import mcp.mobius.waila.api.IServerDataProvider;
-import mcp.mobius.waila.api.ITaggableList;
+import mcp.mobius.waila.api.ITooltip;
+import mcp.mobius.waila.api.TooltipPosition;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CropsBlock;
 import net.minecraft.block.JukeboxBlock;
@@ -25,7 +24,6 @@ import net.minecraft.tileentity.JukeboxTileEntity;
 import net.minecraft.tileentity.MobSpawnerTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -52,19 +50,22 @@ public class VanillaProvider implements IComponentProvider, IServerDataProvider<
         return ItemStack.EMPTY;
     }
 
-    @Override
-    public void appendHead(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {
+    public void appendHead(ITooltip tooltip, IDataAccessor accessor, IPluginConfig config) {
         if (config.get(MinecraftPlugin.CONFIG_HIDE_SILVERFISH) && accessor.getBlock() instanceof SilverfishBlock)
-            ((ITaggableList<ResourceLocation, ITextComponent>) tooltip).setTag(OBJECT_NAME_TAG, new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getBlockName(), accessor.getStack().getDisplayName().getString())));
+            tooltip.add(new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getBlockName(), accessor.getPickedResult().getDisplayName().getString())), OBJECT_NAME_TAG);
 
         if (accessor.getBlock() == Blocks.SPAWNER && config.get(MinecraftPlugin.CONFIG_SPAWNER_TYPE)) {
             MobSpawnerTileEntity spawner = (MobSpawnerTileEntity) accessor.getTileEntity();
-            ((ITaggableList<ResourceLocation, ITextComponent>) tooltip).setTag(OBJECT_NAME_TAG, new TranslationTextComponent(accessor.getBlock().getTranslationKey()).appendString(" (").appendSibling(spawner.getSpawnerBaseLogic().getCachedEntity().getDisplayName()).appendString(")"));
+            tooltip.add(new TranslationTextComponent(accessor.getBlock().getTranslationKey()).appendString(" (").appendSibling(spawner.getSpawnerBaseLogic().getCachedEntity().getDisplayName()).appendString(")"), OBJECT_NAME_TAG);
         }
     }
 
     @Override
-    public void appendBody(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {
+    public void append(ITooltip tooltip, IDataAccessor accessor, IPluginConfig config) {
+        if (accessor.getTooltipPosition() == TooltipPosition.HEAD) {
+            appendHead(tooltip, accessor, config);
+            return;
+        }
         if (config.get(MinecraftPlugin.CONFIG_CROP_PROGRESS)) {
             if (accessor.getBlock() instanceof CropsBlock) {
                 CropsBlock crop = (CropsBlock) accessor.getBlock();
@@ -125,7 +126,7 @@ public class VanillaProvider implements IComponentProvider, IServerDataProvider<
         }
     }
 
-    private static void addMaturityTooltip(List<ITextComponent> tooltip, float growthValue) {
+    private static void addMaturityTooltip(ITooltip tooltip, float growthValue) {
         growthValue *= 100.0F;
         if (growthValue < 100.0F)
             tooltip.add(new TranslationTextComponent("tooltip.waila.crop_growth", String.format("%.0f%%", growthValue)));

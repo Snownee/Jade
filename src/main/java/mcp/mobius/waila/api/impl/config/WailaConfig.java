@@ -1,19 +1,25 @@
 package mcp.mobius.waila.api.impl.config;
 
+import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import com.google.common.collect.Maps;
-import com.google.gson.*;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.HandSide;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceContext.FluidMode;
-
-import org.apache.commons.lang3.StringEscapeUtils;
-
-import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.Map;
 
 public class WailaConfig {
 
@@ -44,6 +50,7 @@ public class WailaConfig {
         private int maxHealthForRender = 40;
         private int maxHeartsPerLine = 10;
         private FluidMode fluldMode = FluidMode.NONE;
+        private boolean debug = false;
 
         public void setDisplayTooltip(boolean displayTooltip) {
             this.displayTooltip = displayTooltip;
@@ -132,6 +139,14 @@ public class WailaConfig {
         public FluidMode getDisplayFluids() {
             return fluldMode;
         }
+
+        public void setDebug(boolean debug) {
+            this.debug = debug;
+        }
+
+        public boolean isDebug() {
+            return debug;
+        }
     }
 
     public static class ConfigOverlay {
@@ -183,15 +198,15 @@ public class WailaConfig {
         public float getAnchorY() {
             return MathHelper.clamp(overlayAnchorY, 0.0F, 1.0F);
         }
-        
+
         public void setFlipMainHand(boolean overlaySquare) {
             this.flipMainHand = overlaySquare;
         }
-        
+
         public boolean getFlipMainHand() {
             return flipMainHand;
         }
-        
+
         public float tryFlip(float f) {
             if (Minecraft.getInstance().gameSettings.mainHand == HandSide.LEFT)
                 f = 1 - f;
@@ -201,7 +216,7 @@ public class WailaConfig {
         public void setSquare(boolean overlaySquare) {
             this.overlaySquare = overlaySquare;
         }
-        
+
         public boolean getSquare() {
             return overlaySquare;
         }
@@ -336,7 +351,6 @@ public class WailaConfig {
     }
 
     public enum DisplayMode {
-        HOLD_KEY,
-        TOGGLE
+        HOLD_KEY, TOGGLE
     }
 }

@@ -1,13 +1,11 @@
 package snownee.jade.addon.vanilla;
 
-import java.util.List;
-
 import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IDataAccessor;
 import mcp.mobius.waila.api.IPluginConfig;
+import mcp.mobius.waila.api.ITooltip;
 import net.minecraft.block.EnchantingTableBlock;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
@@ -19,7 +17,7 @@ public class EnchantmentPowerProvider implements IComponentProvider {
     public static final EnchantmentPowerProvider INSTANCE = new EnchantmentPowerProvider();
 
     @Override
-    public void appendBody(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {
+    public void append(ITooltip tooltip, IDataAccessor accessor, IPluginConfig config) {
         World world = accessor.getWorld();
         BlockPos pos = accessor.getPosition();
         float power = 0;

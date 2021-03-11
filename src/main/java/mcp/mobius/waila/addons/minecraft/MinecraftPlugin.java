@@ -4,20 +4,19 @@ import mcp.mobius.waila.api.IRegistrar;
 import mcp.mobius.waila.api.IWailaPlugin;
 import mcp.mobius.waila.api.TooltipPosition;
 import mcp.mobius.waila.api.WailaPlugin;
-import mcp.mobius.waila.overlay.tooltiprenderers.TooltipRendererProgressBar;
-import mcp.mobius.waila.overlay.tooltiprenderers.TooltipRendererSpacer;
-import mcp.mobius.waila.overlay.tooltiprenderers.TooltipRendererStack;
+import net.minecraft.block.AbstractFurnaceBlock;
 import net.minecraft.block.CocoaBlock;
 import net.minecraft.block.ComparatorBlock;
 import net.minecraft.block.CropsBlock;
+import net.minecraft.block.JukeboxBlock;
 import net.minecraft.block.LeverBlock;
 import net.minecraft.block.RedstoneWireBlock;
 import net.minecraft.block.RepeaterBlock;
 import net.minecraft.block.SilverfishBlock;
+import net.minecraft.block.SpawnerBlock;
 import net.minecraft.block.StemBlock;
 import net.minecraft.tileentity.AbstractFurnaceTileEntity;
 import net.minecraft.tileentity.JukeboxTileEntity;
-import net.minecraft.tileentity.MobSpawnerTileEntity;
 import net.minecraft.util.ResourceLocation;
 
 @WailaPlugin
@@ -49,14 +48,10 @@ public class MinecraftPlugin implements IWailaPlugin {
         registrar.addConfig(CONFIG_REDSTONE, true);
         registrar.addConfig(CONFIG_JUKEBOX, true);
 
-        registrar.registerTooltipRenderer(RENDER_ITEM, new TooltipRendererStack());
-        registrar.registerTooltipRenderer(RENDER_SPACER, new TooltipRendererSpacer());
-        registrar.registerTooltipRenderer(RENDER_FURNACE_PROGRESS, new TooltipRendererProgressBar());
-
         registrar.registerStackProvider(VanillaProvider.INSTANCE, SilverfishBlock.class);
         registrar.registerStackProvider(VanillaProvider.INSTANCE, CropsBlock.class);
         registrar.registerComponentProvider(VanillaProvider.INSTANCE, TooltipPosition.HEAD, SilverfishBlock.class);
-        registrar.registerComponentProvider(VanillaProvider.INSTANCE, TooltipPosition.HEAD, MobSpawnerTileEntity.class);
+        registrar.registerComponentProvider(VanillaProvider.INSTANCE, TooltipPosition.HEAD, SpawnerBlock.class);
         registrar.registerComponentProvider(VanillaProvider.INSTANCE, TooltipPosition.BODY, CropsBlock.class);
         registrar.registerComponentProvider(VanillaProvider.INSTANCE, TooltipPosition.BODY, StemBlock.class);
         registrar.registerComponentProvider(VanillaProvider.INSTANCE, TooltipPosition.BODY, CocoaBlock.class);
@@ -64,10 +59,10 @@ public class MinecraftPlugin implements IWailaPlugin {
         registrar.registerComponentProvider(VanillaProvider.INSTANCE, TooltipPosition.BODY, RepeaterBlock.class);
         registrar.registerComponentProvider(VanillaProvider.INSTANCE, TooltipPosition.BODY, ComparatorBlock.class);
         registrar.registerComponentProvider(VanillaProvider.INSTANCE, TooltipPosition.BODY, RedstoneWireBlock.class);
-        registrar.registerComponentProvider(VanillaProvider.INSTANCE, TooltipPosition.BODY, JukeboxTileEntity.class);
+        registrar.registerComponentProvider(VanillaProvider.INSTANCE, TooltipPosition.BODY, JukeboxBlock.class);
         registrar.registerBlockDataProvider(VanillaProvider.INSTANCE, JukeboxTileEntity.class);
 
-        registrar.registerComponentProvider(FurnaceProvider.INSTANCE, TooltipPosition.BODY, AbstractFurnaceTileEntity.class);
+        registrar.registerComponentProvider(FurnaceProvider.INSTANCE, TooltipPosition.BODY, AbstractFurnaceBlock.class);
         registrar.registerBlockDataProvider(FurnaceProvider.INSTANCE, AbstractFurnaceTileEntity.class);
     }
 }

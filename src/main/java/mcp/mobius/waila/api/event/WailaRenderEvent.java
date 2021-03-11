@@ -1,10 +1,12 @@
 package mcp.mobius.waila.api.event;
 
-import mcp.mobius.waila.api.ICommonAccessor;
+import java.awt.Rectangle;
+
+import com.mojang.blaze3d.matrix.MatrixStack;
+
+import mcp.mobius.waila.api.IAccessor;
 import net.minecraftforge.eventbus.api.Cancelable;
 import net.minecraftforge.eventbus.api.Event;
-
-import java.awt.Rectangle;
 
 /**
  * The base event for rendering the Waila tooltip. This provides the opportunity to do last minute changes to the tooltip.
@@ -17,13 +19,19 @@ import java.awt.Rectangle;
 public class WailaRenderEvent extends Event {
 
     private final Rectangle position;
+    private final MatrixStack matrixStack;
 
-    public WailaRenderEvent(Rectangle position) {
+    public WailaRenderEvent(Rectangle position, MatrixStack matrixStack) {
         this.position = position;
+        this.matrixStack = matrixStack;
     }
 
     public Rectangle getPosition() {
         return position;
+    }
+
+    public MatrixStack getMatrixStack() {
+        return matrixStack;
     }
 
     /**
@@ -36,15 +44,15 @@ public class WailaRenderEvent extends Event {
     @Cancelable
     public static class Pre extends WailaRenderEvent {
 
-        private final ICommonAccessor accessor;
+        private final IAccessor accessor;
 
-        public Pre(ICommonAccessor accessor, Rectangle position) {
-            super(position);
+        public Pre(IAccessor accessor, Rectangle position, MatrixStack matrixStack) {
+            super(position, matrixStack);
 
             this.accessor = accessor;
         }
 
-        public ICommonAccessor getAccessor() {
+        public IAccessor getAccessor() {
             return accessor;
         }
     }
@@ -58,8 +66,8 @@ public class WailaRenderEvent extends Event {
      */
     public static class Post extends WailaRenderEvent {
 
-        public Post(Rectangle position) {
-            super(position);
+        public Post(Rectangle position, MatrixStack matrixStack) {
+            super(position, matrixStack);
         }
     }
 

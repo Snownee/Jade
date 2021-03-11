@@ -1,46 +1,46 @@
 package mcp.mobius.waila.api.impl;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import mcp.mobius.waila.api.*;
+import java.util.EnumMap;
+import java.util.List;
+
+import mcp.mobius.waila.api.IComponentProvider;
+import mcp.mobius.waila.api.IEntityComponentProvider;
+import mcp.mobius.waila.api.IRegistrar;
+import mcp.mobius.waila.api.IServerDataProvider;
+import mcp.mobius.waila.api.TooltipPosition;
 import mcp.mobius.waila.api.impl.config.ConfigEntry;
 import mcp.mobius.waila.api.impl.config.PluginConfig;
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
-
-import java.util.*;
 
 public class WailaRegistrar implements IRegistrar {
 
     public static final WailaRegistrar INSTANCE = new WailaRegistrar();
 
-    final Map<Class, List<IComponentProvider>> blockStackProviders;
-    final EnumMap<TooltipPosition, Map<Class, List<IComponentProvider>>> blockComponentProviders;
-    final Map<Class, List<IServerDataProvider<TileEntity>>> blockDataProviders;
+    final HierarchyLookup<IComponentProvider> blockStackProviders;
+    final EnumMap<TooltipPosition, HierarchyLookup<IComponentProvider>> blockComponentProviders;
+    final HierarchyLookup<IServerDataProvider<TileEntity>> blockDataProviders;
 
-    final Map<Class, List<IEntityComponentProvider>> entityOverrideProviders;
-    final Map<Class, List<IEntityComponentProvider>> entityStackProviders;
-    final EnumMap<TooltipPosition, Map<Class, List<IEntityComponentProvider>>> entityComponentProviders;
-    final Map<Class, List<IServerDataProvider<Entity>>> entityDataProviders;
-
-    final Map<ResourceLocation, ITooltipRenderer> tooltipRenderers;
+    final HierarchyLookup<IEntityComponentProvider> entityOverrideProviders;
+    final HierarchyLookup<IEntityComponentProvider> entityStackProviders;
+    final EnumMap<TooltipPosition, HierarchyLookup<IEntityComponentProvider>> entityComponentProviders;
+    final HierarchyLookup<IServerDataProvider<Entity>> entityDataProviders;
 
     WailaRegistrar() {
-        blockStackProviders = Maps.newLinkedHashMap();
+        blockStackProviders = new HierarchyLookup<>(Block.class);
         blockComponentProviders = new EnumMap<>(TooltipPosition.class);
-        blockDataProviders = Maps.newLinkedHashMap();
+        blockDataProviders = new HierarchyLookup<>(TileEntity.class);
 
-        entityOverrideProviders = Maps.newLinkedHashMap();
-        entityStackProviders = Maps.newLinkedHashMap();
+        entityOverrideProviders = new HierarchyLookup<>(Entity.class);
+        entityStackProviders = new HierarchyLookup<>(Entity.class);
         entityComponentProviders = new EnumMap<>(TooltipPosition.class);
-        entityDataProviders = Maps.newLinkedHashMap();
-
-        tooltipRenderers = Maps.newLinkedHashMap();
+        entityDataProviders = new HierarchyLookup<>(Entity.class);
 
         for (TooltipPosition position : TooltipPosition.values()) {
-            blockComponentProviders.put(position, new LinkedHashMap<>());
-            entityComponentProviders.put(position, new LinkedHashMap<>());
+            blockComponentProviders.put(position, new HierarchyLookup<>(Block.class));
+            entityComponentProviders.put(position, new HierarchyLookup<>(Entity.class));
         }
     }
 
@@ -59,175 +59,68 @@ public class WailaRegistrar implements IRegistrar {
     /* REGISTRATION METHODS */
 
     @Override
-    public void registerStackProvider(IComponentProvider dataProvider, Class block) {
-        registerProvider(dataProvider, block, blockStackProviders);
+    public void registerStackProvider(IComponentProvider dataProvider, Class<? extends Block> block) {
+        blockStackProviders.register(block, dataProvider);
     }
 
     @Override
-    public void registerComponentProvider(IComponentProvider dataProvider, TooltipPosition position, Class block) {
-        registerProvider(dataProvider, block, blockComponentProviders.get(position));
+    public void registerComponentProvider(IComponentProvider dataProvider, TooltipPosition position, Class<? extends Block> block) {
+        blockComponentProviders.get(position).register(block, dataProvider);
     }
 
     @Override
-    public void registerBlockDataProvider(IServerDataProvider<TileEntity> dataProvider, Class block) {
-        registerProvider(dataProvider, block, blockDataProviders);
+    public void registerBlockDataProvider(IServerDataProvider<TileEntity> dataProvider, Class<? extends TileEntity> block) {
+        blockDataProviders.register(block, dataProvider);
     }
 
     @Override
-    public void registerOverrideEntityProvider(IEntityComponentProvider dataProvider, Class entity) {
-        registerProvider(dataProvider, entity, entityOverrideProviders);
+    public void registerOverrideEntityProvider(IEntityComponentProvider dataProvider, Class<? extends Entity> entity) {
+        entityOverrideProviders.register(entity, dataProvider);
     }
 
     @Override
-    public void registerEntityStackProvider(IEntityComponentProvider dataProvider, Class entity) {
-        registerProvider(dataProvider, entity, entityStackProviders);
+    public void registerEntityStackProvider(IEntityComponentProvider dataProvider, Class<? extends Entity> entity) {
+        entityStackProviders.register(entity, dataProvider);
     }
 
     @Override
-    public void registerComponentProvider(IEntityComponentProvider dataProvider, TooltipPosition position, Class entity) {
-        registerProvider(dataProvider, entity, entityComponentProviders.get(position));
+    public void registerComponentProvider(IEntityComponentProvider dataProvider, TooltipPosition position, Class<? extends Entity> entity) {
+        entityComponentProviders.get(position).register(entity, dataProvider);
     }
 
     @Override
-    public void registerEntityDataProvider(IServerDataProvider<Entity> dataProvider, Class entity) {
-        registerProvider(dataProvider, entity, entityDataProviders);
-    }
-
-    @Override
-    public void registerTooltipRenderer(ResourceLocation id, ITooltipRenderer renderer) {
-        this.tooltipRenderers.put(id, renderer);
-    }
-
-    private <T, V extends Class<?>> void registerProvider(T dataProvider, V clazz, Map<V, List<T>> target) {
-        if (clazz == null || dataProvider == null)
-            throw new RuntimeException(String.format("Trying to register a null provider or null block ! Please check the stacktrace to know what was the original registration method. [Provider : %s, Target : %s]", dataProvider.getClass().getName(), clazz));
-
-        List<T> providers = target.computeIfAbsent(clazz, c -> Lists.newArrayList());
-        if (providers.contains(dataProvider))
-            return;
-
-        providers.add(dataProvider);
+    public void registerEntityDataProvider(IServerDataProvider<Entity> dataProvider, Class<? extends Entity> entity) {
+        entityDataProviders.register(entity, dataProvider);
     }
 
     /* PROVIDER GETTERS */
 
-    public Map<Integer, List<IComponentProvider>> getHeadProviders(Object block) {
-        return getProviders(block, blockComponentProviders.get(TooltipPosition.HEAD));
+    public List<IComponentProvider> getBlockProviders(Block block, TooltipPosition position) {
+        return blockComponentProviders.get(position).get(block);
     }
 
-    public Map<Integer, List<IComponentProvider>> getBodyProviders(Object block) {
-        return getProviders(block, blockComponentProviders.get(TooltipPosition.BODY));
+    public List<IComponentProvider> getBlockStackProviders(Block block) {
+        return blockStackProviders.get(block);
     }
 
-    public Map<Integer, List<IComponentProvider>> getTailProviders(Object block) {
-        return getProviders(block, blockComponentProviders.get(TooltipPosition.TAIL));
+    public List<IServerDataProvider<TileEntity>> getBlockNBTProviders(TileEntity block) {
+        return blockDataProviders.get(block);
     }
 
-    public Map<Integer, List<IComponentProvider>> getStackProviders(Object block) {
-        return getProviders(block, blockStackProviders);
+    public List<IEntityComponentProvider> getEntityProviders(Entity entity, TooltipPosition position) {
+        return entityComponentProviders.get(position).get(entity);
     }
 
-    public Map<Integer, List<IServerDataProvider<TileEntity>>> getNBTProviders(Object block) {
-        return getProviders(block, blockDataProviders);
+    public List<IEntityComponentProvider> getOverrideEntityProviders(Entity entity) {
+        return entityOverrideProviders.get(entity);
     }
 
-    public Map<Integer, List<IEntityComponentProvider>> getHeadEntityProviders(Object entity) {
-        return getProviders(entity, entityComponentProviders.get(TooltipPosition.HEAD));
+    public List<IEntityComponentProvider> getEntityStackProviders(Entity entity) {
+        return entityStackProviders.get(entity);
     }
 
-    public Map<Integer, List<IEntityComponentProvider>> getBodyEntityProviders(Object entity) {
-        return getProviders(entity, entityComponentProviders.get(TooltipPosition.BODY));
+    public List<IServerDataProvider<Entity>> getEntityNBTProviders(Entity entity) {
+        return entityDataProviders.get(entity);
     }
 
-    public Map<Integer, List<IEntityComponentProvider>> getTailEntityProviders(Object entity) {
-        return getProviders(entity, entityComponentProviders.get(TooltipPosition.TAIL));
-    }
-
-    public Map<Integer, List<IEntityComponentProvider>> getOverrideEntityProviders(Object entity) {
-        return getProviders(entity, entityOverrideProviders);
-    }
-
-    public Map<Integer, List<IEntityComponentProvider>> getStackEntityProviders(Object entity) {
-        return getProviders(entity, entityStackProviders);
-    }
-
-    public Map<Integer, List<IServerDataProvider<Entity>>> getNBTEntityProviders(Object entity) {
-        return getProviders(entity, entityDataProviders);
-    }
-
-    public ITooltipRenderer getTooltipRenderer(ResourceLocation id) {
-        ITooltipRenderer renderer = this.tooltipRenderers.get(id);
-        if (renderer == null)
-            throw new NullPointerException("TooltipRenderer " + id + " doesn't exist");
-        return renderer;
-    }
-
-    private <T> Map<Integer, List<T>> getProviders(Object obj, Map<Class, List<T>> target) {
-        Map<Integer, List<T>> returnList = new TreeMap<>();
-        Integer index = 0;
-
-        for (Class clazz : target.keySet()) {
-            if (clazz.isInstance(obj))
-                returnList.put(index, target.get(clazz));
-
-            index++;
-        }
-
-        return returnList;
-    }
-
-    /* HAS METHODS */
-
-    public boolean hasStackProviders(Object block) {
-        return hasProviders(block, blockStackProviders);
-    }
-
-    public boolean hasHeadProviders(Object block) {
-        return hasProviders(block, blockComponentProviders.get(TooltipPosition.HEAD));
-    }
-
-    public boolean hasBodyProviders(Object block) {
-        return hasProviders(block, blockComponentProviders.get(TooltipPosition.BODY));
-    }
-
-    public boolean hasTailProviders(Object block) {
-        return hasProviders(block, blockComponentProviders.get(TooltipPosition.TAIL));
-    }
-
-    public boolean hasNBTProviders(Object block) {
-        return hasProviders(block, blockDataProviders);
-    }
-
-    public boolean hasHeadEntityProviders(Object entity) {
-        return hasProviders(entity, entityComponentProviders.get(TooltipPosition.HEAD));
-    }
-
-    public boolean hasBodyEntityProviders(Object entity) {
-        return hasProviders(entity, entityComponentProviders.get(TooltipPosition.BODY));
-    }
-
-    public boolean hasTailEntityProviders(Object entity) {
-        return hasProviders(entity, entityComponentProviders.get(TooltipPosition.TAIL));
-    }
-
-    public boolean hasOverrideEntityProviders(Object entity) {
-        return hasProviders(entity, entityOverrideProviders);
-    }
-
-    public boolean hasStackEntityProviders(Object entity) {
-        return hasProviders(entity, entityStackProviders);
-    }
-
-    public boolean hasNBTEntityProviders(Object entity) {
-        return hasProviders(entity, entityDataProviders);
-    }
-
-    private <T> boolean hasProviders(Object obj, Map<Class, List<T>> target) {
-        if (obj == null)
-            return false;
-        for (Class clazz : target.keySet())
-            if (clazz.isInstance(obj))
-                return true;
-        return false;
-    }
 }

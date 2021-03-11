@@ -12,7 +12,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.WailaClient;
 import mcp.mobius.waila.addons.core.CorePlugin;
-import mcp.mobius.waila.api.RenderContext;
 import mcp.mobius.waila.api.event.WailaRenderEvent;
 import mcp.mobius.waila.api.impl.DataAccessor;
 import mcp.mobius.waila.api.impl.config.PluginConfig;
@@ -35,7 +34,7 @@ public class OverlayRenderer {
     protected static int depthFunc;
 
     public static void renderOverlay() {
-        if (WailaTickHandler.instance().tooltip == null)
+        if (WailaTickHandler.instance().tooltipRenderer == null)
             return;
 
         if (!Waila.CONFIG.get().getGeneral().shouldDisplayTooltip())
@@ -63,10 +62,10 @@ public class OverlayRenderer {
             return;
 
         if (RayTracing.INSTANCE.getTarget().getType() == RayTraceResult.Type.BLOCK)
-            renderOverlay(WailaTickHandler.instance().tooltip, new MatrixStack());
+            renderOverlay(WailaTickHandler.instance().tooltipRenderer, new MatrixStack());
 
         if (RayTracing.INSTANCE.getTarget().getType() == RayTraceResult.Type.ENTITY && PluginConfig.INSTANCE.get(CorePlugin.CONFIG_SHOW_ENTITY))
-            renderOverlay(WailaTickHandler.instance().tooltip, new MatrixStack());
+            renderOverlay(WailaTickHandler.instance().tooltipRenderer, new MatrixStack());
     }
 
     public static void enableGUIStandardItemLighting() {
@@ -77,13 +76,12 @@ public class OverlayRenderer {
         RenderSystem.popMatrix();
     }
 
-    public static void renderOverlay(Tooltip tooltip, MatrixStack matrixStack) {
+    public static void renderOverlay(TooltipRenderer tooltip, MatrixStack matrixStack) {
         Minecraft.getInstance().getProfiler().startSection("Waila Overlay");
-        RenderContext.matrixStack = matrixStack;
         matrixStack.push();
         saveGLState();
 
-        WailaRenderEvent.Pre preEvent = new WailaRenderEvent.Pre(DataAccessor.INSTANCE, tooltip.getPosition());
+        WailaRenderEvent.Pre preEvent = new WailaRenderEvent.Pre(DataAccessor.INSTANCE, tooltip.getPosition(), matrixStack);
         if (MinecraftForge.EVENT_BUS.post(preEvent)) {
             loadGLState();
             matrixStack.pop();
@@ -99,7 +97,7 @@ public class OverlayRenderer {
         //float scale = Waila.CONFIG.get().getOverlay().getOverlayScale();
         //matrixStack.translate(position.x, position.y, 0);
         //matrixStack.scale(scale, scale, 1.0F);
-        
+
         WailaConfig.ConfigOverlay.ConfigOverlayColor color = Waila.CONFIG.get().getOverlay().getColor();
         if (color.getRawAlpha() > 0) {
             WailaRenderEvent.Color colorEvent = new WailaRenderEvent.Color(color.getAlpha(), color.getBackgroundColor(), color.getGradientStart(), color.getGradientEnd());
@@ -109,7 +107,7 @@ public class OverlayRenderer {
 
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-        tooltip.draw();
+        tooltip.draw(matrixStack);
         RenderSystem.disableBlend();
 
         if (tooltip.hasItem())
@@ -123,7 +121,7 @@ public class OverlayRenderer {
             DisplayUtil.renderStack(matrixStack, position.x + 5, position.y + 2, tooltip.identifierStack, 1);
         }
 
-        WailaRenderEvent.Post postEvent = new WailaRenderEvent.Post(position);
+        WailaRenderEvent.Post postEvent = new WailaRenderEvent.Post(position, matrixStack);
         MinecraftForge.EVENT_BUS.post(postEvent);
 
         loadGLState();

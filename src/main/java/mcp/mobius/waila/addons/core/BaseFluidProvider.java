@@ -1,20 +1,16 @@
 package mcp.mobius.waila.addons.core;
 
 import mcp.mobius.waila.Waila;
-import mcp.mobius.waila.api.IPluginConfig;
-import mcp.mobius.waila.api.IDataAccessor;
 import mcp.mobius.waila.api.IComponentProvider;
-import mcp.mobius.waila.api.ITaggableList;
+import mcp.mobius.waila.api.IDataAccessor;
+import mcp.mobius.waila.api.IPluginConfig;
+import mcp.mobius.waila.api.ITooltip;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
-
-import java.util.List;
 
 public class BaseFluidProvider implements IComponentProvider {
 
@@ -31,9 +27,10 @@ public class BaseFluidProvider implements IComponentProvider {
     }
 
     @Override
-    public void appendHead(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {
-        ((ITaggableList<ResourceLocation, ITextComponent>) tooltip).setTag(BaseBlockProvider.OBJECT_NAME_TAG, new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getFluidName(), I18n.format(accessor.getBlock().getTranslationKey()))));
+    public void append(ITooltip tooltip, IDataAccessor accessor, IPluginConfig config) {
+        String name = I18n.format(accessor.getBlock().getTranslationKey());
+        tooltip.add(new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getBlockName(), name)), CorePlugin.TAG_OBJECT_NAME);
         if (config.get(CorePlugin.CONFIG_SHOW_REGISTRY))
-            ((ITaggableList<ResourceLocation, ITextComponent>) tooltip).setTag(BaseBlockProvider.REGISTRY_NAME_TAG, new StringTextComponent(accessor.getBlock().getRegistryName().toString()).mergeStyle(TextFormatting.GRAY));
+            tooltip.add(new StringTextComponent(accessor.getBlock().getRegistryName().toString()).mergeStyle(TextFormatting.GRAY), CorePlugin.TAG_REGISTRY_NAME);
     }
 }

@@ -13,7 +13,6 @@ import net.minecraft.block.NoteBlock;
 import net.minecraft.block.TNTBlock;
 import net.minecraft.block.TrappedChestBlock;
 import net.minecraft.entity.AgeableEntity;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ArmorStandEntity;
 import net.minecraft.entity.item.ItemEntity;
@@ -25,6 +24,10 @@ import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.ChickenEntity;
 import net.minecraft.entity.passive.horse.AbstractChestedHorseEntity;
 import net.minecraft.entity.passive.horse.AbstractHorseEntity;
+import net.minecraft.tileentity.BeehiveTileEntity;
+import net.minecraft.tileentity.BrewingStandTileEntity;
+import net.minecraft.tileentity.CommandBlockTileEntity;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import snownee.jade.addon.vanilla.AgeableEntityProvider;
 import snownee.jade.addon.vanilla.ArmorStandProvider;
@@ -35,12 +38,10 @@ import snownee.jade.addon.vanilla.ChestedHorseProvider;
 import snownee.jade.addon.vanilla.ChickenEggProvider;
 import snownee.jade.addon.vanilla.CommandBlockProvider;
 import snownee.jade.addon.vanilla.EnchantmentPowerProvider;
-import snownee.jade.addon.vanilla.HarvestToolProvider;
 import snownee.jade.addon.vanilla.HorseProvider;
 import snownee.jade.addon.vanilla.InventoryProvider;
 import snownee.jade.addon.vanilla.ItemFrameProvider;
 import snownee.jade.addon.vanilla.ItemTooltipProvider;
-import snownee.jade.addon.vanilla.MiscEntityNameProvider;
 import snownee.jade.addon.vanilla.NoteBlockProvider;
 import snownee.jade.addon.vanilla.PaintingProvider;
 import snownee.jade.addon.vanilla.PlayerHeadProvider;
@@ -89,11 +90,11 @@ public class JadePlugin implements IWailaPlugin {
     @Override
     public void register(IRegistrar registrar) {
         registrar.registerComponentProvider(InventoryProvider.INSTANCE, TooltipPosition.BODY, Block.class);
-        registrar.registerBlockDataProvider(InventoryProvider.INSTANCE, Block.class);
+        registrar.registerBlockDataProvider(InventoryProvider.INSTANCE, TileEntity.class);
         registrar.addConfig(INVENTORY, true);
 
         registrar.registerComponentProvider(BrewingStandProvider.INSTANCE, TooltipPosition.BODY, BrewingStandBlock.class);
-        registrar.registerBlockDataProvider(BrewingStandProvider.INSTANCE, BrewingStandBlock.class);
+        registrar.registerBlockDataProvider(BrewingStandProvider.INSTANCE, BrewingStandTileEntity.class);
         registrar.addConfig(BREWING_STAND, true);
 
         registrar.registerComponentProvider(HorseProvider.INSTANCE, TooltipPosition.BODY, AbstractHorseEntity.class);
@@ -117,16 +118,11 @@ public class JadePlugin implements IWailaPlugin {
         registrar.registerEntityDataProvider(BreedingProvider.INSTANCE, AnimalEntity.class);
         registrar.addConfig(MOB_BREEDING, true);
 
-        //        registrar.registerComponentProvider(MiscEntityNameProvider.INSTANCE, TooltipPosition.HEAD, Entity.class);
-        //        registrar.registerComponentProvider(MiscEntityNameProvider.INSTANCE, TooltipPosition.TAIL, Entity.class);
-        registrar.registerEntityStackProvider(MiscEntityNameProvider.INSTANCE, Entity.class);
-        //        registrar.addConfig(MISC_ENTITY, true);
-
         registrar.registerComponentProvider(TNTProvider.INSTANCE, TooltipPosition.BODY, TNTBlock.class);
         registrar.addConfig(TNT_STABILITY, true);
 
         registrar.registerComponentProvider(BeehiveProvider.INSTANCE, TooltipPosition.BODY, BeehiveBlock.class);
-        registrar.registerBlockDataProvider(BeehiveProvider.INSTANCE, BeehiveBlock.class);
+        registrar.registerBlockDataProvider(BeehiveProvider.INSTANCE, BeehiveTileEntity.class);
         registrar.addConfig(BEEHIVE, true);
 
         registrar.registerComponentProvider(NoteBlockProvider.INSTANCE, TooltipPosition.BODY, NoteBlock.class);
@@ -145,14 +141,14 @@ public class JadePlugin implements IWailaPlugin {
         registrar.registerEntityDataProvider(ChickenEggProvider.INSTANCE, ChickenEntity.class);
         registrar.addConfig(CHICKEN_EGG, true);
 
-        registrar.registerComponentProvider(HarvestToolProvider.INSTANCE, TooltipPosition.HEAD, Block.class);
-        registrar.registerComponentProvider(HarvestToolProvider.INSTANCE, TooltipPosition.BODY, Block.class);
-        registrar.addConfig(HARVEST_TOOL, true);
-        registrar.addConfig(HARVEST_TOOL_NEW_LINE, false);
-        registrar.addConfig(EFFECTIVE_TOOL, true);
+//        registrar.registerComponentProvider(HarvestToolProvider.INSTANCE, TooltipPosition.HEAD, Block.class);
+//        registrar.registerComponentProvider(HarvestToolProvider.INSTANCE, TooltipPosition.BODY, Block.class);
+//        registrar.addConfig(HARVEST_TOOL, true);
+//        registrar.addConfig(HARVEST_TOOL_NEW_LINE, false);
+//        registrar.addConfig(EFFECTIVE_TOOL, true);
 
         registrar.registerComponentProvider(CommandBlockProvider.INSTANCE, TooltipPosition.BODY, CommandBlockBlock.class);
-        registrar.registerBlockDataProvider(CommandBlockProvider.INSTANCE, CommandBlockBlock.class);
+        registrar.registerBlockDataProvider(CommandBlockProvider.INSTANCE, CommandBlockTileEntity.class);
         registrar.addConfig(COMMAND_BLOCK, true);
 
         registrar.addConfig(BREAKING_PROGRESS, true);

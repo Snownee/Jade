@@ -1,10 +1,9 @@
 package snownee.jade.addon.vanilla;
 
-import java.util.List;
-
 import mcp.mobius.waila.api.IEntityAccessor;
 import mcp.mobius.waila.api.IEntityComponentProvider;
 import mcp.mobius.waila.api.IPluginConfig;
+import mcp.mobius.waila.api.ITooltip;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.merchant.villager.VillagerData;
 import net.minecraft.entity.merchant.villager.VillagerEntity;
@@ -21,7 +20,7 @@ public class VillagerProfessionProvider implements IEntityComponentProvider {
     private static final ITextComponent field_243352_C = new StringTextComponent(" - ");
 
     @Override
-    public void appendBody(List<ITextComponent> tooltip, IEntityAccessor accessor, IPluginConfig config) {
+    public void append(ITooltip tooltip, IEntityAccessor accessor, IPluginConfig config) {
         if (!config.get(JadePlugin.PROFESSION)) {
             return;
         }

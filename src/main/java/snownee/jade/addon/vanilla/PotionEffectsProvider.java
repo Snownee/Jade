@@ -1,12 +1,13 @@
 package snownee.jade.addon.vanilla;
 
 import java.util.Collection;
-import java.util.List;
 
+import mcp.mobius.waila.api.IElementHelper;
 import mcp.mobius.waila.api.IEntityAccessor;
 import mcp.mobius.waila.api.IEntityComponentProvider;
 import mcp.mobius.waila.api.IPluginConfig;
 import mcp.mobius.waila.api.IServerDataProvider;
+import mcp.mobius.waila.api.ITooltip;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -20,16 +21,17 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import snownee.jade.JadePlugin;
-import snownee.jade.Renderables;
 
 public class PotionEffectsProvider implements IEntityComponentProvider, IServerDataProvider<Entity> {
     public static final PotionEffectsProvider INSTANCE = new PotionEffectsProvider();
 
     @Override
-    public void appendBody(List<ITextComponent> tooltip, IEntityAccessor accessor, IPluginConfig config) {
+    public void append(ITooltip tooltip, IEntityAccessor accessor, IPluginConfig config) {
         if (!config.get(JadePlugin.EFFECTS) || !accessor.getServerData().contains("Potions")) {
             return;
         }
+        IElementHelper helper = tooltip.getElementHelper();
+        ITooltip box = helper.createTooltip();
         ListNBT list = accessor.getServerData().getList("Potions", Constants.NBT.TAG_COMPOUND);
         ITextComponent[] lines = new ITextComponent[list.size()];
         for (int i = 0; i < lines.length; i++) {
@@ -38,9 +40,9 @@ public class PotionEffectsProvider implements IEntityComponentProvider, IServerD
             TranslationTextComponent name = new TranslationTextComponent(compound.getString("Name"));
             TranslationTextComponent amplifier = new TranslationTextComponent("potion.potency." + compound.getInt("Amplifier"));
             TranslationTextComponent s = new TranslationTextComponent("jade.potion", name, amplifier, getPotionDurationString(duration));
-            lines[i] = s.mergeStyle(compound.getBoolean("Bad") ? TextFormatting.RED : TextFormatting.GREEN);
+            box.add(s.mergeStyle(compound.getBoolean("Bad") ? TextFormatting.RED : TextFormatting.GREEN));
         }
-        tooltip.add(Renderables.box(lines));
+        tooltip.add(helper.box(box));
     }
 
     public static String getPotionDurationString(int duration) {

@@ -1,16 +1,22 @@
 package mcp.mobius.waila.api;
 
-import java.awt.Dimension;
+import com.mojang.blaze3d.matrix.MatrixStack;
 
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.ResourceLocation;
 
-public interface ITooltipRenderer {
+// TODO docs
+public interface IElement {
+
+    IElement size(Size size);
+
     /**
      * @param data     The data supplied by the provider
      * @param accessor A global accessor for TileEntities and Entities
      * @return Dimension of the reserved area
      */
-    Dimension getSize(CompoundNBT data, ICommonAccessor accessor);
+    Size getSize();
+
+    Size getCachedSize();
 
     /**
      * Draw method for the renderer. The GL matrice is automatically moved to the top left of the reserved zone.<br>
@@ -19,6 +25,21 @@ public interface ITooltipRenderer {
      * @param data     The data supplied by the provider
      * @param accessor A global accessor for TileEntities and Entities
      */
-    void draw(CompoundNBT data, ICommonAccessor accessor, int x, int y);
+    void render(MatrixStack matrixStack, int x, int y);
 
+    IElement align(Align align);
+
+    Align getAlignment();
+
+    IElement translate(int x, int y);
+
+    Size getTranslation();
+
+    IElement tag(ResourceLocation tag);
+
+    ResourceLocation getTag();
+
+    public static enum Align {
+        LEFT, RIGHT
+    }
 }

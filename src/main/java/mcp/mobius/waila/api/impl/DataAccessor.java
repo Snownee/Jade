@@ -1,8 +1,8 @@
 package mcp.mobius.waila.api.impl;
 
-import mcp.mobius.waila.api.ICommonAccessor;
 import mcp.mobius.waila.api.IDataAccessor;
 import mcp.mobius.waila.api.IEntityAccessor;
+import mcp.mobius.waila.api.TooltipPosition;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -12,36 +12,30 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.*;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.EntityRayTraceResult;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 
-public class DataAccessor implements ICommonAccessor, IDataAccessor, IEntityAccessor {
+public class DataAccessor implements IDataAccessor, IEntityAccessor {
 
     public static final DataAccessor INSTANCE = new DataAccessor();
 
     public World world;
     public PlayerEntity player;
     public RayTraceResult hitResult;
-    public Vector3d renderingvec = null;
-    public Block block = Blocks.AIR;
     public BlockState state = Blocks.AIR.getDefaultState();
     public BlockPos pos = BlockPos.ZERO;
-    public ResourceLocation blockRegistryName = Blocks.AIR.getRegistryName();
     public TileEntity tileEntity;
     public Entity entity;
     public CompoundNBT serverData = null;
     public long timeLastUpdate = System.currentTimeMillis();
-    public double partialFrame;
-    public ItemStack stack = ItemStack.EMPTY;
+    public ItemStack pickedResult = ItemStack.EMPTY;
     public boolean serverConnected;
+    public TooltipPosition tooltipPosition;
 
     public void set(World world, PlayerEntity player, RayTraceResult hit) {
-        this.set(world, player, hit, null, 0.0);
-    }
-
-    public void set(World world, PlayerEntity player, RayTraceResult hit, Entity viewEntity, double partialTicks) {
         this.world = world;
         this.player = player;
         this.hitResult = hit;
@@ -49,7 +43,6 @@ public class DataAccessor implements ICommonAccessor, IDataAccessor, IEntityAcce
         if (this.hitResult.getType() == RayTraceResult.Type.BLOCK) {
             this.pos = ((BlockRayTraceResult) this.hitResult).getPos();
             this.state = this.world.getBlockState(this.pos);
-            this.block = this.state.getBlock();
             TileEntity tileEntity = this.world.getTileEntity(this.pos);
             if (this.tileEntity != tileEntity) {
                 this.tileEntity = tileEntity;
@@ -57,8 +50,7 @@ public class DataAccessor implements ICommonAccessor, IDataAccessor, IEntityAcce
                 this.timeLastUpdate = System.currentTimeMillis() - MetaDataProvider.rateLimiter;
             }
             this.entity = null;
-            this.blockRegistryName = block.getRegistryName();
-            this.stack = block.getPickBlock(state, hitResult, world, pos, player);
+            this.pickedResult = state.getPickBlock(hitResult, world, pos, player);
         } else if (this.hitResult.getType() == RayTraceResult.Type.ENTITY) {
             Entity entity = ((EntityRayTraceResult) this.hitResult).getEntity();
             if (this.entity != entity) {
@@ -68,17 +60,8 @@ public class DataAccessor implements ICommonAccessor, IDataAccessor, IEntityAcce
             }
             this.pos = new BlockPos(entity.getPositionVec());
             this.state = Blocks.AIR.getDefaultState();
-            this.block = Blocks.AIR;
             this.tileEntity = null;
-            this.stack = ItemStack.EMPTY;
-        }
-
-        if (viewEntity != null) {
-            double px = viewEntity.prevPosX + (viewEntity.getPositionVec().x - viewEntity.prevPosX) * partialTicks;
-            double py = viewEntity.prevPosY + (viewEntity.getPositionVec().y - viewEntity.prevPosY) * partialTicks;
-            double pz = viewEntity.prevPosZ + (viewEntity.getPositionVec().z - viewEntity.prevPosZ) * partialTicks;
-            this.renderingvec = new Vector3d(this.pos.getX() - px, this.pos.getY() - py, this.pos.getZ() - pz);
-            this.partialFrame = partialTicks;
+            this.pickedResult = entity.getPickedResult(hit);
         }
     }
 
@@ -94,7 +77,7 @@ public class DataAccessor implements ICommonAccessor, IDataAccessor, IEntityAcce
 
     @Override
     public Block getBlock() {
-        return this.block;
+        return this.state.getBlock();
     }
 
     @Override
@@ -120,11 +103,6 @@ public class DataAccessor implements ICommonAccessor, IDataAccessor, IEntityAcce
     @Override
     public RayTraceResult getHitResult() {
         return this.hitResult;
-    }
-
-    @Override
-    public Vector3d getRenderingPosition() {
-        return this.renderingvec;
     }
 
     @Override
@@ -184,18 +162,13 @@ public class DataAccessor implements ICommonAccessor, IDataAccessor, IEntityAcce
     }
 
     @Override
-    public double getPartialFrame() {
-        return this.partialFrame;
-    }
-
-    @Override
     public Direction getSide() {
         return hitResult == null ? null : hitResult.getType() == RayTraceResult.Type.ENTITY ? null : ((BlockRayTraceResult) this.hitResult).getFace();
     }
 
     @Override
-    public ItemStack getStack() {
-        return this.stack;
+    public ItemStack getPickedResult() {
+        return this.pickedResult;
     }
 
     public boolean isTimeElapsed(long time) {
@@ -207,7 +180,13 @@ public class DataAccessor implements ICommonAccessor, IDataAccessor, IEntityAcce
     }
 
     @Override
-    public ResourceLocation getBlockId() {
-        return blockRegistryName;
+    public TooltipPosition getTooltipPosition() {
+        return tooltipPosition;
     }
+
+    @Override
+    public boolean isServerConnected() {
+        return serverConnected;
+    }
+
 }

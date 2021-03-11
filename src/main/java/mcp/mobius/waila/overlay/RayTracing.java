@@ -1,6 +1,11 @@
 package mcp.mobius.waila.overlay;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Predicate;
+
 import com.google.common.collect.Lists;
+
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IEntityComponentProvider;
@@ -13,16 +18,15 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.ProjectileHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.EntityRayTraceResult;
+import net.minecraft.util.math.RayTraceContext;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.RayTraceResult.Type;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.function.Predicate;
 
 public class RayTracing {
 
@@ -51,7 +55,7 @@ public class RayTracing {
     }
 
     public ItemStack getTargetStack() {
-        return target != null && target.getType() == RayTraceResult.Type.BLOCK ? getIdentifierStack() : ItemStack.EMPTY;
+        return target != null && target.getType() != RayTraceResult.Type.MISS ? getIdentifierStack() : ItemStack.EMPTY;
     }
 
     public Entity getTargetEntity() {
@@ -87,7 +91,7 @@ public class RayTracing {
 
         RayTraceContext.FluidMode fluidView = Waila.CONFIG.get().getGeneral().getDisplayFluids();
         RayTraceContext context = new RayTraceContext(eyePosition, traceEnd, RayTraceContext.BlockMode.OUTLINE, fluidView, entity);
-        
+
         return world.rayTraceBlocks(context);
     }
 
@@ -107,12 +111,9 @@ public class RayTracing {
         List<Entity> entities = Lists.newArrayList();
 
         Entity entity = ((EntityRayTraceResult) target).getEntity();
-        if (WailaRegistrar.INSTANCE.hasOverrideEntityProviders(entity)) {
-            Collection<List<IEntityComponentProvider>> overrideProviders = WailaRegistrar.INSTANCE.getOverrideEntityProviders(entity).values();
-            for (List<IEntityComponentProvider> providers : overrideProviders)
-                for (IEntityComponentProvider provider : providers)
-                    entities.add(provider.getOverride(DataAccessor.INSTANCE, PluginConfig.INSTANCE));
-        }
+        List<IEntityComponentProvider> providers = WailaRegistrar.INSTANCE.getOverrideEntityProviders(entity);
+        for (IEntityComponentProvider provider : providers)
+            entities.add(provider.getOverride(DataAccessor.INSTANCE, PluginConfig.INSTANCE));
 
         return entities.size() > 0 ? entities.get(0) : entity;
     }
@@ -124,62 +125,52 @@ public class RayTracing {
             return items;
 
         switch (this.target.getType()) {
-            case ENTITY: {
-                if (WailaRegistrar.INSTANCE.hasStackEntityProviders(((EntityRayTraceResult) target).getEntity())) {
-                    Collection<List<IEntityComponentProvider>> providers = WailaRegistrar.INSTANCE.getStackEntityProviders(((EntityRayTraceResult) target).getEntity()).values();
-                    for (List<IEntityComponentProvider> providersList : providers) {
-                        for (IEntityComponentProvider provider : providersList) {
-                            ItemStack providerStack = provider.getDisplayItem(DataAccessor.INSTANCE, PluginConfig.INSTANCE);
-                            if (providerStack.isEmpty())
-                                continue;
-
-                            items.add(providerStack);
-                        }
-                    }
-                }
-                break;
+        case ENTITY: {
+            List<IEntityComponentProvider> providers = WailaRegistrar.INSTANCE.getEntityStackProviders(((EntityRayTraceResult) target).getEntity());
+            for (IEntityComponentProvider provider : providers) {
+                ItemStack providerStack = provider.getDisplayItem(DataAccessor.INSTANCE, PluginConfig.INSTANCE);
+                if (providerStack.isEmpty())
+                    continue;
+                items.add(providerStack);
             }
-            case BLOCK: {
-                World world = mc.world;
-                BlockPos pos = ((BlockRayTraceResult) target).getPos();
-                BlockState state = world.getBlockState(pos);
-                if (state.isAir(world, pos))
-                    return items;
+            break;
+        }
+        case BLOCK: {
+            World world = mc.world;
+            BlockPos pos = ((BlockRayTraceResult) target).getPos();
+            BlockState state = world.getBlockState(pos);
+            if (state.getBlock().isAir(state, world, pos))
+                return items;
 
-                TileEntity tile = world.getTileEntity(pos);
+            handleStackProviders(items, WailaRegistrar.INSTANCE.getBlockStackProviders(state.getBlock()));
 
-                if (WailaRegistrar.INSTANCE.hasStackProviders(state.getBlock()))
-                    handleStackProviders(items, WailaRegistrar.INSTANCE.getStackProviders(state.getBlock()).values());
+            if (!items.isEmpty())
+                return items;
 
-                if (tile != null && WailaRegistrar.INSTANCE.hasStackProviders(tile))
-                    handleStackProviders(items, WailaRegistrar.INSTANCE.getStackProviders(tile).values());
+            ItemStack pick = state.getBlock().getPickBlock(state, target, world, pos, mc.player);
+            if (!pick.isEmpty())
+                return Collections.singletonList(pick);
 
-                if (!items.isEmpty())
-                    return items;
+            if (items.isEmpty() && state.getBlock().asItem() != Items.AIR)
+                items.add(new ItemStack(state.getBlock()));
 
-                ItemStack pick = state.getBlock().getPickBlock(state, target, world, pos, mc.player);
-                if (!pick.isEmpty())
-                    return Collections.singletonList(pick);
-
-                if (items.isEmpty() && state.getBlock().asItem() != Items.AIR)
-                    items.add(new ItemStack(state.getBlock()));
-
-                break;
-            }
+            break;
+        }
+        default:
+            break;
         }
 
         return items;
+
     }
 
-    private void handleStackProviders(List<ItemStack> items, Collection<List<IComponentProvider>> providers) {
-        for (List<IComponentProvider> providersList : providers) {
-            for (IComponentProvider provider : providersList) {
-                ItemStack providerStack = provider.getStack(DataAccessor.INSTANCE, PluginConfig.INSTANCE);
-                if (providerStack.isEmpty())
-                    continue;
+    private void handleStackProviders(List<ItemStack> items, List<IComponentProvider> providers) {
+        for (IComponentProvider provider : providers) {
+            ItemStack providerStack = provider.getStack(DataAccessor.INSTANCE, PluginConfig.INSTANCE);
+            if (providerStack.isEmpty())
+                continue;
 
-                items.add(providerStack);
-            }
+            items.add(providerStack);
         }
     }
 }

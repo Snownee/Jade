@@ -2,7 +2,6 @@ package snownee.jade.client;
 
 import java.awt.Rectangle;
 
-import mcp.mobius.waila.api.RenderContext;
 import mcp.mobius.waila.api.event.WailaRenderEvent;
 import mcp.mobius.waila.api.impl.config.PluginConfig;
 import net.minecraft.block.BlockState;
@@ -48,7 +47,7 @@ public final class ClientHandler {
         float progress = state.getPlayerRelativeBlockHardness(mc.player, mc.player.world, playerController.currentBlock);
         progress = playerController.curBlockDamageMP + mc.getRenderPartialTicks() * progress;
         progress = MathHelper.clamp(progress, 0, 1);
-        AbstractGui.fill(RenderContext.matrixStack, rect.x + 1, rect.y + rect.height, rect.x + 1 + (int) (rect.width * progress), rect.y + rect.height + 1, color);
+        AbstractGui.fill(event.getMatrixStack(), rect.x + 1, rect.y + rect.height, rect.x + 1 + (int) (rect.width * progress), rect.y + rect.height + 1, color);
     }
 
 }

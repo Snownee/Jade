@@ -14,9 +14,9 @@ import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.Set;
 
-public class GuiConfigPlugins extends GuiOptions {
+public class PluginsConfigScreen extends GuiOptions {
 
-    public GuiConfigPlugins(Screen parent) {
+    public PluginsConfigScreen(Screen parent) {
         super(parent, new TranslationTextComponent("gui.waila.plugin_settings"), PluginConfig.INSTANCE::save, PluginConfig.INSTANCE::reload);
     }
 
@@ -27,7 +27,7 @@ public class GuiConfigPlugins extends GuiOptions {
             String translationKey = "config.waila.plugin_" + namespace;
             Set<ResourceLocation> keys = PluginConfig.INSTANCE.getKeys(namespace);
             options.add(new OptionsEntryButton(translationKey, new Button(0, 0, 100, 20, new StringTextComponent(""), w -> {
-                minecraft.displayGuiScreen(new GuiOptions(GuiConfigPlugins.this, new TranslationTextComponent(translationKey)) {
+                minecraft.displayGuiScreen(new GuiOptions(PluginsConfigScreen.this, new TranslationTextComponent(translationKey)) {
                     @Override
                     public OptionsListWidget getOptions() {
                         OptionsListWidget options = new OptionsListWidget(this, minecraft, width + 45, height, 32, height - 32, 30);

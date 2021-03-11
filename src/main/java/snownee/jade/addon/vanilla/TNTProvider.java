@@ -1,13 +1,11 @@
 package snownee.jade.addon.vanilla;
 
-import java.util.List;
-
 import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IDataAccessor;
 import mcp.mobius.waila.api.IPluginConfig;
+import mcp.mobius.waila.api.ITooltip;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.TNTBlock;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import snownee.jade.JadePlugin;
@@ -17,7 +15,7 @@ public class TNTProvider implements IComponentProvider {
     public static final TNTProvider INSTANCE = new TNTProvider();
 
     @Override
-    public void appendBody(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {
+    public void append(ITooltip tooltip, IDataAccessor accessor, IPluginConfig config) {
         if (!config.get(JadePlugin.TNT_STABILITY)) {
             return;
         }

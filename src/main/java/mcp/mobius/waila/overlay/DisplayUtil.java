@@ -4,7 +4,6 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 
-import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.utils.WailaExceptionHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
@@ -77,7 +76,7 @@ public class DisplayUtil {
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.translatef((float) x, (float) y, 100.0F + renderer.zLevel);
+        RenderSystem.translatef(x, y, 100.0F + renderer.zLevel);
         RenderSystem.translatef(8.0F * scale, 8.0F * scale, 0.0F);
         RenderSystem.scalef(scale, -scale, scale);
         RenderSystem.scalef(16.0F, 16.0F, 16.0F);

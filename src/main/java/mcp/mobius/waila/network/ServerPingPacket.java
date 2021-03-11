@@ -1,7 +1,14 @@
 package mcp.mobius.waila.network;
 
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Supplier;
+
+import javax.annotation.Nullable;
+
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
+
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.impl.DataAccessor;
 import mcp.mobius.waila.api.impl.config.ConfigEntry;
@@ -10,41 +17,34 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkEvent;
 
-import javax.annotation.Nullable;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Supplier;
-
-public class MessageServerPing {
+public class ServerPingPacket {
 
     public Map<ResourceLocation, Boolean> forcedKeys = Maps.newHashMap();
 
-    public MessageServerPing(@Nullable Map<ResourceLocation, Boolean> forcedKeys) {
+    public ServerPingPacket(@Nullable Map<ResourceLocation, Boolean> forcedKeys) {
         this.forcedKeys = forcedKeys;
     }
 
-    public MessageServerPing(PluginConfig config) {
+    public ServerPingPacket(PluginConfig config) {
         Set<ConfigEntry> entries = config.getSyncableConfigs();
         entries.forEach(e -> forcedKeys.put(e.getId(), e.getValue()));
     }
 
-    public static MessageServerPing read(PacketBuffer buffer) {
+    public static ServerPingPacket read(PacketBuffer buffer) {
         int size = buffer.readInt();
         Map<ResourceLocation, Boolean> temp = Maps.newHashMap();
         for (int i = 0; i < size; i++) {
-            int idLength = buffer.readInt();
-            ResourceLocation id = new ResourceLocation(buffer.readString(idLength));
+            ResourceLocation id = new ResourceLocation(buffer.readString(128));
             boolean value = buffer.readBoolean();
             temp.put(id, value);
         }
 
-        return new MessageServerPing(temp);
+        return new ServerPingPacket(temp);
     }
 
-    public static void write(MessageServerPing message, PacketBuffer buffer) {
+    public static void write(ServerPingPacket message, PacketBuffer buffer) {
         buffer.writeInt(message.forcedKeys.size());
         message.forcedKeys.forEach((k, v) -> {
-            buffer.writeInt(k.toString().length());
             buffer.writeString(k.toString());
             buffer.writeBoolean(v);
         });
@@ -52,7 +52,7 @@ public class MessageServerPing {
 
     public static class Handler {
 
-        public static void onMessage(MessageServerPing message, Supplier<NetworkEvent.Context> context) {
+        public static void onMessage(ServerPingPacket message, Supplier<NetworkEvent.Context> context) {
             context.get().enqueueWork(() -> {
                 DataAccessor.INSTANCE.serverConnected = true;
                 message.forcedKeys.forEach(PluginConfig.INSTANCE::set);

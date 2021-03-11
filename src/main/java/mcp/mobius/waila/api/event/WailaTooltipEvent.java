@@ -1,10 +1,8 @@
 package mcp.mobius.waila.api.event;
 
-import mcp.mobius.waila.api.ICommonAccessor;
-import net.minecraft.util.text.ITextComponent;
+import mcp.mobius.waila.api.IAccessor;
+import mcp.mobius.waila.api.impl.Tooltip;
 import net.minecraftforge.eventbus.api.Event;
-
-import java.util.List;
 
 /**
  * This event is fired just before the Waila tooltip sizes are calculated. This is the last chance to make edits to
@@ -16,19 +14,19 @@ import java.util.List;
  */
 public class WailaTooltipEvent extends Event {
 
-    private final List<ITextComponent> currentTip;
-    private final ICommonAccessor accessor;
+    private final Tooltip currentTip;
+    private final IAccessor accessor;
 
-    public WailaTooltipEvent(List<ITextComponent> currentTip, ICommonAccessor accessor) {
+    public WailaTooltipEvent(Tooltip currentTip, IAccessor accessor) {
         this.currentTip = currentTip;
         this.accessor = accessor;
     }
 
-    public List<ITextComponent> getCurrentTip() {
+    public Tooltip getTooltip() {
         return currentTip;
     }
 
-    public ICommonAccessor getAccessor() {
+    public IAccessor getAccessor() {
         return accessor;
     }
 }

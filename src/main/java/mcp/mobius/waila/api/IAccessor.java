@@ -1,15 +1,11 @@
 package mcp.mobius.waila.api;
 
-import net.minecraft.block.Block;
-import net.minecraft.entity.Entity;
+import javax.annotation.Nullable;
+
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 
 /**
@@ -18,29 +14,20 @@ import net.minecraft.world.World;
  * Common accessor for both Entity and Block/TileEntity.<br>
  * Available data depends on what it is called upon (ie : getEntity() will return null if looking at a block, etc).<br>
  */
-public interface ICommonAccessor {
+public interface IAccessor {
 
     World getWorld();
 
     PlayerEntity getPlayer();
 
-    Block getBlock();
-
-    ResourceLocation getBlockId();
-
-    TileEntity getTileEntity();
-
-    Entity getEntity();
-
-    BlockPos getPosition();
-
-    Vector3d getRenderingPosition();
-
     CompoundNBT getServerData();
 
-    double getPartialFrame();
+    ItemStack getPickedResult();
 
-    Direction getSide();
+    RayTraceResult getHitResult();
 
-    ItemStack getStack();
+    @Nullable
+    TooltipPosition getTooltipPosition();
+
+    boolean isServerConnected();
 }
