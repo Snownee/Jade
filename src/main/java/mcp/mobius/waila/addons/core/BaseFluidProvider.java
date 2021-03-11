@@ -16,9 +16,9 @@ import net.minecraft.util.text.TextFormatting;
 
 import java.util.List;
 
-public class HUDHandlerFluids implements IComponentProvider {
+public class BaseFluidProvider implements IComponentProvider {
 
-    static final IComponentProvider INSTANCE = new HUDHandlerFluids();
+    static final IComponentProvider INSTANCE = new BaseFluidProvider();
 
     @Override
     public ItemStack getStack(IDataAccessor accessor, IPluginConfig config) {
@@ -32,8 +32,8 @@ public class HUDHandlerFluids implements IComponentProvider {
 
     @Override
     public void appendHead(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {
-        ((ITaggableList<ResourceLocation, ITextComponent>) tooltip).setTag(HUDHandlerBlocks.OBJECT_NAME_TAG, new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getFluidName(), I18n.format(accessor.getBlock().getTranslationKey()))));
-        if (config.get(PluginCore.CONFIG_SHOW_REGISTRY))
-            ((ITaggableList<ResourceLocation, ITextComponent>) tooltip).setTag(HUDHandlerBlocks.REGISTRY_NAME_TAG, new StringTextComponent(accessor.getBlock().getRegistryName().toString()).mergeStyle(TextFormatting.GRAY));
+        ((ITaggableList<ResourceLocation, ITextComponent>) tooltip).setTag(BaseBlockProvider.OBJECT_NAME_TAG, new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getFluidName(), I18n.format(accessor.getBlock().getTranslationKey()))));
+        if (config.get(CorePlugin.CONFIG_SHOW_REGISTRY))
+            ((ITaggableList<ResourceLocation, ITextComponent>) tooltip).setTag(BaseBlockProvider.REGISTRY_NAME_TAG, new StringTextComponent(accessor.getBlock().getRegistryName().toString()).mergeStyle(TextFormatting.GRAY));
     }
 }

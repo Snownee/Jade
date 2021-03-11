@@ -14,13 +14,13 @@ import net.minecraftforge.common.util.Constants;
 
 import java.util.List;
 
-public class HUDHandlerFurnace implements IComponentProvider, IServerDataProvider<TileEntity> {
+public class FurnaceProvider implements IComponentProvider, IServerDataProvider<TileEntity> {
 
-    static final HUDHandlerFurnace INSTANCE = new HUDHandlerFurnace();
+    static final FurnaceProvider INSTANCE = new FurnaceProvider();
 
     @Override
     public void appendBody(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {
-        if (!config.get(PluginMinecraft.CONFIG_DISPLAY_FURNACE))
+        if (!config.get(MinecraftPlugin.CONFIG_DISPLAY_FURNACE))
             return;
 
         int progressInt = accessor.getServerData().getInt("progress");
@@ -36,7 +36,7 @@ public class HUDHandlerFurnace implements IComponentProvider, IServerDataProvide
         progress.putInt("progress", progressInt);
         progress.putInt("total", accessor.getServerData().getInt("total"));
 
-        RenderableTextComponent renderables = new RenderableTextComponent(getRenderable(inventory.get(0)), getRenderable(inventory.get(1)), new RenderableTextComponent(PluginMinecraft.RENDER_FURNACE_PROGRESS, progress), getRenderable(inventory.get(2)));
+        RenderableTextComponent renderables = new RenderableTextComponent(getRenderable(inventory.get(0)), getRenderable(inventory.get(1)), new RenderableTextComponent(MinecraftPlugin.RENDER_FURNACE_PROGRESS, progress), getRenderable(inventory.get(2)));
 
         tooltip.add(renderables);
     }
@@ -61,11 +61,11 @@ public class HUDHandlerFurnace implements IComponentProvider, IServerDataProvide
             tag.putInt("count", stack.getCount());
             if (stack.hasTag())
                 tag.putString("nbt", stack.getTag().toString());
-            return new RenderableTextComponent(PluginMinecraft.RENDER_ITEM, tag);
+            return new RenderableTextComponent(MinecraftPlugin.RENDER_ITEM, tag);
         } else {
             CompoundNBT spacerTag = new CompoundNBT();
             spacerTag.putInt("width", 18);
-            return new RenderableTextComponent(PluginMinecraft.RENDER_SPACER, spacerTag);
+            return new RenderableTextComponent(MinecraftPlugin.RENDER_SPACER, spacerTag);
         }
     }
 }

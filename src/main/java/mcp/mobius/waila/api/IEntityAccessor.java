@@ -27,7 +27,7 @@ public interface IEntityAccessor {
 
     Vector3d getRenderingPosition();
 
-     CompoundNBT getServerData();
+    CompoundNBT getServerData();
 
     double getPartialFrame();
 }

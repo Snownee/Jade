@@ -11,7 +11,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.WailaClient;
-import mcp.mobius.waila.addons.core.PluginCore;
+import mcp.mobius.waila.addons.core.CorePlugin;
 import mcp.mobius.waila.api.RenderContext;
 import mcp.mobius.waila.api.event.WailaRenderEvent;
 import mcp.mobius.waila.api.impl.DataAccessor;
@@ -65,7 +65,7 @@ public class OverlayRenderer {
         if (RayTracing.INSTANCE.getTarget().getType() == RayTraceResult.Type.BLOCK)
             renderOverlay(WailaTickHandler.instance().tooltip, new MatrixStack());
 
-        if (RayTracing.INSTANCE.getTarget().getType() == RayTraceResult.Type.ENTITY && PluginConfig.INSTANCE.get(PluginCore.CONFIG_SHOW_ENTITY))
+        if (RayTracing.INSTANCE.getTarget().getType() == RayTraceResult.Type.ENTITY && PluginConfig.INSTANCE.get(CorePlugin.CONFIG_SHOW_ENTITY))
             renderOverlay(WailaTickHandler.instance().tooltip, new MatrixStack());
     }
 

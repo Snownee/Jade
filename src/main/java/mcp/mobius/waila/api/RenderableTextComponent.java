@@ -5,7 +5,7 @@ import java.util.List;
 import com.google.common.collect.Lists;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
-import mcp.mobius.waila.addons.core.PluginCore;
+import mcp.mobius.waila.addons.core.CorePlugin;
 import mcp.mobius.waila.api.impl.WailaRegistrar;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.JsonToNBT;
@@ -99,7 +99,7 @@ public class RenderableTextComponent extends StringTextComponent {
         CompoundNBT data = new CompoundNBT();
         data.putString("text", ITextComponent.Serializer.toJson(component));
         CompoundNBT renderData = new CompoundNBT();
-        renderData.putString("id", PluginCore.RENDER_TEXT.toString());
+        renderData.putString("id", CorePlugin.RENDER_TEXT.toString());
         renderData.put("data", data);
         return renderData.toString();
     }

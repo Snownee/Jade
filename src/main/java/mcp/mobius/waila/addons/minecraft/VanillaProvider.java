@@ -32,15 +32,15 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.registries.ForgeRegistries;
 
-public class HUDHandlerVanilla implements IComponentProvider, IServerDataProvider<TileEntity> {
+public class VanillaProvider implements IComponentProvider, IServerDataProvider<TileEntity> {
 
-    static final HUDHandlerVanilla INSTANCE = new HUDHandlerVanilla();
+    static final VanillaProvider INSTANCE = new VanillaProvider();
 
     static final ResourceLocation OBJECT_NAME_TAG = new ResourceLocation(Waila.MODID, "object_name");
 
     @Override
     public ItemStack getStack(IDataAccessor accessor, IPluginConfig config) {
-        if (config.get(PluginMinecraft.CONFIG_HIDE_SILVERFISH) && accessor.getBlock() instanceof SilverfishBlock)
+        if (config.get(MinecraftPlugin.CONFIG_HIDE_SILVERFISH) && accessor.getBlock() instanceof SilverfishBlock)
             return new ItemStack(((SilverfishBlock) accessor.getBlock()).getMimickedBlock().asItem());
 
         if (accessor.getBlock() == Blocks.WHEAT)
@@ -54,10 +54,10 @@ public class HUDHandlerVanilla implements IComponentProvider, IServerDataProvide
 
     @Override
     public void appendHead(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {
-        if (config.get(PluginMinecraft.CONFIG_HIDE_SILVERFISH) && accessor.getBlock() instanceof SilverfishBlock)
+        if (config.get(MinecraftPlugin.CONFIG_HIDE_SILVERFISH) && accessor.getBlock() instanceof SilverfishBlock)
             ((ITaggableList<ResourceLocation, ITextComponent>) tooltip).setTag(OBJECT_NAME_TAG, new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getBlockName(), accessor.getStack().getDisplayName().getString())));
 
-        if (accessor.getBlock() == Blocks.SPAWNER && config.get(PluginMinecraft.CONFIG_SPAWNER_TYPE)) {
+        if (accessor.getBlock() == Blocks.SPAWNER && config.get(MinecraftPlugin.CONFIG_SPAWNER_TYPE)) {
             MobSpawnerTileEntity spawner = (MobSpawnerTileEntity) accessor.getTileEntity();
             ((ITaggableList<ResourceLocation, ITextComponent>) tooltip).setTag(OBJECT_NAME_TAG, new TranslationTextComponent(accessor.getBlock().getTranslationKey()).appendString(" (").appendSibling(spawner.getSpawnerBaseLogic().getCachedEntity().getDisplayName()).appendString(")"));
         }
@@ -65,7 +65,7 @@ public class HUDHandlerVanilla implements IComponentProvider, IServerDataProvide
 
     @Override
     public void appendBody(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {
-        if (config.get(PluginMinecraft.CONFIG_CROP_PROGRESS)) {
+        if (config.get(MinecraftPlugin.CONFIG_CROP_PROGRESS)) {
             if (accessor.getBlock() instanceof CropsBlock) {
                 CropsBlock crop = (CropsBlock) accessor.getBlock();
                 addMaturityTooltip(tooltip, accessor.getBlockState().get(crop.getAgeProperty()) / (float) crop.getMaxAge());
@@ -76,30 +76,30 @@ public class HUDHandlerVanilla implements IComponentProvider, IServerDataProvide
             }
         }
 
-        if (config.get(PluginMinecraft.CONFIG_LEVER) && accessor.getBlock() instanceof LeverBlock) {
+        if (config.get(MinecraftPlugin.CONFIG_LEVER) && accessor.getBlock() instanceof LeverBlock) {
             boolean active = accessor.getBlockState().get(BlockStateProperties.POWERED);
             tooltip.add(new TranslationTextComponent("tooltip.waila.state", new TranslationTextComponent("tooltip.waila.state_" + (active ? "on" : "off"))));
             return;
         }
 
-        if (config.get(PluginMinecraft.CONFIG_REPEATER) && accessor.getBlock() == Blocks.REPEATER) {
+        if (config.get(MinecraftPlugin.CONFIG_REPEATER) && accessor.getBlock() == Blocks.REPEATER) {
             int delay = accessor.getBlockState().get(BlockStateProperties.DELAY_1_4);
             tooltip.add(new TranslationTextComponent("tooltip.waila.delay", TextFormatting.WHITE.toString() + delay));
             return;
         }
 
-        if (config.get(PluginMinecraft.CONFIG_COMPARATOR) && accessor.getBlock() == Blocks.COMPARATOR) {
+        if (config.get(MinecraftPlugin.CONFIG_COMPARATOR) && accessor.getBlock() == Blocks.COMPARATOR) {
             ComparatorMode mode = accessor.getBlockState().get(BlockStateProperties.COMPARATOR_MODE);
             tooltip.add(new TranslationTextComponent("tooltip.waila.mode", new TranslationTextComponent("tooltip.waila.mode_" + (mode == ComparatorMode.COMPARE ? "comparator" : "subtractor"))));
             return;
         }
 
-        if (config.get(PluginMinecraft.CONFIG_REDSTONE) && accessor.getBlock() == Blocks.REDSTONE_WIRE) {
+        if (config.get(MinecraftPlugin.CONFIG_REDSTONE) && accessor.getBlock() == Blocks.REDSTONE_WIRE) {
             tooltip.add(new TranslationTextComponent("tooltip.waila.power", TextFormatting.WHITE.toString() + accessor.getBlockState().get(BlockStateProperties.POWER_0_15)));
             return;
         }
 
-        if (config.get(PluginMinecraft.CONFIG_JUKEBOX) && accessor.getBlock() == Blocks.JUKEBOX) {
+        if (config.get(MinecraftPlugin.CONFIG_JUKEBOX) && accessor.getBlock() == Blocks.JUKEBOX) {
             if (accessor.getBlockState().get(JukeboxBlock.HAS_RECORD) && accessor.getServerData().contains("record")) {
                 try {
                     Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(accessor.getServerData().getString("record")));

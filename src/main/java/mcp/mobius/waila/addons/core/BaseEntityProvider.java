@@ -5,33 +5,35 @@ import mcp.mobius.waila.api.*;
 import mcp.mobius.waila.utils.ModIdentification;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.*;
 import snownee.jade.Jade;
 import snownee.jade.JadePlugin;
 import snownee.jade.Renderables;
+import snownee.jade.addon.vanilla.MiscEntityNameProvider;
 
 import java.util.List;
 
-public class HUDHandlerEntities implements IEntityComponentProvider {
+public class BaseEntityProvider implements IEntityComponentProvider {
 
-    static final IEntityComponentProvider INSTANCE = new HUDHandlerEntities();
+    static final IEntityComponentProvider INSTANCE = new BaseEntityProvider();
 
     @Override
     public void appendHead(List<ITextComponent> tooltip, IEntityAccessor accessor, IPluginConfig config) {
-        ((ITaggableList<ResourceLocation, ITextComponent>) tooltip).setTag(HUDHandlerBlocks.OBJECT_NAME_TAG, new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getEntityName(), accessor.getEntity().getDisplayName().getString())));
-        if (config.get(PluginCore.CONFIG_SHOW_REGISTRY))
-            ((ITaggableList<ResourceLocation, ITextComponent>) tooltip).setTag(HUDHandlerBlocks.REGISTRY_NAME_TAG, new StringTextComponent(accessor.getEntity().getType().getRegistryName().toString()).mergeStyle(TextFormatting.GRAY));
+        ((ITaggableList<ResourceLocation, ITextComponent>) tooltip).setTag(BaseBlockProvider.OBJECT_NAME_TAG, new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getEntityName(), accessor.getEntity().getDisplayName().getString())));
+        if (config.get(CorePlugin.CONFIG_SHOW_REGISTRY))
+            ((ITaggableList<ResourceLocation, ITextComponent>) tooltip).setTag(BaseBlockProvider.REGISTRY_NAME_TAG, new StringTextComponent(accessor.getEntity().getType().getRegistryName().toString()).mergeStyle(TextFormatting.GRAY));
     }
 
     @Override
     public void appendBody(List<ITextComponent> tooltip, IEntityAccessor accessor, IPluginConfig config) {
         if (!(accessor.getEntity() instanceof LivingEntity))
             return;
-        if (config.get(PluginCore.CONFIG_SHOW_ENTITY_HEALTH))
+        if (config.get(CorePlugin.CONFIG_SHOW_ENTITY_HEALTH))
             appendHealth((LivingEntity) accessor.getEntity(), tooltip);
-        if (config.get(PluginCore.CONFIG_SHOW_ENTITY_HEALTH))
+        if (config.get(CorePlugin.CONFIG_SHOW_ENTITY_HEALTH))
             appendArmor((LivingEntity) accessor.getEntity(), tooltip);
     }
 
@@ -50,14 +52,14 @@ public class HUDHandlerEntities implements IEntityComponentProvider {
             CompoundNBT healthData = new CompoundNBT();
             healthData.putFloat("health", 1);
             healthData.putFloat("max", 1);
-            RenderableTextComponent icon = new RenderableTextComponent(PluginCore.RENDER_ENTITY_HEALTH, healthData);
+            RenderableTextComponent icon = new RenderableTextComponent(CorePlugin.RENDER_ENTITY_HEALTH, healthData);
             RenderableTextComponent text = Renderables.offsetText(String.format("%s/%s", Jade.dfCommas.format(health), Jade.dfCommas.format(maxHealth)), 5, 0);
             tooltip.add(Renderables.of(icon, text));
         } else {
             CompoundNBT healthData = new CompoundNBT();
             healthData.putFloat("health", health * 0.5F);
             healthData.putFloat("max", maxHealth * 0.5F);
-            tooltip.add(new RenderableTextComponent(PluginCore.RENDER_ENTITY_HEALTH, healthData));
+            tooltip.add(new RenderableTextComponent(CorePlugin.RENDER_ENTITY_HEALTH, healthData));
         }
     }
 
@@ -68,13 +70,18 @@ public class HUDHandlerEntities implements IEntityComponentProvider {
         if (armor > Waila.CONFIG.get().getGeneral().getMaxHealthForRender()) {
             CompoundNBT armorData = new CompoundNBT();
             armorData.putFloat("armor", -1);
-            RenderableTextComponent icon = new RenderableTextComponent(PluginCore.RENDER_ENTITY_ARMOR, armorData);
+            RenderableTextComponent icon = new RenderableTextComponent(CorePlugin.RENDER_ENTITY_ARMOR, armorData);
             RenderableTextComponent text = Renderables.offsetText(Jade.dfCommas.format(armor), 5, 0);
             tooltip.add(Renderables.of(icon, text));
         } else {
             CompoundNBT armorData = new CompoundNBT();
             armorData.putFloat("armor", armor * 0.5F);
-            tooltip.add(new RenderableTextComponent(PluginCore.RENDER_ENTITY_ARMOR, armorData));
+            tooltip.add(new RenderableTextComponent(CorePlugin.RENDER_ENTITY_ARMOR, armorData));
         }
+    }
+
+    @Override
+    public ItemStack getDisplayItem(IEntityAccessor accessor, IPluginConfig config) {
+        return MiscEntityNameProvider.INSTANCE.getDisplayItem(accessor, config);
     }
 }

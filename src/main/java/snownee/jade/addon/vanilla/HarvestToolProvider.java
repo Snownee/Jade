@@ -18,7 +18,7 @@ import com.google.common.collect.Maps;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import mcp.mobius.waila.Waila;
-import mcp.mobius.waila.addons.core.HUDHandlerBlocks;
+import mcp.mobius.waila.addons.core.BaseBlockProvider;
 import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IDataAccessor;
 import mcp.mobius.waila.api.IPluginConfig;
@@ -133,9 +133,9 @@ public class HarvestToolProvider implements IComponentProvider, ISelectiveResour
             return;
         }
         ITaggableList<ResourceLocation, ITextComponent> taggableList = (ITaggableList<ResourceLocation, ITextComponent>) tooltip;
-        ITextComponent component = taggableList.getTag(HUDHandlerBlocks.OBJECT_NAME_TAG);
+        ITextComponent component = taggableList.getTag(BaseBlockProvider.OBJECT_NAME_TAG);
         if (component != null) {
-            taggableList.setTag(HUDHandlerBlocks.OBJECT_NAME_TAG, Renderables.of(component, text));
+            taggableList.setTag(BaseBlockProvider.OBJECT_NAME_TAG, Renderables.of(component, text));
         }
     }
 

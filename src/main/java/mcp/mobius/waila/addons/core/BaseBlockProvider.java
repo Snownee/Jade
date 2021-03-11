@@ -28,9 +28,9 @@ import net.minecraftforge.common.util.Constants;
 import snownee.jade.JadeCommonConfig;
 import snownee.jade.JadePlugin;
 
-public class HUDHandlerBlocks implements IComponentProvider, IServerDataProvider<TileEntity> {
+public class BaseBlockProvider implements IComponentProvider, IServerDataProvider<TileEntity> {
 
-    public static final HUDHandlerBlocks INSTANCE = new HUDHandlerBlocks();
+    public static final BaseBlockProvider INSTANCE = new BaseBlockProvider();
     public static final ResourceLocation OBJECT_NAME_TAG = new ResourceLocation(Waila.MODID, "object_name");
     public static final ResourceLocation REGISTRY_NAME_TAG = new ResourceLocation(Waila.MODID, "registry_name");
     public static final ResourceLocation MOD_NAME_TAG = new ResourceLocation(Waila.MODID, "mod_name");
@@ -58,13 +58,13 @@ public class HUDHandlerBlocks implements IComponentProvider, IServerDataProvider
             }
         }
         ((ITaggableList<ResourceLocation, ITextComponent>) tooltip).setTag(OBJECT_NAME_TAG, new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getBlockName(), name)));
-        if (config.get(PluginCore.CONFIG_SHOW_REGISTRY))
+        if (config.get(CorePlugin.CONFIG_SHOW_REGISTRY))
             ((ITaggableList<ResourceLocation, ITextComponent>) tooltip).setTag(REGISTRY_NAME_TAG, new StringTextComponent(accessor.getBlock().getRegistryName().toString()).mergeStyle(TextFormatting.GRAY));
     }
 
     @Override
     public void appendBody(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {
-        if (config.get(PluginCore.CONFIG_SHOW_STATES)) {
+        if (config.get(CorePlugin.CONFIG_SHOW_STATES)) {
             BlockState state = accessor.getBlockState();
             state.getProperties().forEach(p -> {
                 Comparable<?> value = state.get(p);
