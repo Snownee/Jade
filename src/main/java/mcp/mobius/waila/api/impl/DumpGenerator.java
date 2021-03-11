@@ -17,7 +17,6 @@ public class DumpGenerator {
         createSection(builder, "Body Providers", (Map<Class, List<Object>>) (Object) WailaRegistrar.INSTANCE.blockComponentProviders.get(TooltipPosition.BODY));
         createSection(builder, "Tail Providers", (Map<Class, List<Object>>) (Object) WailaRegistrar.INSTANCE.blockComponentProviders.get(TooltipPosition.TAIL));
         createSection(builder, "Data Providers", (Map<Class, List<Object>>) (Object) WailaRegistrar.INSTANCE.blockDataProviders);
-        createSection(builder, "Decorators", (Map<Class, List<Object>>) (Object) WailaRegistrar.INSTANCE.blockDecorators);
 
         builder.append("\n## Entity");
         createSection(builder, "Override Providers", (Map<Class, List<Object>>) (Object) WailaRegistrar.INSTANCE.entityOverrideProviders);

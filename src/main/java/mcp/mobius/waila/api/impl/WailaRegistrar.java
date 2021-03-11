@@ -24,7 +24,6 @@ public class WailaRegistrar implements IRegistrar {
     final EnumMap<TooltipPosition, Map<Class, List<IEntityComponentProvider>>> entityComponentProviders;
     final Map<Class, List<IServerDataProvider<Entity>>> entityDataProviders;
 
-    final Map<Class, List<IBlockDecorator>> blockDecorators;
     final Map<ResourceLocation, ITooltipRenderer> tooltipRenderers;
 
     WailaRegistrar() {
@@ -37,7 +36,6 @@ public class WailaRegistrar implements IRegistrar {
         entityComponentProviders = new EnumMap<>(TooltipPosition.class);
         entityDataProviders = Maps.newLinkedHashMap();
 
-        blockDecorators = Maps.newLinkedHashMap();
         tooltipRenderers = Maps.newLinkedHashMap();
 
         for (TooltipPosition position : TooltipPosition.values()) {
@@ -93,12 +91,6 @@ public class WailaRegistrar implements IRegistrar {
     @Override
     public void registerEntityDataProvider(IServerDataProvider<Entity> dataProvider, Class entity) {
         registerProvider(dataProvider, entity, entityDataProviders);
-    }
-
-    @Override
-    public void registerDecorator(IBlockDecorator decorator, Class block) {
-        List<IBlockDecorator> decorators = blockDecorators.computeIfAbsent(block, b -> Lists.newArrayList());
-        decorators.add(decorator);
     }
 
     @Override
@@ -163,10 +155,6 @@ public class WailaRegistrar implements IRegistrar {
         return getProviders(entity, entityDataProviders);
     }
 
-    public Map<Integer, List<IBlockDecorator>> getBlockDecorators(Object block) {
-        return getProviders(block, blockDecorators);
-    }
-
     public ITooltipRenderer getTooltipRenderer(ResourceLocation id) {
         ITooltipRenderer renderer = this.tooltipRenderers.get(id);
         if (renderer == null)
@@ -174,7 +162,7 @@ public class WailaRegistrar implements IRegistrar {
         return renderer;
     }
 
-    private  <T> Map<Integer, List<T>> getProviders(Object obj, Map<Class, List<T>> target) {
+    private <T> Map<Integer, List<T>> getProviders(Object obj, Map<Class, List<T>> target) {
         Map<Integer, List<T>> returnList = new TreeMap<>();
         Integer index = 0;
 
@@ -232,10 +220,6 @@ public class WailaRegistrar implements IRegistrar {
 
     public boolean hasNBTEntityProviders(Object entity) {
         return hasProviders(entity, entityDataProviders);
-    }
-
-    public boolean hasBlockDecorator(Object block) {
-        return hasProviders(block, blockDecorators);
     }
 
     private <T> boolean hasProviders(Object obj, Map<Class, List<T>> target) {

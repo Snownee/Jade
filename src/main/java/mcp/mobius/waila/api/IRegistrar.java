@@ -88,14 +88,6 @@ public interface IRegistrar {
     void registerEntityDataProvider(IServerDataProvider<Entity> dataProvider, Class entity);
 
     /**
-     * Registers an {@link IBlockDecorator} instance to allow rendering content in the world while looking at the block.
-     *
-     * @param decorator The decorator instance
-     * @param block The highest level class to apply to
-     */
-    void registerDecorator(IBlockDecorator decorator, Class block);
-
-    /**
      * Registers an {@link ITooltipRenderer} to allow passing a data string as a component to be rendered as a graphic
      * instead.
      *
