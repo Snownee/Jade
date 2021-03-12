@@ -12,7 +12,7 @@ import net.minecraft.tileentity.CommandBlockTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
-import snownee.jade.JadePlugin;
+import snownee.jade.VanillaPlugin;
 
 public class CommandBlockProvider implements IComponentProvider, IServerDataProvider<TileEntity> {
 
@@ -20,10 +20,10 @@ public class CommandBlockProvider implements IComponentProvider, IServerDataProv
 
     @Override
     public void append(ITooltip tooltip, IDataAccessor accessor, IPluginConfig config) {
-        if (!config.get(JadePlugin.COMMAND_BLOCK) || !accessor.getServerData().contains("Command")) {
+        if (!config.get(VanillaPlugin.COMMAND_BLOCK) || !accessor.getServerData().contains("Command")) {
             return;
         }
-        tooltip.add(new StringTextComponent(accessor.getServerData().getString("Command")));
+        tooltip.add(new StringTextComponent("> " + accessor.getServerData().getString("Command")));
     }
 
     @Override

@@ -1,8 +1,11 @@
 package mcp.mobius.waila.gui;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.impl.config.WailaConfig;
-import mcp.mobius.waila.gui.config.*;
+import mcp.mobius.waila.gui.config.OptionsEntryButton;
+import mcp.mobius.waila.gui.config.OptionsListWidget;
 import mcp.mobius.waila.gui.config.value.OptionsEntryValueBoolean;
 import mcp.mobius.waila.gui.config.value.OptionsEntryValueCycle;
 import mcp.mobius.waila.gui.config.value.OptionsEntryValueEnum;
@@ -14,7 +17,6 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.RayTraceContext.FluidMode;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
-import org.apache.commons.lang3.StringEscapeUtils;
 
 public class WailaConfigScreen extends GuiOptions {
 

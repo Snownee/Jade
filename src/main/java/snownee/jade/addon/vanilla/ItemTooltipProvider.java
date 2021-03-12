@@ -12,7 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import snownee.jade.JadePlugin;
+import snownee.jade.VanillaPlugin;
 
 public class ItemTooltipProvider implements IEntityComponentProvider {
     public static final ItemTooltipProvider INSTANCE = new ItemTooltipProvider();
@@ -20,7 +20,7 @@ public class ItemTooltipProvider implements IEntityComponentProvider {
     @Override
     @OnlyIn(Dist.CLIENT)
     public void append(ITooltip tooltip, IEntityAccessor accessor, IPluginConfig config) {
-        if (!config.get(JadePlugin.ITEM_TOOLTIP)) {
+        if (!config.get(VanillaPlugin.ITEM_TOOLTIP)) {
             return;
         }
         ItemStack stack = ((ItemEntity) accessor.getEntity()).getItem();

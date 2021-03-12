@@ -11,14 +11,12 @@ import mcp.mobius.waila.overlay.element.HealthElement;
 import mcp.mobius.waila.utils.ModIdentification;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.item.ItemFrameEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import snownee.jade.Jade;
-import snownee.jade.JadePlugin;
 
 public class BaseEntityProvider implements IEntityComponentProvider {
 
@@ -39,23 +37,23 @@ public class BaseEntityProvider implements IEntityComponentProvider {
     public void appendHead(ITooltip tooltip, IEntityAccessor accessor, IPluginConfig config) {
         String name = accessor.getEntity().getDisplayName().getString();
         tooltip.add(new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getEntityName(), name)), CorePlugin.TAG_OBJECT_NAME);
-        if (config.get(CorePlugin.CONFIG_SHOW_REGISTRY))
+        if (config.get(CorePlugin.CONFIG_REGISTRY_NAME))
             tooltip.add(new StringTextComponent(accessor.getEntity().getType().getRegistryName().toString()).mergeStyle(TextFormatting.GRAY), CorePlugin.TAG_REGISTRY_NAME);
     }
 
     public void appendBody(ITooltip tooltip, IEntityAccessor accessor, IPluginConfig config) {
         if (!(accessor.getEntity() instanceof LivingEntity))
             return;
-        if (config.get(CorePlugin.CONFIG_SHOW_ENTITY_HEALTH))
+        if (config.get(CorePlugin.CONFIG_ENTITY_HEALTH))
             appendHealth((LivingEntity) accessor.getEntity(), tooltip);
-        if (config.get(CorePlugin.CONFIG_SHOW_ENTITY_HEALTH))
+        if (config.get(CorePlugin.CONFIG_ENTITY_HEALTH))
             appendArmor((LivingEntity) accessor.getEntity(), tooltip);
     }
 
     public void appendTail(ITooltip tooltip, IEntityAccessor accessor, IPluginConfig config) {
-        if (config.get(JadePlugin.HIDE_MOD_NAME) || accessor.getEntity() instanceof ItemEntity)
+        if (!config.get(CorePlugin.CONFIG_MOD_NAME) || accessor.getEntity() instanceof ItemEntity)
             return;
-        tooltip.add(new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getModName(), ModIdentification.getModInfo(accessor.getEntity()).getName())));
+        tooltip.add(new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getModName(), ModIdentification.getModName(accessor.getEntity()))));
     }
 
     private void appendHealth(LivingEntity living, ITooltip tooltip) {
@@ -92,7 +90,7 @@ public class BaseEntityProvider implements IEntityComponentProvider {
             return ((ItemEntity) accessor.getEntity()).getItem();
         }
         ItemStack stack = accessor.getEntity().getPickedResult(accessor.getHitResult());
-        if (stack.getItem() instanceof SpawnEggItem && !(accessor.getEntity() instanceof ItemFrameEntity)) {
+        if (stack.getItem() instanceof SpawnEggItem && accessor.getEntity() instanceof LivingEntity) {
             return ItemStack.EMPTY;
         }
         return stack;

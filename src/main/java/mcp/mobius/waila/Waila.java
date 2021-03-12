@@ -36,6 +36,7 @@ import net.minecraftforge.fml.network.FMLNetworkConstants;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
+import snownee.jade.Jade;
 
 @Mod(Waila.MODID)
 public class Waila {
@@ -48,7 +49,7 @@ public class Waila {
             .serverAcceptedVersions(s -> true)
             .networkProtocolVersion(() -> "1.0.0")
             .simpleChannel();
-    public static final JsonConfig<WailaConfig> CONFIG = new JsonConfig<>(MODID + "/" + MODID, WailaConfig.class)
+    public static final JsonConfig<WailaConfig> CONFIG = new JsonConfig<>(Jade.MODID + "/" + Jade.MODID, WailaConfig.class)
             .withGson(new GsonBuilder()
                     .setPrettyPrinting()
                     .registerTypeAdapter(WailaConfig.ConfigOverlay.ConfigOverlayColor.class, new WailaConfig.ConfigOverlay.ConfigOverlayColor.Adapter())

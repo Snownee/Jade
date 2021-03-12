@@ -18,7 +18,6 @@ import net.minecraftforge.common.MinecraftForge;
 
 public class TooltipRenderer {
 
-    private final Minecraft client;
     private final Tooltip tooltip;
     private final boolean showItem;
     private final Size totalSize;
@@ -28,7 +27,7 @@ public class TooltipRenderer {
         WailaTooltipEvent event = new WailaTooltipEvent(tooltip, DataAccessor.INSTANCE);
         MinecraftForge.EVENT_BUS.post(event);
 
-        this.client = Minecraft.getInstance();
+        Minecraft.getInstance();
         this.showItem = showItem;
         this.tooltip = tooltip;
 
@@ -50,21 +49,15 @@ public class TooltipRenderer {
     public void draw(MatrixStack matrixStack) {
         Rectangle position = getPosition();
 
-        int x = position.x + (hasItem() ? 26 : 6);
-        position.width += hasItem() ? 24 : 4;
-        int y = position.y + 6;
+        int x = hasItem() ? 26 : 6;
+        int y = 6;
 
         for (Line line : tooltip.lines) {
-            line.render(matrixStack, x, y);
-            //            RenderableTextComponent component = (RenderableTextComponent) line.getComponent();
-            //            int xOffset = 0;
-            //            for (RenderableTextComponent.RenderContainer container : component.getRenderers()) {
-            //                Size size = container.getRenderer().getSize();
-            //                container.getRenderer().render(matrixStack, x + xOffset, y);
-            //                xOffset += size.width;
-            //            }
-            y += line.getSize().height;
+            Size size = line.getSize();
+            line.render(matrixStack, x, y, position.width, size.height);
+            y += size.height;
         }
+        position.width += x - 2;
     }
 
     public Tooltip getTooltip() {

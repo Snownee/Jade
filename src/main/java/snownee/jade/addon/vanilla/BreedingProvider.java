@@ -12,14 +12,14 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
-import snownee.jade.JadePlugin;
+import snownee.jade.VanillaPlugin;
 
 public class BreedingProvider implements IEntityComponentProvider, IServerDataProvider<Entity> {
     public static final BreedingProvider INSTANCE = new BreedingProvider();
 
     @Override
     public void append(ITooltip tooltip, IEntityAccessor accessor, IPluginConfig config) {
-        if (!config.get(JadePlugin.MOB_BREEDING) || !accessor.getServerData().contains("BreedingCD", Constants.NBT.TAG_INT)) {
+        if (!config.get(VanillaPlugin.MOB_BREEDING) || !accessor.getServerData().contains("BreedingCD", Constants.NBT.TAG_INT)) {
             return;
         }
         int time = accessor.getServerData().getInt("BreedingCD");

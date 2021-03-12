@@ -11,14 +11,14 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
-import snownee.jade.JadePlugin;
+import snownee.jade.VanillaPlugin;
 
 public class ChickenEggProvider implements IEntityComponentProvider, IServerDataProvider<Entity> {
     public static final ChickenEggProvider INSTANCE = new ChickenEggProvider();
 
     @Override
     public void append(ITooltip tooltip, IEntityAccessor accessor, IPluginConfig config) {
-        if (!config.get(JadePlugin.CHICKEN_EGG) || !accessor.getServerData().contains("NextEgg")) {
+        if (!config.get(VanillaPlugin.CHICKEN_EGG) || !accessor.getServerData().contains("NextEgg")) {
             return;
         }
         tooltip.add(new TranslationTextComponent("jade.nextEgg", accessor.getServerData().getInt("NextEgg")));

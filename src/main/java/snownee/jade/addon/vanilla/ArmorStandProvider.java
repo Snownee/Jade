@@ -9,7 +9,7 @@ import net.minecraft.entity.item.ArmorStandEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
-import snownee.jade.JadePlugin;
+import snownee.jade.VanillaPlugin;
 
 public class ArmorStandProvider implements IEntityComponentProvider {
 
@@ -17,7 +17,7 @@ public class ArmorStandProvider implements IEntityComponentProvider {
 
     @Override
     public void append(ITooltip tooltip, IEntityAccessor accessor, IPluginConfig config) {
-        if (!config.get(JadePlugin.ARMOR_STAND)) {
+        if (!config.get(VanillaPlugin.ARMOR_STAND)) {
             return;
         }
         ArmorStandEntity entity = (ArmorStandEntity) accessor.getEntity();
@@ -31,7 +31,7 @@ public class ArmorStandProvider implements IEntityComponentProvider {
             if (stack.isEmpty())
                 continue;
             tooltip.add(helper.item(stack, 0.75f));
-            tooltip.append(helper.text(stack.getDisplayName()).translate(0, 3));
+            tooltip.append(helper.text(stack.getDisplayName()).translate(0, 2));
         }
     }
 

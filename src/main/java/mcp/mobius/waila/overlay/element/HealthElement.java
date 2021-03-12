@@ -30,7 +30,7 @@ public class HealthElement extends Element {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int x, int y) {
+    public void render(MatrixStack matrixStack, int x, int y, int maxX, int maxY) {
         float maxHearts = Waila.CONFIG.get().getGeneral().getMaxHeartsPerLine();
 
         int heartCount = MathHelper.ceil(maxHealth);

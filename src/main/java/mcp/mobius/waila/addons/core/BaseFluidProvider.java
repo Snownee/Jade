@@ -30,7 +30,7 @@ public class BaseFluidProvider implements IComponentProvider {
     public void append(ITooltip tooltip, IDataAccessor accessor, IPluginConfig config) {
         String name = I18n.format(accessor.getBlock().getTranslationKey());
         tooltip.add(new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getBlockName(), name)), CorePlugin.TAG_OBJECT_NAME);
-        if (config.get(CorePlugin.CONFIG_SHOW_REGISTRY))
+        if (config.get(CorePlugin.CONFIG_REGISTRY_NAME))
             tooltip.add(new StringTextComponent(accessor.getBlock().getRegistryName().toString()).mergeStyle(TextFormatting.GRAY), CorePlugin.TAG_REGISTRY_NAME);
     }
 }

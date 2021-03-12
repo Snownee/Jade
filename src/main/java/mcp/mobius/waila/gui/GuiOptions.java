@@ -71,7 +71,7 @@ public abstract class GuiOptions extends Screen {
 
         OptionsListWidget.Entry entry = options.getSelected();
         if (entry instanceof OptionsEntryValue) {
-            OptionsEntryValue value = (OptionsEntryValue) entry;
+            OptionsEntryValue<?> value = (OptionsEntryValue<?>) entry;
 
             if (I18n.hasKey(value.getDescription())) {
                 int valueX = value.getX() + 10;

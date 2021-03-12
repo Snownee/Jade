@@ -30,7 +30,7 @@ public class ArmorElement extends Element {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int x, int y) {
+    public void render(MatrixStack matrixStack, int x, int y, int maxX, int maxY) {
         float maxHearts = Waila.CONFIG.get().getGeneral().getMaxHeartsPerLine();
         float armor = this.armor;
         if (armor == -1)

@@ -1,4 +1,4 @@
-package mcp.mobius.waila.addons.minecraft;
+package snownee.jade.addon.vanilla;
 
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.IComponentProvider;
@@ -12,6 +12,7 @@ import net.minecraft.block.CropsBlock;
 import net.minecraft.block.JukeboxBlock;
 import net.minecraft.block.LeverBlock;
 import net.minecraft.block.SilverfishBlock;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -29,16 +30,17 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.registries.ForgeRegistries;
+import snownee.jade.VanillaPlugin;
 
 public class VanillaProvider implements IComponentProvider, IServerDataProvider<TileEntity> {
 
-    static final VanillaProvider INSTANCE = new VanillaProvider();
+    public static final VanillaProvider INSTANCE = new VanillaProvider();
 
     static final ResourceLocation OBJECT_NAME_TAG = new ResourceLocation(Waila.MODID, "object_name");
 
     @Override
     public ItemStack getStack(IDataAccessor accessor, IPluginConfig config) {
-        if (config.get(MinecraftPlugin.CONFIG_HIDE_SILVERFISH) && accessor.getBlock() instanceof SilverfishBlock)
+        if (config.get(VanillaPlugin.CONFIG_HIDE_SILVERFISH) && accessor.getBlock() instanceof SilverfishBlock)
             return new ItemStack(((SilverfishBlock) accessor.getBlock()).getMimickedBlock().asItem());
 
         if (accessor.getBlock() == Blocks.WHEAT)
@@ -51,12 +53,16 @@ public class VanillaProvider implements IComponentProvider, IServerDataProvider<
     }
 
     public void appendHead(ITooltip tooltip, IDataAccessor accessor, IPluginConfig config) {
-        if (config.get(MinecraftPlugin.CONFIG_HIDE_SILVERFISH) && accessor.getBlock() instanceof SilverfishBlock)
+        if (config.get(VanillaPlugin.CONFIG_HIDE_SILVERFISH) && accessor.getBlock() instanceof SilverfishBlock)
             tooltip.add(new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getBlockName(), accessor.getPickedResult().getDisplayName().getString())), OBJECT_NAME_TAG);
 
-        if (accessor.getBlock() == Blocks.SPAWNER && config.get(MinecraftPlugin.CONFIG_SPAWNER_TYPE)) {
+        if (accessor.getBlock() == Blocks.SPAWNER && config.get(VanillaPlugin.CONFIG_SPAWNER_TYPE)) {
             MobSpawnerTileEntity spawner = (MobSpawnerTileEntity) accessor.getTileEntity();
-            tooltip.add(new TranslationTextComponent(accessor.getBlock().getTranslationKey()).appendString(" (").appendSibling(spawner.getSpawnerBaseLogic().getCachedEntity().getDisplayName()).appendString(")"), OBJECT_NAME_TAG);
+            String name = I18n.format(accessor.getBlock().getTranslationKey());
+            name = I18n.format("jade.spawner", name, spawner.getSpawnerBaseLogic().getCachedEntity().getDisplayName().getString());
+            name = String.format(Waila.CONFIG.get().getFormatting().getBlockName(), name);
+            tooltip.remove(OBJECT_NAME_TAG);
+            tooltip.add(new StringTextComponent(name), OBJECT_NAME_TAG);
         }
     }
 
@@ -66,7 +72,7 @@ public class VanillaProvider implements IComponentProvider, IServerDataProvider<
             appendHead(tooltip, accessor, config);
             return;
         }
-        if (config.get(MinecraftPlugin.CONFIG_CROP_PROGRESS)) {
+        if (config.get(VanillaPlugin.CONFIG_CROP_PROGRESS)) {
             if (accessor.getBlock() instanceof CropsBlock) {
                 CropsBlock crop = (CropsBlock) accessor.getBlock();
                 addMaturityTooltip(tooltip, accessor.getBlockState().get(crop.getAgeProperty()) / (float) crop.getMaxAge());
@@ -77,30 +83,30 @@ public class VanillaProvider implements IComponentProvider, IServerDataProvider<
             }
         }
 
-        if (config.get(MinecraftPlugin.CONFIG_LEVER) && accessor.getBlock() instanceof LeverBlock) {
+        if (config.get(VanillaPlugin.CONFIG_LEVER) && accessor.getBlock() instanceof LeverBlock) {
             boolean active = accessor.getBlockState().get(BlockStateProperties.POWERED);
             tooltip.add(new TranslationTextComponent("tooltip.waila.state", new TranslationTextComponent("tooltip.waila.state_" + (active ? "on" : "off"))));
             return;
         }
 
-        if (config.get(MinecraftPlugin.CONFIG_REPEATER) && accessor.getBlock() == Blocks.REPEATER) {
+        if (config.get(VanillaPlugin.CONFIG_REPEATER) && accessor.getBlock() == Blocks.REPEATER) {
             int delay = accessor.getBlockState().get(BlockStateProperties.DELAY_1_4);
             tooltip.add(new TranslationTextComponent("tooltip.waila.delay", TextFormatting.WHITE.toString() + delay));
             return;
         }
 
-        if (config.get(MinecraftPlugin.CONFIG_COMPARATOR) && accessor.getBlock() == Blocks.COMPARATOR) {
+        if (config.get(VanillaPlugin.CONFIG_COMPARATOR) && accessor.getBlock() == Blocks.COMPARATOR) {
             ComparatorMode mode = accessor.getBlockState().get(BlockStateProperties.COMPARATOR_MODE);
             tooltip.add(new TranslationTextComponent("tooltip.waila.mode", new TranslationTextComponent("tooltip.waila.mode_" + (mode == ComparatorMode.COMPARE ? "comparator" : "subtractor"))));
             return;
         }
 
-        if (config.get(MinecraftPlugin.CONFIG_REDSTONE) && accessor.getBlock() == Blocks.REDSTONE_WIRE) {
+        if (config.get(VanillaPlugin.CONFIG_REDSTONE) && accessor.getBlock() == Blocks.REDSTONE_WIRE) {
             tooltip.add(new TranslationTextComponent("tooltip.waila.power", TextFormatting.WHITE.toString() + accessor.getBlockState().get(BlockStateProperties.POWER_0_15)));
             return;
         }
 
-        if (config.get(MinecraftPlugin.CONFIG_JUKEBOX) && accessor.getBlock() == Blocks.JUKEBOX) {
+        if (config.get(VanillaPlugin.CONFIG_JUKEBOX) && accessor.getBlock() == Blocks.JUKEBOX) {
             if (accessor.getBlockState().get(JukeboxBlock.HAS_RECORD) && accessor.getServerData().contains("record")) {
                 try {
                     Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(accessor.getServerData().getString("record")));

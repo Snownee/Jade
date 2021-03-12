@@ -1,5 +1,7 @@
 package mcp.mobius.waila.gui.config;
 
+import org.lwjgl.opengl.GL11;
+
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -53,7 +55,7 @@ public class OptionsListWidget extends AbstractList<OptionsListWidget.Entry> {
         this.minecraft.getTextureManager().bindTexture(BACKGROUND_LOCATION);
         RenderSystem.enableDepthTest();
         RenderSystem.depthFunc(519);
-        bufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
+        bufferBuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
         bufferBuilder.pos(this.x0, this.y0, -100.0D).tex(0.0F, this.y0 / 32.0F).color(64, 64, 64, 255).endVertex();
         bufferBuilder.pos((this.x0 + this.width), this.y0, -100.0D).tex(this.width / 32.0F, this.y0 / 32.0F).color(64, 64, 64, 255).endVertex();
         bufferBuilder.pos((this.x0 + this.width), 0.0D, -100.0D).tex(this.width / 32.0F, 0.0F).color(64, 64, 64, 255).endVertex();
@@ -68,7 +70,7 @@ public class OptionsListWidget extends AbstractList<OptionsListWidget.Entry> {
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
         RenderSystem.disableAlphaTest();
-        RenderSystem.shadeModel(7425);
+        RenderSystem.shadeModel(GL11.GL_SMOOTH);
         RenderSystem.disableTexture();
         bufferBuilder.begin(7, DefaultVertexFormats.POSITION_COLOR_TEX);
         bufferBuilder.pos(this.x0, this.y0 + 4, 0.0D).color(0, 0, 0, 0).tex(0.0f, 1.0f).endVertex();
@@ -107,7 +109,7 @@ public class OptionsListWidget extends AbstractList<OptionsListWidget.Entry> {
 
         this.renderDecorations(matrixStack, mouseX, mouseY);
         RenderSystem.enableTexture();
-        RenderSystem.shadeModel(7424);
+        RenderSystem.shadeModel(GL11.GL_FLAT);
         RenderSystem.enableAlphaTest();
         RenderSystem.disableBlend();
     }

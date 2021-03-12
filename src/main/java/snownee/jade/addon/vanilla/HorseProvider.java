@@ -9,14 +9,14 @@ import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.entity.passive.horse.AbstractHorseEntity;
 import net.minecraft.util.text.TranslationTextComponent;
 import snownee.jade.Jade;
-import snownee.jade.JadePlugin;
+import snownee.jade.VanillaPlugin;
 
 public class HorseProvider implements IEntityComponentProvider {
     public static final HorseProvider INSTANCE = new HorseProvider();
 
     @Override
     public void append(ITooltip tooltip, IEntityAccessor accessor, IPluginConfig config) {
-        if (!config.get(JadePlugin.HORSE_STAT)) {
+        if (!config.get(VanillaPlugin.HORSE_STAT)) {
             return;
         }
         AbstractHorseEntity horse = (AbstractHorseEntity) accessor.getEntity();

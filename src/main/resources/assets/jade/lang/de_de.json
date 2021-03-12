@@ -69,7 +69,6 @@
   "config.waila.plugin_minecraft.jukebox": "Aufnahme aktiv",
   "config.waila.plugin_minecraft.villager_profession": "Dorfbewohnerberuf",
 
-  "config.waila.plugin_waila": "Waila",
   "config.waila.plugin_waila.show_registry": "Zeige Registrierungsnamen",
   "config.waila.plugin_waila.show_entities": "Zeige Kreaturen",
   "config.waila.plugin_waila.show_entity_hp": "Zeige Gesundheit von Kreaturen",

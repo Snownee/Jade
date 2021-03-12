@@ -22,7 +22,7 @@ public class IconElement extends Element {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int x, int y) {
+    public void render(MatrixStack matrixStack, int x, int y, int maxX, int maxY) {
         DisplayUtil.renderIcon(matrixStack, x, y, size, size, icon);
     }
 

@@ -1,5 +1,11 @@
 package mcp.mobius.waila.overlay;
 
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.lwjgl.opengl.GL11;
+
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -28,10 +34,7 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
-
+@SuppressWarnings("deprecation")
 public class DisplayUtil {
 
     private static final String[] NUM_SUFFIXES = new String[] { "", "k", "m", "b", "t" };
@@ -42,11 +45,7 @@ public class DisplayUtil {
         matrixStack.push();
         enable3DRender();
         try {
-            //MatrixStack matrixStack = new MatrixStack();
-            //scale *= Waila.CONFIG.get().getOverlay().getOverlayScale();
-            if (scale != 1)
-                matrixStack.scale(scale, scale, scale);
-            renderItemIntoGUI(stack, x, y, scale);
+            renderItemIntoGUI(matrixStack, stack, x, y, scale);
             ItemStack overlayRender = stack.copy();
             overlayRender.setCount(1);
             CLIENT.getItemRenderer().renderItemOverlayIntoGUI(CLIENT.fontRenderer, overlayRender, x, y, null);
@@ -59,15 +58,15 @@ public class DisplayUtil {
         matrixStack.pop();
     }
 
-    public static void renderItemIntoGUI(ItemStack stack, int x, int y, float scale) {
+    public static void renderItemIntoGUI(MatrixStack matrixStack, ItemStack stack, int x, int y, float scale) {
         ItemRenderer renderer = CLIENT.getItemRenderer();
-        renderItemModelIntoGUI(stack, x, y, renderer.getItemModelWithOverrides(stack, (World) null, (LivingEntity) null), scale);
+        renderItemModelIntoGUI(matrixStack, stack, x, y, renderer.getItemModelWithOverrides(stack, (World) null, (LivingEntity) null), scale);
     }
 
-    protected static void renderItemModelIntoGUI(ItemStack stack, int x, int y, IBakedModel bakedmodel, float scale) {
+    protected static void renderItemModelIntoGUI(MatrixStack matrixStack, ItemStack stack, int x, int y, IBakedModel bakedmodel, float scale) {
         ItemRenderer renderer = CLIENT.getItemRenderer();
         TextureManager textureManager = CLIENT.textureManager;
-        RenderSystem.pushMatrix();
+        matrixStack.push();
         textureManager.bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
         textureManager.getTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE).setBlurMipmapDirect(false, false);
         RenderSystem.enableRescaleNormal();
@@ -76,18 +75,17 @@ public class DisplayUtil {
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.translatef(x, y, 100.0F + renderer.zLevel);
-        RenderSystem.translatef(8.0F * scale, 8.0F * scale, 0.0F);
-        RenderSystem.scalef(scale, -scale, scale);
-        RenderSystem.scalef(16.0F, 16.0F, 16.0F);
-        MatrixStack matrixstack = new MatrixStack();
+        matrixStack.translate(x, y, 100.0F + renderer.zLevel);
+        matrixStack.translate(8.0F * scale, 8.0F * scale, 0.0F);
+        matrixStack.scale(scale, -scale, scale);
+        matrixStack.scale(16.0F, 16.0F, 16.0F);
         IRenderTypeBuffer.Impl irendertypebuffer$impl = Minecraft.getInstance().getRenderTypeBuffers().getBufferSource();
         boolean flag = !bakedmodel.isSideLit();
         if (flag) {
             RenderHelper.setupGuiFlatDiffuseLighting();
         }
 
-        renderer.renderItem(stack, ItemCameraTransforms.TransformType.GUI, false, matrixstack, irendertypebuffer$impl, 15728880, OverlayTexture.NO_OVERLAY, bakedmodel);
+        renderer.renderItem(stack, ItemCameraTransforms.TransformType.GUI, false, matrixStack, irendertypebuffer$impl, 15728880, OverlayTexture.NO_OVERLAY, bakedmodel);
         irendertypebuffer$impl.finish();
         RenderSystem.enableDepthTest();
         if (flag) {
@@ -96,7 +94,7 @@ public class DisplayUtil {
 
         RenderSystem.disableAlphaTest();
         RenderSystem.disableRescaleNormal();
-        RenderSystem.popMatrix();
+        matrixStack.pop();
     }
 
     public static void renderStackSize(MatrixStack matrixStack, FontRenderer fr, ItemStack stack, int xPosition, int yPosition) {
@@ -152,19 +150,26 @@ public class DisplayUtil {
         RenderSystem.enableBlend();
         RenderSystem.disableAlphaTest();
         RenderSystem.blendFuncSeparate(770, 771, 1, 0);
-        RenderSystem.shadeModel(7425);
+        RenderSystem.shadeModel(GL11.GL_SMOOTH);
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin(7, DefaultVertexFormats.POSITION_COLOR);
+        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
         buffer.pos(matrix, left + right, top, zLevel).color(f1, f2, f3, f).endVertex();
         buffer.pos(matrix, left, top, zLevel).color(f1, f2, f3, f).endVertex();
         buffer.pos(matrix, left, top + bottom, zLevel).color(f5, f6, f7, f4).endVertex();
         buffer.pos(matrix, left + right, top + bottom, zLevel).color(f5, f6, f7, f4).endVertex();
         tessellator.draw();
-        RenderSystem.shadeModel(7424);
+        RenderSystem.shadeModel(GL11.GL_FLAT);
         RenderSystem.disableBlend();
         RenderSystem.enableAlphaTest();
         RenderSystem.enableTexture();
+    }
+
+    public static void drawBorder(MatrixStack matrixStack, int minX, int minY, int maxX, int maxY, int color) {
+        AbstractGui.fill(matrixStack, minX, minY, maxX, minY + 1, color);
+        AbstractGui.fill(matrixStack, minX, maxY - 1, maxX, maxY, color);
+        AbstractGui.fill(matrixStack, minX, minY, minX + 1, maxY, color);
+        AbstractGui.fill(matrixStack, maxX - 1, minY, maxX, maxY, color);
     }
 
     public static void drawTexturedModalRect(MatrixStack matrixStack, int x, int y, int textureX, int textureY, int width, int height, int tw, int th) {
@@ -174,7 +179,7 @@ public class DisplayUtil {
         float zLevel = 0.0F;
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin(7, DefaultVertexFormats.POSITION_TEX);
+        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
         buffer.pos(matrix, x, y + height, zLevel).tex(((textureX) * f), ((textureY + th) * f1)).endVertex();
         buffer.pos(matrix, x + width, y + height, zLevel).tex(((textureX + tw) * f), ((textureY + th) * f1)).endVertex();
         buffer.pos(matrix, x + width, y, zLevel).tex(((textureX + tw) * f), ((textureY) * f1)).endVertex();

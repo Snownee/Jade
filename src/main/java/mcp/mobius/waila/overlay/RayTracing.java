@@ -2,7 +2,10 @@ package mcp.mobius.waila.overlay;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
+
+import javax.annotation.Nullable;
 
 import com.google.common.collect.Lists;
 
@@ -15,7 +18,7 @@ import mcp.mobius.waila.api.impl.config.PluginConfig;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.projectile.ProjectileHelper;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -47,7 +50,7 @@ public class RayTracing {
         if (viewpoint == null)
             return;
 
-        this.target = this.rayTrace(viewpoint, mc.playerController.getBlockReachDistance(), 0);
+        this.target = this.rayTrace(viewpoint, mc.playerController.getBlockReachDistance(), mc.getRenderPartialTicks());
     }
 
     public RayTraceResult getTarget() {
@@ -79,7 +82,7 @@ public class RayTracing {
         if (riding != null) {
             predicate = e -> e != riding;
         }
-        EntityRayTraceResult rayTraceResult = ProjectileHelper.rayTraceEntities(world, entity, eyePosition, traceEnd, bound, predicate);
+        EntityRayTraceResult rayTraceResult = rayTraceEntities(world, entity, eyePosition, traceEnd, bound, predicate);
         if (rayTraceResult != null) {
             return rayTraceResult;
         }
@@ -102,6 +105,30 @@ public class RayTracing {
             return ItemStack.EMPTY;
 
         return items.get(0);
+    }
+
+    // from ProjectileHelper
+    @Nullable
+    public static EntityRayTraceResult rayTraceEntities(World worldIn, Entity projectile, Vector3d startVec, Vector3d endVec, AxisAlignedBB boundingBox, Predicate<Entity> filter) {
+        double d0 = Double.MAX_VALUE;
+        Entity entity = null;
+
+        for (Entity entity1 : worldIn.getEntitiesInAABBexcluding(projectile, boundingBox, filter)) {
+            AxisAlignedBB axisalignedbb = entity1.getBoundingBox();
+            if (entity1 instanceof ItemEntity) {
+                axisalignedbb = axisalignedbb.grow(0.3);
+            }
+            Optional<Vector3d> optional = axisalignedbb.rayTrace(startVec, endVec);
+            if (optional.isPresent()) {
+                double d1 = startVec.squareDistanceTo(optional.get());
+                if (d1 < d0) {
+                    entity = entity1;
+                    d0 = d1;
+                }
+            }
+        }
+
+        return entity == null ? null : new EntityRayTraceResult(entity);
     }
 
     public Entity getIdentifierEntity() {

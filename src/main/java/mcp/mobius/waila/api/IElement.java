@@ -21,11 +21,13 @@ public interface IElement {
     /**
      * Draw method for the renderer. The GL matrice is automatically moved to the top left of the reserved zone.<br>
      * All calls should be relative to (0,0)
+     * @param maxWidth 
+     * @param maxHeight 
      *
      * @param data     The data supplied by the provider
      * @param accessor A global accessor for TileEntities and Entities
      */
-    void render(MatrixStack matrixStack, int x, int y);
+    void render(MatrixStack matrixStack, int x, int y, int maxX, int maxY);
 
     IElement align(Align align);
 

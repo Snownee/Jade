@@ -6,14 +6,14 @@ import mcp.mobius.waila.api.IPluginConfig;
 import mcp.mobius.waila.api.ITooltip;
 import net.minecraft.entity.item.ItemFrameEntity;
 import net.minecraft.item.ItemStack;
-import snownee.jade.JadePlugin;
+import snownee.jade.VanillaPlugin;
 
 public class ItemFrameProvider implements IEntityComponentProvider {
     public static final ItemFrameProvider INSTANCE = new ItemFrameProvider();
 
     @Override
     public void append(ITooltip tooltip, IEntityAccessor accessor, IPluginConfig config) {
-        if (!config.get(JadePlugin.ITEM_FRAME)) {
+        if (!config.get(VanillaPlugin.ITEM_FRAME)) {
             return;
         }
         ItemFrameEntity itemFrame = (ItemFrameEntity) accessor.getEntity();

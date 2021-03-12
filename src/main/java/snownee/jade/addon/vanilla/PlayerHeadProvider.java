@@ -12,7 +12,7 @@ import net.minecraft.item.Items;
 import net.minecraft.tileentity.SkullTileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.StringTextComponent;
-import snownee.jade.JadePlugin;
+import snownee.jade.VanillaPlugin;
 
 public class PlayerHeadProvider implements IComponentProvider {
 
@@ -21,7 +21,7 @@ public class PlayerHeadProvider implements IComponentProvider {
 
     @Override
     public void append(ITooltip tooltip, IDataAccessor accessor, IPluginConfig config) {
-        if (!config.get(JadePlugin.PLAYER_HEAD)) {
+        if (!config.get(VanillaPlugin.PLAYER_HEAD)) {
             return;
         }
         if (accessor.getTileEntity() instanceof SkullTileEntity) {

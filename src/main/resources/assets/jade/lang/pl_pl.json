@@ -69,7 +69,6 @@
   "config.waila.plugin_minecraft.jukebox": "Odtwarzana płyta",
   "config.waila.plugin_minecraft.villager_profession": "Profesja osadnika",
 
-  "config.waila.plugin_waila": "WAILA",
   "config.waila.plugin_waila.show_registry": "Pokaż nazwy rejetrów",
   "config.waila.plugin_waila.show_entities": "Pokaż byty",
   "config.waila.plugin_waila.show_entity_hp": "Pokaż zdrowie bytów",

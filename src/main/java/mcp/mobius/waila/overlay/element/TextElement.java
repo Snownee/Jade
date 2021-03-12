@@ -30,7 +30,7 @@ public class TextElement extends Element {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int x, int y) {
+    public void render(MatrixStack matrixStack, int x, int y, int maxX, int maxY) {
         FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
         WailaConfig.ConfigOverlay.ConfigOverlayColor color = Waila.CONFIG.get().getOverlay().getColor();
         IRenderTypeBuffer.Impl irendertypebuffer$impl = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());

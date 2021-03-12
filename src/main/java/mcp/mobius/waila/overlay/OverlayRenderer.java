@@ -22,6 +22,7 @@ import net.minecraft.entity.player.ChatVisibility;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.common.MinecraftForge;
 
+@SuppressWarnings("deprecation")
 public class OverlayRenderer {
 
     protected static boolean hasLight;
@@ -64,7 +65,7 @@ public class OverlayRenderer {
         if (RayTracing.INSTANCE.getTarget().getType() == RayTraceResult.Type.BLOCK)
             renderOverlay(WailaTickHandler.instance().tooltipRenderer, new MatrixStack());
 
-        if (RayTracing.INSTANCE.getTarget().getType() == RayTraceResult.Type.ENTITY && PluginConfig.INSTANCE.get(CorePlugin.CONFIG_SHOW_ENTITY))
+        if (RayTracing.INSTANCE.getTarget().getType() == RayTraceResult.Type.ENTITY && PluginConfig.INSTANCE.get(CorePlugin.CONFIG_ENTITY))
             renderOverlay(WailaTickHandler.instance().tooltipRenderer, new MatrixStack());
     }
 
@@ -94,15 +95,17 @@ public class OverlayRenderer {
         RenderSystem.disableDepthTest();
 
         Rectangle position = preEvent.getPosition();
-        //float scale = Waila.CONFIG.get().getOverlay().getOverlayScale();
-        //matrixStack.translate(position.x, position.y, 0);
-        //matrixStack.scale(scale, scale, 1.0F);
+        float scale = Waila.CONFIG.get().getOverlay().getOverlayScale();
+        matrixStack.translate(position.x, position.y, 0);
+        if (scale != 1) {
+            matrixStack.scale(scale, scale, 1.0F);
+        }
 
         WailaConfig.ConfigOverlay.ConfigOverlayColor color = Waila.CONFIG.get().getOverlay().getColor();
         if (color.getRawAlpha() > 0) {
             WailaRenderEvent.Color colorEvent = new WailaRenderEvent.Color(color.getAlpha(), color.getBackgroundColor(), color.getGradientStart(), color.getGradientEnd());
             MinecraftForge.EVENT_BUS.post(colorEvent);
-            drawTooltipBox(matrixStack, position.x, position.y, position.width, position.height, colorEvent.getBackground(), colorEvent.getGradientStart(), colorEvent.getGradientEnd(), Waila.CONFIG.get().getOverlay().getSquare());
+            drawTooltipBox(matrixStack, 0, 0, position.width, position.height, colorEvent.getBackground(), colorEvent.getGradientStart(), colorEvent.getGradientEnd(), Waila.CONFIG.get().getOverlay().getSquare());
         }
 
         RenderSystem.enableBlend();
@@ -118,7 +121,7 @@ public class OverlayRenderer {
             if (tooltip.identifierStack == null) {
                 tooltip.identifierStack = RayTracing.INSTANCE.getIdentifierStack();
             }
-            DisplayUtil.renderStack(matrixStack, position.x + 5, position.y + 2, tooltip.identifierStack, 1);
+            DisplayUtil.renderStack(matrixStack, 5, 2, tooltip.identifierStack, 1);
         }
 
         WailaRenderEvent.Post postEvent = new WailaRenderEvent.Post(position, matrixStack);

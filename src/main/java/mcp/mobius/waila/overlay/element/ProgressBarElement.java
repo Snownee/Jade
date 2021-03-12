@@ -25,7 +25,7 @@ public class ProgressBarElement extends Element {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int x, int y) {
+    public void render(MatrixStack matrixStack, int x, int y, int maxX, int maxY) {
         Minecraft.getInstance().getTextureManager().bindTexture(SHEET);
 
         // Draws the "empty" background arrow

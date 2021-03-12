@@ -1,5 +1,6 @@
 package mcp.mobius.waila;
 
+import mcp.mobius.waila.addons.core.CorePlugin;
 import mcp.mobius.waila.api.impl.DataAccessor;
 import mcp.mobius.waila.api.impl.config.PluginConfig;
 import mcp.mobius.waila.api.impl.config.WailaConfig;
@@ -25,7 +26,6 @@ import net.minecraftforge.fml.ExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
-import snownee.jade.JadePlugin;
 
 @Mod.EventBusSubscriber(modid = Waila.MODID, value = Dist.CLIENT)
 public class WailaClient {
@@ -68,11 +68,10 @@ public class WailaClient {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onTooltip(ItemTooltipEvent event) {
-        if (PluginConfig.INSTANCE.get(JadePlugin.HIDE_ITEM_MOD_NAME, false)) {
-            return;
+        if (PluginConfig.INSTANCE.get(CorePlugin.CONFIG_ITEM_MOD_NAME, false)) {
+            String name = String.format(Waila.CONFIG.get().getFormatting().getModName(), ModIdentification.getModName(event.getItemStack()));
+            event.getToolTip().add(new StringTextComponent(name));
         }
-        String name = String.format(Waila.CONFIG.get().getFormatting().getModName(), ModIdentification.getModInfo(event.getItemStack()).getName());
-        event.getToolTip().add(new StringTextComponent(name));
     }
 
     @SubscribeEvent

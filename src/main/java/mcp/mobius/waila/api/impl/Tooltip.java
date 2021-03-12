@@ -1,17 +1,20 @@
 package mcp.mobius.waila.api.impl;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.matrix.MatrixStack;
 
+import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.IElement;
 import mcp.mobius.waila.api.IElement.Align;
 import mcp.mobius.waila.api.IElementHelper;
 import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.Size;
+import mcp.mobius.waila.overlay.DisplayUtil;
 import net.minecraft.util.ResourceLocation;
 
 public class Tooltip implements ITooltip {
@@ -43,13 +46,36 @@ public class Tooltip implements ITooltip {
             return size;
         }
 
-        public void render(MatrixStack matrixStack, int x, int y) {
+        public void render(MatrixStack matrixStack, int x, int y, int maxWidth, int maxHeight) {
+            int ox = maxWidth, oy = y;
+            for (int i = right.size() - 1; i >= 0; i--) {
+                IElement element = right.get(i);
+                Size translate = element.getTranslation();
+                Size size = element.getCachedSize();
+                ox -= size.width;
+                drawBorder(matrixStack, ox, oy, element);
+                element.render(matrixStack, ox + translate.width, oy + translate.height, x + maxWidth, y + maxHeight);
+            }
+            maxWidth = ox;
+            ox = x;
             for (IElement element : left) {
                 Size translate = element.getTranslation();
-                element.render(matrixStack, x + translate.width, y + translate.height);
-                x += element.getCachedSize().width;
+                Size size = element.getCachedSize();
+                drawBorder(matrixStack, ox, oy, element);
+                element.render(matrixStack, ox + translate.width, oy + translate.height, maxWidth, y + maxHeight);
+                ox += size.width;
             }
-            //TODO right
+        }
+
+        public void drawBorder(MatrixStack matrixStack, int x, int y, IElement element) {
+            if (Waila.CONFIG.get().getGeneral().isDebug()) {
+                Size translate = element.getTranslation();
+                Size size = element.getCachedSize();
+                DisplayUtil.drawBorder(matrixStack, x, y, x + size.width, y + size.height, 0xFFFF0000);
+                if (translate != Size.ZERO) {
+                    DisplayUtil.drawBorder(matrixStack, x + translate.width, y + translate.height, x + translate.width + size.width, y + translate.height + size.height, 0xFF0000FF);
+                }
+            }
         }
     }
 
@@ -61,11 +87,11 @@ public class Tooltip implements ITooltip {
     }
 
     @Override
-    public void append(IElement element) {
-        if (isEmpty()) {
+    public void append(int index, IElement element) {
+        if (isEmpty() || index == size()) {
             add(element);
         } else {
-            Line lastLine = lines.get(lines.size() - 1);
+            Line lastLine = lines.get(index);
             lastLine.getAlignedElements(element.getAlignment()).add(element);
         }
     }
@@ -98,9 +124,13 @@ public class Tooltip implements ITooltip {
 
     @Override
     public void remove(ResourceLocation tag) {
-        for (Line line : lines) {
+        for (Iterator<Line> iterator = lines.iterator(); iterator.hasNext();) {
+            Line line = iterator.next();
             line.left.removeIf(e -> Objects.equal(tag, e.getTag()));
             line.right.removeIf(e -> Objects.equal(tag, e.getTag()));
+            if (line.left.isEmpty() && line.right.isEmpty()) {
+                iterator.remove();
+            }
         }
     }
 

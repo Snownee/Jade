@@ -7,14 +7,14 @@ import mcp.mobius.waila.api.ITooltip;
 import net.minecraft.entity.passive.horse.AbstractChestedHorseEntity;
 import net.minecraft.entity.passive.horse.LlamaEntity;
 import net.minecraft.util.text.TranslationTextComponent;
-import snownee.jade.JadePlugin;
+import snownee.jade.VanillaPlugin;
 
 public class ChestedHorseProvider implements IEntityComponentProvider {
     public static final ChestedHorseProvider INSTANCE = new ChestedHorseProvider();
 
     @Override
     public void append(ITooltip tooltip, IEntityAccessor accessor, IPluginConfig config) {
-        if (!config.get(JadePlugin.HORSE_INVENTORY)) {
+        if (!config.get(VanillaPlugin.HORSE_INVENTORY)) {
             return;
         }
         AbstractChestedHorseEntity horse = (AbstractChestedHorseEntity) accessor.getEntity();

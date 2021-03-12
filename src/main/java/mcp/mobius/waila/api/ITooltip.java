@@ -39,16 +39,20 @@ public interface ITooltip {
         add(size(), element);
     }
 
-    default void add(List<IElement> elements) {
+    default void add(int index, List<IElement> elements) {
         boolean first = true;
         for (IElement element : elements) {
             if (first) {
-                add(element);
+                add(index, element);
             } else {
-                append(element);
+                append(index, element);
             }
             first = false;
         }
+    }
+
+    default void add(List<IElement> elements) {
+        add(size(), elements);
     }
 
     void add(int index, IElement element);
@@ -61,7 +65,17 @@ public interface ITooltip {
         append(getElementHelper().text(component).tag(tag));
     }
 
-    void append(IElement element);
+    default void append(IElement element) {
+        append(size() - 1, element);
+    }
+
+    default void append(int index, List<IElement> elements) {
+        for (IElement element : elements) {
+            append(index, element);
+        }
+    }
+
+    void append(int index, IElement element);
 
     IElementHelper getElementHelper();
 

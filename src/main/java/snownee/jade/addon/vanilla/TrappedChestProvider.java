@@ -16,7 +16,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.registries.ForgeRegistries;
-import snownee.jade.JadePlugin;
+import snownee.jade.VanillaPlugin;
 
 public class TrappedChestProvider implements IComponentProvider {
 
@@ -27,7 +27,7 @@ public class TrappedChestProvider implements IComponentProvider {
 
     @Override
     public void append(ITooltip tooltip, IDataAccessor accessor, IPluginConfig config) {
-        if (!config.get(JadePlugin.TRAPPED_CHEST)) {
+        if (!config.get(VanillaPlugin.TRAPPED_CHEST)) {
             return;
         }
         try {
@@ -42,7 +42,7 @@ public class TrappedChestProvider implements IComponentProvider {
                 }
                 return DEFAULT_NAME;
             });
-            tooltip.remove(CorePlugin.TAG_OBJECT_NAME);
+            tooltip.remove(CorePlugin.TAG_OBJECT_NAME); //FIXME
             tooltip.add(0, new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getBlockName(), name.getString())), CorePlugin.TAG_OBJECT_NAME);
         } catch (Exception e) {
         }

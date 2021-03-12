@@ -1,15 +1,5 @@
 package mcp.mobius.waila.api.impl.config;
 
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-import mcp.mobius.waila.Waila;
-import mcp.mobius.waila.api.IPluginConfig;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.loading.FMLPaths;
-
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -18,6 +8,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+
+import mcp.mobius.waila.Waila;
+import mcp.mobius.waila.api.IPluginConfig;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.loading.FMLPaths;
+import snownee.jade.Jade;
 
 public class PluginConfig implements IPluginConfig {
 
@@ -67,14 +69,15 @@ public class PluginConfig implements IPluginConfig {
     }
 
     public void reload() {
-        File configFile = new File(FMLPaths.CONFIGDIR.get().toFile(), Waila.MODID + "/" + Waila.MODID + "_plugins.json");
+        File configFile = new File(FMLPaths.CONFIGDIR.get().toFile(), Jade.MODID + "/" + Jade.MODID + "_plugins.json");
 
         if (!configFile.exists()) { // Write defaults, but don't read
             writeConfig(configFile, true);
         } else { // Read back from config
             Map<String, Map<String, Boolean>> config;
             try (FileReader reader = new FileReader(configFile)) {
-                config = new Gson().fromJson(reader, new TypeToken<Map<String, Map<String, Boolean>>>(){}.getType());
+                config = new Gson().fromJson(reader, new TypeToken<Map<String, Map<String, Boolean>>>() {
+                }.getType());
             } catch (Exception e) {
                 e.printStackTrace();
                 config = Maps.newHashMap();

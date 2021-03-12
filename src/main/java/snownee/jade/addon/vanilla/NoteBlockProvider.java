@@ -9,7 +9,7 @@ import net.minecraft.block.NoteBlock;
 import net.minecraft.state.properties.NoteBlockInstrument;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
-import snownee.jade.JadePlugin;
+import snownee.jade.VanillaPlugin;
 
 public class NoteBlockProvider implements IComponentProvider {
 
@@ -20,7 +20,7 @@ public class NoteBlockProvider implements IComponentProvider {
 
     @Override
     public void append(ITooltip tooltip, IDataAccessor accessor, IPluginConfig config) {
-        if (!config.get(JadePlugin.NOTE_BLOCK)) {
+        if (!config.get(VanillaPlugin.NOTE_BLOCK)) {
             return;
         }
         BlockState state = accessor.getBlockState();

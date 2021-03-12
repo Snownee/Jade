@@ -12,7 +12,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
-import snownee.jade.JadePlugin;
+import snownee.jade.VanillaPlugin;
 
 public class VillagerProfessionProvider implements IEntityComponentProvider {
 
@@ -21,7 +21,7 @@ public class VillagerProfessionProvider implements IEntityComponentProvider {
 
     @Override
     public void append(ITooltip tooltip, IEntityAccessor accessor, IPluginConfig config) {
-        if (!config.get(JadePlugin.PROFESSION)) {
+        if (!config.get(VanillaPlugin.PROFESSION)) {
             return;
         }
         VillagerData data = null;

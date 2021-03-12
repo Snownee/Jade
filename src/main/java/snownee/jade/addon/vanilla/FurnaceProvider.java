@@ -1,4 +1,4 @@
-package mcp.mobius.waila.addons.minecraft;
+package snownee.jade.addon.vanilla;
 
 import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IDataAccessor;
@@ -15,14 +15,15 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
+import snownee.jade.VanillaPlugin;
 
 public class FurnaceProvider implements IComponentProvider, IServerDataProvider<TileEntity> {
 
-    static final FurnaceProvider INSTANCE = new FurnaceProvider();
+    public static final FurnaceProvider INSTANCE = new FurnaceProvider();
 
     @Override
     public void append(ITooltip tooltip, IDataAccessor accessor, IPluginConfig config) {
-        if (!config.get(MinecraftPlugin.CONFIG_DISPLAY_FURNACE))
+        if (!config.get(VanillaPlugin.CONFIG_DISPLAY_FURNACE))
             return;
 
         int progress = accessor.getServerData().getInt("progress");

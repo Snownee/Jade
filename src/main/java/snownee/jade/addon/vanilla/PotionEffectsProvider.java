@@ -20,14 +20,14 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
-import snownee.jade.JadePlugin;
+import snownee.jade.VanillaPlugin;
 
 public class PotionEffectsProvider implements IEntityComponentProvider, IServerDataProvider<Entity> {
     public static final PotionEffectsProvider INSTANCE = new PotionEffectsProvider();
 
     @Override
     public void append(ITooltip tooltip, IEntityAccessor accessor, IPluginConfig config) {
-        if (!config.get(JadePlugin.EFFECTS) || !accessor.getServerData().contains("Potions")) {
+        if (!config.get(VanillaPlugin.EFFECTS) || !accessor.getServerData().contains("Potions")) {
             return;
         }
         IElementHelper helper = tooltip.getElementHelper();

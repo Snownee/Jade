@@ -25,7 +25,6 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import snownee.jade.JadeCommonConfig;
-import snownee.jade.JadePlugin;
 
 public class BaseBlockProvider implements IComponentProvider, IServerDataProvider<TileEntity> {
 
@@ -65,12 +64,12 @@ public class BaseBlockProvider implements IComponentProvider, IServerDataProvide
             }
         }
         tooltip.add(new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getBlockName(), name)), CorePlugin.TAG_OBJECT_NAME);
-        if (config.get(CorePlugin.CONFIG_SHOW_REGISTRY))
+        if (config.get(CorePlugin.CONFIG_REGISTRY_NAME))
             tooltip.add(new StringTextComponent(accessor.getBlock().getRegistryName().toString()).mergeStyle(TextFormatting.GRAY), CorePlugin.TAG_REGISTRY_NAME);
     }
 
     public void appendBody(ITooltip tooltip, IDataAccessor accessor, IPluginConfig config) {
-        if (config.get(CorePlugin.CONFIG_SHOW_STATES)) {
+        if (config.get(CorePlugin.CONFIG_BLOCK_STATES)) {
             BlockState state = accessor.getBlockState();
             state.getProperties().forEach(p -> {
                 Comparable<?> value = state.get(p);
@@ -81,9 +80,9 @@ public class BaseBlockProvider implements IComponentProvider, IServerDataProvide
     }
 
     public void appendTail(ITooltip tooltip, IDataAccessor accessor, IPluginConfig config) {
-        if (config.get(JadePlugin.HIDE_MOD_NAME))
+        if (!config.get(CorePlugin.CONFIG_MOD_NAME))
             return;
-        String modName = ModIdentification.getModInfo(accessor.getPickedResult()).getName();
+        String modName = ModIdentification.getModName(accessor.getPickedResult());
         if (!Strings.isNullOrEmpty(modName)) {
             modName = String.format(Waila.CONFIG.get().getFormatting().getModName(), modName);
             IElementHelper helper = tooltip.getElementHelper();

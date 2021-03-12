@@ -10,7 +10,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import snownee.jade.Jade;
-import snownee.jade.JadePlugin;
+import snownee.jade.VanillaPlugin;
 
 public class EnchantmentPowerProvider implements IComponentProvider {
 
@@ -22,7 +22,7 @@ public class EnchantmentPowerProvider implements IComponentProvider {
         BlockPos pos = accessor.getPosition();
         float power = 0;
         if (accessor.getBlock() instanceof EnchantingTableBlock) {
-            if (config.get(JadePlugin.TOTAL_ENCH_POWER)) {
+            if (config.get(VanillaPlugin.TOTAL_ENCH_POWER)) {
                 // EnchantmentContainer.class
                 for (int k = -1; k <= 1; ++k) {
                     for (int l = -1; l <= 1; ++l) {
@@ -40,7 +40,7 @@ public class EnchantmentPowerProvider implements IComponentProvider {
                     }
                 }
             }
-        } else if (config.get(JadePlugin.ENCH_POWER)) {
+        } else if (config.get(VanillaPlugin.ENCH_POWER)) {
             power = getPower(world, pos);
         }
         if (power > 0) {

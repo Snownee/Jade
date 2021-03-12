@@ -7,6 +7,7 @@ import java.util.Set;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
+import mcp.mobius.waila.addons.core.CorePlugin;
 import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IDataAccessor;
 import mcp.mobius.waila.api.IElement;
@@ -31,7 +32,6 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 import snownee.jade.JadeCommonConfig;
-import snownee.jade.JadePlugin;
 
 public class InventoryProvider implements IComponentProvider, IServerDataProvider<TileEntity> {
 
@@ -42,7 +42,7 @@ public class InventoryProvider implements IComponentProvider, IServerDataProvide
 
     @Override
     public void append(ITooltip tooltip, IDataAccessor accessor, IPluginConfig config) {
-        if (!config.get(JadePlugin.INVENTORY) || accessor.getTileEntity() == null || accessor.getTileEntity() instanceof AbstractFurnaceTileEntity)
+        if (!config.get(CorePlugin.CONFIG_INVENTORY) || accessor.getTileEntity() == null || accessor.getTileEntity() instanceof AbstractFurnaceTileEntity)
             return;
 
         if (accessor.getServerData().contains("Locked") && accessor.getServerData().getBoolean("Locked")) {

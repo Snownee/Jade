@@ -14,7 +14,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import snownee.jade.JadePlugin;
+import snownee.jade.VanillaPlugin;
 
 @OnlyIn(Dist.CLIENT)
 @EventBusSubscriber(Dist.CLIENT)
@@ -32,7 +32,7 @@ public final class ClientHandler {
 
     @SubscribeEvent
     public static void post(WailaRenderEvent.Post event) {
-        if (!PluginConfig.INSTANCE.get(JadePlugin.BREAKING_PROGRESS)) {
+        if (!PluginConfig.INSTANCE.get(VanillaPlugin.BREAKING_PROGRESS)) {
             return;
         }
         Minecraft mc = Minecraft.getInstance();
@@ -47,7 +47,7 @@ public final class ClientHandler {
         float progress = state.getPlayerRelativeBlockHardness(mc.player, mc.player.world, playerController.currentBlock);
         progress = playerController.curBlockDamageMP + mc.getRenderPartialTicks() * progress;
         progress = MathHelper.clamp(progress, 0, 1);
-        AbstractGui.fill(event.getMatrixStack(), rect.x + 1, rect.y + rect.height, rect.x + 1 + (int) (rect.width * progress), rect.y + rect.height + 1, color);
+        AbstractGui.fill(event.getMatrixStack(), 1, rect.height, 1 + (int) (rect.width * progress), rect.height + 1, color);
     }
 
 }

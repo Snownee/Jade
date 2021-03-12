@@ -35,7 +35,10 @@ public abstract class Element implements IElement {
 
     @Override
     public IElement translate(int x, int y) {
-        this.translate = new Size(x, y);
+        if (x == 0 && y == 0)
+            this.translate = Size.ZERO;
+        else
+            this.translate = new Size(x, y);
         return this;
     }
 

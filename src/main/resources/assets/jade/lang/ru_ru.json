@@ -69,7 +69,6 @@
   "config.waila.plugin_minecraft.jukebox": "Активная пластинка",
   "config.waila.plugin_minecraft.villager_profession": "Профессия жителей",
 
-  "config.waila.plugin_waila": "Waila",
   "config.waila.plugin_waila.show_registry": "Имена из регистра",
   "config.waila.plugin_waila.show_entities": "Отображать сущности",
   "config.waila.plugin_waila.show_entity_hp": "Здоровье сущностей",
