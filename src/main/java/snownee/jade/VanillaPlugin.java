@@ -25,6 +25,7 @@ import net.minecraft.block.StemBlock;
 import net.minecraft.block.TNTBlock;
 import net.minecraft.block.TargetBlock;
 import net.minecraft.block.TrappedChestBlock;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.AgeableEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ArmorStandEntity;
@@ -37,12 +38,14 @@ import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.ChickenEntity;
 import net.minecraft.entity.passive.horse.AbstractChestedHorseEntity;
 import net.minecraft.entity.passive.horse.AbstractHorseEntity;
+import net.minecraft.resources.IReloadableResourceManager;
 import net.minecraft.tileentity.AbstractFurnaceTileEntity;
 import net.minecraft.tileentity.BeehiveTileEntity;
 import net.minecraft.tileentity.BrewingStandTileEntity;
 import net.minecraft.tileentity.CommandBlockTileEntity;
 import net.minecraft.tileentity.JukeboxTileEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import snownee.jade.addon.vanilla.AgeableEntityProvider;
 import snownee.jade.addon.vanilla.ArmorStandProvider;
 import snownee.jade.addon.vanilla.BeehiveProvider;
@@ -213,6 +216,10 @@ public class VanillaPlugin implements IWailaPlugin {
 
         registrar.registerComponentProvider(FurnaceProvider.INSTANCE, TooltipPosition.BODY, AbstractFurnaceBlock.class);
         registrar.registerBlockDataProvider(FurnaceProvider.INSTANCE, AbstractFurnaceTileEntity.class);
+
+        if (FMLEnvironment.dist.isClient()) {
+            ((IReloadableResourceManager) Minecraft.getInstance().getResourceManager()).addReloadListener(HarvestToolProvider.INSTANCE);
+        }
     }
 
 }

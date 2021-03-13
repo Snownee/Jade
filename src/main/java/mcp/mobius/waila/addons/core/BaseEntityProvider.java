@@ -9,8 +9,10 @@ import mcp.mobius.waila.api.TooltipPosition;
 import mcp.mobius.waila.overlay.element.ArmorElement;
 import mcp.mobius.waila.overlay.element.HealthElement;
 import mcp.mobius.waila.utils.ModIdentification;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.merchant.villager.VillagerEntity;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -34,10 +36,17 @@ public class BaseEntityProvider implements IEntityComponentProvider {
     }
 
     public void appendHead(ITooltip tooltip, IEntityAccessor accessor, IPluginConfig config) {
-        String name = accessor.getEntity().getDisplayName().getString();
+        String name = getEntityName(accessor.getEntity());
         tooltip.add(new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getEntityName(), name)), CorePlugin.TAG_OBJECT_NAME);
         if (config.get(CorePlugin.CONFIG_REGISTRY_NAME))
             tooltip.add(new StringTextComponent(accessor.getEntity().getType().getRegistryName().toString()).mergeStyle(TextFormatting.GRAY), CorePlugin.TAG_REGISTRY_NAME);
+    }
+
+    public static String getEntityName(Entity entity) {
+        if (entity instanceof VillagerEntity && !entity.hasCustomName()) {
+            return entity.getType().getName().getString();
+        }
+        return entity.getName().getString();
     }
 
     public void appendBody(ITooltip tooltip, IEntityAccessor accessor, IPluginConfig config) {
