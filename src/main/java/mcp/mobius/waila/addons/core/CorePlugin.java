@@ -7,6 +7,7 @@ import mcp.mobius.waila.api.TooltipPosition;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.tileentity.LockableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import snownee.jade.Jade;
@@ -40,7 +41,6 @@ public class CorePlugin implements IWailaPlugin {
         registrar.registerComponentProvider(BaseEntityProvider.INSTANCE, TooltipPosition.HEAD, Entity.class);
         registrar.registerComponentProvider(BaseEntityProvider.INSTANCE, TooltipPosition.BODY, LivingEntity.class);
         registrar.registerComponentProvider(BaseEntityProvider.INSTANCE, TooltipPosition.TAIL, Entity.class);
-        registrar.registerEntityStackProvider(BaseEntityProvider.INSTANCE, Entity.class);
 
         registrar.addConfig(CONFIG_REGISTRY_NAME, false);
         registrar.addConfig(CONFIG_ENTITY, true);
@@ -51,7 +51,7 @@ public class CorePlugin implements IWailaPlugin {
         registrar.addConfig(CONFIG_ITEM_MOD_NAME, false);
 
         registrar.registerComponentProvider(InventoryProvider.INSTANCE, TooltipPosition.BODY, Block.class);
-        registrar.registerBlockDataProvider(InventoryProvider.INSTANCE, TileEntity.class);
+        registrar.registerBlockDataProvider(InventoryProvider.INSTANCE, LockableTileEntity.class);
         registrar.addConfig(CONFIG_INVENTORY, true);
     }
 }

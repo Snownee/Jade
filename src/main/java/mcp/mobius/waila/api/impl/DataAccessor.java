@@ -8,7 +8,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -31,7 +30,6 @@ public class DataAccessor implements IDataAccessor, IEntityAccessor {
     public Entity entity;
     public CompoundNBT serverData = null;
     public long timeLastUpdate = System.currentTimeMillis();
-    public ItemStack pickedResult = ItemStack.EMPTY;
     public boolean serverConnected;
     public TooltipPosition tooltipPosition;
 
@@ -50,7 +48,6 @@ public class DataAccessor implements IDataAccessor, IEntityAccessor {
                 this.timeLastUpdate = System.currentTimeMillis() - MetaDataProvider.rateLimiter;
             }
             this.entity = null;
-            this.pickedResult = state.getPickBlock(hitResult, world, pos, player);
         } else if (this.hitResult.getType() == RayTraceResult.Type.ENTITY) {
             Entity entity = ((EntityRayTraceResult) this.hitResult).getEntity();
             if (this.entity != entity) {
@@ -61,7 +58,6 @@ public class DataAccessor implements IDataAccessor, IEntityAccessor {
             this.pos = new BlockPos(entity.getPositionVec());
             this.state = Blocks.AIR.getDefaultState();
             this.tileEntity = null;
-            this.pickedResult = entity.getPickedResult(hit);
         }
     }
 
@@ -164,11 +160,6 @@ public class DataAccessor implements IDataAccessor, IEntityAccessor {
     @Override
     public Direction getSide() {
         return hitResult == null ? null : hitResult.getType() == RayTraceResult.Type.ENTITY ? null : ((BlockRayTraceResult) this.hitResult).getFace();
-    }
-
-    @Override
-    public ItemStack getPickedResult() {
-        return this.pickedResult;
     }
 
     public boolean isTimeElapsed(long time) {

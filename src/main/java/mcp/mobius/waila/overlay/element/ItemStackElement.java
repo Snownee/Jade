@@ -12,14 +12,22 @@ public class ItemStackElement extends Element {
 
     private final ItemStack stack;
     private final float scale;
+    public static final ItemStackElement EMPTY = new ItemStackElement(ItemStack.EMPTY, 1);
 
-    public ItemStackElement(ItemStack stack, float scale) {
+    private ItemStackElement(ItemStack stack, float scale) {
         this.stack = stack;
         this.scale = scale == 0 ? 1 : scale;
     }
 
-    public ItemStackElement(ItemStack stack) {
-        this(stack, 1);
+    public static ItemStackElement of(ItemStack stack) {
+        return of(stack, 1);
+    }
+
+    public static ItemStackElement of(ItemStack stack, float scale) {
+        if (scale == 1 && stack.isEmpty()) {
+            return EMPTY;
+        }
+        return new ItemStackElement(stack, scale);
     }
 
     @Override

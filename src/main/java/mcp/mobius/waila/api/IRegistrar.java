@@ -26,7 +26,7 @@ public interface IRegistrar {
 
     /**
      * Registers an {@link IComponentProvider} instance to allow overriding the displayed item for a block via the
-     * {@link IComponentProvider#getStack(IDataAccessor, IPluginConfig)} method. A {@link TileEntity}
+     * {@link IComponentProvider#getIcon(IDataAccessor, IPluginConfig)} method. A {@link TileEntity}
      * is also an acceptable class type.
      *
      * @param dataProvider The data provider instance

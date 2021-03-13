@@ -1,5 +1,7 @@
 package mcp.mobius.waila.api;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
@@ -24,10 +26,12 @@ public interface IComponentProvider {
      *
      * @param accessor Contains most of the relevant information about the current environment.
      * @param config   Current configuration of Waila.
+     * @param currentElement 
      * @return {@link ItemStack#EMPTY} if override is not required, a non-empty ItemStack otherwise.
      */
-    default ItemStack getStack(IDataAccessor accessor, IPluginConfig config) {
-        return ItemStack.EMPTY;
+    @Nullable
+    default IElement getIcon(IDataAccessor accessor, IPluginConfig config, IElement currentIcon) {
+        return null;
     }
 
     /**

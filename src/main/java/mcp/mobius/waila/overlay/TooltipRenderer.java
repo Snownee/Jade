@@ -5,6 +5,7 @@ import java.awt.Rectangle;
 import com.mojang.blaze3d.matrix.MatrixStack;
 
 import mcp.mobius.waila.Waila;
+import mcp.mobius.waila.api.IElement;
 import mcp.mobius.waila.api.Size;
 import mcp.mobius.waila.api.event.WailaTooltipEvent;
 import mcp.mobius.waila.api.impl.DataAccessor;
@@ -13,23 +14,25 @@ import mcp.mobius.waila.api.impl.Tooltip.Line;
 import mcp.mobius.waila.api.impl.config.WailaConfig.ConfigOverlay;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
-import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 
 public class TooltipRenderer {
 
     private final Tooltip tooltip;
-    private final boolean showItem;
+    private final boolean showIcon;
     private final Size totalSize;
-    ItemStack identifierStack;
+    IElement icon;
 
-    public TooltipRenderer(Tooltip tooltip, boolean showItem) {
+    public TooltipRenderer(Tooltip tooltip, boolean showIcon) {
         WailaTooltipEvent event = new WailaTooltipEvent(tooltip, DataAccessor.INSTANCE);
         MinecraftForge.EVENT_BUS.post(event);
 
         Minecraft.getInstance();
-        this.showItem = showItem;
+        this.showIcon = showIcon;
         this.tooltip = tooltip;
+        if (showIcon) {
+            icon = RayTracing.INSTANCE.getIcon();
+        }
 
         totalSize = computeSize();
     }
@@ -41,7 +44,7 @@ public class TooltipRenderer {
             width = Math.max(width, size.width);
             height += size.height;
         }
-        width += hasItem() ? 30 : 10;
+        width += hasIcon() ? 30 : 10;
         height += 8;
         return new Size(width, height);
     }
@@ -49,7 +52,7 @@ public class TooltipRenderer {
     public void draw(MatrixStack matrixStack) {
         Rectangle position = getPosition();
 
-        int x = hasItem() ? 26 : 6;
+        int x = hasIcon() ? 26 : 6;
         int y = 6;
 
         for (Line line : tooltip.lines) {
@@ -64,8 +67,8 @@ public class TooltipRenderer {
         return tooltip;
     }
 
-    public boolean hasItem() {
-        return showItem && Waila.CONFIG.get().getGeneral().shouldShowItem() && !RayTracing.INSTANCE.getIdentifierStack().isEmpty();
+    public boolean hasIcon() {
+        return showIcon && Waila.CONFIG.get().getGeneral().shouldShowIcon() && icon != null;
     }
 
     public Rectangle getPosition() {

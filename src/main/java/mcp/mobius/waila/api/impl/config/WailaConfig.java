@@ -45,7 +45,7 @@ public class WailaConfig {
         private DisplayMode displayMode = DisplayMode.TOGGLE;
         private boolean hideFromPlayerList = true;
         private boolean hideFromDebug = true;
-        private boolean showItem = true;
+        private boolean showIcon = true;
         private boolean enableTextToSpeech = false;
         private int maxHealthForRender = 40;
         private int maxHeartsPerLine = 10;
@@ -72,8 +72,8 @@ public class WailaConfig {
             this.hideFromDebug = hideFromDebug;
         }
 
-        public void setShowItem(boolean showItem) {
-            this.showItem = showItem;
+        public void setShowIcon(boolean showIcon) {
+            this.showIcon = showIcon;
         }
 
         public void setEnableTextToSpeech(boolean enableTextToSpeech) {
@@ -116,8 +116,8 @@ public class WailaConfig {
             return hideFromDebug;
         }
 
-        public boolean shouldShowItem() {
-            return showItem;
+        public boolean shouldShowIcon() {
+            return showIcon;
         }
 
         public boolean shouldEnableTextToSpeech() {

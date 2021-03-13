@@ -104,7 +104,6 @@ public class WailaTickHandler {
                 return;
             }
         }
-        accessor.pickedResult = RayTracing.INSTANCE.getTargetStack();
 
         instance().handler.gatherComponents(targetEntity, accessor, currentTip, TooltipPosition.HEAD);
         instance().handler.gatherComponents(targetEntity, accessor, currentTipBody, TooltipPosition.BODY);
@@ -115,7 +114,7 @@ public class WailaTickHandler {
         }
         instance().handler.gatherComponents(targetEntity, accessor, currentTip, TooltipPosition.TAIL);
 
-        tooltipRenderer = new TooltipRenderer(currentTip, !accessor.pickedResult.isEmpty());
+        tooltipRenderer = new TooltipRenderer(currentTip, true);
     }
 
     private static Narrator getNarrator() {

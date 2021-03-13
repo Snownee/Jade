@@ -43,9 +43,6 @@ public class BaseBlockProvider implements IComponentProvider, IServerDataProvide
     }
 
     public void appendHead(ITooltip tooltip, IDataAccessor accessor, IPluginConfig config) {
-//        if (accessor.getBlockState().getMaterial().isLiquid())
-//            return;
-
         String name;
         if (accessor.getServerData().contains("givenName", Constants.NBT.TAG_STRING)) {
             ITextComponent component = ITextComponent.Serializer.getComponentFromJson(accessor.getServerData().getString("givenName"));
@@ -82,7 +79,7 @@ public class BaseBlockProvider implements IComponentProvider, IServerDataProvide
     public void appendTail(ITooltip tooltip, IDataAccessor accessor, IPluginConfig config) {
         if (!config.get(CorePlugin.CONFIG_MOD_NAME))
             return;
-        String modName = ModIdentification.getModName(accessor.getPickedResult());
+        String modName = ModIdentification.getModName(accessor.getBlock());
         if (!Strings.isNullOrEmpty(modName)) {
             modName = String.format(Waila.CONFIG.get().getFormatting().getModName(), modName);
             IElementHelper helper = tooltip.getElementHelper();

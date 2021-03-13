@@ -11,8 +11,6 @@ import mcp.mobius.waila.overlay.element.HealthElement;
 import mcp.mobius.waila.utils.ModIdentification;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.SpawnEggItem;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -87,15 +85,4 @@ public class BaseEntityProvider implements IEntityComponentProvider {
         }
     }
 
-    @Override
-    public ItemStack getDisplayItem(IEntityAccessor accessor, IPluginConfig config) {
-        if (accessor.getEntity() instanceof ItemEntity) {
-            return ((ItemEntity) accessor.getEntity()).getItem();
-        }
-        ItemStack stack = accessor.getEntity().getPickedResult(accessor.getHitResult());
-        if (stack.getItem() instanceof SpawnEggItem && accessor.getEntity() instanceof LivingEntity) {
-            return ItemStack.EMPTY;
-        }
-        return stack;
-    }
 }

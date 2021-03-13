@@ -3,10 +3,12 @@ package snownee.jade.addon.vanilla;
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IDataAccessor;
+import mcp.mobius.waila.api.IElement;
 import mcp.mobius.waila.api.IPluginConfig;
 import mcp.mobius.waila.api.IServerDataProvider;
 import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.TooltipPosition;
+import mcp.mobius.waila.overlay.element.ItemStackElement;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -41,22 +43,25 @@ public class VanillaProvider implements IComponentProvider, IServerDataProvider<
     static final ResourceLocation OBJECT_NAME_TAG = new ResourceLocation(Waila.MODID, "object_name");
 
     @Override
-    public ItemStack getStack(IDataAccessor accessor, IPluginConfig config) {
+    public IElement getIcon(IDataAccessor accessor, IPluginConfig config, IElement currentIcon) {
         if (config.get(VanillaPlugin.CONFIG_HIDE_SILVERFISH) && accessor.getBlock() instanceof SilverfishBlock)
-            return new ItemStack(((SilverfishBlock) accessor.getBlock()).getMimickedBlock().asItem());
+            return ItemStackElement.of(new ItemStack(((SilverfishBlock) accessor.getBlock()).getMimickedBlock().asItem()));
 
         if (accessor.getBlock() == Blocks.WHEAT)
-            return new ItemStack(Items.WHEAT);
+            return ItemStackElement.of(new ItemStack(Items.WHEAT));
 
         if (accessor.getBlock() == Blocks.BEETROOTS)
-            return new ItemStack(Items.BEETROOT);
+            return ItemStackElement.of(new ItemStack(Items.BEETROOT));
 
-        return ItemStack.EMPTY;
+        return null;
     }
 
     public void appendHead(ITooltip tooltip, IDataAccessor accessor, IPluginConfig config) {
-        if (config.get(VanillaPlugin.CONFIG_HIDE_SILVERFISH) && accessor.getBlock() instanceof SilverfishBlock)
-            tooltip.add(new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getBlockName(), accessor.getPickedResult().getDisplayName().getString())), OBJECT_NAME_TAG);
+        if (config.get(VanillaPlugin.CONFIG_HIDE_SILVERFISH) && accessor.getBlock() instanceof SilverfishBlock) {
+            tooltip.remove(OBJECT_NAME_TAG);
+            Block block = ((SilverfishBlock) accessor.getBlock()).getMimickedBlock();
+            tooltip.add(new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getBlockName(), I18n.format(block.getTranslationKey()))), OBJECT_NAME_TAG);
+        }
 
         if (accessor.getBlock() == Blocks.SPAWNER && config.get(VanillaPlugin.CONFIG_SPAWNER_TYPE)) {
             MobSpawnerTileEntity spawner = (MobSpawnerTileEntity) accessor.getTileEntity();

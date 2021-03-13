@@ -3,7 +3,6 @@ package mcp.mobius.waila.api;
 import javax.annotation.Nullable;
 
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
@@ -21,8 +20,6 @@ public interface IAccessor {
     PlayerEntity getPlayer();
 
     CompoundNBT getServerData();
-
-    ItemStack getPickedResult();
 
     RayTraceResult getHitResult();
 

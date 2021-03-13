@@ -12,8 +12,10 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.WailaClient;
 import mcp.mobius.waila.addons.core.CorePlugin;
+import mcp.mobius.waila.api.Size;
 import mcp.mobius.waila.api.event.WailaRenderEvent;
 import mcp.mobius.waila.api.impl.DataAccessor;
+import mcp.mobius.waila.api.impl.Tooltip;
 import mcp.mobius.waila.api.impl.config.PluginConfig;
 import mcp.mobius.waila.api.impl.config.WailaConfig;
 import net.minecraft.client.Minecraft;
@@ -113,18 +115,15 @@ public class OverlayRenderer {
         tooltip.draw(matrixStack);
         RenderSystem.disableBlend();
 
-        if (tooltip.hasItem())
-            enableGUIStandardItemLighting();
-
         RenderSystem.enableRescaleNormal();
-        if (tooltip.hasItem()) {
-            if (tooltip.identifierStack == null) {
-                tooltip.identifierStack = RayTracing.INSTANCE.getIdentifierStack().copy();
-                if (!tooltip.identifierStack.isEmpty()) {
-                    tooltip.identifierStack.setCount(1);
-                }
-            }
-            DisplayHelper.INSTANCE.drawItem(matrixStack, 5, 2, tooltip.identifierStack, 1);
+        if (tooltip.hasIcon()) {
+            Size size = tooltip.icon.getCachedSize();
+            Size offset = tooltip.icon.getTranslation();
+            int offsetX = offset.width + 5;
+            int offsetY = offset.height + 2;
+            Tooltip.drawBorder(matrixStack, offsetX, offsetY, tooltip.icon);
+            enableGUIStandardItemLighting();
+            tooltip.icon.render(matrixStack, offsetX, offsetY, offsetX + size.width, offsetY + size.height); //TODO
         }
 
         WailaRenderEvent.Post postEvent = new WailaRenderEvent.Post(position, matrixStack);

@@ -31,7 +31,7 @@ public class ElementHelper implements IElementHelper {
 
     @Override
     public IElement item(ItemStack stack, float scale) {
-        return new ItemStackElement(stack, scale);
+        return ItemStackElement.of(stack, scale);
     }
 
     @Override

@@ -1,5 +1,7 @@
 package mcp.mobius.waila.api;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
@@ -39,8 +41,9 @@ public interface IEntityComponentProvider {
      * @param config   Current configuration of Waila.
      * @return The item to display or {@link ItemStack#EMPTY} to display nothing.
      */
-    default ItemStack getDisplayItem(IEntityAccessor accessor, IPluginConfig config) {
-        return ItemStack.EMPTY;
+    @Nullable
+    default IElement getIcon(IEntityAccessor accessor, IPluginConfig config) {
+        return null;
     }
 
     /**

@@ -66,17 +66,6 @@ public class Tooltip implements ITooltip {
                 ox += size.width;
             }
         }
-
-        public void drawBorder(MatrixStack matrixStack, int x, int y, IElement element) {
-            if (Waila.CONFIG.get().getGeneral().isDebug()) {
-                Size translate = element.getTranslation();
-                Size size = element.getCachedSize();
-                DisplayHelper.INSTANCE.drawBorder(matrixStack, x, y, x + size.width, y + size.height, 0xFFFF0000);
-                if (translate != Size.ZERO) {
-                    DisplayHelper.INSTANCE.drawBorder(matrixStack, x + translate.width, y + translate.height, x + translate.width + size.width, y + translate.height + size.height, 0xFF0000FF);
-                }
-            }
-        }
     }
 
     public final List<Line> lines = new ArrayList<>();
@@ -130,6 +119,17 @@ public class Tooltip implements ITooltip {
             line.right.removeIf(e -> Objects.equal(tag, e.getTag()));
             if (line.left.isEmpty() && line.right.isEmpty()) {
                 iterator.remove();
+            }
+        }
+    }
+
+    public static void drawBorder(MatrixStack matrixStack, int x, int y, IElement element) {
+        if (Waila.CONFIG.get().getGeneral().isDebug()) {
+            Size translate = element.getTranslation();
+            Size size = element.getCachedSize();
+            DisplayHelper.INSTANCE.drawBorder(matrixStack, x, y, x + size.width, y + size.height, 0xFFFF0000);
+            if (translate != Size.ZERO) {
+                DisplayHelper.INSTANCE.drawBorder(matrixStack, x + translate.width, y + translate.height, x + translate.width + size.width, y + translate.height + size.height, 0xFF0000FF);
             }
         }
     }
