@@ -11,6 +11,7 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import snownee.jade.Jade;
 
 public class PluginCore implements IWailaPlugin {
@@ -42,8 +43,10 @@ public class PluginCore implements IWailaPlugin {
         registrar.addConfig(CONFIG_SHOW_ENTITY_ARMOR, true);
         registrar.addConfig(CONFIG_SHOW_STATES, false);
 
-        registrar.registerTooltipRenderer(RENDER_ENTITY_HEALTH, new TooltipRendererHealth());
-        registrar.registerTooltipRenderer(RENDER_ENTITY_ARMOR, new TooltipRendererArmor());
-        registrar.registerTooltipRenderer(RENDER_TEXT, new TextTooltipRenderer());
+        if (FMLEnvironment.dist.isClient()) {
+            registrar.registerTooltipRenderer(RENDER_ENTITY_HEALTH, new TooltipRendererHealth());
+            registrar.registerTooltipRenderer(RENDER_ENTITY_ARMOR, new TooltipRendererArmor());
+            registrar.registerTooltipRenderer(RENDER_TEXT, new TextTooltipRenderer());
+        }
     }
 }
