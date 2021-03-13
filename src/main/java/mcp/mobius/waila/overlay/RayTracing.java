@@ -149,13 +149,12 @@ public class RayTracing {
     }
 
     public List<ItemStack> getIdentifierItems() {
-        List<ItemStack> items = Lists.newArrayList();
-
         if (this.target == null)
-            return items;
+            return Collections.EMPTY_LIST;
 
         switch (this.target.getType()) {
         case ENTITY: {
+            List<ItemStack> items = Lists.newArrayList();
             List<IEntityComponentProvider> providers = WailaRegistrar.INSTANCE.getEntityStackProviders(((EntityRayTraceResult) target).getEntity());
             for (IEntityComponentProvider provider : providers) {
                 ItemStack providerStack = provider.getDisplayItem(DataAccessor.INSTANCE, PluginConfig.INSTANCE);
@@ -163,15 +162,16 @@ public class RayTracing {
                     continue;
                 items.add(providerStack);
             }
-            break;
+            return items;
         }
         case BLOCK: {
             World world = mc.world;
             BlockPos pos = ((BlockRayTraceResult) target).getPos();
             BlockState state = world.getBlockState(pos);
             if (state.getBlock().isAir(state, world, pos))
-                return items;
+                break;
 
+            List<ItemStack> items = Lists.newArrayList();
             handleStackProviders(items, WailaRegistrar.INSTANCE.getBlockStackProviders(state.getBlock()));
 
             if (!items.isEmpty())
@@ -182,7 +182,7 @@ public class RayTracing {
                 return Collections.singletonList(pick);
 
             if (state.getBlock().asItem() != Items.AIR)
-                items.add(new ItemStack(state.getBlock()));
+                return Collections.singletonList(new ItemStack(state.getBlock()));
 
             if (state.getBlock() instanceof FlowingFluidBlock) {
                 FlowingFluidBlock block = (FlowingFluidBlock) state.getBlock();
@@ -196,7 +196,7 @@ public class RayTracing {
             break;
         }
 
-        return items;
+        return Collections.EMPTY_LIST;
 
     }
 
@@ -205,7 +205,6 @@ public class RayTracing {
             ItemStack providerStack = provider.getStack(DataAccessor.INSTANCE, PluginConfig.INSTANCE);
             if (providerStack.isEmpty())
                 continue;
-
             items.add(providerStack);
         }
     }

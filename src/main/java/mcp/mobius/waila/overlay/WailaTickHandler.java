@@ -52,7 +52,7 @@ public class WailaTickHandler {
 
         World world = client.world;
         PlayerEntity player = client.player;
-        if (world == null && player == null) {
+        if (world == null || player == null) {
             tooltipRenderer = null;
             return;
         }
