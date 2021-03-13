@@ -69,10 +69,10 @@
   "config.waila.plugin_minecraft.jukebox": "Активная пластинка",
   "config.waila.plugin_minecraft.villager_profession": "Профессия жителей",
 
-  "config.waila.plugin_waila.show_registry": "Имена из регистра",
-  "config.waila.plugin_waila.show_entities": "Отображать сущности",
-  "config.waila.plugin_waila.show_entity_hp": "Здоровье сущностей",
-  "config.waila.plugin_waila.show_states": "Показывать состояния",
+  "config.waila.plugin_jade.registry_name": "Имена из регистра",
+  "config.waila.plugin_jade.entity": "Отображать сущности",
+  "config.waila.plugin_jade.entity_hp": "Здоровье сущностей",
+  "config.waila.plugin_jade.block_states": "Показывать состояния",
 
   "entity.minecraft.villager.none": "Безработный"
 }

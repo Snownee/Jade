@@ -7,6 +7,8 @@ import mcp.mobius.waila.api.IPluginConfig;
 import mcp.mobius.waila.api.IServerDataProvider;
 import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.TooltipPosition;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CropsBlock;
 import net.minecraft.block.JukeboxBlock;
@@ -72,42 +74,46 @@ public class VanillaProvider implements IComponentProvider, IServerDataProvider<
             appendHead(tooltip, accessor, config);
             return;
         }
+
+        BlockState state = accessor.getBlockState();
+        Block block = state.getBlock();
+
         if (config.get(VanillaPlugin.CONFIG_CROP_PROGRESS)) {
-            if (accessor.getBlock() instanceof CropsBlock) {
-                CropsBlock crop = (CropsBlock) accessor.getBlock();
-                addMaturityTooltip(tooltip, accessor.getBlockState().get(crop.getAgeProperty()) / (float) crop.getMaxAge());
-            } else if (accessor.getBlock() == Blocks.MELON_STEM || accessor.getBlock() == Blocks.PUMPKIN_STEM) {
-                addMaturityTooltip(tooltip, accessor.getBlockState().get(BlockStateProperties.AGE_0_7) / 7F);
-            } else if (accessor.getBlock() == Blocks.COCOA) {
-                addMaturityTooltip(tooltip, accessor.getBlockState().get(BlockStateProperties.AGE_0_2) / 2.0F);
+            if (block instanceof CropsBlock) {
+                CropsBlock crop = (CropsBlock) block;
+                addMaturityTooltip(tooltip, state.get(crop.getAgeProperty()) / (float) crop.getMaxAge());
+            } else if (block == Blocks.MELON_STEM || block == Blocks.PUMPKIN_STEM) {
+                addMaturityTooltip(tooltip, state.get(BlockStateProperties.AGE_0_7) / 7F);
+            } else if (block == Blocks.COCOA) {
+                addMaturityTooltip(tooltip, state.get(BlockStateProperties.AGE_0_2) / 2.0F);
             }
         }
 
-        if (config.get(VanillaPlugin.CONFIG_LEVER) && accessor.getBlock() instanceof LeverBlock) {
-            boolean active = accessor.getBlockState().get(BlockStateProperties.POWERED);
+        if (config.get(VanillaPlugin.CONFIG_LEVER) && block instanceof LeverBlock) {
+            boolean active = state.get(BlockStateProperties.POWERED);
             tooltip.add(new TranslationTextComponent("tooltip.waila.state", new TranslationTextComponent("tooltip.waila.state_" + (active ? "on" : "off"))));
             return;
         }
 
-        if (config.get(VanillaPlugin.CONFIG_REPEATER) && accessor.getBlock() == Blocks.REPEATER) {
-            int delay = accessor.getBlockState().get(BlockStateProperties.DELAY_1_4);
+        if (config.get(VanillaPlugin.CONFIG_REPEATER) && block == Blocks.REPEATER) {
+            int delay = state.get(BlockStateProperties.DELAY_1_4);
             tooltip.add(new TranslationTextComponent("tooltip.waila.delay", TextFormatting.WHITE.toString() + delay));
             return;
         }
 
-        if (config.get(VanillaPlugin.CONFIG_COMPARATOR) && accessor.getBlock() == Blocks.COMPARATOR) {
-            ComparatorMode mode = accessor.getBlockState().get(BlockStateProperties.COMPARATOR_MODE);
+        if (config.get(VanillaPlugin.CONFIG_COMPARATOR) && block == Blocks.COMPARATOR) {
+            ComparatorMode mode = state.get(BlockStateProperties.COMPARATOR_MODE);
             tooltip.add(new TranslationTextComponent("tooltip.waila.mode", new TranslationTextComponent("tooltip.waila.mode_" + (mode == ComparatorMode.COMPARE ? "comparator" : "subtractor"))));
             return;
         }
 
-        if (config.get(VanillaPlugin.CONFIG_REDSTONE) && accessor.getBlock() == Blocks.REDSTONE_WIRE) {
-            tooltip.add(new TranslationTextComponent("tooltip.waila.power", TextFormatting.WHITE.toString() + accessor.getBlockState().get(BlockStateProperties.POWER_0_15)));
+        if (config.get(VanillaPlugin.CONFIG_REDSTONE) && state.hasProperty(BlockStateProperties.POWER_0_15)) {
+            tooltip.add(new TranslationTextComponent("tooltip.waila.power", TextFormatting.WHITE.toString() + state.get(BlockStateProperties.POWER_0_15)));
             return;
         }
 
-        if (config.get(VanillaPlugin.CONFIG_JUKEBOX) && accessor.getBlock() == Blocks.JUKEBOX) {
-            if (accessor.getBlockState().get(JukeboxBlock.HAS_RECORD) && accessor.getServerData().contains("record")) {
+        if (config.get(VanillaPlugin.CONFIG_JUKEBOX) && block == Blocks.JUKEBOX) {
+            if (state.get(JukeboxBlock.HAS_RECORD) && accessor.getServerData().contains("record")) {
                 try {
                     Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(accessor.getServerData().getString("record")));
                     if (item instanceof MusicDiscItem) {
@@ -135,8 +141,8 @@ public class VanillaProvider implements IComponentProvider, IServerDataProvider<
     private static void addMaturityTooltip(ITooltip tooltip, float growthValue) {
         growthValue *= 100.0F;
         if (growthValue < 100.0F)
-            tooltip.add(new TranslationTextComponent("tooltip.waila.crop_growth", String.format("%.0f%%", growthValue)));
+            tooltip.add(new TranslationTextComponent("tooltip.waila.crop_growth", TextFormatting.WHITE + String.format("%.0f%%", growthValue)));
         else
-            tooltip.add(new TranslationTextComponent("tooltip.waila.crop_growth", new TranslationTextComponent("tooltip.waila.crop_mature")));
+            tooltip.add(new TranslationTextComponent("tooltip.waila.crop_growth", new TranslationTextComponent("tooltip.waila.crop_mature").mergeStyle(TextFormatting.GREEN)));
     }
 }

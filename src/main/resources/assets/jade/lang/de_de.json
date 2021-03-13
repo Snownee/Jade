@@ -69,10 +69,10 @@
   "config.waila.plugin_minecraft.jukebox": "Aufnahme aktiv",
   "config.waila.plugin_minecraft.villager_profession": "Dorfbewohnerberuf",
 
-  "config.waila.plugin_waila.show_registry": "Zeige Registrierungsnamen",
-  "config.waila.plugin_waila.show_entities": "Zeige Kreaturen",
-  "config.waila.plugin_waila.show_entity_hp": "Zeige Gesundheit von Kreaturen",
-  "config.waila.plugin_waila.show_states": "Zeige Status",
+  "config.waila.plugin_jade.registry_name": "Zeige Registrierungsnamen",
+  "config.waila.plugin_jade.entity": "Zeige Kreaturen",
+  "config.waila.plugin_jade.entity_hp": "Zeige Gesundheit von Kreaturen",
+  "config.waila.plugin_jade.block_states": "Zeige Status",
   
    "entity.minecraft.villager.none": "Nichtsnutz"
 }

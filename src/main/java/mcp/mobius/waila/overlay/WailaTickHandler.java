@@ -21,6 +21,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.ChatVisibility;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.RayTraceResult.Type;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextProcessing;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -39,8 +40,10 @@ public class WailaTickHandler {
     public MetaDataProvider handler = new MetaDataProvider();
 
     public void tickClient() {
-        if (!Waila.CONFIG.get().getGeneral().shouldDisplayTooltip())
+        if (!Waila.CONFIG.get().getGeneral().shouldDisplayTooltip()) {
+            tooltipRenderer = null;
             return;
+        }
 
         Minecraft client = Minecraft.getInstance();
         if (client.isGamePaused() || client.currentScreen != null || client.keyboardListener == null) {
@@ -49,8 +52,10 @@ public class WailaTickHandler {
 
         World world = client.world;
         PlayerEntity player = client.player;
-        if (world == null && player == null)
+        if (world == null && player == null) {
+            tooltipRenderer = null;
             return;
+        }
 
         RayTracing.INSTANCE.fire();
         RayTraceResult target = RayTracing.INSTANCE.getTarget();
@@ -58,8 +63,10 @@ public class WailaTickHandler {
         Tooltip currentTip = new Tooltip();
         Tooltip currentTipBody = new Tooltip();
 
-        if (target == null)
+        if (target == null || target.getType() == Type.MISS) {
+            tooltipRenderer = null;
             return;
+        }
         DataAccessor accessor = DataAccessor.INSTANCE;
         Entity targetEntity = null;
         if (target.getType() == RayTraceResult.Type.BLOCK) {

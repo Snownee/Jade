@@ -69,10 +69,10 @@
   "config.waila.plugin_minecraft.jukebox": "Odtwarzana płyta",
   "config.waila.plugin_minecraft.villager_profession": "Profesja osadnika",
 
-  "config.waila.plugin_waila.show_registry": "Pokaż nazwy rejetrów",
-  "config.waila.plugin_waila.show_entities": "Pokaż byty",
-  "config.waila.plugin_waila.show_entity_hp": "Pokaż zdrowie bytów",
-  "config.waila.plugin_waila.show_states": "Pokaż stan",
+  "config.waila.plugin_jade.registry_name": "Pokaż nazwy rejetrów",
+  "config.waila.plugin_jade.entity": "Pokaż byty",
+  "config.waila.plugin_jade.entity_hp": "Pokaż zdrowie bytów",
+  "config.waila.plugin_jade.block_states": "Pokaż stan",
 
   "entity.minecraft.villager.none": "Głupiec"
 }
