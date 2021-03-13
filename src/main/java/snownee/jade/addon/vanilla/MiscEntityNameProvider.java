@@ -3,8 +3,8 @@ package snownee.jade.addon.vanilla;
 import mcp.mobius.waila.api.IEntityAccessor;
 import mcp.mobius.waila.api.IEntityComponentProvider;
 import mcp.mobius.waila.api.IPluginConfig;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.item.ItemFrameEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SpawnEggItem;
 
@@ -40,7 +40,7 @@ public class MiscEntityNameProvider implements IEntityComponentProvider {
             return ((ItemEntity) accessor.getEntity()).getItem();
         }
         ItemStack stack = accessor.getEntity().getPickedResult(accessor.getHitResult());
-        if (stack.getItem() instanceof SpawnEggItem && !(accessor.getEntity() instanceof ItemFrameEntity)) {
+        if (stack.getItem() instanceof SpawnEggItem && accessor.getEntity() instanceof LivingEntity) {
             return ItemStack.EMPTY;
         }
         return stack;

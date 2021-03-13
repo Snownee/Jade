@@ -60,5 +60,6 @@
   "config.waila.plugin_jade.player_head": "Player Head",
   "config.waila.plugin_jade.profession": "Villager Profession",
   "config.waila.plugin_jade.show_entity_armor": "Entity Armor",
-  "config.waila.plugin_jade.item_tooltip": "Item Tooltip"
+  "config.waila.plugin_jade.item_tooltip": "Item Tooltip",
+  "jade.spawner": "%s (%s)"
 }

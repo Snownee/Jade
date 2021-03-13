@@ -10,11 +10,13 @@ import mcp.mobius.waila.overlay.tooltiprenderers.TooltipRendererStack;
 import net.minecraft.block.CocoaBlock;
 import net.minecraft.block.ComparatorBlock;
 import net.minecraft.block.CropsBlock;
+import net.minecraft.block.DaylightDetectorBlock;
 import net.minecraft.block.LeverBlock;
 import net.minecraft.block.RedstoneWireBlock;
 import net.minecraft.block.RepeaterBlock;
 import net.minecraft.block.SilverfishBlock;
 import net.minecraft.block.StemBlock;
+import net.minecraft.block.TargetBlock;
 import net.minecraft.entity.item.ItemFrameEntity;
 import net.minecraft.entity.item.LeashKnotEntity;
 import net.minecraft.entity.item.PaintingEntity;
@@ -68,6 +70,8 @@ public class PluginMinecraft implements IWailaPlugin {
         registrar.registerComponentProvider(HUDHandlerVanilla.INSTANCE, TooltipPosition.BODY, RepeaterBlock.class);
         registrar.registerComponentProvider(HUDHandlerVanilla.INSTANCE, TooltipPosition.BODY, ComparatorBlock.class);
         registrar.registerComponentProvider(HUDHandlerVanilla.INSTANCE, TooltipPosition.BODY, RedstoneWireBlock.class);
+        registrar.registerComponentProvider(HUDHandlerVanilla.INSTANCE, TooltipPosition.BODY, TargetBlock.class);
+        registrar.registerComponentProvider(HUDHandlerVanilla.INSTANCE, TooltipPosition.BODY, DaylightDetectorBlock.class);
         registrar.registerComponentProvider(HUDHandlerVanilla.INSTANCE, TooltipPosition.BODY, JukeboxTileEntity.class);
         registrar.registerBlockDataProvider(HUDHandlerVanilla.INSTANCE, JukeboxTileEntity.class);
 

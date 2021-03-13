@@ -1,67 +1,67 @@
 package mcp.mobius.waila.utils;
 
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
+
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
-import net.minecraft.item.Item;
+import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.item.PaintingEntity;
+import net.minecraft.entity.item.PaintingType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.ModList;
-
-import java.util.Map;
+import net.minecraftforge.fml.loading.moddiscovery.ModInfo;
 
 public class ModIdentification {
 
-    private static final Map<String, Info> CONTAINER_CACHE = Maps.newHashMap();
-    private static final Info MC_MOD_INFO = new Info("minecraft", "Minecraft");
+    private static final Map<String, String> NAMES = Maps.newHashMap();
+
     static {
-        CONTAINER_CACHE.put(MC_MOD_INFO.getId(), MC_MOD_INFO);
-    }
-
-    public static Info getModInfo(String namespace) {
-        return CONTAINER_CACHE.computeIfAbsent(namespace, s -> ModList.get().getMods().stream()
-                .filter(c -> c.getModId().equals(s))
-                .map(c -> new Info(c.getModId(), c.getDisplayName()))
-                .findFirst()
-                .orElse(new ModIdentification.Info(s, s)));
-    }
-
-    public static Info getModInfo(ResourceLocation id) {
-        return getModInfo(id.getNamespace());
-    }
-
-    public static Info getModInfo(Block block) {
-        return getModInfo(block.getRegistryName());
-    }
-
-    public static Info getModInfo(ItemStack stack) {
-        return getModInfo(stack.getItem().getCreatorModId(stack));
-    }
-
-    public static Info getModInfo(Item item) {
-        return getModInfo(new ItemStack(item));
-    }
-
-    public static Info getModInfo(Entity entity) {
-        ResourceLocation registryName = entity.getType().getRegistryName();
-        return registryName == null ? MC_MOD_INFO : getModInfo(registryName);
-    }
-
-    public static class Info {
-        private final String id;
-        private final String name;
-
-        public Info(String id, String name) {
-            this.id = id;
-            this.name = name;
-        }
-
-        public String getId() {
-            return id;
-        }
-
-        public String getName() {
-            return name;
+        List<ModInfo> mods = ImmutableList.copyOf(ModList.get().getMods());
+        for (ModInfo mod : mods) {
+            String modid = mod.getModId();
+            String name = mod.getDisplayName();
+            if (Strings.isNullOrEmpty(name)) {
+                StringUtils.capitalize(modid);
+            }
+            NAMES.put(modid, name);
         }
     }
+
+    public static String getModName(String namespace) {
+        return NAMES.getOrDefault(namespace, "Minecraft");
+    }
+
+    public static String getModName(ResourceLocation id) {
+        return getModName(id.getNamespace());
+    }
+
+    public static String getModName(Block block) {
+        return getModName(block.getRegistryName());
+    }
+
+    public static String getModName(ItemStack stack) {
+        return getModName(stack.getItem().getCreatorModId(stack));
+    }
+
+    public static String getModName(Entity entity) {
+        if (entity instanceof PaintingEntity) {
+            PaintingType art = ((PaintingEntity) entity).art;
+            if (art != null) {
+                return getModName(art.getRegistryName().getNamespace());
+            }
+        }
+        if (entity instanceof ItemEntity) {
+            return getModName(((ItemEntity) entity).getItem());
+        }
+        return getModName(entity.getType().getRegistryName());
+    }
+
 }

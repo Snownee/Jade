@@ -8,7 +8,6 @@ import mcp.mobius.waila.overlay.tooltiprenderers.TextTooltipRenderer;
 import mcp.mobius.waila.overlay.tooltiprenderers.TooltipRendererArmor;
 import mcp.mobius.waila.overlay.tooltiprenderers.TooltipRendererHealth;
 import net.minecraft.block.Block;
-import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.ResourceLocation;
@@ -32,9 +31,6 @@ public class PluginCore implements IWailaPlugin {
         registrar.registerComponentProvider(HUDHandlerBlocks.INSTANCE, TooltipPosition.BODY, Block.class);
         registrar.registerComponentProvider(HUDHandlerBlocks.INSTANCE, TooltipPosition.TAIL, Block.class);
         registrar.registerBlockDataProvider(HUDHandlerBlocks.INSTANCE, Block.class);
-
-        registrar.registerStackProvider(HUDHandlerFluids.INSTANCE, FlowingFluidBlock.class);
-        registrar.registerComponentProvider(HUDHandlerFluids.INSTANCE, TooltipPosition.HEAD, FlowingFluidBlock.class);
 
         registrar.registerComponentProvider(HUDHandlerEntities.INSTANCE, TooltipPosition.HEAD, Entity.class);
         registrar.registerComponentProvider(HUDHandlerEntities.INSTANCE, TooltipPosition.BODY, LivingEntity.class);

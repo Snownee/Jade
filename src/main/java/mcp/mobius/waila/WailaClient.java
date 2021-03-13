@@ -71,7 +71,7 @@ public class WailaClient {
         if (PluginConfig.INSTANCE.get(JadePlugin.HIDE_ITEM_MOD_NAME, false)) {
             return;
         }
-        String name = String.format(Waila.CONFIG.get().getFormatting().getModName(), ModIdentification.getModInfo(event.getItemStack()).getName());
+        String name = String.format(Waila.CONFIG.get().getFormatting().getModName(), ModIdentification.getModName(event.getItemStack()));
         event.getToolTip().add(new StringTextComponent(name));
     }
 

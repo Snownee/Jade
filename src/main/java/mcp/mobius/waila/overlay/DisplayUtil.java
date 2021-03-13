@@ -1,10 +1,13 @@
 package mcp.mobius.waila.overlay;
 
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 
-import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.utils.WailaExceptionHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
@@ -28,10 +31,6 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
 
 public class DisplayUtil {
 

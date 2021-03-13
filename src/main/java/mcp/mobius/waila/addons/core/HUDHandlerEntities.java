@@ -1,18 +1,24 @@
 package mcp.mobius.waila.addons.core;
 
+import java.util.List;
+
 import mcp.mobius.waila.Waila;
-import mcp.mobius.waila.api.*;
+import mcp.mobius.waila.api.IEntityAccessor;
+import mcp.mobius.waila.api.IEntityComponentProvider;
+import mcp.mobius.waila.api.IPluginConfig;
+import mcp.mobius.waila.api.ITaggableList;
+import mcp.mobius.waila.api.RenderableTextComponent;
 import mcp.mobius.waila.utils.ModIdentification;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.*;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 import snownee.jade.Jade;
 import snownee.jade.JadePlugin;
 import snownee.jade.Renderables;
-
-import java.util.List;
 
 public class HUDHandlerEntities implements IEntityComponentProvider {
 
@@ -37,9 +43,11 @@ public class HUDHandlerEntities implements IEntityComponentProvider {
 
     @Override
     public void appendTail(List<ITextComponent> tooltip, IEntityAccessor accessor, IPluginConfig config) {
-        if (config.get(JadePlugin.HIDE_MOD_NAME) || accessor.getEntity() instanceof ItemEntity)
+        if (config.get(JadePlugin.HIDE_MOD_NAME))
             return;
-        tooltip.add(new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getModName(), ModIdentification.getModInfo(accessor.getEntity()).getName())));
+        if (accessor.getEntity() instanceof ItemEntity && !config.get(JadePlugin.HIDE_ITEM_MOD_NAME) && config.get(JadePlugin.ITEM_TOOLTIP))
+            return;
+        tooltip.add(new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getModName(), ModIdentification.getModName(accessor.getEntity()))));
     }
 
     private void appendHealth(LivingEntity living, List<ITextComponent> tooltip) {

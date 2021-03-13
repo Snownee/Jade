@@ -1,6 +1,15 @@
 package mcp.mobius.waila.overlay;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
+
+import javax.annotation.Nullable;
+
 import com.google.common.collect.Lists;
+
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IEntityComponentProvider;
@@ -8,21 +17,24 @@ import mcp.mobius.waila.api.impl.DataAccessor;
 import mcp.mobius.waila.api.impl.WailaRegistrar;
 import mcp.mobius.waila.api.impl.config.PluginConfig;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.projectile.ProjectileHelper;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.EntityRayTraceResult;
+import net.minecraft.util.math.RayTraceContext;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.RayTraceResult.Type;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.function.Predicate;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidUtil;
 
 public class RayTracing {
 
@@ -75,7 +87,7 @@ public class RayTracing {
         if (riding != null) {
             predicate = e -> e != riding;
         }
-        EntityRayTraceResult rayTraceResult = ProjectileHelper.rayTraceEntities(world, entity, eyePosition, traceEnd, bound, predicate);
+        EntityRayTraceResult rayTraceResult = rayTraceEntities(world, entity, eyePosition, traceEnd, bound, predicate);
         if (rayTraceResult != null) {
             return rayTraceResult;
         }
@@ -87,7 +99,7 @@ public class RayTracing {
 
         RayTraceContext.FluidMode fluidView = Waila.CONFIG.get().getGeneral().getDisplayFluids();
         RayTraceContext context = new RayTraceContext(eyePosition, traceEnd, RayTraceContext.BlockMode.OUTLINE, fluidView, entity);
-        
+
         return world.rayTraceBlocks(context);
     }
 
@@ -98,6 +110,30 @@ public class RayTracing {
             return ItemStack.EMPTY;
 
         return items.get(0);
+    }
+
+    // from ProjectileHelper
+    @Nullable
+    public static EntityRayTraceResult rayTraceEntities(World worldIn, Entity projectile, Vector3d startVec, Vector3d endVec, AxisAlignedBB boundingBox, Predicate<Entity> filter) {
+        double d0 = Double.MAX_VALUE;
+        Entity entity = null;
+
+        for (Entity entity1 : worldIn.getEntitiesInAABBexcluding(projectile, boundingBox, filter)) {
+            AxisAlignedBB axisalignedbb = entity1.getBoundingBox();
+            if (axisalignedbb.getAverageEdgeLength() < 0.3) {
+                axisalignedbb = axisalignedbb.grow(0.3);
+            }
+            Optional<Vector3d> optional = axisalignedbb.rayTrace(startVec, endVec);
+            if (optional.isPresent()) {
+                double d1 = startVec.squareDistanceTo(optional.get());
+                if (d1 < d0) {
+                    entity = entity1;
+                    d0 = d1;
+                }
+            }
+        }
+
+        return entity == null ? null : new EntityRayTraceResult(entity);
     }
 
     public Entity getIdentifierEntity() {
@@ -124,48 +160,56 @@ public class RayTracing {
             return items;
 
         switch (this.target.getType()) {
-            case ENTITY: {
-                if (WailaRegistrar.INSTANCE.hasStackEntityProviders(((EntityRayTraceResult) target).getEntity())) {
-                    Collection<List<IEntityComponentProvider>> providers = WailaRegistrar.INSTANCE.getStackEntityProviders(((EntityRayTraceResult) target).getEntity()).values();
-                    for (List<IEntityComponentProvider> providersList : providers) {
-                        for (IEntityComponentProvider provider : providersList) {
-                            ItemStack providerStack = provider.getDisplayItem(DataAccessor.INSTANCE, PluginConfig.INSTANCE);
-                            if (providerStack.isEmpty())
-                                continue;
+        case ENTITY: {
+            if (WailaRegistrar.INSTANCE.hasStackEntityProviders(((EntityRayTraceResult) target).getEntity())) {
+                Collection<List<IEntityComponentProvider>> providers = WailaRegistrar.INSTANCE.getStackEntityProviders(((EntityRayTraceResult) target).getEntity()).values();
+                for (List<IEntityComponentProvider> providersList : providers) {
+                    for (IEntityComponentProvider provider : providersList) {
+                        ItemStack providerStack = provider.getDisplayItem(DataAccessor.INSTANCE, PluginConfig.INSTANCE);
+                        if (providerStack.isEmpty())
+                            continue;
 
-                            items.add(providerStack);
-                        }
+                        items.add(providerStack);
                     }
                 }
-                break;
             }
-            case BLOCK: {
-                World world = mc.world;
-                BlockPos pos = ((BlockRayTraceResult) target).getPos();
-                BlockState state = world.getBlockState(pos);
-                if (state.isAir(world, pos))
-                    return items;
+            break;
+        }
+        case BLOCK: {
+            World world = mc.world;
+            BlockPos pos = ((BlockRayTraceResult) target).getPos();
+            BlockState state = world.getBlockState(pos);
+            if (state.getBlock().isAir(state, world, pos))
+                return items;
 
-                TileEntity tile = world.getTileEntity(pos);
+            TileEntity tile = world.getTileEntity(pos);
 
-                if (WailaRegistrar.INSTANCE.hasStackProviders(state.getBlock()))
-                    handleStackProviders(items, WailaRegistrar.INSTANCE.getStackProviders(state.getBlock()).values());
+            if (WailaRegistrar.INSTANCE.hasStackProviders(state.getBlock()))
+                handleStackProviders(items, WailaRegistrar.INSTANCE.getStackProviders(state.getBlock()).values());
 
-                if (tile != null && WailaRegistrar.INSTANCE.hasStackProviders(tile))
-                    handleStackProviders(items, WailaRegistrar.INSTANCE.getStackProviders(tile).values());
+            if (tile != null && WailaRegistrar.INSTANCE.hasStackProviders(tile))
+                handleStackProviders(items, WailaRegistrar.INSTANCE.getStackProviders(tile).values());
 
-                if (!items.isEmpty())
-                    return items;
+            if (!items.isEmpty())
+                return items;
 
-                ItemStack pick = state.getBlock().getPickBlock(state, target, world, pos, mc.player);
-                if (!pick.isEmpty())
-                    return Collections.singletonList(pick);
+            ItemStack pick = state.getBlock().getPickBlock(state, target, world, pos, mc.player);
+            if (!pick.isEmpty())
+                return Collections.singletonList(pick);
 
-                if (items.isEmpty() && state.getBlock().asItem() != Items.AIR)
-                    items.add(new ItemStack(state.getBlock()));
+            if (state.getBlock().asItem() != Items.AIR)
+                return Collections.singletonList(new ItemStack(state.getBlock()));
 
-                break;
+            if (state.getBlock() instanceof FlowingFluidBlock) {
+                FlowingFluidBlock block = (FlowingFluidBlock) state.getBlock();
+                Fluid fluid = block.getFluid();
+                return Collections.singletonList(FluidUtil.getFilledBucket(new FluidStack(fluid, 1)));
             }
+
+            break;
+        }
+        default:
+            break;
         }
 
         return items;

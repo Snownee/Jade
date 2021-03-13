@@ -37,9 +37,6 @@ public class HUDHandlerBlocks implements IComponentProvider, IServerDataProvider
 
     @Override
     public void appendHead(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {
-        if (accessor.getBlockState().getMaterial().isLiquid())
-            return;
-
         String name;
         if (accessor.getServerData().contains("givenName", Constants.NBT.TAG_STRING)) {
             ITextComponent component = ITextComponent.Serializer.getComponentFromJson(accessor.getServerData().getString("givenName"));
@@ -78,7 +75,7 @@ public class HUDHandlerBlocks implements IComponentProvider, IServerDataProvider
     public void appendTail(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {
         if (config.get(JadePlugin.HIDE_MOD_NAME))
             return;
-        String modName = ModIdentification.getModInfo(accessor.getStack()).getName();
+        String modName = ModIdentification.getModName(accessor.getStack());
         if (!Strings.isNullOrEmpty(modName)) {
             modName = String.format(Waila.CONFIG.get().getFormatting().getModName(), modName);
             ((ITaggableList<ResourceLocation, ITextComponent>) tooltip).setTag(MOD_NAME_TAG, new StringTextComponent(modName));

@@ -42,89 +42,91 @@ public class WailaTickHandler {
     public MetaDataProvider handler = new MetaDataProvider();
 
     public void tickClient() {
-        if (!Waila.CONFIG.get().getGeneral().shouldDisplayTooltip())
+        if (!Waila.CONFIG.get().getGeneral().shouldDisplayTooltip()) {
+            tooltip = null;
             return;
+        }
 
         Minecraft client = Minecraft.getInstance();
-        if (client.isGamePaused() || client.currentScreen != null) {
+        if (client.isGamePaused() || client.currentScreen != null || client.keyboardListener == null) {
             return;
         }
         World world = client.world;
         PlayerEntity player = client.player;
 
-        if (client.keyboardListener == null)
+        if (world == null || player == null) {
+            tooltip = null;
             return;
+        }
+        RayTracing.INSTANCE.fire();
+        RayTraceResult target = RayTracing.INSTANCE.getTarget();
 
-        if (world != null && player != null) {
-            RayTracing.INSTANCE.fire();
-            RayTraceResult target = RayTracing.INSTANCE.getTarget();
+        List<ITextComponent> currentTip = new TaggableList<>(TaggedTextComponent::new);
+        List<ITextComponent> currentTipHead = new TaggableList<>(TaggedTextComponent::new);
+        List<ITextComponent> currentTipBody = new TaggableList<>(TaggedTextComponent::new);
+        List<ITextComponent> currentTipTail = new TaggableList<>(TaggedTextComponent::new);
 
-            List<ITextComponent> currentTip = new TaggableList<>(TaggedTextComponent::new);
-            List<ITextComponent> currentTipHead = new TaggableList<>(TaggedTextComponent::new);
-            List<ITextComponent> currentTipBody = new TaggableList<>(TaggedTextComponent::new);
-            List<ITextComponent> currentTipTail = new TaggableList<>(TaggedTextComponent::new);
+        if (target == null || target.getType() == RayTraceResult.Type.MISS) {
+            tooltip = null;
+            return;
+        }
+        if (target.getType() == RayTraceResult.Type.BLOCK) {
+            DataAccessor accessor = DataAccessor.INSTANCE;
+            accessor.set(world, player, target);
 
-            if (target == null)
-                return;
-            if (target.getType() == RayTraceResult.Type.BLOCK) {
-                DataAccessor accessor = DataAccessor.INSTANCE;
-                accessor.set(world, player, target);
-
-                if (accessor.serverConnected && accessor.getTileEntity() != null && Waila.CONFIG.get().getGeneral().shouldDisplayTooltip()) {
-                    if (accessor.isTimeElapsed(MetaDataProvider.rateLimiter)) {
-                        accessor.resetTimer();
-                        if (WailaRegistrar.INSTANCE.hasNBTProviders(accessor.getBlock()) || WailaRegistrar.INSTANCE.hasNBTProviders(accessor.getTileEntity()))
-                            Waila.NETWORK.sendToServer(new MessageRequestTile(accessor.getTileEntity()));
-                    }
-                    if (DataAccessor.INSTANCE.serverData == null) {
-                        if (WailaRegistrar.INSTANCE.hasNBTProviders(accessor.getBlock()) || WailaRegistrar.INSTANCE.hasNBTProviders(accessor.getTileEntity()))
-                            return;
-                    }
+            if (accessor.serverConnected && accessor.getTileEntity() != null && Waila.CONFIG.get().getGeneral().shouldDisplayTooltip()) {
+                if (accessor.isTimeElapsed(MetaDataProvider.rateLimiter)) {
+                    accessor.resetTimer();
+                    if (WailaRegistrar.INSTANCE.hasNBTProviders(accessor.getBlock()) || WailaRegistrar.INSTANCE.hasNBTProviders(accessor.getTileEntity()))
+                        Waila.NETWORK.sendToServer(new MessageRequestTile(accessor.getTileEntity()));
                 }
+                if (DataAccessor.INSTANCE.serverData == null) {
+                    if (WailaRegistrar.INSTANCE.hasNBTProviders(accessor.getBlock()) || WailaRegistrar.INSTANCE.hasNBTProviders(accessor.getTileEntity()))
+                        return;
+                }
+            }
 
-                ItemStack targetStack = RayTracing.INSTANCE.getTargetStack(); // Here we get either the proper stack or the override
-                accessor.stack = targetStack;
+            ItemStack targetStack = RayTracing.INSTANCE.getTargetStack(); // Here we get either the proper stack or the override
+            accessor.stack = targetStack;
 
-                //if (!targetStack.isEmpty()) {
-                instance().handler.gatherBlockComponents(accessor, currentTipHead, TooltipPosition.HEAD);
-                instance().handler.gatherBlockComponents(accessor, currentTipBody, TooltipPosition.BODY);
-                instance().handler.gatherBlockComponents(accessor, currentTipTail, TooltipPosition.TAIL);
+            //if (!targetStack.isEmpty()) {
+            instance().handler.gatherBlockComponents(accessor, currentTipHead, TooltipPosition.HEAD);
+            instance().handler.gatherBlockComponents(accessor, currentTipBody, TooltipPosition.BODY);
+            instance().handler.gatherBlockComponents(accessor, currentTipTail, TooltipPosition.TAIL);
+
+            combinePositions(player, currentTip, currentTipHead, currentTipBody, currentTipTail);
+
+            tooltip = new Tooltip(currentTip, !targetStack.isEmpty());
+            //}
+        } else if (target.getType() == RayTraceResult.Type.ENTITY) {
+            DataAccessor accessor = DataAccessor.INSTANCE;
+            accessor.set(world, player, target);
+
+            if (accessor.serverConnected && accessor.getEntity() != null && Waila.CONFIG.get().getGeneral().shouldDisplayTooltip()) {
+                if (accessor.isTimeElapsed(MetaDataProvider.rateLimiter)) {
+                    accessor.resetTimer();
+                    if (WailaRegistrar.INSTANCE.hasNBTEntityProviders(accessor.getEntity()))
+                        Waila.NETWORK.sendToServer(new MessageRequestEntity(accessor.getEntity()));
+                }
+                if (DataAccessor.INSTANCE.serverData == null) {
+                    if (WailaRegistrar.INSTANCE.hasNBTEntityProviders(accessor.getEntity()))
+                        return;
+                }
+            }
+
+            Entity targetEnt = RayTracing.INSTANCE.getTargetEntity(); // This need to be replaced by the override check.
+
+            if (targetEnt != null) {
+                instance().handler.gatherEntityComponents(targetEnt, accessor, currentTipHead, TooltipPosition.HEAD);
+                instance().handler.gatherEntityComponents(targetEnt, accessor, currentTipBody, TooltipPosition.BODY);
+                instance().handler.gatherEntityComponents(targetEnt, accessor, currentTipTail, TooltipPosition.TAIL);
 
                 combinePositions(player, currentTip, currentTipHead, currentTipBody, currentTipTail);
 
-                tooltip = new Tooltip(currentTip, !targetStack.isEmpty());
-                //}
-            } else if (target.getType() == RayTraceResult.Type.ENTITY) {
-                DataAccessor accessor = DataAccessor.INSTANCE;
-                accessor.set(world, player, target);
-
-                if (accessor.serverConnected && accessor.getEntity() != null && Waila.CONFIG.get().getGeneral().shouldDisplayTooltip()) {
-                    if (accessor.isTimeElapsed(MetaDataProvider.rateLimiter)) {
-                        accessor.resetTimer();
-                        if (WailaRegistrar.INSTANCE.hasNBTEntityProviders(accessor.getEntity()))
-                            Waila.NETWORK.sendToServer(new MessageRequestEntity(accessor.getEntity()));
-                    }
-                    if (DataAccessor.INSTANCE.serverData == null) {
-                        if (WailaRegistrar.INSTANCE.hasNBTEntityProviders(accessor.getEntity()))
-                            return;
-                    }
-                }
-                
-                Entity targetEnt = RayTracing.INSTANCE.getTargetEntity(); // This need to be replaced by the override check.
-
-                if (targetEnt != null) {
-                    instance().handler.gatherEntityComponents(targetEnt, accessor, currentTipHead, TooltipPosition.HEAD);
-                    instance().handler.gatherEntityComponents(targetEnt, accessor, currentTipBody, TooltipPosition.BODY);
-                    instance().handler.gatherEntityComponents(targetEnt, accessor, currentTipTail, TooltipPosition.TAIL);
-
-                    combinePositions(player, currentTip, currentTipHead, currentTipBody, currentTipTail);
-
-                    ItemStack displayItem = RayTracing.INSTANCE.getIdentifierStack();
-                    tooltip = new Tooltip(currentTip, !displayItem.isEmpty());
-                }
+                ItemStack displayItem = RayTracing.INSTANCE.getIdentifierStack();
+                tooltip = new Tooltip(currentTip, !displayItem.isEmpty());
             }
         }
-
     }
 
     private void combinePositions(PlayerEntity player, List<ITextComponent> currentTip, List<ITextComponent> currentTipHead, List<ITextComponent> currentTipBody, List<ITextComponent> currentTipTail) {

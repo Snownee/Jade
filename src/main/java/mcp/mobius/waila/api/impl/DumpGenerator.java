@@ -1,9 +1,9 @@
 package mcp.mobius.waila.api.impl;
 
-import mcp.mobius.waila.api.TooltipPosition;
-
 import java.util.List;
 import java.util.Map;
+
+import mcp.mobius.waila.api.TooltipPosition;
 
 @SuppressWarnings("unchecked")
 public class DumpGenerator {
@@ -20,6 +20,7 @@ public class DumpGenerator {
         createSection(builder, "Decorators", (Map<Class, List<Object>>) (Object) WailaRegistrar.INSTANCE.blockDecorators);
 
         builder.append("\n## Entity");
+        createSection(builder, "Stack Providers", (Map<Class, List<Object>>) (Object) WailaRegistrar.INSTANCE.entityStackProviders);
         createSection(builder, "Override Providers", (Map<Class, List<Object>>) (Object) WailaRegistrar.INSTANCE.entityOverrideProviders);
         createSection(builder, "Head Providers", (Map<Class, List<Object>>) (Object) WailaRegistrar.INSTANCE.entityComponentProviders.get(TooltipPosition.HEAD));
         createSection(builder, "Body Providers", (Map<Class, List<Object>>) (Object) WailaRegistrar.INSTANCE.entityComponentProviders.get(TooltipPosition.BODY));

@@ -25,7 +25,7 @@ public class CommandBlockProvider implements IComponentProvider, IServerDataProv
         if (!config.get(JadePlugin.COMMAND_BLOCK) || !accessor.getServerData().contains("Command")) {
             return;
         }
-        tooltip.add(new StringTextComponent(accessor.getServerData().getString("Command")));
+        tooltip.add(new StringTextComponent("> " + accessor.getServerData().getString("Command")));
     }
 
     @Override
