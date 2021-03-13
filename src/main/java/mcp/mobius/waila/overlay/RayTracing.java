@@ -16,8 +16,10 @@ import mcp.mobius.waila.api.impl.DataAccessor;
 import mcp.mobius.waila.api.impl.WailaRegistrar;
 import mcp.mobius.waila.api.impl.config.PluginConfig;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -29,6 +31,8 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.RayTraceResult.Type;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidUtil;
 
 public class RayTracing {
 
@@ -177,8 +181,14 @@ public class RayTracing {
             if (!pick.isEmpty())
                 return Collections.singletonList(pick);
 
-            if (items.isEmpty() && state.getBlock().asItem() != Items.AIR)
+            if (state.getBlock().asItem() != Items.AIR)
                 items.add(new ItemStack(state.getBlock()));
+
+            if (state.getBlock() instanceof FlowingFluidBlock) {
+                FlowingFluidBlock block = (FlowingFluidBlock) state.getBlock();
+                Fluid fluid = block.getFluid();
+                return Collections.singletonList(FluidUtil.getFilledBucket(new FluidStack(fluid, 1)));
+            }
 
             break;
         }

@@ -11,6 +11,7 @@ import com.google.common.collect.Maps;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.item.PaintingEntity;
 import net.minecraft.entity.item.PaintingType;
 import net.minecraft.item.ItemStack;
@@ -56,6 +57,9 @@ public class ModIdentification {
             if (art != null) {
                 return getModName(art.getRegistryName().getNamespace());
             }
+        }
+        if (entity instanceof ItemEntity) {
+            return getModName(((ItemEntity) entity).getItem());
         }
         return getModName(entity.getType().getRegistryName());
     }

@@ -4,7 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 
 import mcp.mobius.waila.api.Element;
 import mcp.mobius.waila.api.Size;
-import mcp.mobius.waila.overlay.DisplayUtil;
+import mcp.mobius.waila.overlay.DisplayHelper;
 import mcp.mobius.waila.overlay.IconUI;
 
 public class IconElement extends Element {
@@ -23,7 +23,7 @@ public class IconElement extends Element {
 
     @Override
     public void render(MatrixStack matrixStack, int x, int y, int maxX, int maxY) {
-        DisplayUtil.renderIcon(matrixStack, x, y, size, size, icon);
+        DisplayHelper.renderIcon(matrixStack, x, y, size, size, icon);
     }
 
 }

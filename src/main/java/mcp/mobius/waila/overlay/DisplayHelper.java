@@ -4,14 +4,18 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import org.lwjgl.opengl.GL11;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 
+import mcp.mobius.waila.api.IDisplayHelper;
 import mcp.mobius.waila.utils.WailaExceptionHandler;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -28,6 +32,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -35,27 +40,85 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
 @SuppressWarnings("deprecation")
-public class DisplayUtil {
+public class DisplayHelper implements IDisplayHelper {
 
+    public static final DisplayHelper INSTANCE = new DisplayHelper();
     private static final String[] NUM_SUFFIXES = new String[] { "", "k", "m", "b", "t" };
     private static final int MAX_LENGTH = 4;
     private static final Minecraft CLIENT = Minecraft.getInstance();
 
-    public static void renderStack(MatrixStack matrixStack, int x, int y, ItemStack stack, float scale) {
+    @Override
+    public void drawItem(MatrixStack matrixStack, int x, int y, ItemStack stack, float scale) {
         matrixStack.push();
         enable3DRender();
         try {
             renderItemIntoGUI(matrixStack, stack, x, y, scale);
-            ItemStack overlayRender = stack.copy();
-            overlayRender.setCount(1);
-            CLIENT.getItemRenderer().renderItemOverlayIntoGUI(CLIENT.fontRenderer, overlayRender, x, y, null);
+            renderItemOverlayIntoGUI(matrixStack, CLIENT.fontRenderer, stack, x, y, null);
             renderStackSize(matrixStack, CLIENT.fontRenderer, stack, x, y);
         } catch (Exception e) {
             String stackStr = stack != null ? stack.toString() : "NullStack";
-            WailaExceptionHandler.handleErr(e, "renderStack | " + stackStr, null);
+            WailaExceptionHandler.handleErr(e, "drawItem | " + stackStr, null);
         }
         enable2DRender();
         matrixStack.pop();
+    }
+
+    private static void renderItemOverlayIntoGUI(MatrixStack matrixStack, FontRenderer fr, ItemStack stack, int xPosition, int yPosition, @Nullable String text) {
+        if (stack.isEmpty()) {
+            return;
+        }
+        matrixStack.push();
+        ItemRenderer renderer = CLIENT.getItemRenderer();
+        if (stack.getCount() != 1 || text != null) {
+            String s = text == null ? String.valueOf(stack.getCount()) : text;
+            matrixStack.translate(0.0D, 0.0D, (double) (renderer.zLevel + 200.0F));
+            IRenderTypeBuffer.Impl irendertypebuffer$impl = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
+            fr.renderString(s, (float) (xPosition + 19 - 2 - fr.getStringWidth(s)), (float) (yPosition + 6 + 3), 16777215, true, matrixStack.getLast().getMatrix(), irendertypebuffer$impl, false, 0, 15728880);
+            irendertypebuffer$impl.finish();
+        }
+
+        if (stack.getItem().showDurabilityBar(stack)) {
+            RenderSystem.disableDepthTest();
+            RenderSystem.disableTexture();
+            RenderSystem.disableAlphaTest();
+            RenderSystem.disableBlend();
+            Tessellator tessellator = Tessellator.getInstance();
+            BufferBuilder bufferbuilder = tessellator.getBuffer();
+            double health = stack.getItem().getDurabilityForDisplay(stack);
+            int i = Math.round(13.0F - (float) health * 13.0F);
+            int j = stack.getItem().getRGBDurabilityForDisplay(stack);
+            draw(matrixStack, bufferbuilder, xPosition + 2, yPosition + 13, 13, 2, 0, 0, 0, 255);
+            draw(matrixStack, bufferbuilder, xPosition + 2, yPosition + 13, i, 1, j >> 16 & 255, j >> 8 & 255, j & 255, 255);
+            RenderSystem.enableBlend();
+            RenderSystem.enableAlphaTest();
+            RenderSystem.enableTexture();
+            RenderSystem.enableDepthTest();
+        }
+
+        ClientPlayerEntity clientplayerentity = Minecraft.getInstance().player;
+        float f3 = clientplayerentity == null ? 0.0F : clientplayerentity.getCooldownTracker().getCooldown(stack.getItem(), Minecraft.getInstance().getRenderPartialTicks());
+        if (f3 > 0.0F) {
+            RenderSystem.disableDepthTest();
+            RenderSystem.disableTexture();
+            RenderSystem.enableBlend();
+            RenderSystem.defaultBlendFunc();
+            Tessellator tessellator1 = Tessellator.getInstance();
+            BufferBuilder bufferbuilder1 = tessellator1.getBuffer();
+            draw(matrixStack, bufferbuilder1, xPosition, yPosition + MathHelper.floor(16.0F * (1.0F - f3)), 16, MathHelper.ceil(16.0F * f3), 255, 255, 255, 127);
+            RenderSystem.enableTexture();
+            RenderSystem.enableDepthTest();
+        }
+        matrixStack.pop();
+    }
+
+    private static void draw(MatrixStack ms, BufferBuilder renderer, int x, int y, int width, int height, int red, int green, int blue, int alpha) {
+        Matrix4f matrix = ms.getLast().getMatrix();
+        renderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+        renderer.pos(matrix, x, y, 0).color(red, green, blue, alpha).endVertex();
+        renderer.pos(matrix, x, y + height, 0).color(red, green, blue, alpha).endVertex();
+        renderer.pos(matrix, x + width, y + height, 0).color(red, green, blue, alpha).endVertex();
+        renderer.pos(matrix, x + width, y, 0).color(red, green, blue, alpha).endVertex();
+        Tessellator.getInstance().draw();
     }
 
     public static void renderItemIntoGUI(MatrixStack matrixStack, ItemStack stack, int x, int y, float scale) {
@@ -63,7 +126,7 @@ public class DisplayUtil {
         renderItemModelIntoGUI(matrixStack, stack, x, y, renderer.getItemModelWithOverrides(stack, (World) null, (LivingEntity) null), scale);
     }
 
-    protected static void renderItemModelIntoGUI(MatrixStack matrixStack, ItemStack stack, int x, int y, IBakedModel bakedmodel, float scale) {
+    private static void renderItemModelIntoGUI(MatrixStack matrixStack, ItemStack stack, int x, int y, IBakedModel bakedmodel, float scale) {
         ItemRenderer renderer = CLIENT.getItemRenderer();
         TextureManager textureManager = CLIENT.textureManager;
         matrixStack.push();
@@ -97,7 +160,7 @@ public class DisplayUtil {
         matrixStack.pop();
     }
 
-    public static void renderStackSize(MatrixStack matrixStack, FontRenderer fr, ItemStack stack, int xPosition, int yPosition) {
+    private static void renderStackSize(MatrixStack matrixStack, FontRenderer fr, ItemStack stack, int xPosition, int yPosition) {
         if (!stack.isEmpty() && stack.getCount() != 1) {
             String s = shortHandNumber(stack.getCount());
 
@@ -134,7 +197,8 @@ public class DisplayUtil {
         RenderSystem.disableDepthTest();
     }
 
-    public static void drawGradientRect(MatrixStack matrixStack, int left, int top, int right, int bottom, int startColor, int endColor) {
+    @Override
+    public void drawGradientRect(MatrixStack matrixStack, int left, int top, int right, int bottom, int startColor, int endColor) {
         float zLevel = 0.0F;
         Matrix4f matrix = matrixStack.getLast().getMatrix();
 
@@ -165,7 +229,8 @@ public class DisplayUtil {
         RenderSystem.enableTexture();
     }
 
-    public static void drawBorder(MatrixStack matrixStack, int minX, int minY, int maxX, int maxY, int color) {
+    @Override
+    public void drawBorder(MatrixStack matrixStack, int minX, int minY, int maxX, int maxY, int color) {
         AbstractGui.fill(matrixStack, minX, minY, maxX, minY + 1, color);
         AbstractGui.fill(matrixStack, minX, maxY - 1, maxX, maxY, color);
         AbstractGui.fill(matrixStack, minX, minY, minX + 1, maxY, color);
@@ -216,8 +281,8 @@ public class DisplayUtil {
 
         RenderSystem.enableAlphaTest();
         if (icon.bu != -1)
-            DisplayUtil.drawTexturedModalRect(matrixStack, x, y, icon.bu, icon.bv, sx, sy, icon.bsu, icon.bsv);
-        DisplayUtil.drawTexturedModalRect(matrixStack, x, y, icon.u, icon.v, sx, sy, icon.su, icon.sv);
+            DisplayHelper.drawTexturedModalRect(matrixStack, x, y, icon.bu, icon.bv, sx, sy, icon.bsu, icon.bsv);
+        DisplayHelper.drawTexturedModalRect(matrixStack, x, y, icon.u, icon.v, sx, sy, icon.su, icon.sv);
         RenderSystem.disableAlphaTest();
     }
 }

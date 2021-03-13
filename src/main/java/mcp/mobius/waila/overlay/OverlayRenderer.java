@@ -119,9 +119,12 @@ public class OverlayRenderer {
         RenderSystem.enableRescaleNormal();
         if (tooltip.hasItem()) {
             if (tooltip.identifierStack == null) {
-                tooltip.identifierStack = RayTracing.INSTANCE.getIdentifierStack();
+                tooltip.identifierStack = RayTracing.INSTANCE.getIdentifierStack().copy();
+                if (!tooltip.identifierStack.isEmpty()) {
+                    tooltip.identifierStack.setCount(1);
+                }
             }
-            DisplayUtil.renderStack(matrixStack, 5, 2, tooltip.identifierStack, 1);
+            DisplayHelper.INSTANCE.drawItem(matrixStack, 5, 2, tooltip.identifierStack, 1);
         }
 
         WailaRenderEvent.Post postEvent = new WailaRenderEvent.Post(position, matrixStack);
@@ -180,16 +183,16 @@ public class OverlayRenderer {
     }
 
     public static void drawTooltipBox(MatrixStack matrixStack, int x, int y, int w, int h, int bg, int grad1, int grad2, boolean square) {
-        DisplayUtil.drawGradientRect(matrixStack, x + 1, y + 1, w - 1, h - 1, bg, bg);//center
+        DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x + 1, y + 1, w - 1, h - 1, bg, bg);//center
         if (!square) {
-            DisplayUtil.drawGradientRect(matrixStack, x + 1, y, w - 1, 1, bg, bg);
-            DisplayUtil.drawGradientRect(matrixStack, x + 1, y + h, w - 1, 1, bg, bg);
-            DisplayUtil.drawGradientRect(matrixStack, x, y + 1, 1, h - 1, bg, bg);
-            DisplayUtil.drawGradientRect(matrixStack, x + w, y + 1, 1, h - 1, bg, bg);
+            DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x + 1, y, w - 1, 1, bg, bg);
+            DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x + 1, y + h, w - 1, 1, bg, bg);
+            DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x, y + 1, 1, h - 1, bg, bg);
+            DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x + w, y + 1, 1, h - 1, bg, bg);
         }
-        DisplayUtil.drawGradientRect(matrixStack, x + 1, y + 2, 1, h - 3, grad1, grad2);
-        DisplayUtil.drawGradientRect(matrixStack, x + w - 1, y + 2, 1, h - 3, grad1, grad2);
-        DisplayUtil.drawGradientRect(matrixStack, x + 1, y + 1, w - 1, 1, grad1, grad1);
-        DisplayUtil.drawGradientRect(matrixStack, x + 1, y + h - 1, w - 1, 1, grad2, grad2);
+        DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x + 1, y + 2, 1, h - 3, grad1, grad2);
+        DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x + w - 1, y + 2, 1, h - 3, grad1, grad2);
+        DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x + 1, y + 1, w - 1, 1, grad1, grad1);
+        DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x + 1, y + h - 1, w - 1, 1, grad2, grad2);
     }
 }

@@ -9,7 +9,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import mcp.mobius.waila.api.Element;
 import mcp.mobius.waila.api.Size;
 import mcp.mobius.waila.api.impl.Tooltip;
-import mcp.mobius.waila.overlay.DisplayUtil;
+import mcp.mobius.waila.overlay.DisplayHelper;
 import mcp.mobius.waila.overlay.TooltipRenderer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -41,7 +41,7 @@ public class BoxElement extends Element {
         int color = Color.GRAY.getRGB();
         matrixStack.push();
         matrixStack.translate(x, y, 0);
-        DisplayUtil.drawBorder(matrixStack, 0, 0, rect.width + 2, rect.height + 2, color);
+        DisplayHelper.INSTANCE.drawBorder(matrixStack, 0, 0, rect.width + 2, rect.height + 2, color);
         tooltip.draw(matrixStack);
         matrixStack.pop();
     }

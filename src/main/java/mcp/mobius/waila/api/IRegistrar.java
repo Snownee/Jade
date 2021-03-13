@@ -88,4 +88,7 @@ public interface IRegistrar {
      */
     void registerEntityDataProvider(IServerDataProvider<Entity> dataProvider, Class<? extends Entity> entity);
 
+    IElementHelper getElementHelper();
+
+    IDisplayHelper getDisplayHelper();
 }

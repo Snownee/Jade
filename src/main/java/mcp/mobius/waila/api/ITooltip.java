@@ -77,7 +77,7 @@ public interface ITooltip {
 
     void append(int index, IElement element);
 
-    IElementHelper getElementHelper();
-
     void remove(ResourceLocation tag);
+
+    IElementHelper getElementHelper();
 }

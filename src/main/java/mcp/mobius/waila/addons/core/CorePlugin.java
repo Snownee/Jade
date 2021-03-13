@@ -5,13 +5,11 @@ import mcp.mobius.waila.api.IRegistrar;
 import mcp.mobius.waila.api.IWailaPlugin;
 import mcp.mobius.waila.api.TooltipPosition;
 import net.minecraft.block.Block;
-import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import snownee.jade.Jade;
-import snownee.jade.addon.vanilla.InventoryProvider;
 
 public class CorePlugin implements IWailaPlugin {
 
@@ -38,9 +36,6 @@ public class CorePlugin implements IWailaPlugin {
         registrar.registerComponentProvider(BaseBlockProvider.INSTANCE, TooltipPosition.BODY, Block.class);
         registrar.registerComponentProvider(BaseBlockProvider.INSTANCE, TooltipPosition.TAIL, Block.class);
         registrar.registerBlockDataProvider(BaseBlockProvider.INSTANCE, TileEntity.class);
-
-        registrar.registerStackProvider(BaseFluidProvider.INSTANCE, FlowingFluidBlock.class);
-        registrar.registerComponentProvider(BaseFluidProvider.INSTANCE, TooltipPosition.HEAD, FlowingFluidBlock.class);
 
         registrar.registerComponentProvider(BaseEntityProvider.INSTANCE, TooltipPosition.HEAD, Entity.class);
         registrar.registerComponentProvider(BaseEntityProvider.INSTANCE, TooltipPosition.BODY, LivingEntity.class);

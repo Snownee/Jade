@@ -1,4 +1,4 @@
-package snownee.jade.addon.vanilla;
+package mcp.mobius.waila.addons.core;
 
 import java.util.Collections;
 import java.util.List;
@@ -7,7 +7,6 @@ import java.util.Set;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-import mcp.mobius.waila.addons.core.CorePlugin;
 import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IDataAccessor;
 import mcp.mobius.waila.api.IElement;
@@ -46,7 +45,7 @@ public class InventoryProvider implements IComponentProvider, IServerDataProvide
             return;
 
         if (accessor.getServerData().contains("Locked") && accessor.getServerData().getBoolean("Locked")) {
-            tooltip.add(new TranslationTextComponent("jade.locked"));
+            tooltip.add(new TranslationTextComponent("jade.locked"), CorePlugin.CONFIG_INVENTORY);
             return;
         }
 
@@ -77,10 +76,9 @@ public class InventoryProvider implements IComponentProvider, IServerDataProvide
                     drawnCount = 0;
                 }
 
-                elements.add(helper.item(stack));
+                elements.add(helper.item(stack).tag(CorePlugin.CONFIG_INVENTORY));
                 if (showName) {
-                    elements.add(helper.text(stack.getDisplayName()).translate(0, 4));
-                    //elements.add(helper.text(stack.getDisplayName(), 0, 4));
+                    elements.add(helper.text(stack.getDisplayName()).translate(0, 4).tag(CorePlugin.CONFIG_INVENTORY));
                 }
                 drawnCount += 1;
             }

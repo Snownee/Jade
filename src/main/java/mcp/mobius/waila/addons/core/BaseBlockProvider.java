@@ -43,8 +43,8 @@ public class BaseBlockProvider implements IComponentProvider, IServerDataProvide
     }
 
     public void appendHead(ITooltip tooltip, IDataAccessor accessor, IPluginConfig config) {
-        if (accessor.getBlockState().getMaterial().isLiquid())
-            return;
+//        if (accessor.getBlockState().getMaterial().isLiquid())
+//            return;
 
         String name;
         if (accessor.getServerData().contains("givenName", Constants.NBT.TAG_STRING)) {

@@ -5,7 +5,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.Size;
 import mcp.mobius.waila.api.Element;
-import mcp.mobius.waila.overlay.DisplayUtil;
+import mcp.mobius.waila.overlay.DisplayHelper;
 import mcp.mobius.waila.overlay.IconUI;
 import net.minecraft.util.math.MathHelper;
 
@@ -39,17 +39,17 @@ public class HealthElement extends Element {
         int xOffset = 0;
         for (int i = 1; i <= heartCount; i++) {
             if (i <= MathHelper.floor(health)) {
-                DisplayUtil.renderIcon(matrixStack, x + xOffset, y, 8, 8, IconUI.HEART);
+                DisplayHelper.renderIcon(matrixStack, x + xOffset, y, 8, 8, IconUI.HEART);
                 xOffset += 8;
             }
 
             if ((i > health) && (i < health + 1)) {
-                DisplayUtil.renderIcon(matrixStack, x + xOffset, y, 8, 8, IconUI.HALF_HEART);
+                DisplayHelper.renderIcon(matrixStack, x + xOffset, y, 8, 8, IconUI.HALF_HEART);
                 xOffset += 8;
             }
 
             if (i >= health + 1) {
-                DisplayUtil.renderIcon(matrixStack, x + xOffset, y, 8, 8, IconUI.EMPTY_HEART);
+                DisplayHelper.renderIcon(matrixStack, x + xOffset, y, 8, 8, IconUI.EMPTY_HEART);
                 xOffset += 8;
             }
 

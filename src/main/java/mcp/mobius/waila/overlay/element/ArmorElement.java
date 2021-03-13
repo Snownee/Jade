@@ -5,7 +5,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.Element;
 import mcp.mobius.waila.api.Size;
-import mcp.mobius.waila.overlay.DisplayUtil;
+import mcp.mobius.waila.overlay.DisplayHelper;
 import mcp.mobius.waila.overlay.IconUI;
 import net.minecraft.util.math.MathHelper;
 
@@ -43,17 +43,17 @@ public class ArmorElement extends Element {
         int xOffset = 0;
         for (int i = 1; i <= heartCount; i++) {
             if (i <= MathHelper.floor(armor)) {
-                DisplayUtil.renderIcon(matrixStack, x + xOffset, y, 8, 8, IconUI.ARMOR);
+                DisplayHelper.renderIcon(matrixStack, x + xOffset, y, 8, 8, IconUI.ARMOR);
                 xOffset += 8;
             }
 
             if ((i > armor) && (i < armor + 1)) {
-                DisplayUtil.renderIcon(matrixStack, x + xOffset, y, 8, 8, IconUI.HALF_ARMOR);
+                DisplayHelper.renderIcon(matrixStack, x + xOffset, y, 8, 8, IconUI.HALF_ARMOR);
                 xOffset += 8;
             }
 
             if (i >= armor + 1) {
-                DisplayUtil.renderIcon(matrixStack, x + xOffset, y, 8, 8, IconUI.EMPTY_ARMOR);
+                DisplayHelper.renderIcon(matrixStack, x + xOffset, y, 8, 8, IconUI.EMPTY_ARMOR);
                 xOffset += 8;
             }
 

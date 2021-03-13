@@ -17,6 +17,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import snownee.jade.Jade;
+import snownee.jade.VanillaPlugin;
 
 public class BaseEntityProvider implements IEntityComponentProvider {
 
@@ -51,7 +52,9 @@ public class BaseEntityProvider implements IEntityComponentProvider {
     }
 
     public void appendTail(ITooltip tooltip, IEntityAccessor accessor, IPluginConfig config) {
-        if (!config.get(CorePlugin.CONFIG_MOD_NAME) || accessor.getEntity() instanceof ItemEntity)
+        if (!config.get(CorePlugin.CONFIG_MOD_NAME))
+            return;
+        if (accessor.getEntity() instanceof ItemEntity && config.get(CorePlugin.CONFIG_ITEM_MOD_NAME) && config.get(VanillaPlugin.ITEM_TOOLTIP))
             return;
         tooltip.add(new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getModName(), ModIdentification.getModName(accessor.getEntity()))));
     }

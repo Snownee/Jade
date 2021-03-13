@@ -4,12 +4,15 @@ import java.util.EnumMap;
 import java.util.List;
 
 import mcp.mobius.waila.api.IComponentProvider;
+import mcp.mobius.waila.api.IDisplayHelper;
+import mcp.mobius.waila.api.IElementHelper;
 import mcp.mobius.waila.api.IEntityComponentProvider;
 import mcp.mobius.waila.api.IRegistrar;
 import mcp.mobius.waila.api.IServerDataProvider;
 import mcp.mobius.waila.api.TooltipPosition;
 import mcp.mobius.waila.api.impl.config.ConfigEntry;
 import mcp.mobius.waila.api.impl.config.PluginConfig;
+import mcp.mobius.waila.overlay.DisplayHelper;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
@@ -121,6 +124,16 @@ public class WailaRegistrar implements IRegistrar {
 
     public List<IServerDataProvider<Entity>> getEntityNBTProviders(Entity entity) {
         return entityDataProviders.get(entity);
+    }
+
+    @Override
+    public IElementHelper getElementHelper() {
+        return ElementHelper.INSTANCE;
+    }
+
+    @Override
+    public IDisplayHelper getDisplayHelper() {
+        return DisplayHelper.INSTANCE;
     }
 
 }

@@ -14,7 +14,7 @@ import mcp.mobius.waila.api.IElement.Align;
 import mcp.mobius.waila.api.IElementHelper;
 import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.Size;
-import mcp.mobius.waila.overlay.DisplayUtil;
+import mcp.mobius.waila.overlay.DisplayHelper;
 import net.minecraft.util.ResourceLocation;
 
 public class Tooltip implements ITooltip {
@@ -71,9 +71,9 @@ public class Tooltip implements ITooltip {
             if (Waila.CONFIG.get().getGeneral().isDebug()) {
                 Size translate = element.getTranslation();
                 Size size = element.getCachedSize();
-                DisplayUtil.drawBorder(matrixStack, x, y, x + size.width, y + size.height, 0xFFFF0000);
+                DisplayHelper.INSTANCE.drawBorder(matrixStack, x, y, x + size.width, y + size.height, 0xFFFF0000);
                 if (translate != Size.ZERO) {
-                    DisplayUtil.drawBorder(matrixStack, x + translate.width, y + translate.height, x + translate.width + size.width, y + translate.height + size.height, 0xFF0000FF);
+                    DisplayHelper.INSTANCE.drawBorder(matrixStack, x + translate.width, y + translate.height, x + translate.width + size.width, y + translate.height + size.height, 0xFF0000FF);
                 }
             }
         }
