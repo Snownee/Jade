@@ -27,6 +27,7 @@ import mcp.mobius.waila.api.IElementHelper;
 import mcp.mobius.waila.api.IPluginConfig;
 import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.Size;
+import mcp.mobius.waila.api.TooltipPosition;
 import mcp.mobius.waila.overlay.element.SubStringElement;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.resources.I18n;
@@ -130,15 +131,23 @@ public class HarvestToolProvider implements IComponentProvider, ISelectiveResour
         BlockState state = accessor.getBlockState();
         float hardness = state.getBlockHardness(accessor.getWorld(), accessor.getPosition());
         if (hardness < 0) {
-            tooltip.add(UNBREAKABLE_TEXT);
+            if (accessor.getTooltipPosition() == TooltipPosition.BODY) {
+                tooltip.add(UNBREAKABLE_TEXT);
+            }
             return;
         }
 
+        boolean newLine = config.get(VanillaPlugin.HARVEST_TOOL_NEW_LINE);
+        if (!newLine && accessor.getTooltipPosition() != TooltipPosition.TAIL) {
+            return;
+        } else if (newLine && accessor.getTooltipPosition() != TooltipPosition.BODY) {
+            return;
+        }
         List<IElement> elements = getText(accessor, config, tooltip.getElementHelper());
         if (elements.isEmpty()) {
             return;
         }
-        if (config.get(VanillaPlugin.HARVEST_TOOL_NEW_LINE)) {
+        if (newLine) {
             tooltip.add(elements);
         } else {
             elements.forEach(e -> e.align(Align.RIGHT));
@@ -174,8 +183,13 @@ public class HarvestToolProvider implements IComponentProvider, ISelectiveResour
                 name = " " + level;
             }
         }
-        int offsetY = config.get(VanillaPlugin.HARVEST_TOOL_NEW_LINE) ? 0 : -3;
-        elements.add(helper.item(tool, 0.75f).translate(0, offsetY).size(ITEM_SIZE));
+        IElement item = helper.item(tool, 0.75f);
+        int offsetY = 0;
+        if (!config.get(VanillaPlugin.HARVEST_TOOL_NEW_LINE)) {
+            offsetY = -3;
+            item.translate(0, offsetY).size(ITEM_SIZE);
+        }
+        elements.add(item);
 
         boolean canHarvest = ForgeHooks.canHarvestBlock(state, accessor.getPlayer(), accessor.getWorld(), accessor.getPosition());
         if (state.getRequiresTool()) {

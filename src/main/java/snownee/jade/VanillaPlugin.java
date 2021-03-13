@@ -155,7 +155,8 @@ public class VanillaPlugin implements IWailaPlugin {
         registrar.registerEntityDataProvider(ChickenEggProvider.INSTANCE, ChickenEntity.class);
         registrar.addConfig(CHICKEN_EGG, true);
 
-        registrar.registerComponentProvider(HarvestToolProvider.INSTANCE, TooltipPosition.HEAD, Block.class);
+        registrar.registerComponentProvider(HarvestToolProvider.INSTANCE, TooltipPosition.BODY, Block.class);
+        registrar.registerComponentProvider(HarvestToolProvider.INSTANCE, TooltipPosition.TAIL, Block.class);
         registrar.addConfig(HARVEST_TOOL, true);
         registrar.addConfig(HARVEST_TOOL_NEW_LINE, false);
         registrar.addConfig(EFFECTIVE_TOOL, true);

@@ -67,7 +67,7 @@
   "config.waila.plugin_jade.registry_name": "注册名",
   "config.waila.plugin_jade.entity": "实体",
   "config.waila.plugin_jade.entity_hp": "实体生命值",
-  "config.waila.plugin_jade.show_entity_armor": "实体盔甲值",
+  "config.waila.plugin_jade.entity_armor": "实体盔甲值",
   "config.waila.plugin_jade.block_states": "方块状态",
   "config.waila.plugin_jade.inventory": "物品容器",
   "config.waila.plugin_jade.mod_name": "模组名称",
