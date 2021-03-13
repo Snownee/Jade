@@ -18,7 +18,6 @@ import mcp.mobius.waila.api.impl.config.PluginConfig;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -115,7 +114,7 @@ public class RayTracing {
 
         for (Entity entity1 : worldIn.getEntitiesInAABBexcluding(projectile, boundingBox, filter)) {
             AxisAlignedBB axisalignedbb = entity1.getBoundingBox();
-            if (entity1 instanceof ItemEntity) {
+            if (axisalignedbb.getAverageEdgeLength() < 0.3) {
                 axisalignedbb = axisalignedbb.grow(0.3);
             }
             Optional<Vector3d> optional = axisalignedbb.rayTrace(startVec, endVec);
