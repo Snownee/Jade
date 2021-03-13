@@ -169,6 +169,7 @@ public class JadePlugin implements IWailaPlugin {
         registrar.registerComponentProvider(PlayerHeadProvider.INSTANCE, TooltipPosition.HEAD, AbstractSkullBlock.class);
         registrar.addConfig(PLAYER_HEAD, true);
 
+        registrar.registerComponentProvider(VillagerProfessionProvider.INSTANCE, TooltipPosition.HEAD, VillagerEntity.class);
         registrar.registerComponentProvider(VillagerProfessionProvider.INSTANCE, TooltipPosition.BODY, VillagerEntity.class);
         registrar.registerComponentProvider(VillagerProfessionProvider.INSTANCE, TooltipPosition.BODY, ZombieVillagerEntity.class);
         registrar.addConfig(PROFESSION, true);
