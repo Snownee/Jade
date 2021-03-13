@@ -53,18 +53,18 @@ public class WailaClient {
         if (event.getAction() != 1)
             return;
 
-        while (openConfig.isKeyDown()) {
+        if (openConfig.isKeyDown()) {
             Minecraft.getInstance().displayGuiScreen(new GuiConfigHome(null));
         }
 
-        while (showOverlay.isKeyDown()) {
+        if (showOverlay.isKeyDown()) {
             DisplayMode mode = Waila.CONFIG.get().getGeneral().getDisplayMode();
             if (mode == WailaConfig.DisplayMode.TOGGLE) {
                 Waila.CONFIG.get().getGeneral().setDisplayTooltip(!Waila.CONFIG.get().getGeneral().shouldDisplayTooltip());
             }
         }
 
-        while (toggleLiquid.isKeyDown()) {
+        if (toggleLiquid.isKeyDown()) {
             Waila.CONFIG.get().getGeneral().setDisplayFluids(!Waila.CONFIG.get().getGeneral().shouldDisplayFluids());
         }
     }
