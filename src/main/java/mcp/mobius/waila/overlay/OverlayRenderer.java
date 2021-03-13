@@ -43,19 +43,14 @@ public class OverlayRenderer {
         if (!Waila.CONFIG.get().getGeneral().shouldDisplayTooltip())
             return;
 
-        if (Waila.CONFIG.get().getGeneral().getDisplayMode() == WailaConfig.DisplayMode.HOLD_KEY && !WailaClient.showOverlay.getKeyBinding().isPressed())
+        if (Waila.CONFIG.get().getGeneral().getDisplayMode() == WailaConfig.DisplayMode.HOLD_KEY && !WailaClient.showOverlay.getKeyBinding().isKeyDown())
             return;
 
         Minecraft mc = Minecraft.getInstance();
         if ((mc.currentScreen != null && mc.gameSettings.chatVisibility != ChatVisibility.HIDDEN) || mc.world == null)
             return;
 
-        assert mc.player != null;
-        boolean isOnServer = !mc.isSingleplayer() || mc.player.connection.getPlayerInfoMap().size() > 1;
-        if (Waila.CONFIG.get().getGeneral().shouldHideFromPlayerList() && mc.gameSettings.keyBindPlayerList.isPressed() && isOnServer)
-            return;
-
-        if (!Minecraft.isGuiEnabled())
+        if (mc.ingameGUI.getTabList().visible || mc.loadingGui != null || !Minecraft.isGuiEnabled())
             return;
 
         if (mc.gameSettings.showDebugInfo && Waila.CONFIG.get().getGeneral().shouldHideFromDebug())

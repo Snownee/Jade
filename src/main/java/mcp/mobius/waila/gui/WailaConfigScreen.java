@@ -44,9 +44,6 @@ public class WailaConfigScreen extends GuiOptions {
                     options.add(new OptionsEntryValueEnum<>(Util.makeTranslationKey("config", new ResourceLocation(Waila.MODID, "display_mode")), WailaConfig.DisplayMode.values(), Waila.CONFIG.get().getGeneral().getDisplayMode(), val ->
                             Waila.CONFIG.get().getGeneral().setDisplayMode(val)
                     ));
-                    options.add(new OptionsEntryValueBoolean(Util.makeTranslationKey("config", new ResourceLocation(Waila.MODID, "hide_from_players")), Waila.CONFIG.get().getGeneral().shouldHideFromPlayerList(), val ->
-                            Waila.CONFIG.get().getGeneral().setHideFromPlayerList(val)
-                    ));
                     options.add(new OptionsEntryValueBoolean(Util.makeTranslationKey("config", new ResourceLocation(Waila.MODID, "hide_from_debug")), Waila.CONFIG.get().getGeneral().shouldHideFromDebug(), val ->
                             Waila.CONFIG.get().getGeneral().setHideFromDebug(val)
                     ));

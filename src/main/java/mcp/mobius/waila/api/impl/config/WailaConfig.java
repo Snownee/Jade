@@ -43,7 +43,6 @@ public class WailaConfig {
         private boolean displayTooltip = true;
         private boolean shiftForDetails = false;
         private DisplayMode displayMode = DisplayMode.TOGGLE;
-        private boolean hideFromPlayerList = true;
         private boolean hideFromDebug = true;
         private boolean showIcon = true;
         private boolean enableTextToSpeech = false;
@@ -62,10 +61,6 @@ public class WailaConfig {
 
         public void setDisplayMode(DisplayMode displayMode) {
             this.displayMode = displayMode;
-        }
-
-        public void setHideFromPlayerList(boolean hideFromPlayerList) {
-            this.hideFromPlayerList = hideFromPlayerList;
         }
 
         public void setHideFromDebug(boolean hideFromDebug) {
@@ -106,10 +101,6 @@ public class WailaConfig {
 
         public DisplayMode getDisplayMode() {
             return displayMode;
-        }
-
-        public boolean shouldHideFromPlayerList() {
-            return hideFromPlayerList;
         }
 
         public boolean shouldHideFromDebug() {

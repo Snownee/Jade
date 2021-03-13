@@ -32,8 +32,6 @@
   "config.waila.display_mode_desc": "Zachowanie wyświetlania etykiet\nPrzełącz: Włącz i wyłącz przyciskiem „wyświetl”\nPrzytrzymaj: Przytrzymaj przycisk „wyświetl”",
   "config.waila.display_mode_toggle": "Przełącz",
   "config.waila.display_mode_hold_key": "Przytrzymaj",
-  "config.waila.hide_from_players": "Ukryj na liście graczy",
-  "config.waila.hide_from_players_desc": "Ukrywa etykietę po otwarciu listy graczy",
   "config.waila.hide_from_debug": "Ukryj w tr. debugowania",
   "config.waila.hide_from_debug_desc": "Ukrywa etykietę po otwarciu ekranu debugowania",
   "config.waila.display_item": "Pokazuj przedmiot",

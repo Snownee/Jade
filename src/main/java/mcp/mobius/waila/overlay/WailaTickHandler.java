@@ -21,7 +21,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.ChatVisibility;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.RayTraceResult.Type;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextProcessing;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -63,7 +62,7 @@ public class WailaTickHandler {
         Tooltip currentTip = new Tooltip();
         Tooltip currentTipBody = new Tooltip();
 
-        if (target == null || target.getType() == Type.MISS) {
+        if (target == null || target.getType() == RayTraceResult.Type.MISS) {
             tooltipRenderer = null;
             return;
         }
