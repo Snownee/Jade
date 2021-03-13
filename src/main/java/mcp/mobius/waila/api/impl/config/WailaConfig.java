@@ -170,7 +170,7 @@ public class WailaConfig {
         }
 
         public float getOverlayScale() {
-            return overlayScale;
+            return 1;
         }
 
         public float getAnchorX() {

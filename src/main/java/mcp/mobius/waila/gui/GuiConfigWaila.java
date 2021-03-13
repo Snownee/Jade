@@ -66,9 +66,6 @@ public class GuiConfigWaila extends GuiOptions {
                     options.add(new OptionsEntryValueInput<>(Util.makeTranslationKey("config", new ResourceLocation(Waila.MODID, "overlay_pos_y")), Waila.CONFIG.get().getOverlay().getOverlayPosY(), val ->
                             Waila.CONFIG.get().getOverlay().setOverlayPosY(val)
                             , OptionsEntryValueInput.FLOAT));
-                    options.add(new OptionsEntryValueInput<>(Util.makeTranslationKey("config", new ResourceLocation(Waila.MODID, "overlay_scale")), Waila.CONFIG.get().getOverlay().getOverlayScale(), val ->
-                            Waila.CONFIG.get().getOverlay().setOverlayScale(Math.min(2.0F, Math.max(0.1F, val)))
-                            , OptionsEntryValueInput.FLOAT));
                     options.add(new OptionsEntryValueInput<>(Util.makeTranslationKey("config", new ResourceLocation(Waila.MODID, "overlay_anchor_x")), Waila.CONFIG.get().getOverlay().getAnchorX(), val ->
                             Waila.CONFIG.get().getOverlay().setAnchorX(val)
                             , OptionsEntryValueInput.FLOAT));
