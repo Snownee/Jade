@@ -1,19 +1,25 @@
 package mcp.mobius.waila.api.impl.config;
 
+import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import com.google.common.collect.Maps;
-import com.google.gson.*;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.HandSide;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceContext.FluidMode;
-
-import org.apache.commons.lang3.StringEscapeUtils;
-
-import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.Map;
 
 public class WailaConfig {
 
@@ -37,7 +43,6 @@ public class WailaConfig {
         private boolean displayTooltip = true;
         private boolean shiftForDetails = false;
         private DisplayMode displayMode = DisplayMode.TOGGLE;
-        private boolean hideFromPlayerList = true;
         private boolean hideFromDebug = true;
         private boolean showItem = true;
         private boolean enableTextToSpeech = false;
@@ -55,10 +60,6 @@ public class WailaConfig {
 
         public void setDisplayMode(DisplayMode displayMode) {
             this.displayMode = displayMode;
-        }
-
-        public void setHideFromPlayerList(boolean hideFromPlayerList) {
-            this.hideFromPlayerList = hideFromPlayerList;
         }
 
         public void setHideFromDebug(boolean hideFromDebug) {
@@ -99,10 +100,6 @@ public class WailaConfig {
 
         public DisplayMode getDisplayMode() {
             return displayMode;
-        }
-
-        public boolean shouldHideFromPlayerList() {
-            return hideFromPlayerList;
         }
 
         public boolean shouldHideFromDebug() {
@@ -183,15 +180,15 @@ public class WailaConfig {
         public float getAnchorY() {
             return MathHelper.clamp(overlayAnchorY, 0.0F, 1.0F);
         }
-        
+
         public void setFlipMainHand(boolean overlaySquare) {
             this.flipMainHand = overlaySquare;
         }
-        
+
         public boolean getFlipMainHand() {
             return flipMainHand;
         }
-        
+
         public float tryFlip(float f) {
             if (Minecraft.getInstance().gameSettings.mainHand == HandSide.LEFT)
                 f = 1 - f;
@@ -201,7 +198,7 @@ public class WailaConfig {
         public void setSquare(boolean overlaySquare) {
             this.overlaySquare = overlaySquare;
         }
-        
+
         public boolean getSquare() {
             return overlaySquare;
         }
@@ -336,7 +333,6 @@ public class WailaConfig {
     }
 
     public enum DisplayMode {
-        HOLD_KEY,
-        TOGGLE
+        HOLD_KEY, TOGGLE
     }
 }

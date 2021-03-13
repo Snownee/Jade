@@ -41,22 +41,14 @@ public class OverlayRenderer {
         if (!Waila.CONFIG.get().getGeneral().shouldDisplayTooltip())
             return;
 
-        if (Waila.CONFIG.get().getGeneral().getDisplayMode() == WailaConfig.DisplayMode.HOLD_KEY && !WailaClient.showOverlay.getKeyBinding().isPressed())
+        if (Waila.CONFIG.get().getGeneral().getDisplayMode() == WailaConfig.DisplayMode.HOLD_KEY && !WailaClient.showOverlay.getKeyBinding().isKeyDown())
             return;
 
         Minecraft mc = Minecraft.getInstance();
         if ((mc.currentScreen != null && mc.gameSettings.chatVisibility != ChatVisibility.HIDDEN) || mc.world == null)
             return;
 
-        assert mc.player != null;
-        boolean isOnServer = !mc.isSingleplayer() || mc.player.connection.getPlayerInfoMap().size() > 1;
-        if (Waila.CONFIG.get().getGeneral().shouldHideFromPlayerList() && mc.gameSettings.keyBindPlayerList.isPressed() && isOnServer)
-            return;
-
-        if (!Minecraft.isGuiEnabled())
-            return;
-
-        if (mc.gameSettings.showDebugInfo && Waila.CONFIG.get().getGeneral().shouldHideFromDebug())
+        if (mc.ingameGUI.getTabList().visible || mc.loadingGui != null || !Minecraft.isGuiEnabled())
             return;
 
         if (RayTracing.INSTANCE.getTarget() == null)
@@ -99,7 +91,7 @@ public class OverlayRenderer {
         //float scale = Waila.CONFIG.get().getOverlay().getOverlayScale();
         //matrixStack.translate(position.x, position.y, 0);
         //matrixStack.scale(scale, scale, 1.0F);
-        
+
         WailaConfig.ConfigOverlay.ConfigOverlayColor color = Waila.CONFIG.get().getOverlay().getColor();
         if (color.getRawAlpha() > 0) {
             WailaRenderEvent.Color colorEvent = new WailaRenderEvent.Color(color.getAlpha(), color.getBackgroundColor(), color.getGradientStart(), color.getGradientEnd());

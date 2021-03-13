@@ -32,8 +32,6 @@
   "config.waila.display_mode_desc": "Schnellinfo Anzeigeverhalten\nUmschalten: Zugewiesene Tasten schalten es ein und aus\nHalten: Zugewiesene Tasten müssen gehalten werden",
   "config.waila.display_mode_toggle": "Umschalten",
   "config.waila.display_mode_hold_key": "Halten",
-  "config.waila.hide_from_players": "Von Spielerliste verstecken",
-  "config.waila.hide_from_players_desc": "Verstecke Schnellinfo, wenn Spielerliste offen ist",
   "config.waila.hide_from_debug": "Verstecke im Debug",
   "config.waila.hide_from_debug_desc": "Verstecke die Schnellinfo während das Debug-Menü offen ist",
   "config.waila.display_item": "Zeige Item",

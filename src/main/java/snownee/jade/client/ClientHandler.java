@@ -22,16 +22,6 @@ import snownee.jade.JadePlugin;
 public final class ClientHandler {
 
     @SubscribeEvent
-    public static void pre(WailaRenderEvent.Pre event) {
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.ingameGUI.getTabList().visible) {
-            event.setCanceled(true);
-        } else if (mc.loadingGui != null) {
-            event.setCanceled(true);
-        }
-    }
-
-    @SubscribeEvent
     public static void post(WailaRenderEvent.Post event) {
         if (!PluginConfig.INSTANCE.get(JadePlugin.BREAKING_PROGRESS)) {
             return;

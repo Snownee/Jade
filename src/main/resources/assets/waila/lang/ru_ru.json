@@ -32,8 +32,6 @@
   "config.waila.display_mode_desc": "Режим отображения подсказок\nКлавишей: Клавиша отображения включит или выключит подсказки\nУдерживанием: Клавиша отображения должна удерживаться для отображения подсказки",
   "config.waila.display_mode_toggle": "Клавишей",
   "config.waila.display_mode_hold_key": "Удерживанием",
-  "config.waila.hide_from_players": "Скрыть при списке игроков",
-  "config.waila.hide_from_players_desc": "Скрывает подсказку если список игроков открыт",
   "config.waila.hide_from_debug": "Скрыть при отладке",
   "config.waila.hide_from_debug_desc": "Скрывать подсказки если меню отладки открыто",
   "config.waila.display_item": "Отображать предмет",

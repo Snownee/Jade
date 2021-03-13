@@ -3,6 +3,7 @@ package mcp.mobius.waila;
 import mcp.mobius.waila.api.impl.DataAccessor;
 import mcp.mobius.waila.api.impl.config.PluginConfig;
 import mcp.mobius.waila.api.impl.config.WailaConfig;
+import mcp.mobius.waila.api.impl.config.WailaConfig.DisplayMode;
 import mcp.mobius.waila.gui.GuiConfigHome;
 import mcp.mobius.waila.overlay.OverlayRenderer;
 import mcp.mobius.waila.overlay.WailaTickHandler;
@@ -14,7 +15,6 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.client.extensions.IForgeKeybinding;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.event.TickEvent;
@@ -30,9 +30,9 @@ import snownee.jade.JadePlugin;
 @Mod.EventBusSubscriber(modid = Waila.MODID, value = Dist.CLIENT)
 public class WailaClient {
 
-    public static IForgeKeybinding openConfig;
-    public static IForgeKeybinding showOverlay;
-    public static IForgeKeybinding toggleLiquid;
+    public static KeyBinding openConfig;
+    public static KeyBinding showOverlay;
+    public static KeyBinding toggleLiquid;
 
     public static void initClient() {
         ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.CONFIGGUIFACTORY, () -> ((minecraft, screen) -> new GuiConfigHome(screen)));
@@ -50,18 +50,21 @@ public class WailaClient {
     public static void onKeyPressed(InputEvent.KeyInputEvent event) {
         if (openConfig == null || showOverlay == null || toggleLiquid == null)
             return;
+        if (event.getAction() != 1)
+            return;
 
-        while (openConfig.getKeyBinding().isPressed()) {
+        while (openConfig.isKeyDown()) {
             Minecraft.getInstance().displayGuiScreen(new GuiConfigHome(null));
         }
 
-        while (showOverlay.getKeyBinding().isPressed()) {
-            if (Waila.CONFIG.get().getGeneral().getDisplayMode() == WailaConfig.DisplayMode.TOGGLE) {
+        while (showOverlay.isKeyDown()) {
+            DisplayMode mode = Waila.CONFIG.get().getGeneral().getDisplayMode();
+            if (mode == WailaConfig.DisplayMode.TOGGLE) {
                 Waila.CONFIG.get().getGeneral().setDisplayTooltip(!Waila.CONFIG.get().getGeneral().shouldDisplayTooltip());
             }
         }
 
-        while (toggleLiquid.getKeyBinding().isPressed()) {
+        while (toggleLiquid.isKeyDown()) {
             Waila.CONFIG.get().getGeneral().setDisplayFluids(!Waila.CONFIG.get().getGeneral().shouldDisplayFluids());
         }
     }
