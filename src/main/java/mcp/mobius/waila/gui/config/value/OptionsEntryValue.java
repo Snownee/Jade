@@ -1,16 +1,17 @@
 package mcp.mobius.waila.gui.config.value;
 
+import java.util.function.Consumer;
+
 import com.mojang.blaze3d.matrix.MatrixStack;
+
 import mcp.mobius.waila.gui.config.OptionsListWidget;
 import net.minecraft.client.gui.IGuiEventListener;
-import net.minecraft.util.text.TextComponent;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
-
-import java.util.function.Consumer;
 
 public abstract class OptionsEntryValue<T> extends OptionsListWidget.Entry {
 
-    private final TextComponent title;
+    private final ITextComponent title;
     private final String description;
     protected final Consumer<T> save;
     protected T value;
@@ -37,7 +38,7 @@ public abstract class OptionsEntryValue<T> extends OptionsListWidget.Entry {
         return null;
     }
 
-    public TextComponent getTitle() {
+    public ITextComponent getTitle() {
         return title;
     }
 
