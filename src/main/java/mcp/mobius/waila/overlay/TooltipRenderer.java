@@ -83,8 +83,10 @@ public class TooltipRenderer {
     public Rectangle getPosition() {
         MainWindow window = Minecraft.getInstance().getMainWindow();
         ConfigOverlay overlay = Waila.CONFIG.get().getOverlay();
-        int x = (int) (window.getScaledWidth() * overlay.tryFlip(overlay.getOverlayPosX()) - totalSize.width * overlay.tryFlip(overlay.getAnchorX()));
-        int y = (int) (window.getScaledHeight() * (1.0F - overlay.getOverlayPosY()) - totalSize.height * overlay.getAnchorY());
+        //        int x = (int) (window.getScaledWidth() * overlay.tryFlip(overlay.getOverlayPosX()) - totalSize.width * overlay.tryFlip(overlay.getAnchorX()));
+        //        int y = (int) (window.getScaledHeight() * (1.0F - overlay.getOverlayPosY()) - totalSize.height * overlay.getAnchorY());
+        int x = (int) (window.getScaledWidth() * overlay.tryFlip(overlay.getOverlayPosX()));
+        int y = (int) (window.getScaledHeight() * (1.0F - overlay.getOverlayPosY()));
         return new Rectangle(x, y, totalSize.width, totalSize.height);
     }
 
