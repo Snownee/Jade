@@ -7,5 +7,7 @@ assignees: ''
 
 ---
 
- * Minecraft Version:
+ * Forge Version:
  * Mod Version:
+
+drop crash report here if you have

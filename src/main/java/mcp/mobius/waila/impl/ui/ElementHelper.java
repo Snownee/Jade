@@ -1,12 +1,17 @@
-package mcp.mobius.waila.api.impl;
+package mcp.mobius.waila.impl.ui;
 
-import mcp.mobius.waila.api.IElement;
-import mcp.mobius.waila.api.IElementHelper;
+import javax.annotation.Nullable;
+
 import mcp.mobius.waila.api.ITooltip;
-import mcp.mobius.waila.api.Size;
+import mcp.mobius.waila.api.ui.IBorderStyle;
+import mcp.mobius.waila.api.ui.IElement;
+import mcp.mobius.waila.api.ui.IElementHelper;
+import mcp.mobius.waila.api.ui.IProgressStyle;
+import mcp.mobius.waila.api.ui.Size;
+import mcp.mobius.waila.impl.Tooltip;
 import mcp.mobius.waila.overlay.element.BoxElement;
 import mcp.mobius.waila.overlay.element.ItemStackElement;
-import mcp.mobius.waila.overlay.element.ProgressBarElement;
+import mcp.mobius.waila.overlay.element.ProgressElement;
 import mcp.mobius.waila.overlay.element.SpacerElement;
 import mcp.mobius.waila.overlay.element.TextElement;
 import net.minecraft.item.ItemStack;
@@ -40,18 +45,28 @@ public class ElementHelper implements IElementHelper {
     }
 
     @Override
-    public IElement progress(float progress) {
-        return new ProgressBarElement(progress);
+    public IElement progress(float progress, @Nullable ITextComponent text, IProgressStyle style, IBorderStyle borderStyle) {
+        return new ProgressElement(progress, text, (ProgressStyle) style, (BorderStyle) borderStyle);
     }
 
     @Override
-    public IElement box(ITooltip tooltip) {
-        return new BoxElement((Tooltip) tooltip);
+    public IElement box(ITooltip tooltip, IBorderStyle border) {
+        return new BoxElement((Tooltip) tooltip, (BorderStyle) border);
     }
 
     @Override
-    public ITooltip createTooltip() {
+    public ITooltip tooltip() {
         return new Tooltip();
+    }
+
+    @Override
+    public IBorderStyle borderStyle() {
+        return new BorderStyle();
+    }
+
+    @Override
+    public IProgressStyle progressStyle() {
+        return new ProgressStyle();
     }
 
     //

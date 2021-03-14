@@ -1,4 +1,4 @@
-package mcp.mobius.waila.api.impl;
+package mcp.mobius.waila.impl;
 
 import mcp.mobius.waila.api.IDataAccessor;
 import mcp.mobius.waila.api.IEntityAccessor;

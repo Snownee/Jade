@@ -6,13 +6,13 @@ import com.mojang.text2speech.Narrator;
 
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.addons.core.CorePlugin;
-import mcp.mobius.waila.api.IElement;
 import mcp.mobius.waila.api.TooltipPosition;
 import mcp.mobius.waila.api.event.WailaTooltipEvent;
-import mcp.mobius.waila.api.impl.DataAccessor;
-import mcp.mobius.waila.api.impl.MetaDataProvider;
-import mcp.mobius.waila.api.impl.Tooltip;
-import mcp.mobius.waila.api.impl.WailaRegistrar;
+import mcp.mobius.waila.api.ui.IElement;
+import mcp.mobius.waila.impl.DataAccessor;
+import mcp.mobius.waila.impl.MetaDataProvider;
+import mcp.mobius.waila.impl.Tooltip;
+import mcp.mobius.waila.impl.WailaRegistrar;
 import mcp.mobius.waila.network.RequestEntityPacket;
 import mcp.mobius.waila.network.RequestTilePacket;
 import mcp.mobius.waila.overlay.element.TextElement;

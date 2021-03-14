@@ -9,11 +9,11 @@ import com.google.common.collect.Sets;
 
 import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IDataAccessor;
-import mcp.mobius.waila.api.IElement;
-import mcp.mobius.waila.api.IElementHelper;
 import mcp.mobius.waila.api.IPluginConfig;
 import mcp.mobius.waila.api.IServerDataProvider;
 import mcp.mobius.waila.api.ITooltip;
+import mcp.mobius.waila.api.ui.IElement;
+import mcp.mobius.waila.api.ui.IElementHelper;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;

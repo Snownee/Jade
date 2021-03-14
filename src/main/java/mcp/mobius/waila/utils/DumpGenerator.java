@@ -1,8 +1,10 @@
-package mcp.mobius.waila.api.impl;
+package mcp.mobius.waila.utils;
 
 import com.google.common.collect.Multimap;
 
 import mcp.mobius.waila.api.TooltipPosition;
+import mcp.mobius.waila.impl.HierarchyLookup;
+import mcp.mobius.waila.impl.WailaRegistrar;
 
 @SuppressWarnings("unchecked")
 public class DumpGenerator {

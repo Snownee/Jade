@@ -13,7 +13,9 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 
-import mcp.mobius.waila.api.IDisplayHelper;
+import mcp.mobius.waila.api.ui.IBorderStyle;
+import mcp.mobius.waila.api.ui.IDisplayHelper;
+import mcp.mobius.waila.impl.ui.BorderStyle;
 import mcp.mobius.waila.utils.WailaExceptionHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
@@ -237,11 +239,12 @@ public class DisplayHelper implements IDisplayHelper {
     }
 
     @Override
-    public void drawBorder(MatrixStack matrixStack, int minX, int minY, int maxX, int maxY, int color) {
-        AbstractGui.fill(matrixStack, minX, minY, maxX, minY + 1, color);
-        AbstractGui.fill(matrixStack, minX, maxY - 1, maxX, maxY, color);
-        AbstractGui.fill(matrixStack, minX, minY, minX + 1, maxY, color);
-        AbstractGui.fill(matrixStack, maxX - 1, minY, maxX, maxY, color);
+    public void drawBorder(MatrixStack matrixStack, int minX, int minY, int maxX, int maxY, IBorderStyle border0) {
+        BorderStyle border = (BorderStyle) border0;
+        AbstractGui.fill(matrixStack, minX + border.width, minY, maxX - border.width, minY + border.width, border.color);
+        AbstractGui.fill(matrixStack, minX + border.width, maxY - border.width, maxX - border.width, maxY, border.color);
+        AbstractGui.fill(matrixStack, minX, minY, minX + border.width, maxY, border.color);
+        AbstractGui.fill(matrixStack, maxX - border.width, minY, maxX, maxY, border.color);
     }
 
     public static void drawTexturedModalRect(MatrixStack matrixStack, int x, int y, int textureX, int textureY, int width, int height, int tw, int th) {

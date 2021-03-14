@@ -1,10 +1,10 @@
 package snownee.jade.addon.vanilla;
 
-import mcp.mobius.waila.api.IElementHelper;
 import mcp.mobius.waila.api.IEntityAccessor;
 import mcp.mobius.waila.api.IEntityComponentProvider;
 import mcp.mobius.waila.api.IPluginConfig;
 import mcp.mobius.waila.api.ITooltip;
+import mcp.mobius.waila.api.ui.IElementHelper;
 import net.minecraft.entity.item.ArmorStandEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.CapabilityItemHandler;

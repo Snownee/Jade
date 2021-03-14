@@ -3,7 +3,7 @@ package snownee.jade.client;
 import java.awt.Rectangle;
 
 import mcp.mobius.waila.api.event.WailaRenderEvent;
-import mcp.mobius.waila.api.impl.config.PluginConfig;
+import mcp.mobius.waila.impl.config.PluginConfig;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;

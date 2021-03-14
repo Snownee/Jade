@@ -3,19 +3,19 @@ package mcp.mobius.waila.overlay.element;
 import com.mojang.blaze3d.matrix.MatrixStack;
 
 import mcp.mobius.waila.Waila;
-import mcp.mobius.waila.api.Element;
-import mcp.mobius.waila.api.Size;
+import mcp.mobius.waila.api.ui.Element;
+import mcp.mobius.waila.api.ui.Size;
 import mcp.mobius.waila.overlay.DisplayHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 
-public class ProgressBarElement extends Element {
+public class ProgressArrowElement extends Element {
 
     private static final ResourceLocation SHEET = new ResourceLocation(Waila.MODID, "textures/sprites.png");
 
     private final float progress;
 
-    public ProgressBarElement(float progress) {
+    public ProgressArrowElement(float progress) {
         this.progress = progress;
     }
 

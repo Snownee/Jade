@@ -2,8 +2,8 @@ package mcp.mobius.waila.overlay.element;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 
-import mcp.mobius.waila.api.Element;
-import mcp.mobius.waila.api.Size;
+import mcp.mobius.waila.api.ui.Element;
+import mcp.mobius.waila.api.ui.Size;
 import mcp.mobius.waila.overlay.DisplayHelper;
 import mcp.mobius.waila.overlay.IconUI;
 

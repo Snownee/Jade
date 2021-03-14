@@ -6,7 +6,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 
-import mcp.mobius.waila.gui.GuiOptions;
+import mcp.mobius.waila.gui.OptionsScreen;
 import mcp.mobius.waila.gui.config.value.OptionsEntryValue;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.IGuiEventListener;
@@ -18,10 +18,10 @@ import net.minecraft.util.math.MathHelper;
 
 public class OptionsListWidget extends AbstractList<OptionsListWidget.Entry> {
 
-    private final GuiOptions owner;
+    private final OptionsScreen owner;
     private final Runnable diskWriter;
 
-    public OptionsListWidget(GuiOptions owner, Minecraft client, int x, int height, int width, int y, int entryHeight, Runnable diskWriter) {
+    public OptionsListWidget(OptionsScreen owner, Minecraft client, int x, int height, int width, int y, int entryHeight, Runnable diskWriter) {
         super(client, x, height, width, y, entryHeight);
 
         this.owner = owner;
@@ -29,7 +29,7 @@ public class OptionsListWidget extends AbstractList<OptionsListWidget.Entry> {
         setRenderSelection(false);
     }
 
-    public OptionsListWidget(GuiOptions owner, Minecraft client, int x, int height, int width, int y, int entryHeight) {
+    public OptionsListWidget(OptionsScreen owner, Minecraft client, int x, int height, int width, int y, int entryHeight) {
         this(owner, client, x, height, width, y, entryHeight, null);
     }
 

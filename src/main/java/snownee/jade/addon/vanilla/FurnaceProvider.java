@@ -2,10 +2,11 @@ package snownee.jade.addon.vanilla;
 
 import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IDataAccessor;
-import mcp.mobius.waila.api.IElementHelper;
 import mcp.mobius.waila.api.IPluginConfig;
 import mcp.mobius.waila.api.IServerDataProvider;
 import mcp.mobius.waila.api.ITooltip;
+import mcp.mobius.waila.api.ui.IElementHelper;
+import mcp.mobius.waila.overlay.element.ProgressArrowElement;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -40,7 +41,7 @@ public class FurnaceProvider implements IComponentProvider, IServerDataProvider<
 
         tooltip.add(helper.item(inventory.get(0)));
         tooltip.append(helper.item(inventory.get(1)));
-        tooltip.append(helper.progress((float) progress / total));
+        tooltip.append(new ProgressArrowElement((float) progress / total));
         tooltip.append(helper.item(inventory.get(2)));
     }
 

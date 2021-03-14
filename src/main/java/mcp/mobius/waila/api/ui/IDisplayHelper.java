@@ -1,4 +1,4 @@
-package mcp.mobius.waila.api;
+package mcp.mobius.waila.api.ui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 
@@ -10,6 +10,6 @@ public interface IDisplayHelper {
 
     void drawGradientRect(MatrixStack matrixStack, int left, int top, int right, int bottom, int startColor, int endColor);
 
-    void drawBorder(MatrixStack matrixStack, int minX, int minY, int maxX, int maxY, int color);
+    void drawBorder(MatrixStack matrixStack, int minX, int minY, int maxX, int maxY, IBorderStyle border);
 
 }

@@ -3,9 +3,9 @@ package mcp.mobius.waila.overlay.element;
 import com.mojang.blaze3d.matrix.MatrixStack;
 
 import mcp.mobius.waila.Waila;
-import mcp.mobius.waila.api.Element;
-import mcp.mobius.waila.api.Size;
-import mcp.mobius.waila.api.impl.config.WailaConfig;
+import mcp.mobius.waila.api.ui.Element;
+import mcp.mobius.waila.api.ui.Size;
+import mcp.mobius.waila.impl.config.WailaConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraftforge.api.distmarker.Dist;

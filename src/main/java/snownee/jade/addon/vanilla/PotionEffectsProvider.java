@@ -2,12 +2,12 @@ package snownee.jade.addon.vanilla;
 
 import java.util.Collection;
 
-import mcp.mobius.waila.api.IElementHelper;
 import mcp.mobius.waila.api.IEntityAccessor;
 import mcp.mobius.waila.api.IEntityComponentProvider;
 import mcp.mobius.waila.api.IPluginConfig;
 import mcp.mobius.waila.api.IServerDataProvider;
 import mcp.mobius.waila.api.ITooltip;
+import mcp.mobius.waila.api.ui.IElementHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -31,7 +31,7 @@ public class PotionEffectsProvider implements IEntityComponentProvider, IServerD
             return;
         }
         IElementHelper helper = tooltip.getElementHelper();
-        ITooltip box = helper.createTooltip();
+        ITooltip box = helper.tooltip();
         ListNBT list = accessor.getServerData().getList("Potions", Constants.NBT.TAG_COMPOUND);
         ITextComponent[] lines = new ITextComponent[list.size()];
         for (int i = 0; i < lines.length; i++) {

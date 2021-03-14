@@ -1,4 +1,4 @@
-package mcp.mobius.waila.api.impl;
+package mcp.mobius.waila.impl;
 
 import java.util.Collections;
 import java.util.List;

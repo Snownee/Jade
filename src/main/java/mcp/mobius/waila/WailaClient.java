@@ -1,11 +1,11 @@
 package mcp.mobius.waila;
 
 import mcp.mobius.waila.addons.core.CorePlugin;
-import mcp.mobius.waila.api.impl.DataAccessor;
-import mcp.mobius.waila.api.impl.config.PluginConfig;
-import mcp.mobius.waila.api.impl.config.WailaConfig;
-import mcp.mobius.waila.api.impl.config.WailaConfig.DisplayMode;
 import mcp.mobius.waila.gui.HomeConfigScreen;
+import mcp.mobius.waila.impl.DataAccessor;
+import mcp.mobius.waila.impl.config.PluginConfig;
+import mcp.mobius.waila.impl.config.WailaConfig;
+import mcp.mobius.waila.impl.config.WailaConfig.DisplayMode;
 import mcp.mobius.waila.overlay.OverlayRenderer;
 import mcp.mobius.waila.overlay.WailaTickHandler;
 import mcp.mobius.waila.utils.ModIdentification;

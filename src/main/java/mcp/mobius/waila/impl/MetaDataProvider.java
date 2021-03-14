@@ -1,11 +1,11 @@
-package mcp.mobius.waila.api.impl;
+package mcp.mobius.waila.impl;
 
 import java.util.List;
 
 import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IEntityComponentProvider;
 import mcp.mobius.waila.api.TooltipPosition;
-import mcp.mobius.waila.api.impl.config.PluginConfig;
+import mcp.mobius.waila.impl.config.PluginConfig;
 import mcp.mobius.waila.utils.WailaExceptionHandler;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;

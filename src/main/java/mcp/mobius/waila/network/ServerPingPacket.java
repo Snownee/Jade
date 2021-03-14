@@ -10,9 +10,9 @@ import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 
 import mcp.mobius.waila.Waila;
-import mcp.mobius.waila.api.impl.DataAccessor;
-import mcp.mobius.waila.api.impl.config.ConfigEntry;
-import mcp.mobius.waila.api.impl.config.PluginConfig;
+import mcp.mobius.waila.impl.DataAccessor;
+import mcp.mobius.waila.impl.config.ConfigEntry;
+import mcp.mobius.waila.impl.config.PluginConfig;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkEvent;

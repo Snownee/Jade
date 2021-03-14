@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.IServerDataProvider;
-import mcp.mobius.waila.api.impl.WailaRegistrar;
+import mcp.mobius.waila.impl.WailaRegistrar;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;

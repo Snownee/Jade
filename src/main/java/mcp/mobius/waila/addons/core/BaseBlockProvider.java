@@ -1,15 +1,18 @@
 package mcp.mobius.waila.addons.core;
 
+import java.awt.Color;
+
 import com.google.common.base.Strings;
 
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IDataAccessor;
-import mcp.mobius.waila.api.IElementHelper;
 import mcp.mobius.waila.api.IPluginConfig;
 import mcp.mobius.waila.api.IServerDataProvider;
 import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.TooltipPosition;
+import mcp.mobius.waila.api.ui.IElementHelper;
+import mcp.mobius.waila.api.ui.IProgressStyle;
 import mcp.mobius.waila.utils.ModIdentification;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.resources.I18n;
@@ -74,6 +77,10 @@ public class BaseBlockProvider implements IComponentProvider, IServerDataProvide
                 tooltip.add(new StringTextComponent(p.getName() + ":").appendSibling(valueText));
             });
         }
+        IElementHelper helper = tooltip.getElementHelper();
+        IProgressStyle progressStyle = helper.progressStyle().color(Color.RED.getRGB(), 0xFF660000);
+        tooltip.add(helper.progress(0.95f, null, progressStyle, helper.borderStyle()));
+        //        tooltip.add(helper.progress(0.95f, new StringTextComponent("测试测试testtesttesttesttesttesttesttesttesttest"), progressStyle, helper.borderStyle()));
     }
 
     public void appendTail(ITooltip tooltip, IDataAccessor accessor, IPluginConfig config) {

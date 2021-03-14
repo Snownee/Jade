@@ -1,5 +1,7 @@
 package mcp.mobius.waila.api;
 
+import mcp.mobius.waila.api.ui.IDisplayHelper;
+import mcp.mobius.waila.api.ui.IElementHelper;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;

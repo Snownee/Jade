@@ -1,4 +1,4 @@
-package mcp.mobius.waila.api.impl.config;
+package mcp.mobius.waila.impl.config;
 
 import net.minecraft.util.ResourceLocation;
 

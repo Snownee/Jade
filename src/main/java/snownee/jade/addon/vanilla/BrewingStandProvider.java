@@ -2,10 +2,10 @@ package snownee.jade.addon.vanilla;
 
 import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IDataAccessor;
-import mcp.mobius.waila.api.IElementHelper;
 import mcp.mobius.waila.api.IPluginConfig;
 import mcp.mobius.waila.api.IServerDataProvider;
 import mcp.mobius.waila.api.ITooltip;
+import mcp.mobius.waila.api.ui.IElementHelper;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;

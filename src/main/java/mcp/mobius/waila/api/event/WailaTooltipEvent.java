@@ -1,7 +1,7 @@
 package mcp.mobius.waila.api.event;
 
 import mcp.mobius.waila.api.IAccessor;
-import mcp.mobius.waila.api.impl.Tooltip;
+import mcp.mobius.waila.impl.Tooltip;
 import net.minecraftforge.eventbus.api.Event;
 
 /**

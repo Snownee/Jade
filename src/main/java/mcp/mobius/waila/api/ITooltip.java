@@ -2,6 +2,8 @@ package mcp.mobius.waila.api;
 
 import java.util.List;
 
+import mcp.mobius.waila.api.ui.IElement;
+import mcp.mobius.waila.api.ui.IElementHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 

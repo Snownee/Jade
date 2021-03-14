@@ -1,17 +1,18 @@
-package mcp.mobius.waila.api.impl;
+package mcp.mobius.waila.impl;
 
 import java.util.EnumMap;
 import java.util.List;
 
 import mcp.mobius.waila.api.IComponentProvider;
-import mcp.mobius.waila.api.IDisplayHelper;
-import mcp.mobius.waila.api.IElementHelper;
 import mcp.mobius.waila.api.IEntityComponentProvider;
 import mcp.mobius.waila.api.IRegistrar;
 import mcp.mobius.waila.api.IServerDataProvider;
 import mcp.mobius.waila.api.TooltipPosition;
-import mcp.mobius.waila.api.impl.config.ConfigEntry;
-import mcp.mobius.waila.api.impl.config.PluginConfig;
+import mcp.mobius.waila.api.ui.IDisplayHelper;
+import mcp.mobius.waila.api.ui.IElementHelper;
+import mcp.mobius.waila.impl.config.ConfigEntry;
+import mcp.mobius.waila.impl.config.PluginConfig;
+import mcp.mobius.waila.impl.ui.ElementHelper;
 import mcp.mobius.waila.overlay.DisplayHelper;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
@@ -22,14 +23,14 @@ public class WailaRegistrar implements IRegistrar {
 
     public static final WailaRegistrar INSTANCE = new WailaRegistrar();
 
-    final HierarchyLookup<IComponentProvider> blockStackProviders;
-    final EnumMap<TooltipPosition, HierarchyLookup<IComponentProvider>> blockComponentProviders;
-    final HierarchyLookup<IServerDataProvider<TileEntity>> blockDataProviders;
+    public final HierarchyLookup<IComponentProvider> blockStackProviders;
+    public final EnumMap<TooltipPosition, HierarchyLookup<IComponentProvider>> blockComponentProviders;
+    public final HierarchyLookup<IServerDataProvider<TileEntity>> blockDataProviders;
 
-    final HierarchyLookup<IEntityComponentProvider> entityOverrideProviders;
-    final HierarchyLookup<IEntityComponentProvider> entityStackProviders;
-    final EnumMap<TooltipPosition, HierarchyLookup<IEntityComponentProvider>> entityComponentProviders;
-    final HierarchyLookup<IServerDataProvider<Entity>> entityDataProviders;
+    public final HierarchyLookup<IEntityComponentProvider> entityOverrideProviders;
+    public final HierarchyLookup<IEntityComponentProvider> entityStackProviders;
+    public final EnumMap<TooltipPosition, HierarchyLookup<IEntityComponentProvider>> entityComponentProviders;
+    public final HierarchyLookup<IServerDataProvider<Entity>> entityDataProviders;
 
     WailaRegistrar() {
         blockStackProviders = new HierarchyLookup<>(Block.class);

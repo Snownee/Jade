@@ -2,7 +2,7 @@ package mcp.mobius.waila.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import mcp.mobius.waila.Waila;
-import mcp.mobius.waila.api.impl.config.PluginConfig;
+import mcp.mobius.waila.impl.config.PluginConfig;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.text.TranslationTextComponent;

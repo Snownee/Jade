@@ -1,7 +1,8 @@
 package mcp.mobius.waila.command;
 
 import com.mojang.brigadier.CommandDispatcher;
-import mcp.mobius.waila.api.impl.DumpGenerator;
+
+import mcp.mobius.waila.utils.DumpGenerator;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.util.text.StringTextComponent;

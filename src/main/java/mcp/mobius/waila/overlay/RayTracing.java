@@ -10,12 +10,12 @@ import com.google.common.collect.Lists;
 
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.IComponentProvider;
-import mcp.mobius.waila.api.IElement;
 import mcp.mobius.waila.api.IEntityComponentProvider;
-import mcp.mobius.waila.api.Size;
-import mcp.mobius.waila.api.impl.DataAccessor;
-import mcp.mobius.waila.api.impl.WailaRegistrar;
-import mcp.mobius.waila.api.impl.config.PluginConfig;
+import mcp.mobius.waila.api.ui.IElement;
+import mcp.mobius.waila.api.ui.Size;
+import mcp.mobius.waila.impl.DataAccessor;
+import mcp.mobius.waila.impl.WailaRegistrar;
+import mcp.mobius.waila.impl.config.PluginConfig;
 import mcp.mobius.waila.overlay.element.FluidStackElement;
 import mcp.mobius.waila.overlay.element.ItemStackElement;
 import net.minecraft.block.BlockState;
