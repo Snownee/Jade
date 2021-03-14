@@ -14,6 +14,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.HandSide;
@@ -49,6 +51,7 @@ public class WailaConfig {
         private int maxHealthForRender = 40;
         private int maxHeartsPerLine = 10;
         private FluidMode fluldMode = FluidMode.NONE;
+        @Expose
         private boolean debug = false;
 
         public void setDisplayTooltip(boolean displayTooltip) {
@@ -149,6 +152,8 @@ public class WailaConfig {
         private boolean overlaySquare = false;
         private boolean flipMainHand = false;
         private ConfigOverlayColor color = new ConfigOverlayColor();
+        @Expose
+        private float autoScaleThreshold = 0.5f;
 
         public void setOverlayPosX(float overlayPosX) {
             this.overlayPosX = MathHelper.clamp(overlayPosX, 0.0F, 1.0F);
@@ -159,7 +164,7 @@ public class WailaConfig {
         }
 
         public void setOverlayScale(float overlayScale) {
-            this.overlayScale = overlayScale;
+            this.overlayScale = MathHelper.clamp(overlayScale, 0.2F, 2.0F);
         }
 
         public void setAnchorX(float overlayAnchorX) {
@@ -290,6 +295,10 @@ public class WailaConfig {
                     return json;
                 }
             }
+        }
+
+        public float getAutoScaleThreshold() {
+            return autoScaleThreshold;
         }
     }
 

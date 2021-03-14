@@ -53,7 +53,6 @@ public class WailaClient {
         if (event.getAction() != 1)
             return;
 
-        //InputMappings.Input input = InputMappings.getInputByCode(event.getKey(), event.getModifiers());
         if (openConfig.isKeyDown()) {
             Minecraft.getInstance().displayGuiScreen(new HomeConfigScreen(null));
         }
@@ -76,6 +75,9 @@ public class WailaClient {
             String name = String.format(Waila.CONFIG.get().getFormatting().getModName(), ModIdentification.getModName(event.getItemStack()));
             event.getToolTip().add(new StringTextComponent(name));
         }
+        //        if (Waila.CONFIG.get().getGeneral().isDebug() && event.getItemStack().hasTag()) {
+        //            event.getToolTip().add(event.getItemStack().getTag().toFormattedComponent());
+        //        }
     }
 
     @SubscribeEvent

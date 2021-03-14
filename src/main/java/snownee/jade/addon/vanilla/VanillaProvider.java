@@ -4,6 +4,7 @@ import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IDataAccessor;
 import mcp.mobius.waila.api.IElement;
+import mcp.mobius.waila.api.IElementHelper;
 import mcp.mobius.waila.api.IPluginConfig;
 import mcp.mobius.waila.api.IServerDataProvider;
 import mcp.mobius.waila.api.ITooltip;
@@ -14,6 +15,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CropsBlock;
 import net.minecraft.block.JukeboxBlock;
+import net.minecraft.block.LecternBlock;
 import net.minecraft.block.LeverBlock;
 import net.minecraft.block.SilverfishBlock;
 import net.minecraft.client.resources.I18n;
@@ -26,6 +28,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.state.properties.ComparatorMode;
 import net.minecraft.tileentity.JukeboxTileEntity;
+import net.minecraft.tileentity.LecternTileEntity;
 import net.minecraft.tileentity.MobSpawnerTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
@@ -44,7 +47,7 @@ public class VanillaProvider implements IComponentProvider, IServerDataProvider<
 
     @Override
     public IElement getIcon(IDataAccessor accessor, IPluginConfig config, IElement currentIcon) {
-        if (config.get(VanillaPlugin.CONFIG_HIDE_SILVERFISH) && accessor.getBlock() instanceof SilverfishBlock)
+        if (config.get(VanillaPlugin.HIDE_SILVERFISH) && accessor.getBlock() instanceof SilverfishBlock)
             return ItemStackElement.of(new ItemStack(((SilverfishBlock) accessor.getBlock()).getMimickedBlock().asItem()));
 
         if (accessor.getBlock() == Blocks.WHEAT)
@@ -57,13 +60,13 @@ public class VanillaProvider implements IComponentProvider, IServerDataProvider<
     }
 
     public void appendHead(ITooltip tooltip, IDataAccessor accessor, IPluginConfig config) {
-        if (config.get(VanillaPlugin.CONFIG_HIDE_SILVERFISH) && accessor.getBlock() instanceof SilverfishBlock) {
+        if (config.get(VanillaPlugin.HIDE_SILVERFISH) && accessor.getBlock() instanceof SilverfishBlock) {
             tooltip.remove(OBJECT_NAME_TAG);
             Block block = ((SilverfishBlock) accessor.getBlock()).getMimickedBlock();
             tooltip.add(new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getBlockName(), I18n.format(block.getTranslationKey()))), OBJECT_NAME_TAG);
         }
 
-        if (accessor.getBlock() == Blocks.SPAWNER && config.get(VanillaPlugin.CONFIG_SPAWNER_TYPE)) {
+        if (accessor.getBlock() == Blocks.SPAWNER && config.get(VanillaPlugin.SPAWNER_TYPE)) {
             MobSpawnerTileEntity spawner = (MobSpawnerTileEntity) accessor.getTileEntity();
             String name = I18n.format(accessor.getBlock().getTranslationKey());
             name = I18n.format("jade.spawner", name, spawner.getSpawnerBaseLogic().getCachedEntity().getDisplayName().getString());
@@ -83,41 +86,22 @@ public class VanillaProvider implements IComponentProvider, IServerDataProvider<
         BlockState state = accessor.getBlockState();
         Block block = state.getBlock();
 
-        if (config.get(VanillaPlugin.CONFIG_CROP_PROGRESS)) {
+        if (config.get(VanillaPlugin.CROP_PROGRESS)) {
             if (block instanceof CropsBlock) {
                 CropsBlock crop = (CropsBlock) block;
                 addMaturityTooltip(tooltip, state.get(crop.getAgeProperty()) / (float) crop.getMaxAge());
-            } else if (block == Blocks.MELON_STEM || block == Blocks.PUMPKIN_STEM) {
+            } else if (state.hasProperty(BlockStateProperties.AGE_0_7)) {
                 addMaturityTooltip(tooltip, state.get(BlockStateProperties.AGE_0_7) / 7F);
-            } else if (block == Blocks.COCOA) {
+            } else if (state.hasProperty(BlockStateProperties.AGE_0_2)) {
                 addMaturityTooltip(tooltip, state.get(BlockStateProperties.AGE_0_2) / 2.0F);
             }
         }
 
-        if (config.get(VanillaPlugin.CONFIG_LEVER) && block instanceof LeverBlock) {
-            boolean active = state.get(BlockStateProperties.POWERED);
-            tooltip.add(new TranslationTextComponent("tooltip.waila.state", new TranslationTextComponent("tooltip.waila.state_" + (active ? "on" : "off"))));
-            return;
+        if (config.get(VanillaPlugin.REDSTONE)) {
+            appendRedstone(tooltip, state);
         }
 
-        if (config.get(VanillaPlugin.CONFIG_REPEATER) && block == Blocks.REPEATER) {
-            int delay = state.get(BlockStateProperties.DELAY_1_4);
-            tooltip.add(new TranslationTextComponent("tooltip.waila.delay", TextFormatting.WHITE.toString() + delay));
-            return;
-        }
-
-        if (config.get(VanillaPlugin.CONFIG_COMPARATOR) && block == Blocks.COMPARATOR) {
-            ComparatorMode mode = state.get(BlockStateProperties.COMPARATOR_MODE);
-            tooltip.add(new TranslationTextComponent("tooltip.waila.mode", new TranslationTextComponent("tooltip.waila.mode_" + (mode == ComparatorMode.COMPARE ? "comparator" : "subtractor"))));
-            return;
-        }
-
-        if (config.get(VanillaPlugin.CONFIG_REDSTONE) && state.hasProperty(BlockStateProperties.POWER_0_15)) {
-            tooltip.add(new TranslationTextComponent("tooltip.waila.power", TextFormatting.WHITE.toString() + state.get(BlockStateProperties.POWER_0_15)));
-            return;
-        }
-
-        if (config.get(VanillaPlugin.CONFIG_JUKEBOX) && block == Blocks.JUKEBOX) {
+        if (config.get(VanillaPlugin.JUKEBOX) && block instanceof JukeboxBlock) {
             if (state.get(JukeboxBlock.HAS_RECORD) && accessor.getServerData().contains("record")) {
                 try {
                     Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(accessor.getServerData().getString("record")));
@@ -130,6 +114,43 @@ public class VanillaProvider implements IComponentProvider, IServerDataProvider<
             } else
                 tooltip.add(new TranslationTextComponent("tooltip.waila.empty"));
         }
+
+        if (config.get(VanillaPlugin.LECTERN) && block instanceof LecternBlock) {
+            if (state.get(LecternBlock.HAS_BOOK) && accessor.getServerData().contains("book")) {
+                ItemStack stack = ItemStack.read(accessor.getServerData().getCompound("book"));
+                if (!stack.isEmpty()) {
+                    IElementHelper helper = tooltip.getElementHelper();
+                    tooltip.add(helper.item(stack, 0.75f));
+                    tooltip.append(helper.text(stack.getDisplayName()).translate(3, 3));
+                }
+            }
+        }
+    }
+
+    private void appendRedstone(ITooltip tooltip, BlockState state) {
+        Block block = state.getBlock();
+        if (block instanceof LeverBlock) {
+            boolean active = state.get(BlockStateProperties.POWERED);
+            tooltip.add(new TranslationTextComponent("tooltip.waila.state", new TranslationTextComponent("tooltip.waila.state_" + (active ? "on" : "off"))));
+            return;
+        }
+
+        if (block == Blocks.REPEATER) {
+            int delay = state.get(BlockStateProperties.DELAY_1_4);
+            tooltip.add(new TranslationTextComponent("tooltip.waila.delay", TextFormatting.WHITE.toString() + delay));
+            return;
+        }
+
+        if (block == Blocks.COMPARATOR) {
+            ComparatorMode mode = state.get(BlockStateProperties.COMPARATOR_MODE);
+            tooltip.add(new TranslationTextComponent("tooltip.waila.mode", new TranslationTextComponent("tooltip.waila.mode_" + (mode == ComparatorMode.COMPARE ? "comparator" : "subtractor"))));
+            return;
+        }
+
+        if (state.hasProperty(BlockStateProperties.POWER_0_15)) {
+            tooltip.add(new TranslationTextComponent("tooltip.waila.power", TextFormatting.WHITE.toString() + state.get(BlockStateProperties.POWER_0_15)));
+            return;
+        }
     }
 
     @Override
@@ -139,6 +160,16 @@ public class VanillaProvider implements IComponentProvider, IServerDataProvider<
             ItemStack stack = jukebox.getRecord();
             if (!stack.isEmpty()) {
                 data.putString("record", stack.getItem().getRegistryName().toString());
+            }
+        }
+
+        if (blockEntity instanceof LecternTileEntity) {
+            LecternTileEntity lectern = (LecternTileEntity) blockEntity;
+            ItemStack stack = lectern.getBook();
+            if (!stack.isEmpty()) {
+                if (stack.hasDisplayName() || stack.getItem() != Items.WRITABLE_BOOK) {
+                    data.put("book", stack.serializeNBT());
+                }
             }
         }
     }

@@ -23,7 +23,7 @@ public class FurnaceProvider implements IComponentProvider, IServerDataProvider<
 
     @Override
     public void append(ITooltip tooltip, IDataAccessor accessor, IPluginConfig config) {
-        if (!config.get(VanillaPlugin.CONFIG_DISPLAY_FURNACE))
+        if (!config.get(VanillaPlugin.FURNACE))
             return;
 
         int progress = accessor.getServerData().getInt("progress");

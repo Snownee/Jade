@@ -15,6 +15,7 @@ import net.minecraft.block.ComparatorBlock;
 import net.minecraft.block.CropsBlock;
 import net.minecraft.block.DaylightDetectorBlock;
 import net.minecraft.block.JukeboxBlock;
+import net.minecraft.block.LecternBlock;
 import net.minecraft.block.LeverBlock;
 import net.minecraft.block.NoteBlock;
 import net.minecraft.block.RedstoneWireBlock;
@@ -44,6 +45,7 @@ import net.minecraft.tileentity.BeehiveTileEntity;
 import net.minecraft.tileentity.BrewingStandTileEntity;
 import net.minecraft.tileentity.CommandBlockTileEntity;
 import net.minecraft.tileentity.JukeboxTileEntity;
+import net.minecraft.tileentity.LecternTileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import snownee.jade.addon.vanilla.AgeableEntityProvider;
@@ -101,15 +103,13 @@ public class VanillaPlugin implements IWailaPlugin {
     public static final ResourceLocation PROFESSION = MC("profession");
     public static final ResourceLocation ITEM_TOOLTIP = MC("item_tooltip");
 
-    public static final ResourceLocation CONFIG_DISPLAY_FURNACE = MC("display_furnace_contents");
-    public static final ResourceLocation CONFIG_HIDE_SILVERFISH = MC("hide_infestations");
-    public static final ResourceLocation CONFIG_SPAWNER_TYPE = MC("spawner_type");
-    public static final ResourceLocation CONFIG_CROP_PROGRESS = MC("crop_progress");
-    public static final ResourceLocation CONFIG_LEVER = MC("lever");
-    public static final ResourceLocation CONFIG_REPEATER = MC("repeater");
-    public static final ResourceLocation CONFIG_COMPARATOR = MC("comparator");
-    public static final ResourceLocation CONFIG_REDSTONE = MC("redstone");
-    public static final ResourceLocation CONFIG_JUKEBOX = MC("jukebox");
+    public static final ResourceLocation FURNACE = MC("display_furnace_contents");
+    public static final ResourceLocation HIDE_SILVERFISH = MC("hide_infestations");
+    public static final ResourceLocation SPAWNER_TYPE = MC("spawner_type");
+    public static final ResourceLocation CROP_PROGRESS = MC("crop_progress");
+    public static final ResourceLocation REDSTONE = MC("redstone");
+    public static final ResourceLocation JUKEBOX = MC("jukebox");
+    public static final ResourceLocation LECTERN = MC("lectern");
 
     @Override
     public void register(IRegistrar registrar) {
@@ -187,15 +187,13 @@ public class VanillaPlugin implements IWailaPlugin {
         registrar.registerComponentProvider(ItemTooltipProvider.INSTANCE, TooltipPosition.BODY, ItemEntity.class);
         registrar.addConfig(ITEM_TOOLTIP, true);
 
-        registrar.addConfig(CONFIG_DISPLAY_FURNACE, true);
-        registrar.addSyncedConfig(CONFIG_HIDE_SILVERFISH, true);
-        registrar.addConfig(CONFIG_SPAWNER_TYPE, true);
-        registrar.addConfig(CONFIG_CROP_PROGRESS, true);
-        registrar.addConfig(CONFIG_LEVER, true);
-        registrar.addConfig(CONFIG_REPEATER, true);
-        registrar.addConfig(CONFIG_COMPARATOR, true);
-        registrar.addConfig(CONFIG_REDSTONE, true);
-        registrar.addConfig(CONFIG_JUKEBOX, true);
+        registrar.addConfig(FURNACE, true);
+        registrar.addSyncedConfig(HIDE_SILVERFISH, true);
+        registrar.addConfig(SPAWNER_TYPE, true);
+        registrar.addConfig(CROP_PROGRESS, true);
+        registrar.addConfig(REDSTONE, true);
+        registrar.addConfig(JUKEBOX, true);
+        registrar.addConfig(LECTERN, true);
 
         registrar.registerStackProvider(VanillaProvider.INSTANCE, SilverfishBlock.class);
         registrar.registerStackProvider(VanillaProvider.INSTANCE, CropsBlock.class);
@@ -212,7 +210,9 @@ public class VanillaPlugin implements IWailaPlugin {
         registrar.registerComponentProvider(VanillaProvider.INSTANCE, TooltipPosition.BODY, DaylightDetectorBlock.class);
         registrar.registerComponentProvider(VanillaProvider.INSTANCE, TooltipPosition.BODY, RedstoneWireBlock.class);
         registrar.registerComponentProvider(VanillaProvider.INSTANCE, TooltipPosition.BODY, JukeboxBlock.class);
+        registrar.registerComponentProvider(VanillaProvider.INSTANCE, TooltipPosition.BODY, LecternBlock.class);
         registrar.registerBlockDataProvider(VanillaProvider.INSTANCE, JukeboxTileEntity.class);
+        registrar.registerBlockDataProvider(VanillaProvider.INSTANCE, LecternTileEntity.class);
 
         registrar.registerComponentProvider(FurnaceProvider.INSTANCE, TooltipPosition.BODY, AbstractFurnaceBlock.class);
         registrar.registerBlockDataProvider(FurnaceProvider.INSTANCE, AbstractFurnaceTileEntity.class);

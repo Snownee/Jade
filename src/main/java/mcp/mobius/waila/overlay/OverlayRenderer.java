@@ -19,6 +19,7 @@ import mcp.mobius.waila.api.impl.Tooltip;
 import mcp.mobius.waila.api.impl.config.PluginConfig;
 import mcp.mobius.waila.api.impl.config.WailaConfig;
 import mcp.mobius.waila.api.impl.config.WailaConfig.ConfigOverlay;
+import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.ChatVisibility;
@@ -94,8 +95,15 @@ public class OverlayRenderer {
 
         Rectangle position = preEvent.getPosition();
         ConfigOverlay configOverlay = Waila.CONFIG.get().getOverlay();
-        float scale = configOverlay.getOverlayScale();
         matrixStack.translate(position.x, position.y, 0);
+
+        float scale = configOverlay.getOverlayScale();
+        MainWindow window = Minecraft.getInstance().getMainWindow();
+        float thresholdHeight = window.getScaledHeight() * configOverlay.getAutoScaleThreshold();
+        if (position.height * scale > thresholdHeight) {
+            scale = Math.max(scale * 0.5f, thresholdHeight / position.height);
+        }
+
         if (scale != 1) {
             matrixStack.scale(scale, scale, 1.0F);
         }
