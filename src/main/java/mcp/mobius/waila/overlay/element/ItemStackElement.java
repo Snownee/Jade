@@ -5,6 +5,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import mcp.mobius.waila.api.Element;
 import mcp.mobius.waila.api.Size;
 import mcp.mobius.waila.overlay.DisplayHelper;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
 
@@ -40,7 +41,9 @@ public class ItemStackElement extends Element {
     public void render(MatrixStack matrixStack, int x, int y, int maxX, int maxY) {
         if (stack.isEmpty())
             return;
-        DisplayHelper.INSTANCE.drawItem(matrixStack, x, y, stack, scale);
+        RenderHelper.enableStandardItemLighting();
+        DisplayHelper.INSTANCE.drawItem(matrixStack, x + 1, y + 1, stack, scale);
+        RenderHelper.disableStandardItemLighting();
     }
 
 }

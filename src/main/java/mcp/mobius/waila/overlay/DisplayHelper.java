@@ -1,6 +1,7 @@
 package mcp.mobius.waila.overlay;
 
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,17 +28,23 @@ import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.inventory.container.PlayerContainer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import net.minecraftforge.fluids.FluidAttributes;
+import net.minecraftforge.fluids.FluidStack;
 
 @SuppressWarnings("deprecation")
 public class DisplayHelper implements IDisplayHelper {
@@ -284,5 +291,102 @@ public class DisplayHelper implements IDisplayHelper {
             DisplayHelper.drawTexturedModalRect(matrixStack, x, y, icon.bu, icon.bv, sx, sy, icon.bsu, icon.bsv);
         DisplayHelper.drawTexturedModalRect(matrixStack, x, y, icon.u, icon.v, sx, sy, icon.su, icon.sv);
         RenderSystem.disableAlphaTest();
+    }
+
+    //https://github.com/mezz/JustEnoughItems/blob/1.16/src/main/java/mezz/jei/plugins/vanilla/ingredients/fluid/FluidStackRenderer.java
+    private static final NumberFormat nf = NumberFormat.getIntegerInstance();
+    private static final int TEX_WIDTH = 16;
+    private static final int TEX_HEIGHT = 16;
+    private static final int MIN_FLUID_HEIGHT = 1; // ensure tiny amounts of fluid are still visible
+
+    public void drawFluid(MatrixStack matrixStack, final int xPosition, final int yPosition, @Nullable FluidStack fluidStack, int width, int height, int capacityMb) {
+        if (fluidStack == null) {
+            return;
+        }
+        Fluid fluid = fluidStack.getFluid();
+        if (fluid == null) {
+            return;
+        }
+
+        TextureAtlasSprite fluidStillSprite = getStillFluidSprite(fluidStack);
+
+        FluidAttributes attributes = fluid.getAttributes();
+        int fluidColor = attributes.getColor(fluidStack);
+
+        int amount = fluidStack.getAmount();
+        int scaledAmount = (amount * height) / capacityMb;
+        if (amount > 0 && scaledAmount < MIN_FLUID_HEIGHT) {
+            scaledAmount = MIN_FLUID_HEIGHT;
+        }
+        if (scaledAmount > height) {
+            scaledAmount = height;
+        }
+
+        drawTiledSprite(matrixStack, xPosition, yPosition, width, height, fluidColor, scaledAmount, fluidStillSprite);
+    }
+
+    private void drawTiledSprite(MatrixStack matrixStack, final int xPosition, final int yPosition, final int tiledWidth, final int tiledHeight, int color, int scaledAmount, TextureAtlasSprite sprite) {
+        Minecraft minecraft = Minecraft.getInstance();
+        minecraft.getTextureManager().bindTexture(PlayerContainer.LOCATION_BLOCKS_TEXTURE);
+        Matrix4f matrix = matrixStack.getLast().getMatrix();
+        setGLColorFromInt(color);
+
+        final int xTileCount = tiledWidth / TEX_WIDTH;
+        final int xRemainder = tiledWidth - (xTileCount * TEX_WIDTH);
+        final int yTileCount = scaledAmount / TEX_HEIGHT;
+        final int yRemainder = scaledAmount - (yTileCount * TEX_HEIGHT);
+
+        final int yStart = yPosition + tiledHeight;
+
+        for (int xTile = 0; xTile <= xTileCount; xTile++) {
+            for (int yTile = 0; yTile <= yTileCount; yTile++) {
+                int width = (xTile == xTileCount) ? xRemainder : TEX_WIDTH;
+                int height = (yTile == yTileCount) ? yRemainder : TEX_HEIGHT;
+                int x = xPosition + (xTile * TEX_WIDTH);
+                int y = yStart - ((yTile + 1) * TEX_HEIGHT);
+                if (width > 0 && height > 0) {
+                    int maskTop = TEX_HEIGHT - height;
+                    int maskRight = TEX_WIDTH - width;
+
+                    drawTextureWithMasking(matrix, x, y, sprite, maskTop, maskRight, 100);
+                }
+            }
+        }
+    }
+
+    private static TextureAtlasSprite getStillFluidSprite(FluidStack fluidStack) {
+        Minecraft minecraft = Minecraft.getInstance();
+        Fluid fluid = fluidStack.getFluid();
+        FluidAttributes attributes = fluid.getAttributes();
+        ResourceLocation fluidStill = attributes.getStillTexture(fluidStack);
+        return minecraft.getAtlasSpriteGetter(PlayerContainer.LOCATION_BLOCKS_TEXTURE).apply(fluidStill);
+    }
+
+    @SuppressWarnings("deprecation")
+    private static void setGLColorFromInt(int color) {
+        float red = (color >> 16 & 0xFF) / 255.0F;
+        float green = (color >> 8 & 0xFF) / 255.0F;
+        float blue = (color & 0xFF) / 255.0F;
+        float alpha = ((color >> 24) & 0xFF) / 255F;
+
+        RenderSystem.color4f(red, green, blue, alpha);
+    }
+
+    private static void drawTextureWithMasking(Matrix4f matrix, float xCoord, float yCoord, TextureAtlasSprite textureSprite, int maskTop, int maskRight, float zLevel) {
+        float uMin = textureSprite.getMinU();
+        float uMax = textureSprite.getMaxU();
+        float vMin = textureSprite.getMinV();
+        float vMax = textureSprite.getMaxV();
+        uMax = uMax - (maskRight / 16F * (uMax - uMin));
+        vMax = vMax - (maskTop / 16F * (vMax - vMin));
+
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
+        bufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
+        bufferBuilder.pos(matrix, xCoord, yCoord + 16, zLevel).tex(uMin, vMax).endVertex();
+        bufferBuilder.pos(matrix, xCoord + 16 - maskRight, yCoord + 16, zLevel).tex(uMax, vMax).endVertex();
+        bufferBuilder.pos(matrix, xCoord + 16 - maskRight, yCoord + maskTop, zLevel).tex(uMax, vMin).endVertex();
+        bufferBuilder.pos(matrix, xCoord, yCoord + maskTop, zLevel).tex(uMin, vMin).endVertex();
+        tessellator.draw();
     }
 }

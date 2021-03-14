@@ -12,9 +12,11 @@ import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IElement;
 import mcp.mobius.waila.api.IEntityComponentProvider;
+import mcp.mobius.waila.api.Size;
 import mcp.mobius.waila.api.impl.DataAccessor;
 import mcp.mobius.waila.api.impl.WailaRegistrar;
 import mcp.mobius.waila.api.impl.config.PluginConfig;
+import mcp.mobius.waila.overlay.element.FluidStackElement;
 import mcp.mobius.waila.overlay.element.ItemStackElement;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FlowingFluidBlock;
@@ -36,7 +38,6 @@ import net.minecraft.util.math.RayTraceResult.Type;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
 
 public class RayTracing {
 
@@ -179,7 +180,8 @@ public class RayTracing {
             if (isEmpty(icon) && state.getBlock() instanceof FlowingFluidBlock) {
                 FlowingFluidBlock block = (FlowingFluidBlock) state.getBlock();
                 Fluid fluid = block.getFluid();
-                icon = ItemStackElement.of(FluidUtil.getFilledBucket(new FluidStack(fluid, 1)));
+                FluidStack fluidStack = new FluidStack(fluid, 1);
+                icon = new FluidStackElement(fluidStack);//.size(new Size(18, 18));
             }
 
             for (IComponentProvider provider : WailaRegistrar.INSTANCE.getBlockStackProviders(state.getBlock())) {

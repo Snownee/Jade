@@ -44,7 +44,13 @@ public class TooltipRenderer {
             width = Math.max(width, size.width);
             height += size.height;
         }
-        width += hasIcon() ? 30 : 10;
+        if (hasIcon()) {
+            Size size = icon.getCachedSize();
+            width += 12 + size.width;
+            height = Math.max(height, size.height - 5);
+        } else {
+            width += 10;
+        }
         height += 8;
         return new Size(width, height);
     }
@@ -52,7 +58,10 @@ public class TooltipRenderer {
     public void draw(MatrixStack matrixStack) {
         Rectangle position = getPosition();
 
-        int x = hasIcon() ? 26 : 6;
+        int x = 6;
+        if (hasIcon()) {
+            x = icon.getCachedSize().width + 8;
+        }
         int y = 6;
 
         for (Line line : tooltip.lines) {

@@ -117,7 +117,6 @@ public class OverlayRenderer {
             int offsetX = offset.width + 5;
             int offsetY = offset.height + 2;
             Tooltip.drawBorder(matrixStack, offsetX, offsetY, tooltip.icon);
-            enableGUIStandardItemLighting();
             tooltip.icon.render(matrixStack, offsetX, offsetY, offsetX + size.width, offsetY + size.height); //TODO
         }
 
