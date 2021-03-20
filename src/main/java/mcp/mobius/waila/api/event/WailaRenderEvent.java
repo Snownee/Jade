@@ -72,20 +72,20 @@ public class WailaRenderEvent extends Event {
     }
 
     public static class Color extends Event {
-        private final int alpha;
+        private final float alpha;
         private int background;
         private int gradientStart;
         private int gradientEnd;
         private boolean reset;
 
-        public Color(int alpha, int background, int gradientStart, int gradientEnd) {
+        public Color(float alpha, int background, int gradientStart, int gradientEnd) {
             this.alpha = alpha;
             this.background = background;
             this.gradientStart = gradientStart;
             this.gradientEnd = gradientEnd;
         }
 
-        public int getAlpha() {
+        public float getAlpha() {
             return alpha;
         }
 

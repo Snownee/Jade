@@ -13,7 +13,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.IReorderingProcessor;
-import net.minecraft.util.text.TextComponent;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
 public abstract class OptionsScreen extends Screen {
@@ -23,7 +23,7 @@ public abstract class OptionsScreen extends Screen {
     private final Runnable canceller;
     private OptionsListWidget options;
 
-    public OptionsScreen(Screen parent, TextComponent title, Runnable saver, Runnable canceller) {
+    public OptionsScreen(Screen parent, ITextComponent title, Runnable saver, Runnable canceller) {
         super(title);
 
         this.parent = parent;
@@ -31,7 +31,7 @@ public abstract class OptionsScreen extends Screen {
         this.canceller = canceller;
     }
 
-    public OptionsScreen(Screen parent, TextComponent title) {
+    public OptionsScreen(Screen parent, ITextComponent title) {
         this(parent, title, null, null);
     }
 

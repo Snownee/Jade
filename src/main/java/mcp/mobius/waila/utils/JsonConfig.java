@@ -27,7 +27,10 @@ public class JsonConfig<T> {
                 return def;
             }
             try (FileReader reader = new FileReader(configFile)) {
-                return gson.fromJson(reader, configClass);
+                T ret = gson.fromJson(reader, configClass);
+                if (ret == null)
+                    throw new NullPointerException();
+                return ret;
             } catch (Exception e) {
                 e.printStackTrace();
                 try {

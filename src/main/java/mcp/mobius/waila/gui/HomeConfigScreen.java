@@ -6,6 +6,7 @@ import mcp.mobius.waila.impl.config.PluginConfig;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.text.TranslationTextComponent;
+import snownee.jade.Jade;
 
 public class HomeConfigScreen extends Screen {
 
@@ -19,7 +20,7 @@ public class HomeConfigScreen extends Screen {
 
     @Override
     protected void init() {
-        addButton(new Button(width / 2 - 105, height / 2 - 10, 100, 20, new TranslationTextComponent("gui.waila.waila_settings", Waila.NAME), w -> {
+        addButton(new Button(width / 2 - 105, height / 2 - 10, 100, 20, new TranslationTextComponent("gui.waila.waila_settings", Jade.NAME), w -> {
             minecraft.displayGuiScreen(new WailaConfigScreen(HomeConfigScreen.this));
         }));
         addButton(new Button(width / 2 + 5, height / 2 - 10, 100, 20, new TranslationTextComponent("gui.waila.plugin_settings"), w -> {

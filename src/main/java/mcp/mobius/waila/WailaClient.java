@@ -26,6 +26,7 @@ import net.minecraftforge.fml.ExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
+import snownee.jade.Jade;
 
 @Mod.EventBusSubscriber(modid = Waila.MODID, value = Dist.CLIENT)
 public class WailaClient {
@@ -37,9 +38,9 @@ public class WailaClient {
     public static void initClient() {
         ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.CONFIGGUIFACTORY, () -> ((minecraft, screen) -> new HomeConfigScreen(screen)));
 
-        WailaClient.openConfig = new KeyBinding("key.waila.config", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputMappings.Type.KEYSYM.getOrMakeInput(320), Waila.NAME);
-        WailaClient.showOverlay = new KeyBinding("key.waila.show_overlay", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputMappings.Type.KEYSYM.getOrMakeInput(321), Waila.NAME);
-        WailaClient.toggleLiquid = new KeyBinding("key.waila.toggle_liquid", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputMappings.Type.KEYSYM.getOrMakeInput(322), Waila.NAME);
+        WailaClient.openConfig = new KeyBinding("key.waila.config", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputMappings.Type.KEYSYM.getOrMakeInput(320), Jade.NAME);
+        WailaClient.showOverlay = new KeyBinding("key.waila.show_overlay", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputMappings.Type.KEYSYM.getOrMakeInput(321), Jade.NAME);
+        WailaClient.toggleLiquid = new KeyBinding("key.waila.toggle_liquid", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputMappings.Type.KEYSYM.getOrMakeInput(322), Jade.NAME);
 
         ClientRegistry.registerKeyBinding(WailaClient.openConfig.getKeyBinding());
         ClientRegistry.registerKeyBinding(WailaClient.showOverlay.getKeyBinding());
@@ -54,6 +55,7 @@ public class WailaClient {
             return;
 
         if (openConfig.isKeyDown()) {
+        	Waila.CONFIG.invalidate();
             Minecraft.getInstance().displayGuiScreen(new HomeConfigScreen(null));
         }
 

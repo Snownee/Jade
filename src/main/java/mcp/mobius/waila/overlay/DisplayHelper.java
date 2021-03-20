@@ -207,7 +207,7 @@ public class DisplayHelper implements IDisplayHelper {
     }
 
     @Override
-    public void drawGradientRect(MatrixStack matrixStack, int left, int top, int right, int bottom, int startColor, int endColor) {
+    public void drawGradientRect(MatrixStack matrixStack, float left, float top, float right, float bottom, int startColor, int endColor) {
         float zLevel = 0.0F;
         Matrix4f matrix = matrixStack.getLast().getMatrix();
 

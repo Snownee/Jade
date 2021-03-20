@@ -1,7 +1,5 @@
 package mcp.mobius.waila.gui;
 
-import org.apache.commons.lang3.StringEscapeUtils;
-
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.gui.config.OptionsEntryButton;
 import mcp.mobius.waila.gui.config.OptionsListWidget;
@@ -17,11 +15,12 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.RayTraceContext.FluidMode;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+import snownee.jade.Jade;
 
 public class WailaConfigScreen extends OptionsScreen {
 
     public WailaConfigScreen(Screen parent) {
-        super(parent, new TranslationTextComponent("gui.waila.configuration", Waila.NAME), Waila.CONFIG::save, Waila.CONFIG::invalidate);
+        super(parent, new TranslationTextComponent("gui.waila.configuration", Jade.NAME), Waila.CONFIG::save, Waila.CONFIG::invalidate);
     }
 
     @Override
@@ -62,6 +61,14 @@ public class WailaConfigScreen extends OptionsScreen {
                 @Override
                 public OptionsListWidget getOptions() {
                     OptionsListWidget options = new OptionsListWidget(this, minecraft, width + 45, height, 32, height - 32, 30);
+                    options.add(new OptionsEntryValueInput<>(Util.makeTranslationKey("config", new ResourceLocation(Waila.MODID, "overlay_alpha")), Waila.CONFIG.get().getOverlay().getColor().getRawAlpha(), val ->
+                            Waila.CONFIG.get().getOverlay().getColor().setAlpha(Math.min(100, Math.max(0, val)))
+                            , OptionsEntryValueInput.INTEGER));
+                    options.add(new OptionsEntryValueCycle(Util.makeTranslationKey("config", new ResourceLocation(Waila.MODID, "overlay_theme")),
+                            Waila.CONFIG.get().getOverlay().getColor().getThemes().stream().map(t -> t.getId().toString()).sorted(String::compareToIgnoreCase).toArray(String[]::new),
+                            Waila.CONFIG.get().getOverlay().getColor().getTheme().getId().toString(),
+                            val -> Waila.CONFIG.get().getOverlay().getColor().applyTheme(new ResourceLocation(val))
+                    ));
                     options.add(new OptionsEntryValueInput<>(Util.makeTranslationKey("config", new ResourceLocation(Waila.MODID, "overlay_pos_x")), Waila.CONFIG.get().getOverlay().getOverlayPosX(), val ->
                             Waila.CONFIG.get().getOverlay().setOverlayPosX(val)
                             , OptionsEntryValueInput.FLOAT));
@@ -81,24 +88,6 @@ public class WailaConfigScreen extends OptionsScreen {
                             Waila.CONFIG.get().getOverlay().setSquare(val)));
                     options.add(new OptionsEntryValueBoolean(Util.makeTranslationKey("config", new ResourceLocation(Waila.MODID, "flip_main_hand")), Waila.CONFIG.get().getOverlay().getFlipMainHand(), val ->
                             Waila.CONFIG.get().getOverlay().setFlipMainHand(val)));
-                    options.add(new OptionsEntryButton(Util.makeTranslationKey("config", new ResourceLocation(Waila.MODID, "overlay_color")), new Button(0, 0, 100, 20, new StringTextComponent(""), w -> {
-                        minecraft.displayGuiScreen(new OptionsScreen(WailaConfigScreen.this, new TranslationTextComponent(Util.makeTranslationKey("config", new ResourceLocation(Waila.MODID, "overlay_color")))) {
-                            @Override
-                            public OptionsListWidget getOptions() {
-                                OptionsListWidget options = new OptionsListWidget(this, minecraft, width + 45, height, 32, height - 32, 30);
-                                options.add(new OptionsEntryValueInput<>(Util.makeTranslationKey("config", new ResourceLocation(Waila.MODID, "overlay_alpha")), Waila.CONFIG.get().getOverlay().getColor().getRawAlpha(), val ->
-                                        Waila.CONFIG.get().getOverlay().getColor().setAlpha(Math.min(100, Math.max(0, val)))
-                                        , OptionsEntryValueInput.INTEGER));
-                                options.add(new OptionsEntryValueCycle(Util.makeTranslationKey("config", new ResourceLocation(Waila.MODID, "overlay_theme")),
-                                        Waila.CONFIG.get().getOverlay().getColor().getThemes().stream().map(t -> t.getId().toString()).sorted(String::compareToIgnoreCase).toArray(String[]::new),
-                                        Waila.CONFIG.get().getOverlay().getColor().getTheme().getId().toString(),
-                                        val ->
-                                                Waila.CONFIG.get().getOverlay().getColor().applyTheme(new ResourceLocation(val))
-                                ));
-                                return options;
-                            }
-                        });
-                    })));
                     return options;
                 }
             });
@@ -108,19 +97,19 @@ public class WailaConfigScreen extends OptionsScreen {
                 @Override
                 public OptionsListWidget getOptions() {
                     OptionsListWidget options = new OptionsListWidget(this, minecraft, width + 45, height, 32, height - 32, 30);
-                    options.add(new OptionsEntryValueInput<>(Util.makeTranslationKey("config", new ResourceLocation(Waila.MODID, "format_mod_name")), StringEscapeUtils.escapeJava(Waila.CONFIG.get().getFormatting().getModName()), val ->
+                    options.add(new OptionsEntryValueInput<>(Util.makeTranslationKey("config", new ResourceLocation(Waila.MODID, "format_mod_name")), Waila.CONFIG.get().getFormatting().getModName(), val ->
                             Waila.CONFIG.get().getFormatting().setModName(val.isEmpty() || !val.contains("%s") ? Waila.CONFIG.get().getFormatting().getModName() : val)
                     ));
-                    options.add(new OptionsEntryValueInput<>(Util.makeTranslationKey("config", new ResourceLocation(Waila.MODID, "format_block_name")), StringEscapeUtils.escapeJava(Waila.CONFIG.get().getFormatting().getBlockName()), val ->
+                    options.add(new OptionsEntryValueInput<>(Util.makeTranslationKey("config", new ResourceLocation(Waila.MODID, "format_block_name")), Waila.CONFIG.get().getFormatting().getBlockName(), val ->
                             Waila.CONFIG.get().getFormatting().setBlockName(val.isEmpty() || !val.contains("%s") ? Waila.CONFIG.get().getFormatting().getBlockName() : val)
                     ));
-                    options.add(new OptionsEntryValueInput<>(Util.makeTranslationKey("config", new ResourceLocation(Waila.MODID, "format_fluid_name")), StringEscapeUtils.escapeJava(Waila.CONFIG.get().getFormatting().getFluidName()), val ->
+                    options.add(new OptionsEntryValueInput<>(Util.makeTranslationKey("config", new ResourceLocation(Waila.MODID, "format_fluid_name")), Waila.CONFIG.get().getFormatting().getFluidName(), val ->
                             Waila.CONFIG.get().getFormatting().setFluidName(val.isEmpty() || !val.contains("%s") ? Waila.CONFIG.get().getFormatting().getFluidName() : val)
                     ));
-                    options.add(new OptionsEntryValueInput<>(Util.makeTranslationKey("config", new ResourceLocation(Waila.MODID, "format_entity_name")), StringEscapeUtils.escapeJava(Waila.CONFIG.get().getFormatting().getEntityName()), val ->
+                    options.add(new OptionsEntryValueInput<>(Util.makeTranslationKey("config", new ResourceLocation(Waila.MODID, "format_entity_name")), Waila.CONFIG.get().getFormatting().getEntityName(), val ->
                             Waila.CONFIG.get().getFormatting().setEntityName(val.isEmpty() || !val.contains("%s") ? Waila.CONFIG.get().getFormatting().getEntityName() : val)
                     ));
-                    options.add(new OptionsEntryValueInput<>(Util.makeTranslationKey("config", new ResourceLocation(Waila.MODID, "format_registry_name")), StringEscapeUtils.escapeJava(Waila.CONFIG.get().getFormatting().getRegistryName()), val ->
+                    options.add(new OptionsEntryValueInput<>(Util.makeTranslationKey("config", new ResourceLocation(Waila.MODID, "format_registry_name")), Waila.CONFIG.get().getFormatting().getRegistryName(), val ->
                             Waila.CONFIG.get().getFormatting().setRegistryName(val.isEmpty() || !val.contains("%s") ? Waila.CONFIG.get().getFormatting().getRegistryName() : val)
                     ));
                     return options;

@@ -62,7 +62,6 @@
   "config.waila.format_entity_name": "Entity Name",
   "config.waila.format_registry_name": "Registry Name",
 
-  "config.waila.plugin_jade": "Jade",
   "config.waila.plugin_jade.registry_name": "Registry Name",
   "config.waila.plugin_jade.entity": "Entity",
   "config.waila.plugin_jade.entity_hp": "Entity Health",
@@ -78,7 +77,6 @@
 
   "command.dump.success": "Dump successful",
 
-  "config.waila.plugin_minecraft": "Minecraft",
   "config.waila.plugin_minecraft.horse_stat": "Horse Stats",
   "jade.horseStat.jump": "Jump height: %d",
   "jade.horseStat.speed": "Speed: %d",

@@ -4,8 +4,6 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringEscapeUtils;
-
 import com.google.common.collect.Maps;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -15,7 +13,6 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.HandSide;
@@ -222,17 +219,19 @@ public class WailaConfig {
         }
 
         public static class ConfigOverlayColor {
-            private int alpha = 50;
+            private int alpha = 70;
             private Map<ResourceLocation, HUDTheme> themes = Maps.newHashMap();
             private ResourceLocation activeTheme = HUDTheme.DARK.getId();
 
             public ConfigOverlayColor() {
-                themes.put(HUDTheme.VANILLA.getId(), HUDTheme.VANILLA);
+                themes.put(HUDTheme.WAILA.getId(), HUDTheme.WAILA);
                 themes.put(HUDTheme.DARK.getId(), HUDTheme.DARK);
+                themes.put(HUDTheme.CREATE.getId(), HUDTheme.CREATE);
+                themes.put(HUDTheme.TOP.getId(), HUDTheme.TOP);
             }
 
-            public int getAlpha() {
-                return alpha == 100 ? 255 : alpha == 0 ? (int) (0.4F / 100.0F * 256) << 24 : (int) (alpha / 100.0F * 256) << 24;
+            public float getAlpha() {
+                return MathHelper.clamp(alpha / 100f, 0, 1);
             }
 
             public int getRawAlpha() {
@@ -240,7 +239,7 @@ public class WailaConfig {
             }
 
             public HUDTheme getTheme() {
-                return themes.getOrDefault(activeTheme, HUDTheme.VANILLA);
+                return themes.getOrDefault(activeTheme, HUDTheme.DARK);
             }
 
             public Collection<HUDTheme> getThemes() {
@@ -252,19 +251,27 @@ public class WailaConfig {
             }
 
             public int getBackgroundColor() {
-                return getAlpha() + getTheme().getBackgroundColor();
+                return applyAlpha(getTheme().getBackgroundColor(), getAlpha());
             }
 
             public int getGradientStart() {
-                return getAlpha() + getTheme().getGradientStart();
+                return applyAlpha(getTheme().getGradientStart(), getAlpha());
             }
 
             public int getGradientEnd() {
-                return getAlpha() + getTheme().getGradientEnd();
+                return applyAlpha(getTheme().getGradientEnd(), getAlpha());
             }
 
             public int getFontColor() {
                 return getTheme().getFontColor();
+            }
+
+            public static int applyAlpha(int color, float alpha) {
+                int prevAlphaChannel = (color >> 24) & 0xFF;
+                if (prevAlphaChannel > 0)
+                    alpha *= prevAlphaChannel / 256f;
+                int alphaChannel = (int) (0xFF * MathHelper.clamp(alpha, 0, 1));
+                return (color & 0xFFFFFF) | alphaChannel << 24;
             }
 
             public void applyTheme(ResourceLocation id) {
@@ -303,11 +310,11 @@ public class WailaConfig {
     }
 
     public static class ConfigFormatting {
-        private String modName = StringEscapeUtils.escapeJava("\u00A79\u00A7o%s");
-        private String blockName = StringEscapeUtils.escapeJava("\u00a7f%s");
-        private String fluidName = StringEscapeUtils.escapeJava("\u00a7f%s");
-        private String entityName = StringEscapeUtils.escapeJava("\u00a7f%s");
-        private String registryName = StringEscapeUtils.escapeJava("\u00a77[%s]");
+        private String modName = "§9§o%s";
+        private String blockName = "§f%s";
+        private String fluidName = "§f%s";
+        private String entityName = "§f%s";
+        private String registryName = "§7[%s]";
 
         public void setModName(String modName) {
             this.modName = modName;
@@ -330,23 +337,23 @@ public class WailaConfig {
         }
 
         public String getModName() {
-            return StringEscapeUtils.unescapeJava(modName);
+            return modName;
         }
 
         public String getBlockName() {
-            return StringEscapeUtils.unescapeJava(blockName);
+            return blockName;
         }
 
         public String getFluidName() {
-            return StringEscapeUtils.unescapeJava(fluidName);
+            return fluidName;
         }
 
         public String getEntityName() {
-            return StringEscapeUtils.unescapeJava(entityName);
+            return entityName;
         }
 
         public String getRegistryName() {
-            return StringEscapeUtils.unescapeJava(registryName);
+            return registryName;
         }
     }
 

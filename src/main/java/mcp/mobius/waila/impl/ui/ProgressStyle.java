@@ -48,7 +48,9 @@ public class ProgressStyle implements IProgressStyle {
             int alpha = (int) (lighter.getAlpha() * 0.7f);
             lighter = new Color(lighter.getRed(), lighter.getGreen(), lighter.getBlue(), alpha);
 
-            DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x, y, width, height, color, lighter.getRGB());
+            float half = height / 2;
+            DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x, y, width, half, lighter.getRGB(), color);
+            DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x, y + half, width, half, color, lighter.getRGB());
             if (color != color2) {
                 for (int xx = x + 1; xx < x + width; xx += 2) {
                     AbstractGui.fill(matrixStack, xx, y, xx + 1, y + height, color2);
