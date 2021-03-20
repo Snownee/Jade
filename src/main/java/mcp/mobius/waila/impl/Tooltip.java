@@ -105,6 +105,7 @@ public class Tooltip implements ITooltip {
         lines.add(index, line);
     }
 
+    @Override
     public List<IElement> get(ResourceLocation tag) {
         List<IElement> elements = Lists.newArrayList();
         for (Line line : lines) {

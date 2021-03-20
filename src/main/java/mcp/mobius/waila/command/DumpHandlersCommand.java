@@ -21,7 +21,7 @@ public class DumpHandlersCommand {
                     File file = new File("waila_handlers.md");
                     try (FileWriter writer = new FileWriter(file)) {
                         writer.write(DumpGenerator.generateInfoDump());
-                        context.getSource().sendFeedback(new TranslationTextComponent("command.dump.success"), false);
+                        context.getSource().sendFeedback(new TranslationTextComponent("command.waila.dump.success"), false);
                         return 1;
                     } catch (IOException e) {
                         context.getSource().sendErrorMessage(new StringTextComponent(e.getClass().getSimpleName() + ": " + e.getMessage()));

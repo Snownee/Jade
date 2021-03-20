@@ -82,4 +82,6 @@ public interface ITooltip {
     void remove(ResourceLocation tag);
 
     IElementHelper getElementHelper();
+
+    List<IElement> get(ResourceLocation tag);
 }

@@ -48,7 +48,7 @@
   "config.waila.overlay_scale": "Display Scale",
   "config.waila.overlay_anchor_x": "Horizontal Anchor",
   "config.waila.overlay_anchor_y": "Vertical Anchor",
-  "config.waila.overlay_square": "Square",
+  "config.waila.overlay_square": "Square Border",
   "config.waila.flip_main_hand": "Flip Main Hand",
 
   "config.waila.overlay_color": "Color",
@@ -75,7 +75,7 @@
   "entity.minecraft.villager.none": "Unemployed",
   "entity.minecraft.villager.nitwit": "Nitwit",
 
-  "command.dump.success": "Dump successful",
+  "command.waila.dump.success": "Dump successful",
 
   "config.waila.plugin_minecraft.horse_stat": "Horse Stats",
   "jade.horseStat.jump": "Jump height: %d",

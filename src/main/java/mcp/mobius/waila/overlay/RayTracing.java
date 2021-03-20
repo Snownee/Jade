@@ -12,7 +12,6 @@ import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IEntityComponentProvider;
 import mcp.mobius.waila.api.ui.IElement;
-import mcp.mobius.waila.api.ui.Size;
 import mcp.mobius.waila.impl.DataAccessor;
 import mcp.mobius.waila.impl.WailaRegistrar;
 import mcp.mobius.waila.impl.config.PluginConfig;
@@ -109,6 +108,9 @@ public class RayTracing {
         Entity entity = null;
 
         for (Entity entity1 : worldIn.getEntitiesInAABBexcluding(projectile, boundingBox, filter)) {
+            if (entity1.isSpectator() || entity1.canBeCollidedWith()) {
+                continue;
+            }
             AxisAlignedBB axisalignedbb = entity1.getBoundingBox();
             if (axisalignedbb.getAverageEdgeLength() < 0.3) {
                 axisalignedbb = axisalignedbb.grow(0.3);
