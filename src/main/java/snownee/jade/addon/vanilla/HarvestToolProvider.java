@@ -31,6 +31,7 @@ import mcp.mobius.waila.api.ui.IElement.Align;
 import mcp.mobius.waila.overlay.element.SubStringElement;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -128,6 +129,10 @@ public class HarvestToolProvider implements IComponentProvider, ISelectiveResour
 
     @Override
     public void append(ITooltip tooltip, IDataAccessor accessor, IPluginConfig config) {
+        PlayerEntity player = accessor.getPlayer();
+        if (player.isCreative() || player.isSpectator()) {
+            return;
+        }
         BlockState state = accessor.getBlockState();
         float hardness = state.getBlockHardness(accessor.getWorld(), accessor.getPosition());
         if (hardness < 0) {
