@@ -12,6 +12,7 @@ import mcp.mobius.waila.api.IServerDataProvider;
 import mcp.mobius.waila.api.ITaggableList;
 import mcp.mobius.waila.utils.ModIdentification;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.TrappedChestBlock;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -27,6 +28,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import snownee.jade.JadeCommonConfig;
 import snownee.jade.JadePlugin;
+import snownee.jade.addon.vanilla.TrappedChestProvider;
 
 public class HUDHandlerBlocks implements IComponentProvider, IServerDataProvider<TileEntity> {
 
@@ -57,6 +59,9 @@ public class HUDHandlerBlocks implements IComponentProvider, IServerDataProvider
         ((ITaggableList<ResourceLocation, ITextComponent>) tooltip).setTag(OBJECT_NAME_TAG, new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getBlockName(), name)));
         if (config.get(PluginCore.CONFIG_SHOW_REGISTRY))
             ((ITaggableList<ResourceLocation, ITextComponent>) tooltip).setTag(REGISTRY_NAME_TAG, new StringTextComponent(accessor.getBlock().getRegistryName().toString()).mergeStyle(TextFormatting.GRAY));
+        if (accessor.getBlock() instanceof TrappedChestBlock) {
+            TrappedChestProvider.INSTANCE.appendHead(tooltip, accessor, config);
+        }
     }
 
     @Override

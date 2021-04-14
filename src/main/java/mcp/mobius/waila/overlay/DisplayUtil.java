@@ -109,8 +109,10 @@ public class DisplayUtil {
             RenderSystem.disableLighting();
             RenderSystem.disableDepthTest();
             RenderSystem.disableBlend();
-            RenderSystem.translated(0, 0, Minecraft.getInstance().getItemRenderer().zLevel + 200F);
+            matrixStack.push();
+            matrixStack.translate(0, 0, Minecraft.getInstance().getItemRenderer().zLevel + 200F);
             fr.drawStringWithShadow(matrixStack, s, xPosition + 19 - 2 - fr.getStringWidth(s), yPosition + 6 + 3, 16777215);
+            matrixStack.pop();
             RenderSystem.enableLighting();
             RenderSystem.enableDepthTest();
             RenderSystem.enableBlend();

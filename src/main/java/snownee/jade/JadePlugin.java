@@ -11,7 +11,6 @@ import net.minecraft.block.BrewingStandBlock;
 import net.minecraft.block.CommandBlockBlock;
 import net.minecraft.block.NoteBlock;
 import net.minecraft.block.TNTBlock;
-import net.minecraft.block.TrappedChestBlock;
 import net.minecraft.entity.AgeableEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -46,7 +45,6 @@ import snownee.jade.addon.vanilla.PaintingProvider;
 import snownee.jade.addon.vanilla.PlayerHeadProvider;
 import snownee.jade.addon.vanilla.PotionEffectsProvider;
 import snownee.jade.addon.vanilla.TNTProvider;
-import snownee.jade.addon.vanilla.TrappedChestProvider;
 import snownee.jade.addon.vanilla.VillagerProfessionProvider;
 
 @WailaPlugin
@@ -157,7 +155,7 @@ public class JadePlugin implements IWailaPlugin {
 
         registrar.addConfig(BREAKING_PROGRESS, true);
 
-        registrar.registerComponentProvider(TrappedChestProvider.INSTANCE, TooltipPosition.HEAD, TrappedChestBlock.class);
+        //registrar.registerComponentProvider(TrappedChestProvider.INSTANCE, TooltipPosition.HEAD, TrappedChestBlock.class);
         registrar.addConfig(TRAPPED_CHEST, true);
 
         registrar.registerComponentProvider(EnchantmentPowerProvider.INSTANCE, TooltipPosition.BODY, Block.class);
