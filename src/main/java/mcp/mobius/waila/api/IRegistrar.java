@@ -1,5 +1,7 @@
 package mcp.mobius.waila.api;
 
+import mcp.mobius.waila.api.config.IPluginConfig;
+import mcp.mobius.waila.api.config.WailaConfig;
 import mcp.mobius.waila.api.ui.IDisplayHelper;
 import mcp.mobius.waila.api.ui.IElementHelper;
 import net.minecraft.block.Block;
@@ -86,4 +88,6 @@ public interface IRegistrar {
 	IElementHelper getElementHelper();
 
 	IDisplayHelper getDisplayHelper();
+
+	WailaConfig getConfig();
 }

@@ -2,6 +2,7 @@ package mcp.mobius.waila.api;
 
 import javax.annotation.Nullable;
 
+import mcp.mobius.waila.api.config.IPluginConfig;
 import mcp.mobius.waila.api.ui.IElement;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;

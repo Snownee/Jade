@@ -1,13 +1,13 @@
 package mcp.mobius.waila.gui;
 
 import mcp.mobius.waila.Waila;
+import mcp.mobius.waila.api.config.WailaConfig;
 import mcp.mobius.waila.gui.config.OptionsEntryButton;
 import mcp.mobius.waila.gui.config.OptionsListWidget;
 import mcp.mobius.waila.gui.config.value.OptionsEntryValueBoolean;
 import mcp.mobius.waila.gui.config.value.OptionsEntryValueCycle;
 import mcp.mobius.waila.gui.config.value.OptionsEntryValueEnum;
 import mcp.mobius.waila.gui.config.value.OptionsEntryValueInput;
-import mcp.mobius.waila.impl.config.WailaConfig;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.ResourceLocation;

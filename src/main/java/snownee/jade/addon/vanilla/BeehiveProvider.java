@@ -2,9 +2,9 @@ package snownee.jade.addon.vanilla;
 
 import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IBlockAccessor;
-import mcp.mobius.waila.api.IPluginConfig;
 import mcp.mobius.waila.api.IServerDataProvider;
 import mcp.mobius.waila.api.ITooltip;
+import mcp.mobius.waila.api.config.IPluginConfig;
 import net.minecraft.block.BeehiveBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.ServerPlayerEntity;

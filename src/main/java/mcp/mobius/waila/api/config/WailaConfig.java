@@ -1,17 +1,9 @@
-package mcp.mobius.waila.impl.config;
+package mcp.mobius.waila.api.config;
 
-import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Map;
 
 import com.google.common.collect.Maps;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
 import com.google.gson.annotations.Expose;
 
 import net.minecraft.client.Minecraft;
@@ -223,6 +215,10 @@ public class WailaConfig {
 			return overlaySquare;
 		}
 
+		public float getAutoScaleThreshold() {
+			return autoScaleThreshold;
+		}
+
 		public ConfigOverlayColor getColor() {
 			return color;
 		}
@@ -286,35 +282,6 @@ public class WailaConfig {
 			public void applyTheme(ResourceLocation id) {
 				activeTheme = themes.containsKey(id) ? id : activeTheme;
 			}
-
-			public static class Adapter implements JsonSerializer<ConfigOverlayColor>, JsonDeserializer<ConfigOverlayColor> {
-				@Override
-				public ConfigOverlayColor deserialize(JsonElement element, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-					JsonObject json = element.getAsJsonObject();
-					ConfigOverlayColor color = new ConfigOverlayColor();
-					color.alpha = json.getAsJsonPrimitive("alpha").getAsInt();
-					color.activeTheme = new ResourceLocation(json.getAsJsonPrimitive("activeTheme").getAsString());
-					color.themes = Maps.newHashMap();
-					json.getAsJsonArray("themes").forEach(e -> {
-						HUDTheme theme = context.deserialize(e, HUDTheme.class);
-						color.themes.put(theme.getId(), theme);
-					});
-					return color;
-				}
-
-				@Override
-				public JsonElement serialize(ConfigOverlayColor src, Type typeOfSrc, JsonSerializationContext context) {
-					JsonObject json = new JsonObject();
-					json.addProperty("alpha", src.alpha);
-					json.add("themes", context.serialize(src.themes.values()));
-					json.addProperty("activeTheme", src.activeTheme.toString());
-					return json;
-				}
-			}
-		}
-
-		public float getAutoScaleThreshold() {
-			return autoScaleThreshold;
 		}
 	}
 

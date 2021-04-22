@@ -5,12 +5,12 @@ import java.awt.Color;
 import com.google.common.base.Strings;
 
 import mcp.mobius.waila.Waila;
-import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IBlockAccessor;
-import mcp.mobius.waila.api.IPluginConfig;
+import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IServerDataProvider;
 import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.TooltipPosition;
+import mcp.mobius.waila.api.config.IPluginConfig;
 import mcp.mobius.waila.api.ui.IElementHelper;
 import mcp.mobius.waila.api.ui.IProgressStyle;
 import mcp.mobius.waila.utils.ModIdentification;

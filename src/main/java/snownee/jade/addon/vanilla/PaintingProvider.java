@@ -2,8 +2,8 @@ package snownee.jade.addon.vanilla;
 
 import mcp.mobius.waila.api.IEntityAccessor;
 import mcp.mobius.waila.api.IEntityComponentProvider;
-import mcp.mobius.waila.api.IPluginConfig;
 import mcp.mobius.waila.api.ITooltip;
+import mcp.mobius.waila.api.config.IPluginConfig;
 import net.minecraft.entity.item.PaintingEntity;
 import net.minecraft.util.text.StringTextComponent;
 import snownee.jade.VanillaPlugin;

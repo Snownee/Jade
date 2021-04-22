@@ -9,10 +9,10 @@ import com.google.gson.GsonBuilder;
 import mcp.mobius.waila.addons.core.CorePlugin;
 import mcp.mobius.waila.api.IWailaPlugin;
 import mcp.mobius.waila.api.WailaPlugin;
+import mcp.mobius.waila.api.config.WailaConfig;
 import mcp.mobius.waila.command.DumpHandlersCommand;
 import mcp.mobius.waila.impl.WailaRegistrar;
 import mcp.mobius.waila.impl.config.PluginConfig;
-import mcp.mobius.waila.impl.config.WailaConfig;
 import mcp.mobius.waila.network.ReceiveDataPacket;
 import mcp.mobius.waila.network.RequestEntityPacket;
 import mcp.mobius.waila.network.RequestTilePacket;
@@ -45,7 +45,17 @@ public class Waila {
 	public static final String NAME = "Waila";
 	public static final Logger LOGGER = LogManager.getLogger(NAME);
 	public static final SimpleChannel NETWORK = NetworkRegistry.ChannelBuilder.named(new ResourceLocation(MODID, "networking")).clientAcceptedVersions(s -> true).serverAcceptedVersions(s -> true).networkProtocolVersion(() -> "1.0.0").simpleChannel();
-	public static final JsonConfig<WailaConfig> CONFIG = new JsonConfig<>(Jade.MODID + "/" + Jade.MODID, WailaConfig.class).withGson(new GsonBuilder().setPrettyPrinting().registerTypeAdapter(WailaConfig.ConfigOverlay.ConfigOverlayColor.class, new WailaConfig.ConfigOverlay.ConfigOverlayColor.Adapter()).registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer()).create());
+	/** addons: Use {@link mcp.mobius.waila.api.IRegistrar#getConfig} */
+	/* off */
+	public static final JsonConfig<WailaConfig> CONFIG = 
+			new JsonConfig<>(Jade.MODID + "/" + Jade.MODID, WailaConfig.class).withGson(
+					new GsonBuilder()
+					.setPrettyPrinting()
+					.enableComplexMapKeySerialization()
+					.registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
+					.create()
+			);
+	/* on */
 
 	public Waila() {
 		ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.DISPLAYTEST, () -> Pair.of(() -> FMLNetworkConstants.IGNORESERVERONLY, (a, b) -> true));

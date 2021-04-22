@@ -1,4 +1,4 @@
-package mcp.mobius.waila.api;
+package mcp.mobius.waila.api.config;
 
 import java.util.Set;
 

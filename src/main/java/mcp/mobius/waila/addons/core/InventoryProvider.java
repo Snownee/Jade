@@ -9,9 +9,9 @@ import com.google.common.collect.Sets;
 
 import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IBlockAccessor;
-import mcp.mobius.waila.api.IPluginConfig;
 import mcp.mobius.waila.api.IServerDataProvider;
 import mcp.mobius.waila.api.ITooltip;
+import mcp.mobius.waila.api.config.IPluginConfig;
 import mcp.mobius.waila.api.ui.IElement;
 import mcp.mobius.waila.api.ui.IElementHelper;
 import net.minecraft.entity.player.ServerPlayerEntity;

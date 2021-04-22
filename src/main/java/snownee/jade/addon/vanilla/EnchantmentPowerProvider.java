@@ -2,8 +2,8 @@ package snownee.jade.addon.vanilla;
 
 import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IBlockAccessor;
-import mcp.mobius.waila.api.IPluginConfig;
 import mcp.mobius.waila.api.ITooltip;
+import mcp.mobius.waila.api.config.IPluginConfig;
 import net.minecraft.block.EnchantingTableBlock;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;

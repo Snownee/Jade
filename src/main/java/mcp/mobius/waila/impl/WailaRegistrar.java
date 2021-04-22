@@ -3,11 +3,13 @@ package mcp.mobius.waila.impl;
 import java.util.EnumMap;
 import java.util.List;
 
+import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IEntityComponentProvider;
 import mcp.mobius.waila.api.IRegistrar;
 import mcp.mobius.waila.api.IServerDataProvider;
 import mcp.mobius.waila.api.TooltipPosition;
+import mcp.mobius.waila.api.config.WailaConfig;
 import mcp.mobius.waila.api.ui.IDisplayHelper;
 import mcp.mobius.waila.api.ui.IElementHelper;
 import mcp.mobius.waila.impl.config.ConfigEntry;
@@ -124,6 +126,11 @@ public class WailaRegistrar implements IRegistrar {
 	@Override
 	public IDisplayHelper getDisplayHelper() {
 		return DisplayHelper.INSTANCE;
+	}
+
+	@Override
+	public WailaConfig getConfig() {
+		return Waila.CONFIG.get();
 	}
 
 }
