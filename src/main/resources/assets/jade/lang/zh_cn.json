@@ -52,7 +52,7 @@
   "config.waila.plugin_jade.ench_power": "附魔能力",
   "config.waila.plugin_jade.total_ench_power": "总附魔能力",
   "jade.ench_power": "附魔能力：%s",
-  "config.waila.plugin_jade.player_head": "玩家的头",
+  "config.waila.plugin_jade.player_head": "玩家头颅",
   "config.waila.plugin_jade.profession": "村民职业",
   "config.waila.plugin_jade.show_entity_armor": "实体盔甲",
   "config.waila.plugin_jade.item_tooltip": "物品工具提示"

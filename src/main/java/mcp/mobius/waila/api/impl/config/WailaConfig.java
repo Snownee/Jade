@@ -49,6 +49,7 @@ public class WailaConfig {
         private int maxHealthForRender = 40;
         private int maxHeartsPerLine = 10;
         private FluidMode fluldMode = FluidMode.NONE;
+        private float reachDistance = 0;
 
         public void setDisplayTooltip(boolean displayTooltip) {
             this.displayTooltip = displayTooltip;
@@ -129,12 +130,19 @@ public class WailaConfig {
         public FluidMode getDisplayFluids() {
             return fluldMode;
         }
+
+		public float getReachDistance() {
+			return reachDistance;
+		}
+
+		public void setReachDistance(float reachDistance) {
+			this.reachDistance = MathHelper.clamp(reachDistance, 0, 30);
+		}
     }
 
     public static class ConfigOverlay {
         private float overlayPosX = 0.5F;
         private float overlayPosY = 0.99F;
-        private float overlayScale = 1.0F;
         private float overlayAnchorX = 0.5F;
         private float overlayAnchorY = 0F;
         private boolean overlaySquare = false;
@@ -150,7 +158,6 @@ public class WailaConfig {
         }
 
         public void setOverlayScale(float overlayScale) {
-            this.overlayScale = overlayScale;
         }
 
         public void setAnchorX(float overlayAnchorX) {
