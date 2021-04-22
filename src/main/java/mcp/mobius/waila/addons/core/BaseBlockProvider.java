@@ -6,7 +6,7 @@ import com.google.common.base.Strings;
 
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.IComponentProvider;
-import mcp.mobius.waila.api.IDataAccessor;
+import mcp.mobius.waila.api.IBlockAccessor;
 import mcp.mobius.waila.api.IPluginConfig;
 import mcp.mobius.waila.api.IServerDataProvider;
 import mcp.mobius.waila.api.ITooltip;
@@ -34,7 +34,7 @@ public class BaseBlockProvider implements IComponentProvider, IServerDataProvide
 	public static final BaseBlockProvider INSTANCE = new BaseBlockProvider();
 
 	@Override
-	public void append(ITooltip tooltip, IDataAccessor accessor, IPluginConfig config) {
+	public void append(ITooltip tooltip, IBlockAccessor accessor, IPluginConfig config) {
 		TooltipPosition position = accessor.getTooltipPosition();
 		if (position == TooltipPosition.HEAD) {
 			appendHead(tooltip, accessor, config);
@@ -45,7 +45,7 @@ public class BaseBlockProvider implements IComponentProvider, IServerDataProvide
 		}
 	}
 
-	public void appendHead(ITooltip tooltip, IDataAccessor accessor, IPluginConfig config) {
+	public void appendHead(ITooltip tooltip, IBlockAccessor accessor, IPluginConfig config) {
 		String name;
 		if (accessor.getServerData().contains("givenName", Constants.NBT.TAG_STRING)) {
 			ITextComponent component = ITextComponent.Serializer.getComponentFromJson(accessor.getServerData().getString("givenName"));
@@ -68,7 +68,7 @@ public class BaseBlockProvider implements IComponentProvider, IServerDataProvide
 			tooltip.add(new StringTextComponent(accessor.getBlock().getRegistryName().toString()).mergeStyle(TextFormatting.GRAY), CorePlugin.TAG_REGISTRY_NAME);
 	}
 
-	public void appendBody(ITooltip tooltip, IDataAccessor accessor, IPluginConfig config) {
+	public void appendBody(ITooltip tooltip, IBlockAccessor accessor, IPluginConfig config) {
 		if (config.get(CorePlugin.CONFIG_BLOCK_STATES)) {
 			BlockState state = accessor.getBlockState();
 			state.getProperties().forEach(p -> {
@@ -83,7 +83,7 @@ public class BaseBlockProvider implements IComponentProvider, IServerDataProvide
 		//        tooltip.add(helper.progress(0.95f, new StringTextComponent("测试测试testtesttesttesttesttesttesttesttesttest"), progressStyle, helper.borderStyle()));
 	}
 
-	public void appendTail(ITooltip tooltip, IDataAccessor accessor, IPluginConfig config) {
+	public void appendTail(ITooltip tooltip, IBlockAccessor accessor, IPluginConfig config) {
 		if (!config.get(CorePlugin.CONFIG_MOD_NAME))
 			return;
 		String modName = ModIdentification.getModName(accessor.getBlock());

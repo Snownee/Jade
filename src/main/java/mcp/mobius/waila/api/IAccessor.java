@@ -26,5 +26,7 @@ public interface IAccessor {
 	@Nullable
 	TooltipPosition getTooltipPosition();
 
+	void setTooltipPosition(TooltipPosition position);
+
 	boolean isServerConnected();
 }

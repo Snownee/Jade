@@ -1,7 +1,7 @@
 package snownee.jade.addon.vanilla;
 
 import mcp.mobius.waila.api.IComponentProvider;
-import mcp.mobius.waila.api.IDataAccessor;
+import mcp.mobius.waila.api.IBlockAccessor;
 import mcp.mobius.waila.api.IPluginConfig;
 import mcp.mobius.waila.api.IServerDataProvider;
 import mcp.mobius.waila.api.ITooltip;
@@ -21,7 +21,7 @@ public class BeehiveProvider implements IComponentProvider, IServerDataProvider<
 	public static final BeehiveProvider INSTANCE = new BeehiveProvider();
 
 	@Override
-	public void append(ITooltip tooltip, IDataAccessor accessor, IPluginConfig config) {
+	public void append(ITooltip tooltip, IBlockAccessor accessor, IPluginConfig config) {
 		if (!config.get(VanillaPlugin.BEEHIVE)) {
 			return;
 		}

@@ -1,6 +1,6 @@
 package mcp.mobius.waila.impl;
 
-import mcp.mobius.waila.api.IDataAccessor;
+import mcp.mobius.waila.api.IBlockAccessor;
 import mcp.mobius.waila.api.IEntityAccessor;
 import mcp.mobius.waila.api.TooltipPosition;
 import net.minecraft.block.Block;
@@ -17,7 +17,7 @@ import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 
-public class DataAccessor implements IDataAccessor, IEntityAccessor {
+public class DataAccessor implements IBlockAccessor, IEntityAccessor {
 
 	public static final DataAccessor INSTANCE = new DataAccessor();
 
@@ -31,7 +31,7 @@ public class DataAccessor implements IDataAccessor, IEntityAccessor {
 	public CompoundNBT serverData = null;
 	public long timeLastUpdate = System.currentTimeMillis();
 	public boolean serverConnected;
-	public TooltipPosition tooltipPosition;
+	private TooltipPosition tooltipPosition;
 
 	public void set(World world, PlayerEntity player, RayTraceResult hit) {
 		this.world = world;
@@ -173,6 +173,11 @@ public class DataAccessor implements IDataAccessor, IEntityAccessor {
 	@Override
 	public TooltipPosition getTooltipPosition() {
 		return tooltipPosition;
+	}
+
+	@Override
+	public void setTooltipPosition(TooltipPosition position) {
+		tooltipPosition = position;
 	}
 
 	@Override

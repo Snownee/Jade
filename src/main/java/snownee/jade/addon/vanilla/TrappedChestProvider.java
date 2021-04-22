@@ -6,7 +6,7 @@ import com.google.common.cache.CacheBuilder;
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.addons.core.CorePlugin;
 import mcp.mobius.waila.api.IComponentProvider;
-import mcp.mobius.waila.api.IDataAccessor;
+import mcp.mobius.waila.api.IBlockAccessor;
 import mcp.mobius.waila.api.IPluginConfig;
 import mcp.mobius.waila.api.ITooltip;
 import net.minecraft.block.Block;
@@ -26,7 +26,7 @@ public class TrappedChestProvider implements IComponentProvider {
 	private static final ITextComponent DEFAULT_NAME = new TranslationTextComponent(Blocks.CHEST.getTranslationKey());
 
 	@Override
-	public void append(ITooltip tooltip, IDataAccessor accessor, IPluginConfig config) {
+	public void append(ITooltip tooltip, IBlockAccessor accessor, IPluginConfig config) {
 		if (!config.get(VanillaPlugin.TRAPPED_CHEST)) {
 			return;
 		}

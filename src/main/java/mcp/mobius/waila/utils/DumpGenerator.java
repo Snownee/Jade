@@ -20,7 +20,6 @@ public class DumpGenerator {
 		createSection(builder, "Data Providers", WailaRegistrar.INSTANCE.blockDataProviders);
 
 		builder.append("\n## Entity");
-		createSection(builder, "Override Providers", WailaRegistrar.INSTANCE.entityOverrideProviders);
 		createSection(builder, "Stack Providers", WailaRegistrar.INSTANCE.entityStackProviders);
 		createSection(builder, "Head Providers", WailaRegistrar.INSTANCE.entityComponentProviders.get(TooltipPosition.HEAD));
 		createSection(builder, "Body Providers", WailaRegistrar.INSTANCE.entityComponentProviders.get(TooltipPosition.BODY));

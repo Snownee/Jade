@@ -20,7 +20,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.IComponentProvider;
-import mcp.mobius.waila.api.IDataAccessor;
+import mcp.mobius.waila.api.IBlockAccessor;
 import mcp.mobius.waila.api.IPluginConfig;
 import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.TooltipPosition;
@@ -128,7 +128,7 @@ public class HarvestToolProvider implements IComponentProvider, ISelectiveResour
 	}
 
 	@Override
-	public void append(ITooltip tooltip, IDataAccessor accessor, IPluginConfig config) {
+	public void append(ITooltip tooltip, IBlockAccessor accessor, IPluginConfig config) {
 		PlayerEntity player = accessor.getPlayer();
 		if (player.isCreative() || player.isSpectator()) {
 			return;
@@ -160,7 +160,7 @@ public class HarvestToolProvider implements IComponentProvider, ISelectiveResour
 		}
 	}
 
-	public List<IElement> getText(IDataAccessor accessor, IPluginConfig config, IElementHelper helper) {
+	public List<IElement> getText(IBlockAccessor accessor, IPluginConfig config, IElementHelper helper) {
 		if (!config.get(VanillaPlugin.HARVEST_TOOL)) {
 			return Collections.EMPTY_LIST;
 		}

@@ -6,7 +6,11 @@ import com.mojang.text2speech.Narrator;
 
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.addons.core.CorePlugin;
+import mcp.mobius.waila.api.IAccessor;
+import mcp.mobius.waila.api.IBlockAccessor;
+import mcp.mobius.waila.api.IEntityAccessor;
 import mcp.mobius.waila.api.TooltipPosition;
+import mcp.mobius.waila.api.event.WailaRayTraceEvent;
 import mcp.mobius.waila.api.event.WailaTooltipEvent;
 import mcp.mobius.waila.api.ui.IElement;
 import mcp.mobius.waila.impl.DataAccessor;
@@ -20,12 +24,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.ChatVisibility;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextProcessing;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -66,52 +72,49 @@ public class WailaTickHandler {
 			tooltipRenderer = null;
 			return;
 		}
-		DataAccessor accessor = DataAccessor.INSTANCE;
-		Entity targetEntity = null;
-		if (target.getType() == RayTraceResult.Type.BLOCK) {
-			accessor.set(world, player, target);
+		DataAccessor.INSTANCE.set(world, player, target);
+		WailaRayTraceEvent event = new WailaRayTraceEvent(DataAccessor.INSTANCE);
+		MinecraftForge.EVENT_BUS.post(event);
+		IAccessor accessor = event.getTarget();
+		if (accessor == null || accessor.getHitResult() == null)
+			return;
 
-			if (accessor.serverConnected && accessor.getTileEntity() != null && Waila.CONFIG.get().getGeneral().shouldDisplayTooltip()) {
-				if (accessor.isTimeElapsed(MetaDataProvider.rateLimiter)) {
-					accessor.resetTimer();
-					if (!WailaRegistrar.INSTANCE.getBlockNBTProviders(accessor.getTileEntity()).isEmpty())
-						Waila.NETWORK.sendToServer(new RequestTilePacket(accessor.getTileEntity()));
+		if (accessor instanceof IBlockAccessor && target.getType() == RayTraceResult.Type.BLOCK) {
+			TileEntity tileEntity = ((IBlockAccessor) accessor).getTileEntity();
+			if (accessor.isServerConnected() && tileEntity != null && Waila.CONFIG.get().getGeneral().shouldDisplayTooltip()) {
+				if (DataAccessor.INSTANCE.isTimeElapsed(MetaDataProvider.rateLimiter)) {
+					DataAccessor.INSTANCE.resetTimer();
+					if (!WailaRegistrar.INSTANCE.getBlockNBTProviders(tileEntity).isEmpty())
+						Waila.NETWORK.sendToServer(new RequestTilePacket(tileEntity));
 				}
-				if (DataAccessor.INSTANCE.serverData == null) {
-					if (!WailaRegistrar.INSTANCE.getBlockNBTProviders(accessor.getTileEntity()).isEmpty())
+				if (accessor == DataAccessor.INSTANCE && DataAccessor.INSTANCE.serverData == null) {
+					if (!WailaRegistrar.INSTANCE.getBlockNBTProviders(tileEntity).isEmpty())
 						return;
 				}
 			}
-		} else if (target.getType() == RayTraceResult.Type.ENTITY) {
-			accessor.set(world, player, target);
-
-			if (accessor.serverConnected && accessor.getEntity() != null && Waila.CONFIG.get().getGeneral().shouldDisplayTooltip()) {
-				if (accessor.isTimeElapsed(MetaDataProvider.rateLimiter)) {
-					accessor.resetTimer();
-					if (!WailaRegistrar.INSTANCE.getEntityNBTProviders(accessor.getEntity()).isEmpty())
-						Waila.NETWORK.sendToServer(new RequestEntityPacket(accessor.getEntity()));
+		} else if (accessor instanceof IEntityAccessor && target.getType() == RayTraceResult.Type.ENTITY) {
+			Entity entity = ((IEntityAccessor) accessor).getEntity();
+			if (accessor.isServerConnected() && entity != null && Waila.CONFIG.get().getGeneral().shouldDisplayTooltip()) {
+				if (DataAccessor.INSTANCE.isTimeElapsed(MetaDataProvider.rateLimiter)) {
+					DataAccessor.INSTANCE.resetTimer();
+					if (!WailaRegistrar.INSTANCE.getEntityNBTProviders(entity).isEmpty())
+						Waila.NETWORK.sendToServer(new RequestEntityPacket(entity));
 				}
-				if (DataAccessor.INSTANCE.serverData == null) {
-					if (!WailaRegistrar.INSTANCE.getEntityNBTProviders(accessor.getEntity()).isEmpty())
+				if (accessor == DataAccessor.INSTANCE && DataAccessor.INSTANCE.serverData == null) {
+					if (!WailaRegistrar.INSTANCE.getEntityNBTProviders(entity).isEmpty())
 						return;
 				}
-			}
-
-			targetEntity = RayTracing.INSTANCE.getTargetEntity(); // This need to be replaced by the override check.
-
-			if (targetEntity == null) {
-				return;
 			}
 		}
 
-		instance().handler.gatherComponents(targetEntity, accessor, currentTip, TooltipPosition.HEAD);
-		instance().handler.gatherComponents(targetEntity, accessor, currentTipBody, TooltipPosition.BODY);
+		instance().handler.gatherComponents(accessor, currentTip, TooltipPosition.HEAD);
+		instance().handler.gatherComponents(accessor, currentTipBody, TooltipPosition.BODY);
 		if (Waila.CONFIG.get().getGeneral().shouldShiftForDetails() && !currentTipBody.isEmpty() && !player.isSecondaryUseActive()) {
 			currentTip.add(new TranslationTextComponent("tooltip.waila.sneak_for_details").setStyle(Style.EMPTY.setItalic(true)));
 		} else {
 			currentTip.lines.addAll(currentTipBody.lines);
 		}
-		instance().handler.gatherComponents(targetEntity, accessor, currentTip, TooltipPosition.TAIL);
+		instance().handler.gatherComponents(accessor, currentTip, TooltipPosition.TAIL);
 
 		tooltipRenderer = new TooltipRenderer(currentTip, true);
 	}

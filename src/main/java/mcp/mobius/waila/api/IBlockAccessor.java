@@ -14,7 +14,7 @@ import net.minecraft.util.math.BlockPos;
  * @author ProfMobius
  */
 
-public interface IDataAccessor extends IAccessor {
+public interface IBlockAccessor extends IAccessor {
 
 	Block getBlock();
 

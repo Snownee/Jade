@@ -4,7 +4,7 @@ import com.mojang.authlib.GameProfile;
 
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.IComponentProvider;
-import mcp.mobius.waila.api.IDataAccessor;
+import mcp.mobius.waila.api.IBlockAccessor;
 import mcp.mobius.waila.api.IPluginConfig;
 import mcp.mobius.waila.api.ITooltip;
 import net.minecraft.client.resources.I18n;
@@ -20,7 +20,7 @@ public class PlayerHeadProvider implements IComponentProvider {
 	static final ResourceLocation OBJECT_NAME_TAG = new ResourceLocation(Waila.MODID, "object_name");
 
 	@Override
-	public void append(ITooltip tooltip, IDataAccessor accessor, IPluginConfig config) {
+	public void append(ITooltip tooltip, IBlockAccessor accessor, IPluginConfig config) {
 		if (!config.get(VanillaPlugin.PLAYER_HEAD)) {
 			return;
 		}

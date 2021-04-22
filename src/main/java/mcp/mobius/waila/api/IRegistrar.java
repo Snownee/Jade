@@ -3,6 +3,7 @@ package mcp.mobius.waila.api;
 import mcp.mobius.waila.api.ui.IDisplayHelper;
 import mcp.mobius.waila.api.ui.IElementHelper;
 import net.minecraft.block.Block;
+import net.minecraft.command.impl.data.IDataAccessor;
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
@@ -55,14 +56,6 @@ public interface IRegistrar {
 	 * @param block The highest level class to apply to
 	 */
 	void registerBlockDataProvider(IServerDataProvider<TileEntity> dataProvider, Class<? extends TileEntity> block);
-
-	/**
-     * Registers an {@link IEntityComponentProvider} instance to allow overriding the entity being displayed.
-     *
-     * @param dataProvider The data provider instance
-     * @param entity The highest level class to apply to
-     */
-	void registerOverrideEntityProvider(IEntityComponentProvider dataProvider, Class<? extends Entity> entity);
 
 	/**
      * Registers an {@link IEntityComponentProvider} instance to allow displaying an item next to the entity name.

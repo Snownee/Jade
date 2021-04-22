@@ -1,7 +1,7 @@
 package snownee.jade.addon.vanilla;
 
 import mcp.mobius.waila.api.IComponentProvider;
-import mcp.mobius.waila.api.IDataAccessor;
+import mcp.mobius.waila.api.IBlockAccessor;
 import mcp.mobius.waila.api.IPluginConfig;
 import mcp.mobius.waila.api.ITooltip;
 import net.minecraft.block.BlockState;
@@ -19,7 +19,7 @@ public class NoteBlockProvider implements IComponentProvider {
 	private static final TextFormatting[] OCTAVE = { TextFormatting.WHITE, TextFormatting.YELLOW, TextFormatting.GOLD };
 
 	@Override
-	public void append(ITooltip tooltip, IDataAccessor accessor, IPluginConfig config) {
+	public void append(ITooltip tooltip, IBlockAccessor accessor, IPluginConfig config) {
 		if (!config.get(VanillaPlugin.NOTE_BLOCK)) {
 			return;
 		}

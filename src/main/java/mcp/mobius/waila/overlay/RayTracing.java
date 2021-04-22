@@ -1,12 +1,9 @@
 package mcp.mobius.waila.overlay;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
-
-import com.google.common.collect.Lists;
 
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.IComponentProvider;
@@ -66,10 +63,6 @@ public class RayTracing {
 
 	public RayTraceResult getTarget() {
 		return this.target;
-	}
-
-	public Entity getTargetEntity() {
-		return target.getType() == RayTraceResult.Type.ENTITY ? getIdentifierEntity() : null;
 	}
 
 	public RayTraceResult rayTrace(Entity entity, double playerReach, float partialTicks) {
@@ -141,20 +134,6 @@ public class RayTracing {
 		return entity == null ? null : new EntityRayTraceResult(entity);
 	}
 
-	public Entity getIdentifierEntity() {
-		if (this.target == null || this.target.getType() != RayTraceResult.Type.ENTITY)
-			return null;
-
-		List<Entity> entities = Lists.newArrayList();
-
-		Entity entity = ((EntityRayTraceResult) target).getEntity();
-		List<IEntityComponentProvider> providers = WailaRegistrar.INSTANCE.getOverrideEntityProviders(entity);
-		for (IEntityComponentProvider provider : providers)
-			entities.add(provider.getOverride(DataAccessor.INSTANCE, PluginConfig.INSTANCE));
-
-		return entities.size() > 0 ? entities.get(0) : entity;
-	}
-
 	public IElement getIcon() {
 		if (this.target == null)
 			return null;
@@ -172,7 +151,7 @@ public class RayTracing {
 			}
 
 			for (IEntityComponentProvider provider : WailaRegistrar.INSTANCE.getEntityStackProviders(entity)) {
-				IElement element = provider.getIcon(DataAccessor.INSTANCE, PluginConfig.INSTANCE);
+				IElement element = provider.getIcon(DataAccessor.INSTANCE, PluginConfig.INSTANCE, icon);
 				if (!isEmpty(element))
 					icon = element;
 			}

@@ -27,7 +27,6 @@ public class WailaRegistrar implements IRegistrar {
 	public final EnumMap<TooltipPosition, HierarchyLookup<IComponentProvider>> blockComponentProviders;
 	public final HierarchyLookup<IServerDataProvider<TileEntity>> blockDataProviders;
 
-	public final HierarchyLookup<IEntityComponentProvider> entityOverrideProviders;
 	public final HierarchyLookup<IEntityComponentProvider> entityStackProviders;
 	public final EnumMap<TooltipPosition, HierarchyLookup<IEntityComponentProvider>> entityComponentProviders;
 	public final HierarchyLookup<IServerDataProvider<Entity>> entityDataProviders;
@@ -37,7 +36,6 @@ public class WailaRegistrar implements IRegistrar {
 		blockComponentProviders = new EnumMap<>(TooltipPosition.class);
 		blockDataProviders = new HierarchyLookup<>(TileEntity.class);
 
-		entityOverrideProviders = new HierarchyLookup<>(Entity.class);
 		entityStackProviders = new HierarchyLookup<>(Entity.class);
 		entityComponentProviders = new EnumMap<>(TooltipPosition.class);
 		entityDataProviders = new HierarchyLookup<>(Entity.class);
@@ -78,11 +76,6 @@ public class WailaRegistrar implements IRegistrar {
 	}
 
 	@Override
-	public void registerOverrideEntityProvider(IEntityComponentProvider dataProvider, Class<? extends Entity> entity) {
-		entityOverrideProviders.register(entity, dataProvider);
-	}
-
-	@Override
 	public void registerEntityStackProvider(IEntityComponentProvider dataProvider, Class<? extends Entity> entity) {
 		entityStackProviders.register(entity, dataProvider);
 	}
@@ -113,10 +106,6 @@ public class WailaRegistrar implements IRegistrar {
 
 	public List<IEntityComponentProvider> getEntityProviders(Entity entity, TooltipPosition position) {
 		return entityComponentProviders.get(position).get(entity);
-	}
-
-	public List<IEntityComponentProvider> getOverrideEntityProviders(Entity entity) {
-		return entityOverrideProviders.get(entity);
 	}
 
 	public List<IEntityComponentProvider> getEntityStackProviders(Entity entity) {
