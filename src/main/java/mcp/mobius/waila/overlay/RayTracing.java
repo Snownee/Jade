@@ -38,192 +38,205 @@ import net.minecraftforge.fluids.FluidUtil;
 
 public class RayTracing {
 
-    public static final RayTracing INSTANCE = new RayTracing();
-    private RayTraceResult target = null;
-    private Minecraft mc = Minecraft.getInstance();
+	public static final RayTracing INSTANCE = new RayTracing();
+	private RayTraceResult target = null;
+	private Minecraft mc = Minecraft.getInstance();
 
-    private RayTracing() {
-    }
+	private RayTracing() {
+	}
 
-    public void fire() {
-        if (mc.objectMouseOver != null && mc.objectMouseOver.getType() == RayTraceResult.Type.ENTITY) {
-            this.target = mc.objectMouseOver;
-            return;
-        }
+	public void fire() {
+		if (mc.objectMouseOver != null && mc.objectMouseOver.getType() == RayTraceResult.Type.ENTITY) {
+			this.target = mc.objectMouseOver;
+			return;
+		}
 
-        Entity viewpoint = mc.getRenderViewEntity();
-        if (viewpoint == null)
-            return;
+		Entity viewpoint = mc.getRenderViewEntity();
+		if (viewpoint == null)
+			return;
 
-        this.target = this.rayTrace(viewpoint, mc.playerController.getBlockReachDistance(), 0);
-    }
+		float reach = Waila.CONFIG.get().getGeneral().getReachDistance();
+		if (reach == 0) {
+			reach = mc.playerController.getBlockReachDistance();
+		}
+		this.target = this.rayTrace(viewpoint, reach, mc.getRenderPartialTicks());
+	}
 
-    public RayTraceResult getTarget() {
-        return this.target;
-    }
+	public RayTraceResult getTarget() {
+		return this.target;
+	}
 
-    public ItemStack getTargetStack() {
-        return target != null && target.getType() == RayTraceResult.Type.BLOCK ? getIdentifierStack() : ItemStack.EMPTY;
-    }
+	public ItemStack getTargetStack() {
+		return target != null && target.getType() == RayTraceResult.Type.BLOCK ? getIdentifierStack() : ItemStack.EMPTY;
+	}
 
-    public Entity getTargetEntity() {
-        return target.getType() == RayTraceResult.Type.ENTITY ? getIdentifierEntity() : null;
-    }
+	public Entity getTargetEntity() {
+		return target.getType() == RayTraceResult.Type.ENTITY ? getIdentifierEntity() : null;
+	}
 
-    public RayTraceResult rayTrace(Entity entity, double playerReach, float partialTicks) {
-        Vector3d eyePosition = entity.getEyePosition(partialTicks);
-        Vector3d traceEnd;
-        if (mc.objectMouseOver != null && mc.objectMouseOver.getType() == Type.BLOCK) {
-            traceEnd = mc.objectMouseOver.getHitVec();
-        } else {
-            Vector3d lookVector = entity.getLook(partialTicks);
-            traceEnd = eyePosition.add(lookVector.x * playerReach, lookVector.y * playerReach, lookVector.z * playerReach);
-        }
+	public RayTraceResult rayTrace(Entity entity, double playerReach, float partialTicks) {
+		Vector3d eyePosition = entity.getEyePosition(partialTicks);
+		Vector3d traceEnd;
+		boolean defaultReach = Waila.CONFIG.get().getGeneral().getReachDistance() == 0;
+		if (defaultReach && mc.objectMouseOver != null && mc.objectMouseOver.getType() == Type.BLOCK) {
+			traceEnd = mc.objectMouseOver.getHitVec();
+		} else {
+			Vector3d lookVector = entity.getLook(partialTicks);
+			traceEnd = eyePosition.add(lookVector.x * playerReach, lookVector.y * playerReach, lookVector.z * playerReach);
+		}
 
-        World world = entity.getEntityWorld();
-        AxisAlignedBB bound = new AxisAlignedBB(eyePosition, traceEnd);
-        Entity riding = entity.getRidingEntity();
-        Predicate<Entity> predicate = null;
-        if (riding != null) {
-            predicate = e -> e != riding;
-        }
-        EntityRayTraceResult rayTraceResult = rayTraceEntities(world, entity, eyePosition, traceEnd, bound, predicate);
-        if (rayTraceResult != null) {
-            return rayTraceResult;
-        }
+		World world = entity.getEntityWorld();
+		AxisAlignedBB bound = new AxisAlignedBB(eyePosition, traceEnd);
+		Entity riding = entity.getRidingEntity();
+		Predicate<Entity> predicate = null;
+		if (riding != null) {
+			predicate = e -> e != riding;
+		}
+		EntityRayTraceResult entityResult = rayTraceEntities(world, entity, eyePosition, traceEnd, bound, predicate);
+		if (defaultReach && entityResult != null) {
+			return entityResult;
+		}
 
-        if (mc.objectMouseOver != null && mc.objectMouseOver.getType() == Type.BLOCK) {
-            Vector3d lookVector = entity.getLook(partialTicks);
-            traceEnd = eyePosition.add(lookVector.x * playerReach, lookVector.y * playerReach, lookVector.z * playerReach);
-        }
+		if (mc.objectMouseOver != null && mc.objectMouseOver.getType() == Type.BLOCK) {
+			Vector3d lookVector = entity.getLook(partialTicks);
+			traceEnd = eyePosition.add(lookVector.x * playerReach, lookVector.y * playerReach, lookVector.z * playerReach);
+		}
 
-        RayTraceContext.FluidMode fluidView = Waila.CONFIG.get().getGeneral().getDisplayFluids();
-        RayTraceContext context = new RayTraceContext(eyePosition, traceEnd, RayTraceContext.BlockMode.OUTLINE, fluidView, entity);
+		RayTraceContext.FluidMode fluidView = Waila.CONFIG.get().getGeneral().getDisplayFluids();
+		RayTraceContext context = new RayTraceContext(eyePosition, traceEnd, RayTraceContext.BlockMode.OUTLINE, fluidView, entity);
 
-        return world.rayTraceBlocks(context);
-    }
+		BlockRayTraceResult blockResult = world.rayTraceBlocks(context);
+		if (entityResult != null && blockResult != null && blockResult.getType() == Type.BLOCK) {
+			double entityDist = entityResult.getHitVec().squareDistanceTo(eyePosition);
+			double blockDist = blockResult.getHitVec().squareDistanceTo(eyePosition);
+			if (entityDist < blockDist) {
+				return entityResult;
+			}
+		}
+		return blockResult;
+	}
 
-    public ItemStack getIdentifierStack() {
-        List<ItemStack> items = this.getIdentifierItems();
+	public ItemStack getIdentifierStack() {
+		List<ItemStack> items = this.getIdentifierItems();
 
-        if (items.isEmpty())
-            return ItemStack.EMPTY;
+		if (items.isEmpty())
+			return ItemStack.EMPTY;
 
-        return items.get(0);
-    }
+		return items.get(0);
+	}
 
-    // from ProjectileHelper
-    @Nullable
-    public static EntityRayTraceResult rayTraceEntities(World worldIn, Entity projectile, Vector3d startVec, Vector3d endVec, AxisAlignedBB boundingBox, Predicate<Entity> filter) {
-        double d0 = Double.MAX_VALUE;
-        Entity entity = null;
+	// from ProjectileHelper
+	@Nullable
+	public static EntityRayTraceResult rayTraceEntities(World worldIn, Entity projectile, Vector3d startVec, Vector3d endVec, AxisAlignedBB boundingBox, Predicate<Entity> filter) {
+		double d0 = Double.MAX_VALUE;
+		Entity entity = null;
 
-        for (Entity entity1 : worldIn.getEntitiesInAABBexcluding(projectile, boundingBox, filter)) {
-            AxisAlignedBB axisalignedbb = entity1.getBoundingBox();
-            if (axisalignedbb.getAverageEdgeLength() < 0.3) {
-                axisalignedbb = axisalignedbb.grow(0.3);
-            }
-            Optional<Vector3d> optional = axisalignedbb.rayTrace(startVec, endVec);
-            if (optional.isPresent()) {
-                double d1 = startVec.squareDistanceTo(optional.get());
-                if (d1 < d0) {
-                    entity = entity1;
-                    d0 = d1;
-                }
-            }
-        }
+		for (Entity entity1 : worldIn.getEntitiesInAABBexcluding(projectile, boundingBox, filter)) {
+			AxisAlignedBB axisalignedbb = entity1.getBoundingBox();
+			if (axisalignedbb.getAverageEdgeLength() < 0.3) {
+				axisalignedbb = axisalignedbb.grow(0.3);
+			}
+			Optional<Vector3d> optional = axisalignedbb.rayTrace(startVec, endVec);
+			if (optional.isPresent()) {
+				double d1 = startVec.squareDistanceTo(optional.get());
+				if (d1 < d0) {
+					entity = entity1;
+					d0 = d1;
+				}
+			}
+		}
 
-        return entity == null ? null : new EntityRayTraceResult(entity);
-    }
+		return entity == null ? null : new EntityRayTraceResult(entity);
+	}
 
-    public Entity getIdentifierEntity() {
-        if (this.target == null || this.target.getType() != RayTraceResult.Type.ENTITY)
-            return null;
+	public Entity getIdentifierEntity() {
+		if (this.target == null || this.target.getType() != RayTraceResult.Type.ENTITY)
+			return null;
 
-        List<Entity> entities = Lists.newArrayList();
+		List<Entity> entities = Lists.newArrayList();
 
-        Entity entity = ((EntityRayTraceResult) target).getEntity();
-        if (WailaRegistrar.INSTANCE.hasOverrideEntityProviders(entity)) {
-            Collection<List<IEntityComponentProvider>> overrideProviders = WailaRegistrar.INSTANCE.getOverrideEntityProviders(entity).values();
-            for (List<IEntityComponentProvider> providers : overrideProviders)
-                for (IEntityComponentProvider provider : providers)
-                    entities.add(provider.getOverride(DataAccessor.INSTANCE, PluginConfig.INSTANCE));
-        }
+		Entity entity = ((EntityRayTraceResult) target).getEntity();
+		if (WailaRegistrar.INSTANCE.hasOverrideEntityProviders(entity)) {
+			Collection<List<IEntityComponentProvider>> overrideProviders = WailaRegistrar.INSTANCE.getOverrideEntityProviders(entity).values();
+			for (List<IEntityComponentProvider> providers : overrideProviders)
+				for (IEntityComponentProvider provider : providers)
+					entities.add(provider.getOverride(DataAccessor.INSTANCE, PluginConfig.INSTANCE));
+		}
 
-        return entities.size() > 0 ? entities.get(0) : entity;
-    }
+		return entities.size() > 0 ? entities.get(0) : entity;
+	}
 
-    public List<ItemStack> getIdentifierItems() {
-        List<ItemStack> items = Lists.newArrayList();
+	public List<ItemStack> getIdentifierItems() {
+		List<ItemStack> items = Lists.newArrayList();
 
-        if (this.target == null)
-            return items;
+		if (this.target == null)
+			return items;
 
-        switch (this.target.getType()) {
-        case ENTITY: {
-            if (WailaRegistrar.INSTANCE.hasStackEntityProviders(((EntityRayTraceResult) target).getEntity())) {
-                Collection<List<IEntityComponentProvider>> providers = WailaRegistrar.INSTANCE.getStackEntityProviders(((EntityRayTraceResult) target).getEntity()).values();
-                for (List<IEntityComponentProvider> providersList : providers) {
-                    for (IEntityComponentProvider provider : providersList) {
-                        ItemStack providerStack = provider.getDisplayItem(DataAccessor.INSTANCE, PluginConfig.INSTANCE);
-                        if (providerStack.isEmpty())
-                            continue;
+		switch (this.target.getType()) {
+		case ENTITY: {
+			if (WailaRegistrar.INSTANCE.hasStackEntityProviders(((EntityRayTraceResult) target).getEntity())) {
+				Collection<List<IEntityComponentProvider>> providers = WailaRegistrar.INSTANCE.getStackEntityProviders(((EntityRayTraceResult) target).getEntity()).values();
+				for (List<IEntityComponentProvider> providersList : providers) {
+					for (IEntityComponentProvider provider : providersList) {
+						ItemStack providerStack = provider.getDisplayItem(DataAccessor.INSTANCE, PluginConfig.INSTANCE);
+						if (providerStack.isEmpty())
+							continue;
 
-                        items.add(providerStack);
-                    }
-                }
-            }
-            break;
-        }
-        case BLOCK: {
-            World world = mc.world;
-            BlockPos pos = ((BlockRayTraceResult) target).getPos();
-            BlockState state = world.getBlockState(pos);
-            if (state.getBlock().isAir(state, world, pos))
-                return items;
+						items.add(providerStack);
+					}
+				}
+			}
+			break;
+		}
+		case BLOCK: {
+			World world = mc.world;
+			BlockPos pos = ((BlockRayTraceResult) target).getPos();
+			BlockState state = world.getBlockState(pos);
+			if (state.getBlock().isAir(state, world, pos))
+				return items;
 
-            TileEntity tile = world.getTileEntity(pos);
+			TileEntity tile = world.getTileEntity(pos);
 
-            if (WailaRegistrar.INSTANCE.hasStackProviders(state.getBlock()))
-                handleStackProviders(items, WailaRegistrar.INSTANCE.getStackProviders(state.getBlock()).values());
+			if (WailaRegistrar.INSTANCE.hasStackProviders(state.getBlock()))
+				handleStackProviders(items, WailaRegistrar.INSTANCE.getStackProviders(state.getBlock()).values());
 
-            if (tile != null && WailaRegistrar.INSTANCE.hasStackProviders(tile))
-                handleStackProviders(items, WailaRegistrar.INSTANCE.getStackProviders(tile).values());
+			if (tile != null && WailaRegistrar.INSTANCE.hasStackProviders(tile))
+				handleStackProviders(items, WailaRegistrar.INSTANCE.getStackProviders(tile).values());
 
-            if (!items.isEmpty())
-                return items;
+			if (!items.isEmpty())
+				return items;
 
-            ItemStack pick = state.getBlock().getPickBlock(state, target, world, pos, mc.player);
-            if (!pick.isEmpty())
-                return Collections.singletonList(pick);
+			ItemStack pick = state.getBlock().getPickBlock(state, target, world, pos, mc.player);
+			if (!pick.isEmpty())
+				return Collections.singletonList(pick);
 
-            if (state.getBlock().asItem() != Items.AIR)
-                return Collections.singletonList(new ItemStack(state.getBlock()));
+			if (state.getBlock().asItem() != Items.AIR)
+				return Collections.singletonList(new ItemStack(state.getBlock()));
 
-            if (state.getBlock() instanceof FlowingFluidBlock) {
-                FlowingFluidBlock block = (FlowingFluidBlock) state.getBlock();
-                Fluid fluid = block.getFluid();
-                return Collections.singletonList(FluidUtil.getFilledBucket(new FluidStack(fluid, 1)));
-            }
+			if (state.getBlock() instanceof FlowingFluidBlock) {
+				FlowingFluidBlock block = (FlowingFluidBlock) state.getBlock();
+				Fluid fluid = block.getFluid();
+				return Collections.singletonList(FluidUtil.getFilledBucket(new FluidStack(fluid, 1)));
+			}
 
-            break;
-        }
-        default:
-            break;
-        }
+			break;
+		}
+		default:
+			break;
+		}
 
-        return items;
-    }
+		return items;
+	}
 
-    private void handleStackProviders(List<ItemStack> items, Collection<List<IComponentProvider>> providers) {
-        for (List<IComponentProvider> providersList : providers) {
-            for (IComponentProvider provider : providersList) {
-                ItemStack providerStack = provider.getStack(DataAccessor.INSTANCE, PluginConfig.INSTANCE);
-                if (providerStack.isEmpty())
-                    continue;
+	private void handleStackProviders(List<ItemStack> items, Collection<List<IComponentProvider>> providers) {
+		for (List<IComponentProvider> providersList : providers) {
+			for (IComponentProvider provider : providersList) {
+				ItemStack providerStack = provider.getStack(DataAccessor.INSTANCE, PluginConfig.INSTANCE);
+				if (providerStack.isEmpty())
+					continue;
 
-                items.add(providerStack);
-            }
-        }
-    }
+				items.add(providerStack);
+			}
+		}
+	}
 }
