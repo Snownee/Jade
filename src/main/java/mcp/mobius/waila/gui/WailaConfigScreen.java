@@ -37,6 +37,7 @@ public class WailaConfigScreen extends OptionsScreen {
 					options.add(new OptionsEntryValueEnum<>(Util.makeTranslationKey("config", new ResourceLocation(Waila.MODID, "display_mode")), WailaConfig.DisplayMode.values(), Waila.CONFIG.get().getGeneral().getDisplayMode(), val -> Waila.CONFIG.get().getGeneral().setDisplayMode(val)));
 					options.add(new OptionsEntryValueBoolean(Util.makeTranslationKey("config", new ResourceLocation(Waila.MODID, "hide_from_debug")), Waila.CONFIG.get().getGeneral().shouldHideFromDebug(), val -> Waila.CONFIG.get().getGeneral().setHideFromDebug(val)));
 					options.add(new OptionsEntryValueBoolean(Util.makeTranslationKey("config", new ResourceLocation(Waila.MODID, "display_item")), Waila.CONFIG.get().getGeneral().shouldShowIcon(), val -> Waila.CONFIG.get().getGeneral().setShowIcon(val)));
+					options.add(new OptionsEntryValueInput<>(Util.makeTranslationKey("config", new ResourceLocation(Waila.MODID, "reach_distance")), Waila.CONFIG.get().getGeneral().getReachDistance(), val -> Waila.CONFIG.get().getGeneral().setReachDistance(val), OptionsEntryValueInput.FLOAT));
 					options.add(new OptionsEntryValueBoolean(Util.makeTranslationKey("config", new ResourceLocation(Waila.MODID, "tts")), Waila.CONFIG.get().getGeneral().shouldEnableTextToSpeech(), val -> Waila.CONFIG.get().getGeneral().setEnableTextToSpeech(val)));
 					return options;
 				}

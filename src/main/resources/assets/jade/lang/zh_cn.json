@@ -39,8 +39,9 @@
   "config.waila.hide_from_debug_desc": "当调试菜单打开时隐藏工具提示",
   "config.waila.display_item": "显示图标",
   "config.waila.display_item_desc": "显示从方块中得到的物品",
-  "config.waila.tts": "启用 TTS",
+  "config.waila.tts": "语音复述",
   "config.waila.tts_desc": "使用系统讲述人读出实体和方块名",
+  "config.waila.reach_distance": "触及范围",
 
   "config.waila.overlay": "显示",
   "config.waila.overlay_pos_x": "水平比例",
@@ -50,6 +51,7 @@
   "config.waila.overlay_anchor_y": "垂直锚",
   "config.waila.overlay_square": "无圆角边框",
   "config.waila.flip_main_hand": "翻转主手",
+  "config.waila.flip_main_hand_desc": "如果主手为左手则镜像提示框位置",
 
   "config.waila.overlay_color": "颜色",
   "config.waila.overlay_alpha": "不透明度",
@@ -125,7 +127,7 @@
   "config.waila.plugin_minecraft.ench_power": "附魔能力",
   "config.waila.plugin_minecraft.total_ench_power": "总附魔能力",
   "jade.ench_power": "附魔能力：%s",
-  "config.waila.plugin_minecraft.player_head": "玩家的头",
+  "config.waila.plugin_minecraft.player_head": "玩家头颅",
   "config.waila.plugin_minecraft.profession": "村民职业",
   "config.waila.plugin_minecraft.item_tooltip": "物品提示框",
 

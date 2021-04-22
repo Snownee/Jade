@@ -57,7 +57,11 @@ public class RayTracing {
 		if (viewpoint == null)
 			return;
 
-		this.target = this.rayTrace(viewpoint, mc.playerController.getBlockReachDistance(), mc.getRenderPartialTicks());
+		float reach = Waila.CONFIG.get().getGeneral().getReachDistance();
+		if (reach == 0) {
+			reach = mc.playerController.getBlockReachDistance();
+		}
+		this.target = this.rayTrace(viewpoint, reach, mc.getRenderPartialTicks());
 	}
 
 	public RayTraceResult getTarget() {
@@ -71,7 +75,8 @@ public class RayTracing {
 	public RayTraceResult rayTrace(Entity entity, double playerReach, float partialTicks) {
 		Vector3d eyePosition = entity.getEyePosition(partialTicks);
 		Vector3d traceEnd;
-		if (mc.objectMouseOver != null && mc.objectMouseOver.getType() == Type.BLOCK) {
+		boolean defaultReach = Waila.CONFIG.get().getGeneral().getReachDistance() == 0;
+		if (defaultReach && mc.objectMouseOver != null && mc.objectMouseOver.getType() == Type.BLOCK) {
 			traceEnd = mc.objectMouseOver.getHitVec();
 		} else {
 			Vector3d lookVector = entity.getLook(partialTicks);
@@ -85,12 +90,12 @@ public class RayTracing {
 		if (riding != null) {
 			predicate = e -> e != riding;
 		}
-		EntityRayTraceResult rayTraceResult = rayTraceEntities(world, entity, eyePosition, traceEnd, bound, predicate);
-		if (rayTraceResult != null) {
-			return rayTraceResult;
+		EntityRayTraceResult entityResult = rayTraceEntities(world, entity, eyePosition, traceEnd, bound, predicate);
+		if (defaultReach && entityResult != null) {
+			return entityResult;
 		}
 
-		if (mc.objectMouseOver != null && mc.objectMouseOver.getType() == Type.BLOCK) {
+		if (defaultReach && mc.objectMouseOver != null && mc.objectMouseOver.getType() == Type.BLOCK) {
 			Vector3d lookVector = entity.getLook(partialTicks);
 			traceEnd = eyePosition.add(lookVector.x * playerReach, lookVector.y * playerReach, lookVector.z * playerReach);
 		}
@@ -98,7 +103,15 @@ public class RayTracing {
 		RayTraceContext.FluidMode fluidView = Waila.CONFIG.get().getGeneral().getDisplayFluids();
 		RayTraceContext context = new RayTraceContext(eyePosition, traceEnd, RayTraceContext.BlockMode.OUTLINE, fluidView, entity);
 
-		return world.rayTraceBlocks(context);
+		BlockRayTraceResult blockResult = world.rayTraceBlocks(context);
+		if (entityResult != null && blockResult != null && blockResult.getType() == Type.BLOCK) {
+			double entityDist = entityResult.getHitVec().squareDistanceTo(eyePosition);
+			double blockDist = blockResult.getHitVec().squareDistanceTo(eyePosition);
+			if (entityDist < blockDist) {
+				return entityResult;
+			}
+		}
+		return blockResult;
 	}
 
 	// from ProjectileHelper
@@ -108,7 +121,7 @@ public class RayTracing {
 		Entity entity = null;
 
 		for (Entity entity1 : worldIn.getEntitiesInAABBexcluding(projectile, boundingBox, filter)) {
-			if (entity1.isSpectator() || entity1.canBeCollidedWith()) {
+			if (entity1.isSpectator()) {
 				continue;
 			}
 			AxisAlignedBB axisalignedbb = entity1.getBoundingBox();
