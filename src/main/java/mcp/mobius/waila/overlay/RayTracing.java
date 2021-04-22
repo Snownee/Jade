@@ -132,6 +132,9 @@ public class RayTracing {
 		Entity entity = null;
 
 		for (Entity entity1 : worldIn.getEntitiesInAABBexcluding(projectile, boundingBox, filter)) {
+			if (entity1.isSpectator()) {
+				continue;
+			}
 			AxisAlignedBB axisalignedbb = entity1.getBoundingBox();
 			if (axisalignedbb.getAverageEdgeLength() < 0.3) {
 				axisalignedbb = axisalignedbb.grow(0.3);
