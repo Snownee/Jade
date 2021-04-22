@@ -8,10 +8,10 @@ import snownee.jade.addon.vanilla.MiscEntityNameProvider;
 
 public class HUDHandlerEntityIcon implements IEntityComponentProvider {
 
-    public static final IEntityComponentProvider INSTANCE = new HUDHandlerEntityIcon();
+	public static final IEntityComponentProvider INSTANCE = new HUDHandlerEntityIcon();
 
-    @Override
-    public ItemStack getDisplayItem(IEntityAccessor accessor, IPluginConfig config) {
-        return MiscEntityNameProvider.INSTANCE.getDisplayItem(accessor, config);
-    }
+	@Override
+	public ItemStack getDisplayItem(IEntityAccessor accessor, IPluginConfig config) {
+		return MiscEntityNameProvider.INSTANCE.getDisplayItem(accessor, config);
+	}
 }

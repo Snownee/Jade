@@ -17,17 +17,17 @@ import net.minecraft.world.World;
 
 public interface IEntityAccessor {
 
-    World getWorld();
+	World getWorld();
 
-    PlayerEntity getPlayer();
+	PlayerEntity getPlayer();
 
-    Entity getEntity();
+	Entity getEntity();
 
-    RayTraceResult getHitResult();
+	RayTraceResult getHitResult();
 
-    Vector3d getRenderingPosition();
+	Vector3d getRenderingPosition();
 
-     CompoundNBT getServerData();
+	CompoundNBT getServerData();
 
-    double getPartialFrame();
+	double getPartialFrame();
 }

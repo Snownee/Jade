@@ -13,7 +13,7 @@ import net.minecraft.item.ItemStack;
 // TODO implement
 public interface IBlockDecorator {
 
-    /**
+	/**
      * Callback for the decorator. It provides a standard GL stack positioned on the block.</br>
      * Will be used if the implementing class is registered via {@link IRegistrar#registerDecorator}.</br>
      *
@@ -21,6 +21,6 @@ public interface IBlockDecorator {
      * @param accessor  Contains most of the relevant information about the current environment.
      * @param config    Current configuration of Waila.
      */
-    void decorateBlock(ItemStack itemStack, IDataAccessor accessor, IPluginConfig config);
+	void decorateBlock(ItemStack itemStack, IDataAccessor accessor, IPluginConfig config);
 
 }

@@ -17,48 +17,48 @@ import java.util.function.Supplier;
 
 public class MessageServerPing {
 
-    public Map<ResourceLocation, Boolean> forcedKeys = Maps.newHashMap();
+	public Map<ResourceLocation, Boolean> forcedKeys = Maps.newHashMap();
 
-    public MessageServerPing(@Nullable Map<ResourceLocation, Boolean> forcedKeys) {
-        this.forcedKeys = forcedKeys;
-    }
+	public MessageServerPing(@Nullable Map<ResourceLocation, Boolean> forcedKeys) {
+		this.forcedKeys = forcedKeys;
+	}
 
-    public MessageServerPing(PluginConfig config) {
-        Set<ConfigEntry> entries = config.getSyncableConfigs();
-        entries.forEach(e -> forcedKeys.put(e.getId(), e.getValue()));
-    }
+	public MessageServerPing(PluginConfig config) {
+		Set<ConfigEntry> entries = config.getSyncableConfigs();
+		entries.forEach(e -> forcedKeys.put(e.getId(), e.getValue()));
+	}
 
-    public static MessageServerPing read(PacketBuffer buffer) {
-        int size = buffer.readInt();
-        Map<ResourceLocation, Boolean> temp = Maps.newHashMap();
-        for (int i = 0; i < size; i++) {
-            int idLength = buffer.readInt();
-            ResourceLocation id = new ResourceLocation(buffer.readString(idLength));
-            boolean value = buffer.readBoolean();
-            temp.put(id, value);
-        }
+	public static MessageServerPing read(PacketBuffer buffer) {
+		int size = buffer.readInt();
+		Map<ResourceLocation, Boolean> temp = Maps.newHashMap();
+		for (int i = 0; i < size; i++) {
+			int idLength = buffer.readInt();
+			ResourceLocation id = new ResourceLocation(buffer.readString(idLength));
+			boolean value = buffer.readBoolean();
+			temp.put(id, value);
+		}
 
-        return new MessageServerPing(temp);
-    }
+		return new MessageServerPing(temp);
+	}
 
-    public static void write(MessageServerPing message, PacketBuffer buffer) {
-        buffer.writeInt(message.forcedKeys.size());
-        message.forcedKeys.forEach((k, v) -> {
-            buffer.writeInt(k.toString().length());
-            buffer.writeString(k.toString());
-            buffer.writeBoolean(v);
-        });
-    }
+	public static void write(MessageServerPing message, PacketBuffer buffer) {
+		buffer.writeInt(message.forcedKeys.size());
+		message.forcedKeys.forEach((k, v) -> {
+			buffer.writeInt(k.toString().length());
+			buffer.writeString(k.toString());
+			buffer.writeBoolean(v);
+		});
+	}
 
-    public static class Handler {
+	public static class Handler {
 
-        public static void onMessage(MessageServerPing message, Supplier<NetworkEvent.Context> context) {
-            context.get().enqueueWork(() -> {
-                DataAccessor.INSTANCE.serverConnected = true;
-                message.forcedKeys.forEach(PluginConfig.INSTANCE::set);
-                Waila.LOGGER.info("Received config from the server: {}", new Gson().toJson(message.forcedKeys));
-            });
-            context.get().setPacketHandled(true);
-        }
-    }
+		public static void onMessage(MessageServerPing message, Supplier<NetworkEvent.Context> context) {
+			context.get().enqueueWork(() -> {
+				DataAccessor.INSTANCE.serverConnected = true;
+				message.forcedKeys.forEach(PluginConfig.INSTANCE::set);
+				Waila.LOGGER.info("Received config from the server: {}", new Gson().toJson(message.forcedKeys));
+			});
+			context.get().setPacketHandled(true);
+		}
+	}
 }

@@ -32,68 +32,68 @@ import snownee.jade.addon.vanilla.TrappedChestProvider;
 
 public class HUDHandlerBlocks implements IComponentProvider, IServerDataProvider<TileEntity> {
 
-    public static final HUDHandlerBlocks INSTANCE = new HUDHandlerBlocks();
-    public static final ResourceLocation OBJECT_NAME_TAG = new ResourceLocation(Waila.MODID, "object_name");
-    public static final ResourceLocation REGISTRY_NAME_TAG = new ResourceLocation(Waila.MODID, "registry_name");
-    public static final ResourceLocation MOD_NAME_TAG = new ResourceLocation(Waila.MODID, "mod_name");
+	public static final HUDHandlerBlocks INSTANCE = new HUDHandlerBlocks();
+	public static final ResourceLocation OBJECT_NAME_TAG = new ResourceLocation(Waila.MODID, "object_name");
+	public static final ResourceLocation REGISTRY_NAME_TAG = new ResourceLocation(Waila.MODID, "registry_name");
+	public static final ResourceLocation MOD_NAME_TAG = new ResourceLocation(Waila.MODID, "mod_name");
 
-    @Override
-    public void appendHead(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {
-        String name;
-        if (accessor.getServerData().contains("givenName", Constants.NBT.TAG_STRING)) {
-            ITextComponent component = ITextComponent.Serializer.getComponentFromJson(accessor.getServerData().getString("givenName"));
-            name = component.getString();
-        } else {
-            String key = accessor.getBlock().getTranslationKey();
-            if (I18n.hasKey(key)) {
-                name = I18n.format(key);
-            } else {
-                ItemStack stack = accessor.getBlockState().getPickBlock(accessor.getHitResult(), accessor.getWorld(), accessor.getPosition(), accessor.getPlayer());
-                if (stack != null && !stack.isEmpty()) {
-                    name = stack.getDisplayName().getString();
-                } else {
-                    name = key;
-                }
-            }
-        }
-        ((ITaggableList<ResourceLocation, ITextComponent>) tooltip).setTag(OBJECT_NAME_TAG, new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getBlockName(), name)));
-        if (config.get(PluginCore.CONFIG_SHOW_REGISTRY))
-            ((ITaggableList<ResourceLocation, ITextComponent>) tooltip).setTag(REGISTRY_NAME_TAG, new StringTextComponent(accessor.getBlock().getRegistryName().toString()).mergeStyle(TextFormatting.GRAY));
-        if (accessor.getBlock() instanceof TrappedChestBlock) {
-            TrappedChestProvider.INSTANCE.appendHead(tooltip, accessor, config);
-        }
-    }
+	@Override
+	public void appendHead(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {
+		String name;
+		if (accessor.getServerData().contains("givenName", Constants.NBT.TAG_STRING)) {
+			ITextComponent component = ITextComponent.Serializer.getComponentFromJson(accessor.getServerData().getString("givenName"));
+			name = component.getString();
+		} else {
+			String key = accessor.getBlock().getTranslationKey();
+			if (I18n.hasKey(key)) {
+				name = I18n.format(key);
+			} else {
+				ItemStack stack = accessor.getBlockState().getPickBlock(accessor.getHitResult(), accessor.getWorld(), accessor.getPosition(), accessor.getPlayer());
+				if (stack != null && !stack.isEmpty()) {
+					name = stack.getDisplayName().getString();
+				} else {
+					name = key;
+				}
+			}
+		}
+		((ITaggableList<ResourceLocation, ITextComponent>) tooltip).setTag(OBJECT_NAME_TAG, new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getBlockName(), name)));
+		if (config.get(PluginCore.CONFIG_SHOW_REGISTRY))
+			((ITaggableList<ResourceLocation, ITextComponent>) tooltip).setTag(REGISTRY_NAME_TAG, new StringTextComponent(accessor.getBlock().getRegistryName().toString()).mergeStyle(TextFormatting.GRAY));
+		if (accessor.getBlock() instanceof TrappedChestBlock) {
+			TrappedChestProvider.INSTANCE.appendHead(tooltip, accessor, config);
+		}
+	}
 
-    @Override
-    public void appendBody(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {
-        if (config.get(PluginCore.CONFIG_SHOW_STATES)) {
-            BlockState state = accessor.getBlockState();
-            state.getProperties().forEach(p -> {
-                Comparable<?> value = state.get(p);
-                ITextComponent valueText = new StringTextComponent(" " + value.toString()).mergeStyle(p instanceof BooleanProperty ? value == Boolean.TRUE ? TextFormatting.GREEN : TextFormatting.RED : TextFormatting.WHITE);
-                tooltip.add(new StringTextComponent(p.getName() + ":").appendSibling(valueText));
-            });
-        }
-    }
+	@Override
+	public void appendBody(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {
+		if (config.get(PluginCore.CONFIG_SHOW_STATES)) {
+			BlockState state = accessor.getBlockState();
+			state.getProperties().forEach(p -> {
+				Comparable<?> value = state.get(p);
+				ITextComponent valueText = new StringTextComponent(" " + value.toString()).mergeStyle(p instanceof BooleanProperty ? value == Boolean.TRUE ? TextFormatting.GREEN : TextFormatting.RED : TextFormatting.WHITE);
+				tooltip.add(new StringTextComponent(p.getName() + ":").appendSibling(valueText));
+			});
+		}
+	}
 
-    @Override
-    public void appendTail(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {
-        if (config.get(JadePlugin.HIDE_MOD_NAME))
-            return;
-        String modName = ModIdentification.getModName(accessor.getStack());
-        if (!Strings.isNullOrEmpty(modName)) {
-            modName = String.format(Waila.CONFIG.get().getFormatting().getModName(), modName);
-            ((ITaggableList<ResourceLocation, ITextComponent>) tooltip).setTag(MOD_NAME_TAG, new StringTextComponent(modName));
-        }
-    }
+	@Override
+	public void appendTail(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {
+		if (config.get(JadePlugin.HIDE_MOD_NAME))
+			return;
+		String modName = ModIdentification.getModName(accessor.getStack());
+		if (!Strings.isNullOrEmpty(modName)) {
+			modName = String.format(Waila.CONFIG.get().getFormatting().getModName(), modName);
+			((ITaggableList<ResourceLocation, ITextComponent>) tooltip).setTag(MOD_NAME_TAG, new StringTextComponent(modName));
+		}
+	}
 
-    @Override
-    public void appendServerData(CompoundNBT data, ServerPlayerEntity player, World world, TileEntity t) {
-        if (t instanceof INameable && JadeCommonConfig.shouldShowCustomName(t)) {
-            INameable nameable = (INameable) t;
-            if (nameable.hasCustomName()) {
-                data.putString("givenName", ITextComponent.Serializer.toJson(nameable.getCustomName()));
-            }
-        }
-    }
+	@Override
+	public void appendServerData(CompoundNBT data, ServerPlayerEntity player, World world, TileEntity t) {
+		if (t instanceof INameable && JadeCommonConfig.shouldShowCustomName(t)) {
+			INameable nameable = (INameable) t;
+			if (nameable.hasCustomName()) {
+				data.putString("givenName", ITextComponent.Serializer.toJson(nameable.getCustomName()));
+			}
+		}
+	}
 }

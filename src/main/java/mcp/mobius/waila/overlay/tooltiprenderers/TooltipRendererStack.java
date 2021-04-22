@@ -18,42 +18,42 @@ import java.awt.Dimension;
 
 public class TooltipRendererStack implements ITooltipRenderer {
 
-    @Override
-    public Dimension getSize(CompoundNBT tag, ICommonAccessor accessor) {
-        float scale = tag.getFloat("scale");
-        if (scale == 0)
-            scale = 1;
-        int size = MathHelper.floor(18 * scale);
-        int offsetY = tag.getInt("offsetY");
-        return new Dimension(size, size + offsetY);
-    }
+	@Override
+	public Dimension getSize(CompoundNBT tag, ICommonAccessor accessor) {
+		float scale = tag.getFloat("scale");
+		if (scale == 0)
+			scale = 1;
+		int size = MathHelper.floor(18 * scale);
+		int offsetY = tag.getInt("offsetY");
+		return new Dimension(size, size + offsetY);
+	}
 
-    @Override
-    public void draw(CompoundNBT tag, ICommonAccessor accessor, int x, int y) {
-        int count = tag.getInt("count");
-        if (count <= 0)
-            return;
+	@Override
+	public void draw(CompoundNBT tag, ICommonAccessor accessor, int x, int y) {
+		int count = tag.getInt("count");
+		if (count <= 0)
+			return;
 
-        Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(tag.getString("id")));
-        if (item == Items.AIR)
-            return;
+		Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(tag.getString("id")));
+		if (item == Items.AIR)
+			return;
 
-        CompoundNBT stackTag = null;
-        try {
-            stackTag = JsonToNBT.getTagFromJson(tag.getString("nbt"));
-        } catch (CommandSyntaxException e) {
-            // No-op
-        }
+		CompoundNBT stackTag = null;
+		try {
+			stackTag = JsonToNBT.getTagFromJson(tag.getString("nbt"));
+		} catch (CommandSyntaxException e) {
+			// No-op
+		}
 
-        ItemStack stack = new ItemStack(item, count);
-        if (stackTag != null)
-            stack.setTag(stackTag);
+		ItemStack stack = new ItemStack(item, count);
+		if (stackTag != null)
+			stack.setTag(stackTag);
 
-        float scale = tag.getFloat("scale");
-        if (scale == 0)
-            scale = 1;
-        int offsetY = tag.getInt("offsetY");
-        DisplayUtil.renderStack(RenderContext.matrixStack, x, y + offsetY, stack, scale);
-    }
+		float scale = tag.getFloat("scale");
+		if (scale == 0)
+			scale = 1;
+		int offsetY = tag.getInt("offsetY");
+		DisplayUtil.renderStack(RenderContext.matrixStack, x, y + offsetY, stack, scale);
+	}
 
 }

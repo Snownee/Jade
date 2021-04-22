@@ -16,19 +16,19 @@ import java.util.List;
  */
 public class WailaTooltipEvent extends Event {
 
-    private final List<ITextComponent> currentTip;
-    private final ICommonAccessor accessor;
+	private final List<ITextComponent> currentTip;
+	private final ICommonAccessor accessor;
 
-    public WailaTooltipEvent(List<ITextComponent> currentTip, ICommonAccessor accessor) {
-        this.currentTip = currentTip;
-        this.accessor = accessor;
-    }
+	public WailaTooltipEvent(List<ITextComponent> currentTip, ICommonAccessor accessor) {
+		this.currentTip = currentTip;
+		this.accessor = accessor;
+	}
 
-    public List<ITextComponent> getCurrentTip() {
-        return currentTip;
-    }
+	public List<ITextComponent> getCurrentTip() {
+		return currentTip;
+	}
 
-    public ICommonAccessor getAccessor() {
-        return accessor;
-    }
+	public ICommonAccessor getAccessor() {
+		return accessor;
+	}
 }

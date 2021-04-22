@@ -6,7 +6,7 @@ import net.minecraft.world.World;
 
 public interface IServerDataProvider<T> {
 
-    /**
+	/**
      * Callback used server side to return a custom synchronization NBTTagCompound.</br>
      * Will only be called if the implementing class is registered via {@link IRegistrar#registerBlockDataProvider}.</br>
      *
@@ -15,5 +15,5 @@ public interface IServerDataProvider<T> {
      * @param world  The world.
      * @param t      The type targeted for synchronization.
      */
-    void appendServerData(CompoundNBT data, ServerPlayerEntity player, World world, T t);
+	void appendServerData(CompoundNBT data, ServerPlayerEntity player, World world, T t);
 }

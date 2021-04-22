@@ -7,15 +7,15 @@ import java.util.Map;
 
 public interface ITaggableList<TAG, VALUE> extends List<VALUE> {
 
-    void setTag(@Nonnull TAG tag, @Nonnull VALUE value);
+	void setTag(@Nonnull TAG tag, @Nonnull VALUE value);
 
-    VALUE removeTag(@Nonnull TAG tag);
+	VALUE removeTag(@Nonnull TAG tag);
 
-    @Nullable
-    VALUE getTag(@Nonnull TAG tag);
+	@Nullable
+	VALUE getTag(@Nonnull TAG tag);
 
-    @Nonnull
-    Map<TAG, VALUE> getTags();
+	@Nonnull
+	Map<TAG, VALUE> getTags();
 
-    void absorb(@Nonnull ITaggableList<TAG, VALUE> other);
+	void absorb(@Nonnull ITaggableList<TAG, VALUE> other);
 }

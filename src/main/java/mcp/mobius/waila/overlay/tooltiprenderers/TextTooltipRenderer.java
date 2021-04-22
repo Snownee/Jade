@@ -19,27 +19,27 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class TextTooltipRenderer implements ITooltipRenderer {
-    @Override
-    public Dimension getSize(CompoundNBT tag, ICommonAccessor accessor) {
-        ITextComponent component = ITextComponent.Serializer.getComponentFromJson(tag.getString("text"));
-        if (component == null) {
-            return new Dimension();
-        }
-        FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
-        return new Dimension(fontRenderer.getStringWidth(component.getString()), fontRenderer.FONT_HEIGHT + 1);
-    }
+	@Override
+	public Dimension getSize(CompoundNBT tag, ICommonAccessor accessor) {
+		ITextComponent component = ITextComponent.Serializer.getComponentFromJson(tag.getString("text"));
+		if (component == null) {
+			return new Dimension();
+		}
+		FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
+		return new Dimension(fontRenderer.getStringWidth(component.getString()), fontRenderer.FONT_HEIGHT + 1);
+	}
 
-    @Override
-    public void draw(CompoundNBT tag, ICommonAccessor accessor, int x, int y) {
-        ITextComponent component = ITextComponent.Serializer.getComponentFromJson(tag.getString("text"));
-        if (component == null) {
-            return;
-        }
-        FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
-        WailaConfig.ConfigOverlay.ConfigOverlayColor color = Waila.CONFIG.get().getOverlay().getColor();
-        IRenderTypeBuffer.Impl irendertypebuffer$impl = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
-        fontRenderer.drawEntityText(component.func_241878_f(), x, y, color.getFontColor(), true, new MatrixStack().getLast().getMatrix(), irendertypebuffer$impl, false, 0, 15728880);
-        irendertypebuffer$impl.finish();
-    }
+	@Override
+	public void draw(CompoundNBT tag, ICommonAccessor accessor, int x, int y) {
+		ITextComponent component = ITextComponent.Serializer.getComponentFromJson(tag.getString("text"));
+		if (component == null) {
+			return;
+		}
+		FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
+		WailaConfig.ConfigOverlay.ConfigOverlayColor color = Waila.CONFIG.get().getOverlay().getColor();
+		IRenderTypeBuffer.Impl irendertypebuffer$impl = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
+		fontRenderer.drawEntityText(component.func_241878_f(), x, y, color.getFontColor(), true, new MatrixStack().getLast().getMatrix(), irendertypebuffer$impl, false, 0, 15728880);
+		irendertypebuffer$impl.finish();
+	}
 
 }

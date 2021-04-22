@@ -16,7 +16,7 @@ import java.util.List;
  */
 public interface IComponentProvider {
 
-    /**
+	/**
      * Callback used to override the default Waila lookup system.</br>
      * Will only be called if the implementing class is registered via {@link IRegistrar#registerStackProvider}.</br>
      * <p>
@@ -29,11 +29,11 @@ public interface IComponentProvider {
      * @param config   Current configuration of Waila.
      * @return {@link ItemStack#EMPTY} if override is not required, a non-empty ItemStack otherwise.
      */
-    default ItemStack getStack(IDataAccessor accessor, IPluginConfig config) {
-        return ItemStack.EMPTY;
-    }
+	default ItemStack getStack(IDataAccessor accessor, IPluginConfig config) {
+		return ItemStack.EMPTY;
+	}
 
-    /**
+	/**
      * Callback used to add lines to one of the three sections of the tooltip (Head, Body, Tail).</br>
      * Will only be called if the implementing class is registered via {@link IRegistrar#registerComponentProvider(IComponentProvider, TooltipPosition, Class)}.</br>
      * You are supposed to always return the modified input tooltip.</br>
@@ -48,11 +48,11 @@ public interface IComponentProvider {
      * @param accessor   Contains most of the relevant information about the current environment.
      * @param config     Current configuration of Waila.
      */
-    default void appendHead(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {
+	default void appendHead(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {
 
-    }
+	}
 
-    /**
+	/**
      * Callback used to add lines to one of the three sections of the tooltip (Head, Body, Tail).</br>
      * Will only be called if the implementing class is registered via {@link IRegistrar#registerComponentProvider(IComponentProvider, TooltipPosition, Class)}.</br>
      * You are supposed to always return the modified input tooltip.</br>
@@ -67,11 +67,11 @@ public interface IComponentProvider {
      * @param accessor   Contains most of the relevant information about the current environment.
      * @param config     Current configuration of Waila.
      */
-    default void appendBody(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {
+	default void appendBody(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {
 
-    }
+	}
 
-    /**
+	/**
      * Callback used to add lines to one of the three sections of the tooltip (Head, Body, Tail).</br>
      * Will only be called if the implementing class is registered via {@link IRegistrar#registerComponentProvider(IComponentProvider, TooltipPosition, Class)}.</br>
      * You are supposed to always return the modified input tooltip.</br>
@@ -88,7 +88,7 @@ public interface IComponentProvider {
      * @param accessor   Contains most of the relevant information about the current environment.
      * @param config     Current configuration of Waila.
      */
-    default void appendTail(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {
+	default void appendTail(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {
 
-    }
+	}
 }

@@ -22,31 +22,31 @@ import snownee.jade.JadePlugin;
 
 public class TrappedChestProvider implements IComponentProvider {
 
-    public static final TrappedChestProvider INSTANCE = new TrappedChestProvider();
+	public static final TrappedChestProvider INSTANCE = new TrappedChestProvider();
 
-    private static final Cache<Block, ITextComponent> CACHE = CacheBuilder.newBuilder().build();
-    private static final ITextComponent DEFAULT_NAME = new TranslationTextComponent(Blocks.CHEST.getTranslationKey());
+	private static final Cache<Block, ITextComponent> CACHE = CacheBuilder.newBuilder().build();
+	private static final ITextComponent DEFAULT_NAME = new TranslationTextComponent(Blocks.CHEST.getTranslationKey());
 
-    @Override
-    public void appendHead(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {
-        if (!config.get(JadePlugin.TRAPPED_CHEST)) {
-            return;
-        }
-        try {
-            ITextComponent name = CACHE.get(accessor.getBlock(), () -> {
-                ResourceLocation trappedName = accessor.getBlock().getRegistryName();
-                if (trappedName.getPath().startsWith("trapped_")) {
-                    ResourceLocation chestName = new ResourceLocation(trappedName.getNamespace(), trappedName.getPath().substring(8));
-                    Block block = ForgeRegistries.BLOCKS.getValue(chestName);
-                    if (block != null) {
-                        return block.getTranslatedName();
-                    }
-                }
-                return DEFAULT_NAME;
-            });
-            ((ITaggableList<ResourceLocation, ITextComponent>) tooltip).setTag(HUDHandlerBlocks.OBJECT_NAME_TAG, new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getBlockName(), name.getString())));
-        } catch (Exception e) {
-        }
-    }
+	@Override
+	public void appendHead(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {
+		if (!config.get(JadePlugin.TRAPPED_CHEST)) {
+			return;
+		}
+		try {
+			ITextComponent name = CACHE.get(accessor.getBlock(), () -> {
+				ResourceLocation trappedName = accessor.getBlock().getRegistryName();
+				if (trappedName.getPath().startsWith("trapped_")) {
+					ResourceLocation chestName = new ResourceLocation(trappedName.getNamespace(), trappedName.getPath().substring(8));
+					Block block = ForgeRegistries.BLOCKS.getValue(chestName);
+					if (block != null) {
+						return block.getTranslatedName();
+					}
+				}
+				return DEFAULT_NAME;
+			});
+			((ITaggableList<ResourceLocation, ITextComponent>) tooltip).setTag(HUDHandlerBlocks.OBJECT_NAME_TAG, new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getBlockName(), name.getString())));
+		} catch (Exception e) {
+		}
+	}
 
 }

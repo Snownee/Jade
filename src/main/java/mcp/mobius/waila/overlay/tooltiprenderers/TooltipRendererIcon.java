@@ -11,21 +11,21 @@ import java.awt.Dimension;
 
 public class TooltipRendererIcon implements ITooltipRenderer {
 
-    private final String type;
-    private final int size = 8;
+	private final String type;
+	private final int size = 8;
 
-    public TooltipRendererIcon(String type) {
-        this.type = type;
-    }
+	public TooltipRendererIcon(String type) {
+		this.type = type;
+	}
 
-    @Override
-    public Dimension getSize(CompoundNBT tag, ICommonAccessor accessor) {
-        return new Dimension(size, size);
-    }
+	@Override
+	public Dimension getSize(CompoundNBT tag, ICommonAccessor accessor) {
+		return new Dimension(size, size);
+	}
 
-    @Override
-    public void draw(CompoundNBT tag, ICommonAccessor accessor, int x, int y) {
-        DisplayUtil.renderIcon(RenderContext.matrixStack, x, y, size, size, IconUI.bySymbol(type));
-    }
+	@Override
+	public void draw(CompoundNBT tag, ICommonAccessor accessor, int x, int y) {
+		DisplayUtil.renderIcon(RenderContext.matrixStack, x, y, size, size, IconUI.bySymbol(type));
+	}
 
 }

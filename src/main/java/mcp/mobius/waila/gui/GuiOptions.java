@@ -16,86 +16,86 @@ import java.util.List;
 
 public abstract class GuiOptions extends Screen {
 
-    private final Screen parent;
-    private final Runnable saver;
-    private final Runnable canceller;
-    private OptionsListWidget options;
+	private final Screen parent;
+	private final Runnable saver;
+	private final Runnable canceller;
+	private OptionsListWidget options;
 
-    public GuiOptions(Screen parent, TextComponent title, Runnable saver, Runnable canceller) {
-        super(title);
+	public GuiOptions(Screen parent, TextComponent title, Runnable saver, Runnable canceller) {
+		super(title);
 
-        this.parent = parent;
-        this.saver = saver;
-        this.canceller = canceller;
-    }
+		this.parent = parent;
+		this.saver = saver;
+		this.canceller = canceller;
+	}
 
-    public GuiOptions(Screen parent, TextComponent title) {
-        this(parent, title, null, null);
-    }
+	public GuiOptions(Screen parent, TextComponent title) {
+		this(parent, title, null, null);
+	}
 
-    @Override
-    public void init(Minecraft client, int width, int height) {
-        super.init(client, width, height);
+	@Override
+	public void init(Minecraft client, int width, int height) {
+		super.init(client, width, height);
 
-        options = getOptions();
-        children.add(options);
-        setListener(options);
+		options = getOptions();
+		children.add(options);
+		setListener(options);
 
-        if (saver != null && canceller != null) {
-            addButton(new Button(width / 2 - 100, height - 25, 100, 20, new TranslationTextComponent("gui.done"), w -> {
-                options.save();
-                saver.run();
-                minecraft.displayGuiScreen(parent);
-            }));
-            addButton(new Button(width / 2 + 5, height - 25, 100, 20, new TranslationTextComponent("gui.cancel"), w -> {
-                canceller.run();
-                minecraft.displayGuiScreen(parent);
-            }));
-        } else {
-            addButton(new Button(width / 2 - 50, height - 25, 100, 20, new TranslationTextComponent("gui.done"), w -> {
-                options.save();
-                minecraft.displayGuiScreen(parent);
-            }));
-        }
-    }
+		if (saver != null && canceller != null) {
+			addButton(new Button(width / 2 - 100, height - 25, 100, 20, new TranslationTextComponent("gui.done"), w -> {
+				options.save();
+				saver.run();
+				minecraft.displayGuiScreen(parent);
+			}));
+			addButton(new Button(width / 2 + 5, height - 25, 100, 20, new TranslationTextComponent("gui.cancel"), w -> {
+				canceller.run();
+				minecraft.displayGuiScreen(parent);
+			}));
+		} else {
+			addButton(new Button(width / 2 - 50, height - 25, 100, 20, new TranslationTextComponent("gui.done"), w -> {
+				options.save();
+				minecraft.displayGuiScreen(parent);
+			}));
+		}
+	}
 
-    @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        renderBackground(matrixStack);
-        options.render(matrixStack, mouseX, mouseY, partialTicks);
-        drawCenteredString(matrixStack, font, title, width / 2, 12, 16777215);
-        super.render(matrixStack, mouseX, mouseY, partialTicks);
+	@Override
+	public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+		renderBackground(matrixStack);
+		options.render(matrixStack, mouseX, mouseY, partialTicks);
+		drawCenteredString(matrixStack, font, title, width / 2, 12, 16777215);
+		super.render(matrixStack, mouseX, mouseY, partialTicks);
 
-        if (mouseY < 32 || mouseY > height - 32)
-            return;
+		if (mouseY < 32 || mouseY > height - 32)
+			return;
 
-        OptionsListWidget.Entry entry = options.getSelected();
-        if (entry instanceof OptionsEntryValue) {
-            OptionsEntryValue value = (OptionsEntryValue) entry;
+		OptionsListWidget.Entry entry = options.getSelected();
+		if (entry instanceof OptionsEntryValue) {
+			OptionsEntryValue value = (OptionsEntryValue) entry;
 
-            if (I18n.hasKey(value.getDescription())) {
-                int valueX = value.getX() + 10;
-                String title = value.getTitle().getString();
-                if (mouseX < valueX || mouseX > valueX + font.getStringWidth(title))
-                    return;
+			if (I18n.hasKey(value.getDescription())) {
+				int valueX = value.getX() + 10;
+				String title = value.getTitle().getString();
+				if (mouseX < valueX || mouseX > valueX + font.getStringWidth(title))
+					return;
 
-                List<IReorderingProcessor> tooltip = Arrays.asList(new StringTextComponent(title).func_241878_f());
-                tooltip.addAll(font.trimStringToWidth(new TranslationTextComponent(value.getDescription()), 200));
-                renderTooltip(matrixStack, tooltip, mouseX, mouseY);
-            }
-        }
-    }
+				List<IReorderingProcessor> tooltip = Arrays.asList(new StringTextComponent(title).func_241878_f());
+				tooltip.addAll(font.trimStringToWidth(new TranslationTextComponent(value.getDescription()), 200));
+				renderTooltip(matrixStack, tooltip, mouseX, mouseY);
+			}
+		}
+	}
 
-    @Override
-    public IGuiEventListener addListener(IGuiEventListener listener) {
-        children.add(listener);
-        return listener;
-    }
+	@Override
+	public IGuiEventListener addListener(IGuiEventListener listener) {
+		children.add(listener);
+		return listener;
+	}
 
-    public abstract OptionsListWidget getOptions();
+	public abstract OptionsListWidget getOptions();
 
-    @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
-        return options.mouseScrolled(mouseX, mouseY, delta);
-    }
+	@Override
+	public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+		return options.mouseScrolled(mouseX, mouseY, delta);
+	}
 }

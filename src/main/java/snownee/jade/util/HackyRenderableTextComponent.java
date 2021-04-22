@@ -9,18 +9,18 @@ import net.minecraft.util.ResourceLocation;
 
 public class HackyRenderableTextComponent extends RenderableTextComponent {
 
-    private final ResourceLocation id;
-    private final CompoundNBT data;
+	private final ResourceLocation id;
+	private final CompoundNBT data;
 
-    public HackyRenderableTextComponent(ResourceLocation id, CompoundNBT data) {
-        super(id, data);
-        this.id = id;
-        this.data = data;
-    }
+	public HackyRenderableTextComponent(ResourceLocation id, CompoundNBT data) {
+		super(id, data);
+		this.id = id;
+		this.data = data;
+	}
 
-    @Override
-    public List<RenderContainer> getRenderers() {
-        return Collections.singletonList(new RenderContainer(id, data));
-    }
+	@Override
+	public List<RenderContainer> getRenderers() {
+		return Collections.singletonList(new RenderContainer(id, data));
+	}
 
 }

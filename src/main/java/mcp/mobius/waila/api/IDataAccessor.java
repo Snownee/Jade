@@ -22,27 +22,27 @@ import net.minecraft.world.World;
 
 public interface IDataAccessor {
 
-    World getWorld();
+	World getWorld();
 
-    PlayerEntity getPlayer();
+	PlayerEntity getPlayer();
 
-    Block getBlock();
+	Block getBlock();
 
-    BlockState getBlockState();
+	BlockState getBlockState();
 
-    TileEntity getTileEntity();
+	TileEntity getTileEntity();
 
-    RayTraceResult getHitResult();
+	RayTraceResult getHitResult();
 
-    BlockPos getPosition();
+	BlockPos getPosition();
 
-    Vector3d getRenderingPosition();
+	Vector3d getRenderingPosition();
 
-    CompoundNBT getServerData();
+	CompoundNBT getServerData();
 
-    double getPartialFrame();
+	double getPartialFrame();
 
-    Direction getSide();
+	Direction getSide();
 
-    ItemStack getStack();
+	ItemStack getStack();
 }

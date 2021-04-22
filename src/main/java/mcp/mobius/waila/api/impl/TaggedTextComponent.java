@@ -5,15 +5,15 @@ import net.minecraft.util.text.StringTextComponent;
 
 public class TaggedTextComponent extends StringTextComponent {
 
-    private final ResourceLocation tag;
+	private final ResourceLocation tag;
 
-    public TaggedTextComponent(ResourceLocation tag) {
-        super(String.format("${%s}", tag.toString()));
+	public TaggedTextComponent(ResourceLocation tag) {
+		super(String.format("${%s}", tag.toString()));
 
-        this.tag = tag;
-    }
+		this.tag = tag;
+	}
 
-    public ResourceLocation getTag() {
-        return tag;
-    }
+	public ResourceLocation getTag() {
+		return tag;
+	}
 }

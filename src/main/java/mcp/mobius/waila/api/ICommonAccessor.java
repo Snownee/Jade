@@ -20,27 +20,27 @@ import net.minecraft.world.World;
  */
 public interface ICommonAccessor {
 
-    World getWorld();
+	World getWorld();
 
-    PlayerEntity getPlayer();
+	PlayerEntity getPlayer();
 
-    Block getBlock();
+	Block getBlock();
 
-    ResourceLocation getBlockId();
+	ResourceLocation getBlockId();
 
-    TileEntity getTileEntity();
+	TileEntity getTileEntity();
 
-    Entity getEntity();
+	Entity getEntity();
 
-    BlockPos getPosition();
+	BlockPos getPosition();
 
-    Vector3d getRenderingPosition();
+	Vector3d getRenderingPosition();
 
-    CompoundNBT getServerData();
+	CompoundNBT getServerData();
 
-    double getPartialFrame();
+	double getPartialFrame();
 
-    Direction getSide();
+	Direction getSide();
 
-    ItemStack getStack();
+	ItemStack getStack();
 }

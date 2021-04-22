@@ -23,44 +23,44 @@ import snownee.jade.JadePlugin;
 
 public class VillagerProfessionProvider implements IEntityComponentProvider {
 
-    public static final VillagerProfessionProvider INSTANCE = new VillagerProfessionProvider();
-    private static final ITextComponent field_243352_C = new StringTextComponent(" - ");
+	public static final VillagerProfessionProvider INSTANCE = new VillagerProfessionProvider();
+	private static final ITextComponent field_243352_C = new StringTextComponent(" - ");
 
-    @Override
-    public void appendHead(List<ITextComponent> tooltip, IEntityAccessor accessor, IPluginConfig config) {
-        ((ITaggableList<ResourceLocation, ITextComponent>) tooltip).setTag(HUDHandlerBlocks.OBJECT_NAME_TAG, new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getEntityName(), getNameRaw(accessor.getEntity()).getString())));
-    }
+	@Override
+	public void appendHead(List<ITextComponent> tooltip, IEntityAccessor accessor, IPluginConfig config) {
+		((ITaggableList<ResourceLocation, ITextComponent>) tooltip).setTag(HUDHandlerBlocks.OBJECT_NAME_TAG, new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getEntityName(), getNameRaw(accessor.getEntity()).getString())));
+	}
 
-    private static ITextComponent getNameRaw(Entity entity) {
-        ITextComponent itextcomponent = entity.getCustomName();
-        return itextcomponent != null ? sanitizeName(itextcomponent) : entity.getType().getName();
-    }
+	private static ITextComponent getNameRaw(Entity entity) {
+		ITextComponent itextcomponent = entity.getCustomName();
+		return itextcomponent != null ? sanitizeName(itextcomponent) : entity.getType().getName();
+	}
 
-    private static ITextComponent sanitizeName(ITextComponent name) {
-        IFormattableTextComponent iformattabletextcomponent = name.copyRaw().setStyle(name.getStyle().setClickEvent((ClickEvent) null));
-        for (ITextComponent itextcomponent : name.getSiblings()) {
-            iformattabletextcomponent.appendSibling(sanitizeName(itextcomponent));
-        }
-        return iformattabletextcomponent;
-    }
+	private static ITextComponent sanitizeName(ITextComponent name) {
+		IFormattableTextComponent iformattabletextcomponent = name.copyRaw().setStyle(name.getStyle().setClickEvent((ClickEvent) null));
+		for (ITextComponent itextcomponent : name.getSiblings()) {
+			iformattabletextcomponent.appendSibling(sanitizeName(itextcomponent));
+		}
+		return iformattabletextcomponent;
+	}
 
-    @Override
-    public void appendBody(List<ITextComponent> tooltip, IEntityAccessor accessor, IPluginConfig config) {
-        if (!config.get(JadePlugin.PROFESSION)) {
-            return;
-        }
-        VillagerData data = null;
-        if (accessor.getEntity() instanceof VillagerEntity) {
-            data = ((VillagerEntity) accessor.getEntity()).getVillagerData();
-        } else if (accessor.getEntity() instanceof ZombieVillagerEntity) {
-            data = ((ZombieVillagerEntity) accessor.getEntity()).getVillagerData();
-        }
-        if (data == null) {
-            return;
-        }
-        int level = data.getLevel();
-        ResourceLocation profName = data.getProfession().getRegistryName();
-        tooltip.add(new TranslationTextComponent(EntityType.VILLAGER.getTranslationKey() + '.' + (!"minecraft".equals(profName.getNamespace()) ? profName.getNamespace() + '.' : "") + profName.getPath()).appendSibling(field_243352_C).appendSibling(new TranslationTextComponent("merchant.level." + level)));
-    }
+	@Override
+	public void appendBody(List<ITextComponent> tooltip, IEntityAccessor accessor, IPluginConfig config) {
+		if (!config.get(JadePlugin.PROFESSION)) {
+			return;
+		}
+		VillagerData data = null;
+		if (accessor.getEntity() instanceof VillagerEntity) {
+			data = ((VillagerEntity) accessor.getEntity()).getVillagerData();
+		} else if (accessor.getEntity() instanceof ZombieVillagerEntity) {
+			data = ((ZombieVillagerEntity) accessor.getEntity()).getVillagerData();
+		}
+		if (data == null) {
+			return;
+		}
+		int level = data.getLevel();
+		ResourceLocation profName = data.getProfession().getRegistryName();
+		tooltip.add(new TranslationTextComponent(EntityType.VILLAGER.getTranslationKey() + '.' + (!"minecraft".equals(profName.getNamespace()) ? profName.getNamespace() + '.' : "") + profName.getPath()).appendSibling(field_243352_C).appendSibling(new TranslationTextComponent("merchant.level." + level)));
+	}
 
 }

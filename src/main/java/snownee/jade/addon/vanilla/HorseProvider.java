@@ -14,18 +14,18 @@ import snownee.jade.Jade;
 import snownee.jade.JadePlugin;
 
 public class HorseProvider implements IEntityComponentProvider {
-    public static final HorseProvider INSTANCE = new HorseProvider();
+	public static final HorseProvider INSTANCE = new HorseProvider();
 
-    @Override
-    public void appendBody(List<ITextComponent> tooltip, IEntityAccessor accessor, IPluginConfig config) {
-        if (!config.get(JadePlugin.HORSE_STAT)) {
-            return;
-        }
-        AbstractHorseEntity horse = (AbstractHorseEntity) accessor.getEntity();
-        double jumpStrength = horse.getHorseJumpStrength();
-        double jumpHeight = -0.1817584952 * jumpStrength * jumpStrength * jumpStrength + 3.689713992 * jumpStrength * jumpStrength + 2.128599134 * jumpStrength - 0.343930367;
-        ModifiableAttributeInstance iattributeinstance = horse.getAttribute(Attributes.MOVEMENT_SPEED);
-        tooltip.add(new TranslationTextComponent("jade.horseStat.jump", Jade.dfCommas.format(jumpHeight)));
-        tooltip.add(new TranslationTextComponent("jade.horseStat.speed", Jade.dfCommas.format(iattributeinstance.getValue())));
-    }
+	@Override
+	public void appendBody(List<ITextComponent> tooltip, IEntityAccessor accessor, IPluginConfig config) {
+		if (!config.get(JadePlugin.HORSE_STAT)) {
+			return;
+		}
+		AbstractHorseEntity horse = (AbstractHorseEntity) accessor.getEntity();
+		double jumpStrength = horse.getHorseJumpStrength();
+		double jumpHeight = -0.1817584952 * jumpStrength * jumpStrength * jumpStrength + 3.689713992 * jumpStrength * jumpStrength + 2.128599134 * jumpStrength - 0.343930367;
+		ModifiableAttributeInstance iattributeinstance = horse.getAttribute(Attributes.MOVEMENT_SPEED);
+		tooltip.add(new TranslationTextComponent("jade.horseStat.jump", Jade.dfCommas.format(jumpHeight)));
+		tooltip.add(new TranslationTextComponent("jade.horseStat.speed", Jade.dfCommas.format(iattributeinstance.getValue())));
+	}
 }
