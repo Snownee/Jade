@@ -15,19 +15,19 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import snownee.jade.VanillaPlugin;
 
 public class ItemTooltipProvider implements IEntityComponentProvider {
-    public static final ItemTooltipProvider INSTANCE = new ItemTooltipProvider();
+	public static final ItemTooltipProvider INSTANCE = new ItemTooltipProvider();
 
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public void append(ITooltip tooltip, IEntityAccessor accessor, IPluginConfig config) {
-        if (!config.get(VanillaPlugin.ITEM_TOOLTIP)) {
-            return;
-        }
-        ItemStack stack = ((ItemEntity) accessor.getEntity()).getItem();
-        List<ITextComponent> itemTooltip = stack.getTooltip(null, TooltipFlags.NORMAL);
-        if (!itemTooltip.isEmpty()) {
-            itemTooltip.remove(0);
-        }
-        tooltip.addAll(itemTooltip);
-    }
+	@Override
+	@OnlyIn(Dist.CLIENT)
+	public void append(ITooltip tooltip, IEntityAccessor accessor, IPluginConfig config) {
+		if (!config.get(VanillaPlugin.ITEM_TOOLTIP)) {
+			return;
+		}
+		ItemStack stack = ((ItemEntity) accessor.getEntity()).getItem();
+		List<ITextComponent> itemTooltip = stack.getTooltip(null, TooltipFlags.NORMAL);
+		if (!itemTooltip.isEmpty()) {
+			itemTooltip.remove(0);
+		}
+		tooltip.addAll(itemTooltip);
+	}
 }

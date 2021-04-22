@@ -12,17 +12,17 @@ import snownee.jade.VanillaPlugin;
 
 public class TNTProvider implements IComponentProvider {
 
-    public static final TNTProvider INSTANCE = new TNTProvider();
+	public static final TNTProvider INSTANCE = new TNTProvider();
 
-    @Override
-    public void append(ITooltip tooltip, IDataAccessor accessor, IPluginConfig config) {
-        if (!config.get(VanillaPlugin.TNT_STABILITY)) {
-            return;
-        }
-        BlockState state = accessor.getBlockState();
-        if (state.get(TNTBlock.UNSTABLE)) {
-            tooltip.add(new TranslationTextComponent("jade.tnt.unstable").mergeStyle(TextFormatting.RED));
-        }
-    }
+	@Override
+	public void append(ITooltip tooltip, IDataAccessor accessor, IPluginConfig config) {
+		if (!config.get(VanillaPlugin.TNT_STABILITY)) {
+			return;
+		}
+		BlockState state = accessor.getBlockState();
+		if (state.get(TNTBlock.UNSTABLE)) {
+			tooltip.add(new TranslationTextComponent("jade.tnt.unstable").mergeStyle(TextFormatting.RED));
+		}
+	}
 
 }

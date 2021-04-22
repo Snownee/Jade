@@ -13,26 +13,26 @@ import snownee.jade.VanillaPlugin;
 
 public class ArmorStandProvider implements IEntityComponentProvider {
 
-    public static final ArmorStandProvider INSTANCE = new ArmorStandProvider();
+	public static final ArmorStandProvider INSTANCE = new ArmorStandProvider();
 
-    @Override
-    public void append(ITooltip tooltip, IEntityAccessor accessor, IPluginConfig config) {
-        if (!config.get(VanillaPlugin.ARMOR_STAND)) {
-            return;
-        }
-        ArmorStandEntity entity = (ArmorStandEntity) accessor.getEntity();
-        IItemHandler itemHandler = entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
-        if (itemHandler == null) {
-            return;
-        }
-        IElementHelper helper = tooltip.getElementHelper();
-        for (int i = itemHandler.getSlots() - 1; i >= 0; i--) {
-            ItemStack stack = itemHandler.getStackInSlot(i);
-            if (stack.isEmpty())
-                continue;
-            tooltip.add(helper.item(stack, 0.75f));
-            tooltip.append(helper.text(stack.getDisplayName()).translate(0, 2));
-        }
-    }
+	@Override
+	public void append(ITooltip tooltip, IEntityAccessor accessor, IPluginConfig config) {
+		if (!config.get(VanillaPlugin.ARMOR_STAND)) {
+			return;
+		}
+		ArmorStandEntity entity = (ArmorStandEntity) accessor.getEntity();
+		IItemHandler itemHandler = entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
+		if (itemHandler == null) {
+			return;
+		}
+		IElementHelper helper = tooltip.getElementHelper();
+		for (int i = itemHandler.getSlots() - 1; i >= 0; i--) {
+			ItemStack stack = itemHandler.getStackInSlot(i);
+			if (stack.isEmpty())
+				continue;
+			tooltip.add(helper.item(stack, 0.75f));
+			tooltip.append(helper.text(stack.getDisplayName()).translate(0, 2));
+		}
+	}
 
 }

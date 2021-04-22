@@ -16,44 +16,44 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 
 public class ProgressElement extends Element {
-    private final float progress;
-    @Nullable
-    private final ITextComponent text;
-    private final IProgressStyle style;
-    @Nullable
-    private final BorderStyle borderStyle;
+	private final float progress;
+	@Nullable
+	private final ITextComponent text;
+	private final IProgressStyle style;
+	@Nullable
+	private final BorderStyle borderStyle;
 
-    public ProgressElement(float progress, ITextComponent text, ProgressStyle style, BorderStyle borderStyle) {
-        this.progress = MathHelper.clamp(progress, 0, 1);
-        this.text = text;
-        this.style = style;
-        this.borderStyle = borderStyle;
-    }
+	public ProgressElement(float progress, ITextComponent text, ProgressStyle style, BorderStyle borderStyle) {
+		this.progress = MathHelper.clamp(progress, 0, 1);
+		this.text = text;
+		this.style = style;
+		this.borderStyle = borderStyle;
+	}
 
-    @Override
-    public Size getSize() {
-        int height = text == null ? 8 : 14;
-        int minWidth = 0;
-        if (borderStyle != null) {
-            minWidth += borderStyle.width * 2;
-        }
-        if (text != null) {
-            FontRenderer font = Minecraft.getInstance().fontRenderer;
-            minWidth += font.getStringWidth(text.getString());
-        }
-        return new Size(Math.max(20, minWidth), height);
-    }
+	@Override
+	public Size getSize() {
+		int height = text == null ? 8 : 14;
+		int minWidth = 0;
+		if (borderStyle != null) {
+			minWidth += borderStyle.width * 2;
+		}
+		if (text != null) {
+			FontRenderer font = Minecraft.getInstance().fontRenderer;
+			minWidth += font.getStringWidth(text.getString());
+		}
+		return new Size(Math.max(20, minWidth), height);
+	}
 
-    @Override
-    public void render(MatrixStack matrixStack, int x, int y, int maxX, int maxY) {
-        Size size = getCachedSize();
-        if (borderStyle != null) {
-            DisplayHelper.INSTANCE.drawBorder(matrixStack, x, y, maxX - 2, y + size.height - 2, borderStyle);
-        }
-        int b = borderStyle.width;
-        int w = maxX - x - b * 2 - 2;
-        w *= progress;
-        style.render(matrixStack, x + b, y + b, w, size.height - b * 2 - 2, text);
-    }
+	@Override
+	public void render(MatrixStack matrixStack, int x, int y, int maxX, int maxY) {
+		Size size = getCachedSize();
+		if (borderStyle != null) {
+			DisplayHelper.INSTANCE.drawBorder(matrixStack, x, y, maxX - 2, y + size.height - 2, borderStyle);
+		}
+		int b = borderStyle.width;
+		int w = maxX - x - b * 2 - 2;
+		w *= progress;
+		style.render(matrixStack, x + b, y + b, w, size.height - b * 2 - 2, text);
+	}
 
 }

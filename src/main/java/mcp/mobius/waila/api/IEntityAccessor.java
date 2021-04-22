@@ -12,6 +12,6 @@ import net.minecraft.entity.Entity;
 
 public interface IEntityAccessor extends IAccessor {
 
-    Entity getEntity();
+	Entity getEntity();
 
 }

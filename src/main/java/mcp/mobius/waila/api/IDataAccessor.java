@@ -16,14 +16,14 @@ import net.minecraft.util.math.BlockPos;
 
 public interface IDataAccessor extends IAccessor {
 
-    Block getBlock();
+	Block getBlock();
 
-    BlockState getBlockState();
+	BlockState getBlockState();
 
-    TileEntity getTileEntity();
+	TileEntity getTileEntity();
 
-    BlockPos getPosition();
+	BlockPos getPosition();
 
-    Direction getSide();
+	Direction getSide();
 
 }

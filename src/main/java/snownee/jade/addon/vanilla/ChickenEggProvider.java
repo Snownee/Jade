@@ -14,20 +14,20 @@ import net.minecraft.world.World;
 import snownee.jade.VanillaPlugin;
 
 public class ChickenEggProvider implements IEntityComponentProvider, IServerDataProvider<Entity> {
-    public static final ChickenEggProvider INSTANCE = new ChickenEggProvider();
+	public static final ChickenEggProvider INSTANCE = new ChickenEggProvider();
 
-    @Override
-    public void append(ITooltip tooltip, IEntityAccessor accessor, IPluginConfig config) {
-        if (!config.get(VanillaPlugin.CHICKEN_EGG) || !accessor.getServerData().contains("NextEgg")) {
-            return;
-        }
-        tooltip.add(new TranslationTextComponent("jade.nextEgg", accessor.getServerData().getInt("NextEgg")));
-    }
+	@Override
+	public void append(ITooltip tooltip, IEntityAccessor accessor, IPluginConfig config) {
+		if (!config.get(VanillaPlugin.CHICKEN_EGG) || !accessor.getServerData().contains("NextEgg")) {
+			return;
+		}
+		tooltip.add(new TranslationTextComponent("jade.nextEgg", accessor.getServerData().getInt("NextEgg")));
+	}
 
-    @Override
-    public void appendServerData(CompoundNBT tag, ServerPlayerEntity player, World world, Entity entity) {
-        ChickenEntity chicken = (ChickenEntity) entity;
-        tag.putInt("NextEgg", chicken.timeUntilNextEgg / 20);
-    }
+	@Override
+	public void appendServerData(CompoundNBT tag, ServerPlayerEntity player, World world, Entity entity) {
+		ChickenEntity chicken = (ChickenEntity) entity;
+		tag.putInt("NextEgg", chicken.timeUntilNextEgg / 20);
+	}
 
 }

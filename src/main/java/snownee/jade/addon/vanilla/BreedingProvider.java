@@ -15,24 +15,24 @@ import net.minecraftforge.common.util.Constants;
 import snownee.jade.VanillaPlugin;
 
 public class BreedingProvider implements IEntityComponentProvider, IServerDataProvider<Entity> {
-    public static final BreedingProvider INSTANCE = new BreedingProvider();
+	public static final BreedingProvider INSTANCE = new BreedingProvider();
 
-    @Override
-    public void append(ITooltip tooltip, IEntityAccessor accessor, IPluginConfig config) {
-        if (!config.get(VanillaPlugin.MOB_BREEDING) || !accessor.getServerData().contains("BreedingCD", Constants.NBT.TAG_INT)) {
-            return;
-        }
-        int time = accessor.getServerData().getInt("BreedingCD");
-        if (time > 0) {
-            tooltip.add(new TranslationTextComponent("jade.mobbreeding.time", time / 20));
-        }
-    }
+	@Override
+	public void append(ITooltip tooltip, IEntityAccessor accessor, IPluginConfig config) {
+		if (!config.get(VanillaPlugin.MOB_BREEDING) || !accessor.getServerData().contains("BreedingCD", Constants.NBT.TAG_INT)) {
+			return;
+		}
+		int time = accessor.getServerData().getInt("BreedingCD");
+		if (time > 0) {
+			tooltip.add(new TranslationTextComponent("jade.mobbreeding.time", time / 20));
+		}
+	}
 
-    @Override
-    public void appendServerData(CompoundNBT tag, ServerPlayerEntity player, World world, Entity entity) {
-        int time = ((AnimalEntity) entity).getGrowingAge();
-        if (time > 0) {
-            tag.putInt("BreedingCD", time);
-        }
-    }
+	@Override
+	public void appendServerData(CompoundNBT tag, ServerPlayerEntity player, World world, Entity entity) {
+		int time = ((AnimalEntity) entity).getGrowingAge();
+		if (time > 0) {
+			tag.putInt("BreedingCD", time);
+		}
+	}
 }

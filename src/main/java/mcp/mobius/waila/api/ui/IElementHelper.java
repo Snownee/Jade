@@ -8,27 +8,27 @@ import net.minecraft.util.text.ITextComponent;
 
 public interface IElementHelper {
 
-    IElement text(ITextComponent component);
+	IElement text(ITextComponent component);
 
-    IElement spacer(int x, int y);
+	IElement spacer(int x, int y);
 
-    default IElement item(ItemStack stack) {
-        return item(stack, 1);
-    }
+	default IElement item(ItemStack stack) {
+		return item(stack, 1);
+	}
 
-    IElement item(ItemStack stack, float scale);
+	IElement item(ItemStack stack, float scale);
 
-    IElement progress(float progress, @Nullable ITextComponent text, IProgressStyle style, IBorderStyle borderStyle);
+	IElement progress(float progress, @Nullable ITextComponent text, IProgressStyle style, IBorderStyle borderStyle);
 
-    default IElement box(ITooltip tooltip) {
-        return box(tooltip, borderStyle());
-    }
+	default IElement box(ITooltip tooltip) {
+		return box(tooltip, borderStyle());
+	}
 
-    IElement box(ITooltip tooltip, IBorderStyle border);
+	IElement box(ITooltip tooltip, IBorderStyle border);
 
-    ITooltip tooltip();
+	ITooltip tooltip();
 
-    IBorderStyle borderStyle();
+	IBorderStyle borderStyle();
 
-    IProgressStyle progressStyle();
+	IProgressStyle progressStyle();
 }

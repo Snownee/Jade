@@ -18,54 +18,54 @@ import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 public class RequestEntityPacket {
 
-    public int entityId;
+	public int entityId;
 
-    public RequestEntityPacket(Entity entity) {
-        this.entityId = entity.getEntityId();
-    }
+	public RequestEntityPacket(Entity entity) {
+		this.entityId = entity.getEntityId();
+	}
 
-    private RequestEntityPacket(int entityId) {
-        this.entityId = entityId;
-    }
+	private RequestEntityPacket(int entityId) {
+		this.entityId = entityId;
+	}
 
-    public static RequestEntityPacket read(PacketBuffer buffer) {
-        return new RequestEntityPacket(buffer.readVarInt());
-    }
+	public static RequestEntityPacket read(PacketBuffer buffer) {
+		return new RequestEntityPacket(buffer.readVarInt());
+	}
 
-    public static void write(RequestEntityPacket message, PacketBuffer buffer) {
-        buffer.writeVarInt(message.entityId);
-    }
+	public static void write(RequestEntityPacket message, PacketBuffer buffer) {
+		buffer.writeVarInt(message.entityId);
+	}
 
-    public static class Handler {
+	public static class Handler {
 
-        public static void onMessage(final RequestEntityPacket message, Supplier<NetworkEvent.Context> context) {
-            final MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-            if (server == null)
-                return;
+		public static void onMessage(final RequestEntityPacket message, Supplier<NetworkEvent.Context> context) {
+			final MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+			if (server == null)
+				return;
 
-            server.execute(() -> {
-                ServerPlayerEntity player = context.get().getSender();
-                World world = player.world;
-                Entity entity = world.getEntityByID(message.entityId);
+			server.execute(() -> {
+				ServerPlayerEntity player = context.get().getSender();
+				World world = player.world;
+				Entity entity = world.getEntityByID(message.entityId);
 
-                if (entity == null)
-                    return;
+				if (entity == null)
+					return;
 
-                CompoundNBT tag = new CompoundNBT();
-                List<IServerDataProvider<Entity>> providers = WailaRegistrar.INSTANCE.getEntityNBTProviders(entity);
-                if (!providers.isEmpty()) {
-                    for (IServerDataProvider<Entity> provider : providers) {
-                        provider.appendServerData(tag, player, world, entity);
-                    }
-                } else {
-                    entity.writeWithoutTypeId(tag);
-                }
+				CompoundNBT tag = new CompoundNBT();
+				List<IServerDataProvider<Entity>> providers = WailaRegistrar.INSTANCE.getEntityNBTProviders(entity);
+				if (!providers.isEmpty()) {
+					for (IServerDataProvider<Entity> provider : providers) {
+						provider.appendServerData(tag, player, world, entity);
+					}
+				} else {
+					entity.writeWithoutTypeId(tag);
+				}
 
-                tag.putInt("WailaEntityID", entity.getEntityId());
+				tag.putInt("WailaEntityID", entity.getEntityId());
 
-                Waila.NETWORK.sendTo(new ReceiveDataPacket(tag), player.connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
-            });
-            context.get().setPacketHandled(true);
-        }
-    }
+				Waila.NETWORK.sendTo(new ReceiveDataPacket(tag), player.connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
+			});
+			context.get().setPacketHandled(true);
+		}
+	}
 }

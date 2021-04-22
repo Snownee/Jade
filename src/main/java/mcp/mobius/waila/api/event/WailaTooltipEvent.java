@@ -14,19 +14,19 @@ import net.minecraftforge.eventbus.api.Event;
  */
 public class WailaTooltipEvent extends Event {
 
-    private final ITooltip currentTip;
-    private final IAccessor accessor;
+	private final ITooltip currentTip;
+	private final IAccessor accessor;
 
-    public WailaTooltipEvent(ITooltip currentTip, IAccessor accessor) {
-        this.currentTip = currentTip;
-        this.accessor = accessor;
-    }
+	public WailaTooltipEvent(ITooltip currentTip, IAccessor accessor) {
+		this.currentTip = currentTip;
+		this.accessor = accessor;
+	}
 
-    public ITooltip getTooltip() {
-        return currentTip;
-    }
+	public ITooltip getTooltip() {
+		return currentTip;
+	}
 
-    public IAccessor getAccessor() {
-        return accessor;
-    }
+	public IAccessor getAccessor() {
+		return accessor;
+	}
 }

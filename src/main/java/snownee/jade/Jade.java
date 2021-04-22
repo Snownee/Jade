@@ -14,18 +14,18 @@ import net.minecraftforge.fml.network.FMLNetworkConstants;
 
 @Mod(Jade.MODID)
 public class Jade {
-    public static final String MODID = "jade";
-    public static final String NAME = "Jade";
-    public static DecimalFormat dfCommas = new DecimalFormat("##.##");
+	public static final String MODID = "jade";
+	public static final String NAME = "Jade";
+	public static DecimalFormat dfCommas = new DecimalFormat("##.##");
 
-    public Jade() {
-        ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.DISPLAYTEST, () -> Pair.of(() -> FMLNetworkConstants.IGNORESERVERONLY, (a, b) -> true));
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, JadeCommonConfig.spec);
-        FMLJavaModLoadingContext.get().getModEventBus().register(JadeCommonConfig.class);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::init);
-    }
+	public Jade() {
+		ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.DISPLAYTEST, () -> Pair.of(() -> FMLNetworkConstants.IGNORESERVERONLY, (a, b) -> true));
+		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, JadeCommonConfig.spec);
+		FMLJavaModLoadingContext.get().getModEventBus().register(JadeCommonConfig.class);
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::init);
+	}
 
-    private void init(FMLCommonSetupEvent event) {
-        JadeCommonConfig.refresh();
-    }
+	private void init(FMLCommonSetupEvent event) {
+		JadeCommonConfig.refresh();
+	}
 }

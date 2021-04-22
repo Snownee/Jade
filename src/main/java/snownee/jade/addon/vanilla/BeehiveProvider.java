@@ -18,29 +18,29 @@ import snownee.jade.VanillaPlugin;
 
 public class BeehiveProvider implements IComponentProvider, IServerDataProvider<TileEntity> {
 
-    public static final BeehiveProvider INSTANCE = new BeehiveProvider();
+	public static final BeehiveProvider INSTANCE = new BeehiveProvider();
 
-    @Override
-    public void append(ITooltip tooltip, IDataAccessor accessor, IPluginConfig config) {
-        if (!config.get(VanillaPlugin.BEEHIVE)) {
-            return;
-        }
-        BlockState state = accessor.getBlockState();
-        int level = state.get(BeehiveBlock.HONEY_LEVEL); // 0~5
-        tooltip.add(new TranslationTextComponent("jade.beehive.honey", new TranslationTextComponent("jade.fraction", level, 5).mergeStyle(level == 5 ? TextFormatting.GREEN : TextFormatting.WHITE)));
-        if (accessor.getServerData().contains("Full")) {
-            boolean full = accessor.getServerData().getBoolean("Full");
-            int bees = accessor.getServerData().getByte("Bees");
-            tooltip.add(new TranslationTextComponent("jade.beehive.bees", (full ? TextFormatting.GREEN : TextFormatting.WHITE) + "" + bees));
-        }
-    }
+	@Override
+	public void append(ITooltip tooltip, IDataAccessor accessor, IPluginConfig config) {
+		if (!config.get(VanillaPlugin.BEEHIVE)) {
+			return;
+		}
+		BlockState state = accessor.getBlockState();
+		int level = state.get(BeehiveBlock.HONEY_LEVEL); // 0~5
+		tooltip.add(new TranslationTextComponent("jade.beehive.honey", new TranslationTextComponent("jade.fraction", level, 5).mergeStyle(level == 5 ? TextFormatting.GREEN : TextFormatting.WHITE)));
+		if (accessor.getServerData().contains("Full")) {
+			boolean full = accessor.getServerData().getBoolean("Full");
+			int bees = accessor.getServerData().getByte("Bees");
+			tooltip.add(new TranslationTextComponent("jade.beehive.bees", (full ? TextFormatting.GREEN : TextFormatting.WHITE) + "" + bees));
+		}
+	}
 
-    @Override
-    public void appendServerData(CompoundNBT tag, ServerPlayerEntity player, World world, TileEntity te) {
-        tag.keySet().clear();
-        BeehiveTileEntity beehive = (BeehiveTileEntity) te;
-        tag.putByte("Bees", (byte) beehive.getBeeCount());
-        tag.putBoolean("Full", beehive.isFullOfBees());
-    }
+	@Override
+	public void appendServerData(CompoundNBT tag, ServerPlayerEntity player, World world, TileEntity te) {
+		tag.keySet().clear();
+		BeehiveTileEntity beehive = (BeehiveTileEntity) te;
+		tag.putByte("Bees", (byte) beehive.getBeeCount());
+		tag.putBoolean("Full", beehive.isFullOfBees());
+	}
 
 }

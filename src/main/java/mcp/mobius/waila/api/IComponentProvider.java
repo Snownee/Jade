@@ -16,7 +16,7 @@ import net.minecraft.world.World;
  */
 public interface IComponentProvider {
 
-    /**
+	/**
      * Callback used to override the default Waila lookup system.</br>
      * Will only be called if the implementing class is registered via {@link IRegistrar#registerStackProvider}.</br>
      * <p>
@@ -30,12 +30,12 @@ public interface IComponentProvider {
      * @param currentElement 
      * @return {@link ItemStack#EMPTY} if override is not required, a non-empty ItemStack otherwise.
      */
-    @Nullable
-    default IElement getIcon(IDataAccessor accessor, IPluginConfig config, IElement currentIcon) {
-        return null;
-    }
+	@Nullable
+	default IElement getIcon(IDataAccessor accessor, IPluginConfig config, IElement currentIcon) {
+		return null;
+	}
 
-    /**
+	/**
      * Callback used to add lines to one of the three sections of the tooltip (Head, Body, Tail).</br>
      * Will only be called if the implementing class is registered via {@link IRegistrar#registerComponentProvider(IComponentProvider, TooltipPosition, Class)}.</br>
      * You are supposed to always return the modified input tooltip.</br>
@@ -50,8 +50,8 @@ public interface IComponentProvider {
      * @param accessor   Contains most of the relevant information about the current environment.
      * @param config     Current configuration of Waila.
      */
-    default void append(ITooltip tooltip, IDataAccessor accessor, IPluginConfig config) {
+	default void append(ITooltip tooltip, IDataAccessor accessor, IPluginConfig config) {
 
-    }
+	}
 
 }

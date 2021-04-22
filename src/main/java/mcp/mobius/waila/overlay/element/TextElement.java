@@ -17,25 +17,25 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 @OnlyIn(Dist.CLIENT)
 public class TextElement extends Element {
 
-    public final ITextComponent component;
+	public final ITextComponent component;
 
-    public TextElement(ITextComponent component) {
-        this.component = component;
-    }
+	public TextElement(ITextComponent component) {
+		this.component = component;
+	}
 
-    @Override
-    public Size getSize() {
-        FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
-        return new Size(fontRenderer.getStringWidth(component.getString()), fontRenderer.FONT_HEIGHT + 1);
-    }
+	@Override
+	public Size getSize() {
+		FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
+		return new Size(fontRenderer.getStringWidth(component.getString()), fontRenderer.FONT_HEIGHT + 1);
+	}
 
-    @Override
-    public void render(MatrixStack matrixStack, int x, int y, int maxX, int maxY) {
-        FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
-        WailaConfig.ConfigOverlay.ConfigOverlayColor color = Waila.CONFIG.get().getOverlay().getColor();
-        IRenderTypeBuffer.Impl irendertypebuffer$impl = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
-        fontRenderer.drawEntityText(component.func_241878_f(), x, y, color.getFontColor(), true, matrixStack.getLast().getMatrix(), irendertypebuffer$impl, false, 0, 15728880);
-        irendertypebuffer$impl.finish();
-    }
+	@Override
+	public void render(MatrixStack matrixStack, int x, int y, int maxX, int maxY) {
+		FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
+		WailaConfig.ConfigOverlay.ConfigOverlayColor color = Waila.CONFIG.get().getOverlay().getColor();
+		IRenderTypeBuffer.Impl irendertypebuffer$impl = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
+		fontRenderer.drawEntityText(component.func_241878_f(), x, y, color.getFontColor(), true, matrixStack.getLast().getMatrix(), irendertypebuffer$impl, false, 0, 15728880);
+		irendertypebuffer$impl.finish();
+	}
 
 }

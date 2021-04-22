@@ -19,46 +19,46 @@ import net.minecraftforge.fml.network.NetworkEvent;
 
 public class ServerPingPacket {
 
-    public Map<ResourceLocation, Boolean> forcedKeys = Maps.newHashMap();
+	public Map<ResourceLocation, Boolean> forcedKeys = Maps.newHashMap();
 
-    public ServerPingPacket(@Nullable Map<ResourceLocation, Boolean> forcedKeys) {
-        this.forcedKeys = forcedKeys;
-    }
+	public ServerPingPacket(@Nullable Map<ResourceLocation, Boolean> forcedKeys) {
+		this.forcedKeys = forcedKeys;
+	}
 
-    public ServerPingPacket(PluginConfig config) {
-        Set<ConfigEntry> entries = config.getSyncableConfigs();
-        entries.forEach(e -> forcedKeys.put(e.getId(), e.getValue()));
-    }
+	public ServerPingPacket(PluginConfig config) {
+		Set<ConfigEntry> entries = config.getSyncableConfigs();
+		entries.forEach(e -> forcedKeys.put(e.getId(), e.getValue()));
+	}
 
-    public static ServerPingPacket read(PacketBuffer buffer) {
-        int size = buffer.readInt();
-        Map<ResourceLocation, Boolean> temp = Maps.newHashMap();
-        for (int i = 0; i < size; i++) {
-            ResourceLocation id = new ResourceLocation(buffer.readString(128));
-            boolean value = buffer.readBoolean();
-            temp.put(id, value);
-        }
+	public static ServerPingPacket read(PacketBuffer buffer) {
+		int size = buffer.readInt();
+		Map<ResourceLocation, Boolean> temp = Maps.newHashMap();
+		for (int i = 0; i < size; i++) {
+			ResourceLocation id = new ResourceLocation(buffer.readString(128));
+			boolean value = buffer.readBoolean();
+			temp.put(id, value);
+		}
 
-        return new ServerPingPacket(temp);
-    }
+		return new ServerPingPacket(temp);
+	}
 
-    public static void write(ServerPingPacket message, PacketBuffer buffer) {
-        buffer.writeInt(message.forcedKeys.size());
-        message.forcedKeys.forEach((k, v) -> {
-            buffer.writeString(k.toString());
-            buffer.writeBoolean(v);
-        });
-    }
+	public static void write(ServerPingPacket message, PacketBuffer buffer) {
+		buffer.writeInt(message.forcedKeys.size());
+		message.forcedKeys.forEach((k, v) -> {
+			buffer.writeString(k.toString());
+			buffer.writeBoolean(v);
+		});
+	}
 
-    public static class Handler {
+	public static class Handler {
 
-        public static void onMessage(ServerPingPacket message, Supplier<NetworkEvent.Context> context) {
-            context.get().enqueueWork(() -> {
-                DataAccessor.INSTANCE.serverConnected = true;
-                message.forcedKeys.forEach(PluginConfig.INSTANCE::set);
-                Waila.LOGGER.info("Received config from the server: {}", new Gson().toJson(message.forcedKeys));
-            });
-            context.get().setPacketHandled(true);
-        }
-    }
+		public static void onMessage(ServerPingPacket message, Supplier<NetworkEvent.Context> context) {
+			context.get().enqueueWork(() -> {
+				DataAccessor.INSTANCE.serverConnected = true;
+				message.forcedKeys.forEach(PluginConfig.INSTANCE::set);
+				Waila.LOGGER.info("Received config from the server: {}", new Gson().toJson(message.forcedKeys));
+			});
+			context.get().setPacketHandled(true);
+		}
+	}
 }

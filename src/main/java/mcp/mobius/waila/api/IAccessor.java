@@ -15,16 +15,16 @@ import net.minecraft.world.World;
  */
 public interface IAccessor {
 
-    World getWorld();
+	World getWorld();
 
-    PlayerEntity getPlayer();
+	PlayerEntity getPlayer();
 
-    CompoundNBT getServerData();
+	CompoundNBT getServerData();
 
-    RayTraceResult getHitResult();
+	RayTraceResult getHitResult();
 
-    @Nullable
-    TooltipPosition getTooltipPosition();
+	@Nullable
+	TooltipPosition getTooltipPosition();
 
-    boolean isServerConnected();
+	boolean isServerConnected();
 }

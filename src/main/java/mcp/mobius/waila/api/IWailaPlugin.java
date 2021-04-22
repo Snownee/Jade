@@ -7,8 +7,8 @@ package mcp.mobius.waila.api;
  */
 public interface IWailaPlugin {
 
-    /**
-     * @param registrar - An instance of IWailaRegistrar to register your providers with.
-     */
-    void register(IRegistrar registrar);
+	/**
+	 * @param registrar - An instance of IWailaRegistrar to register your providers with.
+	 */
+	void register(IRegistrar registrar);
 }

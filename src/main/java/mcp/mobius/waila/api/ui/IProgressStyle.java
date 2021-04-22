@@ -7,17 +7,17 @@ import net.minecraftforge.fluids.FluidStack;
 
 public interface IProgressStyle {
 
-    default IProgressStyle color(int color) {
-        return color(color, color);
-    }
+	default IProgressStyle color(int color) {
+		return color(color, color);
+	}
 
-    IProgressStyle color(int color, int color2);
+	IProgressStyle color(int color, int color2);
 
-    IProgressStyle textColor(int color);
+	IProgressStyle textColor(int color);
 
-    IProgressStyle vertical(boolean vertical);
+	IProgressStyle vertical(boolean vertical);
 
-    IProgressStyle fluid(FluidStack fluidStack);
+	IProgressStyle fluid(FluidStack fluidStack);
 
-    void render(MatrixStack matrixStack, int i, int j, int w, int k, ITextComponent text);
+	void render(MatrixStack matrixStack, int i, int j, int w, int k, ITextComponent text);
 }

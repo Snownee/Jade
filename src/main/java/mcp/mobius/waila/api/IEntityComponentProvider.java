@@ -17,7 +17,7 @@ import net.minecraft.world.World;
  */
 public interface IEntityComponentProvider {
 
-    /**
+	/**
      * Callback used to override the default Waila lookup system.</br>
      * Will only be called if the implementing class is registered via {@link IRegistrar#registerOverrideEntityProvider}.</br>
      *
@@ -25,11 +25,11 @@ public interface IEntityComponentProvider {
      * @param config   Current configuration of Waila.
      * @return null if override is not required, an Entity otherwise.
      */
-    default Entity getOverride(IEntityAccessor accessor, IPluginConfig config) {
-        return null;
-    }
+	default Entity getOverride(IEntityAccessor accessor, IPluginConfig config) {
+		return null;
+	}
 
-    /**
+	/**
      * Callback used to set an item to display alongside the entity name in the tooltip, similar to how blocks are treated.
      * Will only be called if the implementing class is registered via {@link}
      *
@@ -42,12 +42,12 @@ public interface IEntityComponentProvider {
      * @param config   Current configuration of Waila.
      * @return The item to display or {@link ItemStack#EMPTY} to display nothing.
      */
-    @Nullable
-    default IElement getIcon(IEntityAccessor accessor, IPluginConfig config) {
-        return null;
-    }
+	@Nullable
+	default IElement getIcon(IEntityAccessor accessor, IPluginConfig config) {
+		return null;
+	}
 
-    /**
+	/**
      * Callback used to add lines to one of the three sections of the tooltip (Head, Body, Tail).</br>
      * Will only be called if the implementing class is registered via {@link IRegistrar#registerComponentProvider(IEntityComponentProvider, TooltipPosition, Class)}.</br>
      * You are supposed to always return the modified input currenttip.</br>
@@ -61,8 +61,8 @@ public interface IEntityComponentProvider {
      * @param accessor   Contains most of the relevant information about the current environment.
      * @param config     Current configuration of Waila.
      */
-    default void append(ITooltip tooltip, IEntityAccessor accessor, IPluginConfig config) {
+	default void append(ITooltip tooltip, IEntityAccessor accessor, IPluginConfig config) {
 
-    }
+	}
 
 }

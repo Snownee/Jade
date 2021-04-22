@@ -9,10 +9,10 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface WailaPlugin {
 
-    /**
-     * Defines a modid required before this plugin can be loaded. If this modid is not found, the class will not be loaded.
-     *
-     * @return a modid required for this plugin
-     */
-    String value() default "";
+	/**
+	 * Defines a modid required before this plugin can be loaded. If this modid is not found, the class will not be loaded.
+	 *
+	 * @return a modid required for this plugin
+	 */
+	String value() default "";
 }
