@@ -4,12 +4,12 @@ import mcp.mobius.waila.api.BlockAccessor;
 import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.config.IPluginConfig;
+import mcp.mobius.waila.overlay.DisplayHelper;
 import net.minecraft.block.EnchantingTableBlock;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
-import snownee.jade.Jade;
 import snownee.jade.VanillaPlugin;
 
 public class EnchantmentPowerProvider implements IComponentProvider {
@@ -44,7 +44,7 @@ public class EnchantmentPowerProvider implements IComponentProvider {
 			power = getPower(world, pos);
 		}
 		if (power > 0) {
-			tooltip.add(new TranslationTextComponent("jade.ench_power", TextFormatting.WHITE + Jade.dfCommas.format(power)));
+			tooltip.add(new TranslationTextComponent("jade.ench_power", TextFormatting.WHITE + DisplayHelper.dfCommas.format(power)));
 		}
 	}
 

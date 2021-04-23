@@ -1,5 +1,6 @@
 package mcp.mobius.waila.overlay;
 
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -48,7 +49,6 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
-import snownee.jade.Jade;
 
 @SuppressWarnings("deprecation")
 public class DisplayHelper implements IDisplayHelper {
@@ -433,39 +433,38 @@ public class DisplayHelper implements IDisplayHelper {
 		RenderSystem.disableBlend();
 	}
 
+	public static DecimalFormat dfCommas = new DecimalFormat("##.##");
+
+	static {
+		dfCommas.setRoundingMode(RoundingMode.DOWN);
+	}
+
 	// https://programming.guide/worlds-most-copied-so-snippet.html
 	public String humanReadableNumber(double number, String unit, boolean milli) {
 		StringBuilder sb = new StringBuilder();
-		try {
-			boolean n = number < 0;
-			if (n) {
-				number = -number;
-				sb.append('-');
-			}
-			if (milli && number >= 1000) {
-				number /= 1000;
-				milli = false;
-			}
-			if (number < 1000) {
-				sb.append(Jade.dfCommas.format(number));
-				if (milli) {
-					sb.append('m');
-				}
-			} else {
-				int exp = (int) (Math.log10(number) / Math.log10(1000));
-				if (exp > 7)
-					exp = 7;
-				long th = (long) Math.ceil(Math.pow(1000, exp) * (1000 - 0.05));
-				if (exp < 7 && number >= th - ((th & 0xFFF) == 0xD00 ? 51 : 0))
-					exp++;
-				char pre = "kMGTPEZ".charAt(exp - 1);
-				sb.append(Jade.dfCommas.format(number / Math.pow(1000, exp)));
-				sb.append(pre);
-			}
-			sb.append(unit);
-		} catch (Exception e) {
-			System.err.println(e);
+		boolean n = number < 0;
+		if (n) {
+			number = -number;
+			sb.append('-');
 		}
+		if (milli && number >= 1000) {
+			number /= 1000;
+			milli = false;
+		}
+		if (number < 1000) {
+			sb.append(dfCommas.format(number));
+			if (milli) {
+				sb.append('m');
+			}
+		} else {
+			int exp = (int) (Math.log10(number) / Math.log10(1000));
+			if (exp > 7)
+				exp = 7;
+			char pre = "kMGTPEZ".charAt(exp - 1);
+			sb.append(dfCommas.format(number / Math.pow(1000, exp)));
+			sb.append(pre);
+		}
+		sb.append(unit);
 		return sb.toString();
 	}
 }

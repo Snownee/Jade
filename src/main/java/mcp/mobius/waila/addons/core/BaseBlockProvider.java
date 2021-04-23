@@ -89,7 +89,7 @@ public class BaseBlockProvider implements IComponentProvider, IServerDataProvide
 				int cur = storage.getEnergyStored();
 				int max = storage.getMaxEnergyStored();
 				//ITextComponent text = new StringTextComponent(DisplayHelper.INSTANCE.humanReadableNumber(cur, "FE", false) + "/" + DisplayHelper.INSTANCE.humanReadableNumber(max, "FE", false));
-				ITextComponent text = new StringTextComponent(DisplayHelper.INSTANCE.humanReadableNumber(999999, "FE", false) + "/" + DisplayHelper.INSTANCE.humanReadableNumber(Math.pow(1000, 8) - 1, "FE", false));
+				ITextComponent text = new StringTextComponent(DisplayHelper.INSTANCE.humanReadableNumber(999999999999l, "FE", false) + "/" + DisplayHelper.INSTANCE.humanReadableNumber(Math.pow(1000, 8) - 1, "FE", false));
 				IProgressStyle progressStyle = helper.progressStyle().color(Color.RED.getRGB(), 0xFF660000);
 				tooltip.add(helper.progress((float) cur / max, text, progressStyle, helper.borderStyle()));
 			}

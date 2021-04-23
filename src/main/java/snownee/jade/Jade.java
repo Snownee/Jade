@@ -1,7 +1,5 @@
 package snownee.jade;
 
-import java.text.DecimalFormat;
-
 import org.apache.commons.lang3.tuple.Pair;
 
 import mcp.mobius.waila.gui.HomeConfigScreen;
@@ -18,7 +16,6 @@ import net.minecraftforge.fml.network.FMLNetworkConstants;
 public class Jade {
 	public static final String MODID = "jade";
 	public static final String NAME = "Jade";
-	public static DecimalFormat dfCommas = new DecimalFormat("##.##");
 
 	public Jade() {
 		ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.DISPLAYTEST, () -> Pair.of(() -> FMLNetworkConstants.IGNORESERVERONLY, (a, b) -> true));

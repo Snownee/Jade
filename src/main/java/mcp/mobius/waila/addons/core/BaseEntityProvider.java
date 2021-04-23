@@ -6,6 +6,7 @@ import mcp.mobius.waila.api.IEntityComponentProvider;
 import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.TooltipPosition;
 import mcp.mobius.waila.api.config.IPluginConfig;
+import mcp.mobius.waila.overlay.DisplayHelper;
 import mcp.mobius.waila.overlay.element.ArmorElement;
 import mcp.mobius.waila.overlay.element.HealthElement;
 import mcp.mobius.waila.utils.ModIdentification;
@@ -16,7 +17,6 @@ import net.minecraft.entity.merchant.villager.VillagerEntity;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
-import snownee.jade.Jade;
 import snownee.jade.VanillaPlugin;
 
 public class BaseEntityProvider implements IEntityComponentProvider {
@@ -72,7 +72,7 @@ public class BaseEntityProvider implements IEntityComponentProvider {
 
 		if (living.getMaxHealth() > Waila.CONFIG.get().getGeneral().getMaxHealthForRender()) {
 			HealthElement icon = new HealthElement(1, 1);
-			ITextComponent text = new StringTextComponent(String.format("  %s/%s", Jade.dfCommas.format(health), Jade.dfCommas.format(maxHealth)));
+			ITextComponent text = new StringTextComponent(String.format("  %s/%s", DisplayHelper.dfCommas.format(health), DisplayHelper.dfCommas.format(maxHealth)));
 			tooltip.add(icon);
 			tooltip.append(text);
 		} else {
@@ -86,7 +86,7 @@ public class BaseEntityProvider implements IEntityComponentProvider {
 			return;
 		if (armor > Waila.CONFIG.get().getGeneral().getMaxHealthForRender()) {
 			ArmorElement icon = new ArmorElement(-1);
-			ITextComponent text = new StringTextComponent(Jade.dfCommas.format(armor));
+			ITextComponent text = new StringTextComponent(DisplayHelper.dfCommas.format(armor));
 			tooltip.add(icon);
 			tooltip.append(text);
 		} else {
