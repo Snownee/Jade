@@ -13,6 +13,7 @@ import mcp.mobius.waila.api.TooltipPosition;
 import mcp.mobius.waila.api.config.IPluginConfig;
 import mcp.mobius.waila.api.ui.IElementHelper;
 import mcp.mobius.waila.api.ui.IProgressStyle;
+import mcp.mobius.waila.overlay.DisplayHelper;
 import mcp.mobius.waila.utils.ModIdentification;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.resources.I18n;
@@ -87,7 +88,8 @@ public class BaseBlockProvider implements IComponentProvider, IServerDataProvide
 				IElementHelper helper = tooltip.getElementHelper();
 				int cur = storage.getEnergyStored();
 				int max = storage.getMaxEnergyStored();
-				ITextComponent text = new StringTextComponent(cur + "FE/" + max + "FE");
+				//ITextComponent text = new StringTextComponent(DisplayHelper.INSTANCE.humanReadableNumber(cur, "FE", false) + "/" + DisplayHelper.INSTANCE.humanReadableNumber(max, "FE", false));
+				ITextComponent text = new StringTextComponent(DisplayHelper.INSTANCE.humanReadableNumber(999999, "FE", false) + "/" + DisplayHelper.INSTANCE.humanReadableNumber(Math.pow(1000, 8) - 1, "FE", false));
 				IProgressStyle progressStyle = helper.progressStyle().color(Color.RED.getRGB(), 0xFF660000);
 				tooltip.add(helper.progress((float) cur / max, text, progressStyle, helper.borderStyle()));
 			}
