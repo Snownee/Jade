@@ -7,7 +7,6 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import mcp.mobius.waila.api.ui.IProgressStyle;
 import mcp.mobius.waila.overlay.DisplayHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.text.ITextComponent;
@@ -42,7 +41,7 @@ public class ProgressStyle implements IProgressStyle {
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, int x, int y, int width, int height, ITextComponent text) {
+	public void render(MatrixStack matrixStack, float x, float y, float width, float height, ITextComponent text) {
 		if (width > 0) {
 			Color lighter = new Color(color);
 			int alpha = (int) (lighter.getAlpha() * 0.7f);
@@ -52,8 +51,9 @@ public class ProgressStyle implements IProgressStyle {
 			DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x, y, width, half, lighter.getRGB(), color);
 			DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x, y + half, width, half, color, lighter.getRGB());
 			if (color != color2) {
-				for (int xx = x + 1; xx < x + width; xx += 2) {
-					AbstractGui.fill(matrixStack, xx, y, xx + 1, y + height, color2);
+				for (float xx = x + 1; xx < x + width; xx += 2) {
+					float fx = Math.min(x + width, xx + 1);
+					DisplayHelper.fill(matrixStack, xx, y, fx, y + height, color2);
 				}
 			}
 		}
@@ -69,7 +69,7 @@ public class ProgressStyle implements IProgressStyle {
 				}
 			}
 			y += height - font.FONT_HEIGHT;
-			font.drawString(matrixStack, text.getString(), x + 1, y, textColor);
+			font.drawStringWithShadow(matrixStack, text.getString(), x + 1, y, textColor);
 		}
 	}
 

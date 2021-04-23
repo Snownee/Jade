@@ -1,6 +1,6 @@
 package snownee.jade.addon.vanilla;
 
-import mcp.mobius.waila.api.IEntityAccessor;
+import mcp.mobius.waila.api.EntityAccessor;
 import mcp.mobius.waila.api.IEntityComponentProvider;
 import mcp.mobius.waila.api.IServerDataProvider;
 import mcp.mobius.waila.api.ITooltip;
@@ -18,7 +18,7 @@ public class AgeableEntityProvider implements IEntityComponentProvider, IServerD
 	public static final AgeableEntityProvider INSTANCE = new AgeableEntityProvider();
 
 	@Override
-	public void append(ITooltip tooltip, IEntityAccessor accessor, IPluginConfig config) {
+	public void append(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		if (!config.get(VanillaPlugin.MOB_GROWTH) || !accessor.getServerData().contains("GrowingTime", Constants.NBT.TAG_INT)) {
 			return;
 		}

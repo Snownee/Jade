@@ -9,7 +9,7 @@ import mcp.mobius.waila.api.config.WailaConfig.ConfigOverlay;
 import mcp.mobius.waila.api.event.WailaTooltipEvent;
 import mcp.mobius.waila.api.ui.IElement;
 import mcp.mobius.waila.api.ui.Size;
-import mcp.mobius.waila.impl.DataAccessor;
+import mcp.mobius.waila.impl.ObjectDataCenter;
 import mcp.mobius.waila.impl.Tooltip;
 import mcp.mobius.waila.impl.Tooltip.Line;
 import net.minecraft.client.MainWindow;
@@ -24,7 +24,7 @@ public class TooltipRenderer {
 	IElement icon;
 
 	public TooltipRenderer(Tooltip tooltip, boolean showIcon) {
-		WailaTooltipEvent event = new WailaTooltipEvent(tooltip, DataAccessor.INSTANCE);
+		WailaTooltipEvent event = new WailaTooltipEvent(tooltip, ObjectDataCenter.get());
 		MinecraftForge.EVENT_BUS.post(event);
 
 		Minecraft.getInstance();

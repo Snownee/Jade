@@ -32,7 +32,7 @@ public interface IComponentProvider {
      * @return {@link ItemStack#EMPTY} if override is not required, a non-empty ItemStack otherwise.
      */
 	@Nullable
-	default IElement getIcon(IBlockAccessor accessor, IPluginConfig config, IElement currentIcon) {
+	default IElement getIcon(BlockAccessor accessor, IPluginConfig config, IElement currentIcon) {
 		return null;
 	}
 
@@ -51,7 +51,7 @@ public interface IComponentProvider {
      * @param accessor   Contains most of the relevant information about the current environment.
      * @param config     Current configuration of Waila.
      */
-	default void append(ITooltip tooltip, IBlockAccessor accessor, IPluginConfig config) {
+	default void append(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 
 	}
 

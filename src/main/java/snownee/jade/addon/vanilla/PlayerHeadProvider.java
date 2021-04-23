@@ -3,8 +3,8 @@ package snownee.jade.addon.vanilla;
 import com.mojang.authlib.GameProfile;
 
 import mcp.mobius.waila.Waila;
+import mcp.mobius.waila.api.BlockAccessor;
 import mcp.mobius.waila.api.IComponentProvider;
-import mcp.mobius.waila.api.IBlockAccessor;
 import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.config.IPluginConfig;
 import net.minecraft.client.resources.I18n;
@@ -20,7 +20,7 @@ public class PlayerHeadProvider implements IComponentProvider {
 	static final ResourceLocation OBJECT_NAME_TAG = new ResourceLocation(Waila.MODID, "object_name");
 
 	@Override
-	public void append(ITooltip tooltip, IBlockAccessor accessor, IPluginConfig config) {
+	public void append(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		if (!config.get(VanillaPlugin.PLAYER_HEAD)) {
 			return;
 		}

@@ -1,7 +1,7 @@
 package mcp.mobius.waila.addons.core;
 
 import mcp.mobius.waila.Waila;
-import mcp.mobius.waila.api.IEntityAccessor;
+import mcp.mobius.waila.api.EntityAccessor;
 import mcp.mobius.waila.api.IEntityComponentProvider;
 import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.TooltipPosition;
@@ -24,7 +24,7 @@ public class BaseEntityProvider implements IEntityComponentProvider {
 	static final IEntityComponentProvider INSTANCE = new BaseEntityProvider();
 
 	@Override
-	public void append(ITooltip tooltip, IEntityAccessor accessor, IPluginConfig config) {
+	public void append(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		TooltipPosition position = accessor.getTooltipPosition();
 		if (position == TooltipPosition.HEAD) {
 			appendHead(tooltip, accessor, config);
@@ -35,7 +35,7 @@ public class BaseEntityProvider implements IEntityComponentProvider {
 		}
 	}
 
-	public void appendHead(ITooltip tooltip, IEntityAccessor accessor, IPluginConfig config) {
+	public void appendHead(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		String name = getEntityName(accessor.getEntity());
 		tooltip.add(new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getEntityName(), name)), CorePlugin.TAG_OBJECT_NAME);
 		if (config.get(CorePlugin.CONFIG_REGISTRY_NAME))
@@ -49,7 +49,7 @@ public class BaseEntityProvider implements IEntityComponentProvider {
 		return entity.getName().getString();
 	}
 
-	public void appendBody(ITooltip tooltip, IEntityAccessor accessor, IPluginConfig config) {
+	public void appendBody(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		if (!(accessor.getEntity() instanceof LivingEntity))
 			return;
 		if (config.get(CorePlugin.CONFIG_ENTITY_HEALTH))
@@ -58,7 +58,7 @@ public class BaseEntityProvider implements IEntityComponentProvider {
 			appendArmor((LivingEntity) accessor.getEntity(), tooltip);
 	}
 
-	public void appendTail(ITooltip tooltip, IEntityAccessor accessor, IPluginConfig config) {
+	public void appendTail(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		if (!config.get(CorePlugin.CONFIG_MOD_NAME))
 			return;
 		if (accessor.getEntity() instanceof ItemEntity && config.get(CorePlugin.CONFIG_ITEM_MOD_NAME) && config.get(VanillaPlugin.ITEM_TOOLTIP))

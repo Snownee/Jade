@@ -7,8 +7,8 @@ import java.util.Set;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
+import mcp.mobius.waila.api.BlockAccessor;
 import mcp.mobius.waila.api.IComponentProvider;
-import mcp.mobius.waila.api.IBlockAccessor;
 import mcp.mobius.waila.api.IServerDataProvider;
 import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.config.IPluginConfig;
@@ -40,7 +40,7 @@ public class InventoryProvider implements IComponentProvider, IServerDataProvide
 	public static final Set<String> INVENTORY_IGNORE = Collections.synchronizedSet(Sets.newHashSet());
 
 	@Override
-	public void append(ITooltip tooltip, IBlockAccessor accessor, IPluginConfig config) {
+	public void append(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		if (!config.get(CorePlugin.CONFIG_INVENTORY) || accessor.getTileEntity() == null || accessor.getTileEntity() instanceof AbstractFurnaceTileEntity)
 			return;
 

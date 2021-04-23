@@ -1,7 +1,7 @@
 package snownee.jade.addon.vanilla;
 
+import mcp.mobius.waila.api.BlockAccessor;
 import mcp.mobius.waila.api.IComponentProvider;
-import mcp.mobius.waila.api.IBlockAccessor;
 import mcp.mobius.waila.api.IServerDataProvider;
 import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.config.IPluginConfig;
@@ -21,7 +21,7 @@ public class BrewingStandProvider implements IComponentProvider, IServerDataProv
 	public static final BrewingStandProvider INSTANCE = new BrewingStandProvider();
 
 	@Override
-	public void append(ITooltip tooltip, IBlockAccessor accessor, IPluginConfig config) {
+	public void append(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		if (!config.get(VanillaPlugin.BREWING_STAND) || !accessor.getServerData().contains("BrewingStand", Constants.NBT.TAG_COMPOUND)) {
 			return;
 		}

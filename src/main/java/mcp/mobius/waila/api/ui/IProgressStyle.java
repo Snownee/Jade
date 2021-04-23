@@ -19,5 +19,5 @@ public interface IProgressStyle {
 
 	IProgressStyle fluid(FluidStack fluidStack);
 
-	void render(MatrixStack matrixStack, int i, int j, int w, int k, ITextComponent text);
+	void render(MatrixStack matrixStack, float x, float y, float w, float h, ITextComponent text);
 }

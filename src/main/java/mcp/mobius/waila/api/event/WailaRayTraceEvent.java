@@ -1,26 +1,26 @@
 package mcp.mobius.waila.api.event;
 
-import mcp.mobius.waila.api.IAccessor;
+import mcp.mobius.waila.api.Accessor;
 import net.minecraftforge.eventbus.api.Event;
 
 public class WailaRayTraceEvent extends Event {
 
-	private IAccessor target;
-	private final IAccessor originalTarget;
+	private Accessor target;
+	private final Accessor originalTarget;
 
-	public WailaRayTraceEvent(IAccessor target) {
+	public WailaRayTraceEvent(Accessor target) {
 		this.target = originalTarget = target;
 	}
 
-	public IAccessor getOriginalTarget() {
+	public Accessor getOriginalTarget() {
 		return originalTarget;
 	}
 
-	public IAccessor getTarget() {
+	public Accessor getTarget() {
 		return target;
 	}
 
-	public void setTarget(IAccessor target) {
+	public void setTarget(Accessor target) {
 		this.target = target;
 	}
 

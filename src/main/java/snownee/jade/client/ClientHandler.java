@@ -1,19 +1,32 @@
 package snownee.jade.client;
 
 import java.awt.Rectangle;
+import java.util.Map;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+
+import mcp.mobius.waila.api.BlockAccessor;
+import mcp.mobius.waila.api.event.WailaRayTraceEvent;
 import mcp.mobius.waila.api.event.WailaRenderEvent;
 import mcp.mobius.waila.impl.config.PluginConfig;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.SilverfishBlock;
+import net.minecraft.block.TrappedChestBlock;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.multiplayer.PlayerController;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.state.Property;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.minecraftforge.registries.ForgeRegistries;
 import snownee.jade.VanillaPlugin;
 
 @OnlyIn(Dist.CLIENT)
@@ -40,4 +53,52 @@ public final class ClientHandler {
 		AbstractGui.fill(event.getMatrixStack(), 1, rect.height, 1 + (int) (rect.width * progress), rect.height + 1, color);
 	}
 
+	private static final Cache<BlockState, BlockState> CHEST_CACHE = CacheBuilder.newBuilder().build();
+
+	private static BlockState getCorrespondingNormalChest(BlockState state) {
+		try {
+			return CHEST_CACHE.get(state, () -> {
+				ResourceLocation trappedName = state.getBlock().getRegistryName();
+				if (trappedName.getPath().startsWith("trapped_")) {
+					ResourceLocation chestName = new ResourceLocation(trappedName.getNamespace(), trappedName.getPath().substring(8));
+					Block block = ForgeRegistries.BLOCKS.getValue(chestName);
+					if (block != null) {
+						return copyProperties(state, block.getDefaultState());
+					}
+				}
+				return state;
+			});
+		} catch (Exception e) {
+			return state;
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <T extends Comparable<T>> BlockState copyProperties(BlockState oldState, BlockState newState) {
+		for (Map.Entry<Property<?>, Comparable<?>> entry : oldState.getValues().entrySet()) {
+			Property<T> property = (Property<T>) entry.getKey();
+			if (newState.hasProperty(property))
+				newState = newState.with(property, property.getValueClass().cast(entry.getValue()));
+		}
+		return newState;
+	}
+
+	@SubscribeEvent
+	public static void override(WailaRayTraceEvent event) {
+		PlayerEntity player = event.getTarget().getPlayer();
+		if (player.isCreative() || player.isSpectator())
+			return;
+		if (event.getTarget() instanceof BlockAccessor) {
+			BlockAccessor target = (BlockAccessor) event.getTarget();
+			if (target.getBlock() instanceof TrappedChestBlock) {
+				BlockState state = getCorrespondingNormalChest(target.getBlockState());
+				if (state != target.getBlockState()) {
+					event.setTarget(new BlockAccessor(state, target.getTileEntity(), target.getWorld(), player, target.getServerData(), target.getHitResult(), target.isServerConnected()));
+				}
+			} else if (target.getBlock() instanceof SilverfishBlock) {
+				Block block = ((SilverfishBlock) target.getBlock()).getMimickedBlock();
+				event.setTarget(new BlockAccessor(block.getDefaultState(), target.getTileEntity(), target.getWorld(), player, target.getServerData(), target.getHitResult(), target.isServerConnected()));
+			}
+		}
+	}
 }

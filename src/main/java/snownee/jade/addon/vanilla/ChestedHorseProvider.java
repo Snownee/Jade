@@ -1,6 +1,6 @@
 package snownee.jade.addon.vanilla;
 
-import mcp.mobius.waila.api.IEntityAccessor;
+import mcp.mobius.waila.api.EntityAccessor;
 import mcp.mobius.waila.api.IEntityComponentProvider;
 import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.config.IPluginConfig;
@@ -13,7 +13,7 @@ public class ChestedHorseProvider implements IEntityComponentProvider {
 	public static final ChestedHorseProvider INSTANCE = new ChestedHorseProvider();
 
 	@Override
-	public void append(ITooltip tooltip, IEntityAccessor accessor, IPluginConfig config) {
+	public void append(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		if (!config.get(VanillaPlugin.HORSE_INVENTORY)) {
 			return;
 		}

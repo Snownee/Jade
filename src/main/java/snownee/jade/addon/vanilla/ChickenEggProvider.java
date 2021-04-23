@@ -1,6 +1,6 @@
 package snownee.jade.addon.vanilla;
 
-import mcp.mobius.waila.api.IEntityAccessor;
+import mcp.mobius.waila.api.EntityAccessor;
 import mcp.mobius.waila.api.IEntityComponentProvider;
 import mcp.mobius.waila.api.IServerDataProvider;
 import mcp.mobius.waila.api.ITooltip;
@@ -17,7 +17,7 @@ public class ChickenEggProvider implements IEntityComponentProvider, IServerData
 	public static final ChickenEggProvider INSTANCE = new ChickenEggProvider();
 
 	@Override
-	public void append(ITooltip tooltip, IEntityAccessor accessor, IPluginConfig config) {
+	public void append(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		if (!config.get(VanillaPlugin.CHICKEN_EGG) || !accessor.getServerData().contains("NextEgg")) {
 			return;
 		}

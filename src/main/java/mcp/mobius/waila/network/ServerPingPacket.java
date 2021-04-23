@@ -10,7 +10,7 @@ import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 
 import mcp.mobius.waila.Waila;
-import mcp.mobius.waila.impl.DataAccessor;
+import mcp.mobius.waila.impl.ObjectDataCenter;
 import mcp.mobius.waila.impl.config.ConfigEntry;
 import mcp.mobius.waila.impl.config.PluginConfig;
 import net.minecraft.network.PacketBuffer;
@@ -54,7 +54,7 @@ public class ServerPingPacket {
 
 		public static void onMessage(ServerPingPacket message, Supplier<NetworkEvent.Context> context) {
 			context.get().enqueueWork(() -> {
-				DataAccessor.INSTANCE.serverConnected = true;
+				ObjectDataCenter.serverConnected = true;
 				message.forcedKeys.forEach(PluginConfig.INSTANCE::set);
 				Waila.LOGGER.info("Received config from the server: {}", new Gson().toJson(message.forcedKeys));
 			});

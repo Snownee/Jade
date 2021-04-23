@@ -19,8 +19,8 @@ import com.google.common.collect.Maps;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import mcp.mobius.waila.Waila;
+import mcp.mobius.waila.api.BlockAccessor;
 import mcp.mobius.waila.api.IComponentProvider;
-import mcp.mobius.waila.api.IBlockAccessor;
 import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.TooltipPosition;
 import mcp.mobius.waila.api.config.IPluginConfig;
@@ -128,7 +128,7 @@ public class HarvestToolProvider implements IComponentProvider, ISelectiveResour
 	}
 
 	@Override
-	public void append(ITooltip tooltip, IBlockAccessor accessor, IPluginConfig config) {
+	public void append(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		PlayerEntity player = accessor.getPlayer();
 		if (player.isCreative() || player.isSpectator()) {
 			return;
@@ -160,7 +160,7 @@ public class HarvestToolProvider implements IComponentProvider, ISelectiveResour
 		}
 	}
 
-	public List<IElement> getText(IBlockAccessor accessor, IPluginConfig config, IElementHelper helper) {
+	public List<IElement> getText(BlockAccessor accessor, IPluginConfig config, IElementHelper helper) {
 		if (!config.get(VanillaPlugin.HARVEST_TOOL)) {
 			return Collections.EMPTY_LIST;
 		}

@@ -31,7 +31,7 @@ public interface IEntityComponentProvider {
      * @return The item to display or {@link ItemStack#EMPTY} to display nothing.
      */
 	@Nullable
-	default IElement getIcon(IEntityAccessor accessor, IPluginConfig config, IElement currentIcon) {
+	default IElement getIcon(EntityAccessor accessor, IPluginConfig config, IElement currentIcon) {
 		return null;
 	}
 
@@ -49,7 +49,7 @@ public interface IEntityComponentProvider {
      * @param accessor   Contains most of the relevant information about the current environment.
      * @param config     Current configuration of Waila.
      */
-	default void append(ITooltip tooltip, IEntityAccessor accessor, IPluginConfig config) {
+	default void append(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 
 	}
 

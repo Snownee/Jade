@@ -1,8 +1,8 @@
 package snownee.jade.addon.vanilla;
 
 import mcp.mobius.waila.Waila;
+import mcp.mobius.waila.api.BlockAccessor;
 import mcp.mobius.waila.api.IComponentProvider;
-import mcp.mobius.waila.api.IBlockAccessor;
 import mcp.mobius.waila.api.IServerDataProvider;
 import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.TooltipPosition;
@@ -17,7 +17,6 @@ import net.minecraft.block.CropsBlock;
 import net.minecraft.block.JukeboxBlock;
 import net.minecraft.block.LecternBlock;
 import net.minecraft.block.LeverBlock;
-import net.minecraft.block.SilverfishBlock;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
@@ -46,10 +45,7 @@ public class VanillaProvider implements IComponentProvider, IServerDataProvider<
 	static final ResourceLocation OBJECT_NAME_TAG = new ResourceLocation(Waila.MODID, "object_name");
 
 	@Override
-	public IElement getIcon(IBlockAccessor accessor, IPluginConfig config, IElement currentIcon) {
-		if (config.get(VanillaPlugin.HIDE_SILVERFISH) && accessor.getBlock() instanceof SilverfishBlock)
-			return ItemStackElement.of(new ItemStack(((SilverfishBlock) accessor.getBlock()).getMimickedBlock().asItem()));
-
+	public IElement getIcon(BlockAccessor accessor, IPluginConfig config, IElement currentIcon) {
 		if (accessor.getBlock() == Blocks.WHEAT)
 			return ItemStackElement.of(new ItemStack(Items.WHEAT));
 
@@ -59,13 +55,7 @@ public class VanillaProvider implements IComponentProvider, IServerDataProvider<
 		return null;
 	}
 
-	public void appendHead(ITooltip tooltip, IBlockAccessor accessor, IPluginConfig config) {
-		if (config.get(VanillaPlugin.HIDE_SILVERFISH) && accessor.getBlock() instanceof SilverfishBlock) {
-			tooltip.remove(OBJECT_NAME_TAG);
-			Block block = ((SilverfishBlock) accessor.getBlock()).getMimickedBlock();
-			tooltip.add(new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getBlockName(), I18n.format(block.getTranslationKey()))), OBJECT_NAME_TAG);
-		}
-
+	public void appendHead(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		if (accessor.getBlock() == Blocks.SPAWNER && config.get(VanillaPlugin.SPAWNER_TYPE)) {
 			MobSpawnerTileEntity spawner = (MobSpawnerTileEntity) accessor.getTileEntity();
 			String name = I18n.format(accessor.getBlock().getTranslationKey());
@@ -77,7 +67,7 @@ public class VanillaProvider implements IComponentProvider, IServerDataProvider<
 	}
 
 	@Override
-	public void append(ITooltip tooltip, IBlockAccessor accessor, IPluginConfig config) {
+	public void append(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		if (accessor.getTooltipPosition() == TooltipPosition.HEAD) {
 			appendHead(tooltip, accessor, config);
 			return;

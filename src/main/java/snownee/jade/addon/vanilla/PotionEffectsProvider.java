@@ -2,7 +2,7 @@ package snownee.jade.addon.vanilla;
 
 import java.util.Collection;
 
-import mcp.mobius.waila.api.IEntityAccessor;
+import mcp.mobius.waila.api.EntityAccessor;
 import mcp.mobius.waila.api.IEntityComponentProvider;
 import mcp.mobius.waila.api.IServerDataProvider;
 import mcp.mobius.waila.api.ITooltip;
@@ -26,7 +26,7 @@ public class PotionEffectsProvider implements IEntityComponentProvider, IServerD
 	public static final PotionEffectsProvider INSTANCE = new PotionEffectsProvider();
 
 	@Override
-	public void append(ITooltip tooltip, IEntityAccessor accessor, IPluginConfig config) {
+	public void append(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		if (!config.get(VanillaPlugin.EFFECTS) || !accessor.getServerData().contains("Potions")) {
 			return;
 		}

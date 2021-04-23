@@ -26,6 +26,7 @@ import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.WorldVertexBufferUploader;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.AtlasTexture;
@@ -179,8 +180,10 @@ public class DisplayHelper implements IDisplayHelper {
 			RenderSystem.disableLighting();
 			RenderSystem.disableDepthTest();
 			RenderSystem.disableBlend();
-			RenderSystem.translated(0, 0, Minecraft.getInstance().getItemRenderer().zLevel + 200F);
+			matrixStack.push();
+			matrixStack.translate(0, 0, Minecraft.getInstance().getItemRenderer().zLevel + 200F);
 			fr.drawStringWithShadow(matrixStack, s, xPosition + 19 - 2 - fr.getStringWidth(s), yPosition + 6 + 3, 16777215);
+			matrixStack.pop();
 			RenderSystem.enableLighting();
 			RenderSystem.enableDepthTest();
 			RenderSystem.enableBlend();
@@ -391,5 +394,41 @@ public class DisplayHelper implements IDisplayHelper {
 		bufferBuilder.pos(matrix, xCoord + 16 - maskRight, yCoord + maskTop, zLevel).tex(uMax, vMin).endVertex();
 		bufferBuilder.pos(matrix, xCoord, yCoord + maskTop, zLevel).tex(uMin, vMin).endVertex();
 		tessellator.draw();
+	}
+
+	public static void fill(MatrixStack matrixStack, float minX, float minY, float maxX, float maxY, int color) {
+		fill(matrixStack.getLast().getMatrix(), minX, minY, maxX, maxY, color);
+	}
+
+	private static void fill(Matrix4f matrix, float minX, float minY, float maxX, float maxY, int color) {
+		if (minX < maxX) {
+			float i = minX;
+			minX = maxX;
+			maxX = i;
+		}
+
+		if (minY < maxY) {
+			float j = minY;
+			minY = maxY;
+			maxY = j;
+		}
+
+		float f3 = (color >> 24 & 255) / 255.0F;
+		float f = (color >> 16 & 255) / 255.0F;
+		float f1 = (color >> 8 & 255) / 255.0F;
+		float f2 = (color & 255) / 255.0F;
+		BufferBuilder bufferbuilder = Tessellator.getInstance().getBuffer();
+		RenderSystem.enableBlend();
+		RenderSystem.disableTexture();
+		RenderSystem.defaultBlendFunc();
+		bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
+		bufferbuilder.pos(matrix, minX, maxY, 0.0F).color(f, f1, f2, f3).endVertex();
+		bufferbuilder.pos(matrix, maxX, maxY, 0.0F).color(f, f1, f2, f3).endVertex();
+		bufferbuilder.pos(matrix, maxX, minY, 0.0F).color(f, f1, f2, f3).endVertex();
+		bufferbuilder.pos(matrix, minX, minY, 0.0F).color(f, f1, f2, f3).endVertex();
+		bufferbuilder.finishDrawing();
+		WorldVertexBufferUploader.draw(bufferbuilder);
+		RenderSystem.enableTexture();
+		RenderSystem.disableBlend();
 	}
 }

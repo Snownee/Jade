@@ -2,7 +2,7 @@ package mcp.mobius.waila.network;
 
 import java.util.function.Supplier;
 
-import mcp.mobius.waila.impl.DataAccessor;
+import mcp.mobius.waila.impl.ObjectDataCenter;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -27,7 +27,7 @@ public class ReceiveDataPacket {
 
 		public static void onMessage(ReceiveDataPacket message, Supplier<NetworkEvent.Context> context) {
 			context.get().enqueueWork(() -> {
-				DataAccessor.INSTANCE.setServerData(message.tag);
+				ObjectDataCenter.setServerData(message.tag);
 			});
 			context.get().setPacketHandled(true);
 		}

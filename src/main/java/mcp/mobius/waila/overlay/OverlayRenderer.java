@@ -16,7 +16,7 @@ import mcp.mobius.waila.api.config.WailaConfig;
 import mcp.mobius.waila.api.config.WailaConfig.ConfigOverlay;
 import mcp.mobius.waila.api.event.WailaRenderEvent;
 import mcp.mobius.waila.api.ui.Size;
-import mcp.mobius.waila.impl.DataAccessor;
+import mcp.mobius.waila.impl.ObjectDataCenter;
 import mcp.mobius.waila.impl.Tooltip;
 import mcp.mobius.waila.impl.config.PluginConfig;
 import net.minecraft.client.MainWindow;
@@ -81,7 +81,7 @@ public class OverlayRenderer {
 		matrixStack.push();
 		saveGLState();
 
-		WailaRenderEvent.Pre preEvent = new WailaRenderEvent.Pre(DataAccessor.INSTANCE, tooltip.getPosition(), matrixStack);
+		WailaRenderEvent.Pre preEvent = new WailaRenderEvent.Pre(ObjectDataCenter.get(), tooltip.getPosition(), matrixStack);
 		if (MinecraftForge.EVENT_BUS.post(preEvent)) {
 			loadGLState();
 			matrixStack.pop();

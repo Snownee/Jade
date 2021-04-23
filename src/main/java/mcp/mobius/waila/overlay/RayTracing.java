@@ -6,10 +6,12 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 
 import mcp.mobius.waila.Waila;
+import mcp.mobius.waila.api.BlockAccessor;
+import mcp.mobius.waila.api.EntityAccessor;
 import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IEntityComponentProvider;
 import mcp.mobius.waila.api.ui.IElement;
-import mcp.mobius.waila.impl.DataAccessor;
+import mcp.mobius.waila.impl.ObjectDataCenter;
 import mcp.mobius.waila.impl.WailaRegistrar;
 import mcp.mobius.waila.impl.config.PluginConfig;
 import mcp.mobius.waila.overlay.element.FluidStackElement;
@@ -151,7 +153,7 @@ public class RayTracing {
 			}
 
 			for (IEntityComponentProvider provider : WailaRegistrar.INSTANCE.getEntityStackProviders(entity)) {
-				IElement element = provider.getIcon(DataAccessor.INSTANCE, PluginConfig.INSTANCE, icon);
+				IElement element = provider.getIcon((EntityAccessor) ObjectDataCenter.get(), PluginConfig.INSTANCE, icon);
 				if (!isEmpty(element))
 					icon = element;
 			}
@@ -179,7 +181,7 @@ public class RayTracing {
 			}
 
 			for (IComponentProvider provider : WailaRegistrar.INSTANCE.getBlockStackProviders(state.getBlock())) {
-				IElement element = provider.getIcon(DataAccessor.INSTANCE, PluginConfig.INSTANCE, icon);
+				IElement element = provider.getIcon((BlockAccessor) ObjectDataCenter.get(), PluginConfig.INSTANCE, icon);
 				if (!isEmpty(element))
 					icon = element;
 			}

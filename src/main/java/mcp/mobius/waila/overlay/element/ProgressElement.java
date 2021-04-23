@@ -51,7 +51,7 @@ public class ProgressElement extends Element {
 			DisplayHelper.INSTANCE.drawBorder(matrixStack, x, y, maxX - 2, y + size.height - 2, borderStyle);
 		}
 		int b = borderStyle.width;
-		int w = maxX - x - b * 2 - 2;
+		float w = maxX - x - b * 2 - 2;
 		w *= progress;
 		style.render(matrixStack, x + b, y + b, w, size.height - b * 2 - 2, text);
 	}

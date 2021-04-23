@@ -1,7 +1,7 @@
 package snownee.jade.addon.vanilla;
 
+import mcp.mobius.waila.api.BlockAccessor;
 import mcp.mobius.waila.api.IComponentProvider;
-import mcp.mobius.waila.api.IBlockAccessor;
 import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.config.IPluginConfig;
 import net.minecraft.block.BlockState;
@@ -15,7 +15,7 @@ public class TNTProvider implements IComponentProvider {
 	public static final TNTProvider INSTANCE = new TNTProvider();
 
 	@Override
-	public void append(ITooltip tooltip, IBlockAccessor accessor, IPluginConfig config) {
+	public void append(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		if (!config.get(VanillaPlugin.TNT_STABILITY)) {
 			return;
 		}

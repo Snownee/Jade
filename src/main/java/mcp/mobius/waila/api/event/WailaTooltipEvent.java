@@ -1,6 +1,6 @@
 package mcp.mobius.waila.api.event;
 
-import mcp.mobius.waila.api.IAccessor;
+import mcp.mobius.waila.api.Accessor;
 import mcp.mobius.waila.api.ITooltip;
 import net.minecraftforge.eventbus.api.Event;
 
@@ -15,9 +15,9 @@ import net.minecraftforge.eventbus.api.Event;
 public class WailaTooltipEvent extends Event {
 
 	private final ITooltip currentTip;
-	private final IAccessor accessor;
+	private final Accessor accessor;
 
-	public WailaTooltipEvent(ITooltip currentTip, IAccessor accessor) {
+	public WailaTooltipEvent(ITooltip currentTip, Accessor accessor) {
 		this.currentTip = currentTip;
 		this.accessor = accessor;
 	}
@@ -26,7 +26,7 @@ public class WailaTooltipEvent extends Event {
 		return currentTip;
 	}
 
-	public IAccessor getAccessor() {
+	public Accessor getAccessor() {
 		return accessor;
 	}
 }

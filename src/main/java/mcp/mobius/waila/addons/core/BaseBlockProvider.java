@@ -5,7 +5,7 @@ import java.awt.Color;
 import com.google.common.base.Strings;
 
 import mcp.mobius.waila.Waila;
-import mcp.mobius.waila.api.IBlockAccessor;
+import mcp.mobius.waila.api.BlockAccessor;
 import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IServerDataProvider;
 import mcp.mobius.waila.api.ITooltip;
@@ -27,6 +27,8 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.IEnergyStorage;
 import snownee.jade.JadeCommonConfig;
 
 public class BaseBlockProvider implements IComponentProvider, IServerDataProvider<TileEntity> {
@@ -34,7 +36,7 @@ public class BaseBlockProvider implements IComponentProvider, IServerDataProvide
 	public static final BaseBlockProvider INSTANCE = new BaseBlockProvider();
 
 	@Override
-	public void append(ITooltip tooltip, IBlockAccessor accessor, IPluginConfig config) {
+	public void append(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		TooltipPosition position = accessor.getTooltipPosition();
 		if (position == TooltipPosition.HEAD) {
 			appendHead(tooltip, accessor, config);
@@ -45,7 +47,7 @@ public class BaseBlockProvider implements IComponentProvider, IServerDataProvide
 		}
 	}
 
-	public void appendHead(ITooltip tooltip, IBlockAccessor accessor, IPluginConfig config) {
+	public void appendHead(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		String name;
 		if (accessor.getServerData().contains("givenName", Constants.NBT.TAG_STRING)) {
 			ITextComponent component = ITextComponent.Serializer.getComponentFromJson(accessor.getServerData().getString("givenName"));
@@ -68,7 +70,7 @@ public class BaseBlockProvider implements IComponentProvider, IServerDataProvide
 			tooltip.add(new StringTextComponent(accessor.getBlock().getRegistryName().toString()).mergeStyle(TextFormatting.GRAY), CorePlugin.TAG_REGISTRY_NAME);
 	}
 
-	public void appendBody(ITooltip tooltip, IBlockAccessor accessor, IPluginConfig config) {
+	public void appendBody(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		if (config.get(CorePlugin.CONFIG_BLOCK_STATES)) {
 			BlockState state = accessor.getBlockState();
 			state.getProperties().forEach(p -> {
@@ -77,13 +79,24 @@ public class BaseBlockProvider implements IComponentProvider, IServerDataProvide
 				tooltip.add(new StringTextComponent(p.getName() + ":").appendSibling(valueText));
 			});
 		}
-		IElementHelper helper = tooltip.getElementHelper();
-		IProgressStyle progressStyle = helper.progressStyle().color(Color.RED.getRGB(), 0xFF660000);
-		tooltip.add(helper.progress(0.95f, null, progressStyle, helper.borderStyle()));
+
+		TileEntity tile = accessor.getTileEntity();
+		if (tile != null) {
+			IEnergyStorage storage = tile.getCapability(CapabilityEnergy.ENERGY).orElse(null);
+			if (storage != null) {
+				IElementHelper helper = tooltip.getElementHelper();
+				int cur = storage.getEnergyStored();
+				int max = storage.getMaxEnergyStored();
+				ITextComponent text = new StringTextComponent(cur + "FE/" + max + "FE");
+				IProgressStyle progressStyle = helper.progressStyle().color(Color.RED.getRGB(), 0xFF660000);
+				tooltip.add(helper.progress((float) cur / max, text, progressStyle, helper.borderStyle()));
+			}
+		}
+
 		//        tooltip.add(helper.progress(0.95f, new StringTextComponent("测试测试testtesttesttesttesttesttesttesttesttest"), progressStyle, helper.borderStyle()));
 	}
 
-	public void appendTail(ITooltip tooltip, IBlockAccessor accessor, IPluginConfig config) {
+	public void appendTail(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		if (!config.get(CorePlugin.CONFIG_MOD_NAME))
 			return;
 		String modName = ModIdentification.getModName(accessor.getBlock());

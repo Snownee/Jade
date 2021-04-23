@@ -25,7 +25,6 @@ import net.minecraft.block.SpawnerBlock;
 import net.minecraft.block.StemBlock;
 import net.minecraft.block.TNTBlock;
 import net.minecraft.block.TargetBlock;
-import net.minecraft.block.TrappedChestBlock;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.AgeableEntity;
 import net.minecraft.entity.LivingEntity;
@@ -67,7 +66,6 @@ import snownee.jade.addon.vanilla.PaintingProvider;
 import snownee.jade.addon.vanilla.PlayerHeadProvider;
 import snownee.jade.addon.vanilla.PotionEffectsProvider;
 import snownee.jade.addon.vanilla.TNTProvider;
-import snownee.jade.addon.vanilla.TrappedChestProvider;
 import snownee.jade.addon.vanilla.VanillaProvider;
 import snownee.jade.addon.vanilla.VillagerProfessionProvider;
 
@@ -89,7 +87,6 @@ public class VanillaPlugin implements IWailaPlugin {
 	public static final ResourceLocation BEEHIVE = MC("beehive");
 	public static final ResourceLocation NOTE_BLOCK = MC("note_block");
 	public static final ResourceLocation ARMOR_STAND = MC("armor_stand");
-	public static final ResourceLocation TRAPPED_CHEST = MC("trapped_chest");
 	public static final ResourceLocation PAINTING = MC("painting");
 	public static final ResourceLocation CHICKEN_EGG = MC("chicken_egg");
 	public static final ResourceLocation HARVEST_TOOL = MC("harvest_tool");
@@ -104,7 +101,6 @@ public class VanillaPlugin implements IWailaPlugin {
 	public static final ResourceLocation ITEM_TOOLTIP = MC("item_tooltip");
 
 	public static final ResourceLocation FURNACE = MC("display_furnace_contents");
-	public static final ResourceLocation HIDE_SILVERFISH = MC("hide_infestations");
 	public static final ResourceLocation SPAWNER_TYPE = MC("spawner_type");
 	public static final ResourceLocation CROP_PROGRESS = MC("crop_progress");
 	public static final ResourceLocation REDSTONE = MC("redstone");
@@ -170,9 +166,6 @@ public class VanillaPlugin implements IWailaPlugin {
 
 		registrar.addConfig(BREAKING_PROGRESS, true);
 
-		registrar.registerComponentProvider(TrappedChestProvider.INSTANCE, TooltipPosition.HEAD, TrappedChestBlock.class);
-		registrar.addSyncedConfig(TRAPPED_CHEST, true);
-
 		registrar.registerComponentProvider(EnchantmentPowerProvider.INSTANCE, TooltipPosition.BODY, Block.class);
 		registrar.addConfig(ENCH_POWER, true);
 		registrar.addConfig(TOTAL_ENCH_POWER, true);
@@ -188,7 +181,6 @@ public class VanillaPlugin implements IWailaPlugin {
 		registrar.addConfig(ITEM_TOOLTIP, true);
 
 		registrar.addConfig(FURNACE, true);
-		registrar.addSyncedConfig(HIDE_SILVERFISH, true);
 		registrar.addConfig(SPAWNER_TYPE, true);
 		registrar.addConfig(CROP_PROGRESS, true);
 		registrar.addConfig(REDSTONE, true);

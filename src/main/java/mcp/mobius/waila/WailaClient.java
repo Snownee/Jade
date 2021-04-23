@@ -4,7 +4,7 @@ import mcp.mobius.waila.addons.core.CorePlugin;
 import mcp.mobius.waila.api.config.WailaConfig;
 import mcp.mobius.waila.api.config.WailaConfig.DisplayMode;
 import mcp.mobius.waila.gui.HomeConfigScreen;
-import mcp.mobius.waila.impl.DataAccessor;
+import mcp.mobius.waila.impl.ObjectDataCenter;
 import mcp.mobius.waila.impl.config.PluginConfig;
 import mcp.mobius.waila.overlay.OverlayRenderer;
 import mcp.mobius.waila.overlay.WailaTickHandler;
@@ -96,6 +96,6 @@ public class WailaClient {
 
 	@SubscribeEvent
 	public static void onPlayerLeave(ClientPlayerNetworkEvent.LoggedOutEvent event) {
-		DataAccessor.INSTANCE.serverConnected = false;
+		ObjectDataCenter.serverConnected = false;
 	}
 }

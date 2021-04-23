@@ -4,7 +4,7 @@ import java.awt.Rectangle;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 
-import mcp.mobius.waila.api.IAccessor;
+import mcp.mobius.waila.api.Accessor;
 import net.minecraftforge.eventbus.api.Cancelable;
 import net.minecraftforge.eventbus.api.Event;
 
@@ -44,15 +44,15 @@ public class WailaRenderEvent extends Event {
 	@Cancelable
 	public static class Pre extends WailaRenderEvent {
 
-		private final IAccessor accessor;
+		private final Accessor accessor;
 
-		public Pre(IAccessor accessor, Rectangle position, MatrixStack matrixStack) {
+		public Pre(Accessor accessor, Rectangle position, MatrixStack matrixStack) {
 			super(position, matrixStack);
 
 			this.accessor = accessor;
 		}
 
-		public IAccessor getAccessor() {
+		public Accessor getAccessor() {
 			return accessor;
 		}
 	}
