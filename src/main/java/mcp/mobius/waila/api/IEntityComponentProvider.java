@@ -49,8 +49,6 @@ public interface IEntityComponentProvider {
      * @param accessor   Contains most of the relevant information about the current environment.
      * @param config     Current configuration of Waila.
      */
-	default void append(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
-
-	}
+	void append(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config);
 
 }

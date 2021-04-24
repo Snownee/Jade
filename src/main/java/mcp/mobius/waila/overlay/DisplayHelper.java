@@ -440,6 +440,7 @@ public class DisplayHelper implements IDisplayHelper {
 	}
 
 	// https://programming.guide/worlds-most-copied-so-snippet.html
+	@Override
 	public String humanReadableNumber(double number, String unit, boolean milli) {
 		StringBuilder sb = new StringBuilder();
 		boolean n = number < 0;
@@ -457,7 +458,7 @@ public class DisplayHelper implements IDisplayHelper {
 				sb.append('m');
 			}
 		} else {
-			int exp = (int) (Math.log10(number) / Math.log10(1000));
+			int exp = (int) (Math.log10(number) / 3);
 			if (exp > 7)
 				exp = 7;
 			char pre = "kMGTPEZ".charAt(exp - 1);

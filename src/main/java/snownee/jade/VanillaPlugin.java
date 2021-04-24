@@ -45,8 +45,12 @@ import net.minecraft.tileentity.BrewingStandTileEntity;
 import net.minecraft.tileentity.CommandBlockTileEntity;
 import net.minecraft.tileentity.JukeboxTileEntity;
 import net.minecraft.tileentity.LecternTileEntity;
+import net.minecraft.tileentity.LockableTileEntity;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.loading.FMLEnvironment;
+import snownee.jade.addon.forge.ForgeCapabilityProvider;
+import snownee.jade.addon.forge.InventoryProvider;
 import snownee.jade.addon.vanilla.AgeableEntityProvider;
 import snownee.jade.addon.vanilla.ArmorStandProvider;
 import snownee.jade.addon.vanilla.BeehiveProvider;
@@ -107,6 +111,10 @@ public class VanillaPlugin implements IWailaPlugin {
 	public static final ResourceLocation JUKEBOX = MC("jukebox");
 	public static final ResourceLocation LECTERN = MC("lectern");
 
+	public static final ResourceLocation INVENTORY = MC("inventory");
+	public static final ResourceLocation FORGE_ENERGY = MC("fe");
+	public static final ResourceLocation FORGE_FLUID = MC("fluid");
+
 	@Override
 	public void register(IRegistrar registrar) {
 		registrar.registerComponentProvider(BrewingStandProvider.INSTANCE, TooltipPosition.BODY, BrewingStandBlock.class);
@@ -117,6 +125,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registrar.addConfig(HORSE_STAT, true);
 
 		registrar.registerComponentProvider(ChestedHorseProvider.INSTANCE, TooltipPosition.BODY, AbstractChestedHorseEntity.class);
+		registrar.registerEntityDataProvider(ChestedHorseProvider.INSTANCE, AbstractChestedHorseEntity.class);
 		registrar.addConfig(HORSE_INVENTORY, true);
 
 		registrar.registerComponentProvider(ItemFrameProvider.INSTANCE, TooltipPosition.BODY, ItemFrameEntity.class);
@@ -208,6 +217,15 @@ public class VanillaPlugin implements IWailaPlugin {
 
 		registrar.registerComponentProvider(FurnaceProvider.INSTANCE, TooltipPosition.BODY, AbstractFurnaceBlock.class);
 		registrar.registerBlockDataProvider(FurnaceProvider.INSTANCE, AbstractFurnaceTileEntity.class);
+
+		registrar.registerComponentProvider(InventoryProvider.INSTANCE, TooltipPosition.BODY, Block.class);
+		registrar.registerBlockDataProvider(InventoryProvider.INSTANCE, LockableTileEntity.class);
+		registrar.addConfig(INVENTORY, true);
+
+		registrar.registerComponentProvider(ForgeCapabilityProvider.INSTANCE, TooltipPosition.BODY, Block.class);
+		registrar.registerBlockDataProvider(ForgeCapabilityProvider.INSTANCE, TileEntity.class);
+		registrar.addConfig(FORGE_ENERGY, true);
+		registrar.addConfig(FORGE_FLUID, true);
 
 		if (FMLEnvironment.dist.isClient()) {
 			((IReloadableResourceManager) Minecraft.getInstance().getResourceManager()).addReloadListener(HarvestToolProvider.INSTANCE);

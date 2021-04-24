@@ -1,4 +1,4 @@
-package mcp.mobius.waila.addons.core;
+package snownee.jade.addon.forge;
 
 import java.util.Collections;
 import java.util.List;
@@ -7,6 +7,7 @@ import java.util.Set;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
+import mcp.mobius.waila.api.Accessor;
 import mcp.mobius.waila.api.BlockAccessor;
 import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IServerDataProvider;
@@ -31,6 +32,7 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 import snownee.jade.JadeCommonConfig;
+import snownee.jade.VanillaPlugin;
 
 public class InventoryProvider implements IComponentProvider, IServerDataProvider<TileEntity> {
 
@@ -41,11 +43,15 @@ public class InventoryProvider implements IComponentProvider, IServerDataProvide
 
 	@Override
 	public void append(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		if (!config.get(CorePlugin.CONFIG_INVENTORY) || accessor.getTileEntity() == null || accessor.getTileEntity() instanceof AbstractFurnaceTileEntity)
+		if (!config.get(VanillaPlugin.INVENTORY) || accessor.getTileEntity() == null || accessor.getTileEntity() instanceof AbstractFurnaceTileEntity)
 			return;
 
+		append(tooltip, accessor);
+	}
+
+	public static void append(ITooltip tooltip, Accessor accessor) {
 		if (accessor.getServerData().contains("Locked") && accessor.getServerData().getBoolean("Locked")) {
-			tooltip.add(new TranslationTextComponent("jade.locked"), CorePlugin.CONFIG_INVENTORY);
+			tooltip.add(new TranslationTextComponent("jade.locked"), VanillaPlugin.INVENTORY);
 			return;
 		}
 
@@ -76,9 +82,9 @@ public class InventoryProvider implements IComponentProvider, IServerDataProvide
 					drawnCount = 0;
 				}
 
-				elements.add(helper.item(stack).tag(CorePlugin.CONFIG_INVENTORY));
+				elements.add(helper.item(stack).tag(VanillaPlugin.INVENTORY));
 				if (showName) {
-					elements.add(helper.text(stack.getDisplayName()).translate(0, 4).tag(CorePlugin.CONFIG_INVENTORY));
+					elements.add(helper.text(stack.getDisplayName()).translate(0, 4).tag(VanillaPlugin.INVENTORY));
 				}
 				drawnCount += 1;
 			}
@@ -116,11 +122,15 @@ public class InventoryProvider implements IComponentProvider, IServerDataProvide
 		} else if (te instanceof EnderChestTileEntity) {
 			itemHandler = new InvWrapper(player.getInventoryEnderChest());
 		}
+		putInvData(tag, itemHandler, size, 0);
+	}
+
+	public static void putInvData(CompoundNBT tag, IItemHandler itemHandler, int size, int start) {
 		if (itemHandler != null) {
 			size = Math.min(size, itemHandler.getSlots());
 			ItemStackHandler mergedHandler = new ItemStackHandler(size);
 			boolean empty = true;
-			for (int i = 0; i < size; i++) {
+			for (int i = start; i < size; i++) {
 				ItemStack stack = itemHandler.getStackInSlot(i);
 				if (!stack.isEmpty()) {
 					empty = false;

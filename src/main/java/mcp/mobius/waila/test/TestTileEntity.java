@@ -31,7 +31,7 @@ public class TestTileEntity extends TileEntity implements ITickableTileEntity {
 
 	@Override
 	public void tick() {
-		energyStorage.energy += world.rand.nextInt(10);
+		energyStorage.energy += world.rand.nextInt(1000);
 		if (energyStorage.energy > energyStorage.getMaxEnergyStored()) {
 			energyStorage.energy = 0;
 		}
@@ -73,7 +73,7 @@ public class TestTileEntity extends TileEntity implements ITickableTileEntity {
 		@Override
 		public int getMaxEnergyStored() {
 			// TODO Auto-generated method stub
-			return 10000;
+			return 100000;
 		}
 
 		@Override

@@ -7,7 +7,6 @@ import mcp.mobius.waila.api.TooltipPosition;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.tileentity.LockableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import snownee.jade.Jade;
@@ -25,7 +24,6 @@ public class CorePlugin implements IWailaPlugin {
 	public static final ResourceLocation CONFIG_BLOCK_STATES = JADE("block_states");
 	public static final ResourceLocation CONFIG_MOD_NAME = JADE("mod_name");
 	public static final ResourceLocation CONFIG_ITEM_MOD_NAME = JADE("item_mod_name");
-	public static final ResourceLocation CONFIG_INVENTORY = JADE("inventory");
 
 	public static final ResourceLocation TAG_OBJECT_NAME = new ResourceLocation(Waila.MODID, "object_name");
 	public static final ResourceLocation TAG_REGISTRY_NAME = new ResourceLocation(Waila.MODID, "registry_name");
@@ -49,9 +47,5 @@ public class CorePlugin implements IWailaPlugin {
 		registrar.addConfig(CONFIG_BLOCK_STATES, false);
 		registrar.addConfig(CONFIG_MOD_NAME, true);
 		registrar.addConfig(CONFIG_ITEM_MOD_NAME, false);
-
-		registrar.registerComponentProvider(InventoryProvider.INSTANCE, TooltipPosition.BODY, Block.class);
-		registrar.registerBlockDataProvider(InventoryProvider.INSTANCE, LockableTileEntity.class);
-		registrar.addConfig(CONFIG_INVENTORY, true);
 	}
 }

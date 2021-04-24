@@ -69,7 +69,6 @@
   "config.waila.plugin_jade.entity_hp": "实体生命值",
   "config.waila.plugin_jade.entity_armor": "实体盔甲值",
   "config.waila.plugin_jade.block_states": "方块状态",
-  "config.waila.plugin_jade.inventory": "物品容器",
   "config.waila.plugin_jade.mod_name": "模组名称",
   "config.waila.plugin_jade.item_mod_name": "物品模组名称",
 
@@ -78,7 +77,6 @@
 
   "command.dump.success": "成功导出",
 
-  "jade.locked": "容器已上锁",
   "config.waila.plugin_minecraft.horse_stat": "马匹信息",
   "jade.horseStat.jump": "跳跃高度：%d",
   "jade.horseStat.speed": "速度：%d",
@@ -130,6 +128,8 @@
   "config.waila.plugin_minecraft.player_head": "玩家头颅",
   "config.waila.plugin_minecraft.profession": "村民职业",
   "config.waila.plugin_minecraft.item_tooltip": "物品提示框",
+  "jade.locked": "容器已上锁",
+  "config.waila.plugin_minecraft.inventory": "物品容器",
 
   "config.waila.plugin_minecraft.display_furnace_contents": "熔炉物品",
   "config.waila.plugin_minecraft.spawner_type": "刷怪笼类型",

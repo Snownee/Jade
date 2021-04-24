@@ -1,7 +1,5 @@
 package mcp.mobius.waila.addons.core;
 
-import java.awt.Color;
-
 import com.google.common.base.Strings;
 
 import mcp.mobius.waila.Waila;
@@ -12,8 +10,6 @@ import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.TooltipPosition;
 import mcp.mobius.waila.api.config.IPluginConfig;
 import mcp.mobius.waila.api.ui.IElementHelper;
-import mcp.mobius.waila.api.ui.IProgressStyle;
-import mcp.mobius.waila.overlay.DisplayHelper;
 import mcp.mobius.waila.utils.ModIdentification;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.resources.I18n;
@@ -28,8 +24,6 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.energy.IEnergyStorage;
 import snownee.jade.JadeCommonConfig;
 
 public class BaseBlockProvider implements IComponentProvider, IServerDataProvider<TileEntity> {
@@ -80,22 +74,6 @@ public class BaseBlockProvider implements IComponentProvider, IServerDataProvide
 				tooltip.add(new StringTextComponent(p.getName() + ":").appendSibling(valueText));
 			});
 		}
-
-		TileEntity tile = accessor.getTileEntity();
-		if (tile != null) {
-			IEnergyStorage storage = tile.getCapability(CapabilityEnergy.ENERGY).orElse(null);
-			if (storage != null) {
-				IElementHelper helper = tooltip.getElementHelper();
-				int cur = storage.getEnergyStored();
-				int max = storage.getMaxEnergyStored();
-				//ITextComponent text = new StringTextComponent(DisplayHelper.INSTANCE.humanReadableNumber(cur, "FE", false) + "/" + DisplayHelper.INSTANCE.humanReadableNumber(max, "FE", false));
-				ITextComponent text = new StringTextComponent(DisplayHelper.INSTANCE.humanReadableNumber(999999999999l, "FE", false) + "/" + DisplayHelper.INSTANCE.humanReadableNumber(Math.pow(1000, 8) - 1, "FE", false));
-				IProgressStyle progressStyle = helper.progressStyle().color(Color.RED.getRGB(), 0xFF660000);
-				tooltip.add(helper.progress((float) cur / max, text, progressStyle, helper.borderStyle()));
-			}
-		}
-
-		//        tooltip.add(helper.progress(0.95f, new StringTextComponent("测试测试testtesttesttesttesttesttesttesttesttest"), progressStyle, helper.borderStyle()));
 	}
 
 	public void appendTail(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {

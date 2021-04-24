@@ -12,4 +12,6 @@ public interface IDisplayHelper {
 
 	void drawBorder(MatrixStack matrixStack, int minX, int minY, int maxX, int maxY, IBorderStyle border);
 
+	String humanReadableNumber(double number, String unit, boolean milli);
+
 }
