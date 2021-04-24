@@ -118,6 +118,7 @@ dependencies {
 
 // Example for how to get properties into the manifest for reading by the runtime..
 jar {
+    exclude '/mcp/mobius/waila/test'
     manifest {
         attributes([
             "Implementation-Title": project.name,
