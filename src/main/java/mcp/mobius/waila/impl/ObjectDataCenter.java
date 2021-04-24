@@ -3,6 +3,7 @@ package mcp.mobius.waila.impl;
 import mcp.mobius.waila.api.Accessor;
 import mcp.mobius.waila.api.BlockAccessor;
 import mcp.mobius.waila.api.EntityAccessor;
+import mcp.mobius.waila.overlay.WailaTickHandler;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
 
@@ -22,6 +23,7 @@ public final class ObjectDataCenter {
 	public static void set(Accessor accessor) {
 		ObjectDataCenter.accessor = accessor;
 		if (accessor == null) {
+			WailaTickHandler.instance().progressTracker.clear();
 			lastObject = null;
 			return;
 		}
@@ -34,6 +36,7 @@ public final class ObjectDataCenter {
 		}
 
 		if (object != lastObject) {
+			WailaTickHandler.instance().progressTracker.clear();
 			lastObject = object;
 			serverData = null;
 			requestServerData();

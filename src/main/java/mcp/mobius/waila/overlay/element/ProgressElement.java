@@ -10,6 +10,8 @@ import mcp.mobius.waila.api.ui.Size;
 import mcp.mobius.waila.impl.ui.BorderStyle;
 import mcp.mobius.waila.impl.ui.ProgressStyle;
 import mcp.mobius.waila.overlay.DisplayHelper;
+import mcp.mobius.waila.overlay.ProgressTracker.TrackInfo;
+import mcp.mobius.waila.overlay.WailaTickHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.util.math.MathHelper;
@@ -22,6 +24,7 @@ public class ProgressElement extends Element {
 	private final IProgressStyle style;
 	@Nullable
 	private final BorderStyle borderStyle;
+	private TrackInfo track;
 
 	public ProgressElement(float progress, ITextComponent text, ProgressStyle style, BorderStyle borderStyle) {
 		this.progress = MathHelper.clamp(progress, 0, 1);
@@ -33,15 +36,20 @@ public class ProgressElement extends Element {
 	@Override
 	public Size getSize() {
 		int height = text == null ? 8 : 14;
-		int minWidth = 0;
+		int width = 0;
 		if (borderStyle != null) {
-			minWidth += borderStyle.width * 2;
+			width += borderStyle.width * 2;
 		}
 		if (text != null) {
 			FontRenderer font = Minecraft.getInstance().fontRenderer;
-			minWidth += font.getStringWidth(text.getString());
+			width += font.getStringWidth(text.getString());
 		}
-		return new Size(Math.max(20, minWidth), height);
+		width = Math.max(20, width);
+		if (getTag() != null) {
+			track = WailaTickHandler.instance().progressTracker.createInfo(getTag(), progress, width);
+			width = track.getWidth();
+		}
+		return new Size(width, height);
 	}
 
 	@Override
@@ -52,6 +60,10 @@ public class ProgressElement extends Element {
 		}
 		int b = borderStyle.width;
 		float w = maxX - x - b * 2 - 2;
+		float progress = this.progress;
+		if (track != null) {
+			progress = track.tick(Minecraft.getInstance().getRenderPartialTicks());
+		}
 		w *= progress;
 		style.render(matrixStack, x + b, y + b, w, size.height - b * 2 - 2, text);
 	}

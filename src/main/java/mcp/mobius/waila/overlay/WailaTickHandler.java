@@ -45,12 +45,15 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber(modid = Waila.MODID, value = Dist.CLIENT)
 public class WailaTickHandler {
 
-	public static WailaTickHandler INSTANCE = new WailaTickHandler();
+	private static WailaTickHandler INSTANCE = new WailaTickHandler();
 	private static Narrator narrator;
 	private static String lastNarration = "";
 	public TooltipRenderer tooltipRenderer = null;
+	public ProgressTracker progressTracker = new ProgressTracker();
 
 	public void tickClient() {
+		progressTracker.tick();
+
 		if (!Waila.CONFIG.get().getGeneral().shouldDisplayTooltip()) {
 			tooltipRenderer = null;
 			return;
