@@ -72,6 +72,7 @@ public class Tooltip implements ITooltip {
 	}
 
 	public final List<Line> lines = new ArrayList<>();
+	public boolean sneakDetails;
 
 	@Override
 	public void clear() {

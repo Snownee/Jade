@@ -33,9 +33,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextProcessing;
-import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
@@ -133,7 +131,7 @@ public class WailaTickHandler {
 		instance().gatherComponents(accessor, currentTip, TooltipPosition.HEAD);
 		instance().gatherComponents(accessor, currentTipBody, TooltipPosition.BODY);
 		if (Waila.CONFIG.get().getGeneral().shouldShiftForDetails() && !currentTipBody.isEmpty() && !player.isSecondaryUseActive()) {
-			currentTip.add(new TranslationTextComponent("tooltip.waila.sneak_for_details").setStyle(Style.EMPTY.setItalic(true)));
+			currentTip.sneakDetails = true;
 		} else {
 			currentTip.lines.addAll(currentTipBody.lines);
 		}

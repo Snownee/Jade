@@ -62,7 +62,7 @@ public class ProgressElement extends Element {
 		float w = maxX - x - b * 2 - 2;
 		float progress = this.progress;
 		if (track != null) {
-			progress = track.tick(Minecraft.getInstance().getRenderPartialTicks());
+			progress = track.tick(Minecraft.getInstance().getTickLength());
 		}
 		w *= progress;
 		style.render(matrixStack, x + b, y + b, w, size.y - b * 2 - 2, text);

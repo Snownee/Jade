@@ -6,7 +6,7 @@ public class HUDTheme {
 
 	public static final HUDTheme WAILA = new HUDTheme(new ResourceLocation("jade:waila"), 0x100010, 0x5000ff, 0x28007f, 0xA0A0A0);
 	public static final HUDTheme DARK = new HUDTheme(new ResourceLocation("jade:dark"), 0x131313, 0x383838, 0x242424, 0xA0A0A0);
-	public static final HUDTheme CREATE = new HUDTheme(new ResourceLocation("jade:create"), 0xdd000000, 0x40aa9999, 0x20aa9999, 0xA0A0A0);
+	public static final HUDTheme CREATE = new HUDTheme(new ResourceLocation("jade:create"), 0x000000, 0x1a1717, 0x2a2626, 0xA0A0A0);
 	public static final HUDTheme TOP = new HUDTheme(new ResourceLocation("jade:top"), 0x55006699, 0xff999999, 0xff999999, 0xA0A0A0);
 
 	private final ResourceLocation id;

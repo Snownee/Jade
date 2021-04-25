@@ -13,6 +13,7 @@ import mcp.mobius.waila.impl.Tooltip;
 import mcp.mobius.waila.impl.Tooltip.Line;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector2f;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -20,56 +21,69 @@ public class TooltipRenderer {
 
 	private final Tooltip tooltip;
 	private final boolean showIcon;
-	private final Vector2f totalSize;
+	private Vector2f totalSize;
+	private float contentHeight;
 	IElement icon;
 
 	public TooltipRenderer(Tooltip tooltip, boolean showIcon) {
 		WailaTooltipEvent event = new WailaTooltipEvent(tooltip, ObjectDataCenter.get());
 		MinecraftForge.EVENT_BUS.post(event);
-
-		Minecraft.getInstance();
 		this.showIcon = showIcon;
 		this.tooltip = tooltip;
 		if (showIcon) {
 			icon = RayTracing.INSTANCE.getIcon();
 		}
 
-		totalSize = computeSize();
+		computeSize();
 	}
 
-	public Vector2f computeSize() {
+	public void computeSize() {
 		float width = 0, height = 0;
 		for (Line line : tooltip.lines) {
 			Vector2f size = line.getSize();
 			width = Math.max(width, size.x);
 			height += size.y;
 		}
+		contentHeight = height;
 		if (hasIcon()) {
 			Vector2f size = icon.getCachedSize();
 			width += 12 + size.x;
-			height = Math.max(height, size.y - 5);
+			height = Math.max(height, size.y - 2);
 		} else {
 			width += 10;
 		}
-		height += 8;
-		return new Vector2f(width, height);
+		height += 6;
+		totalSize = new Vector2f(width, height);
 	}
 
 	public void draw(MatrixStack matrixStack) {
-		Rectangle position = getPosition();
-
 		float x = 6;
+		float y = 4;
 		if (hasIcon()) {
 			x = icon.getCachedSize().x + 8;
+			if (icon.getCachedSize().y > contentHeight) {
+				y += (icon.getCachedSize().y - contentHeight) / 2 - 1;
+			}
 		}
-		float y = 6;
 
 		for (Line line : tooltip.lines) {
 			Vector2f size = line.getSize();
 			line.render(matrixStack, x, y, totalSize.x, size.y);
 			y += size.y;
 		}
-		position.width += x - 2;
+
+		if (tooltip.sneakDetails) {
+			Minecraft mc = Minecraft.getInstance();
+			x = (totalSize.x - mc.fontRenderer.getStringWidth("▾") + 1) / 2f;
+			float yOffset = (OverlayRenderer.ticks / 5) % 8 - 2;
+			if (yOffset > 4)
+				return;
+			y = totalSize.y - 6 + yOffset;
+			float alpha = 1 - Math.abs(yOffset) / 2;
+			int alphaChannel = (int) (0xFF * MathHelper.clamp(alpha, 0, 1));
+			if (alphaChannel > 4) //dont know why
+				mc.fontRenderer.drawString(matrixStack, "▾", x, y, 0xFFFFFF | alphaChannel << 24);
+		}
 	}
 
 	public Tooltip getTooltip() {
@@ -83,11 +97,15 @@ public class TooltipRenderer {
 	public Rectangle getPosition() {
 		MainWindow window = Minecraft.getInstance().getMainWindow();
 		ConfigOverlay overlay = Waila.CONFIG.get().getOverlay();
-		//        int x = (int) (window.getScaledWidth() * overlay.tryFlip(overlay.getOverlayPosX()) - totalSize.width * overlay.tryFlip(overlay.getAnchorX()));
-		//        int y = (int) (window.getScaledHeight() * (1.0F - overlay.getOverlayPosY()) - totalSize.height * overlay.getAnchorY());
 		int x = (int) (window.getScaledWidth() * overlay.tryFlip(overlay.getOverlayPosX()));
 		int y = (int) (window.getScaledHeight() * (1.0F - overlay.getOverlayPosY()));
-		return new Rectangle(x, y, (int) totalSize.x, (int) totalSize.y);
+		int width = (int) totalSize.x;
+		int height = (int) totalSize.y;
+		if (!overlay.getSquare()) {
+			width += 2;
+			height += 2;
+		}
+		return new Rectangle(x, y, width, height);
 	}
 
 	public Vector2f getSize() {

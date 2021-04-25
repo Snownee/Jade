@@ -6,16 +6,17 @@ import java.util.Map;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
+import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.BlockAccessor;
 import mcp.mobius.waila.api.event.WailaRayTraceEvent;
 import mcp.mobius.waila.api.event.WailaRenderEvent;
 import mcp.mobius.waila.impl.config.PluginConfig;
+import mcp.mobius.waila.overlay.DisplayHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SilverfishBlock;
 import net.minecraft.block.TrappedChestBlock;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.multiplayer.PlayerController;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.state.Property;
@@ -47,10 +48,16 @@ public final class ClientHandler {
 		boolean canHarvest = ForgeHooks.canHarvestBlock(state, mc.player, mc.world, playerController.currentBlock);
 		int color = canHarvest ? 0x88FFFFFF : 0x88FF4444;
 		Rectangle rect = event.getPosition();
+		int height = rect.height;
+		int width = rect.width;
+		if (!Waila.CONFIG.get().getOverlay().getSquare()) {
+			height -= 1;
+			width -= 2;
+		}
 		float progress = state.getPlayerRelativeBlockHardness(mc.player, mc.player.world, playerController.currentBlock);
 		progress = playerController.curBlockDamageMP + mc.getRenderPartialTicks() * progress;
 		progress = MathHelper.clamp(progress, 0, 1);
-		AbstractGui.fill(event.getMatrixStack(), 1, rect.height, 1 + (int) (rect.width * progress), rect.height + 1, color);
+		DisplayHelper.fill(event.getMatrixStack(), 0, height - 1, width * progress, height, color);
 	}
 
 	private static final Cache<BlockState, BlockState> CHEST_CACHE = CacheBuilder.newBuilder().build();

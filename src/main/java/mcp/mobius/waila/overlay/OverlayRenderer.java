@@ -37,6 +37,7 @@ public class OverlayRenderer {
 	protected static boolean hasColorMaterial;
 	protected static boolean depthMask;
 	protected static int depthFunc;
+	public static float ticks;
 
 	public static void renderOverlay() {
 		if (WailaTickHandler.instance().tooltipRenderer == null)
@@ -61,6 +62,7 @@ public class OverlayRenderer {
 		if (RayTracing.INSTANCE.getTarget() == null)
 			return;
 
+		ticks += mc.getTickLength();
 		if (RayTracing.INSTANCE.getTarget().getType() == RayTraceResult.Type.BLOCK)
 			renderOverlay(WailaTickHandler.instance().tooltipRenderer, new MatrixStack());
 
@@ -95,6 +97,10 @@ public class OverlayRenderer {
 
 		Rectangle position = preEvent.getPosition();
 		ConfigOverlay configOverlay = Waila.CONFIG.get().getOverlay();
+		if (!configOverlay.getSquare()) {
+			position.x++;
+			position.y++;
+		}
 		matrixStack.translate(position.x, position.y, 0);
 
 		float scale = configOverlay.getOverlayScale();
@@ -187,16 +193,20 @@ public class OverlayRenderer {
 	}
 
 	public static void drawTooltipBox(MatrixStack matrixStack, int x, int y, int w, int h, int bg, int grad1, int grad2, boolean square) {
-		DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x + 1, y + 1, w - 1, h - 1, bg, bg);//center
 		if (!square) {
-			DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x + 1, y, w - 1, 1, bg, bg);
-			DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x + 1, y + h, w - 1, 1, bg, bg);
-			DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x, y + 1, 1, h - 1, bg, bg);
-			DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x + w, y + 1, 1, h - 1, bg, bg);
+			w -= 2;
+			h -= 2;
 		}
-		DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x + 1, y + 2, 1, h - 3, grad1, grad2);
-		DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x + w - 1, y + 2, 1, h - 3, grad1, grad2);
-		DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x + 1, y + 1, w - 1, 1, grad1, grad1);
-		DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x + 1, y + h - 1, w - 1, 1, grad2, grad2);
+		DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x + 1, y + 1, w - 2, h - 2, bg, bg);//center
+		if (!square) {
+			DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x, y - 1, w, 1, bg, bg);
+			DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x, y + h, w, 1, bg, bg);
+			DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x - 1, y, 1, h, bg, bg);
+			DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x + w, y, 1, h, bg, bg);
+		}
+		DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x, y + 1, 1, h - 2, grad1, grad2);
+		DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x + w - 1, y + 1, 1, h - 2, grad1, grad2);
+		DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x, y, w, 1, grad1, grad1);
+		DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x, y + h - 1, w, 1, grad2, grad2);
 	}
 }

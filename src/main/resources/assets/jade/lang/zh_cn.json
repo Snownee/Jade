@@ -10,7 +10,6 @@
   "tooltip.waila.state_on": "开",
   "tooltip.waila.state_off": "关",
   "tooltip.waila.power": "强度：%d",
-  "tooltip.waila.sneak_for_details":  "潜行显示详细",
   "tooltip.waila.villager_profession":  "职业：%s",
 
   "gui.waila.configuration": "%s 配置",

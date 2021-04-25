@@ -10,7 +10,6 @@
   "tooltip.waila.state_on": "Ein",
   "tooltip.waila.state_off": "Aus",
   "tooltip.waila.power": "Stärke: %d",
-  "tooltip.waila.sneak_for_details":  "Schleiche für Details",
   "tooltip.waila.villager_profession": "Beruf: %s",
  
   "gui.waila.configuration": "%s Konfiguration",

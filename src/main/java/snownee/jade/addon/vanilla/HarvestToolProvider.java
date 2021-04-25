@@ -192,18 +192,18 @@ public class HarvestToolProvider implements IComponentProvider, ISelectiveResour
 		int offsetY = 0;
 		if (!config.get(VanillaPlugin.HARVEST_TOOL_NEW_LINE)) {
 			offsetY = -3;
-			item.translate(new Vector2f(0, offsetY)).size(ITEM_SIZE);
+			item.translate(new Vector2f(-1, offsetY)).size(ITEM_SIZE);
 		}
 		elements.add(item);
 
 		boolean canHarvest = ForgeHooks.canHarvestBlock(state, accessor.getPlayer(), accessor.getWorld(), accessor.getPosition());
 		if (state.getRequiresTool()) {
 			String sub = canHarvest ? "§a✔" : "§4✕";
-			elements.add(new SubStringElement(sub).translate(new Vector2f(-5, 7 + offsetY)));
+			elements.add(new SubStringElement(sub).translate(new Vector2f(-6, 7 + offsetY)));
 		} else {
 			ItemStack held = accessor.getPlayer().getHeldItemMainhand();
 			if (canHarvest && ForgeHooks.isToolEffective(accessor.getWorld(), accessor.getPosition(), held)) {
-				elements.add(new SubStringElement("§a✔").translate(new Vector2f(-5, 7 + offsetY)));
+				elements.add(new SubStringElement("§a✔").translate(new Vector2f(-6, 7 + offsetY)));
 			}
 		}
 

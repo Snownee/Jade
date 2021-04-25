@@ -143,7 +143,7 @@ public class WailaConfig {
 
 	public static class ConfigOverlay {
 		private float overlayPosX = 0.5F;
-		private float overlayPosY = 0.99F;
+		private float overlayPosY = 1.0F;
 		private float overlayScale = 1.0F;
 		private float overlayAnchorX = 0.5F;
 		private float overlayAnchorY = 0F;

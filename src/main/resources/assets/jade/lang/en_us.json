@@ -10,7 +10,6 @@
   "tooltip.waila.state_on": "On",
   "tooltip.waila.state_off": "Off",
   "tooltip.waila.power": "Power: %d",
-  "tooltip.waila.sneak_for_details":  "Sneak for details",
   "tooltip.waila.villager_profession":  "Profession: %s",
 
   "gui.waila.configuration": "%s Configuration",
@@ -137,6 +136,7 @@
   "config.waila.plugin_minecraft.fluid": "Fluid Tank",
   "jade.fluid": "%s %s",
   "jade.fluid.empty": "Empty",
+  "config.waila.plugin_minecraft.lectern": "Lectern",
 
   "config.waila.plugin_minecraft.display_furnace_contents": "Furnace Contents",
   "config.waila.plugin_minecraft.spawner_type": "Spawner Type",
