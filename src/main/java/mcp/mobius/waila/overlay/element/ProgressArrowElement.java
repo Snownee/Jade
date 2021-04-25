@@ -4,10 +4,10 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.ui.Element;
-import mcp.mobius.waila.api.ui.Size;
 import mcp.mobius.waila.overlay.DisplayHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.vector.Vector2f;
 
 public class ProgressArrowElement extends Element {
 
@@ -20,12 +20,12 @@ public class ProgressArrowElement extends Element {
 	}
 
 	@Override
-	public Size getSize() {
-		return new Size(26, 16);
+	public Vector2f getSize() {
+		return new Vector2f(26, 16);
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, int x, int y, int maxX, int maxY) {
+	public void render(MatrixStack matrixStack, float x, float y, float maxX, float maxY) {
 		Minecraft.getInstance().getTextureManager().bindTexture(SHEET);
 
 		// Draws the "empty" background arrow

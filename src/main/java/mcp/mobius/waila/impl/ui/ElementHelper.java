@@ -7,7 +7,6 @@ import mcp.mobius.waila.api.ui.IBorderStyle;
 import mcp.mobius.waila.api.ui.IElement;
 import mcp.mobius.waila.api.ui.IElementHelper;
 import mcp.mobius.waila.api.ui.IProgressStyle;
-import mcp.mobius.waila.api.ui.Size;
 import mcp.mobius.waila.impl.Tooltip;
 import mcp.mobius.waila.overlay.element.BoxElement;
 import mcp.mobius.waila.overlay.element.ItemStackElement;
@@ -16,6 +15,7 @@ import mcp.mobius.waila.overlay.element.SpacerElement;
 import mcp.mobius.waila.overlay.element.TextElement;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.vector.Vector2f;
 import net.minecraft.util.text.ITextComponent;
 import snownee.jade.Jade;
 
@@ -41,7 +41,7 @@ public class ElementHelper implements IElementHelper {
 
 	@Override
 	public IElement spacer(int width, int height) {
-		return new SpacerElement(new Size(width, height));
+		return new SpacerElement(new Vector2f(width, height));
 	}
 
 	@Override

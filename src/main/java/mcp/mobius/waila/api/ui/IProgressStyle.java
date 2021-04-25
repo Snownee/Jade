@@ -3,7 +3,6 @@ package mcp.mobius.waila.api.ui;
 import com.mojang.blaze3d.matrix.MatrixStack;
 
 import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.fluids.FluidStack;
 
 public interface IProgressStyle {
 
@@ -17,7 +16,7 @@ public interface IProgressStyle {
 
 	IProgressStyle vertical(boolean vertical);
 
-	IProgressStyle fluid(FluidStack fluidStack);
+	IProgressStyle overlay(IElement overlay);
 
 	void render(MatrixStack matrixStack, float x, float y, float w, float h, ITextComponent text);
 }

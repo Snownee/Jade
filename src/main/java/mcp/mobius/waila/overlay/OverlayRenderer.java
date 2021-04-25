@@ -15,7 +15,6 @@ import mcp.mobius.waila.addons.core.CorePlugin;
 import mcp.mobius.waila.api.config.WailaConfig;
 import mcp.mobius.waila.api.config.WailaConfig.ConfigOverlay;
 import mcp.mobius.waila.api.event.WailaRenderEvent;
-import mcp.mobius.waila.api.ui.Size;
 import mcp.mobius.waila.impl.ObjectDataCenter;
 import mcp.mobius.waila.impl.Tooltip;
 import mcp.mobius.waila.impl.config.PluginConfig;
@@ -24,6 +23,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.ChatVisibility;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.vector.Vector2f;
 import net.minecraftforge.common.MinecraftForge;
 
 @SuppressWarnings("deprecation")
@@ -123,12 +123,12 @@ public class OverlayRenderer {
 
 		RenderSystem.enableRescaleNormal();
 		if (tooltip.hasIcon()) {
-			Size size = tooltip.icon.getCachedSize();
-			Size offset = tooltip.icon.getTranslation();
-			int offsetX = offset.width + 5;
-			int offsetY = offset.height + 2;
+			Vector2f size = tooltip.icon.getCachedSize();
+			Vector2f offset = tooltip.icon.getTranslation();
+			float offsetX = offset.x + 5;
+			float offsetY = offset.y + 2;
 			Tooltip.drawBorder(matrixStack, offsetX, offsetY, tooltip.icon);
-			tooltip.icon.render(matrixStack, offsetX, offsetY, offsetX + size.width, offsetY + size.height); //TODO
+			tooltip.icon.render(matrixStack, offsetX, offsetY, offsetX + size.x, offsetY + size.y); //TODO
 		}
 
 		WailaRenderEvent.Post postEvent = new WailaRenderEvent.Post(position, matrixStack);

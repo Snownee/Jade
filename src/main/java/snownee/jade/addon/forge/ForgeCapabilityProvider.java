@@ -10,6 +10,7 @@ import mcp.mobius.waila.api.config.IPluginConfig;
 import mcp.mobius.waila.api.ui.IElementHelper;
 import mcp.mobius.waila.api.ui.IProgressStyle;
 import mcp.mobius.waila.overlay.DisplayHelper;
+import mcp.mobius.waila.overlay.element.FluidStackElement;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
@@ -88,7 +89,7 @@ public class ForgeCapabilityProvider implements IComponentProvider, IServerDataP
 			String amountText = DisplayHelper.INSTANCE.humanReadableNumber(fluidStack.getAmount(), "B", true);
 			text = new TranslationTextComponent("jade.fluid", fluidStack.getDisplayName(), amountText);
 		}
-		IProgressStyle progressStyle = helper.progressStyle().color(Color.RED.getRGB(), 0xFF660000);
+		IProgressStyle progressStyle = helper.progressStyle().overlay(new FluidStackElement(fluidStack));
 		tooltip.add(helper.progress((float) fluidStack.getAmount() / capacity, text, progressStyle, helper.borderStyle()).tag(VanillaPlugin.FORGE_FLUID));
 	}
 

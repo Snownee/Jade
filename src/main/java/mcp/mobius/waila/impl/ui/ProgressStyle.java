@@ -4,13 +4,14 @@ import java.awt.Color;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 
+import mcp.mobius.waila.api.ui.IElement;
 import mcp.mobius.waila.api.ui.IProgressStyle;
 import mcp.mobius.waila.overlay.DisplayHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.util.math.vector.Vector2f;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.fluids.FluidStack;
 
 public class ProgressStyle implements IProgressStyle {
 
@@ -19,7 +20,7 @@ public class ProgressStyle implements IProgressStyle {
 	public int color2;
 	public int textColor;
 	public boolean vertical;
-	public FluidStack tempFluid;
+	public IElement overlay;
 
 	@Override
 	public IProgressStyle color(int color, int color2) {
@@ -29,31 +30,36 @@ public class ProgressStyle implements IProgressStyle {
 	}
 
 	@Override
-	public IProgressStyle vertical(boolean vertical) {
+	public IProgressStyle vertical(boolean vertical) { //TODO
 		this.vertical = vertical;
 		return this;
 	}
 
 	@Override
-	public IProgressStyle fluid(FluidStack fluidStack) {
-		this.tempFluid = fluidStack;
+	public IProgressStyle overlay(IElement overlay) {
+		this.overlay = overlay;
 		return this;
 	}
 
 	@Override
 	public void render(MatrixStack matrixStack, float x, float y, float width, float height, ITextComponent text) {
 		if (width > 0) {
-			Color lighter = new Color(color);
-			int alpha = (int) (lighter.getAlpha() * 0.7f);
-			lighter = new Color(lighter.getRed(), lighter.getGreen(), lighter.getBlue(), alpha);
+			if (overlay != null) {
+				overlay.size(new Vector2f(width, height));
+				overlay.render(matrixStack, x, y, width, height);
+			} else {
+				Color lighter = new Color(color);
+				int alpha = (int) (lighter.getAlpha() * 0.7f);
+				lighter = new Color(lighter.getRed(), lighter.getGreen(), lighter.getBlue(), alpha);
 
-			float half = height / 2;
-			DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x, y, width, half, lighter.getRGB(), color);
-			DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x, y + half, width, half, color, lighter.getRGB());
-			if (color != color2) {
-				for (float xx = x + 1; xx < x + width; xx += 2) {
-					float fx = Math.min(x + width, xx + 1);
-					DisplayHelper.fill(matrixStack, xx, y, fx, y + height, color2);
+				float half = height / 2;
+				DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x, y, width, half, lighter.getRGB(), color);
+				DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x, y + half, width, half, color, lighter.getRGB());
+				if (color != color2) {
+					for (float xx = x + 1; xx < x + width; xx += 2) {
+						float fx = Math.min(x + width, xx + 1);
+						DisplayHelper.fill(matrixStack, xx, y, fx, y + height, color2);
+					}
 				}
 			}
 		}

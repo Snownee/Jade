@@ -59,7 +59,7 @@ public class DisplayHelper implements IDisplayHelper {
 	private static final Minecraft CLIENT = Minecraft.getInstance();
 
 	@Override
-	public void drawItem(MatrixStack matrixStack, int x, int y, ItemStack stack, float scale) {
+	public void drawItem(MatrixStack matrixStack, float x, float y, ItemStack stack, float scale) {
 		matrixStack.push();
 		enable3DRender();
 		try {
@@ -74,7 +74,7 @@ public class DisplayHelper implements IDisplayHelper {
 		matrixStack.pop();
 	}
 
-	private static void renderItemOverlayIntoGUI(MatrixStack matrixStack, FontRenderer fr, ItemStack stack, int xPosition, int yPosition, @Nullable String text) {
+	private static void renderItemOverlayIntoGUI(MatrixStack matrixStack, FontRenderer fr, ItemStack stack, float xPosition, float yPosition, @Nullable String text) {
 		if (stack.isEmpty()) {
 			return;
 		}
@@ -122,7 +122,7 @@ public class DisplayHelper implements IDisplayHelper {
 		matrixStack.pop();
 	}
 
-	private static void draw(MatrixStack ms, BufferBuilder renderer, int x, int y, int width, int height, int red, int green, int blue, int alpha) {
+	private static void draw(MatrixStack ms, BufferBuilder renderer, float x, float y, int width, int height, int red, int green, int blue, int alpha) {
 		Matrix4f matrix = ms.getLast().getMatrix();
 		renderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
 		renderer.pos(matrix, x, y, 0).color(red, green, blue, alpha).endVertex();
@@ -132,12 +132,12 @@ public class DisplayHelper implements IDisplayHelper {
 		Tessellator.getInstance().draw();
 	}
 
-	public static void renderItemIntoGUI(MatrixStack matrixStack, ItemStack stack, int x, int y, float scale) {
+	public static void renderItemIntoGUI(MatrixStack matrixStack, ItemStack stack, float x, float y, float scale) {
 		ItemRenderer renderer = CLIENT.getItemRenderer();
 		renderItemModelIntoGUI(matrixStack, stack, x, y, renderer.getItemModelWithOverrides(stack, (World) null, (LivingEntity) null), scale);
 	}
 
-	private static void renderItemModelIntoGUI(MatrixStack matrixStack, ItemStack stack, int x, int y, IBakedModel bakedmodel, float scale) {
+	private static void renderItemModelIntoGUI(MatrixStack matrixStack, ItemStack stack, float x, float y, IBakedModel bakedmodel, float scale) {
 		ItemRenderer renderer = CLIENT.getItemRenderer();
 		TextureManager textureManager = CLIENT.textureManager;
 		matrixStack.push();
@@ -171,7 +171,7 @@ public class DisplayHelper implements IDisplayHelper {
 		matrixStack.pop();
 	}
 
-	private static void renderStackSize(MatrixStack matrixStack, FontRenderer fr, ItemStack stack, int xPosition, int yPosition) {
+	private static void renderStackSize(MatrixStack matrixStack, FontRenderer fr, ItemStack stack, float xPosition, float yPosition) {
 		if (!stack.isEmpty() && stack.getCount() != 1) {
 			String s = shortHandNumber(stack.getCount());
 
@@ -243,15 +243,15 @@ public class DisplayHelper implements IDisplayHelper {
 	}
 
 	@Override
-	public void drawBorder(MatrixStack matrixStack, int minX, int minY, int maxX, int maxY, IBorderStyle border0) {
+	public void drawBorder(MatrixStack matrixStack, float minX, float minY, float maxX, float maxY, IBorderStyle border0) {
 		BorderStyle border = (BorderStyle) border0;
-		AbstractGui.fill(matrixStack, minX + border.width, minY, maxX - border.width, minY + border.width, border.color);
-		AbstractGui.fill(matrixStack, minX + border.width, maxY - border.width, maxX - border.width, maxY, border.color);
-		AbstractGui.fill(matrixStack, minX, minY, minX + border.width, maxY, border.color);
-		AbstractGui.fill(matrixStack, maxX - border.width, minY, maxX, maxY, border.color);
+		fill(matrixStack, minX + border.width, minY, maxX - border.width, minY + border.width, border.color);
+		fill(matrixStack, minX + border.width, maxY - border.width, maxX - border.width, maxY, border.color);
+		fill(matrixStack, minX, minY, minX + border.width, maxY, border.color);
+		fill(matrixStack, maxX - border.width, minY, maxX, maxY, border.color);
 	}
 
-	public static void drawTexturedModalRect(MatrixStack matrixStack, int x, int y, int textureX, int textureY, int width, int height, int tw, int th) {
+	public static void drawTexturedModalRect(MatrixStack matrixStack, float x, float y, int textureX, int textureY, int width, int height, int tw, int th) {
 		Matrix4f matrix = matrixStack.getLast().getMatrix();
 		float f = 0.00390625F;
 		float f1 = 0.00390625F;
@@ -286,7 +286,7 @@ public class DisplayHelper implements IDisplayHelper {
 		return namelist;
 	}
 
-	public static void renderIcon(MatrixStack matrixStack, int x, int y, int sx, int sy, IconUI icon) {
+	public static void renderIcon(MatrixStack matrixStack, float x, float y, int sx, int sy, IconUI icon) {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		CLIENT.getTextureManager().bindTexture(AbstractGui.GUI_ICONS_LOCATION);
 
@@ -306,8 +306,8 @@ public class DisplayHelper implements IDisplayHelper {
 	private static final int TEX_HEIGHT = 16;
 	private static final int MIN_FLUID_HEIGHT = 1; // ensure tiny amounts of fluid are still visible
 
-	public void drawFluid(MatrixStack matrixStack, final int xPosition, final int yPosition, @Nullable FluidStack fluidStack, int width, int height, int capacityMb) {
-		if (fluidStack == null) {
+	public void drawFluid(MatrixStack matrixStack, final float xPosition, final float yPosition, @Nullable FluidStack fluidStack, float width, float height, int capacityMb) {
+		if (fluidStack == null || fluidStack.isEmpty()) {
 			return;
 		}
 		Fluid fluid = fluidStack.getFluid();
@@ -321,7 +321,7 @@ public class DisplayHelper implements IDisplayHelper {
 		int fluidColor = attributes.getColor(fluidStack);
 
 		int amount = fluidStack.getAmount();
-		int scaledAmount = (amount * height) / capacityMb;
+		float scaledAmount = (amount * height) / capacityMb;
 		if (amount > 0 && scaledAmount < MIN_FLUID_HEIGHT) {
 			scaledAmount = MIN_FLUID_HEIGHT;
 		}
@@ -332,28 +332,28 @@ public class DisplayHelper implements IDisplayHelper {
 		drawTiledSprite(matrixStack, xPosition, yPosition, width, height, fluidColor, scaledAmount, fluidStillSprite);
 	}
 
-	private void drawTiledSprite(MatrixStack matrixStack, final int xPosition, final int yPosition, final int tiledWidth, final int tiledHeight, int color, int scaledAmount, TextureAtlasSprite sprite) {
+	private void drawTiledSprite(MatrixStack matrixStack, final float xPosition, final float yPosition, final float tiledWidth, final float tiledHeight, int color, float scaledAmount, TextureAtlasSprite sprite) {
 		Minecraft minecraft = Minecraft.getInstance();
 		minecraft.getTextureManager().bindTexture(PlayerContainer.LOCATION_BLOCKS_TEXTURE);
 		Matrix4f matrix = matrixStack.getLast().getMatrix();
 		setGLColorFromInt(color);
 
-		final int xTileCount = tiledWidth / TEX_WIDTH;
-		final int xRemainder = tiledWidth - (xTileCount * TEX_WIDTH);
-		final int yTileCount = scaledAmount / TEX_HEIGHT;
-		final int yRemainder = scaledAmount - (yTileCount * TEX_HEIGHT);
+		final int xTileCount = (int) (tiledWidth / TEX_WIDTH);
+		final float xRemainder = tiledWidth - (xTileCount * TEX_WIDTH);
+		final int yTileCount = (int) (scaledAmount / TEX_HEIGHT);
+		final float yRemainder = scaledAmount - (yTileCount * TEX_HEIGHT);
 
-		final int yStart = yPosition + tiledHeight;
+		final float yStart = yPosition + tiledHeight;
 
 		for (int xTile = 0; xTile <= xTileCount; xTile++) {
 			for (int yTile = 0; yTile <= yTileCount; yTile++) {
-				int width = (xTile == xTileCount) ? xRemainder : TEX_WIDTH;
-				int height = (yTile == yTileCount) ? yRemainder : TEX_HEIGHT;
-				int x = xPosition + (xTile * TEX_WIDTH);
-				int y = yStart - ((yTile + 1) * TEX_HEIGHT);
+				float width = (xTile == xTileCount) ? xRemainder : TEX_WIDTH;
+				float height = (yTile == yTileCount) ? yRemainder : TEX_HEIGHT;
+				float x = xPosition + (xTile * TEX_WIDTH);
+				float y = yStart - ((yTile + 1) * TEX_HEIGHT);
 				if (width > 0 && height > 0) {
-					int maskTop = TEX_HEIGHT - height;
-					int maskRight = TEX_WIDTH - width;
+					float maskTop = TEX_HEIGHT - height;
+					float maskRight = TEX_WIDTH - width;
 
 					drawTextureWithMasking(matrix, x, y, sprite, maskTop, maskRight, 100);
 				}
@@ -379,7 +379,7 @@ public class DisplayHelper implements IDisplayHelper {
 		RenderSystem.color4f(red, green, blue, alpha);
 	}
 
-	private static void drawTextureWithMasking(Matrix4f matrix, float xCoord, float yCoord, TextureAtlasSprite textureSprite, int maskTop, int maskRight, float zLevel) {
+	private static void drawTextureWithMasking(Matrix4f matrix, float xCoord, float yCoord, TextureAtlasSprite textureSprite, float maskTop, float maskRight, float zLevel) {
 		float uMin = textureSprite.getMinU();
 		float uMax = textureSprite.getMaxU();
 		float vMin = textureSprite.getMinV();

@@ -5,9 +5,9 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.config.WailaConfig;
 import mcp.mobius.waila.api.ui.Element;
-import mcp.mobius.waila.api.ui.Size;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.util.math.vector.Vector2f;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -21,12 +21,12 @@ public class SubStringElement extends Element {
 	}
 
 	@Override
-	public Size getSize() {
-		return Size.ZERO;
+	public Vector2f getSize() {
+		return Vector2f.ZERO;
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, int x, int y, int maxX, int maxY) {
+	public void render(MatrixStack matrixStack, float x, float y, float maxX, float maxY) {
 		matrixStack.push();
 		FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
 		WailaConfig.ConfigOverlay.ConfigOverlayColor color = Waila.CONFIG.get().getOverlay().getColor();

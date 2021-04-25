@@ -4,10 +4,10 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.ui.Element;
-import mcp.mobius.waila.api.ui.Size;
 import mcp.mobius.waila.overlay.DisplayHelper;
 import mcp.mobius.waila.overlay.IconUI;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.vector.Vector2f;
 
 public class HealthElement extends Element {
 
@@ -20,17 +20,17 @@ public class HealthElement extends Element {
 	}
 
 	@Override
-	public Size getSize() {
+	public Vector2f getSize() {
 		float maxHearts = Waila.CONFIG.get().getGeneral().getMaxHeartsPerLine();
 
 		int heartsPerLine = (int) (Math.min(maxHearts, Math.ceil(maxHealth)));
 		int lineCount = (int) (Math.ceil(maxHealth / maxHearts));
 
-		return new Size(8 * heartsPerLine, 10 * lineCount);
+		return new Vector2f(8 * heartsPerLine, 10 * lineCount);
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, int x, int y, int maxX, int maxY) {
+	public void render(MatrixStack matrixStack, float x, float y, float maxX, float maxY) {
 		float maxHearts = Waila.CONFIG.get().getGeneral().getMaxHeartsPerLine();
 
 		int heartCount = MathHelper.ceil(maxHealth);

@@ -6,11 +6,11 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import mcp.mobius.waila.api.ui.Element;
-import mcp.mobius.waila.api.ui.Size;
 import mcp.mobius.waila.impl.Tooltip;
 import mcp.mobius.waila.impl.ui.BorderStyle;
 import mcp.mobius.waila.overlay.DisplayHelper;
 import mcp.mobius.waila.overlay.TooltipRenderer;
+import net.minecraft.util.math.vector.Vector2f;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -25,16 +25,16 @@ public class BoxElement extends Element {
 	}
 
 	@Override
-	public Size getSize() {
+	public Vector2f getSize() {
 		if (tooltip.getTooltip().isEmpty()) {
-			return Size.ZERO;
+			return Vector2f.ZERO;
 		}
-		Size size = tooltip.getSize();
-		return new Size(size.width + 2, size.height + 4);
+		Vector2f size = tooltip.getSize();
+		return new Vector2f(size.x + 2, size.y + 4);
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, int x, int y, int maxX, int maxY) {
+	public void render(MatrixStack matrixStack, float x, float y, float maxX, float maxY) {
 		if (tooltip.getTooltip().isEmpty()) {
 			return;
 		}

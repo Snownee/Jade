@@ -3,22 +3,22 @@ package mcp.mobius.waila.overlay.element;
 import com.mojang.blaze3d.matrix.MatrixStack;
 
 import mcp.mobius.waila.api.ui.Element;
-import mcp.mobius.waila.api.ui.Size;
+import net.minecraft.util.math.vector.Vector2f;
 
 public class SpacerElement extends Element {
 
-	private final Size dimension;
+	private final Vector2f dimension;
 
-	public SpacerElement(Size dimension) {
+	public SpacerElement(Vector2f dimension) {
 		this.dimension = dimension;
 	}
 
 	@Override
-	public Size getSize() {
+	public Vector2f getSize() {
 		return dimension;
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, int x, int y, int maxX, int maxY) {
+	public void render(MatrixStack matrixStack, float x, float y, float maxX, float maxY) {
 	}
 }

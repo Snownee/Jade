@@ -8,19 +8,19 @@ import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.config.WailaConfig.ConfigOverlay;
 import mcp.mobius.waila.api.event.WailaTooltipEvent;
 import mcp.mobius.waila.api.ui.IElement;
-import mcp.mobius.waila.api.ui.Size;
 import mcp.mobius.waila.impl.ObjectDataCenter;
 import mcp.mobius.waila.impl.Tooltip;
 import mcp.mobius.waila.impl.Tooltip.Line;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.math.vector.Vector2f;
 import net.minecraftforge.common.MinecraftForge;
 
 public class TooltipRenderer {
 
 	private final Tooltip tooltip;
 	private final boolean showIcon;
-	private final Size totalSize;
+	private final Vector2f totalSize;
 	IElement icon;
 
 	public TooltipRenderer(Tooltip tooltip, boolean showIcon) {
@@ -37,37 +37,37 @@ public class TooltipRenderer {
 		totalSize = computeSize();
 	}
 
-	public Size computeSize() {
-		int width = 0, height = 0;
+	public Vector2f computeSize() {
+		float width = 0, height = 0;
 		for (Line line : tooltip.lines) {
-			Size size = line.getSize();
-			width = Math.max(width, size.width);
-			height += size.height;
+			Vector2f size = line.getSize();
+			width = Math.max(width, size.x);
+			height += size.y;
 		}
 		if (hasIcon()) {
-			Size size = icon.getCachedSize();
-			width += 12 + size.width;
-			height = Math.max(height, size.height - 5);
+			Vector2f size = icon.getCachedSize();
+			width += 12 + size.x;
+			height = Math.max(height, size.y - 5);
 		} else {
 			width += 10;
 		}
 		height += 8;
-		return new Size(width, height);
+		return new Vector2f(width, height);
 	}
 
 	public void draw(MatrixStack matrixStack) {
 		Rectangle position = getPosition();
 
-		int x = 6;
+		float x = 6;
 		if (hasIcon()) {
-			x = icon.getCachedSize().width + 8;
+			x = icon.getCachedSize().x + 8;
 		}
-		int y = 6;
+		float y = 6;
 
 		for (Line line : tooltip.lines) {
-			Size size = line.getSize();
-			line.render(matrixStack, x, y, position.width, size.height);
-			y += size.height;
+			Vector2f size = line.getSize();
+			line.render(matrixStack, x, y, totalSize.x, size.y);
+			y += size.y;
 		}
 		position.width += x - 2;
 	}
@@ -87,10 +87,10 @@ public class TooltipRenderer {
 		//        int y = (int) (window.getScaledHeight() * (1.0F - overlay.getOverlayPosY()) - totalSize.height * overlay.getAnchorY());
 		int x = (int) (window.getScaledWidth() * overlay.tryFlip(overlay.getOverlayPosX()));
 		int y = (int) (window.getScaledHeight() * (1.0F - overlay.getOverlayPosY()));
-		return new Rectangle(x, y, totalSize.width, totalSize.height);
+		return new Rectangle(x, y, (int) totalSize.x, (int) totalSize.y);
 	}
 
-	public Size getSize() {
+	public Vector2f getSize() {
 		return totalSize;
 	}
 

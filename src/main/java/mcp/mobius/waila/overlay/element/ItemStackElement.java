@@ -3,11 +3,11 @@ package mcp.mobius.waila.overlay.element;
 import com.mojang.blaze3d.matrix.MatrixStack;
 
 import mcp.mobius.waila.api.ui.Element;
-import mcp.mobius.waila.api.ui.Size;
 import mcp.mobius.waila.overlay.DisplayHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.vector.Vector2f;
 
 public class ItemStackElement extends Element {
 
@@ -32,13 +32,13 @@ public class ItemStackElement extends Element {
 	}
 
 	@Override
-	public Size getSize() {
+	public Vector2f getSize() {
 		int size = MathHelper.floor(18 * scale);
-		return new Size(size, size);
+		return new Vector2f(size, size);
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, int x, int y, int maxX, int maxY) {
+	public void render(MatrixStack matrixStack, float x, float y, float maxX, float maxY) {
 		if (stack.isEmpty())
 			return;
 		RenderHelper.enableStandardItemLighting();

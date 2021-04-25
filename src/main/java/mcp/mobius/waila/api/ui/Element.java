@@ -1,22 +1,23 @@
 package mcp.mobius.waila.api.ui;
 
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.vector.Vector2f;
 
 public abstract class Element implements IElement {
 
 	protected Align align = Align.LEFT;
-	protected Size translate = Size.ZERO;
+	protected Vector2f translation = Vector2f.ZERO;
 	protected ResourceLocation tag;
-	protected Size size;
+	protected Vector2f size;
 
 	@Override
-	public IElement size(Size size) {
+	public IElement size(Vector2f size) {
 		this.size = size;
 		return this;
 	}
 
 	@Override
-	public Size getCachedSize() {
+	public Vector2f getCachedSize() {
 		if (size == null)
 			size = getSize();
 		return size;
@@ -34,17 +35,14 @@ public abstract class Element implements IElement {
 	}
 
 	@Override
-	public IElement translate(int x, int y) {
-		if (x == 0 && y == 0)
-			this.translate = Size.ZERO;
-		else
-			this.translate = new Size(x, y);
+	public IElement translate(Vector2f translation) {
+		this.translation = translation;
 		return this;
 	}
 
 	@Override
-	public Size getTranslation() {
-		return translate;
+	public Vector2f getTranslation() {
+		return translation;
 	}
 
 	@Override

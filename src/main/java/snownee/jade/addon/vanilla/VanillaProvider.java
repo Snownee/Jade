@@ -31,6 +31,7 @@ import net.minecraft.tileentity.LecternTileEntity;
 import net.minecraft.tileentity.MobSpawnerTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.vector.Vector2f;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -111,7 +112,7 @@ public class VanillaProvider implements IComponentProvider, IServerDataProvider<
 				if (!stack.isEmpty()) {
 					IElementHelper helper = tooltip.getElementHelper();
 					tooltip.add(helper.item(stack, 0.75f));
-					tooltip.append(helper.text(stack.getDisplayName()).translate(3, 3));
+					tooltip.append(helper.text(stack.getDisplayName()).translate(new Vector2f(3, 3)));
 				}
 			}
 		}

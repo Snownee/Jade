@@ -27,7 +27,6 @@ import mcp.mobius.waila.api.config.IPluginConfig;
 import mcp.mobius.waila.api.ui.IElement;
 import mcp.mobius.waila.api.ui.IElement.Align;
 import mcp.mobius.waila.api.ui.IElementHelper;
-import mcp.mobius.waila.api.ui.Size;
 import mcp.mobius.waila.overlay.element.SubStringElement;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.resources.I18n;
@@ -37,6 +36,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.resources.IResourceManager;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector2f;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -62,7 +62,7 @@ public class HarvestToolProvider implements IComponentProvider, ISelectiveResour
 	private static final TestCase UNBREAKABLE = new TestCase(ItemStack.EMPTY, "unbreakable", null);
 
 	private static final ITextComponent UNBREAKABLE_TEXT = new TranslationTextComponent("jade.harvest_tool.unbreakable").mergeStyle(TextFormatting.DARK_RED);
-	private static final Size ITEM_SIZE = new Size(13, 0);
+	private static final Vector2f ITEM_SIZE = new Vector2f(13, 0);
 
 	static {
 		/* off */
@@ -192,23 +192,23 @@ public class HarvestToolProvider implements IComponentProvider, ISelectiveResour
 		int offsetY = 0;
 		if (!config.get(VanillaPlugin.HARVEST_TOOL_NEW_LINE)) {
 			offsetY = -3;
-			item.translate(0, offsetY).size(ITEM_SIZE);
+			item.translate(new Vector2f(0, offsetY)).size(ITEM_SIZE);
 		}
 		elements.add(item);
 
 		boolean canHarvest = ForgeHooks.canHarvestBlock(state, accessor.getPlayer(), accessor.getWorld(), accessor.getPosition());
 		if (state.getRequiresTool()) {
 			String sub = canHarvest ? "§a✔" : "§4✕";
-			elements.add(new SubStringElement(sub).translate(-5, 7 + offsetY));
+			elements.add(new SubStringElement(sub).translate(new Vector2f(-5, 7 + offsetY)));
 		} else {
 			ItemStack held = accessor.getPlayer().getHeldItemMainhand();
 			if (canHarvest && ForgeHooks.isToolEffective(accessor.getWorld(), accessor.getPosition(), held)) {
-				elements.add(new SubStringElement("§a✔").translate(-5, 7 + offsetY));
+				elements.add(new SubStringElement("§a✔").translate(new Vector2f(-5, 7 + offsetY)));
 			}
 		}
 
 		if (!name.isEmpty()) {
-			elements.add(helper.text(new StringTextComponent(name)).translate(3, offsetY + 3));
+			elements.add(helper.text(new StringTextComponent(name)).translate(new Vector2f(3, offsetY + 3)));
 		}
 		return elements;
 	}

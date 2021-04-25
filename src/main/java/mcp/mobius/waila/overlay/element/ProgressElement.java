@@ -6,7 +6,6 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 
 import mcp.mobius.waila.api.ui.Element;
 import mcp.mobius.waila.api.ui.IProgressStyle;
-import mcp.mobius.waila.api.ui.Size;
 import mcp.mobius.waila.impl.ui.BorderStyle;
 import mcp.mobius.waila.impl.ui.ProgressStyle;
 import mcp.mobius.waila.overlay.DisplayHelper;
@@ -15,6 +14,7 @@ import mcp.mobius.waila.overlay.WailaTickHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.vector.Vector2f;
 import net.minecraft.util.text.ITextComponent;
 
 public class ProgressElement extends Element {
@@ -34,7 +34,7 @@ public class ProgressElement extends Element {
 	}
 
 	@Override
-	public Size getSize() {
+	public Vector2f getSize() {
 		int height = text == null ? 8 : 14;
 		int width = 0;
 		if (borderStyle != null) {
@@ -49,14 +49,14 @@ public class ProgressElement extends Element {
 			track = WailaTickHandler.instance().progressTracker.createInfo(getTag(), progress, width);
 			width = track.getWidth();
 		}
-		return new Size(width, height);
+		return new Vector2f(width, height);
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, int x, int y, int maxX, int maxY) {
-		Size size = getCachedSize();
+	public void render(MatrixStack matrixStack, float x, float y, float maxX, float maxY) {
+		Vector2f size = getCachedSize();
 		if (borderStyle != null) {
-			DisplayHelper.INSTANCE.drawBorder(matrixStack, x, y, maxX - 2, y + size.height - 2, borderStyle);
+			DisplayHelper.INSTANCE.drawBorder(matrixStack, x, y, maxX - 2, y + size.y - 2, borderStyle);
 		}
 		int b = borderStyle.width;
 		float w = maxX - x - b * 2 - 2;
@@ -65,7 +65,7 @@ public class ProgressElement extends Element {
 			progress = track.tick(Minecraft.getInstance().getRenderPartialTicks());
 		}
 		w *= progress;
-		style.render(matrixStack, x + b, y + b, w, size.height - b * 2 - 2, text);
+		style.render(matrixStack, x + b, y + b, w, size.y - b * 2 - 2, text);
 	}
 
 }

@@ -23,6 +23,7 @@ import net.minecraft.tileentity.AbstractFurnaceTileEntity;
 import net.minecraft.tileentity.EnderChestTileEntity;
 import net.minecraft.tileentity.LockableTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.vector.Vector2f;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.LazyOptional;
@@ -84,7 +85,7 @@ public class InventoryProvider implements IComponentProvider, IServerDataProvide
 
 				elements.add(helper.item(stack).tag(VanillaPlugin.INVENTORY));
 				if (showName) {
-					elements.add(helper.text(stack.getDisplayName()).translate(0, 4).tag(VanillaPlugin.INVENTORY));
+					elements.add(helper.text(stack.getDisplayName()).translate(new Vector2f(0, 4)).tag(VanillaPlugin.INVENTORY));
 				}
 				drawnCount += 1;
 			}

@@ -14,59 +14,59 @@ import mcp.mobius.waila.api.ui.IBorderStyle;
 import mcp.mobius.waila.api.ui.IElement;
 import mcp.mobius.waila.api.ui.IElement.Align;
 import mcp.mobius.waila.api.ui.IElementHelper;
-import mcp.mobius.waila.api.ui.Size;
 import mcp.mobius.waila.impl.ui.BorderStyle;
 import mcp.mobius.waila.impl.ui.ElementHelper;
 import mcp.mobius.waila.overlay.DisplayHelper;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.vector.Vector2f;
 
 public class Tooltip implements ITooltip {
 
 	public static class Line {
 		private final List<IElement> left = new ArrayList<>();
 		private final List<IElement> right = new ArrayList<>();
-		private Size size;
+		private Vector2f size;
 
 		public List<IElement> getAlignedElements(Align align) {
 			return align == Align.LEFT ? left : right;
 		}
 
-		public Size getSize() {
+		public Vector2f getSize() {
 			if (size == null) {
-				int width = 0, height = 0;
+				float width = 0, height = 0;
 				for (IElement element : left) {
-					Size elementSize = element.getCachedSize();
-					width += elementSize.width;
-					height = Math.max(height, elementSize.height);
+					Vector2f elementSize = element.getCachedSize();
+					width += elementSize.x;
+					height = Math.max(height, elementSize.y);
 				}
 				for (IElement element : right) {
-					Size elementSize = element.getCachedSize();
-					width += elementSize.width;
-					height = Math.max(height, elementSize.height);
+					Vector2f elementSize = element.getCachedSize();
+					width += elementSize.x;
+					height = Math.max(height, elementSize.y);
 				}
-				size = new Size(width, height);
+				size = new Vector2f(width, height);
 			}
 			return size;
 		}
 
-		public void render(MatrixStack matrixStack, int x, int y, int maxWidth, int maxHeight) {
-			int ox = maxWidth, oy = y;
+		public void render(MatrixStack matrixStack, float x, float y, float maxWidth, float y2) {
+			float ox = maxWidth, oy = y;
 			for (int i = right.size() - 1; i >= 0; i--) {
 				IElement element = right.get(i);
-				Size translate = element.getTranslation();
-				Size size = element.getCachedSize();
-				ox -= size.width;
+				Vector2f translate = element.getTranslation();
+				Vector2f size = element.getCachedSize();
+				ox -= size.x;
 				drawBorder(matrixStack, ox, oy, element);
-				element.render(matrixStack, ox + translate.width, oy + translate.height, x + maxWidth, y + maxHeight);
+				element.render(matrixStack, ox + translate.x, oy + translate.y, x + maxWidth, y + y2);
 			}
 			maxWidth = ox;
 			ox = x;
 			for (IElement element : left) {
-				Size translate = element.getTranslation();
-				Size size = element.getCachedSize();
+				Vector2f translate = element.getTranslation();
+				Vector2f size = element.getCachedSize();
 				drawBorder(matrixStack, ox, oy, element);
-				element.render(matrixStack, ox + translate.width, oy + translate.height, maxWidth, y + maxHeight);
-				ox += size.width;
+				element.render(matrixStack, ox + translate.x, oy + translate.y, maxWidth, y + y2);
+				ox += size.x;
 			}
 		}
 	}
@@ -130,13 +130,13 @@ public class Tooltip implements ITooltip {
 	private static final IBorderStyle RED = new BorderStyle().color(0x88FF0000);
 	private static final IBorderStyle BLUE = new BorderStyle().color(0x880000FF);
 
-	public static void drawBorder(MatrixStack matrixStack, int x, int y, IElement element) {
+	public static void drawBorder(MatrixStack matrixStack, float x, float y, IElement element) {
 		if (Waila.CONFIG.get().getGeneral().isDebug()) {
-			Size translate = element.getTranslation();
-			Size size = element.getCachedSize();
-			DisplayHelper.INSTANCE.drawBorder(matrixStack, x, y, x + size.width, y + size.height, RED);
-			if (translate != Size.ZERO) {
-				DisplayHelper.INSTANCE.drawBorder(matrixStack, x + translate.width, y + translate.height, x + translate.width + size.width, y + translate.height + size.height, BLUE);
+			Vector2f translate = element.getTranslation();
+			Vector2f size = element.getCachedSize();
+			DisplayHelper.INSTANCE.drawBorder(matrixStack, x, y, x + size.x, y + size.y, RED);
+			if (Vector2f.ZERO.equals(translate)) {
+				DisplayHelper.INSTANCE.drawBorder(matrixStack, x + translate.x, y + translate.y, x + translate.x + size.x, y + translate.y + size.y, BLUE);
 			}
 		}
 	}
