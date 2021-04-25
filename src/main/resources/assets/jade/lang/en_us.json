@@ -38,7 +38,6 @@
   "config.waila.hide_from_debug": "Hide from Debug",
   "config.waila.hide_from_debug_desc": "Hide the tooltip while the debug menu is open",
   "config.waila.display_item": "Display Icon",
-  "config.waila.display_item_desc": "Display the item gotten from the block",
   "config.waila.tts": "Enable TTS",
   "config.waila.tts_desc": "Read out block and entity names with the system's text to speech processor",
   "config.waila.reach_distance": "Reach Distance",

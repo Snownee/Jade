@@ -35,7 +35,6 @@
   "config.waila.hide_from_debug": "Скрыть при отладке",
   "config.waila.hide_from_debug_desc": "Скрывать подсказки если меню отладки открыто",
   "config.waila.display_item": "Отображать предмет",
-  "config.waila.display_item_desc": "Отображает предмет, получаемый из блока",
   "config.waila.tts": "Включить TTS",
   "config.waila.tts_desc": "Читает отображаемый подсказкой текст используя системный речевой модуль",
 

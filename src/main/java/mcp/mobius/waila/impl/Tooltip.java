@@ -135,7 +135,7 @@ public class Tooltip implements ITooltip {
 			Vector2f translate = element.getTranslation();
 			Vector2f size = element.getCachedSize();
 			DisplayHelper.INSTANCE.drawBorder(matrixStack, x, y, x + size.x, y + size.y, RED);
-			if (Vector2f.ZERO.equals(translate)) {
+			if (!Vector2f.ZERO.equals(translate)) {
 				DisplayHelper.INSTANCE.drawBorder(matrixStack, x + translate.x, y + translate.y, x + translate.x + size.x, y + translate.y + size.y, BLUE);
 			}
 		}

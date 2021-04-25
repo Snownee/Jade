@@ -19,7 +19,7 @@ public class Jade {
 
 	public Jade() {
 		ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.DISPLAYTEST, () -> Pair.of(() -> FMLNetworkConstants.IGNORESERVERONLY, (a, b) -> true));
-		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, JadeCommonConfig.spec);
+		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, JadeCommonConfig.spec, "jade-addons.toml");
 		FMLJavaModLoadingContext.get().getModEventBus().register(JadeCommonConfig.class);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::init);
 		if (FMLEnvironment.dist.isClient()) {

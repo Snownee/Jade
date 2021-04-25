@@ -35,7 +35,6 @@
   "config.waila.hide_from_debug": "Verstecke im Debug",
   "config.waila.hide_from_debug_desc": "Verstecke die Schnellinfo während das Debug-Menü offen ist",
   "config.waila.display_item": "Zeige Item",
-  "config.waila.display_item_desc": "Zeige das Item des Blockes",
   "config.waila.tts": "Aktiviere TTS",
   "config.waila.tts_desc": "Lies den Block- und Kreaturname mit dem Text To Speech Prozessor vom System vor",
  
