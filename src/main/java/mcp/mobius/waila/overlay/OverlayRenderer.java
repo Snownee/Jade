@@ -83,7 +83,13 @@ public class OverlayRenderer {
 		matrixStack.push();
 		saveGLState();
 
-		WailaRenderEvent.Pre preEvent = new WailaRenderEvent.Pre(ObjectDataCenter.get(), tooltip.getPosition(), matrixStack);
+		Rectangle position = tooltip.getPosition();
+		ConfigOverlay overlay = Waila.CONFIG.get().getOverlay();
+		if (!overlay.getSquare()) {
+			position.width += 2;
+			position.height += 2;
+		}
+		WailaRenderEvent.Pre preEvent = new WailaRenderEvent.Pre(ObjectDataCenter.get(), position, matrixStack);
 		if (MinecraftForge.EVENT_BUS.post(preEvent)) {
 			loadGLState();
 			matrixStack.pop();
@@ -95,7 +101,7 @@ public class OverlayRenderer {
 		RenderSystem.disableLighting();
 		RenderSystem.disableDepthTest();
 
-		Rectangle position = preEvent.getPosition();
+		position = preEvent.getPosition();
 		ConfigOverlay configOverlay = Waila.CONFIG.get().getOverlay();
 		if (!configOverlay.getSquare()) {
 			position.x++;

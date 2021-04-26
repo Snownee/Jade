@@ -42,7 +42,7 @@ public class BoxElement extends Element {
 		RenderSystem.enableBlend();
 		matrixStack.push();
 		matrixStack.translate(x, y, 0);
-		DisplayHelper.INSTANCE.drawBorder(matrixStack, 0, 0, rect.width + 2, rect.height + 2, border);
+		DisplayHelper.INSTANCE.drawBorder(matrixStack, 0, 0, rect.width, rect.height, border);
 		tooltip.draw(matrixStack);
 		matrixStack.pop();
 	}

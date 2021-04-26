@@ -101,10 +101,6 @@ public class TooltipRenderer {
 		int y = (int) (window.getScaledHeight() * (1.0F - overlay.getOverlayPosY()));
 		int width = (int) totalSize.x;
 		int height = (int) totalSize.y;
-		if (!overlay.getSquare()) {
-			width += 2;
-			height += 2;
-		}
 		return new Rectangle(x, y, width, height);
 	}
 
