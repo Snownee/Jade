@@ -20,7 +20,7 @@ public class VillagerProfessionProvider implements IEntityComponentProvider {
 	private static final ITextComponent field_243352_C = new StringTextComponent(" - ");
 
 	@Override
-	public void append(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
+	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		if (!config.get(VanillaPlugin.PROFESSION)) {
 			return;
 		}

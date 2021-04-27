@@ -12,7 +12,7 @@ public class PaintingProvider implements IEntityComponentProvider {
 	public static final PaintingProvider INSTANCE = new PaintingProvider();
 
 	@Override
-	public void append(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
+	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		if (!config.get(VanillaPlugin.PAINTING)) {
 			return;
 		}

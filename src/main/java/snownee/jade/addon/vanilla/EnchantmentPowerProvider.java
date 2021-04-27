@@ -17,7 +17,7 @@ public class EnchantmentPowerProvider implements IComponentProvider {
 	public static final EnchantmentPowerProvider INSTANCE = new EnchantmentPowerProvider();
 
 	@Override
-	public void append(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
+	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		World world = accessor.getWorld();
 		BlockPos pos = accessor.getPosition();
 		float power = 0;

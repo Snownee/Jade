@@ -23,7 +23,7 @@ public class FurnaceProvider implements IComponentProvider, IServerDataProvider<
 	public static final FurnaceProvider INSTANCE = new FurnaceProvider();
 
 	@Override
-	public void append(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
+	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		if (!config.get(VanillaPlugin.FURNACE))
 			return;
 

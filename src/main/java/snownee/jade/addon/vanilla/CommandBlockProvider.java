@@ -19,7 +19,7 @@ public class CommandBlockProvider implements IComponentProvider, IServerDataProv
 	public static final CommandBlockProvider INSTANCE = new CommandBlockProvider();
 
 	@Override
-	public void append(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
+	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		if (!config.get(VanillaPlugin.COMMAND_BLOCK) || !accessor.getServerData().contains("Command")) {
 			return;
 		}

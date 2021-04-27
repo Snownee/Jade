@@ -21,7 +21,7 @@ public class ChestedHorseProvider implements IEntityComponentProvider, IServerDa
 	public static final ChestedHorseProvider INSTANCE = new ChestedHorseProvider();
 
 	@Override
-	public void append(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
+	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		if (!config.get(VanillaPlugin.HORSE_INVENTORY)) {
 			return;
 		}

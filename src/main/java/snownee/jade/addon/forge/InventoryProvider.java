@@ -43,7 +43,7 @@ public class InventoryProvider implements IComponentProvider, IServerDataProvide
 	public static final Set<String> INVENTORY_IGNORE = Collections.synchronizedSet(Sets.newHashSet());
 
 	@Override
-	public void append(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
+	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		if (!config.get(VanillaPlugin.INVENTORY) || accessor.getTileEntity() == null || accessor.getTileEntity() instanceof AbstractFurnaceTileEntity)
 			return;
 

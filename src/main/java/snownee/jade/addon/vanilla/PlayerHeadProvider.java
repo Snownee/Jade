@@ -20,7 +20,7 @@ public class PlayerHeadProvider implements IComponentProvider {
 	static final ResourceLocation OBJECT_NAME_TAG = new ResourceLocation(Waila.MODID, "object_name");
 
 	@Override
-	public void append(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
+	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		if (!config.get(VanillaPlugin.PLAYER_HEAD)) {
 			return;
 		}

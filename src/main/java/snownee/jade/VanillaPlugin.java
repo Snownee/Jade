@@ -196,8 +196,8 @@ public class VanillaPlugin implements IWailaPlugin {
 		registrar.addConfig(JUKEBOX, true);
 		registrar.addConfig(LECTERN, true);
 
-		registrar.registerStackProvider(VanillaProvider.INSTANCE, SilverfishBlock.class);
-		registrar.registerStackProvider(VanillaProvider.INSTANCE, CropsBlock.class);
+		registrar.registerIconProvider(VanillaProvider.INSTANCE, SilverfishBlock.class);
+		registrar.registerIconProvider(VanillaProvider.INSTANCE, CropsBlock.class);
 		registrar.registerComponentProvider(VanillaProvider.INSTANCE, TooltipPosition.HEAD, SilverfishBlock.class);
 		registrar.registerComponentProvider(VanillaProvider.INSTANCE, TooltipPosition.HEAD, SpawnerBlock.class);
 		registrar.registerComponentProvider(VanillaProvider.INSTANCE, TooltipPosition.BODY, CropsBlock.class);

@@ -18,7 +18,7 @@ public class BreedingProvider implements IEntityComponentProvider, IServerDataPr
 	public static final BreedingProvider INSTANCE = new BreedingProvider();
 
 	@Override
-	public void append(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
+	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		if (!config.get(VanillaPlugin.MOB_BREEDING) || !accessor.getServerData().contains("BreedingCD", Constants.NBT.TAG_INT)) {
 			return;
 		}

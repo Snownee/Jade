@@ -15,7 +15,7 @@ public class HorseProvider implements IEntityComponentProvider {
 	public static final HorseProvider INSTANCE = new HorseProvider();
 
 	@Override
-	public void append(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
+	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		if (!config.get(VanillaPlugin.HORSE_STAT)) {
 			return;
 		}

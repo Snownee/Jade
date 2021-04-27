@@ -37,7 +37,7 @@ public interface IRegistrar {
      * @param dataProvider The data provider instance
      * @param block The highest level class to apply to
      */
-	void registerStackProvider(IComponentProvider dataProvider, Class<? extends Block> block);
+	void registerIconProvider(IComponentProvider dataProvider, Class<? extends Block> block);
 
 	/**
      * Registers an {@link IComponentProvider} instance for appending {@link net.minecraft.util.text.ITextComponent} to
@@ -65,7 +65,7 @@ public interface IRegistrar {
      * @param dataProvider The data provider instance
      * @param entity The highest level class to apply to
      */
-	void registerEntityStackProvider(IEntityComponentProvider dataProvider, Class<? extends Entity> entity);
+	void registerIconProvider(IEntityComponentProvider dataProvider, Class<? extends Entity> entity);
 
 	/**
      * Registers an {@link IEntityComponentProvider} instance for appending {@link net.minecraft.util.text.ITextComponent}

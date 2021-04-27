@@ -26,7 +26,7 @@ public class PotionEffectsProvider implements IEntityComponentProvider, IServerD
 	public static final PotionEffectsProvider INSTANCE = new PotionEffectsProvider();
 
 	@Override
-	public void append(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
+	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		if (!config.get(VanillaPlugin.EFFECTS) || !accessor.getServerData().contains("Potions")) {
 			return;
 		}

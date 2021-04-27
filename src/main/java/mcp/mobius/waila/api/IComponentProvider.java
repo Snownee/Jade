@@ -51,6 +51,6 @@ public interface IComponentProvider {
      * @param accessor   Contains most of the relevant information about the current environment.
      * @param config     Current configuration of Waila.
      */
-	void append(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config);
+	void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config);
 
 }

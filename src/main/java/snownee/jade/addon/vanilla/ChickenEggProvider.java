@@ -17,7 +17,7 @@ public class ChickenEggProvider implements IEntityComponentProvider, IServerData
 	public static final ChickenEggProvider INSTANCE = new ChickenEggProvider();
 
 	@Override
-	public void append(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
+	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		if (!config.get(VanillaPlugin.CHICKEN_EGG) || !accessor.getServerData().contains("NextEgg")) {
 			return;
 		}

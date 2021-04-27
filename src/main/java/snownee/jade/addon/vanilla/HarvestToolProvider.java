@@ -128,7 +128,7 @@ public class HarvestToolProvider implements IComponentProvider, ISelectiveResour
 	}
 
 	@Override
-	public void append(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
+	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		PlayerEntity player = accessor.getPlayer();
 		if (player.isCreative() || player.isSpectator()) {
 			return;

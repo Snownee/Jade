@@ -21,7 +21,7 @@ public class BeehiveProvider implements IComponentProvider, IServerDataProvider<
 	public static final BeehiveProvider INSTANCE = new BeehiveProvider();
 
 	@Override
-	public void append(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
+	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		if (!config.get(VanillaPlugin.BEEHIVE)) {
 			return;
 		}

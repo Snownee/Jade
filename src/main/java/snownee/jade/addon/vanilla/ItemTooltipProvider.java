@@ -19,7 +19,7 @@ public class ItemTooltipProvider implements IEntityComponentProvider {
 
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public void append(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
+	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		if (!config.get(VanillaPlugin.ITEM_TOOLTIP)) {
 			return;
 		}

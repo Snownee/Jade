@@ -31,7 +31,7 @@ public class BaseBlockProvider implements IComponentProvider, IServerDataProvide
 	public static final BaseBlockProvider INSTANCE = new BaseBlockProvider();
 
 	@Override
-	public void append(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
+	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		TooltipPosition position = accessor.getTooltipPosition();
 		if (position == TooltipPosition.HEAD) {
 			appendHead(tooltip, accessor, config);

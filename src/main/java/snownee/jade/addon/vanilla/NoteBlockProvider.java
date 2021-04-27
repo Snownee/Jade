@@ -19,7 +19,7 @@ public class NoteBlockProvider implements IComponentProvider {
 	private static final TextFormatting[] OCTAVE = { TextFormatting.WHITE, TextFormatting.YELLOW, TextFormatting.GOLD };
 
 	@Override
-	public void append(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
+	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		if (!config.get(VanillaPlugin.NOTE_BLOCK)) {
 			return;
 		}

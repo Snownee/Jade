@@ -34,7 +34,7 @@ public class ForgeCapabilityProvider implements IComponentProvider, IServerDataP
 	public static final ForgeCapabilityProvider INSTANCE = new ForgeCapabilityProvider();
 
 	@Override
-	public void append(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
+	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		TileEntity tile = accessor.getTileEntity();
 		if (tile != null) {
 			if (config.get(VanillaPlugin.FORGE_ENERGY)) {

@@ -24,7 +24,7 @@ public class BaseEntityProvider implements IEntityComponentProvider {
 	static final IEntityComponentProvider INSTANCE = new BaseEntityProvider();
 
 	@Override
-	public void append(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
+	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		TooltipPosition position = accessor.getTooltipPosition();
 		if (position == TooltipPosition.HEAD) {
 			appendHead(tooltip, accessor, config);

@@ -18,7 +18,7 @@ public class AgeableEntityProvider implements IEntityComponentProvider, IServerD
 	public static final AgeableEntityProvider INSTANCE = new AgeableEntityProvider();
 
 	@Override
-	public void append(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
+	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		if (!config.get(VanillaPlugin.MOB_GROWTH) || !accessor.getServerData().contains("GrowingTime", Constants.NBT.TAG_INT)) {
 			return;
 		}

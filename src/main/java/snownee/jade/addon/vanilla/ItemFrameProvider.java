@@ -12,7 +12,7 @@ public class ItemFrameProvider implements IEntityComponentProvider {
 	public static final ItemFrameProvider INSTANCE = new ItemFrameProvider();
 
 	@Override
-	public void append(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
+	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		if (!config.get(VanillaPlugin.ITEM_FRAME)) {
 			return;
 		}

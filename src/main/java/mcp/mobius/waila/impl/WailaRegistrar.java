@@ -63,7 +63,7 @@ public class WailaRegistrar implements IRegistrar {
 	/* REGISTRATION METHODS */
 
 	@Override
-	public void registerStackProvider(IComponentProvider dataProvider, Class<? extends Block> block) {
+	public void registerIconProvider(IComponentProvider dataProvider, Class<? extends Block> block) {
 		blockStackProviders.register(block, dataProvider);
 	}
 
@@ -78,7 +78,7 @@ public class WailaRegistrar implements IRegistrar {
 	}
 
 	@Override
-	public void registerEntityStackProvider(IEntityComponentProvider dataProvider, Class<? extends Entity> entity) {
+	public void registerIconProvider(IEntityComponentProvider dataProvider, Class<? extends Entity> entity) {
 		entityStackProviders.register(entity, dataProvider);
 	}
 

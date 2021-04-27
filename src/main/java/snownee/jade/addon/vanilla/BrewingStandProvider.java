@@ -22,7 +22,7 @@ public class BrewingStandProvider implements IComponentProvider, IServerDataProv
 	public static final BrewingStandProvider INSTANCE = new BrewingStandProvider();
 
 	@Override
-	public void append(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
+	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		if (!config.get(VanillaPlugin.BREWING_STAND) || !accessor.getServerData().contains("BrewingStand", Constants.NBT.TAG_COMPOUND)) {
 			return;
 		}

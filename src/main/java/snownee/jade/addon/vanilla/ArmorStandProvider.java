@@ -17,7 +17,7 @@ public class ArmorStandProvider implements IEntityComponentProvider {
 	public static final ArmorStandProvider INSTANCE = new ArmorStandProvider();
 
 	@Override
-	public void append(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
+	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		if (!config.get(VanillaPlugin.ARMOR_STAND)) {
 			return;
 		}

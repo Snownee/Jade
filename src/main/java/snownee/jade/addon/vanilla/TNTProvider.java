@@ -15,7 +15,7 @@ public class TNTProvider implements IComponentProvider {
 	public static final TNTProvider INSTANCE = new TNTProvider();
 
 	@Override
-	public void append(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
+	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		if (!config.get(VanillaPlugin.TNT_STABILITY)) {
 			return;
 		}

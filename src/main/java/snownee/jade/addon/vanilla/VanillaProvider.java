@@ -68,7 +68,7 @@ public class VanillaProvider implements IComponentProvider, IServerDataProvider<
 	}
 
 	@Override
-	public void append(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
+	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		if (accessor.getTooltipPosition() == TooltipPosition.HEAD) {
 			appendHead(tooltip, accessor, config);
 			return;

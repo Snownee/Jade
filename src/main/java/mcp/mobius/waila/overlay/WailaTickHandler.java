@@ -165,7 +165,7 @@ public class WailaTickHandler {
 		List<IComponentProvider> providers = WailaRegistrar.INSTANCE.getBlockProviders(block, position);
 		for (IComponentProvider provider : providers) {
 			try {
-				provider.append(tooltip, accessor, PluginConfig.INSTANCE);
+				provider.appendTooltip(tooltip, accessor, PluginConfig.INSTANCE);
 			} catch (Throwable e) {
 				WailaExceptionHandler.handleErr(e, provider.getClass().toString(), tooltip);
 			}
@@ -176,7 +176,7 @@ public class WailaTickHandler {
 		List<IEntityComponentProvider> providers = WailaRegistrar.INSTANCE.getEntityProviders(accessor.getEntity(), position);
 		for (IEntityComponentProvider provider : providers) {
 			try {
-				provider.append(tooltip, accessor, PluginConfig.INSTANCE);
+				provider.appendTooltip(tooltip, accessor, PluginConfig.INSTANCE);
 			} catch (Throwable e) {
 				WailaExceptionHandler.handleErr(e, provider.getClass().toString(), tooltip);
 			}
