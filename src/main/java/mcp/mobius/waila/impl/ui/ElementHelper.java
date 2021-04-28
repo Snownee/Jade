@@ -8,15 +8,11 @@ import mcp.mobius.waila.api.ui.IElement;
 import mcp.mobius.waila.api.ui.IElementHelper;
 import mcp.mobius.waila.api.ui.IProgressStyle;
 import mcp.mobius.waila.impl.Tooltip;
-import mcp.mobius.waila.overlay.element.BoxElement;
-import mcp.mobius.waila.overlay.element.ItemStackElement;
-import mcp.mobius.waila.overlay.element.ProgressElement;
-import mcp.mobius.waila.overlay.element.SpacerElement;
-import mcp.mobius.waila.overlay.element.TextElement;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector2f;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.fluids.FluidStack;
 import snownee.jade.Jade;
 
 public class ElementHelper implements IElementHelper {
@@ -35,8 +31,13 @@ public class ElementHelper implements IElementHelper {
 	}
 
 	@Override
-	public IElement item(ItemStack stack, float scale) {
-		return ItemStackElement.of(stack, scale);
+	public IElement item(ItemStack itemStack, float scale) {
+		return ItemStackElement.of(itemStack, scale);
+	}
+
+	@Override
+	public IElement fluid(FluidStack fluidStack) {
+		return new FluidStackElement(fluidStack);
 	}
 
 	@Override

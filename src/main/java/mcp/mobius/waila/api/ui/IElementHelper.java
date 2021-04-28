@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 import mcp.mobius.waila.api.ITooltip;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.fluids.FluidStack;
 
 public interface IElementHelper {
 
@@ -16,7 +17,9 @@ public interface IElementHelper {
 		return item(stack, 1);
 	}
 
-	IElement item(ItemStack stack, float scale);
+	IElement item(ItemStack itemStack, float scale);
+
+	IElement fluid(FluidStack fluidStack);
 
 	IElement progress(float progress, @Nullable ITextComponent text, IProgressStyle style, IBorderStyle borderStyle);
 

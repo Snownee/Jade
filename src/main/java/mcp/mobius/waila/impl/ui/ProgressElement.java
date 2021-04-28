@@ -1,4 +1,4 @@
-package mcp.mobius.waila.overlay.element;
+package mcp.mobius.waila.impl.ui;
 
 import javax.annotation.Nullable;
 
@@ -6,8 +6,6 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 
 import mcp.mobius.waila.api.ui.Element;
 import mcp.mobius.waila.api.ui.IProgressStyle;
-import mcp.mobius.waila.impl.ui.BorderStyle;
-import mcp.mobius.waila.impl.ui.ProgressStyle;
 import mcp.mobius.waila.overlay.DisplayHelper;
 import mcp.mobius.waila.overlay.ProgressTracker.TrackInfo;
 import mcp.mobius.waila.overlay.WailaTickHandler;

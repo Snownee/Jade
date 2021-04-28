@@ -1,4 +1,4 @@
-package mcp.mobius.waila.overlay.element;
+package mcp.mobius.waila.impl.ui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 
@@ -9,20 +9,20 @@ import mcp.mobius.waila.overlay.IconUI;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector2f;
 
-public class ArmorElement extends Element {
+public class HealthElement extends Element {
 
-	private final float armor;
+	private final float maxHealth;
+	private final float health;
 
-	public ArmorElement(float armor) {
-		this.armor = armor;
+	public HealthElement(float maxHealth, float health) {
+		this.maxHealth = maxHealth;
+		this.health = health;
 	}
 
 	@Override
 	public Vector2f getSize() {
 		float maxHearts = Waila.CONFIG.get().getGeneral().getMaxHeartsPerLine();
-		float maxHealth = maxHearts;
 
-		//FIXME magic number -1?
 		int heartsPerLine = (int) (Math.min(maxHearts, Math.ceil(maxHealth)));
 		int lineCount = (int) (Math.ceil(maxHealth / maxHearts));
 
@@ -32,28 +32,24 @@ public class ArmorElement extends Element {
 	@Override
 	public void render(MatrixStack matrixStack, float x, float y, float maxX, float maxY) {
 		float maxHearts = Waila.CONFIG.get().getGeneral().getMaxHeartsPerLine();
-		float armor = this.armor;
-		if (armor == -1)
-			maxHearts = armor = 1;
-		float maxHealth = maxHearts;
 
 		int heartCount = MathHelper.ceil(maxHealth);
 		int heartsPerLine = (int) (Math.min(maxHearts, Math.ceil(maxHealth)));
 
 		int xOffset = 0;
 		for (int i = 1; i <= heartCount; i++) {
-			if (i <= MathHelper.floor(armor)) {
-				DisplayHelper.renderIcon(matrixStack, x + xOffset, y, 8, 8, IconUI.ARMOR);
+			if (i <= MathHelper.floor(health)) {
+				DisplayHelper.renderIcon(matrixStack, x + xOffset, y, 8, 8, IconUI.HEART);
 				xOffset += 8;
 			}
 
-			if ((i > armor) && (i < armor + 1)) {
-				DisplayHelper.renderIcon(matrixStack, x + xOffset, y, 8, 8, IconUI.HALF_ARMOR);
+			if ((i > health) && (i < health + 1)) {
+				DisplayHelper.renderIcon(matrixStack, x + xOffset, y, 8, 8, IconUI.HALF_HEART);
 				xOffset += 8;
 			}
 
-			if (i >= armor + 1) {
-				DisplayHelper.renderIcon(matrixStack, x + xOffset, y, 8, 8, IconUI.EMPTY_ARMOR);
+			if (i >= health + 1) {
+				DisplayHelper.renderIcon(matrixStack, x + xOffset, y, 8, 8, IconUI.EMPTY_HEART);
 				xOffset += 8;
 			}
 

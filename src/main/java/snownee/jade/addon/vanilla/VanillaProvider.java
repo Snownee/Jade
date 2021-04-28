@@ -9,7 +9,7 @@ import mcp.mobius.waila.api.TooltipPosition;
 import mcp.mobius.waila.api.config.IPluginConfig;
 import mcp.mobius.waila.api.ui.IElement;
 import mcp.mobius.waila.api.ui.IElementHelper;
-import mcp.mobius.waila.overlay.element.ItemStackElement;
+import mcp.mobius.waila.impl.ui.ItemStackElement;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;

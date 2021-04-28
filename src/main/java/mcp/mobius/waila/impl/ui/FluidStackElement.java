@@ -1,4 +1,4 @@
-package mcp.mobius.waila.overlay.element;
+package mcp.mobius.waila.impl.ui;
 
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.matrix.MatrixStack;

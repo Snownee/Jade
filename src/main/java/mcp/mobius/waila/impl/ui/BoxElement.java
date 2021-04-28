@@ -1,4 +1,4 @@
-package mcp.mobius.waila.overlay.element;
+package mcp.mobius.waila.impl.ui;
 
 import java.awt.Rectangle;
 
@@ -7,7 +7,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import mcp.mobius.waila.api.ui.Element;
 import mcp.mobius.waila.impl.Tooltip;
-import mcp.mobius.waila.impl.ui.BorderStyle;
 import mcp.mobius.waila.overlay.DisplayHelper;
 import mcp.mobius.waila.overlay.TooltipRenderer;
 import net.minecraft.util.math.vector.Vector2f;
