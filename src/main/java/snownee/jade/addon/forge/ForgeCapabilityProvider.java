@@ -9,8 +9,6 @@ import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.config.IPluginConfig;
 import mcp.mobius.waila.api.ui.IElementHelper;
 import mcp.mobius.waila.api.ui.IProgressStyle;
-import mcp.mobius.waila.impl.ui.FluidStackElement;
-import mcp.mobius.waila.overlay.DisplayHelper;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
@@ -49,8 +47,8 @@ public class ForgeCapabilityProvider implements IComponentProvider, IServerDataP
 						cur = storage.getEnergyStored();
 						max = storage.getMaxEnergyStored();
 					}
-					String curText = TextFormatting.WHITE + DisplayHelper.INSTANCE.humanReadableNumber(cur, "FE", false) + TextFormatting.GRAY;
-					String maxText = DisplayHelper.INSTANCE.humanReadableNumber(max, "FE", false);
+					String curText = TextFormatting.WHITE + VanillaPlugin.displayHelper.humanReadableNumber(cur, "FE", false) + TextFormatting.GRAY;
+					String maxText = VanillaPlugin.displayHelper.humanReadableNumber(max, "FE", false);
 					IFormattableTextComponent text = new TranslationTextComponent("jade.fe", curText, maxText).mergeStyle(TextFormatting.GRAY);
 					IProgressStyle progressStyle = helper.progressStyle().color(Color.RED.getRGB(), 0xFF660000);
 					tooltip.add(helper.progress((float) cur / max, text, progressStyle, helper.borderStyle()).tag(VanillaPlugin.FORGE_ENERGY));
@@ -86,10 +84,10 @@ public class ForgeCapabilityProvider implements IComponentProvider, IServerDataP
 		if (fluidStack.isEmpty()) {
 			text = new TranslationTextComponent("jade.fluid.empty");
 		} else {
-			String amountText = DisplayHelper.INSTANCE.humanReadableNumber(fluidStack.getAmount(), "B", true);
+			String amountText = VanillaPlugin.displayHelper.humanReadableNumber(fluidStack.getAmount(), "B", true);
 			text = new TranslationTextComponent("jade.fluid", fluidStack.getDisplayName(), amountText);
 		}
-		IProgressStyle progressStyle = helper.progressStyle().overlay(new FluidStackElement(fluidStack));
+		IProgressStyle progressStyle = helper.progressStyle().overlay(helper.fluid(fluidStack));
 		tooltip.add(helper.progress((float) fluidStack.getAmount() / capacity, text, progressStyle, helper.borderStyle()).tag(VanillaPlugin.FORGE_FLUID));
 	}
 

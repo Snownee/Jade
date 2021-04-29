@@ -7,7 +7,7 @@ import mcp.mobius.waila.api.ui.IBorderStyle;
 public class BorderStyle implements IBorderStyle {
 
 	public int width = 1;
-	public int color = Color.GRAY.getRGB();;
+	public int color = Color.GRAY.getRGB();
 
 	@Override
 	public IBorderStyle width(int px) {

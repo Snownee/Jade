@@ -4,6 +4,7 @@ import mcp.mobius.waila.api.IRegistrar;
 import mcp.mobius.waila.api.IWailaPlugin;
 import mcp.mobius.waila.api.TooltipPosition;
 import mcp.mobius.waila.api.WailaPlugin;
+import mcp.mobius.waila.api.ui.IDisplayHelper;
 import net.minecraft.block.AbstractFurnaceBlock;
 import net.minecraft.block.AbstractSkullBlock;
 import net.minecraft.block.BeehiveBlock;
@@ -115,8 +116,12 @@ public class VanillaPlugin implements IWailaPlugin {
 	public static final ResourceLocation FORGE_ENERGY = MC("fe");
 	public static final ResourceLocation FORGE_FLUID = MC("fluid");
 
+	public static IDisplayHelper displayHelper;
+
 	@Override
 	public void register(IRegistrar registrar) {
+		displayHelper = registrar.getDisplayHelper();
+
 		registrar.registerComponentProvider(BrewingStandProvider.INSTANCE, TooltipPosition.BODY, BrewingStandBlock.class);
 		registrar.registerBlockDataProvider(BrewingStandProvider.INSTANCE, BrewingStandTileEntity.class);
 		registrar.addConfig(BREWING_STAND, true);

@@ -2,6 +2,8 @@ package mcp.mobius.waila.impl.ui;
 
 import java.awt.Rectangle;
 
+import javax.annotation.Nullable;
+
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 
@@ -16,6 +18,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 @OnlyIn(Dist.CLIENT)
 public class BoxElement extends Element {
 	private final TooltipRenderer tooltip;
+	@Nullable
 	private final BorderStyle border;
 
 	public BoxElement(Tooltip tooltip, BorderStyle border) {
@@ -41,7 +44,8 @@ public class BoxElement extends Element {
 		RenderSystem.enableBlend();
 		matrixStack.push();
 		matrixStack.translate(x, y, 0);
-		DisplayHelper.INSTANCE.drawBorder(matrixStack, 0, 0, rect.width, rect.height, border);
+		if (border != null)
+			DisplayHelper.INSTANCE.drawBorder(matrixStack, 0, 0, rect.width, rect.height, border);
 		tooltip.draw(matrixStack);
 		matrixStack.pop();
 	}

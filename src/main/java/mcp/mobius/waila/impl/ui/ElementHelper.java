@@ -46,12 +46,12 @@ public class ElementHelper implements IElementHelper {
 	}
 
 	@Override
-	public IElement progress(float progress, @Nullable ITextComponent text, IProgressStyle style, IBorderStyle borderStyle) {
+	public IElement progress(float progress, @Nullable ITextComponent text, IProgressStyle style, @Nullable IBorderStyle borderStyle) {
 		return new ProgressElement(progress, text, (ProgressStyle) style, (BorderStyle) borderStyle);
 	}
 
 	@Override
-	public IElement box(ITooltip tooltip, IBorderStyle border) {
+	public IElement box(ITooltip tooltip, @Nullable IBorderStyle border) {
 		return new BoxElement((Tooltip) tooltip, (BorderStyle) border);
 	}
 

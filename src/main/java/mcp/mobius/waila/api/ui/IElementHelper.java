@@ -21,13 +21,13 @@ public interface IElementHelper {
 
 	IElement fluid(FluidStack fluidStack);
 
-	IElement progress(float progress, @Nullable ITextComponent text, IProgressStyle style, IBorderStyle borderStyle);
+	IElement progress(float progress, @Nullable ITextComponent text, IProgressStyle style, @Nullable IBorderStyle borderStyle);
 
 	default IElement box(ITooltip tooltip) {
 		return box(tooltip, borderStyle());
 	}
 
-	IElement box(ITooltip tooltip, IBorderStyle border);
+	IElement box(ITooltip tooltip, @Nullable IBorderStyle border);
 
 	ITooltip tooltip();
 
