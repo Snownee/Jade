@@ -80,7 +80,7 @@ public class HUDHandlerBlocks implements IComponentProvider, IServerDataProvider
 	public void appendTail(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {
 		if (config.get(JadePlugin.HIDE_MOD_NAME))
 			return;
-		String modName = ModIdentification.getModName(accessor.getStack());
+		String modName = ModIdentification.getModName(accessor.getBlock());
 		if (!Strings.isNullOrEmpty(modName)) {
 			modName = String.format(Waila.CONFIG.get().getFormatting().getModName(), modName);
 			((ITaggableList<ResourceLocation, ITextComponent>) tooltip).setTag(MOD_NAME_TAG, new StringTextComponent(modName));
