@@ -1,11 +1,12 @@
 package mcp.mobius.waila.api;
 
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 
-public class Accessor {
+public abstract class Accessor {
 
 	private final World world;
 	private final PlayerEntity player;
@@ -51,4 +52,5 @@ public class Accessor {
 		this.tooltipPosition = tooltipPosition;
 	}
 
+	public abstract ItemStack getPickedResult();
 }

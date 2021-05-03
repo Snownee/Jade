@@ -2,6 +2,7 @@ package mcp.mobius.waila.api;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.world.World;
@@ -22,5 +23,10 @@ public class EntityAccessor extends Accessor {
 
 	public Entity getEntity() {
 		return entity;
+	}
+
+	@Override
+	public ItemStack getPickedResult() {
+		return getEntity().getPickedResult(getHitResult());
 	}
 }
