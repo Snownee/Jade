@@ -18,7 +18,6 @@ public class CorePlugin implements IWailaPlugin {
 	}
 
 	public static final ResourceLocation CONFIG_REGISTRY_NAME = JADE("registry_name");
-	public static final ResourceLocation CONFIG_ENTITY = JADE("entity");
 	public static final ResourceLocation CONFIG_ENTITY_HEALTH = JADE("entity_hp");
 	public static final ResourceLocation CONFIG_ENTITY_ARMOR = JADE("entity_armor");
 	public static final ResourceLocation CONFIG_BLOCK_STATES = JADE("block_states");
@@ -41,7 +40,6 @@ public class CorePlugin implements IWailaPlugin {
 		registrar.registerComponentProvider(BaseEntityProvider.INSTANCE, TooltipPosition.TAIL, Entity.class);
 
 		registrar.addConfig(CONFIG_REGISTRY_NAME, false);
-		registrar.addConfig(CONFIG_ENTITY, true);
 		registrar.addConfig(CONFIG_ENTITY_HEALTH, true);
 		registrar.addConfig(CONFIG_ENTITY_ARMOR, true);
 		registrar.addConfig(CONFIG_BLOCK_STATES, false);

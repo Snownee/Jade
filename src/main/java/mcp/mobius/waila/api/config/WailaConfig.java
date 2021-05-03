@@ -32,6 +32,8 @@ public class WailaConfig {
 
 	public static class ConfigGeneral {
 		private boolean displayTooltip = true;
+		private boolean displayBlocks = true;
+		private boolean displayEntities = true;
 		private boolean shiftForDetails = false;
 		private DisplayMode displayMode = DisplayMode.TOGGLE;
 		private boolean hideFromDebug = true;
@@ -46,6 +48,22 @@ public class WailaConfig {
 
 		public void setDisplayTooltip(boolean displayTooltip) {
 			this.displayTooltip = displayTooltip;
+		}
+
+		public boolean getDisplayEntities() {
+			return displayEntities;
+		}
+
+		public boolean getDisplayBlocks() {
+			return displayBlocks;
+		}
+
+		public void setDisplayBlocks(boolean displayBlocks) {
+			this.displayBlocks = displayBlocks;
+		}
+
+		public void setDisplayEntities(boolean displayEntities) {
+			this.displayEntities = displayEntities;
 		}
 
 		public void setShiftForDetails(boolean shiftForDetails) {
@@ -76,12 +94,12 @@ public class WailaConfig {
 			this.maxHeartsPerLine = maxHeartsPerLine;
 		}
 
-		public void setDisplayFluids(FluidMode displayFluids) {
-			this.fluldMode = displayFluids;
-		}
-
 		public void setDisplayFluids(boolean displayFluids) {
 			this.fluldMode = displayFluids ? FluidMode.ANY : FluidMode.NONE;
+		}
+
+		public void setDisplayFluids(FluidMode displayFluids) {
+			this.fluldMode = displayFluids;
 		}
 
 		public boolean shouldDisplayTooltip() {
@@ -129,7 +147,7 @@ public class WailaConfig {
 		}
 
 		public void setReachDistance(float reachDistance) {
-			this.reachDistance = MathHelper.clamp(reachDistance, 0, 30);
+			this.reachDistance = MathHelper.clamp(reachDistance, 0, 20);
 		}
 
 		public void setDebug(boolean debug) {
@@ -224,7 +242,7 @@ public class WailaConfig {
 		}
 
 		public static class ConfigOverlayColor {
-			private int alpha = 70;
+			private float alpha = 0.7f;
 			private Map<ResourceLocation, HUDTheme> themes = Maps.newHashMap();
 			private ResourceLocation activeTheme = HUDTheme.DARK.getId();
 
@@ -236,10 +254,6 @@ public class WailaConfig {
 			}
 
 			public float getAlpha() {
-				return MathHelper.clamp(alpha / 100f, 0, 1);
-			}
-
-			public int getRawAlpha() {
 				return alpha;
 			}
 
@@ -251,8 +265,8 @@ public class WailaConfig {
 				return themes.values();
 			}
 
-			public void setAlpha(int alpha) {
-				this.alpha = alpha;
+			public void setAlpha(float alpha) {
+				this.alpha = MathHelper.clamp(alpha, 0, 1);
 			}
 
 			public int getBackgroundColor() {

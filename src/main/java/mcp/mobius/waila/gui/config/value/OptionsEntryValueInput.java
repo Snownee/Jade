@@ -64,6 +64,8 @@ public class OptionsEntryValueInput<T> extends OptionsEntryValue<T> {
 		} catch (NumberFormatException e) {
 			// no-op
 		}
+
+		save();
 	}
 
 	private static class WatchedTextfield extends TextFieldWidget {

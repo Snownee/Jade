@@ -6,6 +6,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 
+import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.gui.OptionsScreen;
 import mcp.mobius.waila.gui.config.value.OptionsEntryValue;
 import net.minecraft.client.Minecraft;
@@ -14,7 +15,11 @@ import net.minecraft.client.gui.widget.list.AbstractList;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 
 public class OptionsListWidget extends AbstractList<OptionsListWidget.Entry> {
 
@@ -136,6 +141,14 @@ public class OptionsListWidget extends AbstractList<OptionsListWidget.Entry> {
 	public abstract static class Entry extends AbstractList.AbstractListEntry<Entry> {
 
 		protected final Minecraft client;
+
+		public static ITextComponent makeTitle(String key) {
+			return new TranslationTextComponent(makeKey(key));
+		}
+
+		public static String makeKey(String key) {
+			return Util.makeTranslationKey("config", new ResourceLocation(Waila.MODID, key));
+		}
 
 		public Entry() {
 			this.client = Minecraft.getInstance();

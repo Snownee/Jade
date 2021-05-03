@@ -65,7 +65,6 @@
   "config.waila.plugin_minecraft.villager_profession": "Dorfbewohnerberuf",
 
   "config.waila.plugin_jade.registry_name": "Zeige Registrierungsnamen",
-  "config.waila.plugin_jade.entity": "Zeige Kreaturen",
   "config.waila.plugin_jade.entity_hp": "Zeige Gesundheit von Kreaturen",
   "config.waila.plugin_jade.block_states": "Zeige Status",
   

@@ -72,7 +72,7 @@ public class TooltipRenderer {
 			y += size.y;
 		}
 
-		if (tooltip.sneakDetails) {
+		if (tooltip.sneakyDetails) {
 			Minecraft mc = Minecraft.getInstance();
 			x = (totalSize.x - mc.fontRenderer.getStringWidth("▾") + 1) / 2f;
 			float yOffset = (OverlayRenderer.ticks / 5) % 8 - 2;

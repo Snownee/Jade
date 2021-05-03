@@ -23,6 +23,8 @@
   "config.waila.general": "通用",
   "config.waila.display_tooltip": "显示提示",
   "config.waila.display_tooltip_desc": "收集数据并显示工具提示",
+  "config.waila.display_entities": "显示实体",
+  "config.waila.display_blocks": "显示方块",
   "config.waila.display_fluids": "显示流体",
   "config.waila.display_fluids_desc": "显示流体相关信息",
   "config.waila.display_fluids_source_only": "仅显示源块",
@@ -39,7 +41,7 @@
   "config.waila.display_item": "显示图标",
   "config.waila.tts": "语音复述",
   "config.waila.tts_desc": "使用系统讲述人读出实体和方块名",
-  "config.waila.reach_distance": "触及范围",
+  "config.waila.reach_distance": "触及范围延申",
 
   "config.waila.overlay": "显示",
   "config.waila.overlay_pos_x": "水平比例",
@@ -63,7 +65,6 @@
   "config.waila.format_registry_name": "注册名",
 
   "config.waila.plugin_jade.registry_name": "注册名",
-  "config.waila.plugin_jade.entity": "实体",
   "config.waila.plugin_jade.entity_hp": "实体生命值",
   "config.waila.plugin_jade.entity_armor": "实体盔甲值",
   "config.waila.plugin_jade.block_states": "方块状态",

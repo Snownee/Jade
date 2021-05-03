@@ -11,17 +11,15 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.WailaClient;
-import mcp.mobius.waila.addons.core.CorePlugin;
 import mcp.mobius.waila.api.config.WailaConfig;
 import mcp.mobius.waila.api.config.WailaConfig.ConfigOverlay;
 import mcp.mobius.waila.api.event.WailaRenderEvent;
+import mcp.mobius.waila.gui.OptionsScreen;
 import mcp.mobius.waila.impl.ObjectDataCenter;
 import mcp.mobius.waila.impl.Tooltip;
-import mcp.mobius.waila.impl.config.PluginConfig;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.entity.player.ChatVisibility;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.vector.Vector2f;
 import net.minecraftforge.common.MinecraftForge;
@@ -50,8 +48,28 @@ public class OverlayRenderer {
 			return;
 
 		Minecraft mc = Minecraft.getInstance();
-		if ((mc.currentScreen != null && mc.gameSettings.chatVisibility != ChatVisibility.HIDDEN) || mc.world == null)
+
+		if (mc.world == null)
 			return;
+
+		if (RayTracing.INSTANCE.getTarget() == null)
+			return;
+
+		if (mc.currentScreen != null) {
+			if (!(mc.currentScreen instanceof OptionsScreen)) {
+				return;
+			} else {
+				Rectangle position = WailaTickHandler.instance().tooltipRenderer.getPosition();
+				ConfigOverlay overlay = Waila.CONFIG.get().getOverlay();
+				double x = mc.mouseHelper.getMouseX() * (double) mc.getMainWindow().getScaledWidth() / mc.getMainWindow().getWidth();
+				double y = mc.mouseHelper.getMouseY() * (double) mc.getMainWindow().getScaledHeight() / mc.getMainWindow().getHeight();
+				x += position.width * overlay.tryFlip(overlay.getAnchorX());
+				y += position.height * overlay.getAnchorY();
+				if (position.contains(x, y)) {
+					return;
+				}
+			}
+		}
 
 		if (mc.ingameGUI.getTabList().visible || mc.loadingGui != null || !Minecraft.isGuiEnabled())
 			return;
@@ -59,14 +77,8 @@ public class OverlayRenderer {
 		if (mc.gameSettings.showDebugInfo && Waila.CONFIG.get().getGeneral().shouldHideFromDebug())
 			return;
 
-		if (RayTracing.INSTANCE.getTarget() == null)
-			return;
-
 		ticks += mc.getTickLength();
-		if (RayTracing.INSTANCE.getTarget().getType() == RayTraceResult.Type.BLOCK)
-			renderOverlay(WailaTickHandler.instance().tooltipRenderer, new MatrixStack());
-
-		if (RayTracing.INSTANCE.getTarget().getType() == RayTraceResult.Type.ENTITY && PluginConfig.INSTANCE.get(CorePlugin.CONFIG_ENTITY))
+		if (RayTracing.INSTANCE.getTarget().getType() != RayTraceResult.Type.MISS)
 			renderOverlay(WailaTickHandler.instance().tooltipRenderer, new MatrixStack());
 	}
 
@@ -99,7 +111,7 @@ public class OverlayRenderer {
 		RenderSystem.disableRescaleNormal();
 		RenderHelper.disableStandardItemLighting();
 		RenderSystem.disableLighting();
-		RenderSystem.disableDepthTest();
+		//RenderSystem.disableDepthTest();
 
 		position = preEvent.getPosition();
 		ConfigOverlay configOverlay = Waila.CONFIG.get().getOverlay();
@@ -107,7 +119,7 @@ public class OverlayRenderer {
 			position.x++;
 			position.y++;
 		}
-		matrixStack.translate(position.x, position.y, 0);
+		matrixStack.translate(position.x, position.y, 1);
 
 		float scale = configOverlay.getOverlayScale();
 		MainWindow window = Minecraft.getInstance().getMainWindow();
@@ -122,7 +134,7 @@ public class OverlayRenderer {
 		matrixStack.translate(-position.width * configOverlay.tryFlip(configOverlay.getAnchorX()), -position.height * configOverlay.getAnchorY(), 0);
 
 		WailaConfig.ConfigOverlay.ConfigOverlayColor color = Waila.CONFIG.get().getOverlay().getColor();
-		if (color.getRawAlpha() > 0) {
+		if (color.getAlpha() > 0) {
 			WailaRenderEvent.Color colorEvent = new WailaRenderEvent.Color(color.getAlpha(), color.getBackgroundColor(), color.getGradientStart(), color.getGradientEnd());
 			MinecraftForge.EVENT_BUS.post(colorEvent);
 			drawTooltipBox(matrixStack, 0, 0, position.width, position.height, colorEvent.getBackground(), colorEvent.getGradientStart(), colorEvent.getGradientEnd(), Waila.CONFIG.get().getOverlay().getSquare());

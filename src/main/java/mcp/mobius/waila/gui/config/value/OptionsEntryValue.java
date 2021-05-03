@@ -7,7 +7,6 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import mcp.mobius.waila.gui.config.OptionsListWidget;
 import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
 
 public abstract class OptionsEntryValue<T> extends OptionsListWidget.Entry {
 
@@ -18,8 +17,8 @@ public abstract class OptionsEntryValue<T> extends OptionsListWidget.Entry {
 	private int x;
 
 	public OptionsEntryValue(String optionName, Consumer<T> save) {
-		this.title = new TranslationTextComponent(optionName);
-		this.description = optionName + "_desc";
+		this.title = makeTitle(optionName);
+		this.description = makeKey(optionName + "_desc");
 		this.save = save;
 	}
 

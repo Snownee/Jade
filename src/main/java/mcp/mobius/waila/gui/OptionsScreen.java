@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
 
 import mcp.mobius.waila.gui.config.OptionsListWidget;
 import mcp.mobius.waila.gui.config.value.OptionsEntryValue;
@@ -31,7 +32,11 @@ public abstract class OptionsScreen extends Screen {
 		this.canceller = canceller;
 	}
 
-	public OptionsScreen(Screen parent, ITextComponent title) {
+	public OptionsScreen(Screen parent, String title, Runnable saver, Runnable canceller) {
+		this(parent, OptionsListWidget.Entry.makeTitle(title), saver, canceller);
+	}
+
+	public OptionsScreen(Screen parent, String title) {
 		this(parent, title, null, null);
 	}
 
@@ -84,7 +89,11 @@ public abstract class OptionsScreen extends Screen {
 				List<IReorderingProcessor> tooltip = Lists.newArrayList(value.getTitle().func_241878_f());
 				List<IReorderingProcessor> tooltip2 = font.trimStringToWidth(new TranslationTextComponent(value.getDescription()), 200);
 				tooltip.addAll(tooltip2);
+				matrixStack.push();
+				matrixStack.translate(0, 0, 100);
 				renderTooltip(matrixStack, tooltip, mouseX, mouseY);
+				RenderSystem.enableDepthTest();
+				matrixStack.pop();
 			}
 		}
 	}
@@ -115,5 +124,12 @@ public abstract class OptionsScreen extends Screen {
 	@Override
 	public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
 		return options.mouseScrolled(mouseX, mouseY, delta);
+	}
+
+	@Override
+	public void closeScreen() {
+		if (canceller != null)
+			canceller.run();
+		super.closeScreen();
 	}
 }

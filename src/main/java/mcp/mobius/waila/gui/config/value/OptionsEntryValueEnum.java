@@ -17,9 +17,10 @@ public class OptionsEntryValueEnum<T extends Enum<T>> extends OptionsEntryValue<
 	public OptionsEntryValueEnum(String optionName, T[] values, T selected, Consumer<T> save) {
 		super(optionName, save);
 
-		this.translationKey = optionName;
-		this.button = new Button(0, 0, 100, 20, new TranslationTextComponent(optionName + "_" + selected.name().toLowerCase(Locale.ROOT)), w -> {
+		this.translationKey = makeKey(optionName);
+		this.button = new Button(0, 0, 100, 20, makeTitle(optionName + "_" + selected.name().toLowerCase(Locale.ROOT)), w -> {
 			value = values[(value.ordinal() + 1) % values.length];
+			save();
 		});
 		this.value = selected;
 	}

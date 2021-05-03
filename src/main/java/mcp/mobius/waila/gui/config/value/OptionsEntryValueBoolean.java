@@ -17,6 +17,7 @@ public class OptionsEntryValueBoolean extends OptionsEntryValue<Boolean> {
 
 		this.button = new Button(0, 0, 100, 20, new TranslationTextComponent("gui." + (value ? "yes" : "no")), w -> {
 			this.value = !this.value;
+			save();
 		});
 		this.value = value;
 	}

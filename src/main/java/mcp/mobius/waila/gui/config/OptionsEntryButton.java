@@ -5,7 +5,6 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
 
 public class OptionsEntryButton extends OptionsListWidget.Entry {
 
@@ -13,7 +12,7 @@ public class OptionsEntryButton extends OptionsListWidget.Entry {
 	private final Button button;
 
 	public OptionsEntryButton(String titleKey, Button button) {
-		this(new TranslationTextComponent(titleKey), button);
+		this(makeTitle(titleKey), button);
 	}
 
 	public OptionsEntryButton(ITextComponent title, Button button) {

@@ -12,9 +12,11 @@ import mcp.mobius.waila.api.EntityAccessor;
 import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IEntityComponentProvider;
 import mcp.mobius.waila.api.TooltipPosition;
+import mcp.mobius.waila.api.config.WailaConfig.ConfigGeneral;
 import mcp.mobius.waila.api.event.WailaRayTraceEvent;
 import mcp.mobius.waila.api.event.WailaTooltipEvent;
 import mcp.mobius.waila.api.ui.IElement;
+import mcp.mobius.waila.gui.OptionsScreen;
 import mcp.mobius.waila.impl.ObjectDataCenter;
 import mcp.mobius.waila.impl.Tooltip;
 import mcp.mobius.waila.impl.WailaRegistrar;
@@ -52,14 +54,17 @@ public class WailaTickHandler {
 	public void tickClient() {
 		progressTracker.tick();
 
-		if (!Waila.CONFIG.get().getGeneral().shouldDisplayTooltip()) {
+		ConfigGeneral config = Waila.CONFIG.get().getGeneral();
+		if (!config.shouldDisplayTooltip()) {
 			tooltipRenderer = null;
 			return;
 		}
 
 		Minecraft client = Minecraft.getInstance();
-		if (client.isGamePaused() || client.currentScreen != null || client.keyboardListener == null) {
-			return;
+		if (!(client.currentScreen instanceof OptionsScreen)) {
+			if (client.isGamePaused() || client.currentScreen != null || client.keyboardListener == null) {
+				return;
+			}
 		}
 
 		World world = client.world;
@@ -101,8 +106,12 @@ public class WailaTickHandler {
 			return;
 
 		if (accessor instanceof BlockAccessor) {
+			if (!config.getDisplayBlocks()) {
+				tooltipRenderer = null;
+				return;
+			}
 			TileEntity tileEntity = ((BlockAccessor) accessor).getTileEntity();
-			if (accessor.isServerConnected() && tileEntity != null && Waila.CONFIG.get().getGeneral().shouldDisplayTooltip()) {
+			if (accessor.isServerConnected() && tileEntity != null && config.shouldDisplayTooltip()) {
 				if (ObjectDataCenter.isTimeElapsed(ObjectDataCenter.rateLimiter)) {
 					ObjectDataCenter.resetTimer();
 					if (!WailaRegistrar.INSTANCE.getBlockNBTProviders(tileEntity).isEmpty())
@@ -114,6 +123,10 @@ public class WailaTickHandler {
 				}
 			}
 		} else if (accessor instanceof EntityAccessor) {
+			if (!config.getDisplayEntities()) {
+				tooltipRenderer = null;
+				return;
+			}
 			Entity entity = ((EntityAccessor) accessor).getEntity();
 			if (accessor.isServerConnected() && entity != null && Waila.CONFIG.get().getGeneral().shouldDisplayTooltip()) {
 				if (ObjectDataCenter.isTimeElapsed(ObjectDataCenter.rateLimiter)) {
@@ -130,8 +143,8 @@ public class WailaTickHandler {
 
 		instance().gatherComponents(accessor, currentTip, TooltipPosition.HEAD);
 		instance().gatherComponents(accessor, currentTipBody, TooltipPosition.BODY);
-		if (Waila.CONFIG.get().getGeneral().shouldShiftForDetails() && !currentTipBody.isEmpty() && !player.isSecondaryUseActive()) {
-			currentTip.sneakDetails = true;
+		if (config.shouldShiftForDetails() && !currentTipBody.isEmpty() && !player.isSecondaryUseActive()) {
+			currentTip.sneakyDetails = true;
 		} else {
 			currentTip.lines.addAll(currentTipBody.lines);
 		}
