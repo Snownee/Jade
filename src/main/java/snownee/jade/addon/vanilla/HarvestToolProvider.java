@@ -3,6 +3,7 @@ package snownee.jade.addon.vanilla;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
@@ -15,6 +16,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -26,15 +28,20 @@ import mcp.mobius.waila.api.TooltipPosition;
 import mcp.mobius.waila.api.config.IPluginConfig;
 import mcp.mobius.waila.api.ui.IElement;
 import mcp.mobius.waila.api.ui.IElement.Align;
-import mcp.mobius.waila.impl.ui.SubStringElement;
 import mcp.mobius.waila.api.ui.IElementHelper;
+import mcp.mobius.waila.impl.ui.SubStringElement;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.IItemTier;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemTier;
 import net.minecraft.item.Items;
+import net.minecraft.item.TieredItem;
 import net.minecraft.resources.IResourceManager;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector2f;
 import net.minecraft.util.text.ITextComponent;
@@ -44,6 +51,7 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.ToolType;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.resource.IResourceType;
 import net.minecraftforge.resource.ISelectiveResourceReloadListener;
 import net.minecraftforge.resource.VanillaResourceType;
@@ -58,8 +66,8 @@ public class HarvestToolProvider implements IComponentProvider, ISelectiveResour
 	public static final List<TestCase> testTools = Lists.newLinkedList();
 	public static final Map<ToolType, TestCase> toolTypeMap = Maps.newHashMap();
 
-	private static final TestCase NO_TOOL = new TestCase(ItemStack.EMPTY, "no_tool", null);
-	private static final TestCase UNBREAKABLE = new TestCase(ItemStack.EMPTY, "unbreakable", null);
+	public static final TestCase NO_TOOL = new TestCase(ItemStack.EMPTY, "no_tool", null);
+	public static final TestCase UNBREAKABLE = new TestCase(ItemStack.EMPTY, "unbreakable", null);
 
 	private static final ITextComponent UNBREAKABLE_TEXT = new TranslationTextComponent("jade.harvest_tool.unbreakable").mergeStyle(TextFormatting.DARK_RED);
 	private static final Vector2f ITEM_SIZE = new Vector2f(13, 0);
@@ -95,7 +103,6 @@ public class HarvestToolProvider implements IComponentProvider, ISelectiveResour
 
 	@Nullable
 	public static TestCase getTool(BlockState state, World world, BlockPos pos) {
-
 		ToolType toolType = state.getHarvestTool();
 		if (toolType != null) {
 			TestCase testCase = toolTypeMap.get(toolType);
@@ -222,7 +229,7 @@ public class HarvestToolProvider implements IComponentProvider, ISelectiveResour
 	}
 
 	public static class TestCase {
-		private final ItemStack stack;
+		private ItemStack stack;
 		private final String name;
 		private final ToolType toolType;
 		private final Int2ObjectMap<ItemStack> toolMap = new Int2ObjectOpenHashMap<>();
@@ -239,13 +246,53 @@ public class HarvestToolProvider implements IComponentProvider, ISelectiveResour
 		}
 
 		public TestCase addTool(ItemStack stack) {
+			if (stack.isEmpty())
+				return this;
 			int level = 0;
 			if (toolType != null) {
 				level = stack.getHarvestLevel(toolType, null, null);
 			}
+			if (this.stack.isEmpty() || level == 0) {
+				this.stack = stack;
+			}
+			ItemStack oldTool = toolMap.get(level);
+			if (oldTool != null) {
+				IItemTier tier = null;
+				if (oldTool.getItem() instanceof TieredItem) {
+					tier = ((TieredItem) oldTool.getItem()).getTier();
+				}
+				if (tier != ItemTier.GOLD) {
+					return this;
+				}
+			}
 			toolMap.put(level, stack);
 			return this;
 		}
+	}
+
+	public static void init() {
+		NonNullList<ItemStack> stacks = NonNullList.create();
+		Set<ToolType> newToolTypes = Sets.newHashSet();
+		for (Item item : ForgeRegistries.ITEMS.getValues()) {
+			item.fillItemGroup(ItemGroup.SEARCH, stacks);
+		}
+		for (ItemStack stack : stacks) {
+			for (ToolType toolType : stack.getToolTypes()) {
+				if (newToolTypes.contains(toolType)) {
+					toolTypeMap.get(toolType).addTool(stack);
+					log(stack, toolType);
+				} else if (!toolTypeMap.containsKey(toolType)) {
+					registerTool(ItemStack.EMPTY, toolType.getName(), toolType).addTool(stack);
+					newToolTypes.add(toolType);
+					log(stack, toolType);
+				}
+			}
+		}
+	}
+
+	private static void log(ItemStack stack, ToolType toolType) {
+		if (Waila.CONFIG.get().getGeneral().isDebug())
+			Waila.LOGGER.info("Add tool: {} {} {}", stack, toolType.getName(), stack.getHarvestLevel(toolType, null, null));
 	}
 
 }
