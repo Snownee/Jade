@@ -10,7 +10,7 @@ import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.util.text.StringTextComponent;
 
-public class OptionsEntryValueInput<T> extends OptionsEntryValue<T> {
+public class InputOptionValue<T> extends OptionValue<T> {
 
 	public static final Predicate<String> ANY = s -> true;
 	public static final Predicate<String> INTEGER = s -> s.matches("^[0-9]*$");
@@ -18,17 +18,13 @@ public class OptionsEntryValueInput<T> extends OptionsEntryValue<T> {
 
 	private final TextFieldWidget textField;
 
-	public OptionsEntryValueInput(String optionName, T value, Consumer<T> save, Predicate<String> validator) {
-		super(optionName, save);
+	public InputOptionValue(String optionName, T value, Consumer<T> setter, Predicate<String> validator) {
+		super(optionName, setter);
 
 		this.value = value;
 		this.textField = new WatchedTextfield(this, client.fontRenderer, 0, 0, 98, 18);
 		textField.setText(String.valueOf(value));
 		textField.setValidator(validator);
-	}
-
-	public OptionsEntryValueInput(String optionName, T value, Consumer<T> save) {
-		this(optionName, value, save, s -> true);
 	}
 
 	@Override
@@ -69,9 +65,9 @@ public class OptionsEntryValueInput<T> extends OptionsEntryValue<T> {
 	}
 
 	private static class WatchedTextfield extends TextFieldWidget {
-		private final OptionsEntryValueInput<?> watcher;
+		private final InputOptionValue<?> watcher;
 
-		public WatchedTextfield(OptionsEntryValueInput<?> watcher, FontRenderer fontRenderer, int x, int y, int width, int height) {
+		public WatchedTextfield(InputOptionValue<?> watcher, FontRenderer fontRenderer, int x, int y, int width, int height) {
 			super(fontRenderer, x, y, width, height, new StringTextComponent(""));
 
 			this.watcher = watcher;

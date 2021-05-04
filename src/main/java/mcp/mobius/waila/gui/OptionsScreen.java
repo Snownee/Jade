@@ -7,7 +7,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import mcp.mobius.waila.gui.config.OptionsListWidget;
-import mcp.mobius.waila.gui.config.value.OptionsEntryValue;
+import mcp.mobius.waila.gui.config.value.OptionValue;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.client.gui.screen.Screen;
@@ -77,8 +77,8 @@ public abstract class OptionsScreen extends Screen {
 			return;
 
 		OptionsListWidget.Entry entry = options.getSelected();
-		if (entry instanceof OptionsEntryValue) {
-			OptionsEntryValue<?> value = (OptionsEntryValue<?>) entry;
+		if (entry instanceof OptionValue) {
+			OptionValue<?> value = (OptionValue<?>) entry;
 
 			if (I18n.hasKey(value.getDescription())) {
 				int valueX = value.getX() + 10;

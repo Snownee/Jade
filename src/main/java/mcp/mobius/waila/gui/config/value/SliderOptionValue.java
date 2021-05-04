@@ -12,7 +12,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
-public class OptionsEntryValueSlider extends OptionsEntryValue<Float> {
+public class SliderOptionValue extends OptionValue<Float> {
 
 	public static final Predicate<String> ANY = s -> true;
 	public static final Predicate<String> INTEGER = s -> s.matches("^[0-9]*$");
@@ -22,16 +22,12 @@ public class OptionsEntryValueSlider extends OptionsEntryValue<Float> {
 	private float min;
 	private float max;
 
-	public OptionsEntryValueSlider(String optionName, float value, Consumer<Float> save, float min, float max) {
+	public SliderOptionValue(String optionName, float value, Consumer<Float> save, float min, float max) {
 		super(optionName, save);
 		this.value = value;
 		this.min = min;
 		this.max = max;
 		this.slider = new Slider(this, 0, 0, 100, 20, getTitle());
-	}
-
-	public OptionsEntryValueSlider(String optionName, float value, Consumer<Float> save) {
-		this(optionName, value, save, 0, 1);
 	}
 
 	@Override
@@ -47,9 +43,9 @@ public class OptionsEntryValueSlider extends OptionsEntryValue<Float> {
 	}
 
 	public static class Slider extends AbstractSlider {
-		private final OptionsEntryValueSlider value;
+		private final SliderOptionValue value;
 
-		public Slider(OptionsEntryValueSlider value, int x, int y, int width, int height, ITextComponent message) {
+		public Slider(SliderOptionValue value, int x, int y, int width, int height, ITextComponent message) {
 			super(x, y, width, height, message, fromScaled(value.value, value.min, value.max));
 			this.value = value;
 			func_230972_a_();

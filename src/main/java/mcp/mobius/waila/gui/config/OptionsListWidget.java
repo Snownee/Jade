@@ -1,14 +1,26 @@
 package mcp.mobius.waila.gui.config;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+
 import org.lwjgl.opengl.GL11;
 
+import com.google.common.base.Predicates;
+import com.google.common.collect.Lists;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 
+import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.gui.OptionsScreen;
-import mcp.mobius.waila.gui.config.value.OptionsEntryValue;
+import mcp.mobius.waila.gui.config.value.CycleOptionValue;
+import mcp.mobius.waila.gui.config.value.InputOptionValue;
+import mcp.mobius.waila.gui.config.value.OptionValue;
+import mcp.mobius.waila.gui.config.value.SliderOptionValue;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.client.gui.widget.list.AbstractList;
@@ -19,6 +31,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
 public class OptionsListWidget extends AbstractList<OptionsListWidget.Entry> {
@@ -124,18 +137,52 @@ public class OptionsListWidget extends AbstractList<OptionsListWidget.Entry> {
 	}
 
 	public void save() {
-		getEventListeners().stream().filter(e -> e instanceof OptionsEntryValue).map(e -> (OptionsEntryValue<?>) e).forEach(OptionsEntryValue::save);
+		getEventListeners().stream().filter(e -> e instanceof OptionValue).map(e -> (OptionValue<?>) e).forEach(OptionValue::save);
 		if (diskWriter != null)
 			diskWriter.run();
 	}
 
 	public void add(Entry entry) {
-		if (entry instanceof OptionsEntryValue) {
-			IGuiEventListener element = ((OptionsEntryValue<?>) entry).getListener();
+		if (entry instanceof OptionValue) {
+			IGuiEventListener element = ((OptionValue<?>) entry).getListener();
 			if (element != null)
 				owner.addListener(element);
 		}
 		addEntry(entry);
+	}
+
+	public void slider(String optionName, float value, Consumer<Float> setter) {
+		slider(optionName, value, setter, 0, 1);
+	}
+
+	public void slider(String optionName, float value, Consumer<Float> setter, float min, float max) {
+		add(new SliderOptionValue(optionName, value, setter, min, max));
+	}
+
+	public <T> void input(String optionName, T value, Consumer<T> setter, Predicate<String> validator) {
+		add(new InputOptionValue<>(optionName, value, setter, validator));
+	}
+
+	public <T> void input(String optionName, T value, Consumer<T> setter) {
+		input(optionName, value, setter, Predicates.alwaysTrue());
+	}
+
+	private static final List<ITextComponent> boolNames = Arrays.asList(new TranslationTextComponent("gui.yes"), new TranslationTextComponent("gui.no"));
+	private static final List<Boolean> boolValues = Arrays.asList(Boolean.TRUE, Boolean.FALSE);
+
+	public void choices(String optionName, boolean value, BooleanConsumer setter) {
+		add(new CycleOptionValue<>(optionName, boolNames, boolValues, value, setter));
+	}
+
+	public <T extends Enum<T>> void choices(String optionName, T value, Consumer<T> setter) {
+		List<T> values = (List<T>) Arrays.asList(value.getClass().getEnumConstants());
+		List<ITextComponent> names = Lists.transform(values, v -> Entry.makeTitle(optionName + "_" + v.name().toLowerCase(Locale.ENGLISH)));
+		add(new CycleOptionValue<>(optionName, names, values, value, setter));
+	}
+
+	public <T> void choices(String optionName, T value, List<T> values, Consumer<T> setter) {
+		List<ITextComponent> names = Lists.transform(values, v -> new StringTextComponent(v.toString()));
+		add(new CycleOptionValue<>(optionName, names, values, value, setter));
 	}
 
 	public abstract static class Entry extends AbstractList.AbstractListEntry<Entry> {

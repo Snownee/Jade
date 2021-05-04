@@ -6,16 +6,16 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.text.ITextComponent;
 
-public class OptionsEntryButton extends OptionsListWidget.Entry {
+public class OptionButton extends OptionsListWidget.Entry {
 
 	private final ITextComponent title;
 	private final Button button;
 
-	public OptionsEntryButton(String titleKey, Button button) {
+	public OptionButton(String titleKey, Button button) {
 		this(makeTitle(titleKey), button);
 	}
 
-	public OptionsEntryButton(ITextComponent title, Button button) {
+	public OptionButton(ITextComponent title, Button button) {
 		this.title = title;
 		this.button = button;
 		button.setMessage(this.title);

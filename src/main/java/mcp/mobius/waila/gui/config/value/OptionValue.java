@@ -8,18 +8,18 @@ import mcp.mobius.waila.gui.config.OptionsListWidget;
 import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.util.text.ITextComponent;
 
-public abstract class OptionsEntryValue<T> extends OptionsListWidget.Entry {
+public abstract class OptionValue<T> extends OptionsListWidget.Entry {
 
 	private final ITextComponent title;
 	private final String description;
-	protected final Consumer<T> save;
+	protected final Consumer<T> setter;
 	protected T value;
 	private int x;
 
-	public OptionsEntryValue(String optionName, Consumer<T> save) {
+	public OptionValue(String optionName, Consumer<T> setter) {
 		this.title = makeTitle(optionName);
 		this.description = makeKey(optionName + "_desc");
-		this.save = save;
+		this.setter = setter;
 	}
 
 	@Override
@@ -30,7 +30,7 @@ public abstract class OptionsEntryValue<T> extends OptionsListWidget.Entry {
 	}
 
 	public void save() {
-		save.accept(value);
+		setter.accept(value);
 	}
 
 	public IGuiEventListener getListener() {

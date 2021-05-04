@@ -243,7 +243,7 @@ public class WailaConfig {
 
 		public static class ConfigOverlayColor {
 			private float alpha = 0.7f;
-			private Map<ResourceLocation, HUDTheme> themes = Maps.newHashMap();
+			private Map<ResourceLocation, HUDTheme> themes = Maps.newLinkedHashMap();
 			private ResourceLocation activeTheme = HUDTheme.DARK.getId();
 
 			public ConfigOverlayColor() {
