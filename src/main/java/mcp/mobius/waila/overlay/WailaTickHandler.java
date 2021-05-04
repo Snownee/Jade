@@ -13,6 +13,8 @@ import mcp.mobius.waila.api.impl.MetaDataProvider;
 import mcp.mobius.waila.api.impl.TaggableList;
 import mcp.mobius.waila.api.impl.TaggedTextComponent;
 import mcp.mobius.waila.api.impl.WailaRegistrar;
+import mcp.mobius.waila.api.impl.config.WailaConfig.ConfigGeneral;
+import mcp.mobius.waila.gui.GuiOptions;
 import mcp.mobius.waila.network.MessageRequestEntity;
 import mcp.mobius.waila.network.MessageRequestTile;
 import net.minecraft.block.Blocks;
@@ -42,14 +44,17 @@ public class WailaTickHandler {
 	public MetaDataProvider handler = new MetaDataProvider();
 
 	public void tickClient() {
-		if (!Waila.CONFIG.get().getGeneral().shouldDisplayTooltip()) {
+		ConfigGeneral config = Waila.CONFIG.get().getGeneral();
+		if (!config.shouldDisplayTooltip()) {
 			tooltip = null;
 			return;
 		}
 
 		Minecraft client = Minecraft.getInstance();
-		if (client.isGamePaused() || client.currentScreen != null || client.keyboardListener == null) {
-			return;
+		if (!(client.currentScreen instanceof GuiOptions)) {
+			if (client.isGamePaused() || client.currentScreen != null || client.keyboardListener == null) {
+				return;
+			}
 		}
 		World world = client.world;
 		PlayerEntity player = client.player;
@@ -74,7 +79,7 @@ public class WailaTickHandler {
 			DataAccessor accessor = DataAccessor.INSTANCE;
 			accessor.set(world, player, target);
 
-			if (accessor.serverConnected && accessor.getTileEntity() != null && Waila.CONFIG.get().getGeneral().shouldDisplayTooltip()) {
+			if (accessor.serverConnected && accessor.getTileEntity() != null && config.shouldDisplayTooltip()) {
 				if (accessor.isTimeElapsed(MetaDataProvider.rateLimiter)) {
 					accessor.resetTimer();
 					if (WailaRegistrar.INSTANCE.hasNBTProviders(accessor.getBlock()) || WailaRegistrar.INSTANCE.hasNBTProviders(accessor.getTileEntity()))
@@ -102,7 +107,7 @@ public class WailaTickHandler {
 			DataAccessor accessor = DataAccessor.INSTANCE;
 			accessor.set(world, player, target);
 
-			if (accessor.serverConnected && accessor.getEntity() != null && Waila.CONFIG.get().getGeneral().shouldDisplayTooltip()) {
+			if (accessor.serverConnected && accessor.getEntity() != null && config.shouldDisplayTooltip()) {
 				if (accessor.isTimeElapsed(MetaDataProvider.rateLimiter)) {
 					accessor.resetTimer();
 					if (WailaRegistrar.INSTANCE.hasNBTEntityProviders(accessor.getEntity()))

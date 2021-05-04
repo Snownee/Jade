@@ -20,6 +20,7 @@ public class OptionsEntryValueEnum<T extends Enum<T>> extends OptionsEntryValue<
 		this.translationKey = makeKey(optionName);
 		this.button = new Button(0, 0, 100, 20, makeTitle(optionName + "_" + selected.name().toLowerCase(Locale.ROOT)), w -> {
 			value = values[(value.ordinal() + 1) % values.length];
+			save();
 		});
 		this.value = selected;
 	}

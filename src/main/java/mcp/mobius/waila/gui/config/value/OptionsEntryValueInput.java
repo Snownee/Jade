@@ -1,13 +1,14 @@
 package mcp.mobius.waila.gui.config.value;
 
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+
 import com.mojang.blaze3d.matrix.MatrixStack;
+
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.util.text.StringTextComponent;
-
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 public class OptionsEntryValueInput<T> extends OptionsEntryValue<T> {
 
@@ -63,6 +64,8 @@ public class OptionsEntryValueInput<T> extends OptionsEntryValue<T> {
 		} catch (NumberFormatException e) {
 			// no-op
 		}
+
+		save();
 	}
 
 	private static class WatchedTextfield extends TextFieldWidget {

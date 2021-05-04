@@ -17,9 +17,9 @@ import mcp.mobius.waila.api.event.WailaRenderEvent;
 import mcp.mobius.waila.api.impl.DataAccessor;
 import mcp.mobius.waila.api.impl.config.PluginConfig;
 import mcp.mobius.waila.api.impl.config.WailaConfig;
+import mcp.mobius.waila.gui.GuiOptions;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.entity.player.ChatVisibility;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -45,13 +45,29 @@ public class OverlayRenderer {
 			return;
 
 		Minecraft mc = Minecraft.getInstance();
-		if ((mc.currentScreen != null && mc.gameSettings.chatVisibility != ChatVisibility.HIDDEN) || mc.world == null)
+		if (mc.world == null)
 			return;
+
+		if (RayTracing.INSTANCE.getTarget() == null)
+			return;
+
+		if (mc.currentScreen != null) {
+			if (!(mc.currentScreen instanceof GuiOptions)) {
+				return;
+			} else {
+				Rectangle position = WailaTickHandler.instance().tooltip.getPosition();
+				double x = mc.mouseHelper.getMouseX() * (double) mc.getMainWindow().getScaledWidth() / mc.getMainWindow().getWidth();
+				double y = mc.mouseHelper.getMouseY() * (double) mc.getMainWindow().getScaledHeight() / mc.getMainWindow().getHeight();
+				if (position.contains(x, y)) {
+					return;
+				}
+			}
+		}
 
 		if (mc.ingameGUI.getTabList().visible || mc.loadingGui != null || !Minecraft.isGuiEnabled())
 			return;
 
-		if (RayTracing.INSTANCE.getTarget() == null)
+		if (mc.gameSettings.showDebugInfo && Waila.CONFIG.get().getGeneral().shouldHideFromDebug())
 			return;
 
 		if (RayTracing.INSTANCE.getTarget().getType() == RayTraceResult.Type.BLOCK)
