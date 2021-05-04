@@ -136,7 +136,7 @@ public class WailaConfig {
 		}
 
 		public void setReachDistance(float reachDistance) {
-			this.reachDistance = MathHelper.clamp(reachDistance, 0, 30);
+			this.reachDistance = MathHelper.clamp(reachDistance, 0, 20);
 		}
 	}
 

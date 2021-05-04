@@ -1,18 +1,22 @@
 package mcp.mobius.waila.gui.config;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.text.TextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.util.text.ITextComponent;
 
 public class OptionsEntryButton extends OptionsListWidget.Entry {
 
-	private final TextComponent title;
+	private final ITextComponent title;
 	private final Button button;
 
-	public OptionsEntryButton(String title, Button button) {
-		this.title = new TranslationTextComponent(title);
+	public OptionsEntryButton(String titleKey, Button button) {
+		this(makeTitle(titleKey), button);
+	}
+
+	public OptionsEntryButton(ITextComponent title, Button button) {
+		this.title = title;
 		this.button = button;
 		button.setMessage(this.title);
 	}

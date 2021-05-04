@@ -27,6 +27,7 @@ import mcp.mobius.waila.api.IPluginConfig;
 import mcp.mobius.waila.api.ITaggableList;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.IItemTier;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -133,6 +134,10 @@ public class HarvestToolProvider implements IComponentProvider, ISelectiveResour
 
 	@Override
 	public void appendHead(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {
+		PlayerEntity player = accessor.getPlayer();
+		if (player.isCreative() || player.isSpectator()) {
+			return;
+		}
 		if (config.get(JadePlugin.HARVEST_TOOL_NEW_LINE)) {
 			return;
 		}
@@ -149,6 +154,10 @@ public class HarvestToolProvider implements IComponentProvider, ISelectiveResour
 
 	@Override
 	public void appendBody(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {
+		PlayerEntity player = accessor.getPlayer();
+		if (player.isCreative() || player.isSpectator()) {
+			return;
+		}
 		ITextComponent text = getText(accessor, config);
 		if (text != UNBREAKABLE_TEXT) {
 			if (!config.get(JadePlugin.HARVEST_TOOL_NEW_LINE)) {

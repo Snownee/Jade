@@ -1,6 +1,10 @@
 package mcp.mobius.waila.gui;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.mojang.blaze3d.matrix.MatrixStack;
+
 import mcp.mobius.waila.gui.config.OptionsListWidget;
 import mcp.mobius.waila.gui.config.value.OptionsEntryValue;
 import net.minecraft.client.Minecraft;
@@ -9,10 +13,9 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.IReorderingProcessor;
-import net.minecraft.util.text.*;
-
-import java.util.Arrays;
-import java.util.List;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 
 public abstract class GuiOptions extends Screen {
 
@@ -21,15 +24,18 @@ public abstract class GuiOptions extends Screen {
 	private final Runnable canceller;
 	private OptionsListWidget options;
 
-	public GuiOptions(Screen parent, TextComponent title, Runnable saver, Runnable canceller) {
+	public GuiOptions(Screen parent, ITextComponent title, Runnable saver, Runnable canceller) {
 		super(title);
-
 		this.parent = parent;
 		this.saver = saver;
 		this.canceller = canceller;
 	}
 
-	public GuiOptions(Screen parent, TextComponent title) {
+	public GuiOptions(Screen parent, String title, Runnable saver, Runnable canceller) {
+		this(parent, OptionsListWidget.Entry.makeTitle(title), saver, canceller);
+	}
+
+	public GuiOptions(Screen parent, String title) {
 		this(parent, title, null, null);
 	}
 
@@ -97,5 +103,12 @@ public abstract class GuiOptions extends Screen {
 	@Override
 	public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
 		return options.mouseScrolled(mouseX, mouseY, delta);
+	}
+
+	@Override
+	public void closeScreen() {
+		if (canceller != null)
+			canceller.run();
+		super.closeScreen();
 	}
 }

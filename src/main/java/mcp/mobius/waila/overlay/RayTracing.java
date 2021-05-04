@@ -55,10 +55,7 @@ public class RayTracing {
 		if (viewpoint == null)
 			return;
 
-		float reach = Waila.CONFIG.get().getGeneral().getReachDistance();
-		if (reach == 0) {
-			reach = mc.playerController.getBlockReachDistance();
-		}
+		float reach = mc.playerController.getBlockReachDistance() + Waila.CONFIG.get().getGeneral().getReachDistance();
 		this.target = this.rayTrace(viewpoint, reach, mc.getRenderPartialTicks());
 	}
 
@@ -77,8 +74,7 @@ public class RayTracing {
 	public RayTraceResult rayTrace(Entity entity, double playerReach, float partialTicks) {
 		Vector3d eyePosition = entity.getEyePosition(partialTicks);
 		Vector3d traceEnd;
-		boolean defaultReach = Waila.CONFIG.get().getGeneral().getReachDistance() == 0;
-		if (defaultReach && mc.objectMouseOver != null && mc.objectMouseOver.getType() == Type.BLOCK) {
+		if (mc.objectMouseOver != null && mc.objectMouseOver.getType() == Type.BLOCK) {
 			traceEnd = mc.objectMouseOver.getHitVec();
 		} else {
 			Vector3d lookVector = entity.getLook(partialTicks);
@@ -93,9 +89,6 @@ public class RayTracing {
 			predicate = e -> e != riding;
 		}
 		EntityRayTraceResult entityResult = rayTraceEntities(world, entity, eyePosition, traceEnd, bound, predicate);
-		if (defaultReach && entityResult != null) {
-			return entityResult;
-		}
 
 		if (mc.objectMouseOver != null && mc.objectMouseOver.getType() == Type.BLOCK) {
 			Vector3d lookVector = entity.getLook(partialTicks);

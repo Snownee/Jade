@@ -21,7 +21,7 @@ import net.minecraftforge.fml.loading.moddiscovery.ModInfo;
 
 public class ModIdentification {
 
-	private static final Map<String, String> NAMES = Maps.newHashMap();
+	public static final Map<String, String> NAMES = Maps.newHashMap();
 
 	static {
 		List<ModInfo> mods = ImmutableList.copyOf(ModList.get().getMods());

@@ -1,12 +1,13 @@
 package mcp.mobius.waila.gui.config.value;
 
+import java.util.Locale;
+import java.util.function.Consumer;
+
 import com.mojang.blaze3d.matrix.MatrixStack;
+
 import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.text.TranslationTextComponent;
-
-import java.util.Locale;
-import java.util.function.Consumer;
 
 public class OptionsEntryValueEnum<T extends Enum<T>> extends OptionsEntryValue<T> {
 
@@ -16,8 +17,8 @@ public class OptionsEntryValueEnum<T extends Enum<T>> extends OptionsEntryValue<
 	public OptionsEntryValueEnum(String optionName, T[] values, T selected, Consumer<T> save) {
 		super(optionName, save);
 
-		this.translationKey = optionName;
-		this.button = new Button(0, 0, 100, 20, new TranslationTextComponent(optionName + "_" + selected.name().toLowerCase(Locale.ROOT)), w -> {
+		this.translationKey = makeKey(optionName);
+		this.button = new Button(0, 0, 100, 20, makeTitle(optionName + "_" + selected.name().toLowerCase(Locale.ROOT)), w -> {
 			value = values[(value.ordinal() + 1) % values.length];
 		});
 		this.value = selected;

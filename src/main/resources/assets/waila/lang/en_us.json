@@ -43,7 +43,7 @@
   "config.waila.display_item_desc": "Display the item gotten from the block",
   "config.waila.tts": "Enable TTS",
   "config.waila.tts_desc": "Read out block and entity names with the system's text to speech processor",
-  "config.waila.reach_distance": "Reach Distance",
+  "config.waila.reach_distance": "Extended Reach",
 
   "config.waila.overlay": "Overlay",
   "config.waila.overlay_pos_x": "Horizontal Ratio",

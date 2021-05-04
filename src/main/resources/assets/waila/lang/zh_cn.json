@@ -41,7 +41,7 @@
   "config.waila.display_item_desc": "显示从方块中得到的物品",
   "config.waila.tts": "语音复述",
   "config.waila.tts_desc": "使用系统讲述人读出实体和方块名",
-  "config.waila.reach_distance": "触及范围",
+  "config.waila.reach_distance": "触及范围延申",
 
   "config.waila.overlay": "显示",
   "config.waila.overlay_pos_x": "水平比例",
