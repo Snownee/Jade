@@ -225,7 +225,7 @@ public class WailaConfig {
 			}
 
 			public int getAlpha() {
-				return alpha == 100 ? 255 : alpha == 0 ? (int) (0.4F / 100.0F * 256) << 24 : (int) (alpha / 100.0F * 256) << 24;
+				return MathHelper.clamp((int) (alpha / 100.0F * 256), 0, 255) << 24;
 			}
 
 			public int getRawAlpha() {
