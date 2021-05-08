@@ -94,7 +94,7 @@ public class Waila {
 								plugin.register(WailaRegistrar.INSTANCE);
 								LOGGER.info("Registered plugin at {}", a.getMemberName());
 							}
-						} catch (Exception e) {
+						} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
 							LOGGER.error("Error loading plugin at {}", a.getMemberName(), e);
 						}
 					}
