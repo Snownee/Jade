@@ -233,8 +233,8 @@ public class VanillaPlugin implements IWailaPlugin {
 		registrar.addConfig(FORGE_FLUID, true);
 
 		if (FMLEnvironment.dist.isClient()) {
-			HarvestToolProvider.init();
 			((IReloadableResourceManager) Minecraft.getInstance().getResourceManager()).addReloadListener(HarvestToolProvider.INSTANCE);
+			HarvestToolProvider.init();
 		}
 	}
 

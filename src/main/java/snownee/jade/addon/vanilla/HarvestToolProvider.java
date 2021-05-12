@@ -74,16 +74,22 @@ public class HarvestToolProvider implements IComponentProvider, ISelectiveResour
 
 	static {
 		/* off */
-        registerTool(new ItemStack(Items.WOODEN_PICKAXE), "pickaxe", ToolType.PICKAXE)
-            .addTool(Items.STONE_PICKAXE)
-            .addTool(Items.IRON_PICKAXE)
-            .addTool(Items.DIAMOND_PICKAXE)
-            .addTool(Items.NETHERITE_PICKAXE);
-        registerTool(new ItemStack(Items.WOODEN_AXE), "axe", ToolType.AXE);
-        registerTool(new ItemStack(Items.WOODEN_SHOVEL), "shovel", ToolType.SHOVEL);
-        registerTool(new ItemStack(Items.WOODEN_HOE), "hoe", ToolType.HOE);
-        registerTool(new ItemStack(Items.SHEARS), "shears", null);
-        /* on */
+		registerTool(new ItemStack(Items.WOODEN_PICKAXE), "pickaxe", ToolType.PICKAXE)
+			.addTool(Items.STONE_PICKAXE)
+			.addTool(Items.IRON_PICKAXE)
+			.addTool(Items.DIAMOND_PICKAXE)
+			.addTool(Items.NETHERITE_PICKAXE);
+		registerTool(new ItemStack(Items.WOODEN_AXE), "axe", ToolType.AXE)
+			.addTool(Items.STONE_AXE)
+			.addTool(Items.IRON_AXE);
+		registerTool(new ItemStack(Items.WOODEN_SHOVEL), "shovel", ToolType.SHOVEL)
+			.addTool(Items.STONE_SHOVEL)
+			.addTool(Items.IRON_SHOVEL);
+		registerTool(new ItemStack(Items.WOODEN_HOE), "hoe", ToolType.HOE)
+			.addTool(Items.STONE_HOE)
+			.addTool(Items.IRON_HOE);
+		registerTool(new ItemStack(Items.SHEARS), "shears", null);
+		/* on */
 	}
 
 	public static String getToolName(TestCase testCase) {

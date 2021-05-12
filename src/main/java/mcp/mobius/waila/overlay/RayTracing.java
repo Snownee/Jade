@@ -47,14 +47,17 @@ public class RayTracing {
 	}
 
 	public void fire() {
-		if (mc.objectMouseOver != null && mc.objectMouseOver.getType() == RayTraceResult.Type.ENTITY) {
-			this.target = mc.objectMouseOver;
-			return;
-		}
-
 		Entity viewpoint = mc.getRenderViewEntity();
 		if (viewpoint == null)
 			return;
+
+		if (mc.objectMouseOver != null && mc.objectMouseOver.getType() == RayTraceResult.Type.ENTITY) {
+			Entity targetEntity = ((EntityRayTraceResult) mc.objectMouseOver).getEntity();
+			if (targetEntity != viewpoint.getRidingEntity()) {
+				this.target = mc.objectMouseOver;
+				return;
+			}
+		}
 
 		float reach = mc.playerController.getBlockReachDistance() + Waila.CONFIG.get().getGeneral().getReachDistance();
 		this.target = this.rayTrace(viewpoint, reach, mc.getRenderPartialTicks());
