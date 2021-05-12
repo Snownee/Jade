@@ -30,7 +30,7 @@ public class ProgressStyle implements IProgressStyle {
 	}
 
 	@Override
-	public IProgressStyle vertical(boolean vertical) { //TODO
+	public IProgressStyle vertical(boolean vertical) {
 		this.vertical = vertical;
 		return this;
 	}
@@ -68,7 +68,7 @@ public class ProgressStyle implements IProgressStyle {
 							DisplayHelper.fill(matrixStack, x, yy, x + width, fy, color2);
 						}
 					} else {
-						for (float xx = x + 1; xx < x + width; xx += 2) {
+						for (float xx = x + 1; xx < x + progress; xx += 2) {
 							float fx = Math.min(x + width, xx + 1);
 							DisplayHelper.fill(matrixStack, xx, y, fx, y + height, color2);
 						}

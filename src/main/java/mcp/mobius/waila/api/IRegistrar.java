@@ -7,6 +7,7 @@ import mcp.mobius.waila.api.ui.IElementHelper;
 import net.minecraft.block.Block;
 import net.minecraft.command.impl.data.IDataAccessor;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 
@@ -76,6 +77,12 @@ public interface IRegistrar {
      * @param entity The highest level class to apply to
      */
 	void registerComponentProvider(IEntityComponentProvider dataProvider, TooltipPosition position, Class<? extends Entity> entity);
+
+	void hideTarget(Block block);
+
+	void hideTarget(EntityType<?> entityType);
+
+	void usePickedResult(Block block);
 
 	/**
      * Registers an {@link IEntityComponentProvider} instance for data syncing purposes.

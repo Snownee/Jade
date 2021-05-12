@@ -7,6 +7,7 @@ import mcp.mobius.waila.api.TooltipPosition;
 import mcp.mobius.waila.api.WailaPlugin;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
@@ -47,5 +48,7 @@ public class CorePlugin implements IWailaPlugin {
 		registrar.addConfig(CONFIG_BLOCK_STATES, false);
 		registrar.addConfig(CONFIG_MOD_NAME, true);
 		registrar.addConfig(CONFIG_ITEM_MOD_NAME, false);
+
+		registrar.hideTarget(EntityType.AREA_EFFECT_CLOUD);
 	}
 }

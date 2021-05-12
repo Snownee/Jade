@@ -14,7 +14,6 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.vector.Vector2f;
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -51,8 +50,8 @@ public class ForgeCapabilityProvider implements IComponentProvider, IServerDataP
 					String curText = TextFormatting.WHITE + VanillaPlugin.displayHelper.humanReadableNumber(cur, "FE", false) + TextFormatting.GRAY;
 					String maxText = VanillaPlugin.displayHelper.humanReadableNumber(max, "FE", false);
 					IFormattableTextComponent text = new TranslationTextComponent("jade.fe", curText, maxText).mergeStyle(TextFormatting.GRAY);
-					IProgressStyle progressStyle = helper.progressStyle().color(Color.RED.getRGB(), 0xFF660000).vertical(true);
-					tooltip.add(helper.progress((float) cur / max, text, progressStyle, helper.borderStyle()).tag(VanillaPlugin.FORGE_ENERGY).size(new Vector2f(10, 100)));
+					IProgressStyle progressStyle = helper.progressStyle().color(Color.RED.getRGB(), 0xFF660000);
+					tooltip.add(helper.progress((float) cur / max, text, progressStyle, helper.borderStyle()).tag(VanillaPlugin.FORGE_ENERGY));
 				}
 			}
 
@@ -89,10 +88,7 @@ public class ForgeCapabilityProvider implements IComponentProvider, IServerDataP
 			text = new TranslationTextComponent("jade.fluid", fluidStack.getDisplayName(), amountText);
 		}
 		IProgressStyle progressStyle = helper.progressStyle().overlay(helper.fluid(fluidStack));
-		tooltip.add(helper.progress((float) fluidStack.getAmount() / capacity, text, progressStyle, helper.borderStyle()).size(new Vector2f(10, 100)).tag(VanillaPlugin.FORGE_FLUID));
-
-		progressStyle = helper.progressStyle().overlay(helper.fluid(fluidStack)).vertical(true);
-		tooltip.add(helper.progress((float) fluidStack.getAmount() / capacity, text, progressStyle, helper.borderStyle()).size(new Vector2f(10, 100)).tag(VanillaPlugin.FORGE_FLUID));
+		tooltip.add(helper.progress((float) fluidStack.getAmount() / capacity, text, progressStyle, helper.borderStyle()).tag(VanillaPlugin.FORGE_FLUID));
 	}
 
 	@Override

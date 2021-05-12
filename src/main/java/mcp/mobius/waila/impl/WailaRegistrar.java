@@ -2,6 +2,9 @@ package mcp.mobius.waila.impl;
 
 import java.util.EnumMap;
 import java.util.List;
+import java.util.Set;
+
+import com.google.common.collect.Sets;
 
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.IComponentProvider;
@@ -17,7 +20,9 @@ import mcp.mobius.waila.impl.config.PluginConfig;
 import mcp.mobius.waila.impl.ui.ElementHelper;
 import mcp.mobius.waila.overlay.DisplayHelper;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 
@@ -32,6 +37,10 @@ public class WailaRegistrar implements IRegistrar {
 	public final HierarchyLookup<IEntityComponentProvider> entityStackProviders;
 	public final EnumMap<TooltipPosition, HierarchyLookup<IEntityComponentProvider>> entityComponentProviders;
 	public final HierarchyLookup<IServerDataProvider<Entity>> entityDataProviders;
+
+	public final Set<Block> hideBlocks = Sets.newHashSet();
+	public final Set<EntityType<?>> hideEntities = Sets.newHashSet();
+	public final Set<Block> pickBlocks = Sets.newHashSet();
 
 	WailaRegistrar() {
 		blockStackProviders = new HierarchyLookup<>(Block.class);
@@ -133,4 +142,30 @@ public class WailaRegistrar implements IRegistrar {
 		return Waila.CONFIG.get();
 	}
 
+	@Override
+	public void hideTarget(Block block) {
+		hideBlocks.add(block);
+	}
+
+	@Override
+	public void hideTarget(EntityType<?> entityType) {
+		hideEntities.add(entityType);
+	}
+
+	@Override
+	public void usePickedResult(Block block) {
+		pickBlocks.add(block);
+	}
+
+	public boolean shouldHide(BlockState state) {
+		return hideBlocks.contains(state.getBlock());
+	}
+
+	public boolean shouldPick(BlockState state) {
+		return pickBlocks.contains(state.getBlock());
+	}
+
+	public boolean shouldHide(Entity entity) {
+		return hideEntities.contains(entity.getType());
+	}
 }

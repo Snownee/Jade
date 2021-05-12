@@ -10,6 +10,7 @@ import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.TooltipPosition;
 import mcp.mobius.waila.api.config.IPluginConfig;
 import mcp.mobius.waila.api.ui.IElementHelper;
+import mcp.mobius.waila.impl.WailaRegistrar;
 import mcp.mobius.waila.utils.ModIdentification;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.resources.I18n;
@@ -43,24 +44,32 @@ public class BaseBlockProvider implements IComponentProvider, IServerDataProvide
 	}
 
 	public void appendHead(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		String name;
+		String name = null;
 		if (accessor.getServerData().contains("givenName", Constants.NBT.TAG_STRING)) {
 			ITextComponent component = ITextComponent.Serializer.getComponentFromJson(accessor.getServerData().getString("givenName"));
 			name = component.getString();
 		} else {
-			String key = accessor.getBlock().getTranslationKey();
-			if (I18n.hasKey(key)) {
-				name = I18n.format(key);
-			} else {
-				ItemStack stack = accessor.getBlockState().getPickBlock(accessor.getHitResult(), accessor.getWorld(), accessor.getPosition(), accessor.getPlayer());
-				if (stack != null && !stack.isEmpty()) {
-					name = stack.getDisplayName().getString();
+			if (WailaRegistrar.INSTANCE.shouldPick(accessor.getBlockState())) {
+				ItemStack pick = accessor.getPickedResult();
+				if (!pick.isEmpty())
+					name = pick.getDisplayName().getString();
+			}
+			if (name == null) {
+				String key = accessor.getBlock().getTranslationKey();
+				if (I18n.hasKey(key)) {
+					name = I18n.format(key);
 				} else {
-					name = key;
+					ItemStack stack = accessor.getBlockState().getPickBlock(accessor.getHitResult(), accessor.getWorld(), accessor.getPosition(), accessor.getPlayer());
+					if (stack != null && !stack.isEmpty()) {
+						name = stack.getDisplayName().getString();
+					} else {
+						name = key;
+					}
 				}
 			}
 		}
-		tooltip.add(new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getBlockName(), name)), CorePlugin.TAG_OBJECT_NAME);
+		if (name != null)
+			tooltip.add(new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getBlockName(), name)), CorePlugin.TAG_OBJECT_NAME);
 		if (config.get(CorePlugin.CONFIG_REGISTRY_NAME))
 			tooltip.add(new StringTextComponent(accessor.getBlock().getRegistryName().toString()).mergeStyle(TextFormatting.GRAY), CorePlugin.TAG_REGISTRY_NAME);
 	}
@@ -79,7 +88,15 @@ public class BaseBlockProvider implements IComponentProvider, IServerDataProvide
 	public void appendTail(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		if (!config.get(CorePlugin.CONFIG_MOD_NAME))
 			return;
-		String modName = ModIdentification.getModName(accessor.getBlock());
+		String modName = null;
+		if (WailaRegistrar.INSTANCE.shouldPick(accessor.getBlockState())) {
+			ItemStack pick = accessor.getPickedResult();
+			if (!pick.isEmpty())
+				modName = ModIdentification.getModName(pick);
+		}
+		if (modName == null)
+			modName = ModIdentification.getModName(accessor.getBlock());
+
 		if (!Strings.isNullOrEmpty(modName)) {
 			modName = String.format(Waila.CONFIG.get().getFormatting().getModName(), modName);
 			IElementHelper helper = tooltip.getElementHelper();

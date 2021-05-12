@@ -53,7 +53,7 @@ public class RayTracing {
 
 		if (mc.objectMouseOver != null && mc.objectMouseOver.getType() == RayTraceResult.Type.ENTITY) {
 			Entity targetEntity = ((EntityRayTraceResult) mc.objectMouseOver).getEntity();
-			if (targetEntity != viewpoint.getRidingEntity()) {
+			if (!WailaRegistrar.INSTANCE.shouldHide(targetEntity) && targetEntity != viewpoint.getRidingEntity()) {
 				this.target = mc.objectMouseOver;
 				return;
 			}
@@ -102,6 +102,12 @@ public class RayTracing {
 				return entityResult;
 			}
 		}
+		if (blockResult != null) {
+			BlockState state = world.getBlockState(blockResult.getPos());
+			if (WailaRegistrar.INSTANCE.shouldHide(state)) {
+				return null;
+			}
+		}
 		return blockResult;
 	}
 
@@ -112,7 +118,7 @@ public class RayTracing {
 		Entity entity = null;
 
 		for (Entity entity1 : worldIn.getEntitiesInAABBexcluding(projectile, boundingBox, filter)) {
-			if (entity1.isSpectator()) {
+			if (entity1.isSpectator() || WailaRegistrar.INSTANCE.shouldHide(entity1)) {
 				continue;
 			}
 			AxisAlignedBB axisalignedbb = entity1.getBoundingBox();
