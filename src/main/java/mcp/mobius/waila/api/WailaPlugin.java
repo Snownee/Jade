@@ -15,4 +15,6 @@ public @interface WailaPlugin {
 	 * @return a modid required for this plugin
 	 */
 	String value() default "";
+
+	int priority() default 0;
 }

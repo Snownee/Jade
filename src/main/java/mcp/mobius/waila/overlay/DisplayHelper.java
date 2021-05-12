@@ -59,12 +59,12 @@ public class DisplayHelper implements IDisplayHelper {
 	private static final Minecraft CLIENT = Minecraft.getInstance();
 
 	@Override
-	public void drawItem(MatrixStack matrixStack, float x, float y, ItemStack stack, float scale) {
+	public void drawItem(MatrixStack matrixStack, float x, float y, ItemStack stack, float scale, @Nullable String text) {
 		matrixStack.push();
 		enable3DRender();
 		try {
 			renderItemIntoGUI(matrixStack, stack, x, y, scale);
-			renderItemOverlayIntoGUI(matrixStack, CLIENT.fontRenderer, stack, x, y, null);
+			renderItemOverlayIntoGUI(matrixStack, CLIENT.fontRenderer, stack, x, y, text);
 			renderStackSize(matrixStack, CLIENT.fontRenderer, stack, x, y);
 		} catch (Exception e) {
 			String stackStr = stack != null ? stack.toString() : "NullStack";

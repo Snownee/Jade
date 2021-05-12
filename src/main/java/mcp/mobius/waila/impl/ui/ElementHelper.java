@@ -9,21 +9,12 @@ import mcp.mobius.waila.api.ui.IElementHelper;
 import mcp.mobius.waila.api.ui.IProgressStyle;
 import mcp.mobius.waila.impl.Tooltip;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector2f;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.fluids.FluidStack;
-import snownee.jade.Jade;
 
 public class ElementHelper implements IElementHelper {
 	public static final ElementHelper INSTANCE = new ElementHelper();
-
-	static final ResourceLocation ITEM = new ResourceLocation("item");
-	static final ResourceLocation SPACER = new ResourceLocation("spacer");
-
-	static final ResourceLocation OFFSET_TEXT = new ResourceLocation(Jade.MODID, "text");
-	static final ResourceLocation BORDER = new ResourceLocation(Jade.MODID, "border");
-	static final ResourceLocation SUB = new ResourceLocation(Jade.MODID, "sub");
 
 	@Override
 	public IElement text(ITextComponent component) {
@@ -31,8 +22,18 @@ public class ElementHelper implements IElementHelper {
 	}
 
 	@Override
-	public IElement item(ItemStack itemStack, float scale) {
-		return ItemStackElement.of(itemStack, scale);
+	public IElement item(ItemStack stack) {
+		return ItemStackElement.of(stack);
+	}
+
+	@Override
+	public IElement item(ItemStack stack, float scale) {
+		return ItemStackElement.of(stack, scale);
+	}
+
+	@Override
+	public IElement item(ItemStack stack, float scale, String text) {
+		return ItemStackElement.of(stack, scale, text);
 	}
 
 	@Override

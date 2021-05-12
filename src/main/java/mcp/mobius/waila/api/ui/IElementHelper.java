@@ -13,11 +13,11 @@ public interface IElementHelper {
 
 	IElement spacer(int x, int y);
 
-	default IElement item(ItemStack stack) {
-		return item(stack, 1);
-	}
+	IElement item(ItemStack itemStack);
 
 	IElement item(ItemStack itemStack, float scale);
+
+	IElement item(ItemStack itemStack, float scale, @Nullable String text);
 
 	IElement fluid(FluidStack fluidStack);
 

@@ -1,5 +1,8 @@
 package mcp.mobius.waila;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,6 +39,7 @@ import net.minecraftforge.fml.network.FMLNetworkConstants;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
+import net.minecraftforge.forgespi.language.ModFileScanData.AnnotationData;
 import snownee.jade.Jade;
 
 @Mod(Waila.MODID)
@@ -82,27 +86,42 @@ public class Waila {
 	@SubscribeEvent
 	public void loadComplete(FMLLoadCompleteEvent event) {
 		new CorePlugin().register(WailaRegistrar.INSTANCE);
-		ModList.get().getAllScanData().forEach(scan -> {
-			scan.getAnnotations().forEach(a -> {
-				if (a.getAnnotationType().getClassName().equals(WailaPlugin.class.getName())) {
-					String required = (String) a.getAnnotationData().getOrDefault("value", "");
-					if (required.isEmpty() || ModList.get().isLoaded(required)) {
-						try {
-							Class<?> clazz = Class.forName(a.getMemberName());
-							if (IWailaPlugin.class.isAssignableFrom(clazz)) {
-								IWailaPlugin plugin = (IWailaPlugin) clazz.newInstance();
-								plugin.register(WailaRegistrar.INSTANCE);
-								LOGGER.info("Registered plugin at {}", a.getMemberName());
-							}
-						} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-							LOGGER.error("Error loading plugin at {}", a.getMemberName(), e);
+		/* off */
+		List<String> classNames = ModList.get().getAllScanData()
+				.stream()
+				.flatMap($ -> $.getAnnotations().stream())
+				.filter($ -> {
+					if ($.getAnnotationType().getClassName().equals(WailaPlugin.class.getName())) {
+						String required = (String) $.getAnnotationData().getOrDefault("value", "");
+						if (required.isEmpty() || ModList.get().isLoaded(required)) {
+							return true;
 						}
 					}
+					return false;
+				})
+				.sorted((a, b) -> Integer.compare(getPriority(a), getPriority(b)))
+				.map(AnnotationData::getMemberName)
+				.collect(Collectors.toList());
+		/* on */
+
+		for (String className : classNames) {
+			try {
+				Class<?> clazz = Class.forName(className);
+				if (IWailaPlugin.class.isAssignableFrom(clazz)) {
+					IWailaPlugin plugin = (IWailaPlugin) clazz.newInstance();
+					plugin.register(WailaRegistrar.INSTANCE);
+					LOGGER.info("Registered plugin at {}", className);
 				}
-			});
-		});
+			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+				LOGGER.error("Error loading plugin at {}", className, e);
+			}
+		}
 
 		PluginConfig.INSTANCE.reload();
+	}
+
+	private static int getPriority(AnnotationData data) {
+		return (Integer) data.getAnnotationData().getOrDefault("priority", 0);
 	}
 
 	@SubscribeEvent
