@@ -42,23 +42,36 @@ public class ProgressStyle implements IProgressStyle {
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, float x, float y, float width, float height, ITextComponent text) {
-		if (width > 0) {
+	public void render(MatrixStack matrixStack, float x, float y, float width, float height, float progress, ITextComponent text) {
+		progress *= choose(true, width, height);
+		float progressY = y;
+		if (vertical) {
+			progressY += height - progress;
+		}
+		if (progress > 0) {
 			if (overlay != null) {
-				overlay.size(new Vector2f(width, height));
-				overlay.render(matrixStack, x, y, width, height);
+				Vector2f size = new Vector2f(choose(true, progress, width), choose(false, progress, height));
+				overlay.size(size);
+				overlay.render(matrixStack, x, progressY, size.x, size.y);
 			} else {
 				Color lighter = new Color(color);
 				int alpha = (int) (lighter.getAlpha() * 0.7f);
 				lighter = new Color(lighter.getRed(), lighter.getGreen(), lighter.getBlue(), alpha);
 
-				float half = height / 2;
-				DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x, y, width, half, lighter.getRGB(), color);
-				DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x, y + half, width, half, color, lighter.getRGB());
+				float half = choose(true, height, width) / 2;
+				DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x, progressY, choose(true, progress, half), choose(false, progress, half), lighter.getRGB(), color, vertical);
+				DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x + choose(false, half, 0), progressY + choose(true, half, 0), choose(true, progress, half), choose(false, progress, half), color, lighter.getRGB(), vertical);
 				if (color != color2) {
-					for (float xx = x + 1; xx < x + width; xx += 2) {
-						float fx = Math.min(x + width, xx + 1);
-						DisplayHelper.fill(matrixStack, xx, y, fx, y + height, color2);
+					if (vertical) {
+						for (float yy = y + height; yy > progressY; yy -= 2) {
+							float fy = Math.max(progressY, yy + 1);
+							DisplayHelper.fill(matrixStack, x, yy, x + width, fy, color2);
+						}
+					} else {
+						for (float xx = x + 1; xx < x + width; xx += 2) {
+							float fx = Math.min(x + width, xx + 1);
+							DisplayHelper.fill(matrixStack, xx, y, fx, y + height, color2);
+						}
 					}
 				}
 			}
@@ -75,8 +88,16 @@ public class ProgressStyle implements IProgressStyle {
 				}
 			}
 			y += height - font.FONT_HEIGHT;
+			if (vertical && font.FONT_HEIGHT < progress) {
+				y -= progress;
+				y += font.FONT_HEIGHT + 2;
+			}
 			font.drawStringWithShadow(matrixStack, text.getString(), x + 1, y, textColor);
 		}
+	}
+
+	private float choose(boolean expand, float x, float y) {
+		return vertical ^ expand ? x : y;
 	}
 
 	private static Vector3f RGBtoHSV(int rgb) {

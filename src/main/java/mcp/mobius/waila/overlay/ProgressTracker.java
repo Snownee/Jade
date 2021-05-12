@@ -11,12 +11,12 @@ import net.minecraft.util.ResourceLocation;
 public class ProgressTracker {
 
 	public static class TrackInfo {
-		private int width;
+		private float width;
 		private int ticksSinceWidthChanged;
 		private boolean updatedThisTick;
 		private SmoothChasingValue progress = new SmoothChasingValue();
 
-		public int getWidth() {
+		public float getWidth() {
 			return width;
 		}
 
@@ -28,7 +28,7 @@ public class ProgressTracker {
 
 	private final ListMultimap<ResourceLocation, TrackInfo> map = ArrayListMultimap.create();
 
-	public TrackInfo createInfo(ResourceLocation tag, float progress, int expectedWidth) {
+	public TrackInfo createInfo(ResourceLocation tag, float progress, float expectedWidth) {
 		List<TrackInfo> infos = map.get(tag);
 		TrackInfo info = null;
 		for (TrackInfo o : infos) {

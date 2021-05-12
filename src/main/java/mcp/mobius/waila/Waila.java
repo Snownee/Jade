@@ -9,7 +9,6 @@ import org.apache.logging.log4j.Logger;
 
 import com.google.gson.GsonBuilder;
 
-import mcp.mobius.waila.addons.core.CorePlugin;
 import mcp.mobius.waila.api.IWailaPlugin;
 import mcp.mobius.waila.api.WailaPlugin;
 import mcp.mobius.waila.api.config.WailaConfig;
@@ -85,7 +84,6 @@ public class Waila {
 
 	@SubscribeEvent
 	public void loadComplete(FMLLoadCompleteEvent event) {
-		new CorePlugin().register(WailaRegistrar.INSTANCE);
 		/* off */
 		List<String> classNames = ModList.get().getAllScanData()
 				.stream()

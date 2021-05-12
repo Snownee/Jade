@@ -18,5 +18,5 @@ public interface IProgressStyle {
 
 	IProgressStyle overlay(IElement overlay);
 
-	void render(MatrixStack matrixStack, float x, float y, float w, float h, ITextComponent text);
+	void render(MatrixStack matrixStack, float x, float y, float w, float h, float progress, ITextComponent text);
 }

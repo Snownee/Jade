@@ -212,6 +212,10 @@ public class DisplayHelper implements IDisplayHelper {
 
 	@Override
 	public void drawGradientRect(MatrixStack matrixStack, float left, float top, float right, float bottom, int startColor, int endColor) {
+		drawGradientRect(matrixStack, left, top, right, bottom, startColor, endColor, false);
+	}
+
+	public void drawGradientRect(MatrixStack matrixStack, float left, float top, float right, float bottom, int startColor, int endColor, boolean vertical) {
 		float zLevel = 0.0F;
 		Matrix4f matrix = matrixStack.getLast().getMatrix();
 
@@ -231,10 +235,17 @@ public class DisplayHelper implements IDisplayHelper {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder buffer = tessellator.getBuffer();
 		buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-		buffer.pos(matrix, left + right, top, zLevel).color(f1, f2, f3, f).endVertex();
-		buffer.pos(matrix, left, top, zLevel).color(f1, f2, f3, f).endVertex();
-		buffer.pos(matrix, left, top + bottom, zLevel).color(f5, f6, f7, f4).endVertex();
-		buffer.pos(matrix, left + right, top + bottom, zLevel).color(f5, f6, f7, f4).endVertex();
+		if (vertical) {
+			buffer.pos(matrix, left + right, top, zLevel).color(f5, f6, f7, f4).endVertex();
+			buffer.pos(matrix, left, top, zLevel).color(f1, f2, f3, f).endVertex();
+			buffer.pos(matrix, left, top + bottom, zLevel).color(f1, f2, f3, f).endVertex();
+			buffer.pos(matrix, left + right, top + bottom, zLevel).color(f5, f6, f7, f4).endVertex();
+		} else {
+			buffer.pos(matrix, left + right, top, zLevel).color(f1, f2, f3, f).endVertex();
+			buffer.pos(matrix, left, top, zLevel).color(f1, f2, f3, f).endVertex();
+			buffer.pos(matrix, left, top + bottom, zLevel).color(f5, f6, f7, f4).endVertex();
+			buffer.pos(matrix, left + right, top + bottom, zLevel).color(f5, f6, f7, f4).endVertex();
+		}
 		tessellator.draw();
 		RenderSystem.shadeModel(GL11.GL_FLAT);
 		RenderSystem.disableBlend();
