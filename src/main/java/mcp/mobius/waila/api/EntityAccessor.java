@@ -7,6 +7,9 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.world.World;
 
+/**
+ * Class to get information of entity target and context.
+ */
 public class EntityAccessor extends Accessor {
 
 	private final Entity entity;

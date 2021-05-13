@@ -4,7 +4,6 @@ import javax.annotation.Nullable;
 
 import mcp.mobius.waila.api.config.IPluginConfig;
 import mcp.mobius.waila.api.ui.IElement;
-import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
 /**
@@ -19,17 +18,17 @@ public interface IComponentProvider {
 
 	/**
      * Callback used to override the default Waila lookup system.</br>
-     * Will only be called if the implementing class is registered via {@link IRegistrar#registerStackProvider}.</br>
+     * Will only be called if the implementing class is registered via {@link IRegistrar#registerIconProvider}.</br>
      * <p>
      * This method is only called on the client side. If you require data from the server, you should also implement
      * {@link IServerDataProvider#appendServerData(net.minecraft.nbt.CompoundNBT, net.minecraft.entity.player.ServerPlayerEntity, World, Object)}
      * and add the data to the {@link net.minecraft.nbt.CompoundNBT} there, which can then be read back using {@link IBlockAccessor#getServerData()}.
      * If you rely on the client knowing the data you need, you are not guaranteed to have the proper values.
      *
-     * @param accessor Contains most of the relevant information about the current environment.
-     * @param config   Current configuration of Waila.
-     * @param currentElement 
-     * @return {@link ItemStack#EMPTY} if override is not required, a non-empty ItemStack otherwise.
+     * @param accessor       Contains most of the relevant information about the current environment.
+     * @param config         Current configuration of Waila.
+     * @param currentElement Current icon to show
+     * @return {@link null} if override is not required, an {@link IElement} otherwise.
      */
 	@Nullable
 	default IElement getIcon(BlockAccessor accessor, IPluginConfig config, IElement currentIcon) {

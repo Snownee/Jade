@@ -8,7 +8,7 @@ public interface IServerDataProvider<T> {
 
 	/**
      * Callback used server side to return a custom synchronization NBTTagCompound.</br>
-     * Will only be called if the implementing class is registered via {@link IRegistrar#registerBlockDataProvider}.</br>
+     * Will only be called if the implementing class is registered via {@link IRegistrar#registerBlockDataProvider} or {@link IRegistrar#registerEntityDataProvider}.</br>
      *
      * @param data   Current synchronization tag (might have been processed by other providers and might be processed by other providers).
      * @param player The player requesting data synchronization (The owner of the current connection).

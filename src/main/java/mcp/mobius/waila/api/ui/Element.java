@@ -3,6 +3,11 @@ package mcp.mobius.waila.api.ui;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector2f;
 
+/**
+ * A general implementation of {@link IElement}
+ * 
+ * @author Snownee
+ */
 public abstract class Element implements IElement {
 
 	protected Align align = Align.LEFT;

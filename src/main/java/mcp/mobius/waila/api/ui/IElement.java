@@ -5,39 +5,53 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector2f;
 
-// TODO docs
+/**
+ * A basic renderable element to be drawn in Jade's tooltip.
+ * 
+ * @author Snownee
+ */
 public interface IElement {
 
+	/**
+	 * Force a size that this element reserve
+	 */
 	IElement size(Vector2f size);
 
 	/**
-     * @param data     The data supplied by the provider
-     * @param accessor A global accessor for TileEntities and Entities
-     * @return Dimension of the reserved area
-     */
+	 * Calculate the default reserved area of this element.
+	 * 
+	 * Modders call getCachedSize instead
+	 */
 	Vector2f getSize();
 
 	Vector2f getCachedSize();
 
 	/**
-     * Draw method for the renderer. The GL matrice is automatically moved to the top left of the reserved zone.<br>
-     * All calls should be relative to (0,0)
-     * @param maxWidth 
-     * @param maxHeight 
-     *
-     * @param data     The data supplied by the provider
-     * @param accessor A global accessor for TileEntities and Entities
-     */
+	 * Draw method for the renderer.
+	 * 
+	 * @param matrixStack
+	 * @param x
+	 * @param y
+	 * @param maxX Max width this element can expand to
+	 * @param maxY Max height this element can expand to
+	 */
 	void render(MatrixStack matrixStack, float x, float y, float maxX, float maxY);
 
 	IElement align(Align align);
 
 	Align getAlignment();
 
+	/**
+	 * Reposition this element with an offset
+	 */
 	IElement translate(Vector2f translation);
 
 	Vector2f getTranslation();
 
+	/**
+	 * Tag this element for identify by other component providers or
+	 * adding transition animation if this element is a progress bar
+	 */
 	IElement tag(ResourceLocation tag);
 
 	ResourceLocation getTag();

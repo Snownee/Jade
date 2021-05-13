@@ -6,6 +6,9 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 
+/**
+ * A generic class to get basic information of target and context.
+ */
 public abstract class Accessor {
 
 	private final World world;
@@ -40,10 +43,16 @@ public abstract class Accessor {
 		return hit;
 	}
 
+	/**
+	 * Returns true if dedicated server has Jade installed.
+	 */
 	public boolean isServerConnected() {
 		return serverConnected;
 	}
 
+	/**
+	 * Get {@link TooltipPosition} the {@link ITooltip} currently gathering
+	 */
 	public TooltipPosition getTooltipPosition() {
 		return tooltipPosition;
 	}

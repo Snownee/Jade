@@ -3,9 +3,9 @@ package mcp.mobius.waila.api;
 import mcp.mobius.waila.api.config.IPluginConfig;
 import mcp.mobius.waila.api.config.WailaConfig;
 import mcp.mobius.waila.api.ui.IDisplayHelper;
+import mcp.mobius.waila.api.ui.IElement;
 import mcp.mobius.waila.api.ui.IElementHelper;
 import net.minecraft.block.Block;
-import net.minecraft.command.impl.data.IDataAccessor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.tileentity.TileEntity;
@@ -14,7 +14,7 @@ import net.minecraft.util.ResourceLocation;
 public interface IRegistrar {
 
 	/**
-     * Registers a namespaced config key to be accessed within data providers.
+     * Register a namespaced config key to be accessed within data providers.
      *
      * @param key the namespaced key
      * @param defaultValue the default value
@@ -22,7 +22,7 @@ public interface IRegistrar {
 	void addConfig(ResourceLocation key, boolean defaultValue);
 
 	/**
-     * Registers a namespaced config key to be accessed within data providers. These values are sent from the server to
+     * Register a namespaced config key to be accessed within data providers. These values are sent from the server to
      * the client upon connection.
      *
      * @param key The namespaced key
@@ -31,9 +31,8 @@ public interface IRegistrar {
 	void addSyncedConfig(ResourceLocation key, boolean defaultValue);
 
 	/**
-     * Registers an {@link IComponentProvider} instance to allow overriding the displayed item for a block via the
-     * {@link IComponentProvider#getIcon(IDataAccessor, IPluginConfig)} method. A {@link TileEntity}
-     * is also an acceptable class type.
+     * Register an {@link IComponentProvider} instance to allow overriding the icon for a block via the
+     * {@link IComponentProvider#getIcon(BlockAccessor, IPluginConfig, IElement)} method.
      *
      * @param dataProvider The data provider instance
      * @param block The highest level class to apply to
@@ -41,9 +40,8 @@ public interface IRegistrar {
 	void registerIconProvider(IComponentProvider dataProvider, Class<? extends Block> block);
 
 	/**
-     * Registers an {@link IComponentProvider} instance for appending {@link net.minecraft.util.text.ITextComponent} to
+     * Register an {@link IComponentProvider} instance for appending informations to
      * the tooltip.
-     * A {@link TileEntity} is also an acceptable class type.
      *
      * @param dataProvider The data provider instance
      * @param position The position on the tooltip this applies to
@@ -52,8 +50,7 @@ public interface IRegistrar {
 	void registerComponentProvider(IComponentProvider dataProvider, TooltipPosition position, Class<? extends Block> block);
 
 	/**
-	 * Registers an {@link IServerDataProvider<TileEntity>} instance for data syncing purposes.
-	 * A {@link TileEntity} is also an acceptable class type.
+	 * Register an {@link IServerDataProvider<TileEntity>} instance for data syncing purposes.
 	 *
 	 * @param dataProvider The data provider instance
 	 * @param block The highest level class to apply to
@@ -61,7 +58,8 @@ public interface IRegistrar {
 	void registerBlockDataProvider(IServerDataProvider<TileEntity> dataProvider, Class<? extends TileEntity> block);
 
 	/**
-     * Registers an {@link IEntityComponentProvider} instance to allow displaying an item next to the entity name.
+     * Register an {@link IEntityComponentProvider} instance to allow overriding the icon for a entity via the
+     * {@link IEntityComponentProvider#getIcon(EntityAccessor, IPluginConfig, IElement)} method.
      *
      * @param dataProvider The data provider instance
      * @param entity The highest level class to apply to
@@ -69,7 +67,7 @@ public interface IRegistrar {
 	void registerIconProvider(IEntityComponentProvider dataProvider, Class<? extends Entity> entity);
 
 	/**
-     * Registers an {@link IEntityComponentProvider} instance for appending {@link net.minecraft.util.text.ITextComponent}
+     * Register an {@link IEntityComponentProvider} instance for appending {@link net.minecraft.util.text.ITextComponent}
      * to the tooltip.
      *
      * @param dataProvider The data provider instance
@@ -78,19 +76,29 @@ public interface IRegistrar {
      */
 	void registerComponentProvider(IEntityComponentProvider dataProvider, TooltipPosition position, Class<? extends Entity> entity);
 
-	void hideTarget(Block block);
-
-	void hideTarget(EntityType<?> entityType);
-
-	void usePickedResult(Block block);
+	/**
+	 * Register an {@link IServerDataProvider<Entity>} instance for data syncing purposes.
+	 *
+	 * @param dataProvider The data provider instance
+	 * @param entity The highest level class to apply to
+	 */
+	void registerEntityDataProvider(IServerDataProvider<Entity> dataProvider, Class<? extends Entity> entity);
 
 	/**
-     * Registers an {@link IEntityComponentProvider} instance for data syncing purposes.
-     *
-     * @param dataProvider The data provider instance
-     * @param entity The highest level class to apply to
-     */
-	void registerEntityDataProvider(IServerDataProvider<Entity> dataProvider, Class<? extends Entity> entity);
+	 * Mark a block as hidden in tooltip.
+	 */
+	void hideTarget(Block block);
+
+	/**
+	 * Mark an entity as hidden in tooltip. If player is aiming to this entity, it will be ignored and
+	 * try to find next possible target.
+	 */
+	void hideTarget(EntityType<?> entityType);
+
+	/**
+	 * Mark a block to show name of the picked result, rather than block name.
+	 */
+	void usePickedResult(Block block);
 
 	IElementHelper getElementHelper();
 

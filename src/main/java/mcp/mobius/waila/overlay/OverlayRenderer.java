@@ -61,8 +61,8 @@ public class OverlayRenderer {
 			} else {
 				Rectangle position = WailaTickHandler.instance().tooltipRenderer.getPosition();
 				ConfigOverlay overlay = Waila.CONFIG.get().getOverlay();
-				double x = mc.mouseHelper.getMouseX() * (double) mc.getMainWindow().getScaledWidth() / mc.getMainWindow().getWidth();
-				double y = mc.mouseHelper.getMouseY() * (double) mc.getMainWindow().getScaledHeight() / mc.getMainWindow().getHeight();
+				double x = mc.mouseHelper.getMouseX() * mc.getMainWindow().getScaledWidth() / mc.getMainWindow().getWidth();
+				double y = mc.mouseHelper.getMouseY() * mc.getMainWindow().getScaledHeight() / mc.getMainWindow().getHeight();
 				x += position.width * overlay.tryFlip(overlay.getAnchorX());
 				y += position.height * overlay.getAnchorY();
 				if (position.contains(x, y)) {
@@ -152,7 +152,7 @@ public class OverlayRenderer {
 			float offsetX = offset.x + 5;
 			float offsetY = offset.y + 2;
 			Tooltip.drawBorder(matrixStack, offsetX, offsetY, tooltip.icon);
-			tooltip.icon.render(matrixStack, offsetX, offsetY, offsetX + size.x, offsetY + size.y); //TODO
+			tooltip.icon.render(matrixStack, offsetX, offsetY, offsetX + size.x, offsetY + size.y);
 		}
 
 		WailaRenderEvent.Post postEvent = new WailaRenderEvent.Post(position, matrixStack);

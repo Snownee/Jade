@@ -11,6 +11,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.World;
 
+/**
+ * Class to get information of block target and context.
+ */
 public class BlockAccessor extends Accessor {
 
 	private final BlockState blockState;

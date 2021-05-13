@@ -12,6 +12,9 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceContext.FluidMode;
 
+/**
+ * Get this instance from {@link mcp.mobius.waila.api.IRegistrar#getConfig}
+ */
 public class WailaConfig {
 
 	private final ConfigGeneral general = new ConfigGeneral();

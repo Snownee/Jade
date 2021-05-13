@@ -16,5 +16,8 @@ public @interface WailaPlugin {
 	 */
 	String value() default "";
 
+	/**
+	 * @return an integer to define the priority of this WailaPlugin. Smaller means earlier
+	 */
 	int priority() default 0;
 }

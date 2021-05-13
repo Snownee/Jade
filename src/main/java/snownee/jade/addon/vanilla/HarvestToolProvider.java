@@ -287,7 +287,7 @@ public class HarvestToolProvider implements IComponentProvider, ISelectiveResour
 				continue;
 			Set<ToolType> toolTypes = stack.getToolTypes();
 			if (toolTypes == null)
-				throw new NullPointerException(stack.getItem().getRegistryName() +" getToolTypes returns null, report to their developer!");
+				throw new NullPointerException(stack.getItem().getRegistryName() + " getToolTypes returns null, report to their developer!");
 			for (ToolType toolType : toolTypes) {
 				if (newToolTypes.contains(toolType)) {
 					toolTypeMap.get(toolType).addTool(stack);

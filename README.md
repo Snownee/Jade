@@ -35,7 +35,7 @@ Some methods in `IRegistrar` are renamed:
  - `registerStackProvider` -> `registerIconProvider`
  - `registerEntityStackProvider` -> `registerIconProvider`
 
-Component provider registration methods no longer accept interface classes. You can register with the base class and filter it inside the provider.
+Component provider registration methods no longer accept interface or TileEntity classes. You can register with the base class and filter it inside the provider.
 
 `IRegistrar#registerTooltipRenderer` is removed because you don't need to register your renderer any longer. 
 
