@@ -1,7 +1,5 @@
 package mcp.mobius.waila.impl.ui;
 
-import java.awt.Color;
-
 import com.mojang.blaze3d.matrix.MatrixStack;
 
 import mcp.mobius.waila.api.ui.IElement;
@@ -54,13 +52,12 @@ public class ProgressStyle implements IProgressStyle {
 				overlay.size(size);
 				overlay.render(matrixStack, x, progressY, size.x, size.y);
 			} else {
-				Color lighter = new Color(color);
-				int alpha = (int) (lighter.getAlpha() * 0.7f);
-				lighter = new Color(lighter.getRed(), lighter.getGreen(), lighter.getBlue(), alpha);
+				int alpha = (int) (((color >> 24) & 0xFF) * 0.7f);				
+				int lighter = (color & 0xFFFFFF) | alpha << 24;
 
 				float half = choose(true, height, width) / 2;
-				DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x, progressY, choose(true, progress, half), choose(false, progress, half), lighter.getRGB(), color, vertical);
-				DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x + choose(false, half, 0), progressY + choose(true, half, 0), choose(true, progress, half), choose(false, progress, half), color, lighter.getRGB(), vertical);
+				DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x, progressY, choose(true, progress, half), choose(false, progress, half), lighter, color, vertical);
+				DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x + choose(false, half, 0), progressY + choose(true, half, 0), choose(true, progress, half), choose(false, progress, half), color, lighter, vertical);
 				if (color != color2) {
 					if (vertical) {
 						for (float yy = y + height; yy > progressY; yy -= 2) {

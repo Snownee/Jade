@@ -122,7 +122,7 @@ public class VanillaProvider implements IComponentProvider, IServerDataProvider<
 		Block block = state.getBlock();
 		if (block instanceof LeverBlock) {
 			boolean active = state.get(BlockStateProperties.POWERED);
-			tooltip.add(new TranslationTextComponent("tooltip.waila.state", new TranslationTextComponent("tooltip.waila.state_" + (active ? "on" : "off"))));
+			tooltip.add(new TranslationTextComponent("tooltip.waila.state", new TranslationTextComponent("tooltip.waila.state_" + (active ? "on" : "off")).mergeStyle(TextFormatting.WHITE)));
 			return;
 		}
 
@@ -134,7 +134,7 @@ public class VanillaProvider implements IComponentProvider, IServerDataProvider<
 
 		if (block == Blocks.COMPARATOR) {
 			ComparatorMode mode = state.get(BlockStateProperties.COMPARATOR_MODE);
-			tooltip.add(new TranslationTextComponent("tooltip.waila.mode", new TranslationTextComponent("tooltip.waila.mode_" + (mode == ComparatorMode.COMPARE ? "comparator" : "subtractor"))));
+			tooltip.add(new TranslationTextComponent("tooltip.waila.mode", new TranslationTextComponent("tooltip.waila.mode_" + (mode == ComparatorMode.COMPARE ? "comparator" : "subtractor")).mergeStyle(TextFormatting.WHITE)));
 			return;
 		}
 

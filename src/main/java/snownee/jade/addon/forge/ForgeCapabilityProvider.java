@@ -1,7 +1,5 @@
 package snownee.jade.addon.forge;
 
-import java.awt.Color;
-
 import mcp.mobius.waila.api.BlockAccessor;
 import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IServerDataProvider;
@@ -50,7 +48,7 @@ public class ForgeCapabilityProvider implements IComponentProvider, IServerDataP
 					String curText = TextFormatting.WHITE + VanillaPlugin.displayHelper.humanReadableNumber(cur, "FE", false) + TextFormatting.GRAY;
 					String maxText = VanillaPlugin.displayHelper.humanReadableNumber(max, "FE", false);
 					IFormattableTextComponent text = new TranslationTextComponent("jade.fe", curText, maxText).mergeStyle(TextFormatting.GRAY);
-					IProgressStyle progressStyle = helper.progressStyle().color(Color.RED.getRGB(), 0xFF660000);
+					IProgressStyle progressStyle = helper.progressStyle().color(0xFFFF0000, 0xFF660000);
 					tooltip.add(helper.progress((float) cur / max, text, progressStyle, helper.borderStyle()).tag(VanillaPlugin.FORGE_ENERGY));
 				}
 			}

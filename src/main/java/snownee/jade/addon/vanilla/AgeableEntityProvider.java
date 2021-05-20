@@ -9,6 +9,7 @@ import net.minecraft.entity.AgeableEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
@@ -24,7 +25,7 @@ public class AgeableEntityProvider implements IEntityComponentProvider, IServerD
 		}
 		int time = accessor.getServerData().getInt("GrowingTime");
 		if (time < 0) {
-			tooltip.add(new TranslationTextComponent("jade.mobgrowth.time", (time * -1) / 20));
+			tooltip.add(new TranslationTextComponent("jade.mobgrowth.time", TextFormatting.WHITE.toString() + (time * -1) / 20));
 		}
 	}
 

@@ -9,6 +9,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
@@ -24,7 +25,7 @@ public class BreedingProvider implements IEntityComponentProvider, IServerDataPr
 		}
 		int time = accessor.getServerData().getInt("BreedingCD");
 		if (time > 0) {
-			tooltip.add(new TranslationTextComponent("jade.mobbreeding.time", time / 20));
+			tooltip.add(new TranslationTextComponent("jade.mobbreeding.time", TextFormatting.WHITE.toString() + time / 20));
 		}
 	}
 

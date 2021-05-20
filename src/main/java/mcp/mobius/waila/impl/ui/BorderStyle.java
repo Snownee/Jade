@@ -1,13 +1,11 @@
 package mcp.mobius.waila.impl.ui;
 
-import java.awt.Color;
-
 import mcp.mobius.waila.api.ui.IBorderStyle;
 
 public class BorderStyle implements IBorderStyle {
 
 	public int width = 1;
-	public int color = Color.GRAY.getRGB();
+	public int color = 0xFF808080;
 
 	@Override
 	public IBorderStyle width(int px) {

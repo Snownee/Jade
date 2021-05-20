@@ -9,6 +9,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.ChickenEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import snownee.jade.VanillaPlugin;
@@ -21,7 +22,7 @@ public class ChickenEggProvider implements IEntityComponentProvider, IServerData
 		if (!config.get(VanillaPlugin.CHICKEN_EGG) || !accessor.getServerData().contains("NextEgg")) {
 			return;
 		}
-		tooltip.add(new TranslationTextComponent("jade.nextEgg", accessor.getServerData().getInt("NextEgg")));
+		tooltip.add(new TranslationTextComponent("jade.nextEgg", TextFormatting.WHITE.toString() + accessor.getServerData().getInt("NextEgg")));
 	}
 
 	@Override
