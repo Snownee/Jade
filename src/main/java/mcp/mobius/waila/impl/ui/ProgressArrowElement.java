@@ -1,6 +1,7 @@
 package mcp.mobius.waila.impl.ui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
 
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.ui.Element;
@@ -27,6 +28,7 @@ public class ProgressArrowElement extends Element {
 	@Override
 	public void render(MatrixStack matrixStack, float x, float y, float maxX, float maxY) {
 		Minecraft.getInstance().getTextureManager().bindTexture(SHEET);
+		RenderSystem.enableBlend();
 
 		// Draws the "empty" background arrow
 		DisplayHelper.drawTexturedModalRect(matrixStack, x + 2, y, 0, 16, 22, 16, 22, 16);

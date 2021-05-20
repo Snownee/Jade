@@ -7,9 +7,9 @@ import mcp.mobius.waila.api.config.IPluginConfig;
 import mcp.mobius.waila.api.ui.IElementHelper;
 import net.minecraft.entity.item.ArmorStandEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.vector.Vector2f;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
+import snownee.jade.Jade;
 import snownee.jade.VanillaPlugin;
 
 public class ArmorStandProvider implements IEntityComponentProvider {
@@ -32,7 +32,7 @@ public class ArmorStandProvider implements IEntityComponentProvider {
 			if (stack.isEmpty())
 				continue;
 			tooltip.add(helper.item(stack, 0.75f));
-			tooltip.append(helper.text(stack.getDisplayName()).translate(new Vector2f(0, 2)));
+			tooltip.append(helper.text(stack.getDisplayName()).translate(Jade.VERTICAL_OFFSET));
 		}
 	}
 

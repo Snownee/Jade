@@ -49,13 +49,13 @@ public class FurnaceProvider implements IComponentProvider, IServerDataProvider<
 	public void appendServerData(CompoundNBT data, ServerPlayerEntity player, World world, TileEntity blockEntity) {
 		AbstractFurnaceTileEntity furnace = (AbstractFurnaceTileEntity) blockEntity;
 		ListNBT items = new ListNBT();
-		items.add(furnace.getStackInSlot(0).write(new CompoundNBT()));
-		items.add(furnace.getStackInSlot(1).write(new CompoundNBT()));
-		items.add(furnace.getStackInSlot(2).write(new CompoundNBT()));
+		for (int i = 0; i < 3; i++) {
+			items.add(furnace.getStackInSlot(i).serializeNBT());
+		}
 		data.put("furnace", items);
 		CompoundNBT furnaceTag = furnace.write(new CompoundNBT());
-		data.putInt("progress", furnaceTag.getInt("CookTime")); // smh
-		data.putInt("total", furnaceTag.getInt("CookTimeTotal")); // smh
+		data.putInt("progress", furnaceTag.getInt("CookTime"));
+		data.putInt("total", furnaceTag.getInt("CookTimeTotal"));
 	}
 
 }

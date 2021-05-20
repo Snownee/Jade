@@ -3,6 +3,7 @@ package snownee.jade;
 import org.apache.commons.lang3.tuple.Pair;
 
 import mcp.mobius.waila.gui.HomeConfigScreen;
+import net.minecraft.util.math.vector.Vector2f;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.ExtensionPoint;
@@ -19,6 +20,7 @@ import net.minecraftforge.fml.network.FMLNetworkConstants;
 public class Jade {
 	public static final String MODID = "jade";
 	public static final String NAME = "Jade";
+	public static final Vector2f VERTICAL_OFFSET = new Vector2f(0, 2);
 
 	public Jade() {
 		ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.DISPLAYTEST, () -> Pair.of(() -> FMLNetworkConstants.IGNORESERVERONLY, (a, b) -> true));

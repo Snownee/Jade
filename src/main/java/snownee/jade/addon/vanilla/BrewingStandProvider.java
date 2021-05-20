@@ -12,11 +12,11 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.BrewingStandTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.vector.Vector2f;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
+import snownee.jade.Jade;
 import snownee.jade.VanillaPlugin;
 
 public class BrewingStandProvider implements IComponentProvider, IServerDataProvider<TileEntity> {
@@ -32,11 +32,11 @@ public class BrewingStandProvider implements IComponentProvider, IServerDataProv
 		int time = tag.getInt("time");
 		IElementHelper helper = tooltip.getElementHelper();
 		tooltip.add(helper.item(new ItemStack(Items.BLAZE_POWDER), 0.75f));
-		tooltip.append(helper.text(new TranslationTextComponent("jade.brewingStand.fuel", TextFormatting.WHITE.toString() + fuel)).translate(new Vector2f(0, 2))); //TODO cache vector
+		tooltip.append(helper.text(new TranslationTextComponent("jade.brewingStand.fuel", TextFormatting.WHITE.toString() + fuel)).translate(Jade.VERTICAL_OFFSET));
 		if (time > 0) {
 			tooltip.append(helper.spacer(5, 0));
 			tooltip.append(helper.item(new ItemStack(Items.CLOCK), 0.75f));
-			tooltip.append(helper.text(new TranslationTextComponent("jade.brewingStand.time", TextFormatting.WHITE.toString() + time / 20)).translate(new Vector2f(0, 2)));
+			tooltip.append(helper.text(new TranslationTextComponent("jade.brewingStand.time", TextFormatting.WHITE.toString() + time / 20)).translate(Jade.VERTICAL_OFFSET));
 		}
 	}
 
