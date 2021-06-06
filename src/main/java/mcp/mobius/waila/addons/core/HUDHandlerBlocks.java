@@ -1,5 +1,6 @@
 package mcp.mobius.waila.addons.core;
 
+import java.util.Collection;
 import java.util.List;
 
 import com.google.common.base.Strings;
@@ -18,6 +19,7 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.state.BooleanProperty;
+import net.minecraft.state.Property;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.INameable;
 import net.minecraft.util.ResourceLocation;
@@ -28,6 +30,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import snownee.jade.JadeCommonConfig;
 import snownee.jade.JadePlugin;
+import snownee.jade.Renderables;
 import snownee.jade.addon.vanilla.TrappedChestProvider;
 
 public class HUDHandlerBlocks implements IComponentProvider, IServerDataProvider<TileEntity> {
@@ -68,11 +71,18 @@ public class HUDHandlerBlocks implements IComponentProvider, IServerDataProvider
 	public void appendBody(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {
 		if (config.get(PluginCore.CONFIG_SHOW_STATES)) {
 			BlockState state = accessor.getBlockState();
-			state.getProperties().forEach(p -> {
+			Collection<Property<?>> properties = state.getProperties();
+			if (properties.isEmpty())
+				return;
+			ITextComponent[] lines = new ITextComponent[properties.size()];
+			int i = 0;
+			for (Property<?> p : state.getProperties()) {
 				Comparable<?> value = state.get(p);
 				ITextComponent valueText = new StringTextComponent(" " + value.toString()).mergeStyle(p instanceof BooleanProperty ? value == Boolean.TRUE ? TextFormatting.GREEN : TextFormatting.RED : TextFormatting.WHITE);
-				tooltip.add(new StringTextComponent(p.getName() + ":").appendSibling(valueText));
-			});
+				lines[i] = new StringTextComponent(p.getName() + ":").appendSibling(valueText);
+				++i;
+			}
+			tooltip.add(Renderables.box(lines));
 		}
 	}
 
