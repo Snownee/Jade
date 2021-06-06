@@ -27,8 +27,14 @@ public interface IElementHelper {
 		return box(tooltip, borderStyle());
 	}
 
+	/**
+	 * Display a nested tooltip
+	 */
 	IElement box(ITooltip tooltip, @Nullable IBorderStyle border);
 
+	/**
+	 * Create an empty tooltip. Used by the {@code box} method.
+	 */
 	ITooltip tooltip();
 
 	IBorderStyle borderStyle();

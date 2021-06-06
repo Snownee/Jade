@@ -8,6 +8,7 @@ import mcp.mobius.waila.api.IServerDataProvider;
 import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.config.IPluginConfig;
 import mcp.mobius.waila.api.ui.IElementHelper;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -16,6 +17,7 @@ import net.minecraft.nbt.ListNBT;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
@@ -38,7 +40,13 @@ public class PotionEffectsProvider implements IEntityComponentProvider, IServerD
 			CompoundNBT compound = list.getCompound(i);
 			int duration = compound.getInt("Duration");
 			TranslationTextComponent name = new TranslationTextComponent(compound.getString("Name"));
-			TranslationTextComponent amplifier = new TranslationTextComponent("potion.potency." + compound.getInt("Amplifier"));
+			String amplifierKey = "potion.potency." + compound.getInt("Amplifier");
+			ITextComponent amplifier;
+			if (I18n.hasKey(amplifierKey)) {
+				amplifier = new TranslationTextComponent(amplifierKey);
+			} else {
+				amplifier = new StringTextComponent(Integer.toString(compound.getInt("Amplifier")));
+			}
 			TranslationTextComponent s = new TranslationTextComponent("jade.potion", name, amplifier, getPotionDurationString(duration));
 			box.add(s.mergeStyle(compound.getBoolean("Bad") ? TextFormatting.RED : TextFormatting.GREEN));
 		}

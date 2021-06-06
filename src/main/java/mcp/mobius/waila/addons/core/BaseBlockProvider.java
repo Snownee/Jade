@@ -1,5 +1,7 @@
 package mcp.mobius.waila.addons.core;
 
+import java.util.Collection;
+
 import com.google.common.base.Strings;
 
 import mcp.mobius.waila.Waila;
@@ -18,6 +20,7 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.state.BooleanProperty;
+import net.minecraft.state.Property;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.INameable;
 import net.minecraft.util.text.ITextComponent;
@@ -77,11 +80,17 @@ public class BaseBlockProvider implements IComponentProvider, IServerDataProvide
 	public void appendBody(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		if (config.get(CorePlugin.CONFIG_BLOCK_STATES)) {
 			BlockState state = accessor.getBlockState();
-			state.getProperties().forEach(p -> {
+			Collection<Property<?>> properties = state.getProperties();
+			if (properties.isEmpty())
+				return;
+			IElementHelper helper = tooltip.getElementHelper();
+			ITooltip box = helper.tooltip();
+			properties.forEach(p -> {
 				Comparable<?> value = state.get(p);
 				ITextComponent valueText = new StringTextComponent(" " + value.toString()).mergeStyle(p instanceof BooleanProperty ? value == Boolean.TRUE ? TextFormatting.GREEN : TextFormatting.RED : TextFormatting.WHITE);
-				tooltip.add(new StringTextComponent(p.getName() + ":").appendSibling(valueText));
+				box.add(new StringTextComponent(p.getName() + ":").appendSibling(valueText));
 			});
+			tooltip.add(helper.box(box));
 		}
 	}
 
