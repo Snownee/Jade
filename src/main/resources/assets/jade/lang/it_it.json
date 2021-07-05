@@ -1,4 +1,5 @@
-"tooltip.waila.crop_growth": "Crescita: %s",
+{
+  "tooltip.waila.crop_growth": "Crescita: %s",
   "tooltip.waila.crop_mature": "Maturo",
   "tooltip.waila.empty": "Chiuso",
   "tooltip.waila.delay": "Delay: %d",
