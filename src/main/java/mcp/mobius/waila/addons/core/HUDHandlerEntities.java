@@ -10,7 +10,6 @@ import mcp.mobius.waila.api.ITaggableList;
 import mcp.mobius.waila.api.RenderableTextComponent;
 import mcp.mobius.waila.utils.ModIdentification;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
@@ -44,8 +43,6 @@ public class HUDHandlerEntities implements IEntityComponentProvider {
 	@Override
 	public void appendTail(List<ITextComponent> tooltip, IEntityAccessor accessor, IPluginConfig config) {
 		if (config.get(JadePlugin.HIDE_MOD_NAME))
-			return;
-		if (accessor.getEntity() instanceof ItemEntity && !config.get(JadePlugin.HIDE_ITEM_MOD_NAME) && config.get(JadePlugin.ITEM_TOOLTIP))
 			return;
 		tooltip.add(new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getModName(), ModIdentification.getModName(accessor.getEntity()))));
 	}

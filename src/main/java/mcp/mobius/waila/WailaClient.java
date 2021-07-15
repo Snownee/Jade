@@ -69,9 +69,11 @@ public class WailaClient {
 		}
 	}
 
+	public static boolean hideModName;
+
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public static void onTooltip(ItemTooltipEvent event) {
-		if (PluginConfig.INSTANCE.get(JadePlugin.HIDE_ITEM_MOD_NAME, false)) {
+		if (hideModName || PluginConfig.INSTANCE.get(JadePlugin.HIDE_ITEM_MOD_NAME, false)) {
 			return;
 		}
 		String name = String.format(Waila.CONFIG.get().getFormatting().getModName(), ModIdentification.getModName(event.getItemStack()));
