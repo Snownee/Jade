@@ -71,9 +71,11 @@ public class WailaClient {
 		}
 	}
 
+	public static boolean hideModName;
+
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public static void onTooltip(ItemTooltipEvent event) {
-		if (PluginConfig.INSTANCE.get(CorePlugin.CONFIG_ITEM_MOD_NAME, false)) {
+		if (!hideModName && PluginConfig.INSTANCE.get(CorePlugin.CONFIG_ITEM_MOD_NAME, false)) {
 			String name = String.format(Waila.CONFIG.get().getFormatting().getModName(), ModIdentification.getModName(event.getItemStack()));
 			event.getToolTip().add(new StringTextComponent(name));
 		}

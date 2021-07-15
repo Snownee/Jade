@@ -2,6 +2,7 @@ package snownee.jade.addon.vanilla;
 
 import java.util.List;
 
+import mcp.mobius.waila.WailaClient;
 import mcp.mobius.waila.api.EntityAccessor;
 import mcp.mobius.waila.api.IEntityComponentProvider;
 import mcp.mobius.waila.api.ITooltip;
@@ -24,7 +25,9 @@ public class ItemTooltipProvider implements IEntityComponentProvider {
 			return;
 		}
 		ItemStack stack = ((ItemEntity) accessor.getEntity()).getItem();
+		WailaClient.hideModName = true;
 		List<ITextComponent> itemTooltip = stack.getTooltip(null, TooltipFlags.NORMAL);
+		WailaClient.hideModName = false;
 		if (!itemTooltip.isEmpty()) {
 			itemTooltip.remove(0);
 		}

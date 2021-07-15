@@ -12,12 +12,10 @@ import mcp.mobius.waila.overlay.DisplayHelper;
 import mcp.mobius.waila.utils.ModIdentification;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.merchant.villager.VillagerEntity;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
-import snownee.jade.VanillaPlugin;
 
 public class BaseEntityProvider implements IEntityComponentProvider {
 
@@ -60,8 +58,6 @@ public class BaseEntityProvider implements IEntityComponentProvider {
 
 	public void appendTail(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		if (!config.get(CorePlugin.CONFIG_MOD_NAME))
-			return;
-		if (accessor.getEntity() instanceof ItemEntity && config.get(CorePlugin.CONFIG_ITEM_MOD_NAME) && config.get(VanillaPlugin.ITEM_TOOLTIP))
 			return;
 		tooltip.add(new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getModName(), ModIdentification.getModName(accessor.getEntity()))));
 	}
