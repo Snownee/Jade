@@ -105,11 +105,11 @@ public abstract class OptionsScreen extends Screen {
 
 	@Override
 	public void renderBackground(MatrixStack matrixStack, int vOffset) {
-		if (this.minecraft.world != null) {
-			this.fillGradient(matrixStack, 0, 0, this.width, this.height, -1072689136, -804253680);
+		if (minecraft.world != null) {
+			this.fillGradient(matrixStack, 0, 0, width, height, -1072689136, -804253680);
 			net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.GuiScreenEvent.BackgroundDrawnEvent(this, matrixStack));
 		} else {
-			this.renderDirtBackground(vOffset);
+			renderDirtBackground(vOffset);
 		}
 	}
 

@@ -22,7 +22,7 @@ public class RequestTilePacket {
 	public BlockPos pos;
 
 	public RequestTilePacket(TileEntity tile) {
-		this.pos = tile.getPos();
+		pos = tile.getPos();
 	}
 
 	private RequestTilePacket(BlockPos pos) {

@@ -28,7 +28,7 @@ public class PluginConfig implements IPluginConfig {
 	private final Map<ResourceLocation, ConfigEntry> configs;
 
 	private PluginConfig() {
-		this.configs = Maps.newHashMap();
+		configs = Maps.newHashMap();
 	}
 
 	public void addConfig(ConfigEntry entry) {

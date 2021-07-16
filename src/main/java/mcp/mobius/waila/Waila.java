@@ -50,7 +50,7 @@ public class Waila {
 	public static final SimpleChannel NETWORK = NetworkRegistry.ChannelBuilder.named(new ResourceLocation(MODID, "networking")).clientAcceptedVersions(s -> true).serverAcceptedVersions(s -> true).networkProtocolVersion(() -> "1.0.0").simpleChannel();
 	/** addons: Use {@link mcp.mobius.waila.api.IRegistrar#getConfig} */
 	/* off */
-	public static final JsonConfig<WailaConfig> CONFIG = 
+	public static final JsonConfig<WailaConfig> CONFIG =
 			new JsonConfig<>(Jade.MODID + "/" + Jade.MODID, WailaConfig.class).withGson(
 					new GsonBuilder()
 					.setPrettyPrinting()

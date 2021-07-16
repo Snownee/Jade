@@ -140,7 +140,6 @@ public class VanillaProvider implements IComponentProvider, IServerDataProvider<
 
 		if (state.hasProperty(BlockStateProperties.POWER_0_15)) {
 			tooltip.add(new TranslationTextComponent("tooltip.waila.power", TextFormatting.WHITE.toString() + state.get(BlockStateProperties.POWER_0_15)));
-			return;
 		}
 	}
 

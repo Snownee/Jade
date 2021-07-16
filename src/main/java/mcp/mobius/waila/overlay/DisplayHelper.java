@@ -2,7 +2,6 @@ package mcp.mobius.waila.overlay;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -312,7 +311,6 @@ public class DisplayHelper implements IDisplayHelper {
 	}
 
 	//https://github.com/mezz/JustEnoughItems/blob/1.16/src/main/java/mezz/jei/plugins/vanilla/ingredients/fluid/FluidStackRenderer.java
-	private static final NumberFormat nf = NumberFormat.getIntegerInstance();
 	private static final int TEX_WIDTH = 16;
 	private static final int TEX_HEIGHT = 16;
 	private static final int MIN_FLUID_HEIGHT = 1; // ensure tiny amounts of fluid are still visible
@@ -380,7 +378,6 @@ public class DisplayHelper implements IDisplayHelper {
 		return minecraft.getAtlasSpriteGetter(PlayerContainer.LOCATION_BLOCKS_TEXTURE).apply(fluidStill);
 	}
 
-	@SuppressWarnings("deprecation")
 	private static void setGLColorFromInt(int color) {
 		float red = (color >> 16 & 0xFF) / 255.0F;
 		float green = (color >> 8 & 0xFF) / 255.0F;

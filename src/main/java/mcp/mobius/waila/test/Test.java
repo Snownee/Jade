@@ -13,7 +13,7 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 public class Test {
 
 	public static final TestBlock BLOCK = new TestBlock();
-	public static final TileEntityType<TestTileEntity> TILE = TileEntityType.Builder.create(() -> new TestTileEntity(), BLOCK).build(null);
+	public static final TileEntityType<TestTileEntity> TILE = TileEntityType.Builder.create(TestTileEntity::new, BLOCK).build(null);
 
 	@SubscribeEvent
 	public static void registerBlocks(Register<Block> event) {

@@ -55,17 +55,17 @@ public class RayTracing {
 		if (mc.objectMouseOver != null && mc.objectMouseOver.getType() == RayTraceResult.Type.ENTITY) {
 			Entity targetEntity = ((EntityRayTraceResult) mc.objectMouseOver).getEntity();
 			if (canBeTarget(targetEntity, viewpoint)) {
-				this.target = mc.objectMouseOver;
+				target = mc.objectMouseOver;
 				return;
 			}
 		}
 
 		float reach = mc.playerController.getBlockReachDistance() + Waila.CONFIG.get().getGeneral().getReachDistance();
-		this.target = this.rayTrace(viewpoint, reach, mc.getRenderPartialTicks());
+		target = rayTrace(viewpoint, reach, mc.getRenderPartialTicks());
 	}
 
 	public RayTraceResult getTarget() {
-		return this.target;
+		return target;
 	}
 
 	public RayTraceResult rayTrace(Entity entity, double playerReach, float partialTicks) {
@@ -151,18 +151,18 @@ public class RayTracing {
 	}
 
 	public IElement getIcon() {
-		if (this.target == null)
+		if (target == null)
 			return null;
 
 		IElement icon = null;
-		switch (this.target.getType()) {
+		switch (target.getType()) {
 		case ENTITY: {
 			Entity entity = ((EntityRayTraceResult) target).getEntity();
 			if (entity instanceof ItemEntity) {
 				icon = ItemStackElement.of(((ItemEntity) entity.getEntity()).getItem());
 			} else {
 				ItemStack stack = entity.getPickedResult(target);
-				if (!(stack.getItem() instanceof SpawnEggItem && entity instanceof LivingEntity))
+				if ((!(stack.getItem() instanceof SpawnEggItem) || !(entity instanceof LivingEntity)))
 					icon = ItemStackElement.of(stack);
 			}
 

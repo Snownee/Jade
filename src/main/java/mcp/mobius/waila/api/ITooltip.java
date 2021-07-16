@@ -9,7 +9,7 @@ import net.minecraft.util.text.ITextComponent;
 
 /**
  * Tooltip that you can append text and other renderable stuffs to.
- * 
+ *
  * @author Snownee
  */
 public interface ITooltip {

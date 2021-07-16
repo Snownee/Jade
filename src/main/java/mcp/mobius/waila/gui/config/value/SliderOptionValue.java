@@ -27,7 +27,7 @@ public class SliderOptionValue extends OptionValue<Float> {
 		this.value = value;
 		this.min = min;
 		this.max = max;
-		this.slider = new Slider(this, 0, 0, 100, 20, getTitle());
+		slider = new Slider(this, 0, 0, 100, 20, getTitle());
 	}
 
 	@Override

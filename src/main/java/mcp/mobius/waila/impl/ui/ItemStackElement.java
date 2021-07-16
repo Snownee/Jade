@@ -50,7 +50,7 @@ public class ItemStackElement extends Element {
 		if (stack.isEmpty())
 			return;
 		RenderHelper.enableStandardItemLighting();
-		DisplayHelper.INSTANCE.drawItem(matrixStack, x + 1, y + 1, stack, scale, null);
+		DisplayHelper.INSTANCE.drawItem(matrixStack, x + 1, y + 1, stack, scale, text);
 		RenderHelper.disableStandardItemLighting();
 	}
 

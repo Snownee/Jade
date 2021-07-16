@@ -98,11 +98,11 @@ public class WailaConfig {
 		}
 
 		public void setDisplayFluids(boolean displayFluids) {
-			this.fluldMode = displayFluids ? FluidMode.ANY : FluidMode.NONE;
+			fluldMode = displayFluids ? FluidMode.ANY : FluidMode.NONE;
 		}
 
 		public void setDisplayFluids(FluidMode displayFluids) {
-			this.fluldMode = displayFluids;
+			fluldMode = displayFluids;
 		}
 
 		public boolean shouldDisplayTooltip() {
@@ -215,7 +215,7 @@ public class WailaConfig {
 		}
 
 		public void setFlipMainHand(boolean overlaySquare) {
-			this.flipMainHand = overlaySquare;
+			flipMainHand = overlaySquare;
 		}
 
 		public boolean getFlipMainHand() {

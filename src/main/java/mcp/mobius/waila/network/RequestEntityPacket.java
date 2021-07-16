@@ -21,7 +21,7 @@ public class RequestEntityPacket {
 	public int entityId;
 
 	public RequestEntityPacket(Entity entity) {
-		this.entityId = entity.getEntityId();
+		entityId = entity.getEntityId();
 	}
 
 	private RequestEntityPacket(int entityId) {

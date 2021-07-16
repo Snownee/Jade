@@ -33,7 +33,7 @@ public class ProgressArrowElement extends Element {
 		// Draws the "empty" background arrow
 		DisplayHelper.drawTexturedModalRect(matrixStack, x + 2, y, 0, 16, 22, 16, 22, 16);
 
-		if (this.progress > 0) {
+		if (progress > 0) {
 			int progress = (int) (this.progress * 22);
 			// Draws the "full" foreground arrow based on the progress
 			DisplayHelper.drawTexturedModalRect(matrixStack, x + 2, y, 0, 0, progress + 1, 16, progress + 1, 16);

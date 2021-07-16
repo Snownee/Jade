@@ -52,7 +52,7 @@ public class ProgressStyle implements IProgressStyle {
 				overlay.size(size);
 				overlay.render(matrixStack, x, progressY, size.x, size.y);
 			} else {
-				int alpha = (int) (((color >> 24) & 0xFF) * 0.7f);				
+				int alpha = (int) (((color >> 24) & 0xFF) * 0.7f);
 				int lighter = (color & 0xFFFFFF) | alpha << 24;
 
 				float half = choose(true, height, width) / 2;

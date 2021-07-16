@@ -24,9 +24,9 @@ public class OptionButton extends OptionsListWidget.Entry {
 	@Override
 	public void render(MatrixStack matrixStack, int index, int rowTop, int rowLeft, int width, int height, int mouseX, int mouseY, boolean hovered, float deltaTime) {
 		client.fontRenderer.drawStringWithShadow(matrixStack, title.getString(), rowLeft + 10, rowTop + (height / 4) + (client.fontRenderer.FONT_HEIGHT / 2), 16777215);
-		this.button.x = rowLeft + 135;
-		this.button.y = rowTop + height / 6;
-		this.button.render(matrixStack, mouseX, mouseY, deltaTime);
+		button.x = rowLeft + 135;
+		button.y = rowTop + height / 6;
+		button.render(matrixStack, mouseX, mouseY, deltaTime);
 	}
 
 	@Override
