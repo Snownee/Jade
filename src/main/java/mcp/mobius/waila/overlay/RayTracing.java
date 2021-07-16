@@ -20,6 +20,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -52,7 +53,7 @@ public class RayTracing {
 
 		if (mc.objectMouseOver != null && mc.objectMouseOver.getType() == RayTraceResult.Type.ENTITY) {
 			Entity targetEntity = ((EntityRayTraceResult) mc.objectMouseOver).getEntity();
-			if (targetEntity != viewpoint.getRidingEntity()) {
+			if (canBeTarget(targetEntity, viewpoint)) {
 				this.target = mc.objectMouseOver;
 				return;
 			}
@@ -86,11 +87,7 @@ public class RayTracing {
 
 		World world = entity.getEntityWorld();
 		AxisAlignedBB bound = new AxisAlignedBB(eyePosition, traceEnd);
-		Entity riding = entity.getRidingEntity();
-		Predicate<Entity> predicate = null;
-		if (riding != null) {
-			predicate = e -> e != riding;
-		}
+		Predicate<Entity> predicate = e -> canBeTarget(e, entity);
 		EntityRayTraceResult entityResult = rayTraceEntities(world, entity, eyePosition, traceEnd, bound, predicate);
 
 		if (mc.objectMouseOver != null && mc.objectMouseOver.getType() == Type.BLOCK) {
@@ -119,6 +116,21 @@ public class RayTracing {
 			return ItemStack.EMPTY;
 
 		return items.get(0);
+	}
+
+	private boolean canBeTarget(Entity target, Entity viewEntity) {
+		if (target.isSpectator())
+			return false;
+		if (target == viewEntity.getRidingEntity())
+			return false;
+		if (viewEntity instanceof PlayerEntity) {
+			if (target.isInvisibleToPlayer((PlayerEntity) viewEntity))
+				return false;
+		} else {
+			if (target.isInvisible())
+				return false;
+		}
+		return true;
 	}
 
 	// from ProjectileHelper
