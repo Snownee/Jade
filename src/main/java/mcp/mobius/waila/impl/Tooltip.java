@@ -117,6 +117,12 @@ public class Tooltip implements ITooltip {
 	}
 
 	@Override
+	public List<IElement> get(int index, Align align) {
+		Line line = lines.get(index);
+		return align == Align.LEFT ? line.left : line.right;
+	}
+
+	@Override
 	public void remove(ResourceLocation tag) {
 		for (Iterator<Line> iterator = lines.iterator(); iterator.hasNext();) {
 			Line line = iterator.next();

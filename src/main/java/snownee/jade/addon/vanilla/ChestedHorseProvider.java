@@ -10,7 +10,6 @@ import net.minecraft.entity.passive.horse.AbstractChestedHorseEntity;
 import net.minecraft.entity.passive.horse.LlamaEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -28,7 +27,7 @@ public class ChestedHorseProvider implements IEntityComponentProvider, IServerDa
 		}
 		AbstractChestedHorseEntity horse = (AbstractChestedHorseEntity) accessor.getEntity();
 		if (horse instanceof LlamaEntity) {
-			tooltip.add(new TranslationTextComponent("jade.llamaStrength", TextFormatting.WHITE.toString() + ((LlamaEntity) horse).getStrength()));
+			tooltip.add(new TranslationTextComponent("jade.llamaStrength", ((LlamaEntity) horse).getStrength()));
 		}
 		if (horse.hasChest()) {
 			InventoryProvider.append(tooltip, accessor);
@@ -37,7 +36,7 @@ public class ChestedHorseProvider implements IEntityComponentProvider, IServerDa
 
 	@Override
 	public void appendServerData(CompoundNBT data, ServerPlayerEntity player, World world, Entity t, boolean showDetails) {
-		int size = player.isCrouching() ? JadeCommonConfig.inventoryDetailedShowAmount : JadeCommonConfig.inventoryNormalShowAmount;
+		int size = showDetails ? JadeCommonConfig.inventoryDetailedShowAmount : JadeCommonConfig.inventoryNormalShowAmount;
 		if (size == 0) {
 			return;
 		}

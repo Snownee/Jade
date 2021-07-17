@@ -47,7 +47,6 @@
   "config.waila.formatting": "Форматирование",
   "config.waila.format_mod_name": "Название мода",
   "config.waila.format_block_name": "Название блока",
-  "config.waila.format_fluid_name": "Название жидкости",
   "config.waila.format_entity_name": "Название сущности",
   "config.waila.format_registry_name": "Название в регистре",
 

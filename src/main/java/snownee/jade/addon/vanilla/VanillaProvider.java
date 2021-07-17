@@ -63,7 +63,7 @@ public class VanillaProvider implements IComponentProvider, IServerDataProvider<
 			name = I18n.format("jade.spawner", name, spawner.getSpawnerBaseLogic().getCachedEntity().getDisplayName().getString());
 			name = String.format(Waila.CONFIG.get().getFormatting().getBlockName(), name);
 			tooltip.remove(OBJECT_NAME_TAG);
-			tooltip.add(new StringTextComponent(name), OBJECT_NAME_TAG);
+			tooltip.add(new StringTextComponent(name).mergeStyle(Waila.CONFIG.get().getOverlay().getColor().getTitle()), OBJECT_NAME_TAG);
 		}
 	}
 
@@ -122,7 +122,7 @@ public class VanillaProvider implements IComponentProvider, IServerDataProvider<
 		Block block = state.getBlock();
 		if (block instanceof LeverBlock) {
 			boolean active = state.get(BlockStateProperties.POWERED);
-			tooltip.add(new TranslationTextComponent("tooltip.waila.state", new TranslationTextComponent("tooltip.waila.state_" + (active ? "on" : "off")).mergeStyle(TextFormatting.WHITE)));
+			tooltip.add(new TranslationTextComponent("tooltip.waila.state", new TranslationTextComponent("tooltip.waila.state_" + (active ? "on" : "off"))));
 			return;
 		}
 
@@ -167,7 +167,7 @@ public class VanillaProvider implements IComponentProvider, IServerDataProvider<
 	private static void addMaturityTooltip(ITooltip tooltip, float growthValue) {
 		growthValue *= 100.0F;
 		if (growthValue < 100.0F)
-			tooltip.add(new TranslationTextComponent("tooltip.waila.crop_growth", TextFormatting.WHITE + String.format("%.0f%%", growthValue)));
+			tooltip.add(new TranslationTextComponent("tooltip.waila.crop_growth", String.format("%.0f%%", growthValue)));
 		else
 			tooltip.add(new TranslationTextComponent("tooltip.waila.crop_growth", new TranslationTextComponent("tooltip.waila.crop_mature").mergeStyle(TextFormatting.GREEN)));
 	}

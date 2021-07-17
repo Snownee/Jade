@@ -29,7 +29,7 @@ import mcp.mobius.waila.api.config.IPluginConfig;
 import mcp.mobius.waila.api.ui.IElement;
 import mcp.mobius.waila.api.ui.IElement.Align;
 import mcp.mobius.waila.api.ui.IElementHelper;
-import mcp.mobius.waila.impl.ui.SubStringElement;
+import mcp.mobius.waila.impl.ui.SubTextElement;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerEntity;
@@ -212,11 +212,11 @@ public class HarvestToolProvider implements IComponentProvider, ISelectiveResour
 		boolean canHarvest = ForgeHooks.canHarvestBlock(state, accessor.getPlayer(), accessor.getWorld(), accessor.getPosition());
 		if (state.getRequiresTool()) {
 			String sub = canHarvest ? "§a✔" : "§4✕";
-			elements.add(new SubStringElement(sub).translate(new Vector2f(-6, 7 + offsetY)));
+			elements.add(new SubTextElement(sub).translate(new Vector2f(-6, 7 + offsetY)));
 		} else {
 			ItemStack held = accessor.getPlayer().getHeldItemMainhand();
 			if (canHarvest && ForgeHooks.isToolEffective(accessor.getWorld(), accessor.getPosition(), held)) {
-				elements.add(new SubStringElement("§a✔").translate(new Vector2f(-6, 7 + offsetY)));
+				elements.add(new SubTextElement("§a✔").translate(new Vector2f(-6, 7 + offsetY)));
 			}
 		}
 

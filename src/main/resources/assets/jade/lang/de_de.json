@@ -47,7 +47,6 @@
   "config.waila.formatting": "Formation",
   "config.waila.format_mod_name": "Modname",
   "config.waila.format_block_name": "Blockname",
-  "config.waila.format_fluid_name": "Flüssigkeitsname",
   "config.waila.format_entity_name": "Kreaturname",
   "config.waila.format_registry_name": "Registrierungsname",
 

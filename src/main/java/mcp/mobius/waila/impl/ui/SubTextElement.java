@@ -7,16 +7,18 @@ import mcp.mobius.waila.api.config.WailaConfig;
 import mcp.mobius.waila.api.ui.Element;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.math.vector.Vector2f;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public class SubStringElement extends Element {
+public class SubTextElement extends Element {
 
 	private final String text;
 
-	public SubStringElement(String text) {
+	public SubTextElement(String text) {
 		this.text = text;
 	}
 
@@ -33,7 +35,9 @@ public class SubStringElement extends Element {
 		matrixStack.translate(x, y, 800);
 		matrixStack.scale(0.75f, 0.75f, 0);
 
-		fontRenderer.drawStringWithShadow(matrixStack, text, 0, 0, color.getFontColor());
+		IRenderTypeBuffer.Impl irendertypebuffer$impl = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
+		fontRenderer.renderString(text, 0, 0, color.getTheme().textColor, color.getTheme().textShadow, matrixStack.getLast().getMatrix(), irendertypebuffer$impl, false, 0, 15728880);
+		irendertypebuffer$impl.finish();
 		matrixStack.pop();
 	}
 

@@ -11,6 +11,8 @@ import net.minecraft.util.HandSide;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceContext.FluidMode;
+import net.minecraft.util.text.Color;
+import net.minecraft.util.text.Style;
 
 /**
  * Get this instance from {@link mcp.mobius.waila.api.IRegistrar#getConfig}
@@ -238,13 +240,14 @@ public class WailaConfig {
 		public static class ConfigOverlayColor {
 			private float alpha = 0.7f;
 			private Map<ResourceLocation, HUDTheme> themes = Maps.newLinkedHashMap();
-			private ResourceLocation activeTheme = HUDTheme.DARK.getId();
+			private ResourceLocation activeTheme = HUDTheme.DARK.id;
 
 			public ConfigOverlayColor() {
-				themes.put(HUDTheme.WAILA.getId(), HUDTheme.WAILA);
-				themes.put(HUDTheme.DARK.getId(), HUDTheme.DARK);
-				themes.put(HUDTheme.CREATE.getId(), HUDTheme.CREATE);
-				themes.put(HUDTheme.TOP.getId(), HUDTheme.TOP);
+				themes.put(HUDTheme.WAILA.id, HUDTheme.WAILA);
+				themes.put(HUDTheme.DARK.id, HUDTheme.DARK);
+				themes.put(HUDTheme.CREATE.id, HUDTheme.CREATE);
+				themes.put(HUDTheme.TOP.id, HUDTheme.TOP);
+				//themes.put(HUDTheme.GRAY.id, HUDTheme.GRAY);
 			}
 
 			public float getAlpha() {
@@ -264,19 +267,15 @@ public class WailaConfig {
 			}
 
 			public int getBackgroundColor() {
-				return applyAlpha(getTheme().getBackgroundColor(), getAlpha());
+				return applyAlpha(getTheme().backgroundColor, getAlpha());
 			}
 
 			public int getGradientStart() {
-				return applyAlpha(getTheme().getGradientStart(), getAlpha());
+				return applyAlpha(getTheme().gradientStart, getAlpha());
 			}
 
 			public int getGradientEnd() {
-				return applyAlpha(getTheme().getGradientEnd(), getAlpha());
-			}
-
-			public int getFontColor() {
-				return getTheme().getFontColor();
+				return applyAlpha(getTheme().gradientEnd, getAlpha());
 			}
 
 			public static int applyAlpha(int color, float alpha) {
@@ -290,14 +289,21 @@ public class WailaConfig {
 			public void applyTheme(ResourceLocation id) {
 				activeTheme = themes.containsKey(id) ? id : activeTheme;
 			}
+
+			public Style getTitle() {
+				return color(getTheme().titleColor);
+			}
+
+			private static Style color(int color) {
+				return Style.EMPTY.setColor(Color.fromInt(color));
+			}
 		}
 	}
 
 	public static class ConfigFormatting {
 		private String modName = "§9§o%s";
-		private String blockName = "§f%s";
-		private String fluidName = "§f%s";
-		private String entityName = "§f%s";
+		private String blockName = "%s";
+		private String entityName = "%s";
 		private String registryName = "§7[%s]";
 
 		public void setModName(String modName) {
@@ -306,10 +312,6 @@ public class WailaConfig {
 
 		public void setBlockName(String blockName) {
 			this.blockName = blockName;
-		}
-
-		public void setFluidName(String fluidName) {
-			this.fluidName = fluidName;
 		}
 
 		public void setEntityName(String entityName) {
@@ -326,10 +328,6 @@ public class WailaConfig {
 
 		public String getBlockName() {
 			return blockName;
-		}
-
-		public String getFluidName() {
-			return fluidName;
 		}
 
 		public String getEntityName() {

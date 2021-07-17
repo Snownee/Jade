@@ -3,6 +3,7 @@ package mcp.mobius.waila.api;
 import java.util.List;
 
 import mcp.mobius.waila.api.ui.IElement;
+import mcp.mobius.waila.api.ui.IElement.Align;
 import mcp.mobius.waila.api.ui.IElementHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
@@ -119,4 +120,6 @@ public interface ITooltip {
 	 * Get all elements that are tagged with this tag
 	 */
 	List<IElement> get(ResourceLocation tag);
+
+	List<IElement> get(int index, Align align);
 }

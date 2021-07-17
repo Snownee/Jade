@@ -6,6 +6,7 @@ import mcp.mobius.waila.api.IEntityComponentProvider;
 import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.TooltipPosition;
 import mcp.mobius.waila.api.config.IPluginConfig;
+import mcp.mobius.waila.api.config.WailaConfig;
 import mcp.mobius.waila.impl.ui.ArmorElement;
 import mcp.mobius.waila.impl.ui.HealthElement;
 import mcp.mobius.waila.overlay.DisplayHelper;
@@ -35,7 +36,8 @@ public class BaseEntityProvider implements IEntityComponentProvider {
 
 	public void appendHead(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		String name = getEntityName(accessor.getEntity());
-		tooltip.add(new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getEntityName(), name)), CorePlugin.TAG_OBJECT_NAME);
+		WailaConfig wailaConfig = Waila.CONFIG.get();
+		tooltip.add(new StringTextComponent(String.format(wailaConfig.getFormatting().getEntityName(), name)).mergeStyle(wailaConfig.getOverlay().getColor().getTitle()), CorePlugin.TAG_OBJECT_NAME);
 		if (config.get(CorePlugin.CONFIG_REGISTRY_NAME))
 			tooltip.add(new StringTextComponent(accessor.getEntity().getType().getRegistryName().toString()).mergeStyle(TextFormatting.GRAY), CorePlugin.TAG_REGISTRY_NAME);
 	}

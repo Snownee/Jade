@@ -11,6 +11,7 @@ import mcp.mobius.waila.api.IServerDataProvider;
 import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.TooltipPosition;
 import mcp.mobius.waila.api.config.IPluginConfig;
+import mcp.mobius.waila.api.config.WailaConfig;
 import mcp.mobius.waila.api.ui.IElementHelper;
 import mcp.mobius.waila.impl.WailaRegistrar;
 import mcp.mobius.waila.utils.ModIdentification;
@@ -23,6 +24,7 @@ import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.Property;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.INameable;
+import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -71,8 +73,10 @@ public class BaseBlockProvider implements IComponentProvider, IServerDataProvide
 				}
 			}
 		}
-		if (name != null)
-			tooltip.add(new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getBlockName(), name)), CorePlugin.TAG_OBJECT_NAME);
+		if (name != null) {
+			WailaConfig wailaConfig = Waila.CONFIG.get();
+			tooltip.add(new StringTextComponent(String.format(wailaConfig.getFormatting().getBlockName(), name)).mergeStyle(wailaConfig.getOverlay().getColor().getTitle()), CorePlugin.TAG_OBJECT_NAME);
+		}
 		if (config.get(CorePlugin.CONFIG_REGISTRY_NAME))
 			tooltip.add(new StringTextComponent(accessor.getBlock().getRegistryName().toString()).mergeStyle(TextFormatting.GRAY), CorePlugin.TAG_REGISTRY_NAME);
 	}
@@ -87,7 +91,9 @@ public class BaseBlockProvider implements IComponentProvider, IServerDataProvide
 			ITooltip box = helper.tooltip();
 			properties.forEach(p -> {
 				Comparable<?> value = state.get(p);
-				ITextComponent valueText = new StringTextComponent(" " + value.toString()).mergeStyle(p instanceof BooleanProperty ? value == Boolean.TRUE ? TextFormatting.GREEN : TextFormatting.RED : TextFormatting.WHITE);
+				IFormattableTextComponent valueText = new StringTextComponent(" " + value.toString()).mergeStyle();
+				if (p instanceof BooleanProperty)
+					valueText = valueText.mergeStyle(value == Boolean.TRUE ? TextFormatting.GREEN : TextFormatting.RED);
 				box.add(new StringTextComponent(p.getName() + ":").appendSibling(valueText));
 			});
 			tooltip.add(helper.box(box));

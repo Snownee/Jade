@@ -3,7 +3,6 @@ package mcp.mobius.waila.gui;
 import java.util.stream.Collectors;
 
 import mcp.mobius.waila.Waila;
-import mcp.mobius.waila.api.config.HUDTheme;
 import mcp.mobius.waila.api.config.WailaConfig.ConfigFormatting;
 import mcp.mobius.waila.api.config.WailaConfig.ConfigGeneral;
 import mcp.mobius.waila.api.config.WailaConfig.ConfigOverlay;
@@ -53,7 +52,7 @@ public class WailaConfigScreen extends OptionsScreen {
 				public OptionsListWidget getOptions() {
 					OptionsListWidget options = new OptionsListWidget(this, minecraft, width + 45, height, 32, height - 32, 30);
 					options.slider("overlay_alpha", color.getAlpha(), color::setAlpha);
-					options.choices("overlay_theme", color.getTheme().getId(), color.getThemes().stream().map(HUDTheme::getId).collect(Collectors.toList()), color::applyTheme);
+					options.choices("overlay_theme", color.getTheme().id, color.getThemes().stream().map($ -> $.id).collect(Collectors.toList()), color::applyTheme);
 					options.choices("overlay_square", overlay.getSquare(), overlay::setSquare);
 					options.slider("overlay_scale", overlay.getOverlayScale(), overlay::setOverlayScale, 0.2f, 2);
 					options.slider("overlay_pos_x", overlay.getOverlayPosX(), overlay::setOverlayPosX);
@@ -72,7 +71,6 @@ public class WailaConfigScreen extends OptionsScreen {
 					OptionsListWidget options = new OptionsListWidget(this, minecraft, width + 45, height, 32, height - 32, 30);
 					options.input("format_mod_name", formatting.getModName(), val -> formatting.setModName(val.isEmpty() || !val.contains("%s") ? formatting.getModName() : val));
 					options.input("format_block_name", formatting.getBlockName(), val -> formatting.setBlockName(val.isEmpty() || !val.contains("%s") ? formatting.getBlockName() : val));
-					options.input("format_fluid_name", formatting.getFluidName(), val -> formatting.setFluidName(val.isEmpty() || !val.contains("%s") ? formatting.getFluidName() : val));
 					options.input("format_entity_name", formatting.getEntityName(), val -> formatting.setEntityName(val.isEmpty() || !val.contains("%s") ? formatting.getEntityName() : val));
 					options.input("format_registry_name", formatting.getRegistryName(), val -> formatting.setRegistryName(val.isEmpty() || !val.contains("%s") ? formatting.getRegistryName() : val));
 					return options;

@@ -59,7 +59,6 @@
   "config.waila.formatting": "格式",
   "config.waila.format_mod_name": "模组名",
   "config.waila.format_block_name": "方块名",
-  "config.waila.format_fluid_name": "流体名",
   "config.waila.format_entity_name": "实体名",
   "config.waila.format_registry_name": "注册名",
 
@@ -87,8 +86,8 @@
   "config.waila.plugin_minecraft.mob_breeding": "生物繁殖冷却",
   "jade.mobbreeding.time": "繁殖冷却：%ds",
   "config.waila.plugin_minecraft.brewing_stand": "酿造台",
-  "jade.brewingStand.time": "时间：§f%ds",
-  "jade.brewingStand.fuel": "燃料：§f%d",
+  "jade.brewingStand.time": "时间：%ds",
+  "jade.brewingStand.fuel": "燃料：%d",
   "config.waila.plugin_minecraft.tnt_stability": "TNT稳定性",
   "jade.tnt.unstable": "不稳定",
   "config.waila.plugin_minecraft.beehive": "蜂箱",

@@ -31,7 +31,7 @@ public class BeehiveProvider implements IComponentProvider, IServerDataProvider<
 		if (accessor.getServerData().contains("Full")) {
 			boolean full = accessor.getServerData().getBoolean("Full");
 			int bees = accessor.getServerData().getByte("Bees");
-			tooltip.add(new TranslationTextComponent("jade.beehive.bees", (full ? TextFormatting.GREEN : TextFormatting.WHITE) + "" + bees));
+			tooltip.add(new TranslationTextComponent("jade.beehive.bees", (full ? TextFormatting.GREEN.toString() : "") + bees));
 		}
 	}
 
