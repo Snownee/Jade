@@ -37,7 +37,6 @@ public class WailaConfig {
 		private boolean displayTooltip = true;
 		private boolean displayBlocks = true;
 		private boolean displayEntities = true;
-		private boolean shiftForDetails = false;
 		private DisplayMode displayMode = DisplayMode.TOGGLE;
 		private boolean hideFromDebug = true;
 		private boolean showIcon = true;
@@ -67,10 +66,6 @@ public class WailaConfig {
 
 		public void setDisplayEntities(boolean displayEntities) {
 			this.displayEntities = displayEntities;
-		}
-
-		public void setShiftForDetails(boolean shiftForDetails) {
-			this.shiftForDetails = shiftForDetails;
 		}
 
 		public void setDisplayMode(DisplayMode displayMode) {
@@ -107,10 +102,6 @@ public class WailaConfig {
 
 		public boolean shouldDisplayTooltip() {
 			return displayTooltip;
-		}
-
-		public boolean shouldShiftForDetails() {
-			return shiftForDetails;
 		}
 
 		public DisplayMode getDisplayMode() {
@@ -351,6 +342,6 @@ public class WailaConfig {
 	}
 
 	public enum DisplayMode {
-		HOLD_KEY, TOGGLE
+		HOLD_KEY, TOGGLE, LITE
 	}
 }

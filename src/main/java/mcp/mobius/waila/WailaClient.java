@@ -34,6 +34,7 @@ public class WailaClient {
 	public static KeyBinding openConfig;
 	public static KeyBinding showOverlay;
 	public static KeyBinding toggleLiquid;
+	public static KeyBinding showDetails;
 
 	public static void initClient() {
 		ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.CONFIGGUIFACTORY, () -> ((minecraft, screen) -> new HomeConfigScreen(screen)));
@@ -41,10 +42,12 @@ public class WailaClient {
 		WailaClient.openConfig = new KeyBinding("key.waila.config", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputMappings.Type.KEYSYM.getOrMakeInput(320), Jade.NAME);
 		WailaClient.showOverlay = new KeyBinding("key.waila.show_overlay", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputMappings.Type.KEYSYM.getOrMakeInput(321), Jade.NAME);
 		WailaClient.toggleLiquid = new KeyBinding("key.waila.toggle_liquid", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputMappings.Type.KEYSYM.getOrMakeInput(322), Jade.NAME);
+		WailaClient.showDetails = new KeyBinding("key.waila.show_details", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputMappings.Type.KEYSYM.getOrMakeInput(340), Jade.NAME);
 
 		ClientRegistry.registerKeyBinding(WailaClient.openConfig.getKeyBinding());
 		ClientRegistry.registerKeyBinding(WailaClient.showOverlay.getKeyBinding());
 		ClientRegistry.registerKeyBinding(WailaClient.toggleLiquid.getKeyBinding());
+		ClientRegistry.registerKeyBinding(WailaClient.showDetails.getKeyBinding());
 	}
 
 	@SubscribeEvent

@@ -90,7 +90,7 @@ public class ForgeCapabilityProvider implements IComponentProvider, IServerDataP
 	}
 
 	@Override
-	public void appendServerData(CompoundNBT data, ServerPlayerEntity player, World world, TileEntity tile) {
+	public void appendServerData(CompoundNBT data, ServerPlayerEntity player, World world, TileEntity tile, boolean showDetails) {
 		IEnergyStorage storage = tile.getCapability(CapabilityEnergy.ENERGY).orElse(null);
 		if (storage != null) {
 			data.putInt("jadeEnergy", storage.getEnergyStored());

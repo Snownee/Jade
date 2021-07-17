@@ -19,7 +19,7 @@ import snownee.jade.addon.forge.InventoryProvider;
 
 public final class JadeCommonConfig {
 
-	public static int inventorySneakShowAmount = 54;
+	public static int inventoryDetailedShowAmount = 54;
 	public static int inventoryNormalShowAmount = 0;
 	public static int inventoryShowItemPreLine = 9;
 	private static final Set<String> inventoryBlacklist = Sets.newHashSet();
@@ -39,7 +39,7 @@ public final class JadeCommonConfig {
 
 	private JadeCommonConfig(ForgeConfigSpec.Builder builder) {
 		builder.push("inventory");
-		inventorySneakShowAmountVal = builder.defineInRange("sneakShowAmount", inventorySneakShowAmount, 0, 54);
+		inventorySneakShowAmountVal = builder.defineInRange("sneakShowAmount", inventoryDetailedShowAmount, 0, 54);
 		inventoryNormalShowAmountVal = builder.defineInRange("normalShowAmount", inventoryNormalShowAmount, 0, 54);
 		inventoryShowItemPreLineVal = builder.defineInRange("showItemPreLine", inventoryShowItemPreLine, 1, 18);
 		inventoryBlacklistVal = builder.defineList("blacklist", () -> Collections.singletonList("refinedstorage:disk_drive"), Predicates.alwaysTrue());
@@ -51,7 +51,7 @@ public final class JadeCommonConfig {
 	}
 
 	public static void refresh() {
-		inventorySneakShowAmount = inventorySneakShowAmountVal.get();
+		inventoryDetailedShowAmount = inventorySneakShowAmountVal.get();
 		inventoryNormalShowAmount = inventoryNormalShowAmountVal.get();
 		inventoryShowItemPreLine = inventoryShowItemPreLineVal.get();
 		bypassLockedContainer = bypassLockedContainerVal.get();

@@ -96,12 +96,12 @@ public class InventoryProvider implements IComponentProvider, IServerDataProvide
 	}
 
 	@Override
-	public void appendServerData(CompoundNBT tag, ServerPlayerEntity player, World world, TileEntity te) {
+	public void appendServerData(CompoundNBT tag, ServerPlayerEntity player, World world, TileEntity te, boolean showDetails) {
 		if (te == null || JadeCommonConfig.shouldIgnoreTE(tag.getString("id")) || te instanceof AbstractFurnaceTileEntity) {
 			return;
 		}
 
-		int size = player.isCrouching() ? JadeCommonConfig.inventorySneakShowAmount : JadeCommonConfig.inventoryNormalShowAmount;
+		int size = showDetails ? JadeCommonConfig.inventoryDetailedShowAmount : JadeCommonConfig.inventoryNormalShowAmount;
 		if (size == 0) {
 			return;
 		}

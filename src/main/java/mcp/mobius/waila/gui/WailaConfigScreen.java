@@ -38,7 +38,6 @@ public class WailaConfigScreen extends OptionsScreen {
 					options.choices("display_entities", general.getDisplayEntities(), general::setDisplayEntities);
 					options.choices("display_blocks", general.getDisplayBlocks(), general::setDisplayBlocks);
 					options.choices("display_fluids", general.getDisplayFluids(), general::setDisplayFluids);
-					options.choices("sneaky_details", general.shouldShiftForDetails(), general::setShiftForDetails);
 					options.choices("display_mode", general.getDisplayMode(), general::setDisplayMode);
 					options.choices("hide_from_debug", general.shouldHideFromDebug(), general::setHideFromDebug);
 					options.choices("display_item", general.shouldShowIcon(), general::setShowIcon);

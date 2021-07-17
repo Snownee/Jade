@@ -144,7 +144,7 @@ public class VanillaProvider implements IComponentProvider, IServerDataProvider<
 	}
 
 	@Override
-	public void appendServerData(CompoundNBT data, ServerPlayerEntity player, World world, TileEntity blockEntity) {
+	public void appendServerData(CompoundNBT data, ServerPlayerEntity player, World world, TileEntity blockEntity, boolean showDetails) {
 		if (blockEntity instanceof JukeboxTileEntity) {
 			JukeboxTileEntity jukebox = (JukeboxTileEntity) blockEntity;
 			ItemStack stack = jukebox.getRecord();

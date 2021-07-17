@@ -36,7 +36,7 @@ public class BeehiveProvider implements IComponentProvider, IServerDataProvider<
 	}
 
 	@Override
-	public void appendServerData(CompoundNBT tag, ServerPlayerEntity player, World world, TileEntity te) {
+	public void appendServerData(CompoundNBT tag, ServerPlayerEntity player, World world, TileEntity te, boolean showDetails) {
 		tag.keySet().clear();
 		BeehiveTileEntity beehive = (BeehiveTileEntity) te;
 		tag.putByte("Bees", (byte) beehive.getBeeCount());

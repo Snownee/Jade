@@ -36,8 +36,8 @@ public class ChestedHorseProvider implements IEntityComponentProvider, IServerDa
 	}
 
 	@Override
-	public void appendServerData(CompoundNBT data, ServerPlayerEntity player, World world, Entity t) {
-		int size = player.isCrouching() ? JadeCommonConfig.inventorySneakShowAmount : JadeCommonConfig.inventoryNormalShowAmount;
+	public void appendServerData(CompoundNBT data, ServerPlayerEntity player, World world, Entity t, boolean showDetails) {
+		int size = player.isCrouching() ? JadeCommonConfig.inventoryDetailedShowAmount : JadeCommonConfig.inventoryNormalShowAmount;
 		if (size == 0) {
 			return;
 		}

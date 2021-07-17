@@ -30,7 +30,7 @@ public class BreedingProvider implements IEntityComponentProvider, IServerDataPr
 	}
 
 	@Override
-	public void appendServerData(CompoundNBT tag, ServerPlayerEntity player, World world, Entity entity) {
+	public void appendServerData(CompoundNBT tag, ServerPlayerEntity player, World world, Entity entity, boolean showDetails) {
 		int time = ((AnimalEntity) entity).getGrowingAge();
 		if (time > 0) {
 			tag.putInt("BreedingCD", time);

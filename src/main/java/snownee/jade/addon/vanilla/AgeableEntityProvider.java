@@ -30,7 +30,7 @@ public class AgeableEntityProvider implements IEntityComponentProvider, IServerD
 	}
 
 	@Override
-	public void appendServerData(CompoundNBT tag, ServerPlayerEntity player, World world, Entity entity) {
+	public void appendServerData(CompoundNBT tag, ServerPlayerEntity player, World world, Entity entity, boolean showDetails) {
 		int time = ((AgeableEntity) entity).getGrowingAge();
 		if (time < 0) {
 			tag.putInt("GrowingTime", time);

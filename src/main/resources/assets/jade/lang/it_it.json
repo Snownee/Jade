@@ -32,8 +32,6 @@
   "config.waila.display_fluids_source_only": "Source Only",
   "config.waila.display_fluids_any": "Qualunque",
   "config.waila.display_fluids_none": "Nessuno",
-  "config.waila.sneaky_details": "Dettagli subdoli",
-  "config.waila.sneaky_details_desc": "Body text is hidden unless sneaking",
   "config.waila.display_mode": "Modalità di visualizzazione",
   "config.waila.display_mode_desc": "Tooltip display behavior\nToggle: Display keybind will toggle it on and off\nMaintained: Display keybind must be held",
   "config.waila.display_mode_toggle": "Toggle",

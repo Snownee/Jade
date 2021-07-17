@@ -5,6 +5,7 @@ import java.util.List;
 import com.mojang.text2speech.Narrator;
 
 import mcp.mobius.waila.Waila;
+import mcp.mobius.waila.WailaClient;
 import mcp.mobius.waila.addons.core.CorePlugin;
 import mcp.mobius.waila.api.Accessor;
 import mcp.mobius.waila.api.BlockAccessor;
@@ -13,6 +14,7 @@ import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IEntityComponentProvider;
 import mcp.mobius.waila.api.TooltipPosition;
 import mcp.mobius.waila.api.config.WailaConfig.ConfigGeneral;
+import mcp.mobius.waila.api.config.WailaConfig.DisplayMode;
 import mcp.mobius.waila.api.event.WailaRayTraceEvent;
 import mcp.mobius.waila.api.event.WailaTooltipEvent;
 import mcp.mobius.waila.api.ui.IElement;
@@ -105,6 +107,7 @@ public class WailaTickHandler {
 		if (accessor == null || accessor.getHitResult() == null)
 			return;
 
+		boolean showDetails = WailaClient.showDetails.isKeyDown();
 		if (accessor instanceof BlockAccessor) {
 			if (!config.getDisplayBlocks()) {
 				tooltipRenderer = null;
@@ -115,7 +118,7 @@ public class WailaTickHandler {
 				if (ObjectDataCenter.isTimeElapsed(ObjectDataCenter.rateLimiter)) {
 					ObjectDataCenter.resetTimer();
 					if (!WailaRegistrar.INSTANCE.getBlockNBTProviders(tileEntity).isEmpty())
-						Waila.NETWORK.sendToServer(new RequestTilePacket(tileEntity));
+						Waila.NETWORK.sendToServer(new RequestTilePacket(tileEntity, showDetails));
 				}
 				if (ObjectDataCenter.getServerData() == null) {
 					if (!WailaRegistrar.INSTANCE.getBlockNBTProviders(tileEntity).isEmpty())
@@ -132,7 +135,7 @@ public class WailaTickHandler {
 				if (ObjectDataCenter.isTimeElapsed(ObjectDataCenter.rateLimiter)) {
 					ObjectDataCenter.resetTimer();
 					if (!WailaRegistrar.INSTANCE.getEntityNBTProviders(entity).isEmpty())
-						Waila.NETWORK.sendToServer(new RequestEntityPacket(entity));
+						Waila.NETWORK.sendToServer(new RequestEntityPacket(entity, showDetails));
 				}
 				if (ObjectDataCenter.getServerData() == null) {
 					if (!WailaRegistrar.INSTANCE.getEntityNBTProviders(entity).isEmpty())
@@ -143,7 +146,7 @@ public class WailaTickHandler {
 
 		instance().gatherComponents(accessor, currentTip, TooltipPosition.HEAD);
 		instance().gatherComponents(accessor, currentTipBody, TooltipPosition.BODY);
-		if (config.shouldShiftForDetails() && !currentTipBody.isEmpty() && !player.isSecondaryUseActive()) {
+		if (config.getDisplayMode() == DisplayMode.LITE && !currentTipBody.isEmpty() && !showDetails) {
 			currentTip.sneakyDetails = true;
 		} else {
 			currentTip.lines.addAll(currentTipBody.lines);

@@ -27,7 +27,7 @@ public class CommandBlockProvider implements IComponentProvider, IServerDataProv
 	}
 
 	@Override
-	public void appendServerData(CompoundNBT tag, ServerPlayerEntity player, World world, TileEntity te) {
+	public void appendServerData(CompoundNBT tag, ServerPlayerEntity player, World world, TileEntity te, boolean showDetails) {
 		if (te == null || !player.canUseCommandBlock()) {
 			return;
 		}

@@ -19,21 +19,24 @@ import net.minecraftforge.fml.server.ServerLifecycleHooks;
 public class RequestEntityPacket {
 
 	public int entityId;
+	public boolean showDetails;
 
-	public RequestEntityPacket(Entity entity) {
-		entityId = entity.getEntityId();
+	public RequestEntityPacket(Entity entity, boolean showDetails) {
+		this(entity.getEntityId(), showDetails);
 	}
 
-	private RequestEntityPacket(int entityId) {
+	private RequestEntityPacket(int entityId, boolean showDetails) {
 		this.entityId = entityId;
+		this.showDetails = showDetails;
 	}
 
 	public static RequestEntityPacket read(PacketBuffer buffer) {
-		return new RequestEntityPacket(buffer.readVarInt());
+		return new RequestEntityPacket(buffer.readVarInt(), buffer.readBoolean());
 	}
 
 	public static void write(RequestEntityPacket message, PacketBuffer buffer) {
 		buffer.writeVarInt(message.entityId);
+		buffer.writeBoolean(message.showDetails);
 	}
 
 	public static class Handler {
@@ -55,7 +58,7 @@ public class RequestEntityPacket {
 				List<IServerDataProvider<Entity>> providers = WailaRegistrar.INSTANCE.getEntityNBTProviders(entity);
 				if (!providers.isEmpty()) {
 					for (IServerDataProvider<Entity> provider : providers) {
-						provider.appendServerData(tag, player, world, entity);
+						provider.appendServerData(tag, player, world, entity, message.showDetails);
 					}
 				} else {
 					entity.writeWithoutTypeId(tag);

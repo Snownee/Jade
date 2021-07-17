@@ -20,21 +20,24 @@ import net.minecraftforge.fml.server.ServerLifecycleHooks;
 public class RequestTilePacket {
 
 	public BlockPos pos;
+	public boolean showDetails;
 
-	public RequestTilePacket(TileEntity tile) {
-		pos = tile.getPos();
+	public RequestTilePacket(TileEntity tile, boolean showDetails) {
+		this(tile.getPos(), showDetails);
 	}
 
-	private RequestTilePacket(BlockPos pos) {
+	private RequestTilePacket(BlockPos pos, boolean showDetails) {
 		this.pos = pos;
+		this.showDetails = showDetails;
 	}
 
 	public static RequestTilePacket read(PacketBuffer buffer) {
-		return new RequestTilePacket(buffer.readBlockPos());
+		return new RequestTilePacket(buffer.readBlockPos(), buffer.readBoolean());
 	}
 
 	public static void write(RequestTilePacket message, PacketBuffer buffer) {
 		buffer.writeBlockPos(message.pos);
+		buffer.writeBoolean(message.showDetails);
 	}
 
 	public static class Handler {
@@ -58,7 +61,7 @@ public class RequestTilePacket {
 				List<IServerDataProvider<TileEntity>> providers = WailaRegistrar.INSTANCE.getBlockNBTProviders(tile);
 				if (!providers.isEmpty()) {
 					for (IServerDataProvider<TileEntity> provider : providers) {
-						provider.appendServerData(tag, player, world, tile);
+						provider.appendServerData(tag, player, world, tile, message.showDetails);
 					}
 				} else {
 					tile.write(tag);

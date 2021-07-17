@@ -46,7 +46,7 @@ public class FurnaceProvider implements IComponentProvider, IServerDataProvider<
 	}
 
 	@Override
-	public void appendServerData(CompoundNBT data, ServerPlayerEntity player, World world, TileEntity blockEntity) {
+	public void appendServerData(CompoundNBT data, ServerPlayerEntity player, World world, TileEntity blockEntity, boolean showDetails) {
 		AbstractFurnaceTileEntity furnace = (AbstractFurnaceTileEntity) blockEntity;
 		ListNBT items = new ListNBT();
 		for (int i = 0; i < 3; i++) {

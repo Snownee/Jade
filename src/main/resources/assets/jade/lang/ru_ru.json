@@ -25,8 +25,6 @@
   "config.waila.display_tooltip_desc": "Выполнять сбор информации и отображать подсказку",
   "config.waila.display_fluids": "Отображать жидкости",
   "config.waila.display_fluids_desc": "Попробует отобразить подскаску у жидкостей",
-  "config.waila.sneaky_details": "Режим приседания",
-  "config.waila.sneaky_details_desc": "Основной текст будет скрыт пока вы не присядете",
   "config.waila.display_mode": "Режим отображения",
   "config.waila.display_mode_desc": "Режим отображения подсказок\nКлавишей: Клавиша отображения включит или выключит подсказки\nУдерживанием: Клавиша отображения должна удерживаться для отображения подсказки",
   "config.waila.display_mode_toggle": "Клавишей",

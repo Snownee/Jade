@@ -70,7 +70,7 @@ public class PotionEffectsProvider implements IEntityComponentProvider, IServerD
 	}
 
 	@Override
-	public void appendServerData(CompoundNBT tag, ServerPlayerEntity player, World arg2, Entity entity) {
+	public void appendServerData(CompoundNBT tag, ServerPlayerEntity player, World arg2, Entity entity, boolean showDetails) {
 		LivingEntity living = (LivingEntity) entity;
 		Collection<EffectInstance> effects = living.getActivePotionEffects();
 		if (effects.isEmpty()) {

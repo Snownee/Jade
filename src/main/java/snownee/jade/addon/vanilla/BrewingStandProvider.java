@@ -41,7 +41,7 @@ public class BrewingStandProvider implements IComponentProvider, IServerDataProv
 	}
 
 	@Override
-	public void appendServerData(CompoundNBT tag, ServerPlayerEntity player, World arg2, TileEntity te) {
+	public void appendServerData(CompoundNBT tag, ServerPlayerEntity player, World arg2, TileEntity te, boolean showDetails) {
 		if (te instanceof BrewingStandTileEntity) {
 			BrewingStandTileEntity brewingStand = (BrewingStandTileEntity) te;
 			CompoundNBT compound = new CompoundNBT();

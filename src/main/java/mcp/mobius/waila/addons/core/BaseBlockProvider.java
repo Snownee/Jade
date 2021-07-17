@@ -114,7 +114,7 @@ public class BaseBlockProvider implements IComponentProvider, IServerDataProvide
 	}
 
 	@Override
-	public void appendServerData(CompoundNBT data, ServerPlayerEntity player, World world, TileEntity t) {
+	public void appendServerData(CompoundNBT data, ServerPlayerEntity player, World world, TileEntity t, boolean showDetails) {
 		if (t instanceof INameable && JadeCommonConfig.shouldShowCustomName(t)) {
 			INameable nameable = (INameable) t;
 			if (nameable.hasCustomName()) {

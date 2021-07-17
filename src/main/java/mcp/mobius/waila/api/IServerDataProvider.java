@@ -14,6 +14,7 @@ public interface IServerDataProvider<T> {
      * @param player The player requesting data synchronization (The owner of the current connection).
      * @param world  The world.
      * @param t      The type targeted for synchronization.
+     * @param showDetails   Should show details (for example: show more inventory items in tooltip while player is pressing SHIFT by default).
      */
-	void appendServerData(CompoundNBT data, ServerPlayerEntity player, World world, T t);
+	void appendServerData(CompoundNBT data, ServerPlayerEntity player, World world, T t, boolean showDetails);
 }
