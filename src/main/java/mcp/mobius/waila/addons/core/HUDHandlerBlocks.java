@@ -42,24 +42,23 @@ public class HUDHandlerBlocks implements IComponentProvider, IServerDataProvider
 
 	@Override
 	public void appendHead(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {
-		String name;
+		ITextComponent name;
 		if (accessor.getServerData().contains("givenName", Constants.NBT.TAG_STRING)) {
-			ITextComponent component = ITextComponent.Serializer.getComponentFromJson(accessor.getServerData().getString("givenName"));
-			name = component.getString();
+			name = ITextComponent.Serializer.getComponentFromJson(accessor.getServerData().getString("givenName"));
 		} else {
 			String key = accessor.getBlock().getTranslationKey();
 			if (I18n.hasKey(key)) {
-				name = I18n.format(key);
+				name = accessor.getBlock().getTranslatedName();
 			} else {
 				ItemStack stack = accessor.getBlockState().getPickBlock(accessor.getHitResult(), accessor.getWorld(), accessor.getPosition(), accessor.getPlayer());
 				if (stack != null && !stack.isEmpty()) {
-					name = stack.getDisplayName().getString();
+					name = stack.getDisplayName();
 				} else {
-					name = key;
+					name = new StringTextComponent(key);
 				}
 			}
 		}
-		((ITaggableList<ResourceLocation, ITextComponent>) tooltip).setTag(OBJECT_NAME_TAG, new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getBlockName(), name)));
+		((ITaggableList<ResourceLocation, ITextComponent>) tooltip).setTag(OBJECT_NAME_TAG, new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getBlockName(), name.getString())));
 		if (config.get(PluginCore.CONFIG_SHOW_REGISTRY))
 			((ITaggableList<ResourceLocation, ITextComponent>) tooltip).setTag(REGISTRY_NAME_TAG, new StringTextComponent(accessor.getBlock().getRegistryName().toString()).mergeStyle(TextFormatting.GRAY));
 		if (accessor.getBlock() instanceof TrappedChestBlock) {
