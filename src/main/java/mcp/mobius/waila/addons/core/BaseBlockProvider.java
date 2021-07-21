@@ -49,33 +49,32 @@ public class BaseBlockProvider implements IComponentProvider, IServerDataProvide
 	}
 
 	public void appendHead(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		String name = null;
+		ITextComponent name = null;
 		if (accessor.getServerData().contains("givenName", Constants.NBT.TAG_STRING)) {
-			ITextComponent component = ITextComponent.Serializer.getComponentFromJson(accessor.getServerData().getString("givenName"));
-			name = component.getString();
+			name = ITextComponent.Serializer.getComponentFromJson(accessor.getServerData().getString("givenName"));
 		} else {
 			if (WailaRegistrar.INSTANCE.shouldPick(accessor.getBlockState())) {
 				ItemStack pick = accessor.getPickedResult();
 				if (!pick.isEmpty())
-					name = pick.getDisplayName().getString();
+					name = pick.getDisplayName();
 			}
 			if (name == null) {
 				String key = accessor.getBlock().getTranslationKey();
 				if (I18n.hasKey(key)) {
-					name = I18n.format(key);
+					name = accessor.getBlock().getTranslatedName();
 				} else {
 					ItemStack stack = accessor.getBlockState().getPickBlock(accessor.getHitResult(), accessor.getWorld(), accessor.getPosition(), accessor.getPlayer());
 					if (stack != null && !stack.isEmpty()) {
-						name = stack.getDisplayName().getString();
+						name = stack.getDisplayName();
 					} else {
-						name = key;
+						name = new StringTextComponent(key);
 					}
 				}
 			}
 		}
 		if (name != null) {
 			WailaConfig wailaConfig = Waila.CONFIG.get();
-			tooltip.add(new StringTextComponent(String.format(wailaConfig.getFormatting().getBlockName(), name)).mergeStyle(wailaConfig.getOverlay().getColor().getTitle()), CorePlugin.TAG_OBJECT_NAME);
+			tooltip.add(new StringTextComponent(String.format(wailaConfig.getFormatting().getBlockName(), name.getString())).mergeStyle(wailaConfig.getOverlay().getColor().getTitle()), CorePlugin.TAG_OBJECT_NAME);
 		}
 		if (config.get(CorePlugin.CONFIG_REGISTRY_NAME))
 			tooltip.add(new StringTextComponent(accessor.getBlock().getRegistryName().toString()).mergeStyle(TextFormatting.GRAY), CorePlugin.TAG_REGISTRY_NAME);
