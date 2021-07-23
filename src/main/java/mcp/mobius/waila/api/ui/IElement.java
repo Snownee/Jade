@@ -1,9 +1,9 @@
 package mcp.mobius.waila.api.ui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector2f;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec2;
 
 /**
  * A basic renderable element to be drawn in Jade's tooltip.
@@ -15,16 +15,16 @@ public interface IElement {
 	/**
 	 * Force a size that this element reserve
 	 */
-	IElement size(Vector2f size);
+	IElement size(Vec2 size);
 
 	/**
 	 * Calculate the default reserved area of this element.
 	 *
 	 * Modders call getCachedSize instead
 	 */
-	Vector2f getSize();
+	Vec2 getSize();
 
-	Vector2f getCachedSize();
+	Vec2 getCachedSize();
 
 	/**
 	 * Draw method for the renderer.
@@ -35,7 +35,7 @@ public interface IElement {
 	 * @param maxX Max width this element can expand to
 	 * @param maxY Max height this element can expand to
 	 */
-	void render(MatrixStack matrixStack, float x, float y, float maxX, float maxY);
+	void render(PoseStack matrixStack, float x, float y, float maxX, float maxY);
 
 	IElement align(Align align);
 
@@ -44,9 +44,9 @@ public interface IElement {
 	/**
 	 * Reposition this element with an offset
 	 */
-	IElement translate(Vector2f translation);
+	IElement translate(Vec2 translation);
 
-	Vector2f getTranslation();
+	Vec2 getTranslation();
 
 	/**
 	 * Tag this element for identify by other component providers or

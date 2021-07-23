@@ -2,15 +2,19 @@ package mcp.mobius.waila.gui.config.value;
 
 import java.util.function.Consumer;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import mcp.mobius.waila.gui.config.OptionsListWidget;
-import net.minecraft.client.gui.IGuiEventListener;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.narration.NarratedElementType;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 
 public abstract class OptionValue<T> extends OptionsListWidget.Entry {
 
-	private final ITextComponent title;
+	private final Component title;
 	private final String description;
 	protected final Consumer<T> setter;
 	protected T value;
@@ -23,8 +27,8 @@ public abstract class OptionValue<T> extends OptionsListWidget.Entry {
 	}
 
 	@Override
-	public final void render(MatrixStack matrixStack, int index, int rowTop, int rowLeft, int width, int height, int mouseX, int mouseY, boolean hovered, float deltaTime) {
-		client.fontRenderer.drawStringWithShadow(matrixStack, title.getString(), rowLeft + 10, rowTop + (height / 4) + (client.fontRenderer.FONT_HEIGHT / 2), 16777215);
+	public final void render(PoseStack matrixStack, int index, int rowTop, int rowLeft, int width, int height, int mouseX, int mouseY, boolean hovered, float deltaTime) {
+		client.font.drawShadow(matrixStack, title, rowLeft + 10, rowTop + (height / 4) + (client.font.lineHeight / 2), 16777215);
 		drawValue(matrixStack, width, height, rowLeft, rowTop, mouseX, mouseY, hovered, deltaTime);
 		this.x = rowLeft;
 	}
@@ -33,11 +37,11 @@ public abstract class OptionValue<T> extends OptionsListWidget.Entry {
 		setter.accept(value);
 	}
 
-	public IGuiEventListener getListener() {
+	public AbstractWidget getListener() {
 		return null;
 	}
 
-	public ITextComponent getTitle() {
+	public Component getTitle() {
 		return title;
 	}
 
@@ -49,5 +53,13 @@ public abstract class OptionValue<T> extends OptionsListWidget.Entry {
 		return x;
 	}
 
-	protected abstract void drawValue(MatrixStack matrixStack, int entryWidth, int entryHeight, int x, int y, int mouseX, int mouseY, boolean selected, float partialTicks);
+	@Override
+	public void updateNarration(NarrationElementOutput output) {
+		output.add(NarratedElementType.TITLE, getTitle());
+		if (I18n.exists(getDescription())) {
+			output.add(NarratedElementType.HINT, new TranslatableComponent(getDescription()));
+		}
+	}
+
+	protected abstract void drawValue(PoseStack matrixStack, int entryWidth, int entryHeight, int x, int y, int mouseX, int mouseY, boolean selected, float partialTicks);
 }

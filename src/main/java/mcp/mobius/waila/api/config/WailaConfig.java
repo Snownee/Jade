@@ -7,12 +7,11 @@ import com.google.common.collect.Maps;
 import com.google.gson.annotations.Expose;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.HandSide;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RayTraceContext.FluidMode;
-import net.minecraft.util.text.Color;
-import net.minecraft.util.text.Style;
+import net.minecraft.network.chat.Style;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.world.level.ClipContext;
 
 /**
  * Get this instance from {@link mcp.mobius.waila.api.IRegistrar#getConfig}
@@ -45,7 +44,7 @@ public class WailaConfig {
 		private boolean enableTextToSpeech = false;
 		private int maxHealthForRender = 40;
 		private int maxHeartsPerLine = 10;
-		private FluidMode fluldMode = FluidMode.NONE;
+		private ClipContext.Fluid fluldMode = ClipContext.Fluid.NONE;
 		private float reachDistance = 0;
 		@Expose
 		private boolean debug = false;
@@ -95,10 +94,10 @@ public class WailaConfig {
 		}
 
 		public void setDisplayFluids(boolean displayFluids) {
-			fluldMode = displayFluids ? FluidMode.ANY : FluidMode.NONE;
+			fluldMode = displayFluids ? ClipContext.Fluid.ANY : ClipContext.Fluid.NONE;
 		}
 
-		public void setDisplayFluids(FluidMode displayFluids) {
+		public void setDisplayFluids(ClipContext.Fluid displayFluids) {
 			fluldMode = displayFluids;
 		}
 
@@ -131,10 +130,10 @@ public class WailaConfig {
 		}
 
 		public boolean shouldDisplayFluids() {
-			return fluldMode != FluidMode.NONE;
+			return fluldMode != ClipContext.Fluid.NONE;
 		}
 
-		public FluidMode getDisplayFluids() {
+		public ClipContext.Fluid getDisplayFluids() {
 			return fluldMode;
 		}
 
@@ -143,7 +142,7 @@ public class WailaConfig {
 		}
 
 		public void setReachDistance(float reachDistance) {
-			this.reachDistance = MathHelper.clamp(reachDistance, 0, 20);
+			this.reachDistance = Mth.clamp(reachDistance, 0, 20);
 		}
 
 		public void setDebug(boolean debug) {
@@ -168,31 +167,31 @@ public class WailaConfig {
 		private float autoScaleThreshold = 0.5f;
 
 		public void setOverlayPosX(float overlayPosX) {
-			this.overlayPosX = MathHelper.clamp(overlayPosX, 0.0F, 1.0F);
+			this.overlayPosX = Mth.clamp(overlayPosX, 0.0F, 1.0F);
 		}
 
 		public void setOverlayPosY(float overlayPosY) {
-			this.overlayPosY = MathHelper.clamp(overlayPosY, 0.0F, 1.0F);
+			this.overlayPosY = Mth.clamp(overlayPosY, 0.0F, 1.0F);
 		}
 
 		public void setOverlayScale(float overlayScale) {
-			this.overlayScale = MathHelper.clamp(overlayScale, 0.2F, 2.0F);
+			this.overlayScale = Mth.clamp(overlayScale, 0.2F, 2.0F);
 		}
 
 		public void setAnchorX(float overlayAnchorX) {
-			this.overlayAnchorX = MathHelper.clamp(overlayAnchorX, 0.0F, 1.0F);
+			this.overlayAnchorX = Mth.clamp(overlayAnchorX, 0.0F, 1.0F);
 		}
 
 		public void setAnchorY(float overlayAnchorY) {
-			this.overlayAnchorY = MathHelper.clamp(overlayAnchorY, 0.0F, 1.0F);
+			this.overlayAnchorY = Mth.clamp(overlayAnchorY, 0.0F, 1.0F);
 		}
 
 		public float getOverlayPosX() {
-			return MathHelper.clamp(overlayPosX, 0.0F, 1.0F);
+			return Mth.clamp(overlayPosX, 0.0F, 1.0F);
 		}
 
 		public float getOverlayPosY() {
-			return MathHelper.clamp(overlayPosY, 0.0F, 1.0F);
+			return Mth.clamp(overlayPosY, 0.0F, 1.0F);
 		}
 
 		public float getOverlayScale() {
@@ -200,11 +199,11 @@ public class WailaConfig {
 		}
 
 		public float getAnchorX() {
-			return MathHelper.clamp(overlayAnchorX, 0.0F, 1.0F);
+			return Mth.clamp(overlayAnchorX, 0.0F, 1.0F);
 		}
 
 		public float getAnchorY() {
-			return MathHelper.clamp(overlayAnchorY, 0.0F, 1.0F);
+			return Mth.clamp(overlayAnchorY, 0.0F, 1.0F);
 		}
 
 		public void setFlipMainHand(boolean overlaySquare) {
@@ -216,7 +215,7 @@ public class WailaConfig {
 		}
 
 		public float tryFlip(float f) {
-			if (Minecraft.getInstance().gameSettings.mainHand == HandSide.LEFT)
+			if (Minecraft.getInstance().options.mainHand == HumanoidArm.LEFT)
 				f = 1 - f;
 			return f;
 		}
@@ -263,7 +262,7 @@ public class WailaConfig {
 			}
 
 			public void setAlpha(float alpha) {
-				this.alpha = MathHelper.clamp(alpha, 0, 1);
+				this.alpha = Mth.clamp(alpha, 0, 1);
 			}
 
 			public int getBackgroundColor() {
@@ -282,7 +281,7 @@ public class WailaConfig {
 				int prevAlphaChannel = (color >> 24) & 0xFF;
 				if (prevAlphaChannel > 0)
 					alpha *= prevAlphaChannel / 256f;
-				int alphaChannel = (int) (0xFF * MathHelper.clamp(alpha, 0, 1));
+				int alphaChannel = (int) (0xFF * Mth.clamp(alpha, 0, 1));
 				return (color & 0xFFFFFF) | alphaChannel << 24;
 			}
 
@@ -295,7 +294,7 @@ public class WailaConfig {
 			}
 
 			private static Style color(int color) {
-				return Style.EMPTY.setColor(Color.fromInt(color));
+				return Style.EMPTY.withColor(color);
 			}
 		}
 	}

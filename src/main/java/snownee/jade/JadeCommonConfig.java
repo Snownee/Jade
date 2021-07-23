@@ -8,13 +8,13 @@ import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Sets;
 
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
 import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
 import net.minecraftforge.common.ForgeConfigSpec.IntValue;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 import snownee.jade.addon.forge.InventoryProvider;
 
 public final class JadeCommonConfig {
@@ -65,7 +65,7 @@ public final class JadeCommonConfig {
 	}
 
 	@SubscribeEvent
-	public static void onConfigReload(ModConfig.Reloading event) {
+	public static void onConfigReload(ModConfigEvent.Reloading event) {
 		((CommentedFileConfig) event.getConfig().getConfigData()).load();
 		refresh();
 	}
@@ -74,7 +74,7 @@ public final class JadeCommonConfig {
 		return inventoryBlacklist.contains(id);
 	}
 
-	public static boolean shouldShowCustomName(TileEntity t) {
+	public static boolean shouldShowCustomName(BlockEntity t) {
 		String modid = t.getType().getRegistryName().getNamespace();
 		if (onlyShowVanilla) {
 			return modid.equals("minecraft");

@@ -1,41 +1,37 @@
 package mcp.mobius.waila.impl.ui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.config.WailaConfig;
 import mcp.mobius.waila.api.ui.Element;
+import mcp.mobius.waila.overlay.DisplayHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.util.math.vector.Vector2f;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.gui.Font;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class TextElement extends Element {
 
-	public final ITextComponent component;
+	public final Component component;
 
-	public TextElement(ITextComponent component) {
+	public TextElement(Component component) {
 		this.component = component;
 	}
 
 	@Override
-	public Vector2f getSize() {
-		FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
-		return new Vector2f(fontRenderer.getStringWidth(component.getString()), fontRenderer.FONT_HEIGHT + 1);
+	public Vec2 getSize() {
+		Font font = Minecraft.getInstance().font;
+		return new Vec2(font.width(component.getString()), font.lineHeight + 1);
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, float x, float y, float maxX, float maxY) {
-		FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
+	public void render(PoseStack matrixStack, float x, float y, float maxX, float maxY) {
 		WailaConfig.ConfigOverlay.ConfigOverlayColor color = Waila.CONFIG.get().getOverlay().getColor();
-		IRenderTypeBuffer.Impl irendertypebuffer$impl = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
-		fontRenderer.drawEntityText(component.func_241878_f(), x, y, color.getTheme().textColor, color.getTheme().textShadow, matrixStack.getLast().getMatrix(), irendertypebuffer$impl, false, 0, 15728880);
-		irendertypebuffer$impl.finish();
+		DisplayHelper.INSTANCE.drawText(matrixStack, component, x, y, color.getTheme().textColor);
 	}
 
 }

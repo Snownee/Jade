@@ -5,11 +5,11 @@ import mcp.mobius.waila.api.config.WailaConfig;
 import mcp.mobius.waila.api.ui.IDisplayHelper;
 import mcp.mobius.waila.api.ui.IElement;
 import mcp.mobius.waila.api.ui.IElementHelper;
-import net.minecraft.block.Block;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 public interface IRegistrar {
 
@@ -50,12 +50,12 @@ public interface IRegistrar {
 	void registerComponentProvider(IComponentProvider dataProvider, TooltipPosition position, Class<? extends Block> block);
 
 	/**
-	 * Register an {@link IServerDataProvider<TileEntity>} instance for data syncing purposes.
+	 * Register an {@link IServerDataProvider<BlockEntity>} instance for data syncing purposes.
 	 *
 	 * @param dataProvider The data provider instance
 	 * @param block The highest level class to apply to
 	 */
-	void registerBlockDataProvider(IServerDataProvider<TileEntity> dataProvider, Class<? extends TileEntity> block);
+	void registerBlockDataProvider(IServerDataProvider<BlockEntity> dataProvider, Class<? extends BlockEntity> block);
 
 	/**
      * Register an {@link IEntityComponentProvider} instance to allow overriding the icon for a entity via the
@@ -67,7 +67,7 @@ public interface IRegistrar {
 	void registerIconProvider(IEntityComponentProvider dataProvider, Class<? extends Entity> entity);
 
 	/**
-     * Register an {@link IEntityComponentProvider} instance for appending {@link net.minecraft.util.text.ITextComponent}
+     * Register an {@link IEntityComponentProvider} instance for appending {@link net.minecraft.util.text.Component}
      * to the tooltip.
      *
      * @param dataProvider The data provider instance

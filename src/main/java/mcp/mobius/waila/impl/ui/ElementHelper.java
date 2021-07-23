@@ -8,16 +8,16 @@ import mcp.mobius.waila.api.ui.IElement;
 import mcp.mobius.waila.api.ui.IElementHelper;
 import mcp.mobius.waila.api.ui.IProgressStyle;
 import mcp.mobius.waila.impl.Tooltip;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.vector.Vector2f;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.fluids.FluidStack;
 
 public class ElementHelper implements IElementHelper {
 	public static final ElementHelper INSTANCE = new ElementHelper();
 
 	@Override
-	public IElement text(ITextComponent component) {
+	public IElement text(Component component) {
 		return new TextElement(component);
 	}
 
@@ -43,11 +43,11 @@ public class ElementHelper implements IElementHelper {
 
 	@Override
 	public IElement spacer(int width, int height) {
-		return new SpacerElement(new Vector2f(width, height));
+		return new SpacerElement(new Vec2(width, height));
 	}
 
 	@Override
-	public IElement progress(float progress, @Nullable ITextComponent text, IProgressStyle style, @Nullable IBorderStyle borderStyle) {
+	public IElement progress(float progress, @Nullable Component text, IProgressStyle style, @Nullable IBorderStyle borderStyle) {
 		return new ProgressElement(progress, text, (ProgressStyle) style, (BorderStyle) borderStyle);
 	}
 
@@ -73,7 +73,7 @@ public class ElementHelper implements IElementHelper {
 
 	//
 	//    public static IElement sub(String text) {
-	//        CompoundNBT tag = new CompoundNBT();
+	//        CompoundTag tag = new CompoundTag();
 	//        tag.putString("text", text);
 	//        return new RenderableTextComponent(SUB, tag);
 	//    }

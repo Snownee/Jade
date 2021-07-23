@@ -5,10 +5,10 @@ import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.config.IPluginConfig;
 import mcp.mobius.waila.overlay.DisplayHelper;
-import net.minecraft.block.EnchantingTableBlock;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.EnchantmentTableBlock;
 import snownee.jade.VanillaPlugin;
 
 public class EnchantmentPowerProvider implements IComponentProvider {
@@ -17,23 +17,23 @@ public class EnchantmentPowerProvider implements IComponentProvider {
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		World world = accessor.getWorld();
+		Level world = accessor.getLevel();
 		BlockPos pos = accessor.getPosition();
 		float power = 0;
-		if (accessor.getBlock() instanceof EnchantingTableBlock) {
+		if (accessor.getBlock() instanceof EnchantmentTableBlock) {
 			if (config.get(VanillaPlugin.TOTAL_ENCH_POWER)) {
-				// EnchantmentContainer.class
+				// EnchantmentMenu.java
 				for (int k = -1; k <= 1; ++k) {
 					for (int l = -1; l <= 1; ++l) {
-						if ((k != 0 || l != 0) && world.isAirBlock(pos.add(l, 0, k)) && world.isAirBlock(pos.add(l, 1, k))) {
-							power += getPower(world, pos.add(l * 2, 0, k * 2));
-							power += getPower(world, pos.add(l * 2, 1, k * 2));
+						if ((k != 0 || l != 0) && world.isEmptyBlock(pos.offset(l, 0, k)) && world.isEmptyBlock(pos.offset(l, 1, k))) {
+							power += getPower(world, pos.offset(l * 2, 0, k * 2));
+							power += getPower(world, pos.offset(l * 2, 1, k * 2));
 
 							if (l != 0 && k != 0) {
-								power += getPower(world, pos.add(l * 2, 0, k));
-								power += getPower(world, pos.add(l * 2, 1, k));
-								power += getPower(world, pos.add(l, 0, k * 2));
-								power += getPower(world, pos.add(l, 1, k * 2));
+								power += getPower(world, pos.offset(l * 2, 0, k));
+								power += getPower(world, pos.offset(l * 2, 1, k));
+								power += getPower(world, pos.offset(l, 0, k * 2));
+								power += getPower(world, pos.offset(l, 1, k * 2));
 							}
 						}
 					}
@@ -43,11 +43,11 @@ public class EnchantmentPowerProvider implements IComponentProvider {
 			power = getPower(world, pos);
 		}
 		if (power > 0) {
-			tooltip.add(new TranslationTextComponent("jade.ench_power", DisplayHelper.dfCommas.format(power)));
+			tooltip.add(new TranslatableComponent("jade.ench_power", DisplayHelper.dfCommas.format(power)));
 		}
 	}
 
-	private float getPower(World world, BlockPos pos) {
+	private float getPower(Level world, BlockPos pos) {
 		return world.getBlockState(pos).getEnchantPowerBonus(world, pos);
 	}
 }

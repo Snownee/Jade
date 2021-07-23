@@ -5,13 +5,13 @@ import mcp.mobius.waila.api.IEntityComponentProvider;
 import mcp.mobius.waila.api.IServerDataProvider;
 import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.config.IPluginConfig;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.passive.horse.AbstractChestedHorseEntity;
-import net.minecraft.entity.passive.horse.LlamaEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.animal.horse.AbstractChestedHorse;
+import net.minecraft.world.entity.animal.horse.Llama;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.items.CapabilityItemHandler;
 import snownee.jade.JadeCommonConfig;
 import snownee.jade.VanillaPlugin;
@@ -25,9 +25,9 @@ public class ChestedHorseProvider implements IEntityComponentProvider, IServerDa
 		if (!config.get(VanillaPlugin.HORSE_INVENTORY)) {
 			return;
 		}
-		AbstractChestedHorseEntity horse = (AbstractChestedHorseEntity) accessor.getEntity();
-		if (horse instanceof LlamaEntity) {
-			tooltip.add(new TranslationTextComponent("jade.llamaStrength", ((LlamaEntity) horse).getStrength()));
+		AbstractChestedHorse horse = (AbstractChestedHorse) accessor.getEntity();
+		if (horse instanceof Llama) {
+			tooltip.add(new TranslatableComponent("jade.llamaStrength", ((Llama) horse).getStrength()));
 		}
 		if (horse.hasChest()) {
 			InventoryProvider.append(tooltip, accessor);
@@ -35,13 +35,13 @@ public class ChestedHorseProvider implements IEntityComponentProvider, IServerDa
 	}
 
 	@Override
-	public void appendServerData(CompoundNBT data, ServerPlayerEntity player, World world, Entity t, boolean showDetails) {
+	public void appendServerData(CompoundTag data, ServerPlayer player, Level world, Entity t, boolean showDetails) {
 		int size = showDetails ? JadeCommonConfig.inventoryDetailedShowAmount : JadeCommonConfig.inventoryNormalShowAmount;
 		if (size == 0) {
 			return;
 		}
 
-		AbstractChestedHorseEntity horse = (AbstractChestedHorseEntity) t;
+		AbstractChestedHorse horse = (AbstractChestedHorse) t;
 		if (horse.hasChest()) {
 			horse.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(h -> InventoryProvider.putInvData(data, h, size, 2));
 		}

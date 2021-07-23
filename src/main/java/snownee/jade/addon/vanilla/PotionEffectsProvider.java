@@ -8,19 +8,20 @@ import mcp.mobius.waila.api.IServerDataProvider;
 import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.config.IPluginConfig;
 import mcp.mobius.waila.api.ui.IElementHelper;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
+import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.util.Constants;
 import snownee.jade.VanillaPlugin;
 
@@ -34,21 +35,21 @@ public class PotionEffectsProvider implements IEntityComponentProvider, IServerD
 		}
 		IElementHelper helper = tooltip.getElementHelper();
 		ITooltip box = helper.tooltip();
-		ListNBT list = accessor.getServerData().getList("Potions", Constants.NBT.TAG_COMPOUND);
-		ITextComponent[] lines = new ITextComponent[list.size()];
+		ListTag list = accessor.getServerData().getList("Potions", Constants.NBT.TAG_COMPOUND);
+		Component[] lines = new Component[list.size()];
 		for (int i = 0; i < lines.length; i++) {
-			CompoundNBT compound = list.getCompound(i);
+			CompoundTag compound = list.getCompound(i);
 			int duration = compound.getInt("Duration");
-			TranslationTextComponent name = new TranslationTextComponent(compound.getString("Name"));
+			TranslatableComponent name = new TranslatableComponent(compound.getString("Name"));
 			String amplifierKey = "potion.potency." + compound.getInt("Amplifier");
-			ITextComponent amplifier;
-			if (I18n.hasKey(amplifierKey)) {
-				amplifier = new TranslationTextComponent(amplifierKey);
+			Component amplifier;
+			if (I18n.exists(amplifierKey)) {
+				amplifier = new TranslatableComponent(amplifierKey);
 			} else {
-				amplifier = new StringTextComponent(Integer.toString(compound.getInt("Amplifier")));
+				amplifier = new TextComponent(Integer.toString(compound.getInt("Amplifier")));
 			}
-			TranslationTextComponent s = new TranslationTextComponent("jade.potion", name, amplifier, getPotionDurationString(duration));
-			box.add(s.mergeStyle(compound.getBoolean("Bad") ? TextFormatting.RED : TextFormatting.GREEN));
+			TranslatableComponent s = new TranslatableComponent("jade.potion", name, amplifier, getPotionDurationString(duration));
+			box.add(s.withStyle(compound.getBoolean("Bad") ? ChatFormatting.RED : ChatFormatting.GREEN));
 		}
 		tooltip.add(helper.box(box));
 	}
@@ -57,7 +58,7 @@ public class PotionEffectsProvider implements IEntityComponentProvider, IServerD
 		if (duration >= 32767) {
 			return "**:**";
 		} else {
-			int i = MathHelper.floor(duration);
+			int i = Mth.floor(duration);
 			return ticksToElapsedTime(i);
 		}
 	}
@@ -70,20 +71,20 @@ public class PotionEffectsProvider implements IEntityComponentProvider, IServerD
 	}
 
 	@Override
-	public void appendServerData(CompoundNBT tag, ServerPlayerEntity player, World arg2, Entity entity, boolean showDetails) {
+	public void appendServerData(CompoundTag tag, ServerPlayer player, Level arg2, Entity entity, boolean showDetails) {
 		LivingEntity living = (LivingEntity) entity;
-		Collection<EffectInstance> effects = living.getActivePotionEffects();
+		Collection<MobEffectInstance> effects = living.getActiveEffects();
 		if (effects.isEmpty()) {
 			return;
 		}
-		ListNBT list = new ListNBT();
-		for (EffectInstance effect : effects) {
-			CompoundNBT compound = new CompoundNBT();
-			compound.putString("Name", effect.getEffectName());
+		ListTag list = new ListTag();
+		for (MobEffectInstance effect : effects) {
+			CompoundTag compound = new CompoundTag();
+			compound.putString("Name", effect.getDescriptionId());
 			compound.putInt("Amplifier", effect.getAmplifier());
 			int duration = Math.min(32767, effect.getDuration());
 			compound.putInt("Duration", duration);
-			compound.putBoolean("Bad", !effect.getPotion().isBeneficial());
+			compound.putBoolean("Bad", effect.getEffect().getCategory() == MobEffectCategory.HARMFUL);
 			list.add(compound);
 		}
 		tag.put("Potions", list);

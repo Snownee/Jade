@@ -1,25 +1,25 @@
 package mcp.mobius.waila.api;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.world.World;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.HitResult;
 
 /**
  * A generic class to get basic information of target and context.
  */
 public abstract class Accessor {
 
-	private final World world;
-	private final PlayerEntity player;
-	private final CompoundNBT serverData;
-	private final RayTraceResult hit;
+	private final Level world;
+	private final Player player;
+	private final CompoundTag serverData;
+	private final HitResult hit;
 	private final boolean serverConnected;
 
 	private TooltipPosition tooltipPosition;
 
-	public Accessor(World world, PlayerEntity player, CompoundNBT serverData, RayTraceResult hit, boolean serverConnected) {
+	public Accessor(Level world, Player player, CompoundTag serverData, HitResult hit, boolean serverConnected) {
 		this.world = world;
 		this.player = player;
 		this.serverData = serverData;
@@ -27,19 +27,19 @@ public abstract class Accessor {
 		this.serverConnected = serverConnected;
 	}
 
-	public World getWorld() {
+	public Level getLevel() {
 		return world;
 	}
 
-	public PlayerEntity getPlayer() {
+	public Player getPlayer() {
 		return player;
 	}
 
-	public CompoundNBT getServerData() {
-		return serverData == null ? new CompoundNBT() : serverData;
+	public CompoundTag getServerData() {
+		return serverData == null ? new CompoundTag() : serverData;
 	}
 
-	public RayTraceResult getHitResult() {
+	public HitResult getHitResult() {
 		return hit;
 	}
 

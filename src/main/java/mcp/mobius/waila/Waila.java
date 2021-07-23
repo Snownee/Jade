@@ -3,7 +3,6 @@ package mcp.mobius.waila;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -20,13 +19,13 @@ import mcp.mobius.waila.network.RequestEntityPacket;
 import mcp.mobius.waila.network.RequestTilePacket;
 import mcp.mobius.waila.network.ServerPingPacket;
 import mcp.mobius.waila.utils.JsonConfig;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ExtensionPoint;
+import net.minecraftforge.fml.IExtensionPoint;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -34,10 +33,10 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.network.FMLNetworkConstants;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkRegistry;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
+import net.minecraftforge.fmllegacy.network.FMLNetworkConstants;
+import net.minecraftforge.fmllegacy.network.NetworkDirection;
+import net.minecraftforge.fmllegacy.network.NetworkRegistry;
+import net.minecraftforge.fmllegacy.network.simple.SimpleChannel;
 import net.minecraftforge.forgespi.language.ModFileScanData.AnnotationData;
 import snownee.jade.Jade;
 
@@ -61,7 +60,7 @@ public class Waila {
 	/* on */
 
 	public Waila() {
-		ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.DISPLAYTEST, () -> Pair.of(() -> FMLNetworkConstants.IGNORESERVERONLY, (a, b) -> true));
+		ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> FMLNetworkConstants.IGNORESERVERONLY, (a, b) -> true));
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setupClient);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::loadComplete);
@@ -89,8 +88,8 @@ public class Waila {
 				.stream()
 				.flatMap($ -> $.getAnnotations().stream())
 				.filter($ -> {
-					if ($.getAnnotationType().getClassName().equals(WailaPlugin.class.getName())) {
-						String required = (String) $.getAnnotationData().getOrDefault("value", "");
+					if ($.annotationType().getClassName().equals(WailaPlugin.class.getName())) {
+						String required = (String) $.annotationData().getOrDefault("value", "");
 						if (required.isEmpty() || ModList.get().isLoaded(required)) {
 							return true;
 						}
@@ -98,7 +97,7 @@ public class Waila {
 					return false;
 				})
 				.sorted((a, b) -> Integer.compare(getPriority(a), getPriority(b)))
-				.map(AnnotationData::getMemberName)
+				.map(AnnotationData::memberName)
 				.collect(Collectors.toList());
 		/* on */
 
@@ -106,11 +105,11 @@ public class Waila {
 			try {
 				Class<?> clazz = Class.forName(className);
 				if (IWailaPlugin.class.isAssignableFrom(clazz)) {
-					IWailaPlugin plugin = (IWailaPlugin) clazz.newInstance();
+					IWailaPlugin plugin = (IWailaPlugin) clazz.getDeclaredConstructor().newInstance();
 					plugin.register(WailaRegistrar.INSTANCE);
 					LOGGER.info("Registered plugin at {}", className);
 				}
-			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+			} catch (Exception e) {
 				LOGGER.error("Error loading plugin at {}", className, e);
 			}
 		}
@@ -119,7 +118,7 @@ public class Waila {
 	}
 
 	private static int getPriority(AnnotationData data) {
-		return (Integer) data.getAnnotationData().getOrDefault("priority", 0);
+		return (Integer) data.annotationData().getOrDefault("priority", 0);
 	}
 
 	@SubscribeEvent
@@ -130,6 +129,6 @@ public class Waila {
 	@SubscribeEvent
 	public void playerJoin(PlayerEvent.PlayerLoggedInEvent event) {
 		LOGGER.info("Syncing config to {} ({})", event.getPlayer().getGameProfile().getName(), event.getPlayer().getGameProfile().getId());
-		NETWORK.sendTo(new ServerPingPacket(PluginConfig.INSTANCE), ((ServerPlayerEntity) event.getPlayer()).connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
+		NETWORK.sendTo(new ServerPingPacket(PluginConfig.INSTANCE), ((ServerPlayer) event.getPlayer()).connection.connection, NetworkDirection.PLAY_TO_CLIENT);
 	}
 }

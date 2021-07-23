@@ -5,18 +5,18 @@ import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IServerDataProvider;
 import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.config.IPluginConfig;
-import net.minecraft.block.BeehiveBlock;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.BeehiveTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BeehiveBlock;
+import net.minecraft.world.level.block.entity.BeehiveBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import snownee.jade.VanillaPlugin;
 
-public class BeehiveProvider implements IComponentProvider, IServerDataProvider<TileEntity> {
+public class BeehiveProvider implements IComponentProvider, IServerDataProvider<BlockEntity> {
 
 	public static final BeehiveProvider INSTANCE = new BeehiveProvider();
 
@@ -26,21 +26,21 @@ public class BeehiveProvider implements IComponentProvider, IServerDataProvider<
 			return;
 		}
 		BlockState state = accessor.getBlockState();
-		int level = state.get(BeehiveBlock.HONEY_LEVEL); // 0~5
-		tooltip.add(new TranslationTextComponent("jade.beehive.honey", new TranslationTextComponent("jade.fraction", level, 5).mergeStyle(level == 5 ? TextFormatting.GREEN : TextFormatting.WHITE)));
+		int level = state.getValue(BeehiveBlock.HONEY_LEVEL); // 0~5
+		tooltip.add(new TranslatableComponent("jade.beehive.honey", new TranslatableComponent("jade.fraction", level, 5).withStyle(level == 5 ? ChatFormatting.GREEN : ChatFormatting.WHITE)));
 		if (accessor.getServerData().contains("Full")) {
 			boolean full = accessor.getServerData().getBoolean("Full");
 			int bees = accessor.getServerData().getByte("Bees");
-			tooltip.add(new TranslationTextComponent("jade.beehive.bees", (full ? TextFormatting.GREEN.toString() : "") + bees));
+			tooltip.add(new TranslatableComponent("jade.beehive.bees", (full ? ChatFormatting.GREEN.toString() : "") + bees));
 		}
 	}
 
 	@Override
-	public void appendServerData(CompoundNBT tag, ServerPlayerEntity player, World world, TileEntity te, boolean showDetails) {
-		tag.keySet().clear();
-		BeehiveTileEntity beehive = (BeehiveTileEntity) te;
-		tag.putByte("Bees", (byte) beehive.getBeeCount());
-		tag.putBoolean("Full", beehive.isFullOfBees());
+	public void appendServerData(CompoundTag tag, ServerPlayer player, Level world, BlockEntity te, boolean showDetails) {
+		tag.getAllKeys().clear();
+		BeehiveBlockEntity beehive = (BeehiveBlockEntity) te;
+		tag.putByte("Bees", (byte) beehive.getOccupantCount());
+		tag.putBoolean("Full", beehive.isFull());
 	}
 
 }

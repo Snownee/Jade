@@ -4,8 +4,8 @@ import mcp.mobius.waila.api.EntityAccessor;
 import mcp.mobius.waila.api.IEntityComponentProvider;
 import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.config.IPluginConfig;
-import net.minecraft.entity.item.PaintingEntity;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.entity.decoration.Painting;
 import snownee.jade.VanillaPlugin;
 
 public class PaintingProvider implements IEntityComponentProvider {
@@ -16,11 +16,11 @@ public class PaintingProvider implements IEntityComponentProvider {
 		if (!config.get(VanillaPlugin.PAINTING)) {
 			return;
 		}
-		PaintingEntity painting = (PaintingEntity) accessor.getEntity();
-		if (painting.art == null) {
+		Painting painting = (Painting) accessor.getEntity();
+		if (painting.motive == null) {
 			return;
 		}
-		String name = painting.art.getRegistryName().getPath().replace('_', ' ');
-		tooltip.add(new StringTextComponent(name));
+		String name = painting.motive.getRegistryName().getPath().replace('_', ' ');
+		tooltip.add(new TextComponent(name));
 	}
 }

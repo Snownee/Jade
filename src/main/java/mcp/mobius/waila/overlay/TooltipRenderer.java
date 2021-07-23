@@ -2,7 +2,8 @@ package mcp.mobius.waila.overlay;
 
 import java.awt.Rectangle;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.platform.Window;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.config.WailaConfig.ConfigOverlay;
@@ -11,17 +12,16 @@ import mcp.mobius.waila.api.ui.IElement;
 import mcp.mobius.waila.impl.ObjectDataCenter;
 import mcp.mobius.waila.impl.Tooltip;
 import mcp.mobius.waila.impl.Tooltip.Line;
-import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector2f;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.common.MinecraftForge;
 
 public class TooltipRenderer {
 
 	private final Tooltip tooltip;
 	private final boolean showIcon;
-	private Vector2f totalSize;
+	private Vec2 totalSize;
 	private float contentHeight;
 	IElement icon;
 
@@ -40,23 +40,23 @@ public class TooltipRenderer {
 	public void computeSize() {
 		float width = 0, height = 0;
 		for (Line line : tooltip.lines) {
-			Vector2f size = line.getSize();
+			Vec2 size = line.getSize();
 			width = Math.max(width, size.x);
 			height += size.y;
 		}
 		contentHeight = height;
 		if (hasIcon()) {
-			Vector2f size = icon.getCachedSize();
+			Vec2 size = icon.getCachedSize();
 			width += 12 + size.x;
 			height = Math.max(height, size.y - 2);
 		} else {
 			width += 10;
 		}
 		height += 6;
-		totalSize = new Vector2f(width, height);
+		totalSize = new Vec2(width, height);
 	}
 
-	public void draw(MatrixStack matrixStack) {
+	public void draw(PoseStack matrixStack) {
 		float x = 6;
 		float y = 4;
 		if (hasIcon()) {
@@ -67,22 +67,22 @@ public class TooltipRenderer {
 		}
 
 		for (Line line : tooltip.lines) {
-			Vector2f size = line.getSize();
+			Vec2 size = line.getSize();
 			line.render(matrixStack, x, y, totalSize.x, size.y);
 			y += size.y;
 		}
 
 		if (tooltip.sneakyDetails) {
 			Minecraft mc = Minecraft.getInstance();
-			x = (totalSize.x - mc.fontRenderer.getStringWidth("▾") + 1) / 2f;
+			x = (totalSize.x - mc.font.width("▾") + 1) / 2f;
 			float yOffset = (OverlayRenderer.ticks / 5) % 8 - 2;
 			if (yOffset > 4)
 				return;
 			y = totalSize.y - 6 + yOffset;
 			float alpha = 1 - Math.abs(yOffset) / 2;
-			int alphaChannel = (int) (0xFF * MathHelper.clamp(alpha, 0, 1));
+			int alphaChannel = (int) (0xFF * Mth.clamp(alpha, 0, 1));
 			if (alphaChannel > 4) //dont know why
-				mc.fontRenderer.drawString(matrixStack, "▾", x, y, 0xFFFFFF | alphaChannel << 24);
+				mc.font.draw(matrixStack, "▾", x, y, 0xFFFFFF | alphaChannel << 24);
 		}
 	}
 
@@ -95,16 +95,16 @@ public class TooltipRenderer {
 	}
 
 	public Rectangle getPosition() {
-		MainWindow window = Minecraft.getInstance().getMainWindow();
+		Window window = Minecraft.getInstance().getWindow();
 		ConfigOverlay overlay = Waila.CONFIG.get().getOverlay();
-		int x = (int) (window.getScaledWidth() * overlay.tryFlip(overlay.getOverlayPosX()));
-		int y = (int) (window.getScaledHeight() * (1.0F - overlay.getOverlayPosY()));
+		int x = (int) (window.getGuiScaledWidth() * overlay.tryFlip(overlay.getOverlayPosX()));
+		int y = (int) (window.getGuiScaledHeight() * (1.0F - overlay.getOverlayPosY()));
 		int width = (int) totalSize.x;
 		int height = (int) totalSize.y;
 		return new Rectangle(x, y, width, height);
 	}
 
-	public Vector2f getSize() {
+	public Vec2 getSize() {
 		return totalSize;
 	}
 

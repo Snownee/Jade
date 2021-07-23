@@ -2,14 +2,13 @@ package mcp.mobius.waila.impl.ui;
 
 import javax.annotation.Nullable;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import mcp.mobius.waila.api.ui.Element;
 import mcp.mobius.waila.overlay.DisplayHelper;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector2f;
+import net.minecraft.util.Mth;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec2;
 
 public class ItemStackElement extends Element {
 
@@ -40,18 +39,16 @@ public class ItemStackElement extends Element {
 	}
 
 	@Override
-	public Vector2f getSize() {
-		int size = MathHelper.floor(18 * scale);
-		return new Vector2f(size, size);
+	public Vec2 getSize() {
+		int size = Mth.floor(18 * scale);
+		return new Vec2(size, size);
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, float x, float y, float maxX, float maxY) {
+	public void render(PoseStack matrixStack, float x, float y, float maxX, float maxY) {
 		if (stack.isEmpty())
 			return;
-		RenderHelper.enableStandardItemLighting();
 		DisplayHelper.INSTANCE.drawItem(matrixStack, x + 1, y + 1, stack, scale, text);
-		RenderHelper.disableStandardItemLighting();
 	}
 
 }

@@ -13,9 +13,9 @@ import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.impl.ObjectDataCenter;
 import mcp.mobius.waila.impl.config.ConfigEntry;
 import mcp.mobius.waila.impl.config.PluginConfig;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 public class ServerPingPacket {
 
@@ -30,11 +30,11 @@ public class ServerPingPacket {
 		entries.forEach(e -> forcedKeys.put(e.getId(), e.getValue()));
 	}
 
-	public static ServerPingPacket read(PacketBuffer buffer) {
+	public static ServerPingPacket read(FriendlyByteBuf buffer) {
 		int size = buffer.readInt();
 		Map<ResourceLocation, Boolean> temp = Maps.newHashMap();
 		for (int i = 0; i < size; i++) {
-			ResourceLocation id = new ResourceLocation(buffer.readString(128));
+			ResourceLocation id = new ResourceLocation(buffer.readUtf(128));
 			boolean value = buffer.readBoolean();
 			temp.put(id, value);
 		}
@@ -42,10 +42,10 @@ public class ServerPingPacket {
 		return new ServerPingPacket(temp);
 	}
 
-	public static void write(ServerPingPacket message, PacketBuffer buffer) {
+	public static void write(ServerPingPacket message, FriendlyByteBuf buffer) {
 		buffer.writeInt(message.forcedKeys.size());
 		message.forcedKeys.forEach((k, v) -> {
-			buffer.writeString(k.toString());
+			buffer.writeUtf(k.toString());
 			buffer.writeBoolean(v);
 		});
 	}

@@ -1,37 +1,38 @@
 package mcp.mobius.waila.test;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.fluids.FluidUtil;
 
-public class TestBlock extends Block {
+public class TestBlock extends BaseEntityBlock {
 
 	public TestBlock() {
-		super(Properties.create(Material.ROCK));
+		super(Properties.of(Material.STONE));
 	}
 
 	@Override
-	public boolean hasTileEntity(BlockState state) {
-		return true;
+	public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
+		FluidUtil.interactWithFluidHandler(player, handIn, worldIn, pos, hit.getDirection());
+		return InteractionResult.SUCCESS;
 	}
 
 	@Override
-	public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-		return new TestTileEntity();
+	public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+		return new TestBlockEntity(pos, state);
 	}
 
 	@Override
-	public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
-		FluidUtil.interactWithFluidHandler(player, handIn, worldIn, pos, hit.getFace());
-		return ActionResultType.SUCCESS;
+	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+		return createTickerHelper(type, Test.TILE, TestBlockEntity::tick);
 	}
 }

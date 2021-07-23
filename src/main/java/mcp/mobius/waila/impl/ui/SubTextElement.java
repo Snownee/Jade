@@ -1,15 +1,12 @@
 package mcp.mobius.waila.impl.ui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.config.WailaConfig;
 import mcp.mobius.waila.api.ui.Element;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.util.math.vector.Vector2f;
+import mcp.mobius.waila.overlay.DisplayHelper;
+import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -23,22 +20,18 @@ public class SubTextElement extends Element {
 	}
 
 	@Override
-	public Vector2f getSize() {
-		return Vector2f.ZERO;
+	public Vec2 getSize() {
+		return Vec2.ZERO;
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, float x, float y, float maxX, float maxY) {
-		matrixStack.push();
-		FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
+	public void render(PoseStack matrixStack, float x, float y, float maxX, float maxY) {
+		matrixStack.pushPose();
 		WailaConfig.ConfigOverlay.ConfigOverlayColor color = Waila.CONFIG.get().getOverlay().getColor();
 		matrixStack.translate(x, y, 800);
 		matrixStack.scale(0.75f, 0.75f, 0);
-
-		IRenderTypeBuffer.Impl irendertypebuffer$impl = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
-		fontRenderer.renderString(text, 0, 0, color.getTheme().textColor, color.getTheme().textShadow, matrixStack.getLast().getMatrix(), irendertypebuffer$impl, false, 0, 15728880);
-		irendertypebuffer$impl.finish();
-		matrixStack.pop();
+		DisplayHelper.INSTANCE.drawText(matrixStack, text, 0, 0, color.getTheme().textColor);
+		matrixStack.popPose();
 	}
 
 }

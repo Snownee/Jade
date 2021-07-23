@@ -4,11 +4,11 @@ import mcp.mobius.waila.api.BlockAccessor;
 import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.config.IPluginConfig;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.NoteBlock;
-import net.minecraft.state.properties.NoteBlockInstrument;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.level.block.NoteBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import snownee.jade.VanillaPlugin;
 
 public class NoteBlockProvider implements IComponentProvider {
@@ -16,7 +16,7 @@ public class NoteBlockProvider implements IComponentProvider {
 	public static final NoteBlockProvider INSTANCE = new NoteBlockProvider();
 
 	private static final String[] PITCH = { "F♯/G♭", "G", "G♯/A♭", "A", "A♯/B♭", "B", "C", "C♯/D♭", "D", "D♯/E♭", "E", "F" };
-	private static final TextFormatting[] OCTAVE = { TextFormatting.WHITE, TextFormatting.YELLOW, TextFormatting.GOLD };
+	private static final ChatFormatting[] OCTAVE = { ChatFormatting.WHITE, ChatFormatting.YELLOW, ChatFormatting.GOLD };
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
@@ -24,11 +24,11 @@ public class NoteBlockProvider implements IComponentProvider {
 			return;
 		}
 		BlockState state = accessor.getBlockState();
-		int note = state.get(NoteBlock.NOTE);
+		int note = state.getValue(NoteBlock.NOTE);
 		String pitch = PITCH[note % PITCH.length];
-		TextFormatting octave = OCTAVE[note / PITCH.length];
-		NoteBlockInstrument instrument = state.get(NoteBlock.INSTRUMENT);
-		tooltip.add(new TranslationTextComponent("%s %s", new TranslationTextComponent("jade.instrument." + instrument.getString()), octave + pitch));
+		ChatFormatting octave = OCTAVE[note / PITCH.length];
+		NoteBlockInstrument instrument = state.getValue(NoteBlock.INSTRUMENT);
+		tooltip.add(new TranslatableComponent("%s %s", new TranslatableComponent("jade.instrument." + instrument.getSerializedName()), octave + pitch));
 	}
 
 }

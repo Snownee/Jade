@@ -15,17 +15,17 @@ import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.config.IPluginConfig;
 import mcp.mobius.waila.api.ui.IElement;
 import mcp.mobius.waila.api.ui.IElementHelper;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.AbstractFurnaceTileEntity;
-import net.minecraft.tileentity.EnderChestTileEntity;
-import net.minecraft.tileentity.LockableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.vector.Vector2f;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Container;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
+import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.EnderChestBlockEntity;
+import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
@@ -35,7 +35,7 @@ import net.minecraftforge.items.wrapper.InvWrapper;
 import snownee.jade.JadeCommonConfig;
 import snownee.jade.VanillaPlugin;
 
-public class InventoryProvider implements IComponentProvider, IServerDataProvider<TileEntity> {
+public class InventoryProvider implements IComponentProvider, IServerDataProvider<BlockEntity> {
 
 	public static final InventoryProvider INSTANCE = new InventoryProvider();
 	// A set of tile names that need to be ignored in order to avoid network overload
@@ -44,7 +44,7 @@ public class InventoryProvider implements IComponentProvider, IServerDataProvide
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		if (!config.get(VanillaPlugin.INVENTORY) || accessor.getTileEntity() == null || accessor.getTileEntity() instanceof AbstractFurnaceTileEntity)
+		if (!config.get(VanillaPlugin.INVENTORY) || accessor.getBlockEntity() == null || accessor.getBlockEntity() instanceof AbstractFurnaceBlockEntity)
 			return;
 
 		append(tooltip, accessor);
@@ -52,7 +52,7 @@ public class InventoryProvider implements IComponentProvider, IServerDataProvide
 
 	public static void append(ITooltip tooltip, Accessor accessor) {
 		if (accessor.getServerData().contains("Locked") && accessor.getServerData().getBoolean("Locked")) {
-			tooltip.add(new TranslationTextComponent("jade.locked"), VanillaPlugin.INVENTORY);
+			tooltip.add(new TranslatableComponent("jade.locked"), VanillaPlugin.INVENTORY);
 			return;
 		}
 
@@ -85,7 +85,7 @@ public class InventoryProvider implements IComponentProvider, IServerDataProvide
 
 				elements.add(helper.item(stack).tag(VanillaPlugin.INVENTORY));
 				if (showName) {
-					elements.add(helper.text(stack.getDisplayName()).translate(new Vector2f(0, 4)).tag(VanillaPlugin.INVENTORY));
+					elements.add(helper.text(stack.getHoverName()).translate(new Vec2(0, 4)).tag(VanillaPlugin.INVENTORY));
 				}
 				drawnCount += 1;
 			}
@@ -96,8 +96,8 @@ public class InventoryProvider implements IComponentProvider, IServerDataProvide
 	}
 
 	@Override
-	public void appendServerData(CompoundNBT tag, ServerPlayerEntity player, World world, TileEntity te, boolean showDetails) {
-		if (te == null || JadeCommonConfig.shouldIgnoreTE(tag.getString("id")) || te instanceof AbstractFurnaceTileEntity) {
+	public void appendServerData(CompoundTag tag, ServerPlayer player, Level world, BlockEntity te, boolean showDetails) {
+		if (te == null || JadeCommonConfig.shouldIgnoreTE(tag.getString("id")) || te instanceof AbstractFurnaceBlockEntity) {
 			return;
 		}
 
@@ -106,9 +106,9 @@ public class InventoryProvider implements IComponentProvider, IServerDataProvide
 			return;
 		}
 
-		if (!JadeCommonConfig.bypassLockedContainer && !player.isCreative() && !player.isSpectator() && te instanceof LockableTileEntity) {
-			LockableTileEntity lockableTileEntity = (LockableTileEntity) te;
-			if (!lockableTileEntity.canOpen(player)) {
+		if (!JadeCommonConfig.bypassLockedContainer && !player.isCreative() && !player.isSpectator() && te instanceof BaseContainerBlockEntity) {
+			BaseContainerBlockEntity lockableBlockEntity = (BaseContainerBlockEntity) te;
+			if (!lockableBlockEntity.canOpen(player)) {
 				tag.putBoolean("Locked", true);
 				return;
 			}
@@ -118,15 +118,15 @@ public class InventoryProvider implements IComponentProvider, IServerDataProvide
 		LazyOptional<IItemHandler> optional = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
 		if (optional.isPresent()) {
 			itemHandler = optional.orElse(null);
-		} else if (te instanceof IInventory) {
-			itemHandler = new InvWrapper((IInventory) te);
-		} else if (te instanceof EnderChestTileEntity) {
-			itemHandler = new InvWrapper(player.getInventoryEnderChest());
+		} else if (te instanceof Container) {
+			itemHandler = new InvWrapper((Container) te);
+		} else if (te instanceof EnderChestBlockEntity) {
+			itemHandler = new InvWrapper(player.getEnderChestInventory());
 		}
 		putInvData(tag, itemHandler, size, 0);
 	}
 
-	public static void putInvData(CompoundNBT tag, IItemHandler itemHandler, int size, int start) {
+	public static void putInvData(CompoundTag tag, IItemHandler itemHandler, int size, int start) {
 		if (itemHandler != null) {
 			size = Math.min(size, itemHandler.getSlots());
 			ItemStackHandler mergedHandler = new ItemStackHandler(size);

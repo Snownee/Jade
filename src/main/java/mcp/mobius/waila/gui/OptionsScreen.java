@@ -3,19 +3,19 @@ package mcp.mobius.waila.gui;
 import java.util.List;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import mcp.mobius.waila.gui.config.OptionsListWidget;
 import mcp.mobius.waila.gui.config.value.OptionValue;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.IGuiEventListener;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.util.IReorderingProcessor;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.util.FormattedCharSequence;
 
 public abstract class OptionsScreen extends Screen {
 
@@ -24,7 +24,7 @@ public abstract class OptionsScreen extends Screen {
 	private final Runnable canceller;
 	private OptionsListWidget options;
 
-	public OptionsScreen(Screen parent, ITextComponent title, Runnable saver, Runnable canceller) {
+	public OptionsScreen(Screen parent, Component title, Runnable saver, Runnable canceller) {
 		super(title);
 
 		this.parent = parent;
@@ -41,33 +41,30 @@ public abstract class OptionsScreen extends Screen {
 	}
 
 	@Override
-	public void init(Minecraft client, int width, int height) {
-		super.init(client, width, height);
-
+	protected void init() {
 		options = getOptions();
-		children.add(options);
-		setListener(options);
+		addRenderableWidget(options);
 
 		if (saver != null && canceller != null) {
-			addButton(new Button(width / 2 - 100, height - 25, 100, 20, new TranslationTextComponent("gui.done"), w -> {
+			addRenderableWidget(new Button(width / 2 - 100, height - 25, 100, 20, new TranslatableComponent("gui.done"), w -> {
 				options.save();
 				saver.run();
-				minecraft.displayGuiScreen(parent);
+				minecraft.setScreen(parent);
 			}));
-			addButton(new Button(width / 2 + 5, height - 25, 100, 20, new TranslationTextComponent("gui.cancel"), w -> {
+			addRenderableWidget(new Button(width / 2 + 5, height - 25, 100, 20, new TranslatableComponent("gui.cancel"), w -> {
 				canceller.run();
-				minecraft.displayGuiScreen(parent);
+				minecraft.setScreen(parent);
 			}));
 		} else {
-			addButton(new Button(width / 2 - 50, height - 25, 100, 20, new TranslationTextComponent("gui.done"), w -> {
+			addRenderableWidget(new Button(width / 2 - 50, height - 25, 100, 20, new TranslatableComponent("gui.done"), w -> {
 				options.save();
-				minecraft.displayGuiScreen(parent);
+				minecraft.setScreen(parent);
 			}));
 		}
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+	public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
 		renderBackground(matrixStack);
 		options.render(matrixStack, mouseX, mouseY, partialTicks);
 		drawCenteredString(matrixStack, font, title, width / 2, 12, 16777215);
@@ -80,43 +77,37 @@ public abstract class OptionsScreen extends Screen {
 		if (entry instanceof OptionValue) {
 			OptionValue<?> value = (OptionValue<?>) entry;
 
-			if (I18n.hasKey(value.getDescription())) {
+			if (I18n.exists(value.getDescription())) {
 				int valueX = value.getX() + 10;
 				String title = value.getTitle().getString();
-				if (mouseX < valueX || mouseX > valueX + font.getStringWidth(title))
+				if (mouseX < valueX || mouseX > valueX + font.width(title))
 					return;
 
-				List<IReorderingProcessor> tooltip = Lists.newArrayList(value.getTitle().func_241878_f());
-				List<IReorderingProcessor> tooltip2 = font.trimStringToWidth(new TranslationTextComponent(value.getDescription()), 200);
+				List<FormattedCharSequence> tooltip = Lists.newArrayList(value.getTitle().getVisualOrderText());
+				List<FormattedCharSequence> tooltip2 = font.split(new TranslatableComponent(value.getDescription()), 200);
 				tooltip.addAll(tooltip2);
-				matrixStack.push();
+				matrixStack.pushPose();
 				matrixStack.translate(0, 0, 100);
 				renderTooltip(matrixStack, tooltip, mouseX, mouseY);
 				RenderSystem.enableDepthTest();
-				matrixStack.pop();
+				matrixStack.popPose();
 			}
 		}
 	}
 
 	@Override
-	public void renderBackground(MatrixStack matrixStack) {
+	public void renderBackground(PoseStack matrixStack) {
 		this.renderBackground(matrixStack, 0);
 	}
 
 	@Override
-	public void renderBackground(MatrixStack matrixStack, int vOffset) {
-		if (minecraft.world != null) {
+	public void renderBackground(PoseStack matrixStack, int vOffset) {
+		if (minecraft.level != null) {
 			this.fillGradient(matrixStack, 0, 0, width, height, -1072689136, -804253680);
 			net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.GuiScreenEvent.BackgroundDrawnEvent(this, matrixStack));
 		} else {
 			renderDirtBackground(vOffset);
 		}
-	}
-
-	@Override
-	public IGuiEventListener addListener(IGuiEventListener listener) {
-		children.add(listener);
-		return listener;
 	}
 
 	public abstract OptionsListWidget getOptions();
@@ -127,9 +118,14 @@ public abstract class OptionsScreen extends Screen {
 	}
 
 	@Override
-	public void closeScreen() {
+	public void onClose() {
 		if (canceller != null)
 			canceller.run();
-		super.closeScreen();
+		super.onClose();
+	}
+
+	@Override
+	public <T extends GuiEventListener & NarratableEntry> T addWidget(T widget) {
+		return super.addWidget(widget);
 	}
 }

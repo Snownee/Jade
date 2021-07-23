@@ -2,12 +2,10 @@ package mcp.mobius.waila.overlay;
 
 import java.awt.Rectangle;
 
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
-
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.WailaClient;
@@ -17,24 +15,13 @@ import mcp.mobius.waila.api.event.WailaRenderEvent;
 import mcp.mobius.waila.gui.OptionsScreen;
 import mcp.mobius.waila.impl.ObjectDataCenter;
 import mcp.mobius.waila.impl.Tooltip;
-import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.vector.Vector2f;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.common.MinecraftForge;
 
-@SuppressWarnings("deprecation")
 public class OverlayRenderer {
 
-	protected static boolean hasLight;
-	protected static boolean hasDepthTest;
-	protected static boolean hasLight0;
-	protected static boolean hasLight1;
-	protected static boolean hasRescaleNormal;
-	protected static boolean hasColorMaterial;
-	protected static boolean depthMask;
-	protected static int depthFunc;
 	public static float ticks;
 
 	public static void renderOverlay() {
@@ -44,25 +31,26 @@ public class OverlayRenderer {
 		if (!Waila.CONFIG.get().getGeneral().shouldDisplayTooltip())
 			return;
 
-		if (Waila.CONFIG.get().getGeneral().getDisplayMode() == WailaConfig.DisplayMode.HOLD_KEY && !WailaClient.showOverlay.getKeyBinding().isKeyDown())
+		if (Waila.CONFIG.get().getGeneral().getDisplayMode() == WailaConfig.DisplayMode.HOLD_KEY && !WailaClient.showOverlay.isDown())
 			return;
 
 		Minecraft mc = Minecraft.getInstance();
 
-		if (mc.world == null)
+		if (mc.level == null)
 			return;
 
 		if (RayTracing.INSTANCE.getTarget() == null)
 			return;
 
-		if (mc.currentScreen != null) {
-			if (!(mc.currentScreen instanceof OptionsScreen)) {
+		if (mc.screen != null) {
+			if (!(mc.screen instanceof OptionsScreen)) {
 				return;
 			} else {
 				Rectangle position = WailaTickHandler.instance().tooltipRenderer.getPosition();
 				ConfigOverlay overlay = Waila.CONFIG.get().getOverlay();
-				double x = mc.mouseHelper.getMouseX() * mc.getMainWindow().getScaledWidth() / mc.getMainWindow().getWidth();
-				double y = mc.mouseHelper.getMouseY() * mc.getMainWindow().getScaledHeight() / mc.getMainWindow().getHeight();
+				Window window = mc.getWindow();
+				double x = mc.mouseHandler.xpos() * window.getGuiScaledWidth() / window.getScreenWidth();
+				double y = mc.mouseHandler.ypos() * window.getGuiScaledHeight() / window.getScreenHeight();
 				x += position.width * overlay.tryFlip(overlay.getAnchorX());
 				y += position.height * overlay.getAnchorY();
 				if (position.contains(x, y)) {
@@ -71,29 +59,20 @@ public class OverlayRenderer {
 			}
 		}
 
-		if (mc.ingameGUI.getTabList().visible || mc.loadingGui != null || !Minecraft.isGuiEnabled())
+		if (mc.gui.getTabList().visible || mc.getOverlay() != null || mc.options.hideGui)
 			return;
 
-		if (mc.gameSettings.showDebugInfo && Waila.CONFIG.get().getGeneral().shouldHideFromDebug())
+		if (mc.options.renderDebug && Waila.CONFIG.get().getGeneral().shouldHideFromDebug())
 			return;
 
-		ticks += mc.getTickLength();
-		if (RayTracing.INSTANCE.getTarget().getType() != RayTraceResult.Type.MISS)
-			renderOverlay(WailaTickHandler.instance().tooltipRenderer, new MatrixStack());
+		ticks += mc.getDeltaFrameTime();
+		if (RayTracing.INSTANCE.getTarget().getType() != HitResult.Type.MISS)
+			renderOverlay(WailaTickHandler.instance().tooltipRenderer, new PoseStack());
 	}
 
-	public static void enableGUIStandardItemLighting() {
-		RenderSystem.pushMatrix();
-		RenderSystem.rotatef(-30.0F, 0.0F, 1.0F, 0.0F);
-		RenderSystem.rotatef(165.0F, 1.0F, 0.0F, 0.0F);
-		RenderHelper.enableStandardItemLighting();
-		RenderSystem.popMatrix();
-	}
-
-	public static void renderOverlay(TooltipRenderer tooltip, MatrixStack matrixStack) {
-		Minecraft.getInstance().getProfiler().startSection("Waila Overlay");
-		matrixStack.push();
-		saveGLState();
+	public static void renderOverlay(TooltipRenderer tooltip, PoseStack matrixStack) {
+		Minecraft.getInstance().getProfiler().push("Waila Overlay");
+		matrixStack.pushPose();
 
 		Rectangle position = tooltip.getPosition();
 		ConfigOverlay overlay = Waila.CONFIG.get().getOverlay();
@@ -103,14 +82,13 @@ public class OverlayRenderer {
 		}
 		WailaRenderEvent.Pre preEvent = new WailaRenderEvent.Pre(ObjectDataCenter.get(), position, matrixStack);
 		if (MinecraftForge.EVENT_BUS.post(preEvent)) {
-			loadGLState();
-			matrixStack.pop();
+			matrixStack.popPose();
 			return;
 		}
 
-		RenderSystem.disableRescaleNormal();
-		RenderHelper.disableStandardItemLighting();
-		RenderSystem.disableLighting();
+		//RenderSystem.disableRescaleNormal();
+		//Lighting.disableStandardItemLighting();
+		//RenderSystem.disableLighting();
 		//RenderSystem.disableDepthTest();
 
 		position = preEvent.getPosition();
@@ -122,8 +100,8 @@ public class OverlayRenderer {
 		matrixStack.translate(position.x, position.y, 1);
 
 		float scale = configOverlay.getOverlayScale();
-		MainWindow window = Minecraft.getInstance().getMainWindow();
-		float thresholdHeight = window.getScaledHeight() * configOverlay.getAutoScaleThreshold();
+		Window window = Minecraft.getInstance().getWindow();
+		float thresholdHeight = window.getGuiScaledHeight() * configOverlay.getAutoScaleThreshold();
 		if (position.height * scale > thresholdHeight) {
 			scale = Math.max(scale * 0.5f, thresholdHeight / position.height);
 		}
@@ -145,10 +123,10 @@ public class OverlayRenderer {
 		tooltip.draw(matrixStack);
 		RenderSystem.disableBlend();
 
-		RenderSystem.enableRescaleNormal();
+		//RenderSystem.enableRescaleNormal();
 		if (tooltip.hasIcon()) {
-			Vector2f size = tooltip.icon.getCachedSize();
-			Vector2f offset = tooltip.icon.getTranslation();
+			Vec2 size = tooltip.icon.getCachedSize();
+			Vec2 offset = tooltip.icon.getTranslation();
 			float offsetX = offset.x + 5;
 			float offsetY = offset.y + 2;
 			Tooltip.drawBorder(matrixStack, offsetX, offsetY, tooltip.icon);
@@ -158,59 +136,12 @@ public class OverlayRenderer {
 		WailaRenderEvent.Post postEvent = new WailaRenderEvent.Post(position, matrixStack);
 		MinecraftForge.EVENT_BUS.post(postEvent);
 
-		loadGLState();
 		RenderSystem.enableDepthTest();
-		matrixStack.pop();
-		Minecraft.getInstance().getProfiler().endSection();
+		matrixStack.popPose();
+		Minecraft.getInstance().getProfiler().pop();
 	}
 
-	public static void saveGLState() {
-		hasLight = GL11.glGetBoolean(GL11.GL_LIGHTING);
-		hasLight0 = GL11.glGetBoolean(GL11.GL_LIGHT0);
-		hasLight1 = GL11.glGetBoolean(GL11.GL_LIGHT1);
-		hasDepthTest = GL11.glGetBoolean(GL11.GL_DEPTH_TEST);
-		hasRescaleNormal = GL11.glGetBoolean(GL12.GL_RESCALE_NORMAL);
-		hasColorMaterial = GL11.glGetBoolean(GL11.GL_COLOR_MATERIAL);
-		depthFunc = GL11.glGetInteger(GL11.GL_DEPTH_FUNC);
-		depthMask = GL11.glGetBoolean(GL11.GL_DEPTH_WRITEMASK);
-		GL11.glPushAttrib(GL11.GL_CURRENT_BIT); // Leave me alone :(
-	}
-
-	public static void loadGLState() {
-		RenderSystem.depthMask(depthMask);
-		RenderSystem.depthFunc(depthFunc);
-		if (hasLight)
-			RenderSystem.enableLighting();
-		else
-			RenderSystem.disableLighting();
-
-		if (hasLight0)
-			GlStateManager.enableLight(0);
-		else
-		//GlStateManager.disableLight(0);
-
-		if (hasLight1)
-			GlStateManager.enableLight(1);
-		else
-		//GlStateManager.disableLight(1);
-
-		if (hasDepthTest)
-			RenderSystem.enableDepthTest();
-		else
-			RenderSystem.disableDepthTest();
-		if (hasRescaleNormal)
-			RenderSystem.enableRescaleNormal();
-		else
-			RenderSystem.disableRescaleNormal();
-		if (hasColorMaterial)
-			RenderSystem.enableColorMaterial();
-		else
-			RenderSystem.disableColorMaterial();
-
-		RenderSystem.popAttributes();
-	}
-
-	public static void drawTooltipBox(MatrixStack matrixStack, int x, int y, int w, int h, int bg, int grad1, int grad2, boolean square) {
+	public static void drawTooltipBox(PoseStack matrixStack, int x, int y, int w, int h, int bg, int grad1, int grad2, boolean square) {
 		if (!square) {
 			w -= 2;
 			h -= 2;

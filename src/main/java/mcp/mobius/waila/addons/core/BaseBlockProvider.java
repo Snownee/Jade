@@ -15,24 +15,24 @@ import mcp.mobius.waila.api.config.WailaConfig;
 import mcp.mobius.waila.api.ui.IElementHelper;
 import mcp.mobius.waila.impl.WailaRegistrar;
 import mcp.mobius.waila.utils.ModIdentification;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.Property;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.INameable;
-import net.minecraft.util.text.IFormattableTextComponent;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Nameable;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraftforge.common.util.Constants;
 import snownee.jade.JadeCommonConfig;
 
-public class BaseBlockProvider implements IComponentProvider, IServerDataProvider<TileEntity> {
+public class BaseBlockProvider implements IComponentProvider, IServerDataProvider<BlockEntity> {
 
 	public static final BaseBlockProvider INSTANCE = new BaseBlockProvider();
 
@@ -49,35 +49,35 @@ public class BaseBlockProvider implements IComponentProvider, IServerDataProvide
 	}
 
 	public void appendHead(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		ITextComponent name = null;
+		Component name = null;
 		if (accessor.getServerData().contains("givenName", Constants.NBT.TAG_STRING)) {
-			name = ITextComponent.Serializer.getComponentFromJson(accessor.getServerData().getString("givenName"));
+			name = Component.Serializer.fromJson(accessor.getServerData().getString("givenName"));
 		} else {
 			if (WailaRegistrar.INSTANCE.shouldPick(accessor.getBlockState())) {
 				ItemStack pick = accessor.getPickedResult();
 				if (!pick.isEmpty())
-					name = pick.getDisplayName();
+					name = pick.getHoverName();
 			}
 			if (name == null) {
-				String key = accessor.getBlock().getTranslationKey();
-				if (I18n.hasKey(key)) {
-					name = accessor.getBlock().getTranslatedName();
+				String key = accessor.getBlock().getDescriptionId();
+				if (I18n.exists(key)) {
+					name = accessor.getBlock().getName();
 				} else {
-					ItemStack stack = accessor.getBlockState().getPickBlock(accessor.getHitResult(), accessor.getWorld(), accessor.getPosition(), accessor.getPlayer());
+					ItemStack stack = accessor.getBlockState().getPickBlock(accessor.getHitResult(), accessor.getLevel(), accessor.getPosition(), accessor.getPlayer());
 					if (stack != null && !stack.isEmpty()) {
-						name = stack.getDisplayName();
+						name = stack.getHoverName();
 					} else {
-						name = new StringTextComponent(key);
+						name = new TextComponent(key);
 					}
 				}
 			}
 		}
 		if (name != null) {
 			WailaConfig wailaConfig = Waila.CONFIG.get();
-			tooltip.add(new StringTextComponent(String.format(wailaConfig.getFormatting().getBlockName(), name.getString())).mergeStyle(wailaConfig.getOverlay().getColor().getTitle()), CorePlugin.TAG_OBJECT_NAME);
+			tooltip.add(new TextComponent(String.format(wailaConfig.getFormatting().getBlockName(), name.getString())).withStyle(wailaConfig.getOverlay().getColor().getTitle()), CorePlugin.TAG_OBJECT_NAME);
 		}
 		if (config.get(CorePlugin.CONFIG_REGISTRY_NAME))
-			tooltip.add(new StringTextComponent(accessor.getBlock().getRegistryName().toString()).mergeStyle(TextFormatting.GRAY), CorePlugin.TAG_REGISTRY_NAME);
+			tooltip.add(new TextComponent(accessor.getBlock().getRegistryName().toString()).withStyle(ChatFormatting.GRAY), CorePlugin.TAG_REGISTRY_NAME);
 	}
 
 	public void appendBody(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
@@ -89,11 +89,11 @@ public class BaseBlockProvider implements IComponentProvider, IServerDataProvide
 			IElementHelper helper = tooltip.getElementHelper();
 			ITooltip box = helper.tooltip();
 			properties.forEach(p -> {
-				Comparable<?> value = state.get(p);
-				IFormattableTextComponent valueText = new StringTextComponent(" " + value.toString()).mergeStyle();
+				Comparable<?> value = state.getValue(p);
+				MutableComponent valueText = new TextComponent(" " + value.toString()).withStyle();
 				if (p instanceof BooleanProperty)
-					valueText = valueText.mergeStyle(value == Boolean.TRUE ? TextFormatting.GREEN : TextFormatting.RED);
-				box.add(new StringTextComponent(p.getName() + ":").appendSibling(valueText));
+					valueText = valueText.withStyle(value == Boolean.TRUE ? ChatFormatting.GREEN : ChatFormatting.RED);
+				box.add(new TextComponent(p.getName() + ":").append(valueText));
 			});
 			tooltip.add(helper.box(box));
 		}
@@ -114,16 +114,16 @@ public class BaseBlockProvider implements IComponentProvider, IServerDataProvide
 		if (!Strings.isNullOrEmpty(modName)) {
 			modName = String.format(Waila.CONFIG.get().getFormatting().getModName(), modName);
 			IElementHelper helper = tooltip.getElementHelper();
-			tooltip.add(helper.text(new StringTextComponent(modName)).tag(CorePlugin.TAG_MOD_NAME));
+			tooltip.add(helper.text(new TextComponent(modName)).tag(CorePlugin.TAG_MOD_NAME));
 		}
 	}
 
 	@Override
-	public void appendServerData(CompoundNBT data, ServerPlayerEntity player, World world, TileEntity t, boolean showDetails) {
-		if (t instanceof INameable && JadeCommonConfig.shouldShowCustomName(t)) {
-			INameable nameable = (INameable) t;
+	public void appendServerData(CompoundTag data, ServerPlayer player, Level world, BlockEntity t, boolean showDetails) {
+		if (t instanceof Nameable && JadeCommonConfig.shouldShowCustomName(t)) {
+			Nameable nameable = (Nameable) t;
 			if (nameable.hasCustomName()) {
-				data.putString("givenName", ITextComponent.Serializer.toJson(nameable.getCustomName()));
+				data.putString("givenName", Component.Serializer.toJson(nameable.getCustomName()));
 			}
 		}
 	}

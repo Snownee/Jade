@@ -4,20 +4,20 @@ import mcp.mobius.waila.api.EntityAccessor;
 import mcp.mobius.waila.api.IEntityComponentProvider;
 import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.config.IPluginConfig;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.merchant.villager.VillagerData;
-import net.minecraft.entity.merchant.villager.VillagerEntity;
-import net.minecraft.entity.monster.ZombieVillagerEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.monster.ZombieVillager;
+import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.npc.VillagerData;
 import snownee.jade.VanillaPlugin;
 
 public class VillagerProfessionProvider implements IEntityComponentProvider {
 
 	public static final VillagerProfessionProvider INSTANCE = new VillagerProfessionProvider();
-	private static final ITextComponent field_243352_C = new StringTextComponent(" - ");
+	private static final Component field_243352_C = new TextComponent(" - ");
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
@@ -25,17 +25,17 @@ public class VillagerProfessionProvider implements IEntityComponentProvider {
 			return;
 		}
 		VillagerData data = null;
-		if (accessor.getEntity() instanceof VillagerEntity) {
-			data = ((VillagerEntity) accessor.getEntity()).getVillagerData();
-		} else if (accessor.getEntity() instanceof ZombieVillagerEntity) {
-			data = ((ZombieVillagerEntity) accessor.getEntity()).getVillagerData();
+		if (accessor.getEntity() instanceof Villager) {
+			data = ((Villager) accessor.getEntity()).getVillagerData();
+		} else if (accessor.getEntity() instanceof ZombieVillager) {
+			data = ((ZombieVillager) accessor.getEntity()).getVillagerData();
 		}
 		if (data == null) {
 			return;
 		}
 		int level = data.getLevel();
 		ResourceLocation profName = data.getProfession().getRegistryName();
-		tooltip.add(new TranslationTextComponent(EntityType.VILLAGER.getTranslationKey() + '.' + (!"minecraft".equals(profName.getNamespace()) ? profName.getNamespace() + '.' : "") + profName.getPath()).appendSibling(field_243352_C).appendSibling(new TranslationTextComponent("merchant.level." + level)));
+		tooltip.add(new TranslatableComponent(EntityType.VILLAGER.getDescriptionId() + '.' + (!"minecraft".equals(profName.getNamespace()) ? profName.getNamespace() + '.' : "") + profName.getPath()).append(field_243352_C).append(new TranslatableComponent("merchant.level." + level)));
 	}
 
 }

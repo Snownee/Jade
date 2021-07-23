@@ -5,8 +5,8 @@ import java.util.List;
 import mcp.mobius.waila.api.ui.IElement;
 import mcp.mobius.waila.api.ui.IElement.Align;
 import mcp.mobius.waila.api.ui.IElementHelper;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * Tooltip that you can append text and other renderable stuffs to.
@@ -29,26 +29,26 @@ public interface ITooltip {
 	/**
 	 * Add a text to a new line
 	 */
-	default void add(ITextComponent component) {
+	default void add(Component component) {
 		add(component, null);
 	}
 
 	/**
 	 * Add a tagged text to a new line
 	 */
-	default void add(ITextComponent component, ResourceLocation tag) {
+	default void add(Component component, ResourceLocation tag) {
 		add(size(), component, tag);
 	}
 
-	default void add(int index, ITextComponent component) {
+	default void add(int index, Component component) {
 		add(index, component, null);
 	}
 
-	default void add(int index, ITextComponent component, ResourceLocation tag) {
+	default void add(int index, Component component, ResourceLocation tag) {
 		add(index, getElementHelper().text(component).tag(tag));
 	}
 
-	default void addAll(List<ITextComponent> components) {
+	default void addAll(List<Component> components) {
 		components.forEach(this::add);
 	}
 
@@ -80,14 +80,14 @@ public interface ITooltip {
 	/**
 	 * Append a text to the last line
 	 */
-	default void append(ITextComponent component) {
+	default void append(Component component) {
 		append(component, null);
 	}
 
 	/**
 	 * Append a tagged text to the last line
 	 */
-	default void append(ITextComponent component, ResourceLocation tag) {
+	default void append(Component component, ResourceLocation tag) {
 		append(getElementHelper().text(component).tag(tag));
 	}
 

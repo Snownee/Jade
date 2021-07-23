@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
 
@@ -30,34 +29,33 @@ import mcp.mobius.waila.api.ui.IElement;
 import mcp.mobius.waila.api.ui.IElement.Align;
 import mcp.mobius.waila.api.ui.IElementHelper;
 import mcp.mobius.waila.impl.ui.SubTextElement;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.IItemTier;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemTier;
-import net.minecraft.item.Items;
-import net.minecraft.item.TieredItem;
-import net.minecraft.resources.IResourceManager;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector2f;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.NonNullList;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.Tier;
+import net.minecraft.world.item.TieredItem;
+import net.minecraft.world.item.Tiers;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.resource.IResourceType;
-import net.minecraftforge.resource.ISelectiveResourceReloadListener;
-import net.minecraftforge.resource.VanillaResourceType;
 import snownee.jade.VanillaPlugin;
 
-public class HarvestToolProvider implements IComponentProvider, ISelectiveResourceReloadListener {
+@SuppressWarnings("deprecation")
+public class HarvestToolProvider implements IComponentProvider, ResourceManagerReloadListener {
 
 	public static final HarvestToolProvider INSTANCE = new HarvestToolProvider();
 
@@ -69,8 +67,8 @@ public class HarvestToolProvider implements IComponentProvider, ISelectiveResour
 	public static final TestCase NO_TOOL = new TestCase(ItemStack.EMPTY, "no_tool", null);
 	public static final TestCase UNBREAKABLE = new TestCase(ItemStack.EMPTY, "unbreakable", null);
 
-	private static final ITextComponent UNBREAKABLE_TEXT = new TranslationTextComponent("jade.harvest_tool.unbreakable").mergeStyle(TextFormatting.DARK_RED);
-	private static final Vector2f ITEM_SIZE = new Vector2f(13, 0);
+	private static final Component UNBREAKABLE_TEXT = new TranslatableComponent("jade.harvest_tool.unbreakable").withStyle(ChatFormatting.DARK_RED);
+	private static final Vec2 ITEM_SIZE = new Vec2(13, 0);
 
 	static {
 		/* off */
@@ -95,8 +93,8 @@ public class HarvestToolProvider implements IComponentProvider, ISelectiveResour
 	public static String getToolName(TestCase testCase) {
 		try {
 			return toolNames.get(testCase, () -> {
-				if (I18n.hasKey("jade.harvest_tool." + testCase.name)) {
-					return I18n.format("jade.harvest_tool." + testCase.name);
+				if (I18n.exists("jade.harvest_tool." + testCase.name)) {
+					return I18n.get("jade.harvest_tool." + testCase.name);
 				} else {
 					return StringUtils.capitalize(testCase.name);
 				}
@@ -108,7 +106,7 @@ public class HarvestToolProvider implements IComponentProvider, ISelectiveResour
 	}
 
 	@Nullable
-	public static TestCase getTool(BlockState state, World world, BlockPos pos) {
+	public static TestCase getTool(BlockState state, Level world, BlockPos pos) {
 		ToolType toolType = state.getHarvestTool();
 		if (toolType != null) {
 			TestCase testCase = toolTypeMap.get(toolType);
@@ -118,12 +116,12 @@ public class HarvestToolProvider implements IComponentProvider, ISelectiveResour
 			}
 			return testCase;
 		}
-		if (state.getRequiresTool()) {
+		if (state.requiresCorrectToolForDrops()) {
 			for (TestCase testCase : testTools) {
 				if (testCase.stack.isEmpty()) {
 					continue;
 				}
-				if (testCase.stack.canHarvestBlock(state)) {
+				if (testCase.stack.isCorrectToolForDrops(state)) {
 					return testCase;
 				}
 			}
@@ -142,12 +140,12 @@ public class HarvestToolProvider implements IComponentProvider, ISelectiveResour
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		PlayerEntity player = accessor.getPlayer();
+		Player player = accessor.getPlayer();
 		if (player.isCreative() || player.isSpectator()) {
 			return;
 		}
 		BlockState state = accessor.getBlockState();
-		float hardness = state.getBlockHardness(accessor.getWorld(), accessor.getPosition());
+		float hardness = state.getDestroySpeed(accessor.getLevel(), accessor.getPosition());
 		if (hardness < 0) {
 			if (accessor.getTooltipPosition() == TooltipPosition.BODY) {
 				tooltip.add(UNBREAKABLE_TEXT);
@@ -181,14 +179,14 @@ public class HarvestToolProvider implements IComponentProvider, ISelectiveResour
 		TestCase testCase = NO_TOOL;
 		resultCache.invalidateAll();
 		try {
-			testCase = resultCache.get(state, () -> getTool(state, accessor.getWorld(), accessor.getPosition()));
+			testCase = resultCache.get(state, () -> getTool(state, accessor.getLevel(), accessor.getPosition()));
 		} catch (ExecutionException e) {
 			e.printStackTrace();
 		}
 		if (testCase == NO_TOOL || testCase == UNBREAKABLE) {
 			return Collections.EMPTY_LIST;
 		}
-		if (!state.getRequiresTool() && !config.get(VanillaPlugin.EFFECTIVE_TOOL)) {
+		if (!state.requiresCorrectToolForDrops() && !config.get(VanillaPlugin.EFFECTIVE_TOOL)) {
 			return Collections.EMPTY_LIST;
 		}
 		List<IElement> elements = Lists.newArrayList();
@@ -198,40 +196,40 @@ public class HarvestToolProvider implements IComponentProvider, ISelectiveResour
 		if (tool == null) {
 			tool = testCase.stack;
 			if (level > 0) {
-				name = " " + level;
+				name = "" + level;
 			}
 		}
 		IElement item = helper.item(tool, 0.75f);
 		int offsetY = 0;
 		if (!config.get(VanillaPlugin.HARVEST_TOOL_NEW_LINE)) {
 			offsetY = -3;
-			item.translate(new Vector2f(-1, offsetY)).size(ITEM_SIZE);
+			item.translate(new Vec2(-1, offsetY)).size(ITEM_SIZE);
 		}
 		elements.add(item);
 
-		boolean canHarvest = ForgeHooks.canHarvestBlock(state, accessor.getPlayer(), accessor.getWorld(), accessor.getPosition());
-		if (state.getRequiresTool()) {
+		boolean canHarvest = ForgeHooks.canHarvestBlock(state, accessor.getPlayer(), accessor.getLevel(), accessor.getPosition());
+		if (state.requiresCorrectToolForDrops()) {
 			String sub = canHarvest ? "§a✔" : "§4✕";
-			elements.add(new SubTextElement(sub).translate(new Vector2f(-6, 7 + offsetY)));
+			elements.add(new SubTextElement(sub).translate(new Vec2(-6, 7 + offsetY)));
 		} else {
-			ItemStack held = accessor.getPlayer().getHeldItemMainhand();
-			if (canHarvest && ForgeHooks.isToolEffective(accessor.getWorld(), accessor.getPosition(), held)) {
-				elements.add(new SubTextElement("§a✔").translate(new Vector2f(-6, 7 + offsetY)));
+			ItemStack held = accessor.getPlayer().getMainHandItem();
+			if (canHarvest && ForgeHooks.isToolEffective(accessor.getLevel(), accessor.getPosition(), held)) {
+				elements.add(new SubTextElement("§a✔").translate(new Vec2(-6, 7 + offsetY)));
 			}
 		}
 
 		if (!name.isEmpty()) {
-			elements.add(helper.text(new StringTextComponent(name)).translate(new Vector2f(3, offsetY + 3)));
+			elements.add(helper.text(new TextComponent(name)).translate(new Vec2(0, offsetY + 3)));
 		}
 		return elements;
 	}
 
 	@Override
-	public void onResourceManagerReload(IResourceManager resourceManager, Predicate<IResourceType> resourcePredicate) {
-		if (resourcePredicate.test(VanillaResourceType.LANGUAGES)) {
-			toolNames.invalidateAll();
-			resultCache.invalidateAll();
-		}
+	public void onResourceManagerReload(ResourceManager resourceManager) {
+		//if (resourcePredicate.test(VanillaResourceType.LANGUAGES)) {
+		toolNames.invalidateAll();
+		resultCache.invalidateAll();
+		//}
 	}
 
 	public static class TestCase {
@@ -263,11 +261,11 @@ public class HarvestToolProvider implements IComponentProvider, ISelectiveResour
 			}
 			ItemStack oldTool = toolMap.get(level);
 			if (oldTool != null) {
-				IItemTier tier = null;
+				Tier tier = null;
 				if (oldTool.getItem() instanceof TieredItem) {
 					tier = ((TieredItem) oldTool.getItem()).getTier();
 				}
-				if (tier != ItemTier.GOLD) {
+				if (tier != Tiers.GOLD) {
 					return this;
 				}
 			}
@@ -280,7 +278,7 @@ public class HarvestToolProvider implements IComponentProvider, ISelectiveResour
 		NonNullList<ItemStack> stacks = NonNullList.create();
 		Set<ToolType> newToolTypes = Sets.newHashSet();
 		for (Item item : ForgeRegistries.ITEMS.getValues()) {
-			item.fillItemGroup(ItemGroup.SEARCH, stacks);
+			item.fillItemCategory(CreativeModeTab.TAB_SEARCH, stacks);
 		}
 		for (ItemStack stack : stacks) {
 			if (stack.isEmpty())

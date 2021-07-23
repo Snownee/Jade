@@ -1,15 +1,15 @@
 package mcp.mobius.waila.api;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 
 /**
  * Class to get information of block target and context.
@@ -17,12 +17,12 @@ import net.minecraft.world.World;
 public class BlockAccessor extends Accessor {
 
 	private final BlockState blockState;
-	private final TileEntity tileEntity;
+	private final BlockEntity blockEntity;
 
-	public BlockAccessor(BlockState blockState, TileEntity tileEntity, World world, PlayerEntity player, CompoundNBT serverData, BlockRayTraceResult hit, boolean serverConnected) {
+	public BlockAccessor(BlockState blockState, BlockEntity tileEntity, Level world, Player player, CompoundTag serverData, BlockHitResult hit, boolean serverConnected) {
 		super(world, player, serverData, hit, serverConnected);
 		this.blockState = blockState;
-		this.tileEntity = tileEntity;
+		blockEntity = tileEntity;
 	}
 
 	public Block getBlock() {
@@ -33,26 +33,26 @@ public class BlockAccessor extends Accessor {
 		return blockState;
 	}
 
-	public TileEntity getTileEntity() {
-		return tileEntity;
+	public BlockEntity getBlockEntity() {
+		return blockEntity;
 	}
 
 	@Override
-	public BlockRayTraceResult getHitResult() {
-		return (BlockRayTraceResult) super.getHitResult();
+	public BlockHitResult getHitResult() {
+		return (BlockHitResult) super.getHitResult();
 	}
 
 	public BlockPos getPosition() {
-		return getHitResult().getPos();
+		return getHitResult().getBlockPos();
 	}
 
 	public Direction getSide() {
-		return getHitResult().getFace();
+		return getHitResult().getDirection();
 	}
 
 	@Override
 	public ItemStack getPickedResult() {
-		return getBlockState().getPickBlock(getHitResult(), getWorld(), getPosition(), getPlayer());
+		return getBlockState().getPickBlock(getHitResult(), getLevel(), getPosition(), getPlayer());
 	}
 
 }

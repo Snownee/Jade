@@ -6,13 +6,15 @@ import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import org.lwjgl.opengl.GL11;
-
 import com.google.common.base.Predicates;
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat.Mode;
 
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import mcp.mobius.waila.Waila;
@@ -21,20 +23,21 @@ import mcp.mobius.waila.gui.config.value.CycleOptionValue;
 import mcp.mobius.waila.gui.config.value.InputOptionValue;
 import mcp.mobius.waila.gui.config.value.OptionValue;
 import mcp.mobius.waila.gui.config.value.SliderOptionValue;
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.IGuiEventListener;
-import net.minecraft.client.gui.widget.list.AbstractList;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Util;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.client.gui.components.AbstractSelectionList;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.narration.NarratedElementType;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.gui.narration.NarrationSupplier;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 
-public class OptionsListWidget extends AbstractList<OptionsListWidget.Entry> {
+public class OptionsListWidget extends AbstractSelectionList<OptionsListWidget.Entry> {
 
 	private final OptionsScreen owner;
 	private final Runnable diskWriter;
@@ -57,96 +60,92 @@ public class OptionsListWidget extends AbstractList<OptionsListWidget.Entry> {
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, int mouseX, int mouseY, float delta) {
+	public void render(PoseStack matrixStack, int mouseX, int mouseY, float delta) {
 		Entry entry = getEntryAtPosition(mouseX, mouseY);
 		setSelected(entry);
 
 		renderBackground(matrixStack);
 		int scrollPosX = getScrollbarPosition();
 		int j = scrollPosX + 6;
-		RenderSystem.disableLighting();
-		RenderSystem.disableFog();
-		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBuffer();
-		minecraft.getTextureManager().bindTexture(BACKGROUND_LOCATION);
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+		Tesselator tessellator = Tesselator.getInstance();
+		BufferBuilder bufferBuilder = tessellator.getBuilder();
+		RenderSystem.setShaderTexture(0, BACKGROUND_LOCATION);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		int rowLeft = getRowLeft();
 		int scrollJump = y0 + 4 - (int) getScrollAmount();
 
 		renderList(matrixStack, rowLeft, scrollJump, mouseX, mouseY, delta);
-		minecraft.getTextureManager().bindTexture(BACKGROUND_LOCATION);
+		RenderSystem.setShaderTexture(0, BACKGROUND_LOCATION);
 		RenderSystem.enableDepthTest();
 		RenderSystem.depthFunc(519);
-		bufferBuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR_TEX);
-		bufferBuilder.pos(x0, y0, -100.0D).color(64, 64, 64, 255).tex(0.0F, y0 / 32.0F).endVertex();
-		bufferBuilder.pos((x0 + width), y0, -100.0D).color(64, 64, 64, 255).tex(width / 32.0F, y0 / 32.0F).endVertex();
-		bufferBuilder.pos((x0 + width), 0.0D, -100.0D).color(64, 64, 64, 255).tex(width / 32.0F, 0.0F).endVertex();
-		bufferBuilder.pos(x0, 0.0D, -100.0D).color(64, 64, 64, 255).tex(0.0F, 0.0F).endVertex();
-		bufferBuilder.pos(x0, height, -100.0D).color(64, 64, 64, 255).color(64, 64, 64, 255).tex(0.0F, height / 32.0F).endVertex();
-		bufferBuilder.pos((x0 + width), height, -100.0D).color(64, 64, 64, 255).tex(width / 32.0F, height / 32.0F).endVertex();
-		bufferBuilder.pos((x0 + width), y1, -100.0D).color(64, 64, 64, 255).tex(width / 32.0F, y1 / 32.0F).endVertex();
-		bufferBuilder.pos(x0, y1, -100.0D).color(64, 64, 64, 255).tex(0.0F, y1 / 32.0F).endVertex();
-		tessellator.draw();
+		bufferBuilder.begin(Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
+		bufferBuilder.vertex(x0, y0, -100.0D).color(64, 64, 64, 255).uv(0.0F, y0 / 32.0F).endVertex();
+		bufferBuilder.vertex((x0 + width), y0, -100.0D).color(64, 64, 64, 255).uv(width / 32.0F, y0 / 32.0F).endVertex();
+		bufferBuilder.vertex((x0 + width), 0.0D, -100.0D).color(64, 64, 64, 255).uv(width / 32.0F, 0.0F).endVertex();
+		bufferBuilder.vertex(x0, 0.0D, -100.0D).color(64, 64, 64, 255).uv(0.0F, 0.0F).endVertex();
+		bufferBuilder.vertex(x0, height, -100.0D).color(64, 64, 64, 255).color(64, 64, 64, 255).uv(0.0F, height / 32.0F).endVertex();
+		bufferBuilder.vertex((x0 + width), height, -100.0D).color(64, 64, 64, 255).uv(width / 32.0F, height / 32.0F).endVertex();
+		bufferBuilder.vertex((x0 + width), y1, -100.0D).color(64, 64, 64, 255).uv(width / 32.0F, y1 / 32.0F).endVertex();
+		bufferBuilder.vertex(x0, y1, -100.0D).color(64, 64, 64, 255).uv(0.0F, y1 / 32.0F).endVertex();
+		tessellator.end();
 		RenderSystem.depthFunc(515);
 		RenderSystem.disableDepthTest();
 		RenderSystem.enableBlend();
 		RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
-		RenderSystem.disableAlphaTest();
-		RenderSystem.shadeModel(GL11.GL_SMOOTH);
 		RenderSystem.disableTexture();
-		bufferBuilder.begin(7, DefaultVertexFormats.POSITION_COLOR_TEX);
-		bufferBuilder.pos(x0, y0 + 4, 0.0D).color(0, 0, 0, 0).tex(0.0f, 1.0f).endVertex();
-		bufferBuilder.pos(x1, y0 + 4, 0.0D).color(0, 0, 0, 0).tex(1.0f, 1.0f).endVertex();
-		bufferBuilder.pos(x1, y0, 0.0D).color(0, 0, 0, 255).tex(1.0f, 0.0f).endVertex();
-		bufferBuilder.pos(x0, y0, 0.0D).color(0, 0, 0, 255).tex(0.0f, 0.0f).endVertex();
-		bufferBuilder.pos(x0, y1, 0.0D).color(0, 0, 0, 255).tex(0.0f, 1.0f).endVertex();
-		bufferBuilder.pos(x1, y1, 0.0D).color(0, 0, 0, 255).tex(1.0f, 1.0f).endVertex();
-		bufferBuilder.pos(x1, y1 - 4, 0.0D).color(0, 0, 0, 0).tex(1.0f, 0.0f).endVertex();
-		bufferBuilder.pos(x0, y1 - 4, 0.0D).color(0, 0, 0, 0).tex(0.0f, 0.0f).endVertex();
-		tessellator.draw();
+		RenderSystem.setShader(GameRenderer::getPositionColorShader);
+		bufferBuilder.begin(Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
+		bufferBuilder.vertex(x0, y0 + 4, 0.0D).color(0, 0, 0, 0).uv(0.0f, 1.0f).endVertex();
+		bufferBuilder.vertex(x1, y0 + 4, 0.0D).color(0, 0, 0, 0).uv(1.0f, 1.0f).endVertex();
+		bufferBuilder.vertex(x1, y0, 0.0D).color(0, 0, 0, 255).uv(1.0f, 0.0f).endVertex();
+		bufferBuilder.vertex(x0, y0, 0.0D).color(0, 0, 0, 255).uv(0.0f, 0.0f).endVertex();
+		bufferBuilder.vertex(x0, y1, 0.0D).color(0, 0, 0, 255).uv(0.0f, 1.0f).endVertex();
+		bufferBuilder.vertex(x1, y1, 0.0D).color(0, 0, 0, 255).uv(1.0f, 1.0f).endVertex();
+		bufferBuilder.vertex(x1, y1 - 4, 0.0D).color(0, 0, 0, 0).uv(1.0f, 0.0f).endVertex();
+		bufferBuilder.vertex(x0, y1 - 4, 0.0D).color(0, 0, 0, 0).uv(0.0f, 0.0f).endVertex();
+		tessellator.end();
 		int int_8 = Math.max(0, getMaxPosition() - (y1 - y0 - 4));
 		if (int_8 > 0) {
 			int int_9 = (int) ((float) ((y1 - y0) * (y1 - y0)) / (float) getMaxPosition());
-			int_9 = MathHelper.clamp(int_9, 32, y1 - y0 - 8);
+			int_9 = Mth.clamp(int_9, 32, y1 - y0 - 8);
 			int int_10 = (int) getScrollAmount() * (y1 - y0 - int_9) / int_8 + y0;
 			if (int_10 < y0) {
 				int_10 = y0;
 			}
 
-			bufferBuilder.begin(7, DefaultVertexFormats.POSITION_COLOR_TEX);
-			bufferBuilder.pos(scrollPosX, y1, 0.0D).color(0, 0, 0, 255).tex(0.0f, 1.0f).endVertex();
-			bufferBuilder.pos(j, y1, 0.0D).color(0, 0, 0, 255).tex(1.0f, 1.0f).endVertex();
-			bufferBuilder.pos(j, y0, 0.0D).color(0, 0, 0, 255).tex(1.0f, 0.0f).endVertex();
-			bufferBuilder.pos(scrollPosX, y0, 0.0D).color(0, 0, 0, 255).tex(0.0f, 0.0f).endVertex();
-			bufferBuilder.pos(scrollPosX, (int_10 + int_9), 0.0D).color(128, 128, 128, 255).tex(0.0f, 1.0f).endVertex();
-			bufferBuilder.pos(j, (int_10 + int_9), 0.0D).color(128, 128, 128, 255).tex(1.0f, 1.0f).endVertex();
-			bufferBuilder.pos(j, int_10, 0.0D).color(128, 128, 128, 255).tex(1.0f, 0.0f).endVertex();
-			bufferBuilder.pos(scrollPosX, int_10, 0.0D).color(128, 128, 128, 255).tex(0.0f, 0.0f).endVertex();
-			bufferBuilder.pos(scrollPosX, (int_10 + int_9 - 1), 0.0D).color(192, 192, 192, 255).tex(0.0f, 1.0f).endVertex();
-			bufferBuilder.pos(j - 1, int_10 + int_9 - 1, 0.0D).color(192, 192, 192, 255).tex(1.0f, 1.0f).endVertex();
-			bufferBuilder.pos(j - 1, int_10, 0.0D).color(192, 192, 192, 255).tex(1.0f, 0.0f).endVertex();
-			bufferBuilder.pos(scrollPosX, int_10, 0.0D).color(192, 192, 192, 255).tex(0.0f, 0.0f).endVertex();
-			tessellator.draw();
+			bufferBuilder.begin(Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
+			bufferBuilder.vertex(scrollPosX, y1, 0.0D).color(0, 0, 0, 255).uv(0.0f, 1.0f).endVertex();
+			bufferBuilder.vertex(j, y1, 0.0D).color(0, 0, 0, 255).uv(1.0f, 1.0f).endVertex();
+			bufferBuilder.vertex(j, y0, 0.0D).color(0, 0, 0, 255).uv(1.0f, 0.0f).endVertex();
+			bufferBuilder.vertex(scrollPosX, y0, 0.0D).color(0, 0, 0, 255).uv(0.0f, 0.0f).endVertex();
+			bufferBuilder.vertex(scrollPosX, (int_10 + int_9), 0.0D).color(128, 128, 128, 255).uv(0.0f, 1.0f).endVertex();
+			bufferBuilder.vertex(j, (int_10 + int_9), 0.0D).color(128, 128, 128, 255).uv(1.0f, 1.0f).endVertex();
+			bufferBuilder.vertex(j, int_10, 0.0D).color(128, 128, 128, 255).uv(1.0f, 0.0f).endVertex();
+			bufferBuilder.vertex(scrollPosX, int_10, 0.0D).color(128, 128, 128, 255).uv(0.0f, 0.0f).endVertex();
+			bufferBuilder.vertex(scrollPosX, (int_10 + int_9 - 1), 0.0D).color(192, 192, 192, 255).uv(0.0f, 1.0f).endVertex();
+			bufferBuilder.vertex(j - 1, int_10 + int_9 - 1, 0.0D).color(192, 192, 192, 255).uv(1.0f, 1.0f).endVertex();
+			bufferBuilder.vertex(j - 1, int_10, 0.0D).color(192, 192, 192, 255).uv(1.0f, 0.0f).endVertex();
+			bufferBuilder.vertex(scrollPosX, int_10, 0.0D).color(192, 192, 192, 255).uv(0.0f, 0.0f).endVertex();
+			tessellator.end();
 		}
 
 		renderDecorations(matrixStack, mouseX, mouseY);
 		RenderSystem.enableTexture();
-		RenderSystem.shadeModel(GL11.GL_FLAT);
-		RenderSystem.enableAlphaTest();
 		RenderSystem.disableBlend();
 	}
 
 	public void save() {
-		getEventListeners().stream().filter(e -> e instanceof OptionValue).map(e -> (OptionValue<?>) e).forEach(OptionValue::save);
+		children().stream().filter(e -> e instanceof OptionValue).map(e -> (OptionValue<?>) e).forEach(OptionValue::save);
 		if (diskWriter != null)
 			diskWriter.run();
 	}
 
 	public void add(Entry entry) {
 		if (entry instanceof OptionValue) {
-			IGuiEventListener element = ((OptionValue<?>) entry).getListener();
+			AbstractWidget element = ((OptionValue<?>) entry).getListener();
 			if (element != null)
-				owner.addListener(element);
+				owner.addWidget(element);
 		}
 		addEntry(entry);
 	}
@@ -167,7 +166,7 @@ public class OptionsListWidget extends AbstractList<OptionsListWidget.Entry> {
 		input(optionName, value, setter, Predicates.alwaysTrue());
 	}
 
-	private static final List<ITextComponent> boolNames = Arrays.asList(new TranslationTextComponent("gui.yes"), new TranslationTextComponent("gui.no"));
+	private static final List<Component> boolNames = Arrays.asList(new TranslatableComponent("gui.yes"), new TranslatableComponent("gui.no"));
 	private static final List<Boolean> boolValues = Arrays.asList(Boolean.TRUE, Boolean.FALSE);
 
 	public void choices(String optionName, boolean value, BooleanConsumer setter) {
@@ -176,25 +175,42 @@ public class OptionsListWidget extends AbstractList<OptionsListWidget.Entry> {
 
 	public <T extends Enum<T>> void choices(String optionName, T value, Consumer<T> setter) {
 		List<T> values = (List<T>) Arrays.asList(value.getClass().getEnumConstants());
-		List<ITextComponent> names = Lists.transform(values, v -> Entry.makeTitle(optionName + "_" + v.name().toLowerCase(Locale.ENGLISH)));
+		List<Component> names = Lists.transform(values, v -> Entry.makeTitle(optionName + "_" + v.name().toLowerCase(Locale.ENGLISH)));
 		add(new CycleOptionValue<>(optionName, names, values, value, setter));
 	}
 
 	public <T> void choices(String optionName, T value, List<T> values, Consumer<T> setter) {
-		List<ITextComponent> names = Lists.transform(values, v -> new StringTextComponent(v.toString()));
+		List<Component> names = Lists.transform(values, v -> new TextComponent(v.toString()));
 		add(new CycleOptionValue<>(optionName, names, values, value, setter));
 	}
 
-	public abstract static class Entry extends AbstractList.AbstractListEntry<Entry> {
+	@Override
+	public void updateNarration(NarrationElementOutput output) {
+		Entry e = getHovered();
+		if (e != null) {
+			e.updateNarration(output.nest());
+			narrateListElementPosition(output, e);
+		} else {
+			Entry e1 = getFocused();
+			if (e1 != null) {
+				e1.updateNarration(output.nest());
+				narrateListElementPosition(output, e1);
+			}
+		}
+
+		output.add(NarratedElementType.USAGE, new TranslatableComponent("narration.component_list.usage"));
+	}
+
+	public abstract static class Entry extends AbstractSelectionList.Entry<Entry> implements NarrationSupplier {
 
 		protected final Minecraft client;
 
-		public static ITextComponent makeTitle(String key) {
-			return new TranslationTextComponent(makeKey(key));
+		public static Component makeTitle(String key) {
+			return new TranslatableComponent(makeKey(key));
 		}
 
 		public static String makeKey(String key) {
-			return Util.makeTranslationKey("config", new ResourceLocation(Waila.MODID, key));
+			return Util.makeDescriptionId("config", new ResourceLocation(Waila.MODID, key));
 		}
 
 		public Entry() {
@@ -202,6 +218,6 @@ public class OptionsListWidget extends AbstractList<OptionsListWidget.Entry> {
 		}
 
 		@Override
-		public abstract void render(MatrixStack matrixStack, int index, int rowTop, int rowLeft, int width, int height, int mouseX, int mouseY, boolean hovered, float deltaTime);
+		public abstract void render(PoseStack matrixStack, int index, int rowTop, int rowLeft, int width, int height, int mouseX, int mouseY, boolean hovered, float deltaTime);
 	}
 }

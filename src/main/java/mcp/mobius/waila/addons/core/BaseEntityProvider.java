@@ -11,12 +11,12 @@ import mcp.mobius.waila.impl.ui.ArmorElement;
 import mcp.mobius.waila.impl.ui.HealthElement;
 import mcp.mobius.waila.overlay.DisplayHelper;
 import mcp.mobius.waila.utils.ModIdentification;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.merchant.villager.VillagerEntity;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.npc.Villager;
 
 public class BaseEntityProvider implements IEntityComponentProvider {
 
@@ -37,14 +37,14 @@ public class BaseEntityProvider implements IEntityComponentProvider {
 	public void appendHead(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		String name = getEntityName(accessor.getEntity());
 		WailaConfig wailaConfig = Waila.CONFIG.get();
-		tooltip.add(new StringTextComponent(String.format(wailaConfig.getFormatting().getEntityName(), name)).mergeStyle(wailaConfig.getOverlay().getColor().getTitle()), CorePlugin.TAG_OBJECT_NAME);
+		tooltip.add(new TextComponent(String.format(wailaConfig.getFormatting().getEntityName(), name)).withStyle(wailaConfig.getOverlay().getColor().getTitle()), CorePlugin.TAG_OBJECT_NAME);
 		if (config.get(CorePlugin.CONFIG_REGISTRY_NAME))
-			tooltip.add(new StringTextComponent(accessor.getEntity().getType().getRegistryName().toString()).mergeStyle(TextFormatting.GRAY), CorePlugin.TAG_REGISTRY_NAME);
+			tooltip.add(new TextComponent(accessor.getEntity().getType().getRegistryName().toString()).withStyle(ChatFormatting.GRAY), CorePlugin.TAG_REGISTRY_NAME);
 	}
 
 	public static String getEntityName(Entity entity) {
-		if (entity instanceof VillagerEntity && !entity.hasCustomName()) {
-			return entity.getType().getName().getString();
+		if (entity instanceof Villager && !entity.hasCustomName()) {
+			return entity.getType().getDescription().getString();
 		}
 		return entity.getName().getString();
 	}
@@ -61,7 +61,7 @@ public class BaseEntityProvider implements IEntityComponentProvider {
 	public void appendTail(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		if (!config.get(CorePlugin.CONFIG_MOD_NAME))
 			return;
-		tooltip.add(new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getModName(), ModIdentification.getModName(accessor.getEntity()))));
+		tooltip.add(new TextComponent(String.format(Waila.CONFIG.get().getFormatting().getModName(), ModIdentification.getModName(accessor.getEntity()))));
 	}
 
 	private void appendHealth(LivingEntity living, ITooltip tooltip) {
@@ -70,7 +70,7 @@ public class BaseEntityProvider implements IEntityComponentProvider {
 
 		if (living.getMaxHealth() > Waila.CONFIG.get().getGeneral().getMaxHealthForRender()) {
 			HealthElement icon = new HealthElement(1, 1);
-			ITextComponent text = new StringTextComponent(String.format("  %s/%s", DisplayHelper.dfCommas.format(health), DisplayHelper.dfCommas.format(maxHealth)));
+			Component text = new TextComponent(String.format("  %s/%s", DisplayHelper.dfCommas.format(health), DisplayHelper.dfCommas.format(maxHealth)));
 			tooltip.add(icon);
 			tooltip.append(text);
 		} else {
@@ -79,12 +79,12 @@ public class BaseEntityProvider implements IEntityComponentProvider {
 	}
 
 	private void appendArmor(LivingEntity living, ITooltip tooltip) {
-		float armor = living.getTotalArmorValue();
+		float armor = living.getArmorValue();
 		if (armor == 0)
 			return;
 		if (armor > Waila.CONFIG.get().getGeneral().getMaxHealthForRender()) {
 			ArmorElement icon = new ArmorElement(-1);
-			ITextComponent text = new StringTextComponent(DisplayHelper.dfCommas.format(armor));
+			Component text = new TextComponent(DisplayHelper.dfCommas.format(armor));
 			tooltip.add(icon);
 			tooltip.append(text);
 		} else {

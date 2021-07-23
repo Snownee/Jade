@@ -10,36 +10,37 @@ import mcp.mobius.waila.api.config.IPluginConfig;
 import mcp.mobius.waila.api.ui.IElement;
 import mcp.mobius.waila.api.ui.IElementHelper;
 import mcp.mobius.waila.impl.ui.ItemStackElement;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.CropsBlock;
-import net.minecraft.block.JukeboxBlock;
-import net.minecraft.block.LecternBlock;
-import net.minecraft.block.LeverBlock;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.MusicDiscItem;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.state.properties.ComparatorMode;
-import net.minecraft.tileentity.JukeboxTileEntity;
-import net.minecraft.tileentity.LecternTileEntity;
-import net.minecraft.tileentity.MobSpawnerTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector2f;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.RecordItem;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.CropBlock;
+import net.minecraft.world.level.block.JukeboxBlock;
+import net.minecraft.world.level.block.LecternBlock;
+import net.minecraft.world.level.block.LeverBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.JukeboxBlockEntity;
+import net.minecraft.world.level.block.entity.LecternBlockEntity;
+import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.ComparatorMode;
+import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.registries.ForgeRegistries;
 import snownee.jade.VanillaPlugin;
 
-public class VanillaProvider implements IComponentProvider, IServerDataProvider<TileEntity> {
+public class VanillaProvider implements IComponentProvider, IServerDataProvider<BlockEntity> {
 
 	public static final VanillaProvider INSTANCE = new VanillaProvider();
 
@@ -58,12 +59,15 @@ public class VanillaProvider implements IComponentProvider, IServerDataProvider<
 
 	public void appendHead(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		if (accessor.getBlock() == Blocks.SPAWNER && config.get(VanillaPlugin.SPAWNER_TYPE)) {
-			MobSpawnerTileEntity spawner = (MobSpawnerTileEntity) accessor.getTileEntity();
-			String name = I18n.format(accessor.getBlock().getTranslationKey());
-			name = I18n.format("jade.spawner", name, spawner.getSpawnerBaseLogic().getCachedEntity().getDisplayName().getString());
-			name = String.format(Waila.CONFIG.get().getFormatting().getBlockName(), name);
-			tooltip.remove(OBJECT_NAME_TAG);
-			tooltip.add(new StringTextComponent(name).mergeStyle(Waila.CONFIG.get().getOverlay().getColor().getTitle()), OBJECT_NAME_TAG);
+			SpawnerBlockEntity spawner = (SpawnerBlockEntity) accessor.getBlockEntity();
+			String name = I18n.get(accessor.getBlock().getDescriptionId());
+			Entity entity = spawner.getSpawner().getOrCreateDisplayEntity(accessor.getLevel());
+			if (entity != null) {
+				name = I18n.get("jade.spawner", name, entity.getDisplayName().getString());
+				name = String.format(Waila.CONFIG.get().getFormatting().getBlockName(), name);
+				tooltip.remove(OBJECT_NAME_TAG);
+				tooltip.add(new TextComponent(name).withStyle(Waila.CONFIG.get().getOverlay().getColor().getTitle()), OBJECT_NAME_TAG);
+			}
 		}
 	}
 
@@ -78,13 +82,13 @@ public class VanillaProvider implements IComponentProvider, IServerDataProvider<
 		Block block = state.getBlock();
 
 		if (config.get(VanillaPlugin.CROP_PROGRESS)) {
-			if (block instanceof CropsBlock) {
-				CropsBlock crop = (CropsBlock) block;
-				addMaturityTooltip(tooltip, state.get(crop.getAgeProperty()) / (float) crop.getMaxAge());
-			} else if (state.hasProperty(BlockStateProperties.AGE_0_7)) {
-				addMaturityTooltip(tooltip, state.get(BlockStateProperties.AGE_0_7) / 7F);
-			} else if (state.hasProperty(BlockStateProperties.AGE_0_2)) {
-				addMaturityTooltip(tooltip, state.get(BlockStateProperties.AGE_0_2) / 2.0F);
+			if (block instanceof CropBlock) {
+				CropBlock crop = (CropBlock) block;
+				addMaturityTooltip(tooltip, state.getValue(crop.getAgeProperty()) / (float) crop.getMaxAge());
+			} else if (state.hasProperty(BlockStateProperties.AGE_7)) {
+				addMaturityTooltip(tooltip, state.getValue(BlockStateProperties.AGE_7) / 7F);
+			} else if (state.hasProperty(BlockStateProperties.AGE_2)) {
+				addMaturityTooltip(tooltip, state.getValue(BlockStateProperties.AGE_2) / 2.0F);
 			}
 		}
 
@@ -93,26 +97,26 @@ public class VanillaProvider implements IComponentProvider, IServerDataProvider<
 		}
 
 		if (config.get(VanillaPlugin.JUKEBOX) && block instanceof JukeboxBlock) {
-			if (state.get(JukeboxBlock.HAS_RECORD) && accessor.getServerData().contains("record")) {
+			if (state.getValue(JukeboxBlock.HAS_RECORD) && accessor.getServerData().contains("record")) {
 				try {
 					Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(accessor.getServerData().getString("record")));
-					if (item instanceof MusicDiscItem) {
-						tooltip.add(new TranslationTextComponent("record.nowPlaying", ((MusicDiscItem) item).getDescription()));
+					if (item instanceof RecordItem) {
+						tooltip.add(new TranslatableComponent("record.nowPlaying", ((RecordItem) item).getDisplayName()));
 					}
 				} catch (Exception e) {
 					Waila.LOGGER.catching(e);
 				}
 			} else
-				tooltip.add(new TranslationTextComponent("tooltip.waila.empty"));
+				tooltip.add(new TranslatableComponent("tooltip.waila.empty"));
 		}
 
 		if (config.get(VanillaPlugin.LECTERN) && block instanceof LecternBlock) {
-			if (state.get(LecternBlock.HAS_BOOK) && accessor.getServerData().contains("book")) {
-				ItemStack stack = ItemStack.read(accessor.getServerData().getCompound("book"));
+			if (state.getValue(LecternBlock.HAS_BOOK) && accessor.getServerData().contains("book")) {
+				ItemStack stack = ItemStack.of(accessor.getServerData().getCompound("book"));
 				if (!stack.isEmpty()) {
 					IElementHelper helper = tooltip.getElementHelper();
 					tooltip.add(helper.item(stack, 0.75f));
-					tooltip.append(helper.text(stack.getDisplayName()).translate(new Vector2f(3, 3)));
+					tooltip.append(helper.text(stack.getHoverName()).translate(new Vec2(3, 3)));
 				}
 			}
 		}
@@ -121,43 +125,43 @@ public class VanillaProvider implements IComponentProvider, IServerDataProvider<
 	private void appendRedstone(ITooltip tooltip, BlockState state) {
 		Block block = state.getBlock();
 		if (block instanceof LeverBlock) {
-			boolean active = state.get(BlockStateProperties.POWERED);
-			tooltip.add(new TranslationTextComponent("tooltip.waila.state", new TranslationTextComponent("tooltip.waila.state_" + (active ? "on" : "off"))));
+			boolean active = state.getValue(BlockStateProperties.POWERED);
+			tooltip.add(new TranslatableComponent("tooltip.waila.state", new TranslatableComponent("tooltip.waila.state_" + (active ? "on" : "off"))));
 			return;
 		}
 
 		if (block == Blocks.REPEATER) {
-			int delay = state.get(BlockStateProperties.DELAY_1_4);
-			tooltip.add(new TranslationTextComponent("tooltip.waila.delay", TextFormatting.WHITE.toString() + delay));
+			int delay = state.getValue(BlockStateProperties.DELAY);
+			tooltip.add(new TranslatableComponent("tooltip.waila.delay", ChatFormatting.WHITE.toString() + delay));
 			return;
 		}
 
 		if (block == Blocks.COMPARATOR) {
-			ComparatorMode mode = state.get(BlockStateProperties.COMPARATOR_MODE);
-			tooltip.add(new TranslationTextComponent("tooltip.waila.mode", new TranslationTextComponent("tooltip.waila.mode_" + (mode == ComparatorMode.COMPARE ? "comparator" : "subtractor")).mergeStyle(TextFormatting.WHITE)));
+			ComparatorMode mode = state.getValue(BlockStateProperties.MODE_COMPARATOR);
+			tooltip.add(new TranslatableComponent("tooltip.waila.mode", new TranslatableComponent("tooltip.waila.mode_" + (mode == ComparatorMode.COMPARE ? "comparator" : "subtractor")).withStyle(ChatFormatting.WHITE)));
 			return;
 		}
 
-		if (state.hasProperty(BlockStateProperties.POWER_0_15)) {
-			tooltip.add(new TranslationTextComponent("tooltip.waila.power", TextFormatting.WHITE.toString() + state.get(BlockStateProperties.POWER_0_15)));
+		if (state.hasProperty(BlockStateProperties.POWER)) {
+			tooltip.add(new TranslatableComponent("tooltip.waila.power", ChatFormatting.WHITE.toString() + state.getValue(BlockStateProperties.POWER)));
 		}
 	}
 
 	@Override
-	public void appendServerData(CompoundNBT data, ServerPlayerEntity player, World world, TileEntity blockEntity, boolean showDetails) {
-		if (blockEntity instanceof JukeboxTileEntity) {
-			JukeboxTileEntity jukebox = (JukeboxTileEntity) blockEntity;
+	public void appendServerData(CompoundTag data, ServerPlayer player, Level world, BlockEntity blockEntity, boolean showDetails) {
+		if (blockEntity instanceof JukeboxBlockEntity) {
+			JukeboxBlockEntity jukebox = (JukeboxBlockEntity) blockEntity;
 			ItemStack stack = jukebox.getRecord();
 			if (!stack.isEmpty()) {
 				data.putString("record", stack.getItem().getRegistryName().toString());
 			}
 		}
 
-		if (blockEntity instanceof LecternTileEntity) {
-			LecternTileEntity lectern = (LecternTileEntity) blockEntity;
+		if (blockEntity instanceof LecternBlockEntity) {
+			LecternBlockEntity lectern = (LecternBlockEntity) blockEntity;
 			ItemStack stack = lectern.getBook();
 			if (!stack.isEmpty()) {
-				if (stack.hasDisplayName() || stack.getItem() != Items.WRITABLE_BOOK) {
+				if (stack.hasCustomHoverName() || stack.getItem() != Items.WRITABLE_BOOK) {
 					data.put("book", stack.serializeNBT());
 				}
 			}
@@ -167,8 +171,8 @@ public class VanillaProvider implements IComponentProvider, IServerDataProvider<
 	private static void addMaturityTooltip(ITooltip tooltip, float growthValue) {
 		growthValue *= 100.0F;
 		if (growthValue < 100.0F)
-			tooltip.add(new TranslationTextComponent("tooltip.waila.crop_growth", String.format("%.0f%%", growthValue)));
+			tooltip.add(new TranslatableComponent("tooltip.waila.crop_growth", String.format("%.0f%%", growthValue)));
 		else
-			tooltip.add(new TranslationTextComponent("tooltip.waila.crop_growth", new TranslationTextComponent("tooltip.waila.crop_mature").mergeStyle(TextFormatting.GREEN)));
+			tooltip.add(new TranslatableComponent("tooltip.waila.crop_growth", new TranslatableComponent("tooltip.waila.crop_mature").withStyle(ChatFormatting.GREEN)));
 	}
 }

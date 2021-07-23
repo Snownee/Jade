@@ -1,8 +1,10 @@
 package mcp.mobius.waila.test;
 
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
@@ -10,7 +12,7 @@ import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 
-public class TestTileEntity extends TileEntity implements ITickableTileEntity {
+public class TestBlockEntity extends BlockEntity {
 
 	TestEnergyStorage energyStorage = new TestEnergyStorage();
 	LazyOptional<TestEnergyStorage> energyCap = LazyOptional.of(() -> energyStorage);
@@ -18,22 +20,21 @@ public class TestTileEntity extends TileEntity implements ITickableTileEntity {
 	FluidTank fluidStorage = new FluidTank(10000);
 	LazyOptional<FluidTank> fluidCap = LazyOptional.of(() -> fluidStorage);
 
-	public TestTileEntity() {
-		super(Test.TILE);
+	public TestBlockEntity(BlockPos pos, BlockState state) {
+		super(Test.TILE, pos, state);
 	}
 
 	@Override
-	public void remove() {
+	public void onChunkUnloaded() {
 		energyCap.invalidate();
 		fluidCap.invalidate();
-		super.remove();
+		super.onChunkUnloaded();
 	}
 
-	@Override
-	public void tick() {
-		energyStorage.energy += world.rand.nextInt(1000);
-		if (energyStorage.energy > energyStorage.getMaxEnergyStored()) {
-			energyStorage.energy = 0;
+	public static void tick(Level level, BlockPos pos, BlockState state, TestBlockEntity self) {
+		self.energyStorage.energy += level.getRandom().nextInt(1000);
+		if (self.energyStorage.energy > self.energyStorage.getMaxEnergyStored()) {
+			self.energyStorage.energy = 0;
 		}
 	}
 

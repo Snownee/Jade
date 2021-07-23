@@ -5,12 +5,12 @@ import mcp.mobius.waila.api.IEntityComponentProvider;
 import mcp.mobius.waila.api.IServerDataProvider;
 import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.config.IPluginConfig;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.passive.ChickenEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.animal.Chicken;
+import net.minecraft.world.level.Level;
 import snownee.jade.VanillaPlugin;
 
 public class ChickenEggProvider implements IEntityComponentProvider, IServerDataProvider<Entity> {
@@ -21,13 +21,13 @@ public class ChickenEggProvider implements IEntityComponentProvider, IServerData
 		if (!config.get(VanillaPlugin.CHICKEN_EGG) || !accessor.getServerData().contains("NextEgg")) {
 			return;
 		}
-		tooltip.add(new TranslationTextComponent("jade.nextEgg", accessor.getServerData().getInt("NextEgg")));
+		tooltip.add(new TranslatableComponent("jade.nextEgg", accessor.getServerData().getInt("NextEgg")));
 	}
 
 	@Override
-	public void appendServerData(CompoundNBT tag, ServerPlayerEntity player, World world, Entity entity, boolean showDetails) {
-		ChickenEntity chicken = (ChickenEntity) entity;
-		tag.putInt("NextEgg", chicken.timeUntilNextEgg / 20);
+	public void appendServerData(CompoundTag tag, ServerPlayer player, Level world, Entity entity, boolean showDetails) {
+		Chicken chicken = (Chicken) entity;
+		tag.putInt("NextEgg", chicken.eggTime / 20);
 	}
 
 }

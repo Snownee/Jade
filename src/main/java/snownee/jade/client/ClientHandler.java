@@ -12,16 +12,17 @@ import mcp.mobius.waila.api.event.WailaRayTraceEvent;
 import mcp.mobius.waila.api.event.WailaRenderEvent;
 import mcp.mobius.waila.impl.config.PluginConfig;
 import mcp.mobius.waila.overlay.DisplayHelper;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SilverfishBlock;
-import net.minecraft.block.TrappedChestBlock;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.PlayerController;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.state.Property;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.multiplayer.MultiPlayerGameMode;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.InfestedBlock;
+import net.minecraft.world.level.block.TrappedChestBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ForgeHooks;
@@ -41,12 +42,12 @@ public final class ClientHandler {
 			return;
 		}
 		Minecraft mc = Minecraft.getInstance();
-		PlayerController playerController = mc.playerController;
-		if (playerController == null || !playerController.getIsHittingBlock()) {
+		MultiPlayerGameMode playerController = mc.gameMode;
+		if (playerController == null || !playerController.isDestroying()) {
 			return;
 		}
-		BlockState state = mc.world.getBlockState(playerController.currentBlock);
-		boolean canHarvest = ForgeHooks.canHarvestBlock(state, mc.player, mc.world, playerController.currentBlock);
+		BlockState state = mc.level.getBlockState(playerController.destroyBlockPos);
+		boolean canHarvest = ForgeHooks.canHarvestBlock(state, mc.player, mc.level, playerController.destroyBlockPos);
 		int color = canHarvest ? 0x88FFFFFF : 0x88FF4444;
 		Rectangle rect = event.getPosition();
 		int height = rect.height;
@@ -55,10 +56,10 @@ public final class ClientHandler {
 			height -= 1;
 			width -= 2;
 		}
-		float progress = state.getPlayerRelativeBlockHardness(mc.player, mc.player.world, playerController.currentBlock);
-		progress = playerController.curBlockDamageMP + mc.getRenderPartialTicks() * progress;
-		progress = MathHelper.clamp(progress, 0, 1);
-		DisplayHelper.fill(event.getMatrixStack(), 0, height - 1, width * progress, height, color);
+		float progress = state.getDestroyProgress(mc.player, mc.player.level, playerController.destroyBlockPos);
+		progress = playerController.destroyProgress + mc.getFrameTime() * progress;
+		progress = Mth.clamp(progress, 0, 1);
+		DisplayHelper.fill(event.getPoseStack(), 0, height - 1, width * progress, height, color);
 	}
 
 	private static final Cache<BlockState, BlockState> CHEST_CACHE = CacheBuilder.newBuilder().build();
@@ -71,7 +72,7 @@ public final class ClientHandler {
 					ResourceLocation chestName = new ResourceLocation(trappedName.getNamespace(), trappedName.getPath().substring(8));
 					Block block = ForgeRegistries.BLOCKS.getValue(chestName);
 					if (block != null) {
-						return copyProperties(state, block.getDefaultState());
+						return copyProperties(state, block.defaultBlockState());
 					}
 				}
 				return state;
@@ -86,14 +87,14 @@ public final class ClientHandler {
 		for (Map.Entry<Property<?>, Comparable<?>> entry : oldState.getValues().entrySet()) {
 			Property<T> property = (Property<T>) entry.getKey();
 			if (newState.hasProperty(property))
-				newState = newState.with(property, property.getValueClass().cast(entry.getValue()));
+				newState = newState.setValue(property, property.getValueClass().cast(entry.getValue()));
 		}
 		return newState;
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public static void override(WailaRayTraceEvent event) {
-		PlayerEntity player = event.getTarget().getPlayer();
+		Player player = event.getTarget().getPlayer();
 		if (player.isCreative() || player.isSpectator())
 			return;
 		if (event.getTarget() instanceof BlockAccessor) {
@@ -101,11 +102,14 @@ public final class ClientHandler {
 			if (target.getBlock() instanceof TrappedChestBlock) {
 				BlockState state = getCorrespondingNormalChest(target.getBlockState());
 				if (state != target.getBlockState()) {
-					event.setTarget(new BlockAccessor(state, target.getTileEntity(), target.getWorld(), player, target.getServerData(), target.getHitResult(), target.isServerConnected()));
+					event.setTarget(new BlockAccessor(state, target.getBlockEntity(), target.getLevel(), player, target.getServerData(), target.getHitResult(), target.isServerConnected()));
 				}
-			} else if (target.getBlock() instanceof SilverfishBlock) {
-				Block block = ((SilverfishBlock) target.getBlock()).getMimickedBlock();
-				event.setTarget(new BlockAccessor(block.getDefaultState(), target.getTileEntity(), target.getWorld(), player, target.getServerData(), target.getHitResult(), target.isServerConnected()));
+			} else if (target.getBlock() instanceof InfestedBlock) {
+				Block block = ((InfestedBlock) target.getBlock()).getHostBlock();
+				event.setTarget(new BlockAccessor(block.defaultBlockState(), target.getBlockEntity(), target.getLevel(), player, target.getServerData(), target.getHitResult(), target.isServerConnected()));
+			} else if (target.getBlock() == Blocks.POWDER_SNOW) {
+				Block block = Blocks.SNOW_BLOCK;
+				event.setTarget(new BlockAccessor(block.defaultBlockState(), null, target.getLevel(), player, target.getServerData(), target.getHitResult(), target.isServerConnected()));
 			}
 		}
 	}

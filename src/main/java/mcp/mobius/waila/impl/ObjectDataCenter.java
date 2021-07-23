@@ -4,8 +4,8 @@ import mcp.mobius.waila.api.Accessor;
 import mcp.mobius.waila.api.BlockAccessor;
 import mcp.mobius.waila.api.EntityAccessor;
 import mcp.mobius.waila.overlay.WailaTickHandler;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 
 public final class ObjectDataCenter {
 
@@ -14,7 +14,7 @@ public final class ObjectDataCenter {
 
 	public static int rateLimiter = 250;
 	private static Accessor accessor;
-	private static CompoundNBT serverData;
+	private static CompoundTag serverData;
 
 	private static Object lastObject;
 	public static long timeLastUpdate = System.currentTimeMillis();
@@ -30,7 +30,7 @@ public final class ObjectDataCenter {
 
 		Object object = null;
 		if (accessor instanceof BlockAccessor) {
-			object = ((BlockAccessor) accessor).getTileEntity();
+			object = ((BlockAccessor) accessor).getBlockEntity();
 		} else if (accessor instanceof EntityAccessor) {
 			object = ((EntityAccessor) accessor).getEntity();
 		}
@@ -47,12 +47,12 @@ public final class ObjectDataCenter {
 		return accessor;
 	}
 
-	public static void setServerData(CompoundNBT tag) {
+	public static void setServerData(CompoundTag tag) {
 		serverData = tag;
 	}
 
-	public static CompoundNBT getServerData() {
-		if (accessor instanceof BlockAccessor && isTagCorrectTileEntity())
+	public static CompoundTag getServerData() {
+		if (accessor instanceof BlockAccessor && isTagCorrectBlockEntity())
 			return serverData;
 
 		else if (accessor instanceof EntityAccessor && isTagCorrectEntity())
@@ -61,7 +61,7 @@ public final class ObjectDataCenter {
 		return null;
 	}
 
-	private static boolean isTagCorrectTileEntity() {
+	private static boolean isTagCorrectBlockEntity() {
 		if (serverData == null) {
 			requestServerData();
 			return false;
@@ -88,7 +88,7 @@ public final class ObjectDataCenter {
 
 		int id = serverData.getInt("WailaEntityID");
 
-		if (id == ((EntityAccessor) accessor).getEntity().getEntityId())
+		if (id == ((EntityAccessor) accessor).getEntity().getId())
 			return true;
 		else {
 			requestServerData();

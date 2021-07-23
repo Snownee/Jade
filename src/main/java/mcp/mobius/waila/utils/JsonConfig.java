@@ -48,8 +48,8 @@ public class JsonConfig<T> {
 	public JsonConfig(String fileName, Class<T> configClass) {
 		this(fileName, configClass, () -> {
 			try {
-				return configClass.newInstance();
-			} catch (InstantiationException | IllegalAccessException e) {
+				return configClass.getDeclaredConstructor().newInstance();
+			} catch (Exception e) {
 				throw new RuntimeException("Failed to create new config instance", e);
 			}
 		});

@@ -1,6 +1,6 @@
 package mcp.mobius.waila.api.config;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 public class HUDTheme {
 

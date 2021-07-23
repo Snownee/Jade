@@ -1,5 +1,7 @@
 package mcp.mobius.waila;
 
+import com.mojang.blaze3d.platform.InputConstants;
+
 import mcp.mobius.waila.addons.core.CorePlugin;
 import mcp.mobius.waila.api.config.WailaConfig;
 import mcp.mobius.waila.api.config.WailaConfig.DisplayMode;
@@ -9,10 +11,10 @@ import mcp.mobius.waila.impl.config.PluginConfig;
 import mcp.mobius.waila.overlay.OverlayRenderer;
 import mcp.mobius.waila.overlay.WailaTickHandler;
 import mcp.mobius.waila.utils.ModIdentification;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.client.util.InputMappings;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.InputEvent;
@@ -22,32 +24,31 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ExtensionPoint;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fmlclient.registry.ClientRegistry;
 import snownee.jade.Jade;
 
 @Mod.EventBusSubscriber(modid = Waila.MODID, value = Dist.CLIENT)
 public class WailaClient {
 
-	public static KeyBinding openConfig;
-	public static KeyBinding showOverlay;
-	public static KeyBinding toggleLiquid;
-	public static KeyBinding showDetails;
+	public static KeyMapping openConfig;
+	public static KeyMapping showOverlay;
+	public static KeyMapping toggleLiquid;
+	public static KeyMapping showDetails;
 
 	public static void initClient() {
-		ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.CONFIGGUIFACTORY, () -> ((minecraft, screen) -> new HomeConfigScreen(screen)));
+		//TODO
+		//ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.CONFIGGUIFACTORY, () -> ((minecraft, screen) -> new HomeConfigScreen(screen)));
 
-		WailaClient.openConfig = new KeyBinding("key.waila.config", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputMappings.Type.KEYSYM.getOrMakeInput(320), Jade.NAME);
-		WailaClient.showOverlay = new KeyBinding("key.waila.show_overlay", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputMappings.Type.KEYSYM.getOrMakeInput(321), Jade.NAME);
-		WailaClient.toggleLiquid = new KeyBinding("key.waila.toggle_liquid", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputMappings.Type.KEYSYM.getOrMakeInput(322), Jade.NAME);
-		WailaClient.showDetails = new KeyBinding("key.waila.show_details", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputMappings.Type.KEYSYM.getOrMakeInput(340), Jade.NAME);
+		WailaClient.openConfig = new KeyMapping("key.waila.config", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputConstants.Type.KEYSYM.getOrCreate(320), Jade.NAME);
+		WailaClient.showOverlay = new KeyMapping("key.waila.show_overlay", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputConstants.Type.KEYSYM.getOrCreate(321), Jade.NAME);
+		WailaClient.toggleLiquid = new KeyMapping("key.waila.toggle_liquid", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputConstants.Type.KEYSYM.getOrCreate(322), Jade.NAME);
+		WailaClient.showDetails = new KeyMapping("key.waila.show_details", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputConstants.Type.KEYSYM.getOrCreate(340), Jade.NAME);
 
-		ClientRegistry.registerKeyBinding(WailaClient.openConfig.getKeyBinding());
-		ClientRegistry.registerKeyBinding(WailaClient.showOverlay.getKeyBinding());
-		ClientRegistry.registerKeyBinding(WailaClient.toggleLiquid.getKeyBinding());
-		ClientRegistry.registerKeyBinding(WailaClient.showDetails.getKeyBinding());
+		ClientRegistry.registerKeyBinding(WailaClient.openConfig);
+		ClientRegistry.registerKeyBinding(WailaClient.showOverlay);
+		ClientRegistry.registerKeyBinding(WailaClient.toggleLiquid);
+		ClientRegistry.registerKeyBinding(WailaClient.showDetails);
 	}
 
 	@SubscribeEvent
@@ -57,19 +58,19 @@ public class WailaClient {
 		if (event.getAction() != 1)
 			return;
 
-		if (openConfig.isKeyDown()) {
+		if (openConfig.isDown()) {
 			Waila.CONFIG.invalidate();
-			Minecraft.getInstance().displayGuiScreen(new HomeConfigScreen(null));
+			Minecraft.getInstance().setScreen(new HomeConfigScreen(null));
 		}
 
-		if (showOverlay.isKeyDown()) {
+		if (showOverlay.isDown()) {
 			DisplayMode mode = Waila.CONFIG.get().getGeneral().getDisplayMode();
 			if (mode == WailaConfig.DisplayMode.TOGGLE) {
 				Waila.CONFIG.get().getGeneral().setDisplayTooltip(!Waila.CONFIG.get().getGeneral().shouldDisplayTooltip());
 			}
 		}
 
-		if (toggleLiquid.isKeyDown()) {
+		if (toggleLiquid.isDown()) {
 			Waila.CONFIG.get().getGeneral().setDisplayFluids(!Waila.CONFIG.get().getGeneral().shouldDisplayFluids());
 		}
 	}
@@ -80,10 +81,10 @@ public class WailaClient {
 	public static void onTooltip(ItemTooltipEvent event) {
 		if (!hideModName && PluginConfig.INSTANCE.get(CorePlugin.CONFIG_ITEM_MOD_NAME, false)) {
 			String name = String.format(Waila.CONFIG.get().getFormatting().getModName(), ModIdentification.getModName(event.getItemStack()));
-			event.getToolTip().add(new StringTextComponent(name));
+			event.getToolTip().add(new TextComponent(name));
 		}
 		if (Waila.CONFIG.get().getGeneral().isDebug() && event.getItemStack().hasTag()) {
-			event.getToolTip().add(event.getItemStack().getTag().toFormattedComponent());
+			event.getToolTip().add(NbtUtils.toPrettyComponent(event.getItemStack().getTag()));
 		}
 	}
 

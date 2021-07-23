@@ -2,7 +2,7 @@ package mcp.mobius.waila.api.event;
 
 import java.awt.Rectangle;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import mcp.mobius.waila.api.Accessor;
 import net.minecraftforge.eventbus.api.Cancelable;
@@ -19,9 +19,9 @@ import net.minecraftforge.eventbus.api.Event;
 public class WailaRenderEvent extends Event {
 
 	private final Rectangle position;
-	private final MatrixStack matrixStack;
+	private final PoseStack matrixStack;
 
-	public WailaRenderEvent(Rectangle position, MatrixStack matrixStack) {
+	public WailaRenderEvent(Rectangle position, PoseStack matrixStack) {
 		this.position = position;
 		this.matrixStack = matrixStack;
 	}
@@ -30,7 +30,7 @@ public class WailaRenderEvent extends Event {
 		return position;
 	}
 
-	public MatrixStack getMatrixStack() {
+	public PoseStack getPoseStack() {
 		return matrixStack;
 	}
 
@@ -46,7 +46,7 @@ public class WailaRenderEvent extends Event {
 
 		private final Accessor accessor;
 
-		public Pre(Accessor accessor, Rectangle position, MatrixStack matrixStack) {
+		public Pre(Accessor accessor, Rectangle position, PoseStack matrixStack) {
 			super(position, matrixStack);
 
 			this.accessor = accessor;
@@ -66,7 +66,7 @@ public class WailaRenderEvent extends Event {
      */
 	public static class Post extends WailaRenderEvent {
 
-		public Post(Rectangle position, MatrixStack matrixStack) {
+		public Post(Rectangle position, PoseStack matrixStack) {
 			super(position, matrixStack);
 		}
 	}

@@ -7,10 +7,10 @@ import mcp.mobius.waila.api.EntityAccessor;
 import mcp.mobius.waila.api.IEntityComponentProvider;
 import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.config.IPluginConfig;
-import net.minecraft.client.util.ITooltipFlag.TooltipFlags;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import snownee.jade.VanillaPlugin;
@@ -26,7 +26,7 @@ public class ItemTooltipProvider implements IEntityComponentProvider {
 		}
 		ItemStack stack = ((ItemEntity) accessor.getEntity()).getItem();
 		WailaClient.hideModName = true;
-		List<ITextComponent> itemTooltip = stack.getTooltip(null, TooltipFlags.NORMAL);
+		List<Component> itemTooltip = stack.getTooltipLines(null, TooltipFlag.Default.NORMAL);
 		WailaClient.hideModName = false;
 		if (!itemTooltip.isEmpty()) {
 			itemTooltip.remove(0);

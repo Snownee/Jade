@@ -1,8 +1,8 @@
 package mcp.mobius.waila.api.ui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.chat.Component;
 
 public interface IProgressStyle {
 
@@ -18,5 +18,5 @@ public interface IProgressStyle {
 
 	IProgressStyle overlay(IElement overlay);
 
-	void render(MatrixStack matrixStack, float x, float y, float w, float h, float progress, ITextComponent text);
+	void render(PoseStack matrixStack, float x, float y, float w, float h, float progress, Component text);
 }

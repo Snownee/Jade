@@ -1,9 +1,9 @@
 package mcp.mobius.waila.test;
 
-import net.minecraft.block.Block;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
@@ -13,7 +13,7 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 public class Test {
 
 	public static final TestBlock BLOCK = new TestBlock();
-	public static final TileEntityType<TestTileEntity> TILE = TileEntityType.Builder.create(TestTileEntity::new, BLOCK).build(null);
+	public static final BlockEntityType<TestBlockEntity> TILE = BlockEntityType.Builder.of(TestBlockEntity::new, BLOCK).build(null);
 
 	@SubscribeEvent
 	public static void registerBlocks(Register<Block> event) {
@@ -26,7 +26,7 @@ public class Test {
 	}
 
 	@SubscribeEvent
-	public static void registerTileTypes(Register<TileEntityType<?>> event) {
+	public static void registerTileTypes(Register<BlockEntityType<?>> event) {
 		event.getRegistry().register(TILE.setRegistryName("test"));
 	}
 

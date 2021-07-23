@@ -1,13 +1,13 @@
 package mcp.mobius.waila.impl.ui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.ui.Element;
 import mcp.mobius.waila.overlay.DisplayHelper;
 import mcp.mobius.waila.overlay.IconUI;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector2f;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec2;
 
 public class ArmorElement extends Element {
 
@@ -18,7 +18,7 @@ public class ArmorElement extends Element {
 	}
 
 	@Override
-	public Vector2f getSize() {
+	public Vec2 getSize() {
 		float maxHearts = Waila.CONFIG.get().getGeneral().getMaxHeartsPerLine();
 		float maxHealth = maxHearts;
 
@@ -26,23 +26,23 @@ public class ArmorElement extends Element {
 		int heartsPerLine = (int) (Math.min(maxHearts, Math.ceil(maxHealth)));
 		int lineCount = (int) (Math.ceil(maxHealth / maxHearts));
 
-		return new Vector2f(8 * heartsPerLine, 10 * lineCount);
+		return new Vec2(8 * heartsPerLine, 10 * lineCount);
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, float x, float y, float maxX, float maxY) {
+	public void render(PoseStack matrixStack, float x, float y, float maxX, float maxY) {
 		float maxHearts = Waila.CONFIG.get().getGeneral().getMaxHeartsPerLine();
 		float armor = this.armor;
 		if (armor == -1)
 			maxHearts = armor = 1;
 		float maxHealth = maxHearts;
 
-		int heartCount = MathHelper.ceil(maxHealth);
+		int heartCount = Mth.ceil(maxHealth);
 		int heartsPerLine = (int) (Math.min(maxHearts, Math.ceil(maxHealth)));
 
 		int xOffset = 0;
 		for (int i = 1; i <= heartCount; i++) {
-			if (i <= MathHelper.floor(armor)) {
+			if (i <= Mth.floor(armor)) {
 				DisplayHelper.renderIcon(matrixStack, x + xOffset, y, 8, 8, IconUI.ARMOR);
 				xOffset += 8;
 			}

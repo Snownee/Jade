@@ -4,8 +4,8 @@ import mcp.mobius.waila.api.EntityAccessor;
 import mcp.mobius.waila.api.IEntityComponentProvider;
 import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.config.IPluginConfig;
-import net.minecraft.entity.item.ItemFrameEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.decoration.ItemFrame;
+import net.minecraft.world.item.ItemStack;
 import snownee.jade.VanillaPlugin;
 
 public class ItemFrameProvider implements IEntityComponentProvider {
@@ -16,10 +16,10 @@ public class ItemFrameProvider implements IEntityComponentProvider {
 		if (!config.get(VanillaPlugin.ITEM_FRAME)) {
 			return;
 		}
-		ItemFrameEntity itemFrame = (ItemFrameEntity) accessor.getEntity();
-		ItemStack stack = itemFrame.getDisplayedItem();
+		ItemFrame itemFrame = (ItemFrame) accessor.getEntity();
+		ItemStack stack = itemFrame.getItem();
 		if (!stack.isEmpty()) {
-			tooltip.add(stack.getDisplayName());
+			tooltip.add(stack.getHoverName());
 		}
 	}
 }

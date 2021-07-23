@@ -19,12 +19,12 @@ import mcp.mobius.waila.impl.config.ConfigEntry;
 import mcp.mobius.waila.impl.config.PluginConfig;
 import mcp.mobius.waila.impl.ui.ElementHelper;
 import mcp.mobius.waila.overlay.DisplayHelper;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class WailaRegistrar implements IRegistrar {
 
@@ -32,7 +32,7 @@ public class WailaRegistrar implements IRegistrar {
 
 	public final HierarchyLookup<IComponentProvider> blockStackProviders;
 	public final EnumMap<TooltipPosition, HierarchyLookup<IComponentProvider>> blockComponentProviders;
-	public final HierarchyLookup<IServerDataProvider<TileEntity>> blockDataProviders;
+	public final HierarchyLookup<IServerDataProvider<BlockEntity>> blockDataProviders;
 
 	public final HierarchyLookup<IEntityComponentProvider> entityStackProviders;
 	public final EnumMap<TooltipPosition, HierarchyLookup<IEntityComponentProvider>> entityComponentProviders;
@@ -45,7 +45,7 @@ public class WailaRegistrar implements IRegistrar {
 	WailaRegistrar() {
 		blockStackProviders = new HierarchyLookup<>(Block.class);
 		blockComponentProviders = new EnumMap<>(TooltipPosition.class);
-		blockDataProviders = new HierarchyLookup<>(TileEntity.class);
+		blockDataProviders = new HierarchyLookup<>(BlockEntity.class);
 
 		entityStackProviders = new HierarchyLookup<>(Entity.class);
 		entityComponentProviders = new EnumMap<>(TooltipPosition.class);
@@ -82,7 +82,7 @@ public class WailaRegistrar implements IRegistrar {
 	}
 
 	@Override
-	public void registerBlockDataProvider(IServerDataProvider<TileEntity> dataProvider, Class<? extends TileEntity> block) {
+	public void registerBlockDataProvider(IServerDataProvider<BlockEntity> dataProvider, Class<? extends BlockEntity> block) {
 		blockDataProviders.register(block, dataProvider);
 	}
 
@@ -111,7 +111,7 @@ public class WailaRegistrar implements IRegistrar {
 		return blockStackProviders.get(block);
 	}
 
-	public List<IServerDataProvider<TileEntity>> getBlockNBTProviders(TileEntity block) {
+	public List<IServerDataProvider<BlockEntity>> getBlockNBTProviders(BlockEntity block) {
 		return blockDataProviders.get(block);
 	}
 

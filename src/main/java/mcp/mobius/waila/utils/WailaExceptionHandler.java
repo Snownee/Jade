@@ -12,7 +12,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.impl.Tooltip;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.network.chat.TextComponent;
 
 public class WailaExceptionHandler {
 
@@ -33,6 +33,6 @@ public class WailaExceptionHandler {
 			}
 		}
 		if (tooltip != null)
-			tooltip.add(new StringTextComponent("<ERROR>"));
+			tooltip.add(new TextComponent("<ERROR>"));
 	}
 }

@@ -3,13 +3,13 @@ package mcp.mobius.waila.api.ui;
 import javax.annotation.Nullable;
 
 import mcp.mobius.waila.api.ITooltip;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
 public interface IElementHelper {
 
-	IElement text(ITextComponent component);
+	IElement text(Component component);
 
 	IElement spacer(int x, int y);
 
@@ -21,7 +21,7 @@ public interface IElementHelper {
 
 	IElement fluid(FluidStack fluidStack);
 
-	IElement progress(float progress, @Nullable ITextComponent text, IProgressStyle style, @Nullable IBorderStyle borderStyle);
+	IElement progress(float progress, @Nullable Component text, IProgressStyle style, @Nullable IBorderStyle borderStyle);
 
 	default IElement box(ITooltip tooltip) {
 		return box(tooltip, borderStyle());

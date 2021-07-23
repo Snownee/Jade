@@ -1,8 +1,8 @@
 package mcp.mobius.waila.api;
 
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.world.World;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.Level;
 
 public interface IServerDataProvider<T> {
 
@@ -16,5 +16,5 @@ public interface IServerDataProvider<T> {
      * @param t      The type targeted for synchronization.
      * @param showDetails   Should show details (for example: show more inventory items in tooltip while player is pressing SHIFT by default).
      */
-	void appendServerData(CompoundNBT data, ServerPlayerEntity player, World world, T t, boolean showDetails);
+	void appendServerData(CompoundTag data, ServerPlayer player, Level world, T t, boolean showDetails);
 }

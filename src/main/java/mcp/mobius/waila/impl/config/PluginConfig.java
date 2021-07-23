@@ -17,7 +17,7 @@ import com.google.gson.reflect.TypeToken;
 
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.config.IPluginConfig;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fml.loading.FMLPaths;
 import snownee.jade.Jade;
 

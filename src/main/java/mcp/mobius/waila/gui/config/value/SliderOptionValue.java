@@ -3,14 +3,14 @@ package mcp.mobius.waila.gui.config.value;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import mcp.mobius.waila.overlay.DisplayHelper;
-import net.minecraft.client.gui.IGuiEventListener;
-import net.minecraft.client.gui.widget.AbstractSlider;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.gui.components.AbstractSliderButton;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.util.Mth;
 
 public class SliderOptionValue extends OptionValue<Float> {
 
@@ -31,45 +31,45 @@ public class SliderOptionValue extends OptionValue<Float> {
 	}
 
 	@Override
-	protected void drawValue(MatrixStack matrixStack, int entryWidth, int entryHeight, int x, int y, int mouseX, int mouseY, boolean selected, float partialTicks) {
+	protected void drawValue(PoseStack matrixStack, int entryWidth, int entryHeight, int x, int y, int mouseX, int mouseY, boolean selected, float partialTicks) {
 		slider.x = x + 135;
 		slider.y = y + entryHeight / 6;
 		slider.render(matrixStack, mouseX, mouseY, partialTicks);
 	}
 
 	@Override
-	public IGuiEventListener getListener() {
+	public AbstractWidget getListener() {
 		return slider;
 	}
 
-	public static class Slider extends AbstractSlider {
-		private final SliderOptionValue value;
+	public static class Slider extends AbstractSliderButton {
+		private final SliderOptionValue parent;
 
-		public Slider(SliderOptionValue value, int x, int y, int width, int height, ITextComponent message) {
-			super(x, y, width, height, message, fromScaled(value.value, value.min, value.max));
-			this.value = value;
-			func_230972_a_();
+		public Slider(SliderOptionValue parent, int x, int y, int width, int height, Component message) {
+			super(x, y, width, height, message, fromScaled(parent.value, parent.min, parent.max));
+			this.parent = parent;
+			applyValue();
 		}
 
 		public float toScaled() {
-			return value.min + (value.max - value.min) * (float) sliderValue;
+			return parent.min + (parent.max - parent.min) * (float) value;
 		}
 
 		public static double fromScaled(float f, float min, float max) {
-			return MathHelper.clamp((f - min) / (max - min), 0, 1);
+			return Mth.clamp((f - min) / (max - min), 0, 1);
 		}
 
 		//save?
 		@Override
-		protected void func_230979_b_() {
-			value.value = toScaled();
-			value.save();
+		protected void updateMessage() {
+			parent.value = toScaled();
+			parent.save();
 		}
 
 		//get title
 		@Override
-		protected void func_230972_a_() {
-			setMessage(new StringTextComponent(DisplayHelper.dfCommas.format(toScaled())));
+		protected void applyValue() {
+			setMessage(new TextComponent(DisplayHelper.dfCommas.format(toScaled())));
 		}
 	}
 }

@@ -2,18 +2,22 @@ package mcp.mobius.waila.api.ui;
 
 import javax.annotation.Nullable;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
 
 public interface IDisplayHelper {
 
-	void drawItem(MatrixStack matrixStack, float x, float y, ItemStack stack, float scale, @Nullable String text);
+	void drawItem(PoseStack poseStack, float x, float y, ItemStack stack, float scale, @Nullable String text);
 
-	void drawGradientRect(MatrixStack matrixStack, float left, float top, float right, float bottom, int startColor, int endColor);
+	void drawGradientRect(PoseStack poseStack, float left, float top, float right, float bottom, int startColor, int endColor);
 
-	void drawBorder(MatrixStack matrixStack, float minX, float minY, float maxX, float maxY, IBorderStyle border);
+	void drawBorder(PoseStack poseStack, float minX, float minY, float maxX, float maxY, IBorderStyle border);
 
 	String humanReadableNumber(double number, String unit, boolean milli);
 
+	void drawText(PoseStack poseStack, String text, float x, float y, int color);
+
+	void drawText(PoseStack poseStack, Component text, float x, float y, int color);
 }

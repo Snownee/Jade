@@ -9,16 +9,16 @@ import mcp.mobius.waila.api.config.WailaConfig.ConfigOverlay;
 import mcp.mobius.waila.api.config.WailaConfig.ConfigOverlay.ConfigOverlayColor;
 import mcp.mobius.waila.gui.config.OptionButton;
 import mcp.mobius.waila.gui.config.OptionsListWidget;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import snownee.jade.Jade;
 
 public class WailaConfigScreen extends OptionsScreen {
 
 	public WailaConfigScreen(Screen parent) {
-		super(parent, new TranslationTextComponent("gui.waila.configuration", Jade.NAME), Waila.CONFIG::save, Waila.CONFIG::invalidate);
+		super(parent, new TranslatableComponent("gui.waila.configuration", Jade.NAME), Waila.CONFIG::save, Waila.CONFIG::invalidate);
 	}
 
 	@Override
@@ -28,8 +28,8 @@ public class WailaConfigScreen extends OptionsScreen {
 		ConfigOverlayColor color = overlay.getColor();
 		ConfigFormatting formatting = Waila.CONFIG.get().getFormatting();
 		OptionsListWidget options = new OptionsListWidget(this, minecraft, width + 45, height, 32, height - 32, 30, Waila.CONFIG::save);
-		options.add(new OptionButton("general", new Button(0, 0, 100, 20, StringTextComponent.EMPTY, w -> {
-			minecraft.displayGuiScreen(new OptionsScreen(WailaConfigScreen.this, "general") {
+		options.add(new OptionButton("general", new Button(0, 0, 100, 20, TextComponent.EMPTY, w -> {
+			minecraft.setScreen(new OptionsScreen(WailaConfigScreen.this, "general") {
 				@Override
 				public OptionsListWidget getOptions() {
 					OptionsListWidget options = new OptionsListWidget(this, minecraft, width + 45, height, 32, height - 32, 30);
@@ -46,8 +46,8 @@ public class WailaConfigScreen extends OptionsScreen {
 				}
 			});
 		})));
-		options.add(new OptionButton("overlay", new Button(0, 0, 100, 20, StringTextComponent.EMPTY, w -> {
-			minecraft.displayGuiScreen(new OptionsScreen(WailaConfigScreen.this, "overlay") {
+		options.add(new OptionButton("overlay", new Button(0, 0, 100, 20, TextComponent.EMPTY, w -> {
+			minecraft.setScreen(new OptionsScreen(WailaConfigScreen.this, "overlay") {
 				@Override
 				public OptionsListWidget getOptions() {
 					OptionsListWidget options = new OptionsListWidget(this, minecraft, width + 45, height, 32, height - 32, 30);
@@ -64,8 +64,8 @@ public class WailaConfigScreen extends OptionsScreen {
 				}
 			});
 		})));
-		options.add(new OptionButton("formatting", new Button(0, 0, 100, 20, StringTextComponent.EMPTY, w -> {
-			minecraft.displayGuiScreen(new OptionsScreen(WailaConfigScreen.this, "formatting") {
+		options.add(new OptionButton("formatting", new Button(0, 0, 100, 20, TextComponent.EMPTY, w -> {
+			minecraft.setScreen(new OptionsScreen(WailaConfigScreen.this, "formatting") {
 				@Override
 				public OptionsListWidget getOptions() {
 					OptionsListWidget options = new OptionsListWidget(this, minecraft, width + 45, height, 32, height - 32, 30);

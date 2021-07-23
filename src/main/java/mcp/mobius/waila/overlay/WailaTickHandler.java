@@ -27,18 +27,18 @@ import mcp.mobius.waila.impl.ui.TextElement;
 import mcp.mobius.waila.network.RequestEntityPacket;
 import mcp.mobius.waila.network.RequestTilePacket;
 import mcp.mobius.waila.utils.WailaExceptionHandler;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.ChatVisibility;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.EntityRayTraceResult;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.text.TextProcessing;
-import net.minecraft.world.World;
+import net.minecraft.util.StringDecomposer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.ChatVisiblity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -63,38 +63,38 @@ public class WailaTickHandler {
 		}
 
 		Minecraft client = Minecraft.getInstance();
-		if (!(client.currentScreen instanceof OptionsScreen)) {
-			if (client.isGamePaused() || client.currentScreen != null || client.keyboardListener == null) {
+		if (!(client.screen instanceof OptionsScreen)) {
+			if (client.isPaused() || client.screen != null || client.keyboardHandler == null) {
 				return;
 			}
 		}
 
-		World world = client.world;
-		PlayerEntity player = client.player;
+		Level world = client.level;
+		Player player = client.player;
 		if (world == null || player == null) {
 			tooltipRenderer = null;
 			return;
 		}
 
 		RayTracing.INSTANCE.fire();
-		RayTraceResult target = RayTracing.INSTANCE.getTarget();
+		HitResult target = RayTracing.INSTANCE.getTarget();
 
 		Tooltip currentTip = new Tooltip();
 		Tooltip currentTipBody = new Tooltip();
 
-		if (target == null || target.getType() == RayTraceResult.Type.MISS) {
+		if (target == null || target.getType() == HitResult.Type.MISS) {
 			tooltipRenderer = null;
 			return;
 		}
 
 		Accessor accessor;
-		if (target instanceof BlockRayTraceResult) {
-			BlockRayTraceResult blockTarget = (BlockRayTraceResult) target;
-			BlockState state = world.getBlockState(blockTarget.getPos());
-			TileEntity tileEntity = world.getTileEntity(blockTarget.getPos());
+		if (target instanceof BlockHitResult) {
+			BlockHitResult blockTarget = (BlockHitResult) target;
+			BlockState state = world.getBlockState(blockTarget.getBlockPos());
+			BlockEntity tileEntity = world.getBlockEntity(blockTarget.getBlockPos());
 			accessor = new BlockAccessor(state, tileEntity, world, player, ObjectDataCenter.getServerData(), blockTarget, ObjectDataCenter.serverConnected);
-		} else if (target instanceof EntityRayTraceResult) {
-			EntityRayTraceResult entityTarget = (EntityRayTraceResult) target;
+		} else if (target instanceof EntityHitResult) {
+			EntityHitResult entityTarget = (EntityHitResult) target;
 			accessor = new EntityAccessor(entityTarget.getEntity(), world, player, ObjectDataCenter.getServerData(), entityTarget, ObjectDataCenter.serverConnected);
 		} else {
 			tooltipRenderer = null;
@@ -107,13 +107,13 @@ public class WailaTickHandler {
 		if (accessor == null || accessor.getHitResult() == null)
 			return;
 
-		boolean showDetails = WailaClient.showDetails.isKeyDown();
+		boolean showDetails = WailaClient.showDetails.isDown();
 		if (accessor instanceof BlockAccessor) {
 			if (!config.getDisplayBlocks()) {
 				tooltipRenderer = null;
 				return;
 			}
-			TileEntity tileEntity = ((BlockAccessor) accessor).getTileEntity();
+			BlockEntity tileEntity = ((BlockAccessor) accessor).getBlockEntity();
 			if (accessor.isServerConnected() && tileEntity != null && config.shouldDisplayTooltip()) {
 				if (ObjectDataCenter.isTimeElapsed(ObjectDataCenter.rateLimiter)) {
 					ObjectDataCenter.resetTimer();
@@ -207,17 +207,17 @@ public class WailaTickHandler {
 		if (!getNarrator().active() || !Waila.CONFIG.get().getGeneral().shouldEnableTextToSpeech())
 			return;
 
-		if (Minecraft.getInstance().currentScreen != null && Minecraft.getInstance().gameSettings.chatVisibility != ChatVisibility.HIDDEN)
+		if (Minecraft.getInstance().screen != null && Minecraft.getInstance().options.chatVisibility != ChatVisiblity.HIDDEN)
 			return;
 
-		if (Minecraft.getInstance().world != null && Minecraft.getInstance().world.getGameTime() % 5 > 0) {
+		if (Minecraft.getInstance().level != null && Minecraft.getInstance().level.getGameTime() % 5 > 0) {
 			return;
 		}
 
 		List<IElement> elements = event.getTooltip().get(CorePlugin.TAG_OBJECT_NAME);
 		for (IElement element : elements) {
 			if (element instanceof TextElement) {
-				String narrate = TextProcessing.func_244782_a(((TextElement) element).component);
+				String narrate = StringDecomposer.getPlainText(((TextElement) element).component);
 				if (lastNarration.equalsIgnoreCase(narrate))
 					return;
 				getNarrator().clear();

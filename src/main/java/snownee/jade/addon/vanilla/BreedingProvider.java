@@ -5,12 +5,12 @@ import mcp.mobius.waila.api.IEntityComponentProvider;
 import mcp.mobius.waila.api.IServerDataProvider;
 import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.config.IPluginConfig;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.util.Constants;
 import snownee.jade.VanillaPlugin;
 
@@ -24,13 +24,13 @@ public class BreedingProvider implements IEntityComponentProvider, IServerDataPr
 		}
 		int time = accessor.getServerData().getInt("BreedingCD");
 		if (time > 0) {
-			tooltip.add(new TranslationTextComponent("jade.mobbreeding.time", time / 20));
+			tooltip.add(new TranslatableComponent("jade.mobbreeding.time", time / 20));
 		}
 	}
 
 	@Override
-	public void appendServerData(CompoundNBT tag, ServerPlayerEntity player, World world, Entity entity, boolean showDetails) {
-		int time = ((AnimalEntity) entity).getGrowingAge();
+	public void appendServerData(CompoundTag tag, ServerPlayer player, Level world, Entity entity, boolean showDetails) {
+		int time = ((Animal) entity).getAge();
 		if (time > 0) {
 			tag.putInt("BreedingCD", time);
 		}

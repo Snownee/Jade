@@ -1,14 +1,13 @@
 package mcp.mobius.waila.impl.ui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.ui.Element;
 import mcp.mobius.waila.overlay.DisplayHelper;
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector2f;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec2;
 
 public class ProgressArrowElement extends Element {
 
@@ -21,13 +20,13 @@ public class ProgressArrowElement extends Element {
 	}
 
 	@Override
-	public Vector2f getSize() {
-		return new Vector2f(26, 16);
+	public Vec2 getSize() {
+		return new Vec2(26, 16);
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, float x, float y, float maxX, float maxY) {
-		Minecraft.getInstance().getTextureManager().bindTexture(SHEET);
+	public void render(PoseStack matrixStack, float x, float y, float maxX, float maxY) {
+		RenderSystem.setShaderTexture(0, SHEET);
 		RenderSystem.enableBlend();
 
 		// Draws the "empty" background arrow

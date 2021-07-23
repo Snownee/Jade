@@ -1,6 +1,6 @@
 package mcp.mobius.waila.impl.config;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 public class ConfigEntry {
 

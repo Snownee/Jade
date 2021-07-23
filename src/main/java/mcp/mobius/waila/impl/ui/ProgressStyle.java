@@ -1,15 +1,15 @@
 package mcp.mobius.waila.impl.ui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
 
 import mcp.mobius.waila.api.ui.IElement;
 import mcp.mobius.waila.api.ui.IProgressStyle;
 import mcp.mobius.waila.overlay.DisplayHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.util.math.vector.Vector2f;
-import net.minecraft.util.math.vector.Vector3f;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.gui.Font;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.phys.Vec2;
 
 public class ProgressStyle implements IProgressStyle {
 
@@ -40,7 +40,7 @@ public class ProgressStyle implements IProgressStyle {
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, float x, float y, float width, float height, float progress, ITextComponent text) {
+	public void render(PoseStack matrixStack, float x, float y, float width, float height, float progress, Component text) {
 		progress *= choose(true, width, height);
 		float progressY = y;
 		if (vertical) {
@@ -48,7 +48,7 @@ public class ProgressStyle implements IProgressStyle {
 		}
 		if (progress > 0) {
 			if (overlay != null) {
-				Vector2f size = new Vector2f(choose(true, progress, width), choose(false, progress, height));
+				Vec2 size = new Vec2(choose(true, progress, width), choose(false, progress, height));
 				overlay.size(size);
 				overlay.render(matrixStack, x, progressY, size.x, size.y);
 			} else {
@@ -74,22 +74,22 @@ public class ProgressStyle implements IProgressStyle {
 			}
 		}
 		if (text != null) {
-			FontRenderer font = Minecraft.getInstance().fontRenderer;
+			Font font = Minecraft.getInstance().font;
 			if (autoTextColor) {
 				autoTextColor = false;
 				Vector3f hsv = RGBtoHSV(color2);
-				if (hsv.getZ() > 0.5f) {
+				if (hsv.z() > 0.5f) {
 					textColor = 0xFF000000;
 				} else {
 					textColor = 0xFFFFFFFF;
 				}
 			}
-			y += height - font.FONT_HEIGHT;
-			if (vertical && font.FONT_HEIGHT < progress) {
+			y += height - font.lineHeight;
+			if (vertical && font.lineHeight < progress) {
 				y -= progress;
-				y += font.FONT_HEIGHT + 2;
+				y += font.lineHeight + 2;
 			}
-			font.drawStringWithShadow(matrixStack, text.getString(), x + 1, y, textColor);
+			font.drawShadow(matrixStack, text, x + 1, y, textColor);
 		}
 	}
 

@@ -7,18 +7,18 @@ import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.config.IPluginConfig;
 import mcp.mobius.waila.api.ui.IElementHelper;
 import mcp.mobius.waila.impl.ui.ProgressArrowElement;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.tileentity.AbstractFurnaceTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.NonNullList;
-import net.minecraft.world.World;
+import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.util.Constants;
 import snownee.jade.VanillaPlugin;
 
-public class FurnaceProvider implements IComponentProvider, IServerDataProvider<TileEntity> {
+public class FurnaceProvider implements IComponentProvider, IServerDataProvider<BlockEntity> {
 
 	public static final FurnaceProvider INSTANCE = new FurnaceProvider();
 
@@ -31,10 +31,10 @@ public class FurnaceProvider implements IComponentProvider, IServerDataProvider<
 		if (progress == 0)
 			return;
 
-		ListNBT furnaceItems = accessor.getServerData().getList("furnace", Constants.NBT.TAG_COMPOUND);
+		ListTag furnaceItems = accessor.getServerData().getList("furnace", Constants.NBT.TAG_COMPOUND);
 		NonNullList<ItemStack> inventory = NonNullList.withSize(3, ItemStack.EMPTY);
 		for (int i = 0; i < furnaceItems.size(); i++)
-			inventory.set(i, ItemStack.read(furnaceItems.getCompound(i)));
+			inventory.set(i, ItemStack.of(furnaceItems.getCompound(i)));
 
 		IElementHelper helper = tooltip.getElementHelper();
 		int total = accessor.getServerData().getInt("total");
@@ -46,14 +46,14 @@ public class FurnaceProvider implements IComponentProvider, IServerDataProvider<
 	}
 
 	@Override
-	public void appendServerData(CompoundNBT data, ServerPlayerEntity player, World world, TileEntity blockEntity, boolean showDetails) {
-		AbstractFurnaceTileEntity furnace = (AbstractFurnaceTileEntity) blockEntity;
-		ListNBT items = new ListNBT();
+	public void appendServerData(CompoundTag data, ServerPlayer player, Level world, BlockEntity blockEntity, boolean showDetails) {
+		AbstractFurnaceBlockEntity furnace = (AbstractFurnaceBlockEntity) blockEntity;
+		ListTag items = new ListTag();
 		for (int i = 0; i < 3; i++) {
-			items.add(furnace.getStackInSlot(i).serializeNBT());
+			items.add(furnace.getItem(i).serializeNBT());
 		}
 		data.put("furnace", items);
-		CompoundNBT furnaceTag = furnace.write(new CompoundNBT());
+		CompoundTag furnaceTag = furnace.save(new CompoundTag());
 		data.putInt("progress", furnaceTag.getInt("CookTime"));
 		data.putInt("total", furnaceTag.getInt("CookTimeTotal"));
 	}

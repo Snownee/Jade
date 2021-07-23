@@ -3,24 +3,24 @@ package mcp.mobius.waila.network;
 import java.util.function.Supplier;
 
 import mcp.mobius.waila.impl.ObjectDataCenter;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 public class ReceiveDataPacket {
 
-	public CompoundNBT tag;
+	public CompoundTag tag;
 
-	public ReceiveDataPacket(CompoundNBT tag) {
+	public ReceiveDataPacket(CompoundTag tag) {
 		this.tag = tag;
 	}
 
-	public static ReceiveDataPacket read(PacketBuffer buffer) {
-		return new ReceiveDataPacket(buffer.readCompoundTag());
+	public static ReceiveDataPacket read(FriendlyByteBuf buffer) {
+		return new ReceiveDataPacket(buffer.readNbt());
 	}
 
-	public static void write(ReceiveDataPacket message, PacketBuffer buffer) {
-		buffer.writeCompoundTag(message.tag);
+	public static void write(ReceiveDataPacket message, FriendlyByteBuf buffer) {
+		buffer.writeNbt(message.tag);
 	}
 
 	public static class Handler {

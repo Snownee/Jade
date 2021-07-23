@@ -2,7 +2,7 @@ package mcp.mobius.waila.api.config;
 
 import java.util.Set;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * Read-only interface for Waila internal config storage.<br>

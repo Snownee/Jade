@@ -5,54 +5,43 @@ import mcp.mobius.waila.api.IWailaPlugin;
 import mcp.mobius.waila.api.TooltipPosition;
 import mcp.mobius.waila.api.WailaPlugin;
 import mcp.mobius.waila.api.ui.IDisplayHelper;
-import net.minecraft.block.AbstractFurnaceBlock;
-import net.minecraft.block.AbstractSkullBlock;
-import net.minecraft.block.BeehiveBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BrewingStandBlock;
-import net.minecraft.block.CocoaBlock;
-import net.minecraft.block.CommandBlockBlock;
-import net.minecraft.block.ComparatorBlock;
-import net.minecraft.block.CropsBlock;
-import net.minecraft.block.DaylightDetectorBlock;
-import net.minecraft.block.JukeboxBlock;
-import net.minecraft.block.LecternBlock;
-import net.minecraft.block.LeverBlock;
-import net.minecraft.block.NoteBlock;
-import net.minecraft.block.RedstoneWireBlock;
-import net.minecraft.block.RepeaterBlock;
-import net.minecraft.block.SilverfishBlock;
-import net.minecraft.block.SpawnerBlock;
-import net.minecraft.block.StemBlock;
-import net.minecraft.block.TNTBlock;
-import net.minecraft.block.TargetBlock;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.AgeableEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.item.ArmorStandEntity;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.item.ItemFrameEntity;
-import net.minecraft.entity.item.PaintingEntity;
-import net.minecraft.entity.merchant.villager.VillagerEntity;
-import net.minecraft.entity.monster.ZombieVillagerEntity;
-import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.entity.passive.ChickenEntity;
-import net.minecraft.entity.passive.horse.AbstractChestedHorseEntity;
-import net.minecraft.entity.passive.horse.AbstractHorseEntity;
-import net.minecraft.resources.IReloadableResourceManager;
-import net.minecraft.tileentity.AbstractFurnaceTileEntity;
-import net.minecraft.tileentity.BeehiveTileEntity;
-import net.minecraft.tileentity.BrewingStandTileEntity;
-import net.minecraft.tileentity.CommandBlockTileEntity;
-import net.minecraft.tileentity.JukeboxTileEntity;
-import net.minecraft.tileentity.LecternTileEntity;
-import net.minecraft.tileentity.LockableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ReloadableResourceManager;
+import net.minecraft.world.entity.AgeableMob;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.animal.Chicken;
+import net.minecraft.world.entity.animal.horse.AbstractChestedHorse;
+import net.minecraft.world.entity.animal.horse.AbstractHorse;
+import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.entity.decoration.ItemFrame;
+import net.minecraft.world.entity.decoration.Painting;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.monster.ZombieVillager;
+import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.level.block.AbstractFurnaceBlock;
+import net.minecraft.world.level.block.AbstractSkullBlock;
+import net.minecraft.world.level.block.BeehiveBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.BrewingStandBlock;
+import net.minecraft.world.level.block.CommandBlock;
+import net.minecraft.world.level.block.CropBlock;
+import net.minecraft.world.level.block.NoteBlock;
+import net.minecraft.world.level.block.SpawnerBlock;
+import net.minecraft.world.level.block.TntBlock;
+import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
+import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
+import net.minecraft.world.level.block.entity.BeehiveBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
+import net.minecraft.world.level.block.entity.CommandBlockEntity;
+import net.minecraft.world.level.block.entity.JukeboxBlockEntity;
+import net.minecraft.world.level.block.entity.LecternBlockEntity;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import snownee.jade.addon.forge.ForgeCapabilityProvider;
 import snownee.jade.addon.forge.InventoryProvider;
-import snownee.jade.addon.vanilla.AgeableEntityProvider;
+import snownee.jade.addon.vanilla.AgableMobProvider;
 import snownee.jade.addon.vanilla.ArmorStandProvider;
 import snownee.jade.addon.vanilla.BeehiveProvider;
 import snownee.jade.addon.vanilla.BreedingProvider;
@@ -123,49 +112,49 @@ public class VanillaPlugin implements IWailaPlugin {
 		displayHelper = registrar.getDisplayHelper();
 
 		registrar.registerComponentProvider(BrewingStandProvider.INSTANCE, TooltipPosition.BODY, BrewingStandBlock.class);
-		registrar.registerBlockDataProvider(BrewingStandProvider.INSTANCE, BrewingStandTileEntity.class);
+		registrar.registerBlockDataProvider(BrewingStandProvider.INSTANCE, BrewingStandBlockEntity.class);
 		registrar.addConfig(BREWING_STAND, true);
 
-		registrar.registerComponentProvider(HorseProvider.INSTANCE, TooltipPosition.BODY, AbstractHorseEntity.class);
+		registrar.registerComponentProvider(HorseProvider.INSTANCE, TooltipPosition.BODY, AbstractHorse.class);
 		registrar.addConfig(HORSE_STAT, true);
 
-		registrar.registerComponentProvider(ChestedHorseProvider.INSTANCE, TooltipPosition.BODY, AbstractChestedHorseEntity.class);
-		registrar.registerEntityDataProvider(ChestedHorseProvider.INSTANCE, AbstractChestedHorseEntity.class);
+		registrar.registerComponentProvider(ChestedHorseProvider.INSTANCE, TooltipPosition.BODY, AbstractChestedHorse.class);
+		registrar.registerEntityDataProvider(ChestedHorseProvider.INSTANCE, AbstractChestedHorse.class);
 		registrar.addConfig(HORSE_INVENTORY, true);
 
-		registrar.registerComponentProvider(ItemFrameProvider.INSTANCE, TooltipPosition.BODY, ItemFrameEntity.class);
+		registrar.registerComponentProvider(ItemFrameProvider.INSTANCE, TooltipPosition.BODY, ItemFrame.class);
 		registrar.addConfig(ITEM_FRAME, true);
 
 		registrar.registerComponentProvider(PotionEffectsProvider.INSTANCE, TooltipPosition.BODY, LivingEntity.class);
 		registrar.registerEntityDataProvider(PotionEffectsProvider.INSTANCE, LivingEntity.class);
 		registrar.addConfig(EFFECTS, true);
 
-		registrar.registerComponentProvider(AgeableEntityProvider.INSTANCE, TooltipPosition.BODY, AgeableEntity.class);
-		registrar.registerEntityDataProvider(AgeableEntityProvider.INSTANCE, AgeableEntity.class);
+		registrar.registerComponentProvider(AgableMobProvider.INSTANCE, TooltipPosition.BODY, AgeableMob.class);
+		registrar.registerEntityDataProvider(AgableMobProvider.INSTANCE, AgeableMob.class);
 		registrar.addConfig(MOB_GROWTH, true);
 
-		registrar.registerComponentProvider(BreedingProvider.INSTANCE, TooltipPosition.BODY, AnimalEntity.class);
-		registrar.registerEntityDataProvider(BreedingProvider.INSTANCE, AnimalEntity.class);
+		registrar.registerComponentProvider(BreedingProvider.INSTANCE, TooltipPosition.BODY, Animal.class);
+		registrar.registerEntityDataProvider(BreedingProvider.INSTANCE, Animal.class);
 		registrar.addConfig(MOB_BREEDING, true);
 
-		registrar.registerComponentProvider(TNTProvider.INSTANCE, TooltipPosition.BODY, TNTBlock.class);
+		registrar.registerComponentProvider(TNTProvider.INSTANCE, TooltipPosition.BODY, TntBlock.class);
 		registrar.addConfig(TNT_STABILITY, true);
 
 		registrar.registerComponentProvider(BeehiveProvider.INSTANCE, TooltipPosition.BODY, BeehiveBlock.class);
-		registrar.registerBlockDataProvider(BeehiveProvider.INSTANCE, BeehiveTileEntity.class);
+		registrar.registerBlockDataProvider(BeehiveProvider.INSTANCE, BeehiveBlockEntity.class);
 		registrar.addConfig(BEEHIVE, true);
 
 		registrar.registerComponentProvider(NoteBlockProvider.INSTANCE, TooltipPosition.BODY, NoteBlock.class);
 		registrar.addConfig(NOTE_BLOCK, true);
 
-		registrar.registerComponentProvider(ArmorStandProvider.INSTANCE, TooltipPosition.BODY, ArmorStandEntity.class);
+		registrar.registerComponentProvider(ArmorStandProvider.INSTANCE, TooltipPosition.BODY, ArmorStand.class);
 		registrar.addConfig(ARMOR_STAND, true);
 
-		registrar.registerComponentProvider(PaintingProvider.INSTANCE, TooltipPosition.BODY, PaintingEntity.class);
+		registrar.registerComponentProvider(PaintingProvider.INSTANCE, TooltipPosition.BODY, Painting.class);
 		registrar.addConfig(PAINTING, true);
 
-		registrar.registerComponentProvider(ChickenEggProvider.INSTANCE, TooltipPosition.BODY, ChickenEntity.class);
-		registrar.registerEntityDataProvider(ChickenEggProvider.INSTANCE, ChickenEntity.class);
+		registrar.registerComponentProvider(ChickenEggProvider.INSTANCE, TooltipPosition.BODY, Chicken.class);
+		registrar.registerEntityDataProvider(ChickenEggProvider.INSTANCE, Chicken.class);
 		registrar.addConfig(CHICKEN_EGG, true);
 
 		registrar.registerComponentProvider(HarvestToolProvider.INSTANCE, TooltipPosition.BODY, Block.class);
@@ -174,8 +163,8 @@ public class VanillaPlugin implements IWailaPlugin {
 		registrar.addConfig(HARVEST_TOOL_NEW_LINE, false);
 		registrar.addConfig(EFFECTIVE_TOOL, true);
 
-		registrar.registerComponentProvider(CommandBlockProvider.INSTANCE, TooltipPosition.BODY, CommandBlockBlock.class);
-		registrar.registerBlockDataProvider(CommandBlockProvider.INSTANCE, CommandBlockTileEntity.class);
+		registrar.registerComponentProvider(CommandBlockProvider.INSTANCE, TooltipPosition.BODY, CommandBlock.class);
+		registrar.registerBlockDataProvider(CommandBlockProvider.INSTANCE, CommandBlockEntity.class);
 		registrar.addSyncedConfig(COMMAND_BLOCK, true);
 
 		registrar.addConfig(BREAKING_PROGRESS, true);
@@ -187,8 +176,8 @@ public class VanillaPlugin implements IWailaPlugin {
 		registrar.registerComponentProvider(PlayerHeadProvider.INSTANCE, TooltipPosition.HEAD, AbstractSkullBlock.class);
 		registrar.addConfig(PLAYER_HEAD, true);
 
-		registrar.registerComponentProvider(VillagerProfessionProvider.INSTANCE, TooltipPosition.BODY, VillagerEntity.class);
-		registrar.registerComponentProvider(VillagerProfessionProvider.INSTANCE, TooltipPosition.BODY, ZombieVillagerEntity.class);
+		registrar.registerComponentProvider(VillagerProfessionProvider.INSTANCE, TooltipPosition.BODY, Villager.class);
+		registrar.registerComponentProvider(VillagerProfessionProvider.INSTANCE, TooltipPosition.BODY, ZombieVillager.class);
 		registrar.addConfig(PROFESSION, true);
 
 		registrar.registerComponentProvider(ItemTooltipProvider.INSTANCE, TooltipPosition.BODY, ItemEntity.class);
@@ -201,39 +190,26 @@ public class VanillaPlugin implements IWailaPlugin {
 		registrar.addConfig(JUKEBOX, true);
 		registrar.addConfig(LECTERN, true);
 
-		registrar.registerIconProvider(VanillaProvider.INSTANCE, SilverfishBlock.class);
-		registrar.registerIconProvider(VanillaProvider.INSTANCE, CropsBlock.class);
-		registrar.registerComponentProvider(VanillaProvider.INSTANCE, TooltipPosition.HEAD, SilverfishBlock.class);
+		registrar.registerIconProvider(VanillaProvider.INSTANCE, CropBlock.class);
 		registrar.registerComponentProvider(VanillaProvider.INSTANCE, TooltipPosition.HEAD, SpawnerBlock.class);
-		registrar.registerComponentProvider(VanillaProvider.INSTANCE, TooltipPosition.BODY, CropsBlock.class);
-		registrar.registerComponentProvider(VanillaProvider.INSTANCE, TooltipPosition.BODY, StemBlock.class);
-		registrar.registerComponentProvider(VanillaProvider.INSTANCE, TooltipPosition.BODY, CocoaBlock.class);
-		registrar.registerComponentProvider(VanillaProvider.INSTANCE, TooltipPosition.BODY, LeverBlock.class);
-		registrar.registerComponentProvider(VanillaProvider.INSTANCE, TooltipPosition.BODY, RepeaterBlock.class);
-		registrar.registerComponentProvider(VanillaProvider.INSTANCE, TooltipPosition.BODY, ComparatorBlock.class);
-		registrar.registerComponentProvider(VanillaProvider.INSTANCE, TooltipPosition.BODY, RedstoneWireBlock.class);
-		registrar.registerComponentProvider(VanillaProvider.INSTANCE, TooltipPosition.BODY, TargetBlock.class);
-		registrar.registerComponentProvider(VanillaProvider.INSTANCE, TooltipPosition.BODY, DaylightDetectorBlock.class);
-		registrar.registerComponentProvider(VanillaProvider.INSTANCE, TooltipPosition.BODY, RedstoneWireBlock.class);
-		registrar.registerComponentProvider(VanillaProvider.INSTANCE, TooltipPosition.BODY, JukeboxBlock.class);
-		registrar.registerComponentProvider(VanillaProvider.INSTANCE, TooltipPosition.BODY, LecternBlock.class);
-		registrar.registerBlockDataProvider(VanillaProvider.INSTANCE, JukeboxTileEntity.class);
-		registrar.registerBlockDataProvider(VanillaProvider.INSTANCE, LecternTileEntity.class);
+		registrar.registerComponentProvider(VanillaProvider.INSTANCE, TooltipPosition.BODY, Block.class);
+		registrar.registerBlockDataProvider(VanillaProvider.INSTANCE, JukeboxBlockEntity.class);
+		registrar.registerBlockDataProvider(VanillaProvider.INSTANCE, LecternBlockEntity.class);
 
 		registrar.registerComponentProvider(FurnaceProvider.INSTANCE, TooltipPosition.BODY, AbstractFurnaceBlock.class);
-		registrar.registerBlockDataProvider(FurnaceProvider.INSTANCE, AbstractFurnaceTileEntity.class);
+		registrar.registerBlockDataProvider(FurnaceProvider.INSTANCE, AbstractFurnaceBlockEntity.class);
 
 		registrar.registerComponentProvider(InventoryProvider.INSTANCE, TooltipPosition.BODY, Block.class);
-		registrar.registerBlockDataProvider(InventoryProvider.INSTANCE, LockableTileEntity.class);
+		registrar.registerBlockDataProvider(InventoryProvider.INSTANCE, BaseContainerBlockEntity.class);
 		registrar.addConfig(INVENTORY, true);
 
 		registrar.registerComponentProvider(ForgeCapabilityProvider.INSTANCE, TooltipPosition.BODY, Block.class);
-		registrar.registerBlockDataProvider(ForgeCapabilityProvider.INSTANCE, TileEntity.class);
+		registrar.registerBlockDataProvider(ForgeCapabilityProvider.INSTANCE, BlockEntity.class);
 		registrar.addConfig(FORGE_ENERGY, true);
 		registrar.addConfig(FORGE_FLUID, true);
 
 		if (FMLEnvironment.dist.isClient()) {
-			((IReloadableResourceManager) Minecraft.getInstance().getResourceManager()).addReloadListener(HarvestToolProvider.INSTANCE);
+			((ReloadableResourceManager) Minecraft.getInstance().getResourceManager()).registerReloadListener(HarvestToolProvider.INSTANCE);
 			HarvestToolProvider.init();
 		}
 	}

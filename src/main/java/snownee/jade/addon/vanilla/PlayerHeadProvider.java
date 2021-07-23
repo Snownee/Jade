@@ -7,11 +7,11 @@ import mcp.mobius.waila.api.BlockAccessor;
 import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.config.IPluginConfig;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.item.Items;
-import net.minecraft.tileentity.SkullTileEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.entity.SkullBlockEntity;
 import snownee.jade.VanillaPlugin;
 
 public class PlayerHeadProvider implements IComponentProvider {
@@ -24,13 +24,13 @@ public class PlayerHeadProvider implements IComponentProvider {
 		if (!config.get(VanillaPlugin.PLAYER_HEAD)) {
 			return;
 		}
-		if (accessor.getTileEntity() instanceof SkullTileEntity) {
-			SkullTileEntity tile = (SkullTileEntity) accessor.getTileEntity();
-			GameProfile profile = tile.getPlayerProfile();
+		if (accessor.getBlockEntity() instanceof SkullBlockEntity) {
+			SkullBlockEntity tile = (SkullBlockEntity) accessor.getBlockEntity();
+			GameProfile profile = tile.getOwnerProfile();
 			if (profile == null)
 				return;
 			tooltip.remove(OBJECT_NAME_TAG);
-			tooltip.add(0, new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getBlockName(), I18n.format(Items.PLAYER_HEAD.getTranslationKey() + ".named", profile.getName()))).mergeStyle(Waila.CONFIG.get().getOverlay().getColor().getTitle()), OBJECT_NAME_TAG);
+			tooltip.add(0, new TextComponent(String.format(Waila.CONFIG.get().getFormatting().getBlockName(), I18n.get(Items.PLAYER_HEAD.getDescriptionId() + ".named", profile.getName()))).withStyle(Waila.CONFIG.get().getOverlay().getColor().getTitle()), OBJECT_NAME_TAG);
 		}
 	}
 

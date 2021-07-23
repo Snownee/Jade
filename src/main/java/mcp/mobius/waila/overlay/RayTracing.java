@@ -16,91 +16,95 @@ import mcp.mobius.waila.impl.WailaRegistrar;
 import mcp.mobius.waila.impl.config.PluginConfig;
 import mcp.mobius.waila.impl.ui.FluidStackElement;
 import mcp.mobius.waila.impl.ui.ItemStackElement;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.SpawnEggItem;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.EntityRayTraceResult;
-import net.minecraft.util.math.RayTraceContext;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.RayTraceResult.Type;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.HitResult.Type;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.fluids.FluidStack;
 
 public class RayTracing {
 
 	public static final RayTracing INSTANCE = new RayTracing();
-	private RayTraceResult target = null;
+	private HitResult target = null;
 	private Minecraft mc = Minecraft.getInstance();
 
 	private RayTracing() {
 	}
 
 	public void fire() {
-		Entity viewpoint = mc.getRenderViewEntity();
+		Entity viewpoint = mc.getCameraEntity();
 		if (viewpoint == null)
 			return;
 
-		if (mc.objectMouseOver != null && mc.objectMouseOver.getType() == RayTraceResult.Type.ENTITY) {
-			Entity targetEntity = ((EntityRayTraceResult) mc.objectMouseOver).getEntity();
+		if (mc.hitResult != null && mc.hitResult.getType() == HitResult.Type.ENTITY) {
+			Entity targetEntity = ((EntityHitResult) mc.hitResult).getEntity();
 			if (canBeTarget(targetEntity, viewpoint)) {
-				target = mc.objectMouseOver;
+				target = mc.hitResult;
 				return;
 			}
 		}
 
-		float reach = mc.playerController.getBlockReachDistance() + Waila.CONFIG.get().getGeneral().getReachDistance();
-		target = rayTrace(viewpoint, reach, mc.getRenderPartialTicks());
+		float reach = mc.gameMode.getPickRange() + Waila.CONFIG.get().getGeneral().getReachDistance();
+		target = rayTrace(viewpoint, reach, mc.getFrameTime());
 	}
 
-	public RayTraceResult getTarget() {
+	public HitResult getTarget() {
 		return target;
 	}
 
-	public RayTraceResult rayTrace(Entity entity, double playerReach, float partialTicks) {
-		Vector3d eyePosition = entity.getEyePosition(partialTicks);
-		Vector3d traceEnd;
-		if (mc.objectMouseOver != null && mc.objectMouseOver.getType() == Type.BLOCK) {
-			traceEnd = mc.objectMouseOver.getHitVec();
+	public HitResult rayTrace(Entity entity, double playerReach, float partialTicks) {
+		Vec3 eyePosition = entity.getEyePosition(partialTicks);
+		Vec3 traceEnd;
+		if (mc.hitResult != null && mc.hitResult.getType() == Type.BLOCK) {
+			traceEnd = mc.hitResult.getLocation();
 		} else {
-			Vector3d lookVector = entity.getLook(partialTicks);
+			Vec3 lookVector = entity.getViewVector(partialTicks);
 			traceEnd = eyePosition.add(lookVector.x * playerReach, lookVector.y * playerReach, lookVector.z * playerReach);
 		}
 
-		World world = entity.getEntityWorld();
-		AxisAlignedBB bound = new AxisAlignedBB(eyePosition, traceEnd);
+		Level world = entity.level;
+		AABB bound = new AABB(eyePosition, traceEnd);
 		Predicate<Entity> predicate = e -> canBeTarget(e, entity);
-		EntityRayTraceResult entityResult = rayTraceEntities(world, entity, eyePosition, traceEnd, bound, predicate);
+		EntityHitResult entityResult = rayTraceEntities(world, entity, eyePosition, traceEnd, bound, predicate);
 
-		if (mc.objectMouseOver != null && mc.objectMouseOver.getType() == Type.BLOCK) {
-			Vector3d lookVector = entity.getLook(partialTicks);
+		if (mc.hitResult != null && mc.hitResult.getType() == Type.BLOCK) {
+			Vec3 lookVector = entity.getViewVector(partialTicks);
 			traceEnd = eyePosition.add(lookVector.x * playerReach, lookVector.y * playerReach, lookVector.z * playerReach);
 		}
 
-		RayTraceContext.FluidMode fluidView = Waila.CONFIG.get().getGeneral().getDisplayFluids();
-		RayTraceContext context = new RayTraceContext(eyePosition, traceEnd, RayTraceContext.BlockMode.OUTLINE, fluidView, entity);
+		ClipContext.Fluid fluidView = Waila.CONFIG.get().getGeneral().getDisplayFluids();
+		ClipContext context = new ClipContext(eyePosition, traceEnd, ClipContext.Block.OUTLINE, fluidView, entity);
 
-		BlockRayTraceResult blockResult = world.rayTraceBlocks(context);
-		if (entityResult != null && blockResult != null && blockResult.getType() == Type.BLOCK) {
-			double entityDist = entityResult.getHitVec().squareDistanceTo(eyePosition);
-			double blockDist = blockResult.getHitVec().squareDistanceTo(eyePosition);
-			if (entityDist < blockDist) {
-				return entityResult;
+		BlockHitResult blockResult = world.clip(context);
+		if (entityResult != null && blockResult != null) {
+			if (blockResult.getType() == Type.BLOCK) {
+				double entityDist = entityResult.getLocation().distanceToSqr(eyePosition);
+				double blockDist = blockResult.getLocation().distanceToSqr(eyePosition);
+				if (entityDist < blockDist) {
+					return entityResult;
+				}
+			}else {
+				return  entityResult;
 			}
 		}
 		if (blockResult != null) {
-			BlockState state = world.getBlockState(blockResult.getPos());
+			BlockState state = world.getBlockState(blockResult.getBlockPos());
 			if (WailaRegistrar.INSTANCE.shouldHide(state)) {
 				return null;
 			}
@@ -111,10 +115,10 @@ public class RayTracing {
 	private boolean canBeTarget(Entity target, Entity viewEntity) {
 		if (target.isSpectator())
 			return false;
-		if (target == viewEntity.getRidingEntity())
+		if (target == viewEntity.getVehicle())
 			return false;
-		if (viewEntity instanceof PlayerEntity) {
-			if (target.isInvisibleToPlayer((PlayerEntity) viewEntity))
+		if (viewEntity instanceof Player) {
+			if (target.isInvisibleTo((Player) viewEntity))
 				return false;
 		} else {
 			if (target.isInvisible())
@@ -125,21 +129,21 @@ public class RayTracing {
 
 	// from ProjectileHelper
 	@Nullable
-	public static EntityRayTraceResult rayTraceEntities(World worldIn, Entity projectile, Vector3d startVec, Vector3d endVec, AxisAlignedBB boundingBox, Predicate<Entity> filter) {
+	public static EntityHitResult rayTraceEntities(Level worldIn, Entity projectile, Vec3 startVec, Vec3 endVec, AABB boundingBox, Predicate<Entity> filter) {
 		double d0 = Double.MAX_VALUE;
 		Entity entity = null;
 
-		for (Entity entity1 : worldIn.getEntitiesInAABBexcluding(projectile, boundingBox, filter)) {
+		for (Entity entity1 : worldIn.getEntities(projectile, boundingBox, filter)) {
 			if (entity1.isSpectator() || WailaRegistrar.INSTANCE.shouldHide(entity1)) {
 				continue;
 			}
-			AxisAlignedBB axisalignedbb = entity1.getBoundingBox();
-			if (axisalignedbb.getAverageEdgeLength() < 0.3) {
-				axisalignedbb = axisalignedbb.grow(0.3);
+			AABB axisalignedbb = entity1.getBoundingBox();
+			if (axisalignedbb.getSize() < 0.3) {
+				axisalignedbb = axisalignedbb.inflate(0.3);
 			}
-			Optional<Vector3d> optional = axisalignedbb.rayTrace(startVec, endVec);
+			Optional<Vec3> optional = axisalignedbb.clip(startVec, endVec);
 			if (optional.isPresent()) {
-				double d1 = startVec.squareDistanceTo(optional.get());
+				double d1 = startVec.distanceToSqr(optional.get());
 				if (d1 < d0) {
 					entity = entity1;
 					d0 = d1;
@@ -147,7 +151,7 @@ public class RayTracing {
 			}
 		}
 
-		return entity == null ? null : new EntityRayTraceResult(entity);
+		return entity == null ? null : new EntityHitResult(entity);
 	}
 
 	public IElement getIcon() {
@@ -157,9 +161,9 @@ public class RayTracing {
 		IElement icon = null;
 		switch (target.getType()) {
 		case ENTITY: {
-			Entity entity = ((EntityRayTraceResult) target).getEntity();
+			Entity entity = ((EntityHitResult) target).getEntity();
 			if (entity instanceof ItemEntity) {
-				icon = ItemStackElement.of(((ItemEntity) entity.getEntity()).getItem());
+				icon = ItemStackElement.of(((ItemEntity) entity).getItem());
 			} else {
 				ItemStack stack = entity.getPickedResult(target);
 				if ((!(stack.getItem() instanceof SpawnEggItem) || !(entity instanceof LivingEntity)))
@@ -174,10 +178,10 @@ public class RayTracing {
 			break;
 		}
 		case BLOCK: {
-			World world = mc.world;
-			BlockPos pos = ((BlockRayTraceResult) target).getPos();
+			Level world = mc.level;
+			BlockPos pos = ((BlockHitResult) target).getBlockPos();
 			BlockState state = world.getBlockState(pos);
-			if (state.getBlock().isAir(state, world, pos))
+			if (state.isAir())
 				break;
 
 			ItemStack pick = state.getBlock().getPickBlock(state, target, world, pos, mc.player);
@@ -187,8 +191,8 @@ public class RayTracing {
 			if (isEmpty(icon) && state.getBlock().asItem() != Items.AIR)
 				icon = ItemStackElement.of(new ItemStack(state.getBlock()));
 
-			if (isEmpty(icon) && state.getBlock() instanceof FlowingFluidBlock) {
-				FlowingFluidBlock block = (FlowingFluidBlock) state.getBlock();
+			if (isEmpty(icon) && state.getBlock() instanceof LiquidBlock) {
+				LiquidBlock block = (LiquidBlock) state.getBlock();
 				Fluid fluid = block.getFluid();
 				FluidStack fluidStack = new FluidStack(fluid, 1);
 				icon = new FluidStackElement(fluidStack);//.size(new Size(18, 18));

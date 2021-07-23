@@ -9,23 +9,23 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 
-import net.minecraft.block.Block;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.item.PaintingEntity;
-import net.minecraft.entity.item.PaintingType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.decoration.Motive;
+import net.minecraft.world.entity.decoration.Painting;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.loading.moddiscovery.ModInfo;
+import net.minecraftforge.forgespi.language.IModInfo;
 
 public class ModIdentification {
 
 	public static final Map<String, String> NAMES = Maps.newHashMap();
 
 	static {
-		List<ModInfo> mods = ImmutableList.copyOf(ModList.get().getMods());
-		for (ModInfo mod : mods) {
+		List<IModInfo> mods = ImmutableList.copyOf(ModList.get().getMods());
+		for (IModInfo mod : mods) {
 			String modid = mod.getModId();
 			String name = mod.getDisplayName();
 			if (Strings.isNullOrEmpty(name)) {
@@ -52,10 +52,10 @@ public class ModIdentification {
 	}
 
 	public static String getModName(Entity entity) {
-		if (entity instanceof PaintingEntity) {
-			PaintingType art = ((PaintingEntity) entity).art;
-			if (art != null) {
-				return getModName(art.getRegistryName().getNamespace());
+		if (entity instanceof Painting) {
+			Motive motive = ((Painting) entity).motive;
+			if (motive != null) {
+				return getModName(motive.getRegistryName().getNamespace());
 			}
 		}
 		if (entity instanceof ItemEntity) {
