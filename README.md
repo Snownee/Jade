@@ -21,7 +21,7 @@ repositories {
 dependencies {
     // Visit https://www.curseforge.com/minecraft/mc-mods/jade/files/all
     // to get the latest version
-    implementation fg.deobf("curse.maven:jade-324717:3275762")
+    implementation fg.deobf("curse.maven:jade-324717:3398501")
 }
 ```
 
@@ -49,7 +49,7 @@ Component provider registration methods no longer accept interface or TileEntity
 
 ### UI Elements other than Text
 
-`RenderableTextComponent` and `ITooltipRenderer` are removed. Instead of manipulating `List<ITextComponent>`, you are now manipulating `IElement`s, and text component is a type of them.
+`RenderableTextComponent` and `ITooltipRenderer` are removed. Instead of manipulating `List<Component>`, you are now manipulating `IElement`s, and text component is a type of them.
 
 For example, to display an item:
 
@@ -64,7 +64,7 @@ Open `jade.json` in `config/jade` folder. Set `general.debug` to true. Then pres
 
 ### `ITaggableList`
 
-`ITaggableList` is removed. Now the minimal taggable unit is `IElement`.
+`ITaggableList` is removed. Now the minimal taggable element is `IElement`.
 
 For example, to tag a text element:
 
