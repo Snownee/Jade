@@ -99,8 +99,8 @@ public class RayTracing {
 				if (entityDist < blockDist) {
 					return entityResult;
 				}
-			}else {
-				return  entityResult;
+			} else {
+				return entityResult;
 			}
 		}
 		if (blockResult != null) {

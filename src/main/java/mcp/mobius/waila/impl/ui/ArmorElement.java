@@ -19,29 +19,25 @@ public class ArmorElement extends Element {
 
 	@Override
 	public Vec2 getSize() {
-		float maxHearts = Waila.CONFIG.get().getGeneral().getMaxHeartsPerLine();
-		float maxHealth = maxHearts;
-
-		//FIXME magic number -1?
-		int heartsPerLine = (int) (Math.min(maxHearts, Math.ceil(maxHealth)));
-		int lineCount = (int) (Math.ceil(maxHealth / maxHearts));
-
-		return new Vec2(8 * heartsPerLine, 10 * lineCount);
+		int maxHearts = Waila.CONFIG.get().getGeneral().getMaxHeartsPerLine();
+		float armor = this.armor;
+		if (armor == -1)
+			armor = maxHearts = 1;
+		int lineCount = (int) (Math.ceil(armor / maxHearts));
+		return new Vec2(8 * maxHearts, 10 * lineCount);
 	}
 
 	@Override
 	public void render(PoseStack matrixStack, float x, float y, float maxX, float maxY) {
-		float maxHearts = Waila.CONFIG.get().getGeneral().getMaxHeartsPerLine();
+		int maxHearts = Waila.CONFIG.get().getGeneral().getMaxHeartsPerLine();
 		float armor = this.armor;
 		if (armor == -1)
-			maxHearts = armor = 1;
-		float maxHealth = maxHearts;
-
-		int heartCount = Mth.ceil(maxHealth);
-		int heartsPerLine = (int) (Math.min(maxHearts, Math.ceil(maxHealth)));
+			armor = maxHearts = 1;
+		int lineCount = (int) (Math.ceil(armor / maxHearts));
+		int armorCount = lineCount * maxHearts;
 
 		int xOffset = 0;
-		for (int i = 1; i <= heartCount; i++) {
+		for (int i = 1; i <= armorCount; i++) {
 			if (i <= Mth.floor(armor)) {
 				DisplayHelper.renderIcon(matrixStack, x + xOffset, y, 8, 8, IconUI.ARMOR);
 				xOffset += 8;
@@ -57,7 +53,7 @@ public class ArmorElement extends Element {
 				xOffset += 8;
 			}
 
-			if (i % heartsPerLine == 0) {
+			if (i % maxHearts == 0) {
 				y += 10;
 				xOffset = 0;
 			}

@@ -126,7 +126,7 @@ public class WailaConfig {
 		}
 
 		public int getMaxHeartsPerLine() {
-			return maxHeartsPerLine;
+			return Math.max(1, maxHeartsPerLine);
 		}
 
 		public boolean shouldDisplayFluids() {
