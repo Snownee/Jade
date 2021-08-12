@@ -8,7 +8,7 @@ version="${file.jarVersion}"
 displayName="Jade"
 authors="Snownee"
 displayURL="https://minecraft.curseforge.com/projects/jade"
-description="HWYLA addons"
+description="HWYLA fork & addons"
 
 [[mods]]
 modId="waila"
@@ -17,5 +17,13 @@ displayName="Waila (Jade)"
 authors="Snownee, TehNut, ProfMobius"
 description="You are using Jade, a fork of Hwyla."
 
+
+[[dependencies.jade]]
+    modId="forge"
+    mandatory=true
+    versionRange="[37.0.32, )"
+    ordering="BEFORE"
+    side="BOTH"
+
 [modproperties.jade]
-catalogueItemIcon="minecraft:spyglass" #Support for Catalogue mod
+    catalogueItemIcon="minecraft:spyglass" #Support for Catalogue mod

@@ -47,7 +47,7 @@ public final class ClientHandler {
 			return;
 		}
 		BlockState state = mc.level.getBlockState(playerController.destroyBlockPos);
-		boolean canHarvest = ForgeHooks.canHarvestBlock(state, mc.player, mc.level, playerController.destroyBlockPos);
+		boolean canHarvest = ForgeHooks.isCorrectToolForDrops(state, mc.player);
 		int color = canHarvest ? 0x88FFFFFF : 0x88FF4444;
 		Rectangle rect = event.getPosition();
 		int height = rect.height;
