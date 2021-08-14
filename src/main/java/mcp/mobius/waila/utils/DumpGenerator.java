@@ -13,14 +13,14 @@ public class DumpGenerator {
 		StringBuilder builder = new StringBuilder("# Waila Handler Dump");
 
 		builder.append("\n## Block");
-		createSection(builder, "Stack Providers", WailaRegistrar.INSTANCE.blockStackProviders);
+		createSection(builder, "Icon Providers", WailaRegistrar.INSTANCE.blockIconProviders);
 		createSection(builder, "Head Providers", WailaRegistrar.INSTANCE.blockComponentProviders.get(TooltipPosition.HEAD));
 		createSection(builder, "Body Providers", WailaRegistrar.INSTANCE.blockComponentProviders.get(TooltipPosition.BODY));
 		createSection(builder, "Tail Providers", WailaRegistrar.INSTANCE.blockComponentProviders.get(TooltipPosition.TAIL));
 		createSection(builder, "Data Providers", WailaRegistrar.INSTANCE.blockDataProviders);
 
 		builder.append("\n## Entity");
-		createSection(builder, "Stack Providers", WailaRegistrar.INSTANCE.entityStackProviders);
+		createSection(builder, "Icon Providers", WailaRegistrar.INSTANCE.entityIconProviders);
 		createSection(builder, "Head Providers", WailaRegistrar.INSTANCE.entityComponentProviders.get(TooltipPosition.HEAD));
 		createSection(builder, "Body Providers", WailaRegistrar.INSTANCE.entityComponentProviders.get(TooltipPosition.BODY));
 		createSection(builder, "Tail Providers", WailaRegistrar.INSTANCE.entityComponentProviders.get(TooltipPosition.TAIL));

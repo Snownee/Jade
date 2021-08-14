@@ -161,7 +161,8 @@ public class RayTracing {
 		IElement icon = null;
 		switch (target.getType()) {
 		case ENTITY: {
-			Entity entity = ((EntityHitResult) target).getEntity();
+			EntityAccessor accessor = (EntityAccessor) ObjectDataCenter.get();
+			Entity entity = accessor.getEntity();
 			if (entity instanceof ItemEntity) {
 				icon = ItemStackElement.of(((ItemEntity) entity).getItem());
 			} else {
@@ -170,8 +171,8 @@ public class RayTracing {
 					icon = ItemStackElement.of(stack);
 			}
 
-			for (IEntityComponentProvider provider : WailaRegistrar.INSTANCE.getEntityStackProviders(entity)) {
-				IElement element = provider.getIcon((EntityAccessor) ObjectDataCenter.get(), PluginConfig.INSTANCE, icon);
+			for (IEntityComponentProvider provider : WailaRegistrar.INSTANCE.getEntityIconProviders(entity)) {
+				IElement element = provider.getIcon(accessor, PluginConfig.INSTANCE, icon);
 				if (!isEmpty(element))
 					icon = element;
 			}
@@ -180,7 +181,8 @@ public class RayTracing {
 		case BLOCK: {
 			Level world = mc.level;
 			BlockPos pos = ((BlockHitResult) target).getBlockPos();
-			BlockState state = world.getBlockState(pos);
+			BlockAccessor accessor = (BlockAccessor) ObjectDataCenter.get();
+			BlockState state = accessor.getBlockState();
 			if (state.isAir())
 				break;
 
@@ -198,8 +200,8 @@ public class RayTracing {
 				icon = new FluidStackElement(fluidStack);//.size(new Size(18, 18));
 			}
 
-			for (IComponentProvider provider : WailaRegistrar.INSTANCE.getBlockStackProviders(state.getBlock())) {
-				IElement element = provider.getIcon((BlockAccessor) ObjectDataCenter.get(), PluginConfig.INSTANCE, icon);
+			for (IComponentProvider provider : WailaRegistrar.INSTANCE.getBlockIconProviders(state.getBlock())) {
+				IElement element = provider.getIcon(accessor, PluginConfig.INSTANCE, icon);
 				if (!isEmpty(element))
 					icon = element;
 			}

@@ -30,11 +30,11 @@ public class WailaRegistrar implements IRegistrar {
 
 	public static final WailaRegistrar INSTANCE = new WailaRegistrar();
 
-	public final HierarchyLookup<IComponentProvider> blockStackProviders;
+	public final HierarchyLookup<IComponentProvider> blockIconProviders;
 	public final EnumMap<TooltipPosition, HierarchyLookup<IComponentProvider>> blockComponentProviders;
 	public final HierarchyLookup<IServerDataProvider<BlockEntity>> blockDataProviders;
 
-	public final HierarchyLookup<IEntityComponentProvider> entityStackProviders;
+	public final HierarchyLookup<IEntityComponentProvider> entityIconProviders;
 	public final EnumMap<TooltipPosition, HierarchyLookup<IEntityComponentProvider>> entityComponentProviders;
 	public final HierarchyLookup<IServerDataProvider<Entity>> entityDataProviders;
 
@@ -43,11 +43,11 @@ public class WailaRegistrar implements IRegistrar {
 	public final Set<Block> pickBlocks = Sets.newHashSet();
 
 	WailaRegistrar() {
-		blockStackProviders = new HierarchyLookup<>(Block.class);
+		blockIconProviders = new HierarchyLookup<>(Block.class);
 		blockComponentProviders = new EnumMap<>(TooltipPosition.class);
 		blockDataProviders = new HierarchyLookup<>(BlockEntity.class);
 
-		entityStackProviders = new HierarchyLookup<>(Entity.class);
+		entityIconProviders = new HierarchyLookup<>(Entity.class);
 		entityComponentProviders = new EnumMap<>(TooltipPosition.class);
 		entityDataProviders = new HierarchyLookup<>(Entity.class);
 
@@ -73,7 +73,7 @@ public class WailaRegistrar implements IRegistrar {
 
 	@Override
 	public void registerIconProvider(IComponentProvider dataProvider, Class<? extends Block> block) {
-		blockStackProviders.register(block, dataProvider);
+		blockIconProviders.register(block, dataProvider);
 	}
 
 	@Override
@@ -88,7 +88,7 @@ public class WailaRegistrar implements IRegistrar {
 
 	@Override
 	public void registerIconProvider(IEntityComponentProvider dataProvider, Class<? extends Entity> entity) {
-		entityStackProviders.register(entity, dataProvider);
+		entityIconProviders.register(entity, dataProvider);
 	}
 
 	@Override
@@ -107,8 +107,8 @@ public class WailaRegistrar implements IRegistrar {
 		return blockComponentProviders.get(position).get(block);
 	}
 
-	public List<IComponentProvider> getBlockStackProviders(Block block) {
-		return blockStackProviders.get(block);
+	public List<IComponentProvider> getBlockIconProviders(Block block) {
+		return blockIconProviders.get(block);
 	}
 
 	public List<IServerDataProvider<BlockEntity>> getBlockNBTProviders(BlockEntity block) {
@@ -119,8 +119,8 @@ public class WailaRegistrar implements IRegistrar {
 		return entityComponentProviders.get(position).get(entity);
 	}
 
-	public List<IEntityComponentProvider> getEntityStackProviders(Entity entity) {
-		return entityStackProviders.get(entity);
+	public List<IEntityComponentProvider> getEntityIconProviders(Entity entity) {
+		return entityIconProviders.get(entity);
 	}
 
 	public List<IServerDataProvider<Entity>> getEntityNBTProviders(Entity entity) {
