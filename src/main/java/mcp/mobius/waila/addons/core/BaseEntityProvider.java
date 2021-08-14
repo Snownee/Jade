@@ -16,6 +16,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.npc.Villager;
 
 public class BaseEntityProvider implements IEntityComponentProvider {
@@ -43,8 +44,13 @@ public class BaseEntityProvider implements IEntityComponentProvider {
 	}
 
 	public static String getEntityName(Entity entity) {
-		if (entity instanceof Villager && !entity.hasCustomName()) {
-			return entity.getType().getDescription().getString();
+		if (!entity.hasCustomName()) {
+			if (entity instanceof Villager) {
+				return entity.getType().getDescription().getString();
+			}
+			if (entity instanceof ItemEntity) {
+				return ((ItemEntity) entity).getItem().getHoverName().getString();
+			}
 		}
 		return entity.getName().getString();
 	}
