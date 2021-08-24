@@ -25,6 +25,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 
 public class WailaRegistrar implements IRegistrar {
 
@@ -134,7 +135,7 @@ public class WailaRegistrar implements IRegistrar {
 
 	@Override
 	public IDisplayHelper getDisplayHelper() {
-		return DisplayHelper.INSTANCE;
+		return FMLEnvironment.dist.isClient() ? DisplayHelper.INSTANCE : null;
 	}
 
 	@Override
