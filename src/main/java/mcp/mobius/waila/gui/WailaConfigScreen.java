@@ -39,7 +39,7 @@ public class WailaConfigScreen extends OptionsScreen {
 					options.choices("display_fluids", general.getDisplayFluids(), general::setDisplayFluids);
 					options.choices("display_mode", general.getDisplayMode(), general::setDisplayMode);
 					options.choices("hide_from_debug", general.shouldHideFromDebug(), general::setHideFromDebug);
-					options.choices("display_item", general.shouldShowIcon(), general::setShowIcon);
+					options.choices("display_item", general.getIconMode(), general::setIconMode);
 					options.slider("reach_distance", general.getReachDistance(), general::setReachDistance, 0, 20);
 					options.choices("tts", general.shouldEnableTextToSpeech(), general::setEnableTextToSpeech);
 					return options;

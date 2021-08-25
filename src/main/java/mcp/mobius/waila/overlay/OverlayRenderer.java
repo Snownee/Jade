@@ -11,6 +11,7 @@ import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.WailaClient;
 import mcp.mobius.waila.api.config.WailaConfig;
 import mcp.mobius.waila.api.config.WailaConfig.ConfigOverlay;
+import mcp.mobius.waila.api.config.WailaConfig.ConfigGeneral.IconMode;
 import mcp.mobius.waila.api.event.WailaRenderEvent;
 import mcp.mobius.waila.gui.OptionsScreen;
 import mcp.mobius.waila.impl.ObjectDataCenter;
@@ -127,8 +128,13 @@ public class OverlayRenderer {
 		if (tooltip.hasIcon()) {
 			Vec2 size = tooltip.icon.getCachedSize();
 			Vec2 offset = tooltip.icon.getTranslation();
+			float offsetY;
+			if (Waila.CONFIG.get().getGeneral().getIconMode() == IconMode.TOP) {
+				offsetY = offset.y + 2;
+			} else {
+				offsetY = (position.height - size.y) / 2 - 1;
+			}
 			float offsetX = offset.x + 5;
-			float offsetY = offset.y + 2;
 			Tooltip.drawBorder(matrixStack, offsetX, offsetY, tooltip.icon);
 			tooltip.icon.render(matrixStack, offsetX, offsetY, offsetX + size.x, offsetY + size.y);
 		}
