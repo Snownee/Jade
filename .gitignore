@@ -16,9 +16,9 @@ out
 # gradle
 build
 .gradle
-gradle
 
 # other
 eclipse
 run
 /logs
+*.log
