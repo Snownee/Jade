@@ -17,6 +17,7 @@ import mcp.mobius.waila.api.event.WailaRenderEvent;
 import mcp.mobius.waila.api.impl.DataAccessor;
 import mcp.mobius.waila.api.impl.config.PluginConfig;
 import mcp.mobius.waila.api.impl.config.WailaConfig;
+import mcp.mobius.waila.api.impl.config.WailaConfig.IconMode;
 import mcp.mobius.waila.gui.GuiOptions;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderHelper;
@@ -128,7 +129,13 @@ public class OverlayRenderer {
 			if (tooltip.identifierStack == null) {
 				tooltip.identifierStack = RayTracing.INSTANCE.getIdentifierStack();
 			}
-			DisplayUtil.renderStack(matrixStack, position.x + 5, position.y + 2, tooltip.identifierStack, 1);
+			int y = position.y;
+			if (Waila.CONFIG.get().getGeneral().getIconMode() == IconMode.TOP) {
+				y += 2;
+			} else {
+				y += position.height / 2 - 8;
+			}
+			DisplayUtil.renderStack(matrixStack, position.x + 5, y, tooltip.identifierStack, 1);
 		}
 
 		WailaRenderEvent.Post postEvent = new WailaRenderEvent.Post(position);

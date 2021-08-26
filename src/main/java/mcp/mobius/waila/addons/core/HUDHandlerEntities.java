@@ -9,7 +9,9 @@ import mcp.mobius.waila.api.IPluginConfig;
 import mcp.mobius.waila.api.ITaggableList;
 import mcp.mobius.waila.api.RenderableTextComponent;
 import mcp.mobius.waila.utils.ModIdentification;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
@@ -25,9 +27,18 @@ public class HUDHandlerEntities implements IEntityComponentProvider {
 
 	@Override
 	public void appendHead(List<ITextComponent> tooltip, IEntityAccessor accessor, IPluginConfig config) {
-		((ITaggableList<ResourceLocation, ITextComponent>) tooltip).setTag(HUDHandlerBlocks.OBJECT_NAME_TAG, new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getEntityName(), accessor.getEntity().getDisplayName().getString())));
+		((ITaggableList<ResourceLocation, ITextComponent>) tooltip).setTag(HUDHandlerBlocks.OBJECT_NAME_TAG, new StringTextComponent(String.format(Waila.CONFIG.get().getFormatting().getEntityName(), getEntityName(accessor.getEntity()))));
 		if (config.get(PluginCore.CONFIG_SHOW_REGISTRY))
 			((ITaggableList<ResourceLocation, ITextComponent>) tooltip).setTag(HUDHandlerBlocks.REGISTRY_NAME_TAG, new StringTextComponent(accessor.getEntity().getType().getRegistryName().toString()).mergeStyle(TextFormatting.GRAY));
+	}
+
+	public static String getEntityName(Entity entity) {
+		if (!entity.hasCustomName()) {
+			if (entity instanceof ItemEntity) {
+				return ((ItemEntity) entity).getItem().getDisplayName().getString();
+			}
+		}
+		return entity.getName().getString();
 	}
 
 	@Override

@@ -43,7 +43,7 @@ public class GuiConfigWaila extends GuiOptions {
 					options.add(new OptionsEntryValueBoolean("sneaky_details", general.shouldShiftForDetails(), general::setShiftForDetails));
 					options.add(new OptionsEntryValueEnum<>("display_mode", WailaConfig.DisplayMode.values(), general.getDisplayMode(), general::setDisplayMode));
 					options.add(new OptionsEntryValueBoolean("hide_from_debug", general.shouldHideFromDebug(), general::setHideFromDebug));
-					options.add(new OptionsEntryValueBoolean("display_item", general.shouldShowItem(), general::setShowItem));
+					options.add(new OptionsEntryValueEnum<>("display_item", WailaConfig.IconMode.values(), general.getIconMode(), general::setIconMode));
 					options.add(new OptionsEntryValueSlider("reach_distance", general.getReachDistance(), general::setReachDistance, 0, 20));
 					options.add(new OptionsEntryValueBoolean("tts", general.shouldEnableTextToSpeech(), general::setEnableTextToSpeech));
 					return options;
