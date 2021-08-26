@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.function.Supplier;
 
 import com.google.gson.Gson;
@@ -27,7 +28,7 @@ public class JsonConfig<T> {
 				write(def, false);
 				return def;
 			}
-			try (FileReader reader = new FileReader(configFile)) {
+			try (FileReader reader = new FileReader(configFile, StandardCharsets.UTF_8)) {
 				T ret = gson.fromJson(reader, configClass);
 				if (ret == null)
 					throw new NullPointerException();
@@ -72,7 +73,7 @@ public class JsonConfig<T> {
 		if (!configFile.getParentFile().exists())
 			configFile.getParentFile().mkdirs();
 
-		try (FileWriter writer = new FileWriter(configFile)) {
+		try (FileWriter writer = new FileWriter(configFile, StandardCharsets.UTF_8)) {
 			writer.write(gson.toJson(t));
 			if (invalidate)
 				invalidate();
