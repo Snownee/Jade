@@ -1,6 +1,6 @@
 {
   "tooltip.waila.crop_growth": "성장: %s",
-  "tooltip.waila.crop_mature": "다 자람",
+  "tooltip.waila.crop_mature": "100%",
   "tooltip.waila.empty": "비어있음",
   "tooltip.waila.delay": "지연: %d",
   "tooltip.waila.mode": "모드: %s",
