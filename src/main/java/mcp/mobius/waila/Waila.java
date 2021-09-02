@@ -102,12 +102,12 @@ public class Waila {
 		/* on */
 
 		for (String className : classNames) {
+			LOGGER.info("Start loading plugin at {}", className);
 			try {
 				Class<?> clazz = Class.forName(className);
 				if (IWailaPlugin.class.isAssignableFrom(clazz)) {
 					IWailaPlugin plugin = (IWailaPlugin) clazz.getDeclaredConstructor().newInstance();
 					plugin.register(WailaRegistrar.INSTANCE);
-					LOGGER.info("Registered plugin at {}", className);
 				}
 			} catch (Exception e) {
 				LOGGER.error("Error loading plugin at {}", className, e);
