@@ -136,6 +136,7 @@
   "config.waila.plugin_minecraft.item_tooltip": "Item Tooltip",
   "config.waila.plugin_minecraft.inventory": "Inventory",
   "jade.locked": "Inventory is locked",
+  "jade.not_generated": "Inventory isn't generated",
   "config.waila.plugin_minecraft.fe": "Forge Energy",
   "jade.fe": "%s / %s",
   "config.waila.plugin_minecraft.fluid": "Fluid Tank",

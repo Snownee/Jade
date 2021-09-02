@@ -25,6 +25,7 @@ import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.EnderChestBlockEntity;
+import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -51,7 +52,11 @@ public class InventoryProvider implements IComponentProvider, IServerDataProvide
 	}
 
 	public static void append(ITooltip tooltip, Accessor accessor) {
-		if (accessor.getServerData().contains("Locked") && accessor.getServerData().getBoolean("Locked")) {
+		if (accessor.getServerData().getBoolean("Loot")) {
+			tooltip.add(new TranslatableComponent("jade.not_generated"), VanillaPlugin.INVENTORY);
+			return;
+		}
+		if (accessor.getServerData().getBoolean("Locked")) {
 			tooltip.add(new TranslatableComponent("jade.locked"), VanillaPlugin.INVENTORY);
 			return;
 		}
@@ -106,6 +111,10 @@ public class InventoryProvider implements IComponentProvider, IServerDataProvide
 			return;
 		}
 
+		if (te instanceof RandomizableContainerBlockEntity && ((RandomizableContainerBlockEntity) te).lootTable != null) {
+			tag.putBoolean("Loot", true);
+			return;
+		}
 		if (!JadeCommonConfig.bypassLockedContainer && !player.isCreative() && !player.isSpectator() && te instanceof BaseContainerBlockEntity) {
 			BaseContainerBlockEntity lockableBlockEntity = (BaseContainerBlockEntity) te;
 			if (!lockableBlockEntity.canOpen(player)) {
