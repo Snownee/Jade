@@ -109,7 +109,7 @@ public class Waila {
 					IWailaPlugin plugin = (IWailaPlugin) clazz.getDeclaredConstructor().newInstance();
 					plugin.register(WailaRegistrar.INSTANCE);
 				}
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				LOGGER.error("Error loading plugin at {}", className, e);
 			}
 		}
