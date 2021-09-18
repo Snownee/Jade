@@ -24,7 +24,9 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fmlclient.ConfigGuiHandler.ConfigGuiFactory;
 import net.minecraftforge.fmlclient.registry.ClientRegistry;
 import snownee.jade.Jade;
 
@@ -37,8 +39,7 @@ public class WailaClient {
 	public static KeyMapping showDetails;
 
 	public static void initClient() {
-		//TODO
-		//ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.CONFIGGUIFACTORY, () -> ((minecraft, screen) -> new HomeConfigScreen(screen)));
+		ModLoadingContext.get().registerExtensionPoint(ConfigGuiFactory.class, () -> new ConfigGuiFactory((minecraft, screen) -> new HomeConfigScreen(screen)));
 
 		WailaClient.openConfig = new KeyMapping("key.waila.config", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputConstants.Type.KEYSYM.getOrCreate(320), Jade.NAME);
 		WailaClient.showOverlay = new KeyMapping("key.waila.show_overlay", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputConstants.Type.KEYSYM.getOrCreate(321), Jade.NAME);
