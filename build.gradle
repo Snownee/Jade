@@ -1,14 +1,16 @@
 buildscript {
     repositories {
         maven { url = 'https://files.minecraftforge.net/maven' }
-        jcenter()
+        maven { url = 'https://maven.parchmentmc.org' }
         mavenCentral()
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+        classpath 'org.parchmentmc:librarian:1.+'
     }
 }
 apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'org.parchmentmc.librarian.forgegradle'
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
@@ -26,7 +28,7 @@ if (System.getenv().BUILD_NUMBER != null) {
 }
 
 minecraft {
-    mappings channel: 'official', version: '1.17.1'
+    mappings channel: 'parchment', version: '2021.09.05-1.17.1'
 
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
@@ -37,7 +39,7 @@ minecraft {
             workingDirectory project.file('run')
 
             // Recommended logging data for a userdev environment
-            property 'forge.logging.markers', ''
+            //property 'forge.logging.markers', ''
 
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
@@ -53,7 +55,7 @@ minecraft {
             workingDirectory project.file('run')
 
             // Recommended logging data for a userdev environment
-            property 'forge.logging.markers', ''
+            //property 'forge.logging.markers', ''
 
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
