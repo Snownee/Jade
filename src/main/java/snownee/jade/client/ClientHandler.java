@@ -35,6 +35,8 @@ import snownee.jade.VanillaPlugin;
 @OnlyIn(Dist.CLIENT)
 @EventBusSubscriber(Dist.CLIENT)
 public final class ClientHandler {
+	private static float savedProgress;
+	private static float progressAlpha;
 
 	@SubscribeEvent
 	public static void post(WailaRenderEvent.Post event) {
@@ -43,12 +45,14 @@ public final class ClientHandler {
 		}
 		Minecraft mc = Minecraft.getInstance();
 		MultiPlayerGameMode playerController = mc.gameMode;
-		if (playerController == null || !playerController.isDestroying()) {
+		if (playerController == null || playerController.destroyBlockPos == null) {
 			return;
 		}
 		BlockState state = mc.level.getBlockState(playerController.destroyBlockPos);
 		boolean canHarvest = ForgeHooks.isCorrectToolForDrops(state, mc.player);
 		int color = canHarvest ? 0x88FFFFFF : 0x88FF4444;
+		Color fadeColor = new Color(color);
+		Color alphaColor = new Color(fadeColor.getRed(), fadeColor.getGreen(), fadeColor.getBlue(), (int) Mth.clamp(progressAlpha, 0, 200));
 		Rectangle rect = event.getPosition();
 		int height = rect.height;
 		int width = rect.width;
@@ -56,10 +60,21 @@ public final class ClientHandler {
 			height -= 1;
 			width -= 2;
 		}
-		float progress = state.getDestroyProgress(mc.player, mc.player.level, playerController.destroyBlockPos);
-		progress = playerController.destroyProgress + mc.getFrameTime() * progress;
-		progress = Mth.clamp(progress, 0, 1);
-		DisplayHelper.fill(event.getPoseStack(), 0, height - 1, width * progress, height, color);
+		handleProgressAlpha(playerController, state, mc);
+		DisplayHelper.fill(event.getPoseStack(), 0, height - 1, width * savedProgress, height, alphaColor.getRGB());
+	}
+
+	private static void handleProgressAlpha(MultiPlayerGameMode playerController, BlockState state, Minecraft mc) {
+		progressAlpha = Mth.clamp(progressAlpha, 0, 200);
+		if (playerController.isDestroying()) {
+			float progress = state.getDestroyProgress(mc.player, mc.player.level, playerController.destroyBlockPos);
+			progress = playerController.destroyProgress + mc.getFrameTime() * progress;
+			progress = Mth.clamp(progress, 0, 1);
+			progressAlpha += (progress * mc.getDeltaFrameTime()) / 0.02F;
+			savedProgress = progress;
+		} else {
+			progressAlpha -= (savedProgress * mc.getDeltaFrameTime()) / 0.02F;
+		}
 	}
 
 	private static final Cache<BlockState, BlockState> CHEST_CACHE = CacheBuilder.newBuilder().build();
