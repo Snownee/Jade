@@ -1,6 +1,5 @@
 package snownee.jade.client;
 
-import java.awt.Rectangle;
 import java.util.Map;
 
 import com.google.common.cache.Cache;
@@ -15,6 +14,7 @@ import mcp.mobius.waila.impl.config.PluginConfig;
 import mcp.mobius.waila.overlay.DisplayHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
@@ -55,9 +55,9 @@ public final class ClientHandler {
 		if (playerController.isDestroying())
 			canHarvest = ForgeHooks.isCorrectToolForDrops(state, mc.player);
 		int color = canHarvest ? 0xFFFFFF : 0xFF4444;
-		Rectangle rect = event.getPosition();
-		int height = rect.height;
-		int width = rect.width;
+		Rect2i rect = event.getRect();
+		int height = rect.getHeight();
+		int width = rect.getWidth();
 		if (!Waila.CONFIG.get().getOverlay().getSquare()) {
 			height -= 1;
 			width -= 2;

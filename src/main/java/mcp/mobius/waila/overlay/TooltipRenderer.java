@@ -1,7 +1,5 @@
 package mcp.mobius.waila.overlay;
 
-import java.awt.Rectangle;
-
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.vertex.PoseStack;
 
@@ -13,6 +11,7 @@ import mcp.mobius.waila.impl.ObjectDataCenter;
 import mcp.mobius.waila.impl.Tooltip;
 import mcp.mobius.waila.impl.Tooltip.Line;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.common.MinecraftForge;
@@ -94,14 +93,14 @@ public class TooltipRenderer {
 		return showIcon && Waila.CONFIG.get().getGeneral().shouldShowIcon() && icon != null;
 	}
 
-	public Rectangle getPosition() {
+	public Rect2i getPosition() {
 		Window window = Minecraft.getInstance().getWindow();
 		ConfigOverlay overlay = Waila.CONFIG.get().getOverlay();
 		int x = (int) (window.getGuiScaledWidth() * overlay.tryFlip(overlay.getOverlayPosX()));
 		int y = (int) (window.getGuiScaledHeight() * (1.0F - overlay.getOverlayPosY()));
 		int width = (int) totalSize.x;
 		int height = (int) totalSize.y;
-		return new Rectangle(x, y, width, height);
+		return new Rect2i(x, y, width, height);
 	}
 
 	public Vec2 getSize() {

@@ -1,7 +1,5 @@
 package mcp.mobius.waila.impl.ui;
 
-import java.awt.Rectangle;
-
 import javax.annotation.Nullable;
 
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -11,6 +9,7 @@ import mcp.mobius.waila.api.ui.Element;
 import mcp.mobius.waila.impl.Tooltip;
 import mcp.mobius.waila.overlay.DisplayHelper;
 import mcp.mobius.waila.overlay.TooltipRenderer;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -40,12 +39,12 @@ public class BoxElement extends Element {
 		if (tooltip.getTooltip().isEmpty()) {
 			return;
 		}
-		Rectangle rect = tooltip.getPosition();
+		Rect2i rect = tooltip.getPosition();
 		RenderSystem.enableBlend();
 		matrixStack.pushPose();
 		matrixStack.translate(x, y, 0);
 		if (border != null)
-			DisplayHelper.INSTANCE.drawBorder(matrixStack, 0, 0, rect.width, rect.height, border);
+			DisplayHelper.INSTANCE.drawBorder(matrixStack, 0, 0, rect.getWidth(), rect.getHeight(), border);
 		tooltip.draw(matrixStack);
 		matrixStack.popPose();
 	}
