@@ -8,6 +8,7 @@ import com.google.common.cache.CacheBuilder;
 
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.BlockAccessor;
+import mcp.mobius.waila.api.config.WailaConfig.ConfigOverlay.ConfigOverlayColor;
 import mcp.mobius.waila.api.event.WailaRayTraceEvent;
 import mcp.mobius.waila.api.event.WailaRenderEvent;
 import mcp.mobius.waila.impl.config.PluginConfig;
@@ -26,6 +27,7 @@ import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ForgeHooks;
+import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
@@ -37,6 +39,7 @@ import snownee.jade.VanillaPlugin;
 public final class ClientHandler {
 	private static float savedProgress;
 	private static float progressAlpha;
+	private static boolean canHarvest;
 
 	@SubscribeEvent
 	public static void post(WailaRenderEvent.Post event) {
@@ -49,10 +52,9 @@ public final class ClientHandler {
 			return;
 		}
 		BlockState state = mc.level.getBlockState(playerController.destroyBlockPos);
-		boolean canHarvest = ForgeHooks.isCorrectToolForDrops(state, mc.player);
-		int color = canHarvest ? 0x88FFFFFF : 0x88FF4444;
-		Color fadeColor = new Color(color);
-		Color alphaColor = new Color(fadeColor.getRed(), fadeColor.getGreen(), fadeColor.getBlue(), (int) Mth.clamp(progressAlpha, 0, 200));
+		if (playerController.isDestroying())
+			canHarvest = ForgeHooks.isCorrectToolForDrops(state, mc.player);
+		int color = canHarvest ? 0xFFFFFF : 0xFF4444;
 		Rectangle rect = event.getPosition();
 		int height = rect.height;
 		int width = rect.width;
@@ -60,21 +62,23 @@ public final class ClientHandler {
 			height -= 1;
 			width -= 2;
 		}
-		handleProgressAlpha(playerController, state, mc);
-		DisplayHelper.fill(event.getPoseStack(), 0, height - 1, width * savedProgress, height, alphaColor.getRGB());
-	}
-
-	private static void handleProgressAlpha(MultiPlayerGameMode playerController, BlockState state, Minecraft mc) {
-		progressAlpha = Mth.clamp(progressAlpha, 0, 200);
+		progressAlpha += mc.getDeltaFrameTime() * (playerController.isDestroying() ? 0.1F : -0.1F);
 		if (playerController.isDestroying()) {
+			progressAlpha = Math.min(progressAlpha, 0.53F); //0x88 = 0.53 * 255
 			float progress = state.getDestroyProgress(mc.player, mc.player.level, playerController.destroyBlockPos);
 			progress = playerController.destroyProgress + mc.getFrameTime() * progress;
 			progress = Mth.clamp(progress, 0, 1);
-			progressAlpha += (progress * mc.getDeltaFrameTime()) / 0.02F;
 			savedProgress = progress;
 		} else {
-			progressAlpha -= (savedProgress * mc.getDeltaFrameTime()) / 0.02F;
+			progressAlpha = Math.max(progressAlpha, 0);
 		}
+		color = ConfigOverlayColor.applyAlpha(color, progressAlpha);
+		DisplayHelper.fill(event.getPoseStack(), 0, height - 1, width * savedProgress, height, color);
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public static void breakBlock(BreakEvent event) {
+		progressAlpha = 1;
 	}
 
 	private static final Cache<BlockState, BlockState> CHEST_CACHE = CacheBuilder.newBuilder().build();
