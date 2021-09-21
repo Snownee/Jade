@@ -1,14 +1,17 @@
 package mcp.mobius.waila.utils;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.function.Supplier;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import net.minecraftforge.fml.loading.FMLPaths;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.function.Supplier;
+import net.minecraftforge.fml.loading.FMLPaths;
 
 public class JsonConfig<T> {
 
@@ -26,7 +29,7 @@ public class JsonConfig<T> {
 				write(def, false);
 				return def;
 			}
-			try (FileReader reader = new FileReader(configFile)) {
+			try (BufferedReader reader = Files.newBufferedReader(configFile.toPath(), StandardCharsets.UTF_8)) {
 				return gson.fromJson(reader, configClass);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -68,7 +71,7 @@ public class JsonConfig<T> {
 		if (!configFile.getParentFile().exists())
 			configFile.getParentFile().mkdirs();
 
-		try (FileWriter writer = new FileWriter(configFile)) {
+		try (BufferedWriter writer = Files.newBufferedWriter(configFile.toPath(), StandardCharsets.UTF_8)) {
 			writer.write(gson.toJson(t));
 			if (invalidate)
 				invalidate();

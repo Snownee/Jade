@@ -1,18 +1,16 @@
 package mcp.mobius.waila.network;
 
+import java.util.function.Supplier;
+
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.impl.WailaRegistrar;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
-
-import java.util.function.Supplier;
 
 public class MessageRequestEntity {
 
@@ -37,16 +35,12 @@ public class MessageRequestEntity {
 	public static class Handler {
 
 		public static void onMessage(final MessageRequestEntity message, Supplier<NetworkEvent.Context> context) {
-			final MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-			if (server == null)
-				return;
-
-			server.execute(() -> {
+			context.get().enqueueWork(() -> {
 				ServerPlayerEntity player = context.get().getSender();
 				World world = player.world;
 				Entity entity = world.getEntityByID(message.entityId);
 
-				if (entity == null)
+				if (entity == null || player.getDistanceSq(entity) > MessageRequestTile.MAX_DISTANCE_SQR)
 					return;
 
 				CompoundNBT tag = new CompoundNBT();

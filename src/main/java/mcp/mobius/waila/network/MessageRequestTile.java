@@ -1,23 +1,22 @@
 package mcp.mobius.waila.network;
 
+import java.util.function.Supplier;
+
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.impl.WailaRegistrar;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
-
-import java.util.function.Supplier;
 
 public class MessageRequestTile {
 
+	public static int MAX_DISTANCE_SQR = 900;
 	public BlockPos pos;
 
 	public MessageRequestTile(TileEntity tile) {
@@ -39,14 +38,10 @@ public class MessageRequestTile {
 	public static class Handler {
 
 		public static void onMessage(MessageRequestTile message, Supplier<NetworkEvent.Context> context) {
-			final MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-			if (server == null)
-				return;
-
-			server.execute(() -> {
+			context.get().enqueueWork(() -> {
 				ServerPlayerEntity player = context.get().getSender();
 				World world = player.world;
-				if (!world.isBlockPresent(message.pos))
+				if (message.pos.distanceSq(player.getPosition()) > MAX_DISTANCE_SQR || !world.isBlockPresent(message.pos))
 					return;
 
 				TileEntity tile = world.getTileEntity(message.pos);

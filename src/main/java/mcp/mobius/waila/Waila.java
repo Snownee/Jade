@@ -1,5 +1,7 @@
 package mcp.mobius.waila;
 
+import java.util.Optional;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -57,10 +59,10 @@ public class Waila {
 
 	@SubscribeEvent
 	public void setup(FMLCommonSetupEvent event) {
-		NETWORK.registerMessage(0, MessageReceiveData.class, MessageReceiveData::write, MessageReceiveData::read, MessageReceiveData.Handler::onMessage);
-		NETWORK.registerMessage(1, MessageServerPing.class, MessageServerPing::write, MessageServerPing::read, MessageServerPing.Handler::onMessage);
-		NETWORK.registerMessage(2, MessageRequestEntity.class, MessageRequestEntity::write, MessageRequestEntity::read, MessageRequestEntity.Handler::onMessage);
-		NETWORK.registerMessage(3, MessageRequestTile.class, MessageRequestTile::write, MessageRequestTile::read, MessageRequestTile.Handler::onMessage);
+		NETWORK.registerMessage(0, MessageReceiveData.class, MessageReceiveData::write, MessageReceiveData::read, MessageReceiveData.Handler::onMessage, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+		NETWORK.registerMessage(1, MessageServerPing.class, MessageServerPing::write, MessageServerPing::read, MessageServerPing.Handler::onMessage, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+		NETWORK.registerMessage(2, MessageRequestEntity.class, MessageRequestEntity::write, MessageRequestEntity::read, MessageRequestEntity.Handler::onMessage, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+		NETWORK.registerMessage(3, MessageRequestTile.class, MessageRequestTile::write, MessageRequestTile::read, MessageRequestTile.Handler::onMessage, Optional.of(NetworkDirection.PLAY_TO_SERVER));
 	}
 
 	@SubscribeEvent
@@ -83,7 +85,7 @@ public class Waila {
 								plugin.register(WailaRegistrar.INSTANCE);
 								LOGGER.info("Registered plugin at {}", a.getMemberName());
 							}
-						} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+						} catch (Throwable e) {
 							LOGGER.error("Error loading plugin at {}", a.getMemberName(), e);
 						}
 					}

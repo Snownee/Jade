@@ -64,7 +64,7 @@ public class HarvestToolProvider implements IComponentProvider, ISelectiveResour
 	public static final TestCase NO_TOOL = new TestCase(ItemStack.EMPTY, "no_tool", null);
 	public static final TestCase UNBREAKABLE = new TestCase(ItemStack.EMPTY, "unbreakable", null);
 
-	private static final ITextComponent UNBREAKABLE_TEXT = new TranslationTextComponent("jade.harvest_tool.unbreakable").mergeStyle(TextFormatting.DARK_RED);;
+	private static final ITextComponent UNBREAKABLE_TEXT = new TranslationTextComponent("jade.harvest_tool.unbreakable").mergeStyle(TextFormatting.DARK_RED);
 
 	static {
 		/* off */
@@ -182,7 +182,6 @@ public class HarvestToolProvider implements IComponentProvider, ISelectiveResour
 		}
 		BlockState state = accessor.getBlockState();
 		TestCase testCase = NO_TOOL;
-		resultCache.invalidateAll();
 		try {
 			testCase = resultCache.get(state, () -> getTool(state, accessor.getWorld(), accessor.getPosition()));
 		} catch (ExecutionException e) {

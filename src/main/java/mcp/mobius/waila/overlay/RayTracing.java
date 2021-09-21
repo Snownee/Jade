@@ -8,6 +8,7 @@ import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.Lists;
 
 import mcp.mobius.waila.Waila;
@@ -80,6 +81,7 @@ public class RayTracing {
 		Vector3d traceEnd;
 		if (mc.objectMouseOver != null && mc.objectMouseOver.getType() == Type.BLOCK) {
 			traceEnd = mc.objectMouseOver.getHitVec();
+			traceEnd = eyePosition.add(traceEnd.subtract(eyePosition).scale(1.01));
 		} else {
 			Vector3d lookVector = entity.getLook(partialTicks);
 			traceEnd = eyePosition.add(lookVector.x * playerReach, lookVector.y * playerReach, lookVector.z * playerReach);
@@ -102,11 +104,11 @@ public class RayTracing {
 		if (entityResult != null && blockResult != null && blockResult.getType() == Type.BLOCK) {
 			double entityDist = entityResult.getHitVec().squareDistanceTo(eyePosition);
 			double blockDist = blockResult.getHitVec().squareDistanceTo(eyePosition);
-			if (entityDist < blockDist) {
-				return entityResult;
+			if (entityDist > blockDist) {
+				return blockResult;
 			}
 		}
-		return blockResult;
+		return MoreObjects.firstNonNull(entityResult, blockResult);
 	}
 
 	public ItemStack getIdentifierStack() {
@@ -140,9 +142,6 @@ public class RayTracing {
 		Entity entity = null;
 
 		for (Entity entity1 : worldIn.getEntitiesInAABBexcluding(projectile, boundingBox, filter)) {
-			if (entity1.isSpectator()) {
-				continue;
-			}
 			AxisAlignedBB axisalignedbb = entity1.getBoundingBox();
 			if (axisalignedbb.getAverageEdgeLength() < 0.3) {
 				axisalignedbb = axisalignedbb.grow(0.3);
