@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,7 +16,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
-import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.config.IPluginConfig;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fml.loading.FMLPaths;
@@ -75,7 +75,7 @@ public class PluginConfig implements IPluginConfig {
 			writeConfig(configFile, true);
 		} else { // Read back from config
 			Map<String, Map<String, Boolean>> config;
-			try (FileReader reader = new FileReader(configFile)) {
+			try (FileReader reader = new FileReader(configFile, StandardCharsets.UTF_8)) {
 				config = new Gson().fromJson(reader, new TypeToken<Map<String, Map<String, Boolean>>>() {
 				}.getType());
 			} catch (Exception e) {
@@ -108,7 +108,7 @@ public class PluginConfig implements IPluginConfig {
 	}
 
 	public void save() {
-		File configFile = new File(FMLPaths.CONFIGDIR.get().toFile(), Waila.MODID + "/" + Waila.MODID + "_plugins.json");
+		File configFile = new File(FMLPaths.CONFIGDIR.get().toFile(), Jade.MODID + "/" + Jade.MODID + "_plugins.json");
 		writeConfig(configFile, false);
 	}
 
@@ -124,7 +124,7 @@ public class PluginConfig implements IPluginConfig {
 		String json = new GsonBuilder().setPrettyPrinting().create().toJson(config);
 		if (!file.getParentFile().exists())
 			file.getParentFile().mkdirs();
-		try (FileWriter writer = new FileWriter(file)) {
+		try (FileWriter writer = new FileWriter(file, StandardCharsets.UTF_8)) {
 			writer.write(json);
 		} catch (IOException e) {
 			e.printStackTrace();

@@ -76,17 +76,36 @@ public class WailaClient {
 		}
 	}
 
+	//public static boolean hasJEI = ModList.get().isLoaded("jei");
 	public static boolean hideModName;
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public static void onTooltip(ItemTooltipEvent event) {
-		if (!hideModName && PluginConfig.INSTANCE.get(CorePlugin.CONFIG_ITEM_MOD_NAME, false)) {
-			String name = String.format(Waila.CONFIG.get().getFormatting().getModName(), ModIdentification.getModName(event.getItemStack()));
-			event.getToolTip().add(new TextComponent(name));
-		}
+		appendModName(event);
 		if (Waila.CONFIG.get().getGeneral().isDebug() && event.getItemStack().hasTag()) {
 			event.getToolTip().add(NbtUtils.toPrettyComponent(event.getItemStack().getTag()));
 		}
+	}
+
+	private static void appendModName(ItemTooltipEvent event) {
+		if (hideModName || !PluginConfig.INSTANCE.get(CorePlugin.CONFIG_ITEM_MOD_NAME, false))
+			return;
+		//		if (hasJEI) {
+		//			if (JEIClientConfig.modNameFormat.modNameFormat != "") {
+		//				StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+		//				int i = 0;
+		//				for (StackTraceElement element : stackTrace) {
+		//					if (++i > 12) {
+		//						break;
+		//					}
+		//					if (element.getMethodName().equals("getIngredientTooltipSafe")) {
+		//						return;
+		//					}
+		//				}
+		//			}
+		//		}
+		String name = String.format(Waila.CONFIG.get().getFormatting().getModName(), ModIdentification.getModName(event.getItemStack()));
+		event.getToolTip().add(new TextComponent(name));
 	}
 
 	@SubscribeEvent
