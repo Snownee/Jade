@@ -15,6 +15,7 @@ import mcp.mobius.waila.api.impl.WailaRegistrar;
 import mcp.mobius.waila.api.impl.config.PluginConfig;
 import mcp.mobius.waila.api.impl.config.WailaConfig;
 import mcp.mobius.waila.command.CommandDumpHandlers;
+import mcp.mobius.waila.network.MessageBlockBreak;
 import mcp.mobius.waila.network.MessageReceiveData;
 import mcp.mobius.waila.network.MessageRequestEntity;
 import mcp.mobius.waila.network.MessageRequestTile;
@@ -63,6 +64,7 @@ public class Waila {
 		NETWORK.registerMessage(1, MessageServerPing.class, MessageServerPing::write, MessageServerPing::read, MessageServerPing.Handler::onMessage, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
 		NETWORK.registerMessage(2, MessageRequestEntity.class, MessageRequestEntity::write, MessageRequestEntity::read, MessageRequestEntity.Handler::onMessage, Optional.of(NetworkDirection.PLAY_TO_SERVER));
 		NETWORK.registerMessage(3, MessageRequestTile.class, MessageRequestTile::write, MessageRequestTile::read, MessageRequestTile.Handler::onMessage, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+		NETWORK.registerMessage(4, MessageBlockBreak.class, MessageBlockBreak::write, MessageBlockBreak::read, MessageBlockBreak.Handler::onMessage, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
 	}
 
 	@SubscribeEvent

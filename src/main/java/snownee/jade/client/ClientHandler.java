@@ -13,8 +13,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.event.world.BlockEvent.BreakEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import snownee.jade.JadePlugin;
@@ -65,9 +63,12 @@ public final class ClientHandler {
 		return (color & 0xFFFFFF) | alphaChannel << 24;
 	}
 
-	@SubscribeEvent(priority = EventPriority.LOWEST)
-	public static void breakBlock(BreakEvent event) {
-		progressAlpha = 1;
+	public static void setProgressAlpha(float alpha) {
+		progressAlpha = alpha;
+	}
+
+	public static void setSavedProgress(float progress) {
+		savedProgress = progress;
 	}
 
 }

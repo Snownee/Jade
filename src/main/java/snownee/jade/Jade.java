@@ -2,6 +2,14 @@ package snownee.jade;
 
 import java.text.DecimalFormat;
 
+import mcp.mobius.waila.Waila;
+import mcp.mobius.waila.network.MessageBlockBreak;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.world.IWorld;
+import net.minecraftforge.event.world.BlockEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.network.NetworkDirection;
+
 import org.apache.commons.lang3.tuple.Pair;
 
 import net.minecraftforge.fml.ExtensionPoint;
@@ -27,5 +35,18 @@ public class Jade {
 
 	private void init(FMLCommonSetupEvent event) {
 		JadeCommonConfig.refresh();
+	}
+
+	@Mod.EventBusSubscriber
+	public static class JadeBlockEvent {
+
+		@SubscribeEvent
+		public static void breakBlock(BlockEvent.BreakEvent event) {
+			IWorld world = event.getWorld();
+			boolean isRemote = world.isRemote();
+			if (!isRemote) {
+				Waila.NETWORK.sendTo(new MessageBlockBreak(), ((ServerPlayerEntity) event.getPlayer()).connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
+			}
+		}
 	}
 }
