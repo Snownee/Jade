@@ -104,10 +104,11 @@ public class VanillaPlugin implements IWailaPlugin {
 	public static final ResourceLocation FORGE_ENERGY = MC("fe");
 	public static final ResourceLocation FORGE_FLUID = MC("fluid");
 
-	public static IRegistrar registrar;
+	public static IRegistrar REGISTRAR;
 
 	@Override
 	public void register(IRegistrar registrar) {
+		REGISTRAR = registrar;
 		registrar.registerComponentProvider(BrewingStandProvider.INSTANCE, TooltipPosition.BODY, BrewingStandBlock.class);
 		registrar.registerBlockDataProvider(BrewingStandProvider.INSTANCE, BrewingStandBlockEntity.class);
 		registrar.addConfig(BREWING_STAND, true);

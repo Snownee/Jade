@@ -44,6 +44,7 @@ public final class ClientHandler {
 	@SubscribeEvent
 	public static void post(WailaRenderEvent.Post event) {
 		if (!PluginConfig.INSTANCE.get(VanillaPlugin.BREAKING_PROGRESS)) {
+			progressAlpha = 0;
 			return;
 		}
 		Minecraft mc = Minecraft.getInstance();

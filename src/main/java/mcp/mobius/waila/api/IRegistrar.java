@@ -102,6 +102,9 @@ public interface IRegistrar {
 
 	IElementHelper getElementHelper();
 
+	/**
+	 * Client only
+	 */
 	IDisplayHelper getDisplayHelper();
 
 	WailaConfig getConfig();
