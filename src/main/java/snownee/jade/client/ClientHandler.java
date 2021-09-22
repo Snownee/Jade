@@ -27,7 +27,6 @@ import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
@@ -67,6 +66,9 @@ public final class ClientHandler {
 		if (playerController.isDestroying()) {
 			progressAlpha = Math.min(progressAlpha, 0.53F); //0x88 = 0.53 * 255
 			float progress = state.getDestroyProgress(mc.player, mc.player.level, playerController.destroyBlockPos);
+			if (playerController.destroyProgress + progress >= 1) {
+				progressAlpha = 1;
+			}
 			progress = playerController.destroyProgress + mc.getFrameTime() * progress;
 			progress = Mth.clamp(progress, 0, 1);
 			savedProgress = progress;
@@ -75,11 +77,6 @@ public final class ClientHandler {
 		}
 		color = ConfigOverlayColor.applyAlpha(color, progressAlpha);
 		DisplayHelper.fill(event.getPoseStack(), 0, height - 1, width * savedProgress, height, color);
-	}
-
-	@SubscribeEvent(priority = EventPriority.LOWEST)
-	public static void breakBlock(BreakEvent event) {
-		progressAlpha = 1;
 	}
 
 	private static final Cache<BlockState, BlockState> CHEST_CACHE = CacheBuilder.newBuilder().build();
