@@ -1,7 +1,5 @@
 package mcp.mobius.waila.api.event;
 
-import java.awt.Rectangle;
-
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import mcp.mobius.waila.api.Accessor;
@@ -31,11 +29,6 @@ public class WailaRenderEvent extends Event {
 		return rect;
 	}
 
-	@Deprecated //TODO remove in 1.18
-	public Rectangle getPosition() {
-		return new Rectangle(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
-	}
-
 	public PoseStack getPoseStack() {
 		return matrixStack;
 	}
@@ -50,15 +43,15 @@ public class WailaRenderEvent extends Event {
 	@Cancelable
 	public static class Pre extends WailaRenderEvent {
 
-		private final Accessor accessor;
+		private final Accessor<?> accessor;
 
-		public Pre(Accessor accessor, Rect2i rect, PoseStack matrixStack) {
+		public Pre(Accessor<?> accessor, Rect2i rect, PoseStack matrixStack) {
 			super(rect, matrixStack);
 
 			this.accessor = accessor;
 		}
 
-		public Accessor getAccessor() {
+		public Accessor<?> getAccessor() {
 			return accessor;
 		}
 	}

@@ -7,6 +7,8 @@ import java.util.Set;
 import com.google.common.collect.Sets;
 
 import mcp.mobius.waila.Waila;
+import mcp.mobius.waila.api.BlockAccessor;
+import mcp.mobius.waila.api.EntityAccessor;
 import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IEntityComponentProvider;
 import mcp.mobius.waila.api.IRegistrar;
@@ -19,12 +21,17 @@ import mcp.mobius.waila.impl.config.ConfigEntry;
 import mcp.mobius.waila.impl.config.PluginConfig;
 import mcp.mobius.waila.impl.ui.ElementHelper;
 import mcp.mobius.waila.overlay.DisplayHelper;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 
 public class WailaRegistrar implements IRegistrar {
@@ -169,4 +176,15 @@ public class WailaRegistrar implements IRegistrar {
 	public boolean shouldHide(Entity entity) {
 		return hideEntities.contains(entity.getType());
 	}
+
+	@Override
+	public BlockAccessor createBlockAccessor(BlockState blockState, BlockEntity blockEntity, Level level, Player player, CompoundTag serverData, BlockHitResult hit, boolean serverConnected) {
+		return new BlockAccessorImpl(blockState, blockEntity, level, player, serverData, hit, serverConnected);
+	}
+
+	@Override
+	public EntityAccessor createEntityAccessor(Entity entity, Level level, Player player, CompoundTag serverData, EntityHitResult hit, boolean serverConnected) {
+		return new EntityAccessorImpl(entity, level, player, serverData, hit, serverConnected);
+	}
+
 }

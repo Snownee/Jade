@@ -56,7 +56,7 @@ public class JEICompat implements IModPlugin {
 			return;
 		if (!showRecipes.isDown() && !showUses.isDown())
 			return;
-		Accessor accessor = ObjectDataCenter.get();
+		Accessor<?> accessor = ObjectDataCenter.get();
 		if (accessor == null)
 			return;
 		ItemStack stack = accessor.getPickedResult();

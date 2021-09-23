@@ -5,11 +5,17 @@ import mcp.mobius.waila.api.config.WailaConfig;
 import mcp.mobius.waila.api.ui.IDisplayHelper;
 import mcp.mobius.waila.api.ui.IElement;
 import mcp.mobius.waila.api.ui.IElementHelper;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
 
 public interface IRegistrar {
 
@@ -108,4 +114,9 @@ public interface IRegistrar {
 	IDisplayHelper getDisplayHelper();
 
 	WailaConfig getConfig();
+
+	BlockAccessor createBlockAccessor(BlockState blockState, BlockEntity blockEntity, Level level, Player player, CompoundTag serverData, BlockHitResult hit, boolean serverConnected);
+
+	EntityAccessor createEntityAccessor(Entity entity, Level level, Player player, CompoundTag serverData, EntityHitResult hit, boolean serverConnected);
+
 }

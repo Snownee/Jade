@@ -22,7 +22,7 @@ public interface IComponentProvider {
      * <p>
      * This method is only called on the client side. If you require data from the server, you should also implement
      * {@link IServerDataProvider#appendServerData(net.minecraft.nbt.CompoundTag, net.minecraft.entity.player.ServerPlayer, Level, Object)}
-     * and add the data to the {@link net.minecraft.nbt.CompoundTag} there, which can then be read back using {@link IBlockAccessor#getServerData()}.
+     * and add the data to the {@link net.minecraft.nbt.CompoundTag} there, which can then be read back using {@link BlockAccessor#getServerData()}.
      * If you rely on the client knowing the data you need, you are not guaranteed to have the proper values.
      *
      * @param accessor       Contains most of the relevant information about the current environment.

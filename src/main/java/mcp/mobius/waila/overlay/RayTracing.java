@@ -7,37 +7,22 @@ import javax.annotation.Nullable;
 
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.Accessor;
-import mcp.mobius.waila.api.BlockAccessor;
-import mcp.mobius.waila.api.EntityAccessor;
-import mcp.mobius.waila.api.IComponentProvider;
-import mcp.mobius.waila.api.IEntityComponentProvider;
 import mcp.mobius.waila.api.ui.IElement;
 import mcp.mobius.waila.impl.ObjectDataCenter;
 import mcp.mobius.waila.impl.WailaRegistrar;
-import mcp.mobius.waila.impl.config.PluginConfig;
-import mcp.mobius.waila.impl.ui.FluidStackElement;
 import mcp.mobius.waila.impl.ui.ItemStackElement;
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.HitResult.Type;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.fluids.FluidStack;
 
 public class RayTracing {
 
@@ -154,63 +139,18 @@ public class RayTracing {
 	}
 
 	public IElement getIcon() {
-		Accessor accessor = ObjectDataCenter.get();
+		Accessor<?> accessor = ObjectDataCenter.get();
 		if (accessor == null)
 			return null;
 
-		//TODO 1.18: Accessor Factory
-		IElement icon = null;
-		if (accessor instanceof EntityAccessor) {
-			Entity entity = ((EntityAccessor) accessor).getEntity();
-			if (entity instanceof ItemEntity) {
-				icon = ItemStackElement.of(((ItemEntity) entity).getItem());
-			} else {
-				ItemStack stack = entity.getPickedResult(accessor.getHitResult());
-				if ((!(stack.getItem() instanceof SpawnEggItem) || !(entity instanceof LivingEntity)))
-					icon = ItemStackElement.of(stack);
-			}
-
-			for (IEntityComponentProvider provider : WailaRegistrar.INSTANCE.getEntityIconProviders(entity)) {
-				IElement element = provider.getIcon((EntityAccessor) accessor, PluginConfig.INSTANCE, icon);
-				if (!isEmpty(element))
-					icon = element;
-			}
-		} else if (accessor instanceof BlockAccessor) {
-			BlockAccessor blockAccessor = (BlockAccessor) accessor;
-			Level world = blockAccessor.getLevel();
-			BlockPos pos = blockAccessor.getHitResult().getBlockPos();
-			BlockState state = blockAccessor.getBlockState();
-			if (state.isAir())
-				return null;
-
-			ItemStack pick = state.getBlock().getPickBlock(state, target, world, pos, mc.player);
-			if (!pick.isEmpty())
-				icon = ItemStackElement.of(pick);
-
-			if (isEmpty(icon) && state.getBlock().asItem() != Items.AIR)
-				icon = ItemStackElement.of(new ItemStack(state.getBlock()));
-
-			if (isEmpty(icon) && state.getBlock() instanceof LiquidBlock) {
-				LiquidBlock block = (LiquidBlock) state.getBlock();
-				Fluid fluid = block.getFluid();
-				FluidStack fluidStack = new FluidStack(fluid, 1);
-				icon = new FluidStackElement(fluidStack);//.size(new Size(18, 18));
-			}
-
-			for (IComponentProvider provider : WailaRegistrar.INSTANCE.getBlockIconProviders(state.getBlock())) {
-				IElement element = provider.getIcon(blockAccessor, PluginConfig.INSTANCE, icon);
-				if (!isEmpty(element))
-					icon = element;
-			}
-		}
-
-		if (isEmpty(icon))
+		IElement icon = accessor._getIcon();
+		if (isEmptyElement(icon))
 			return null;
 		else
 			return icon;
 	}
 
-	private static boolean isEmpty(IElement element) {
+	public static boolean isEmptyElement(IElement element) {
 		return element == null || element == ItemStackElement.EMPTY;
 	}
 

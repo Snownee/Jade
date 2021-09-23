@@ -8,10 +8,6 @@ import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.WailaClient;
 import mcp.mobius.waila.addons.core.CorePlugin;
 import mcp.mobius.waila.api.Accessor;
-import mcp.mobius.waila.api.BlockAccessor;
-import mcp.mobius.waila.api.EntityAccessor;
-import mcp.mobius.waila.api.IComponentProvider;
-import mcp.mobius.waila.api.IEntityComponentProvider;
 import mcp.mobius.waila.api.TooltipPosition;
 import mcp.mobius.waila.api.config.WailaConfig.ConfigGeneral;
 import mcp.mobius.waila.api.config.WailaConfig.DisplayMode;
@@ -19,21 +15,16 @@ import mcp.mobius.waila.api.event.WailaRayTraceEvent;
 import mcp.mobius.waila.api.event.WailaTooltipEvent;
 import mcp.mobius.waila.api.ui.IElement;
 import mcp.mobius.waila.gui.OptionsScreen;
+import mcp.mobius.waila.impl.BlockAccessorImpl;
+import mcp.mobius.waila.impl.EntityAccessorImpl;
 import mcp.mobius.waila.impl.ObjectDataCenter;
 import mcp.mobius.waila.impl.Tooltip;
-import mcp.mobius.waila.impl.WailaRegistrar;
-import mcp.mobius.waila.impl.config.PluginConfig;
 import mcp.mobius.waila.impl.ui.TextElement;
-import mcp.mobius.waila.network.RequestEntityPacket;
-import mcp.mobius.waila.network.RequestTilePacket;
-import mcp.mobius.waila.utils.WailaExceptionHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.StringDecomposer;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.ChatVisiblity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
@@ -87,71 +78,50 @@ public class WailaTickHandler {
 			return;
 		}
 
-		Accessor accessor;
+		Accessor<?> accessor = null;
 		if (target instanceof BlockHitResult) {
 			BlockHitResult blockTarget = (BlockHitResult) target;
 			BlockState state = world.getBlockState(blockTarget.getBlockPos());
 			BlockEntity tileEntity = world.getBlockEntity(blockTarget.getBlockPos());
-			accessor = new BlockAccessor(state, tileEntity, world, player, ObjectDataCenter.getServerData(), blockTarget, ObjectDataCenter.serverConnected);
+			accessor = new BlockAccessorImpl(state, tileEntity, world, player, ObjectDataCenter.getServerData(), blockTarget, ObjectDataCenter.serverConnected);
 		} else if (target instanceof EntityHitResult) {
 			EntityHitResult entityTarget = (EntityHitResult) target;
-			accessor = new EntityAccessor(entityTarget.getEntity(), world, player, ObjectDataCenter.getServerData(), entityTarget, ObjectDataCenter.serverConnected);
-		} else {
+			accessor = new EntityAccessorImpl(entityTarget.getEntity(), world, player, ObjectDataCenter.getServerData(), entityTarget, ObjectDataCenter.serverConnected);
+		}
+
+		WailaRayTraceEvent event = new WailaRayTraceEvent(accessor, target);
+		MinecraftForge.EVENT_BUS.post(event);
+		ObjectDataCenter.set(accessor = event.getAccessor());
+		if (accessor == null || accessor.getHitResult() == null) {
 			tooltipRenderer = null;
 			return;
 		}
 
-		WailaRayTraceEvent event = new WailaRayTraceEvent(accessor);
-		MinecraftForge.EVENT_BUS.post(event);
-		ObjectDataCenter.set(accessor = event.getTarget());
-		if (accessor == null || accessor.getHitResult() == null)
+		if (!accessor.shouldDisplay()) {
+			tooltipRenderer = null;
 			return;
-
+		}
 		boolean showDetails = WailaClient.showDetails.isDown();
-		if (accessor instanceof BlockAccessor) {
-			if (!config.getDisplayBlocks()) {
-				tooltipRenderer = null;
+		if (accessor.isServerConnected()) {
+			boolean request = accessor.shouldRequestData();
+			if (ObjectDataCenter.isTimeElapsed(ObjectDataCenter.rateLimiter)) {
+				ObjectDataCenter.resetTimer();
+				if (request)
+					accessor._requestData(showDetails);
+			}
+			if (request && ObjectDataCenter.getServerData() == null) {
 				return;
-			}
-			BlockEntity tileEntity = ((BlockAccessor) accessor).getBlockEntity();
-			if (accessor.isServerConnected() && tileEntity != null && config.shouldDisplayTooltip()) {
-				if (ObjectDataCenter.isTimeElapsed(ObjectDataCenter.rateLimiter)) {
-					ObjectDataCenter.resetTimer();
-					if (!WailaRegistrar.INSTANCE.getBlockNBTProviders(tileEntity).isEmpty())
-						Waila.NETWORK.sendToServer(new RequestTilePacket(tileEntity, showDetails));
-				}
-				if (ObjectDataCenter.getServerData() == null) {
-					if (!WailaRegistrar.INSTANCE.getBlockNBTProviders(tileEntity).isEmpty())
-						return;
-				}
-			}
-		} else if (accessor instanceof EntityAccessor) {
-			if (!config.getDisplayEntities()) {
-				tooltipRenderer = null;
-				return;
-			}
-			Entity entity = ((EntityAccessor) accessor).getEntity();
-			if (accessor.isServerConnected() && entity != null && Waila.CONFIG.get().getGeneral().shouldDisplayTooltip()) {
-				if (ObjectDataCenter.isTimeElapsed(ObjectDataCenter.rateLimiter)) {
-					ObjectDataCenter.resetTimer();
-					if (!WailaRegistrar.INSTANCE.getEntityNBTProviders(entity).isEmpty())
-						Waila.NETWORK.sendToServer(new RequestEntityPacket(entity, showDetails));
-				}
-				if (ObjectDataCenter.getServerData() == null) {
-					if (!WailaRegistrar.INSTANCE.getEntityNBTProviders(entity).isEmpty())
-						return;
-				}
 			}
 		}
 
-		instance().gatherComponents(accessor, currentTip, TooltipPosition.HEAD);
-		instance().gatherComponents(accessor, currentTipBody, TooltipPosition.BODY);
+		gatherComponents(accessor, currentTip, TooltipPosition.HEAD);
+		gatherComponents(accessor, currentTipBody, TooltipPosition.BODY);
 		if (config.getDisplayMode() == DisplayMode.LITE && !currentTipBody.isEmpty() && !showDetails) {
 			currentTip.sneakyDetails = true;
 		} else {
 			currentTip.lines.addAll(currentTipBody.lines);
 		}
-		instance().gatherComponents(accessor, currentTip, TooltipPosition.TAIL);
+		gatherComponents(accessor, currentTip, TooltipPosition.TAIL);
 
 		tooltipRenderer = new TooltipRenderer(currentTip, true);
 	}
@@ -166,37 +136,10 @@ public class WailaTickHandler {
 		return INSTANCE;
 	}
 
-	public void gatherComponents(Accessor accessor, Tooltip tooltip, TooltipPosition position) {
-		accessor.setTooltipPosition(position);
-		if (accessor instanceof BlockAccessor) {
-			gatherBlockComponents((BlockAccessor) accessor, tooltip, position);
-		} else if (accessor instanceof EntityAccessor) {
-			gatherEntityComponents((EntityAccessor) accessor, tooltip, position);
-		}
-		accessor.setTooltipPosition(null);
-	}
-
-	private void gatherBlockComponents(BlockAccessor accessor, Tooltip tooltip, TooltipPosition position) {
-		Block block = accessor.getBlock();
-		List<IComponentProvider> providers = WailaRegistrar.INSTANCE.getBlockProviders(block, position);
-		for (IComponentProvider provider : providers) {
-			try {
-				provider.appendTooltip(tooltip, accessor, PluginConfig.INSTANCE);
-			} catch (Throwable e) {
-				WailaExceptionHandler.handleErr(e, provider.getClass().toString(), tooltip);
-			}
-		}
-	}
-
-	private void gatherEntityComponents(EntityAccessor accessor, Tooltip tooltip, TooltipPosition position) {
-		List<IEntityComponentProvider> providers = WailaRegistrar.INSTANCE.getEntityProviders(accessor.getEntity(), position);
-		for (IEntityComponentProvider provider : providers) {
-			try {
-				provider.appendTooltip(tooltip, accessor, PluginConfig.INSTANCE);
-			} catch (Throwable e) {
-				WailaExceptionHandler.handleErr(e, provider.getClass().toString(), tooltip);
-			}
-		}
+	public static void gatherComponents(Accessor<?> accessor, Tooltip tooltip, TooltipPosition position) {
+		accessor._setTooltipPosition(position);
+		accessor._gatherComponents(tooltip);
+		accessor._setTooltipPosition(null);
 	}
 
 	@SubscribeEvent

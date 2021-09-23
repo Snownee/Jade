@@ -1,5 +1,6 @@
 package mcp.mobius.waila.api;
 
+import mcp.mobius.waila.api.ui.IElement;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -9,57 +10,41 @@ import net.minecraft.world.phys.HitResult;
 /**
  * A generic class to get basic information of target and context.
  */
-public abstract class Accessor {
+public interface Accessor<T extends HitResult> {
 
-	private final Level world;
-	private final Player player;
-	private final CompoundTag serverData;
-	private final HitResult hit;
-	private final boolean serverConnected;
+	Level getLevel();
 
-	private TooltipPosition tooltipPosition;
+	Player getPlayer();
 
-	public Accessor(Level world, Player player, CompoundTag serverData, HitResult hit, boolean serverConnected) {
-		this.world = world;
-		this.player = player;
-		this.serverData = serverData;
-		this.hit = hit;
-		this.serverConnected = serverConnected;
-	}
+	CompoundTag getServerData();
 
-	public Level getLevel() {
-		return world;
-	}
-
-	public Player getPlayer() {
-		return player;
-	}
-
-	public CompoundTag getServerData() {
-		return serverData == null ? new CompoundTag() : serverData;
-	}
-
-	public HitResult getHitResult() {
-		return hit;
-	}
+	T getHitResult();
 
 	/**
 	 * Returns true if dedicated server has Jade installed.
 	 */
-	public boolean isServerConnected() {
-		return serverConnected;
-	}
+	boolean isServerConnected();
 
 	/**
 	 * Get {@link TooltipPosition} the {@link ITooltip} currently gathering
 	 */
-	public TooltipPosition getTooltipPosition() {
-		return tooltipPosition;
-	}
+	TooltipPosition getTooltipPosition();
 
-	public void setTooltipPosition(TooltipPosition tooltipPosition) {
-		this.tooltipPosition = tooltipPosition;
-	}
+	ItemStack getPickedResult();
 
-	public abstract ItemStack getPickedResult();
+	boolean shouldDisplay();
+
+	boolean shouldRequestData();
+
+	void _requestData(boolean showDetails);
+
+	boolean _verifyData(CompoundTag serverData);
+
+	IElement _getIcon();
+
+	void _gatherComponents(ITooltip tooltip);
+
+	void _setTooltipPosition(TooltipPosition tooltipPosition);
+
+	Object _getTrackObject();
 }

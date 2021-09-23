@@ -11,7 +11,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import mcp.mobius.waila.Waila;
-import mcp.mobius.waila.impl.Tooltip;
+import mcp.mobius.waila.api.ITooltip;
 import net.minecraft.network.chat.TextComponent;
 
 public class WailaExceptionHandler {
@@ -20,7 +20,7 @@ public class WailaExceptionHandler {
 	private static final File ERROR_OUTPUT = new File("WailaErrorOutput.txt");
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy - HH:mm:ss");
 
-	public static void handleErr(Throwable e, String className, Tooltip tooltip) {
+	public static void handleErr(Throwable e, String className, ITooltip tooltip) {
 		if (!ERRORS.contains(className)) {
 			ERRORS.add(className);
 

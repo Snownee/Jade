@@ -1,6 +1,9 @@
 package mcp.mobius.waila.api.event;
 
+import javax.annotation.Nullable;
+
 import mcp.mobius.waila.api.Accessor;
+import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.eventbus.api.Event;
 
 /**
@@ -9,23 +12,32 @@ import net.minecraftforge.eventbus.api.Event;
  */
 public class WailaRayTraceEvent extends Event {
 
-	private Accessor target;
-	private final Accessor originalTarget;
+	private Accessor<?> accessor;
+	private final Accessor<?> originalAccessor;
+	private final HitResult hitResult;
 
-	public WailaRayTraceEvent(Accessor target) {
-		this.target = originalTarget = target;
+	public WailaRayTraceEvent(Accessor<?> accessor, HitResult hitResult) {
+		this.accessor = originalAccessor = accessor;
+		this.hitResult = hitResult;
 	}
 
-	public Accessor getOriginalTarget() {
-		return originalTarget;
+	@Nullable
+	public Accessor<?> getOriginalAccessor() {
+		return originalAccessor;
 	}
 
-	public Accessor getTarget() {
-		return target;
+	@Nullable
+	public Accessor<?> getAccessor() {
+		return accessor;
 	}
 
-	public void setTarget(Accessor target) {
-		this.target = target;
+	@Nullable
+	public void setAccessor(Accessor<?> accessor) {
+		this.accessor = accessor;
+	}
+
+	public HitResult getHitResult() {
+		return hitResult;
 	}
 
 }

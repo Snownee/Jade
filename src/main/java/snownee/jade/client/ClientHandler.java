@@ -111,22 +111,22 @@ public final class ClientHandler {
 
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public static void override(WailaRayTraceEvent event) {
-		Player player = event.getTarget().getPlayer();
+		Player player = event.getAccessor().getPlayer();
 		if (player.isCreative() || player.isSpectator())
 			return;
-		if (event.getTarget() instanceof BlockAccessor) {
-			BlockAccessor target = (BlockAccessor) event.getTarget();
+		if (event.getAccessor() instanceof BlockAccessor) {
+			BlockAccessor target = (BlockAccessor) event.getAccessor();
 			if (target.getBlock() instanceof TrappedChestBlock) {
 				BlockState state = getCorrespondingNormalChest(target.getBlockState());
 				if (state != target.getBlockState()) {
-					event.setTarget(new BlockAccessor(state, target.getBlockEntity(), target.getLevel(), player, target.getServerData(), target.getHitResult(), target.isServerConnected()));
+					event.setAccessor(VanillaPlugin.REGISTRAR.createBlockAccessor(state, target.getBlockEntity(), target.getLevel(), player, target.getServerData(), target.getHitResult(), target.isServerConnected()));
 				}
 			} else if (target.getBlock() instanceof InfestedBlock) {
 				Block block = ((InfestedBlock) target.getBlock()).getHostBlock();
-				event.setTarget(new BlockAccessor(block.defaultBlockState(), target.getBlockEntity(), target.getLevel(), player, target.getServerData(), target.getHitResult(), target.isServerConnected()));
+				event.setAccessor(VanillaPlugin.REGISTRAR.createBlockAccessor(block.defaultBlockState(), target.getBlockEntity(), target.getLevel(), player, target.getServerData(), target.getHitResult(), target.isServerConnected()));
 			} else if (target.getBlock() == Blocks.POWDER_SNOW) {
 				Block block = Blocks.SNOW_BLOCK;
-				event.setTarget(new BlockAccessor(block.defaultBlockState(), null, target.getLevel(), player, target.getServerData(), target.getHitResult(), target.isServerConnected()));
+				event.setAccessor(VanillaPlugin.REGISTRAR.createBlockAccessor(block.defaultBlockState(), null, target.getLevel(), player, target.getServerData(), target.getHitResult(), target.isServerConnected()));
 			}
 		}
 	}

@@ -51,7 +51,7 @@ public class InventoryProvider implements IComponentProvider, IServerDataProvide
 		append(tooltip, accessor);
 	}
 
-	public static void append(ITooltip tooltip, Accessor accessor) {
+	public static void append(ITooltip tooltip, Accessor<?> accessor) {
 		if (accessor.getServerData().getBoolean("Loot")) {
 			tooltip.add(new TranslatableComponent("jade.not_generated"), VanillaPlugin.INVENTORY);
 			return;
