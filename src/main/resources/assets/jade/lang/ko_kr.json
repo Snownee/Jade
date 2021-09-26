@@ -136,6 +136,7 @@
   "config.waila.plugin_minecraft.item_tooltip": "아이템 설명",
   "config.waila.plugin_minecraft.inventory": "저장소",
   "jade.locked": "저장소가 잠겨있습니다",
+  "jade.not_generated": "아이템이 생성되지 않았습니다",
   "config.waila.plugin_minecraft.fe": "포지 에너지 (FE)",
   "jade.fe": "%s / %s",
   "config.waila.plugin_minecraft.fluid": "액체 탱크",
