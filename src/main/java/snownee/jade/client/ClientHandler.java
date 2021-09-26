@@ -1,6 +1,5 @@
 package snownee.jade.client;
 
-import java.awt.Rectangle;
 import java.util.Map;
 
 import com.google.common.cache.Cache;
@@ -8,12 +7,14 @@ import com.google.common.cache.CacheBuilder;
 
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.BlockAccessor;
+import mcp.mobius.waila.api.config.WailaConfig.ConfigOverlay.ConfigOverlayColor;
 import mcp.mobius.waila.api.event.WailaRayTraceEvent;
 import mcp.mobius.waila.api.event.WailaRenderEvent;
 import mcp.mobius.waila.impl.config.PluginConfig;
 import mcp.mobius.waila.overlay.DisplayHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
@@ -35,31 +36,47 @@ import snownee.jade.VanillaPlugin;
 @OnlyIn(Dist.CLIENT)
 @EventBusSubscriber(Dist.CLIENT)
 public final class ClientHandler {
+	private static float savedProgress;
+	private static float progressAlpha;
+	private static boolean canHarvest;
 
 	@SubscribeEvent
 	public static void post(WailaRenderEvent.Post event) {
 		if (!PluginConfig.INSTANCE.get(VanillaPlugin.BREAKING_PROGRESS)) {
+			progressAlpha = 0;
 			return;
 		}
 		Minecraft mc = Minecraft.getInstance();
 		MultiPlayerGameMode playerController = mc.gameMode;
-		if (playerController == null || !playerController.isDestroying()) {
+		if (playerController == null || playerController.destroyBlockPos == null) {
 			return;
 		}
 		BlockState state = mc.level.getBlockState(playerController.destroyBlockPos);
-		boolean canHarvest = ForgeHooks.isCorrectToolForDrops(state, mc.player);
-		int color = canHarvest ? 0x88FFFFFF : 0x88FF4444;
-		Rectangle rect = event.getPosition();
-		int height = rect.height;
-		int width = rect.width;
+		if (playerController.isDestroying())
+			canHarvest = ForgeHooks.isCorrectToolForDrops(state, mc.player);
+		int color = canHarvest ? 0xFFFFFF : 0xFF4444;
+		Rect2i rect = event.getRect();
+		int height = rect.getHeight();
+		int width = rect.getWidth();
 		if (!Waila.CONFIG.get().getOverlay().getSquare()) {
 			height -= 1;
 			width -= 2;
 		}
-		float progress = state.getDestroyProgress(mc.player, mc.player.level, playerController.destroyBlockPos);
-		progress = playerController.destroyProgress + mc.getFrameTime() * progress;
-		progress = Mth.clamp(progress, 0, 1);
-		DisplayHelper.fill(event.getPoseStack(), 0, height - 1, width * progress, height, color);
+		progressAlpha += mc.getDeltaFrameTime() * (playerController.isDestroying() ? 0.1F : -0.1F);
+		if (playerController.isDestroying()) {
+			progressAlpha = Math.min(progressAlpha, 0.53F); //0x88 = 0.53 * 255
+			float progress = state.getDestroyProgress(mc.player, mc.player.level, playerController.destroyBlockPos);
+			if (playerController.destroyProgress + progress >= 1) {
+				progressAlpha = 1;
+			}
+			progress = playerController.destroyProgress + mc.getFrameTime() * progress;
+			progress = Mth.clamp(progress, 0, 1);
+			savedProgress = progress;
+		} else {
+			progressAlpha = Math.max(progressAlpha, 0);
+		}
+		color = ConfigOverlayColor.applyAlpha(color, progressAlpha);
+		DisplayHelper.fill(event.getPoseStack(), 0, height - 1, width * savedProgress, height, color);
 	}
 
 	private static final Cache<BlockState, BlockState> CHEST_CACHE = CacheBuilder.newBuilder().build();

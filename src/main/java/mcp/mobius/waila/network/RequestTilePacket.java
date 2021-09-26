@@ -9,15 +9,15 @@ import mcp.mobius.waila.impl.WailaRegistrar;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.fmllegacy.network.NetworkDirection;
 import net.minecraftforge.fmllegacy.network.NetworkEvent;
-import net.minecraftforge.fmllegacy.server.ServerLifecycleHooks;
 
 public class RequestTilePacket {
+
+	public static int MAX_DISTANCE_SQR = 900;
 
 	public BlockPos pos;
 	public boolean showDetails;
@@ -43,28 +43,23 @@ public class RequestTilePacket {
 	public static class Handler {
 
 		public static void onMessage(RequestTilePacket message, Supplier<NetworkEvent.Context> context) {
-			final MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-			if (server == null)
-				return;
-
-			server.execute(() -> {
+			context.get().enqueueWork(() -> {
 				ServerPlayer player = context.get().getSender();
 				Level world = player.level;
-				if (!world.isLoaded(message.pos))
+				if (message.pos.distSqr(player.blockPosition()) > MAX_DISTANCE_SQR || !world.isLoaded(message.pos))
 					return;
 
 				BlockEntity tile = world.getBlockEntity(message.pos);
 				if (tile == null)
 					return;
 
-				CompoundTag tag = new CompoundTag();
 				List<IServerDataProvider<BlockEntity>> providers = WailaRegistrar.INSTANCE.getBlockNBTProviders(tile);
-				if (!providers.isEmpty()) {
-					for (IServerDataProvider<BlockEntity> provider : providers) {
-						provider.appendServerData(tag, player, world, tile, message.showDetails);
-					}
-				} else {
-					tile.save(tag);
+				if (providers.isEmpty())
+					return;
+
+				CompoundTag tag = new CompoundTag();
+				for (IServerDataProvider<BlockEntity> provider : providers) {
+					provider.appendServerData(tag, player, world, tile, message.showDetails);
 				}
 
 				tag.putInt("x", message.pos.getX());

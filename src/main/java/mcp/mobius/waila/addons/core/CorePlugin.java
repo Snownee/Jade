@@ -50,5 +50,6 @@ public class CorePlugin implements IWailaPlugin {
 		registrar.addConfig(CONFIG_ITEM_MOD_NAME, false);
 
 		registrar.hideTarget(EntityType.AREA_EFFECT_CLOUD);
+		registrar.hideTarget(EntityType.FIREWORK_ROCKET);
 	}
 }

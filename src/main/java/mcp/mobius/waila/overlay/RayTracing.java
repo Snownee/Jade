@@ -6,6 +6,7 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 
 import mcp.mobius.waila.Waila;
+import mcp.mobius.waila.api.Accessor;
 import mcp.mobius.waila.api.BlockAccessor;
 import mcp.mobius.waila.api.EntityAccessor;
 import mcp.mobius.waila.api.IComponentProvider;
@@ -73,6 +74,7 @@ public class RayTracing {
 		Vec3 traceEnd;
 		if (mc.hitResult != null && mc.hitResult.getType() == Type.BLOCK) {
 			traceEnd = mc.hitResult.getLocation();
+			traceEnd = eyePosition.add(traceEnd.subtract(eyePosition).scale(1.01));
 		} else {
 			Vec3 lookVector = entity.getViewVector(partialTicks);
 			traceEnd = eyePosition.add(lookVector.x * playerReach, lookVector.y * playerReach, lookVector.z * playerReach);
@@ -81,7 +83,7 @@ public class RayTracing {
 		Level world = entity.level;
 		AABB bound = new AABB(eyePosition, traceEnd);
 		Predicate<Entity> predicate = e -> canBeTarget(e, entity);
-		EntityHitResult entityResult = rayTraceEntities(world, entity, eyePosition, traceEnd, bound, predicate);
+		EntityHitResult entityResult = getEntityHitResult(world, entity, eyePosition, traceEnd, bound, predicate);
 
 		if (mc.hitResult != null && mc.hitResult.getType() == Type.BLOCK) {
 			Vec3 lookVector = entity.getViewVector(partialTicks);
@@ -127,16 +129,13 @@ public class RayTracing {
 		return !WailaRegistrar.INSTANCE.shouldHide(target);
 	}
 
-	// from ProjectileHelper
+	// from ProjectileUtil
 	@Nullable
-	public static EntityHitResult rayTraceEntities(Level worldIn, Entity projectile, Vec3 startVec, Vec3 endVec, AABB boundingBox, Predicate<Entity> filter) {
+	public static EntityHitResult getEntityHitResult(Level worldIn, Entity projectile, Vec3 startVec, Vec3 endVec, AABB boundingBox, Predicate<Entity> filter) {
 		double d0 = Double.MAX_VALUE;
 		Entity entity = null;
 
 		for (Entity entity1 : worldIn.getEntities(projectile, boundingBox, filter)) {
-			if (entity1.isSpectator() || WailaRegistrar.INSTANCE.shouldHide(entity1)) {
-				continue;
-			}
 			AABB axisalignedbb = entity1.getBoundingBox();
 			if (axisalignedbb.getSize() < 0.3) {
 				axisalignedbb = axisalignedbb.inflate(0.3);
@@ -155,36 +154,34 @@ public class RayTracing {
 	}
 
 	public IElement getIcon() {
-		if (target == null)
+		Accessor accessor = ObjectDataCenter.get();
+		if (accessor == null)
 			return null;
 
+		//TODO 1.18: Accessor Factory
 		IElement icon = null;
-		switch (target.getType()) {
-		case ENTITY: {
-			EntityAccessor accessor = (EntityAccessor) ObjectDataCenter.get();
-			Entity entity = accessor.getEntity();
+		if (accessor instanceof EntityAccessor) {
+			Entity entity = ((EntityAccessor) accessor).getEntity();
 			if (entity instanceof ItemEntity) {
 				icon = ItemStackElement.of(((ItemEntity) entity).getItem());
 			} else {
-				ItemStack stack = entity.getPickedResult(target);
+				ItemStack stack = entity.getPickedResult(accessor.getHitResult());
 				if ((!(stack.getItem() instanceof SpawnEggItem) || !(entity instanceof LivingEntity)))
 					icon = ItemStackElement.of(stack);
 			}
 
 			for (IEntityComponentProvider provider : WailaRegistrar.INSTANCE.getEntityIconProviders(entity)) {
-				IElement element = provider.getIcon(accessor, PluginConfig.INSTANCE, icon);
+				IElement element = provider.getIcon((EntityAccessor) accessor, PluginConfig.INSTANCE, icon);
 				if (!isEmpty(element))
 					icon = element;
 			}
-			break;
-		}
-		case BLOCK: {
-			Level world = mc.level;
-			BlockPos pos = ((BlockHitResult) target).getBlockPos();
-			BlockAccessor accessor = (BlockAccessor) ObjectDataCenter.get();
-			BlockState state = accessor.getBlockState();
+		} else if (accessor instanceof BlockAccessor) {
+			BlockAccessor blockAccessor = (BlockAccessor) accessor;
+			Level world = blockAccessor.getLevel();
+			BlockPos pos = blockAccessor.getHitResult().getBlockPos();
+			BlockState state = blockAccessor.getBlockState();
 			if (state.isAir())
-				break;
+				return null;
 
 			ItemStack pick = state.getBlock().getPickBlock(state, target, world, pos, mc.player);
 			if (!pick.isEmpty())
@@ -201,14 +198,10 @@ public class RayTracing {
 			}
 
 			for (IComponentProvider provider : WailaRegistrar.INSTANCE.getBlockIconProviders(state.getBlock())) {
-				IElement element = provider.getIcon(accessor, PluginConfig.INSTANCE, icon);
+				IElement element = provider.getIcon(blockAccessor, PluginConfig.INSTANCE, icon);
 				if (!isEmpty(element))
 					icon = element;
 			}
-			break;
-		}
-		default:
-			break;
 		}
 
 		if (isEmpty(icon))

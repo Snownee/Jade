@@ -24,7 +24,9 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fmlclient.ConfigGuiHandler.ConfigGuiFactory;
 import net.minecraftforge.fmlclient.registry.ClientRegistry;
 import snownee.jade.Jade;
 
@@ -37,8 +39,7 @@ public class WailaClient {
 	public static KeyMapping showDetails;
 
 	public static void initClient() {
-		//TODO
-		//ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.CONFIGGUIFACTORY, () -> ((minecraft, screen) -> new HomeConfigScreen(screen)));
+		ModLoadingContext.get().registerExtensionPoint(ConfigGuiFactory.class, () -> new ConfigGuiFactory((minecraft, screen) -> new HomeConfigScreen(screen)));
 
 		WailaClient.openConfig = new KeyMapping("key.waila.config", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputConstants.Type.KEYSYM.getOrCreate(320), Jade.NAME);
 		WailaClient.showOverlay = new KeyMapping("key.waila.show_overlay", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputConstants.Type.KEYSYM.getOrCreate(321), Jade.NAME);
@@ -75,17 +76,36 @@ public class WailaClient {
 		}
 	}
 
+	//public static boolean hasJEI = ModList.get().isLoaded("jei");
 	public static boolean hideModName;
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public static void onTooltip(ItemTooltipEvent event) {
-		if (!hideModName && PluginConfig.INSTANCE.get(CorePlugin.CONFIG_ITEM_MOD_NAME, false)) {
-			String name = String.format(Waila.CONFIG.get().getFormatting().getModName(), ModIdentification.getModName(event.getItemStack()));
-			event.getToolTip().add(new TextComponent(name));
-		}
+		appendModName(event);
 		if (Waila.CONFIG.get().getGeneral().isDebug() && event.getItemStack().hasTag()) {
 			event.getToolTip().add(NbtUtils.toPrettyComponent(event.getItemStack().getTag()));
 		}
+	}
+
+	private static void appendModName(ItemTooltipEvent event) {
+		if (hideModName || !PluginConfig.INSTANCE.get(CorePlugin.CONFIG_ITEM_MOD_NAME, false))
+			return;
+		//		if (hasJEI) {
+		//			if (JEIClientConfig.modNameFormat.modNameFormat != "") {
+		//				StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+		//				int i = 0;
+		//				for (StackTraceElement element : stackTrace) {
+		//					if (++i > 12) {
+		//						break;
+		//					}
+		//					if (element.getMethodName().equals("getIngredientTooltipSafe")) {
+		//						return;
+		//					}
+		//				}
+		//			}
+		//		}
+		String name = String.format(Waila.CONFIG.get().getFormatting().getModName(), ModIdentification.getModName(event.getItemStack()));
+		event.getToolTip().add(new TextComponent(name));
 	}
 
 	@SubscribeEvent

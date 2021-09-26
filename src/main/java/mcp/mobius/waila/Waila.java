@@ -1,6 +1,7 @@
 package mcp.mobius.waila;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
@@ -70,10 +71,10 @@ public class Waila {
 
 	@SubscribeEvent
 	public void setup(FMLCommonSetupEvent event) {
-		NETWORK.registerMessage(0, ReceiveDataPacket.class, ReceiveDataPacket::write, ReceiveDataPacket::read, ReceiveDataPacket.Handler::onMessage);
-		NETWORK.registerMessage(1, ServerPingPacket.class, ServerPingPacket::write, ServerPingPacket::read, ServerPingPacket.Handler::onMessage);
-		NETWORK.registerMessage(2, RequestEntityPacket.class, RequestEntityPacket::write, RequestEntityPacket::read, RequestEntityPacket.Handler::onMessage);
-		NETWORK.registerMessage(3, RequestTilePacket.class, RequestTilePacket::write, RequestTilePacket::read, RequestTilePacket.Handler::onMessage);
+		NETWORK.registerMessage(0, ReceiveDataPacket.class, ReceiveDataPacket::write, ReceiveDataPacket::read, ReceiveDataPacket.Handler::onMessage, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+		NETWORK.registerMessage(1, ServerPingPacket.class, ServerPingPacket::write, ServerPingPacket::read, ServerPingPacket.Handler::onMessage, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+		NETWORK.registerMessage(2, RequestEntityPacket.class, RequestEntityPacket::write, RequestEntityPacket::read, RequestEntityPacket.Handler::onMessage, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+		NETWORK.registerMessage(3, RequestTilePacket.class, RequestTilePacket::write, RequestTilePacket::read, RequestTilePacket.Handler::onMessage, Optional.of(NetworkDirection.PLAY_TO_SERVER));
 	}
 
 	@SubscribeEvent
@@ -102,14 +103,14 @@ public class Waila {
 		/* on */
 
 		for (String className : classNames) {
+			LOGGER.info("Start loading plugin at {}", className);
 			try {
 				Class<?> clazz = Class.forName(className);
 				if (IWailaPlugin.class.isAssignableFrom(clazz)) {
 					IWailaPlugin plugin = (IWailaPlugin) clazz.getDeclaredConstructor().newInstance();
 					plugin.register(WailaRegistrar.INSTANCE);
-					LOGGER.info("Registered plugin at {}", className);
 				}
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				LOGGER.error("Error loading plugin at {}", className, e);
 			}
 		}

@@ -8,13 +8,11 @@ import mcp.mobius.waila.api.IServerDataProvider;
 import mcp.mobius.waila.impl.WailaRegistrar;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.fmllegacy.network.NetworkDirection;
 import net.minecraftforge.fmllegacy.network.NetworkEvent;
-import net.minecraftforge.fmllegacy.server.ServerLifecycleHooks;
 
 public class RequestEntityPacket {
 
@@ -42,26 +40,21 @@ public class RequestEntityPacket {
 	public static class Handler {
 
 		public static void onMessage(final RequestEntityPacket message, Supplier<NetworkEvent.Context> context) {
-			final MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-			if (server == null)
-				return;
-
-			server.execute(() -> {
+			context.get().enqueueWork(() -> {
 				ServerPlayer player = context.get().getSender();
 				Level world = player.level;
 				Entity entity = world.getEntity(message.entityId);
 
-				if (entity == null)
+				if (entity == null || player.distanceToSqr(entity) > RequestTilePacket.MAX_DISTANCE_SQR)
+					return;
+
+				List<IServerDataProvider<Entity>> providers = WailaRegistrar.INSTANCE.getEntityNBTProviders(entity);
+				if (providers.isEmpty())
 					return;
 
 				CompoundTag tag = new CompoundTag();
-				List<IServerDataProvider<Entity>> providers = WailaRegistrar.INSTANCE.getEntityNBTProviders(entity);
-				if (!providers.isEmpty()) {
-					for (IServerDataProvider<Entity> provider : providers) {
-						provider.appendServerData(tag, player, world, entity, message.showDetails);
-					}
-				} else {
-					entity.saveWithoutId(tag);
+				for (IServerDataProvider<Entity> provider : providers) {
+					provider.appendServerData(tag, player, world, entity, message.showDetails);
 				}
 
 				tag.putInt("WailaEntityID", entity.getId());
