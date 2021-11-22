@@ -105,10 +105,6 @@ dependencies {
 
     compileOnly fg.deobf("mezz.jei:jei-1.17.1:8.0.0.14:api")
     runtimeOnly fg.deobf("mezz.jei:jei-1.17.1:8.0.0.14")
-	
-	//compile fg.deobf("curse.maven:hwyla:3033593")
-	//compile files("Hwyla-1.10.8-B72_1.15.2.jar")
-    //compile fg.deobf("mcp.mobius.waila:Hwyla:forge-1.10.9-B76_1.16.1")
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
