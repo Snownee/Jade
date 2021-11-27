@@ -1,0 +1,56 @@
+name: New Issue
+description: Do not write different problems/ideas in one issue. Separate them
+body:
+  - type: dropdown
+    id: modloader
+    attributes:
+      label: Mod loader
+      options:
+        - Forge
+        - Fabric
+    validations:
+      required: true
+  - type: input
+    id: mc-version
+    attributes:
+      label: Minecraft version
+      placeholder: eg. 1.17.1
+    validations:
+      required: true
+  - type: input
+    id: mod-version
+    attributes:
+      label: Mod version
+      placeholder: eg. 1.0.0
+    validations:
+      required: true
+  - type: input
+    id: modloader-version
+    attributes:
+      label: Modloader version
+      description: |
+        List the version of the mod loader you are using.
+        If on Fabric, post the versions of both Fabric Loader and Fabric API.
+      placeholder: "eg. Forge: 36.2.9 / Fabric: Loader 0.10.6 + API 0.42.1"
+    validations:
+      required: true
+  - type: input
+    id: modpack
+    attributes:
+      label: Modpack info
+      description: |
+        If playing a modpack, post the link to it!
+  - type: checkboxes
+    id: reproducible
+    attributes:
+      label: "If bug:"
+      options:
+        - label: "Can you reproduce this issue with relevant mods only?"
+  - type: input
+    attributes:
+      label: "If bug: The latest.log file"
+      description: "Please use a paste site such as [gist](https://gist.github.com/) / [pastebin](https://pastebin.com/) / etc."
+  - type: textarea
+    attributes:
+      label: Issue description
+      placeholder: A description of the issue.
