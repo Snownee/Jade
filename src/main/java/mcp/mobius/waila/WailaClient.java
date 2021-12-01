@@ -16,6 +16,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.ClientRegistry;
+import net.minecraftforge.client.ConfigGuiHandler.ConfigGuiFactory;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
@@ -26,8 +28,6 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fmlclient.ConfigGuiHandler.ConfigGuiFactory;
-import net.minecraftforge.fmlclient.registry.ClientRegistry;
 import snownee.jade.Jade;
 
 @Mod.EventBusSubscriber(modid = Waila.MODID, value = Dist.CLIENT)

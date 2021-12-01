@@ -91,15 +91,15 @@ public class DisplayHelper implements IDisplayHelper {
 			multibuffersource$buffersource.endBatch();
 		}
 
-		if (stack.getItem().showDurabilityBar(stack)) {
+		if (stack.isBarVisible()) {
 			RenderSystem.disableDepthTest();
 			RenderSystem.disableTexture();
 			RenderSystem.disableBlend();
 			Tesselator tesselator = Tesselator.getInstance();
 			BufferBuilder bufferbuilder = tesselator.getBuilder();
-			double health = stack.getItem().getDurabilityForDisplay(stack);
+			double health = stack.getBarWidth();
 			int i = Math.round(13.0F - (float) health * 13.0F);
-			int j = stack.getItem().getRGBDurabilityForDisplay(stack);
+			int j = stack.getBarColor();
 			draw(posestack, bufferbuilder, p_115177_ + 2, p_115178_ + 13, 13, 2, 0, 0, 0, 255);
 			draw(posestack, bufferbuilder, p_115177_ + 2, p_115178_ + 13, i, 1, j >> 16 & 255, j >> 8 & 255, j & 255, 255);
 			RenderSystem.enableBlend();

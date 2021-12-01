@@ -17,7 +17,6 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.util.Constants.NBT;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fluids.FluidStack;
@@ -57,7 +56,7 @@ public class ForgeCapabilityProvider implements IComponentProvider, IServerDataP
 				IFluidHandler fluidHandler = tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).orElse(null);
 				if (fluidHandler != null && (!accessor.isServerConnected() || accessor.getServerData().contains("jadeTanks"))) {
 					if (accessor.isServerConnected()) {
-						ListTag list = accessor.getServerData().getList("jadeTanks", NBT.TAG_COMPOUND);
+						ListTag list = accessor.getServerData().getList("jadeTanks", Tag.TAG_COMPOUND);
 						for (Tag nbt : list) {
 							CompoundTag tankData = (CompoundTag) nbt;
 							int capacity = tankData.getInt("capacity");

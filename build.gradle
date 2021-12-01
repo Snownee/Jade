@@ -19,7 +19,7 @@ version = "${version_major}.${version_minor}.${version_patch}"
 group = "snownee.jade"
 archivesBaseName = "Jade-${minecraft_version}"
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(16)
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 
 if (System.getenv().BUILD_NUMBER != null) {
@@ -28,7 +28,8 @@ if (System.getenv().BUILD_NUMBER != null) {
 }
 
 minecraft {
-    mappings channel: 'parchment', version: '2021.09.05-1.17.1'
+    //mappings channel: 'parchment', version: '2021.09.05-1.17.1'
+    mappings channel: 'official', version: '1.18'
 
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
@@ -103,8 +104,8 @@ dependencies {
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
-    compileOnly fg.deobf("mezz.jei:jei-1.17.1:8.0.0.14:api")
-    runtimeOnly fg.deobf("mezz.jei:jei-1.17.1:8.0.0.14")
+    //compileOnly fg.deobf("mezz.jei:jei-1.17.1:8.0.0.14:api")
+    //runtimeOnly fg.deobf("mezz.jei:jei-1.17.1:8.0.0.14")
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..

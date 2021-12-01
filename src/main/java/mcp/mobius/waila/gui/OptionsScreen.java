@@ -104,7 +104,7 @@ public abstract class OptionsScreen extends Screen {
 	public void renderBackground(PoseStack matrixStack, int vOffset) {
 		if (minecraft.level != null) {
 			this.fillGradient(matrixStack, 0, 0, width, height, -1072689136, -804253680);
-			net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.GuiScreenEvent.BackgroundDrawnEvent(this, matrixStack));
+			net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.ScreenEvent.BackgroundDrawnEvent(this, matrixStack));
 		} else {
 			renderDirtBackground(vOffset);
 		}

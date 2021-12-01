@@ -18,6 +18,7 @@ import mcp.mobius.waila.utils.ModIdentification;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
@@ -29,7 +30,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.Property;
-import net.minecraftforge.common.util.Constants;
 import snownee.jade.JadeCommonConfig;
 
 public class BaseBlockProvider implements IComponentProvider, IServerDataProvider<BlockEntity> {
@@ -50,7 +50,7 @@ public class BaseBlockProvider implements IComponentProvider, IServerDataProvide
 
 	public void appendHead(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		Component name = null;
-		if (accessor.getServerData().contains("givenName", Constants.NBT.TAG_STRING)) {
+		if (accessor.getServerData().contains("givenName", Tag.TAG_STRING)) {
 			name = Component.Serializer.fromJson(accessor.getServerData().getString("givenName"));
 		} else {
 			if (WailaRegistrar.INSTANCE.shouldPick(accessor.getBlockState())) {
@@ -63,7 +63,7 @@ public class BaseBlockProvider implements IComponentProvider, IServerDataProvide
 				if (I18n.exists(key)) {
 					name = accessor.getBlock().getName();
 				} else {
-					ItemStack stack = accessor.getBlockState().getPickBlock(accessor.getHitResult(), accessor.getLevel(), accessor.getPosition(), accessor.getPlayer());
+					ItemStack stack = accessor.getBlockState().getCloneItemStack(accessor.getHitResult(), accessor.getLevel(), accessor.getPosition(), accessor.getPlayer());
 					if (stack != null && !stack.isEmpty()) {
 						name = stack.getHoverName();
 					} else {

@@ -10,12 +10,12 @@ import mcp.mobius.waila.impl.ui.ProgressArrowElement;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.util.Constants;
 import snownee.jade.VanillaPlugin;
 
 public class FurnaceProvider implements IComponentProvider, IServerDataProvider<BlockEntity> {
@@ -31,7 +31,7 @@ public class FurnaceProvider implements IComponentProvider, IServerDataProvider<
 		if (progress == 0)
 			return;
 
-		ListTag furnaceItems = accessor.getServerData().getList("furnace", Constants.NBT.TAG_COMPOUND);
+		ListTag furnaceItems = accessor.getServerData().getList("furnace", Tag.TAG_COMPOUND);
 		NonNullList<ItemStack> inventory = NonNullList.withSize(3, ItemStack.EMPTY);
 		for (int i = 0; i < furnaceItems.size(); i++)
 			inventory.set(i, ItemStack.of(furnaceItems.getCompound(i)));

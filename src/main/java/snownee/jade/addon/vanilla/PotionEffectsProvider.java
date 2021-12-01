@@ -12,6 +12,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -22,7 +23,6 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.util.Constants;
 import snownee.jade.VanillaPlugin;
 
 public class PotionEffectsProvider implements IEntityComponentProvider, IServerDataProvider<Entity> {
@@ -35,7 +35,7 @@ public class PotionEffectsProvider implements IEntityComponentProvider, IServerD
 		}
 		IElementHelper helper = tooltip.getElementHelper();
 		ITooltip box = helper.tooltip();
-		ListTag list = accessor.getServerData().getList("Potions", Constants.NBT.TAG_COMPOUND);
+		ListTag list = accessor.getServerData().getList("Potions", Tag.TAG_COMPOUND);
 		Component[] lines = new Component[list.size()];
 		for (int i = 0; i < lines.length; i++) {
 			CompoundTag compound = list.getCompound(i);

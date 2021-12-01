@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[37,)"
+loaderVersion="[38,)"
 license="CC BY-NC-SA 4.0"
 
 [[mods]]
@@ -21,7 +21,7 @@ description="You are using Jade, a fork of Hwyla."
 [[dependencies.jade]]
     modId="forge"
     mandatory=true
-    versionRange="[37.0.32, )"
+    versionRange="[38, )"
     ordering="BEFORE"
     side="BOTH"
 

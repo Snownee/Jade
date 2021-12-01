@@ -70,7 +70,7 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 
 	@Override
 	public ItemStack getPickedResult() {
-		return getBlockState().getPickBlock(getHitResult(), getLevel(), getPosition(), getPlayer());
+		return getBlockState().getCloneItemStack(getHitResult(), getLevel(), getPosition(), getPlayer());
 	}
 
 	@Override
