@@ -32,7 +32,7 @@ public class OptionButton extends OptionsListWidget.Entry {
 
 	@Override
 	public boolean mouseClicked(double mouseY, double mouseX, int button) {
-		if (button == 0 && this.button.isMouseOver(mouseX, mouseY)) {
+		if (button == 0) {
 			this.button.playDownSound(Minecraft.getInstance().getSoundManager());
 			this.button.onPress();
 			return true;
