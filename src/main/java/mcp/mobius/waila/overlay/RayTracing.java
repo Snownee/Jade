@@ -12,10 +12,13 @@ import mcp.mobius.waila.impl.ObjectDataCenter;
 import mcp.mobius.waila.impl.WailaRegistrar;
 import mcp.mobius.waila.impl.ui.ItemStackElement;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
@@ -75,7 +78,11 @@ public class RayTracing {
 			traceEnd = eyePosition.add(lookVector.x * playerReach, lookVector.y * playerReach, lookVector.z * playerReach);
 		}
 
-		ClipContext.Fluid fluidView = Waila.CONFIG.get().getGeneral().getDisplayFluids();
+		Block eyeBlock = world.getBlockState(new BlockPos(eyePosition.x, eyePosition.y, eyePosition.z)).getBlock();
+		ClipContext.Fluid fluidView = ClipContext.Fluid.NONE;
+		if (!(eyeBlock instanceof LiquidBlock)) {
+			fluidView = Waila.CONFIG.get().getGeneral().getDisplayFluids();
+		}
 		ClipContext context = new ClipContext(eyePosition, traceEnd, ClipContext.Block.OUTLINE, fluidView, entity);
 
 		BlockHitResult blockResult = world.clip(context);
@@ -90,7 +97,7 @@ public class RayTracing {
 				return entityResult;
 			}
 		}
-		if (blockResult != null) {
+		if (blockResult != null && blockResult.getType() == Type.BLOCK) {
 			BlockState state = world.getBlockState(blockResult.getBlockPos());
 			if (WailaRegistrar.INSTANCE.shouldHide(state)) {
 				return null;
