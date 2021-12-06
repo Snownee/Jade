@@ -85,10 +85,10 @@ artifacts {
 }
 
 repositories {
-    maven {
-        name = "jei"
-        url = "https://dvs1.progwml6.com/files/maven"
-    }
+    //maven {
+    //    name = "jei"
+    //    url = "https://dvs1.progwml6.com/files/maven"
+    //}
     maven {
         url = "https://www.cursemaven.com"
     }
@@ -106,6 +106,7 @@ dependencies {
 
     //compileOnly fg.deobf("mezz.jei:jei-1.17.1:8.0.0.14:api")
     //runtimeOnly fg.deobf("mezz.jei:jei-1.17.1:8.0.0.14")
+    implementation fg.deobf("curse.maven:jei-238222:3550020")
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
