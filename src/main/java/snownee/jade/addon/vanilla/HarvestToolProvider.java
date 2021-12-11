@@ -41,7 +41,6 @@ import net.minecraftforge.common.IForgeShearable;
 import net.minecraftforge.common.Tags;
 import snownee.jade.VanillaPlugin;
 
-@SuppressWarnings("deprecation")
 public class HarvestToolProvider implements IComponentProvider, ResourceManagerReloadListener {
 
 	public static final HarvestToolProvider INSTANCE = new HarvestToolProvider();

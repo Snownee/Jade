@@ -5,6 +5,7 @@ import mcp.mobius.waila.api.IEntityComponentProvider;
 import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.config.IPluginConfig;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -12,12 +13,14 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.monster.ZombieVillager;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerData;
+import net.minecraft.world.entity.npc.VillagerProfession;
 import snownee.jade.VanillaPlugin;
 
+// @MerchantScreen
 public class VillagerProfessionProvider implements IEntityComponentProvider {
 
 	public static final VillagerProfessionProvider INSTANCE = new VillagerProfessionProvider();
-	private static final Component field_243352_C = new TextComponent(" - ");
+	private static final Component LEVEL_SEPARATOR = new TextComponent(" - ");
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
@@ -35,7 +38,12 @@ public class VillagerProfessionProvider implements IEntityComponentProvider {
 		}
 		int level = data.getLevel();
 		ResourceLocation profName = data.getProfession().getRegistryName();
-		tooltip.add(new TranslatableComponent(EntityType.VILLAGER.getDescriptionId() + '.' + (!"minecraft".equals(profName.getNamespace()) ? profName.getNamespace() + '.' : "") + profName.getPath()).append(field_243352_C).append(new TranslatableComponent("merchant.level." + level)));
+		MutableComponent component = new TranslatableComponent(EntityType.VILLAGER.getDescriptionId() + '.' + (!"minecraft".equals(profName.getNamespace()) ? profName.getNamespace() + '.' : "") + profName.getPath());
+		VillagerProfession profession = data.getProfession();
+		if (profession != VillagerProfession.NONE && profession != VillagerProfession.NITWIT) {
+			component.append(LEVEL_SEPARATOR).append(new TranslatableComponent("merchant.level." + level));
+		}
+		tooltip.add(component);
 	}
 
 }
