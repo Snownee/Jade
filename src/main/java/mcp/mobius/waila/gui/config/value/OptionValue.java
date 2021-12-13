@@ -5,7 +5,6 @@ import java.util.function.Consumer;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import mcp.mobius.waila.gui.config.OptionsListWidget;
-import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.resources.language.I18n;
@@ -29,16 +28,12 @@ public abstract class OptionValue<T> extends OptionsListWidget.Entry {
 	@Override
 	public final void render(PoseStack matrixStack, int index, int rowTop, int rowLeft, int width, int height, int mouseX, int mouseY, boolean hovered, float deltaTime) {
 		client.font.drawShadow(matrixStack, title, rowLeft + 10, rowTop + (height / 4) + (client.font.lineHeight / 2), 16777215);
-		drawValue(matrixStack, width, height, rowLeft, rowTop, mouseX, mouseY, hovered, deltaTime);
+		drawValue(matrixStack, width, height, rowLeft + width - 110, rowTop, mouseX, mouseY, hovered, deltaTime);
 		this.x = rowLeft;
 	}
 
 	public void save() {
 		setter.accept(value);
-	}
-
-	public AbstractWidget getListener() {
-		return null;
 	}
 
 	public Component getTitle() {

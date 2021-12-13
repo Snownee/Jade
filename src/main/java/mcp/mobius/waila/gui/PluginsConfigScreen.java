@@ -23,7 +23,7 @@ public class PluginsConfigScreen extends OptionsScreen {
 
 	@Override
 	public OptionsListWidget getOptions() {
-		OptionsListWidget options = new OptionsListWidget(this, minecraft, width + 45, height, 32, height - 32, 30, PluginConfig.INSTANCE::save);
+		OptionsListWidget options = new OptionsListWidget(this, minecraft, width, height, 32, height - 32, 30, PluginConfig.INSTANCE::save);
 		PluginConfig.INSTANCE.getNamespaces().forEach(namespace -> {
 			Component title;
 			String translationKey = "plugin_" + namespace;
@@ -37,7 +37,7 @@ public class PluginsConfigScreen extends OptionsScreen {
 				minecraft.setScreen(new OptionsScreen(PluginsConfigScreen.this, title, null, null) {
 					@Override
 					public OptionsListWidget getOptions() {
-						OptionsListWidget options = new OptionsListWidget(this, minecraft, width + 45, height, 32, height - 32, 30);
+						OptionsListWidget options = new OptionsListWidget(this, minecraft, width, height, 32, height - 32, 30);
 						keys.stream().sorted((o1, o2) -> o1.getPath().compareToIgnoreCase(o2.getPath())).forEach(i -> {
 							ConfigEntry entry = PluginConfig.INSTANCE.getEntry(i);
 							if (!entry.isSynced() || Minecraft.getInstance().getCurrentServer() == null)

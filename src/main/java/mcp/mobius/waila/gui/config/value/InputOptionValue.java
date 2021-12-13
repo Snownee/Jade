@@ -29,7 +29,7 @@ public class InputOptionValue<T> extends OptionValue<T> {
 
 	@Override
 	protected void drawValue(PoseStack matrixStack, int entryWidth, int entryHeight, int x, int y, int mouseX, int mouseY, boolean selected, float partialTicks) {
-		textField.x = x + 135;
+		textField.x = x;
 		textField.y = y + entryHeight / 6;
 		textField.render(matrixStack, mouseX, mouseY, partialTicks);
 	}

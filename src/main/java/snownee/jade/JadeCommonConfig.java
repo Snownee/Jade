@@ -77,7 +77,7 @@ public final class JadeCommonConfig {
 	public static boolean shouldShowCustomName(BlockEntity t) {
 		String modid = t.getType().getRegistryName().getNamespace();
 		if (onlyShowVanilla) {
-			return modid.equals("minecraft");
+			return "minecraft".equals(modid);
 		} else {
 			return !modBlacklist.contains(modid);
 		}

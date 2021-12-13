@@ -1,8 +1,11 @@
 package mcp.mobius.waila.gui;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 
@@ -23,6 +26,7 @@ public abstract class OptionsScreen extends Screen {
 	private final Runnable saver;
 	private final Runnable canceller;
 	private OptionsListWidget options;
+	private final Set<GuiEventListener> entryWidgets = Sets.newIdentityHashSet();
 
 	public OptionsScreen(Screen parent, Component title, Runnable saver, Runnable canceller) {
 		super(title);
@@ -42,6 +46,7 @@ public abstract class OptionsScreen extends Screen {
 
 	@Override
 	protected void init() {
+		entryWidgets.clear();
 		options = getOptions();
 		addRenderableWidget(options);
 
@@ -124,8 +129,42 @@ public abstract class OptionsScreen extends Screen {
 		super.onClose();
 	}
 
-	@Override
-	public <T extends GuiEventListener & NarratableEntry> T addWidget(T widget) {
+	public <T extends GuiEventListener & NarratableEntry> T addEntryWidget(T widget) {
+		entryWidgets.add(widget);
 		return super.addWidget(widget);
+	}
+
+	@Override
+	public boolean mouseClicked(double mouseX, double mouseY, int p_94697_) {
+		boolean onList = options.isMouseOver(mouseX, mouseY);
+		for (GuiEventListener guieventlistener : children()) {
+			if (!onList && entryWidgets.contains(guieventlistener)) {
+				continue;
+			}
+			if (guieventlistener.mouseClicked(mouseX, mouseY, p_94697_)) {
+				setFocused(guieventlistener);
+				if (p_94697_ == 0) {
+					setDragging(true);
+				}
+
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public Optional<GuiEventListener> getChildAt(double mouseX, double mouseY) {
+		boolean onList = options.isMouseOver(mouseX, mouseY);
+		for (GuiEventListener guieventlistener : children()) {
+			if (!onList && entryWidgets.contains(guieventlistener)) {
+				continue;
+			}
+			if (guieventlistener.isMouseOver(mouseX, mouseY)) {
+				return Optional.of(guieventlistener);
+			}
+		}
+
+		return Optional.empty();
 	}
 }

@@ -42,21 +42,26 @@ public class OptionsListWidget extends AbstractSelectionList<OptionsListWidget.E
 	private final OptionsScreen owner;
 	private final Runnable diskWriter;
 
-	public OptionsListWidget(OptionsScreen owner, Minecraft client, int x, int height, int width, int y, int entryHeight, Runnable diskWriter) {
-		super(client, x, height, width, y, entryHeight);
+	public OptionsListWidget(OptionsScreen owner, Minecraft client, int width, int height, int y0, int y1, int entryHeight, Runnable diskWriter) {
+		super(client, width, height, y0, y1, entryHeight);
 
 		this.owner = owner;
 		this.diskWriter = diskWriter;
 		setRenderSelection(false);
 	}
 
-	public OptionsListWidget(OptionsScreen owner, Minecraft client, int x, int height, int width, int y, int entryHeight) {
-		this(owner, client, x, height, width, y, entryHeight, null);
+	public OptionsListWidget(OptionsScreen owner, Minecraft client, int width, int height, int y0, int y1, int entryHeight) {
+		this(owner, client, width, height, y0, y1, entryHeight, null);
 	}
 
 	@Override
 	public int getRowWidth() {
-		return 250;
+		return Math.min(width, 300);
+	}
+
+	@Override
+	protected int getScrollbarPosition() {
+		return width - 6;
 	}
 
 	@Override
@@ -142,12 +147,14 @@ public class OptionsListWidget extends AbstractSelectionList<OptionsListWidget.E
 	}
 
 	public void add(Entry entry) {
-		if (entry instanceof OptionValue) {
-			AbstractWidget element = ((OptionValue<?>) entry).getListener();
-			if (element != null)
-				owner.addWidget(element);
-		}
+		AbstractWidget element = entry.getListener();
+		if (element != null)
+			owner.addEntryWidget(element);
 		addEntry(entry);
+	}
+
+	public void title(String string) {
+		add(new Title(string));
 	}
 
 	public void slider(String optionName, float value, Consumer<Float> setter) {
@@ -217,7 +224,32 @@ public class OptionsListWidget extends AbstractSelectionList<OptionsListWidget.E
 			client = Minecraft.getInstance();
 		}
 
+		public AbstractWidget getListener() {
+			return null;
+		}
+
 		@Override
 		public abstract void render(PoseStack matrixStack, int index, int rowTop, int rowLeft, int width, int height, int mouseX, int mouseY, boolean hovered, float deltaTime);
 	}
+
+	public static class Title extends Entry {
+
+		private final Component title;
+
+		public Title(String key) {
+			title = makeTitle(key);
+		}
+
+		@Override
+		public void updateNarration(NarrationElementOutput output) {
+			output.add(NarratedElementType.TITLE, title);
+		}
+
+		@Override
+		public void render(PoseStack matrixStack, int index, int rowTop, int rowLeft, int width, int height, int mouseX, int mouseY, boolean hovered, float deltaTime) {
+			client.font.drawShadow(matrixStack, title, rowLeft + (width - client.font.width(title)) / 2, rowTop + (height / 4) + (client.font.lineHeight / 2), 16777215);
+		}
+
+	}
+
 }
