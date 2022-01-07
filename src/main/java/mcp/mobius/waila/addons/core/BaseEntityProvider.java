@@ -58,10 +58,10 @@ public class BaseEntityProvider implements IEntityComponentProvider {
 	public void appendBody(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		if (!(accessor.getEntity() instanceof LivingEntity))
 			return;
+		if (config.get(CorePlugin.CONFIG_ENTITY_ARMOR))
+			appendArmor((LivingEntity) accessor.getEntity(), tooltip);
 		if (config.get(CorePlugin.CONFIG_ENTITY_HEALTH))
 			appendHealth((LivingEntity) accessor.getEntity(), tooltip);
-		if (config.get(CorePlugin.CONFIG_ENTITY_HEALTH))
-			appendArmor((LivingEntity) accessor.getEntity(), tooltip);
 	}
 
 	public void appendTail(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
@@ -77,10 +77,10 @@ public class BaseEntityProvider implements IEntityComponentProvider {
 		if (living.getMaxHealth() > Waila.CONFIG.get().getGeneral().getMaxHealthForRender()) {
 			HealthElement icon = new HealthElement(1, 1);
 			Component text = new TextComponent(String.format("  %s/%s", DisplayHelper.dfCommas.format(health), DisplayHelper.dfCommas.format(maxHealth)));
-			tooltip.add(icon);
-			tooltip.append(text);
+			tooltip.add(0, icon);
+			tooltip.append(0, tooltip.getElementHelper().text(text));
 		} else {
-			tooltip.add(new HealthElement(maxHealth * 0.5F, health * 0.5F));
+			tooltip.add(0, new HealthElement(maxHealth * 0.5F, health * 0.5F));
 		}
 	}
 
@@ -91,10 +91,10 @@ public class BaseEntityProvider implements IEntityComponentProvider {
 		if (armor > Waila.CONFIG.get().getGeneral().getMaxHealthForRender()) {
 			ArmorElement icon = new ArmorElement(-1);
 			Component text = new TextComponent(DisplayHelper.dfCommas.format(armor));
-			tooltip.add(icon);
-			tooltip.append(text);
+			tooltip.add(0, icon);
+			tooltip.append(0, tooltip.getElementHelper().text(text));
 		} else {
-			tooltip.add(new ArmorElement(armor * 0.5F));
+			tooltip.add(0, new ArmorElement(armor * 0.5F));
 		}
 	}
 
