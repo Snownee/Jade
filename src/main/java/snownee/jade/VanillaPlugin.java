@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.world.entity.AgeableMob;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.Chicken;
@@ -41,6 +42,7 @@ import net.minecraftforge.fml.loading.FMLEnvironment;
 import snownee.jade.addon.forge.ForgeCapabilityProvider;
 import snownee.jade.addon.forge.InventoryProvider;
 import snownee.jade.addon.vanilla.AgableMobProvider;
+import snownee.jade.addon.vanilla.AnimalOwnerProvider;
 import snownee.jade.addon.vanilla.ArmorStandProvider;
 import snownee.jade.addon.vanilla.BeehiveProvider;
 import snownee.jade.addon.vanilla.BreedingProvider;
@@ -99,6 +101,7 @@ public class VanillaPlugin implements IWailaPlugin {
 	public static final ResourceLocation REDSTONE = MC("redstone");
 	public static final ResourceLocation JUKEBOX = MC("jukebox");
 	public static final ResourceLocation LECTERN = MC("lectern");
+	public static final ResourceLocation ANIMAL_OWNER = MC("animal_owner");
 
 	public static final ResourceLocation INVENTORY = MC("inventory");
 	public static final ResourceLocation FORGE_ENERGY = MC("fe");
@@ -205,6 +208,9 @@ public class VanillaPlugin implements IWailaPlugin {
 		registrar.registerBlockDataProvider(ForgeCapabilityProvider.INSTANCE, BlockEntity.class);
 		registrar.addConfig(FORGE_ENERGY, true);
 		registrar.addConfig(FORGE_FLUID, true);
+
+		registrar.registerComponentProvider(AnimalOwnerProvider.INSTANCE, TooltipPosition.BODY, Entity.class);
+		registrar.addConfig(ANIMAL_OWNER, false);
 
 		if (FMLEnvironment.dist.isClient()) {
 			((ReloadableResourceManager) Minecraft.getInstance().getResourceManager()).registerReloadListener(HarvestToolProvider.INSTANCE);

@@ -143,6 +143,8 @@
   "jade.fluid": "%s %s",
   "jade.fluid.empty": "Empty",
   "config.waila.plugin_minecraft.lectern": "Lectern",
+  "config.waila.plugin_minecraft.animal_owner": "Animal Owner",
+  "jade.owner": "Owner: %s",
 
   "config.waila.plugin_minecraft.display_furnace_contents": "Furnace Contents",
   "config.waila.plugin_minecraft.spawner_type": "Spawner Type",
