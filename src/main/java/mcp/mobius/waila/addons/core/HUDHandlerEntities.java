@@ -45,10 +45,10 @@ public class HUDHandlerEntities implements IEntityComponentProvider {
 	public void appendBody(List<ITextComponent> tooltip, IEntityAccessor accessor, IPluginConfig config) {
 		if (!(accessor.getEntity() instanceof LivingEntity))
 			return;
+		if (config.get(PluginCore.CONFIG_SHOW_ENTITY_ARMOR))
+			appendArmor((LivingEntity) accessor.getEntity(), tooltip);
 		if (config.get(PluginCore.CONFIG_SHOW_ENTITY_HEALTH))
 			appendHealth((LivingEntity) accessor.getEntity(), tooltip);
-		if (config.get(PluginCore.CONFIG_SHOW_ENTITY_HEALTH))
-			appendArmor((LivingEntity) accessor.getEntity(), tooltip);
 	}
 
 	@Override
@@ -68,12 +68,12 @@ public class HUDHandlerEntities implements IEntityComponentProvider {
 			healthData.putFloat("max", 1);
 			RenderableTextComponent icon = new RenderableTextComponent(PluginCore.RENDER_ENTITY_HEALTH, healthData);
 			RenderableTextComponent text = Renderables.offsetText(String.format("%s/%s", Jade.dfCommas.format(health), Jade.dfCommas.format(maxHealth)), 5, 0);
-			tooltip.add(Renderables.of(icon, text));
+			tooltip.add(0, Renderables.of(icon, text));
 		} else {
 			CompoundNBT healthData = new CompoundNBT();
 			healthData.putFloat("health", health * 0.5F);
 			healthData.putFloat("max", maxHealth * 0.5F);
-			tooltip.add(new RenderableTextComponent(PluginCore.RENDER_ENTITY_HEALTH, healthData));
+			tooltip.add(0, new RenderableTextComponent(PluginCore.RENDER_ENTITY_HEALTH, healthData));
 		}
 	}
 
@@ -86,11 +86,11 @@ public class HUDHandlerEntities implements IEntityComponentProvider {
 			armorData.putFloat("armor", -1);
 			RenderableTextComponent icon = new RenderableTextComponent(PluginCore.RENDER_ENTITY_ARMOR, armorData);
 			RenderableTextComponent text = Renderables.offsetText(Jade.dfCommas.format(armor), 5, 0);
-			tooltip.add(Renderables.of(icon, text));
+			tooltip.add(0, Renderables.of(icon, text));
 		} else {
 			CompoundNBT armorData = new CompoundNBT();
 			armorData.putFloat("armor", armor * 0.5F);
-			tooltip.add(new RenderableTextComponent(PluginCore.RENDER_ENTITY_ARMOR, armorData));
+			tooltip.add(0, new RenderableTextComponent(PluginCore.RENDER_ENTITY_ARMOR, armorData));
 		}
 	}
 }

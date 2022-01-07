@@ -17,6 +17,7 @@ import mcp.mobius.waila.api.IEntityComponentProvider;
 import mcp.mobius.waila.api.impl.DataAccessor;
 import mcp.mobius.waila.api.impl.WailaRegistrar;
 import mcp.mobius.waila.api.impl.config.PluginConfig;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.client.Minecraft;
@@ -31,12 +32,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.RayTraceContext;
+import net.minecraft.util.math.RayTraceContext.FluidMode;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.RayTraceResult.Type;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
+import net.minecraftforge.fml.ModList;
 
 public class RayTracing {
 
@@ -97,7 +100,11 @@ public class RayTracing {
 			traceEnd = eyePosition.add(lookVector.x * playerReach, lookVector.y * playerReach, lookVector.z * playerReach);
 		}
 
-		RayTraceContext.FluidMode fluidView = Waila.CONFIG.get().getGeneral().getDisplayFluids();
+		Block eyeBlock = world.getBlockState(new BlockPos(eyePosition.x, eyePosition.y, eyePosition.z)).getBlock();
+		RayTraceContext.FluidMode fluidView = FluidMode.NONE;
+		if (!(eyeBlock instanceof FlowingFluidBlock)) {
+			fluidView = Waila.CONFIG.get().getGeneral().getDisplayFluids();
+		}
 		RayTraceContext context = new RayTraceContext(eyePosition, traceEnd, RayTraceContext.BlockMode.OUTLINE, fluidView, entity);
 
 		BlockRayTraceResult blockResult = world.rayTraceBlocks(context);

@@ -12,6 +12,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.merchant.villager.VillagerData;
 import net.minecraft.entity.merchant.villager.VillagerEntity;
+import net.minecraft.entity.merchant.villager.VillagerProfession;
 import net.minecraft.entity.monster.ZombieVillagerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.IFormattableTextComponent;
@@ -24,7 +25,7 @@ import snownee.jade.JadePlugin;
 public class VillagerProfessionProvider implements IEntityComponentProvider {
 
 	public static final VillagerProfessionProvider INSTANCE = new VillagerProfessionProvider();
-	private static final ITextComponent field_243352_C = new StringTextComponent(" - ");
+	private static final ITextComponent LEVEL_SEPARATOR = new StringTextComponent(" - ");
 
 	@Override
 	public void appendHead(List<ITextComponent> tooltip, IEntityAccessor accessor, IPluginConfig config) {
@@ -60,7 +61,12 @@ public class VillagerProfessionProvider implements IEntityComponentProvider {
 		}
 		int level = data.getLevel();
 		ResourceLocation profName = data.getProfession().getRegistryName();
-		tooltip.add(new TranslationTextComponent(EntityType.VILLAGER.getTranslationKey() + '.' + (!"minecraft".equals(profName.getNamespace()) ? profName.getNamespace() + '.' : "") + profName.getPath()).appendSibling(field_243352_C).appendSibling(new TranslationTextComponent("merchant.level." + level)));
+		IFormattableTextComponent component = new TranslationTextComponent(EntityType.VILLAGER.getTranslationKey() + '.' + (!"minecraft".equals(profName.getNamespace()) ? profName.getNamespace() + '.' : "") + profName.getPath());
+		VillagerProfession profession = data.getProfession();
+		if (profession != VillagerProfession.NONE && profession != VillagerProfession.NITWIT) {
+			component.appendSibling(LEVEL_SEPARATOR).appendSibling(new TranslationTextComponent("merchant.level." + level));
+		}
+		tooltip.add(component);
 	}
 
 }
