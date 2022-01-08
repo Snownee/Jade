@@ -23,7 +23,7 @@
   "key.waila.show_recipes": "Показати рецепти",
   "key.waila.show_uses": "Показати застосування",
 
-  "config.waila.general": "Основні",
+  "config.waila.general": "Загальні",
   "config.waila.display_tooltip": "Відображати підказку",
   "config.waila.display_tooltip_desc": "Збирати дані та відображати підказку",
   "config.waila.display_entities": "Відображати сутності",
@@ -121,7 +121,7 @@
   "config.waila.plugin_minecraft.armor_stand": "Стійка для броні",
   "config.waila.plugin_minecraft.painting": "Картина",
   "config.waila.plugin_minecraft.chicken_egg": "Куряче яйце",
-  "jade.nextEgg": "Наступне яйце: %d секунд",
+  "jade.nextEgg": "Наступне яйце через: %d секунд",
   "config.waila.plugin_minecraft.breaking_progress": "Прогрес ламання",
   "config.waila.plugin_minecraft.command_block": "Командний блок",
   "config.waila.plugin_minecraft.harvest_tool": "Жнивний інструмент",
