@@ -102,7 +102,6 @@
   "jade.beehive.bees": "Пчёлы: %s",
   "jade.beehive.honey": "Мёд: %s",
   "config.waila.plugin_minecraft.note_block": "Нотный блок",
-
   "jade.instrument.bass": "Бас (Контрабас)",
   "jade.instrument.snare": "Малый барабан",
   "jade.instrument.hat": "Щелчки и палки",
@@ -119,7 +118,6 @@
   "jade.instrument.banjo": "Банджо",
   "jade.instrument.pling": "Электропиано",
   "jade.instrument.harp": "Арфа",
-
   "config.waila.plugin_minecraft.armor_stand": "Стойка для брони",
   "config.waila.plugin_minecraft.painting": "Картина",
   "config.waila.plugin_minecraft.chicken_egg": "Куриное яйцо",
@@ -145,6 +143,8 @@
   "jade.fluid": "%s %s",
   "jade.fluid.empty": "Пустой",
   "config.waila.plugin_minecraft.lectern": "Кафедра",
+  "config.waila.plugin_minecraft.animal_owner": "Владелец животного",
+  "jade.owner": "Владелец: %s",
 
   "config.waila.plugin_minecraft.display_furnace_contents": "Содержимое печи",
   "config.waila.plugin_minecraft.spawner_type": "Тип рассадника",
