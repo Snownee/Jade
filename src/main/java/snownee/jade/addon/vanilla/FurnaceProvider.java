@@ -53,7 +53,7 @@ public class FurnaceProvider implements IComponentProvider, IServerDataProvider<
 			items.add(furnace.getItem(i).serializeNBT());
 		}
 		data.put("furnace", items);
-		CompoundTag furnaceTag = furnace.save(new CompoundTag());
+		CompoundTag furnaceTag = furnace.saveWithoutMetadata();
 		data.putInt("progress", furnaceTag.getInt("CookTime"));
 		data.putInt("total", furnaceTag.getInt("CookTimeTotal"));
 	}
