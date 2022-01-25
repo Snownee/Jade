@@ -57,9 +57,13 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 		}
 
 		for (IEntityComponentProvider provider : WailaRegistrar.INSTANCE.getEntityIconProviders(entity)) {
-			IElement element = provider.getIcon(this, PluginConfig.INSTANCE, icon);
-			if (!RayTracing.isEmptyElement(element))
-				icon = element;
+			try {
+				IElement element = provider.getIcon(this, PluginConfig.INSTANCE, icon);
+				if (!RayTracing.isEmptyElement(element))
+					icon = element;
+			} catch (Throwable e) {
+				WailaExceptionHandler.handleErr(e, provider.getClass().toString(), null);
+			}
 		}
 		return icon;
 	}

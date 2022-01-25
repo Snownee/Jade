@@ -94,9 +94,13 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 		}
 
 		for (IComponentProvider provider : WailaRegistrar.INSTANCE.getBlockIconProviders(getBlock())) {
-			IElement element = provider.getIcon(this, PluginConfig.INSTANCE, icon);
-			if (!RayTracing.isEmptyElement(element))
-				icon = element;
+			try {
+				IElement element = provider.getIcon(this, PluginConfig.INSTANCE, icon);
+				if (!RayTracing.isEmptyElement(element))
+					icon = element;
+			} catch (Throwable e) {
+				WailaExceptionHandler.handleErr(e, provider.getClass().toString(), null);
+			}
 		}
 		return icon;
 	}
