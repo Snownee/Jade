@@ -119,14 +119,14 @@ public final class ClientHandler {
 			if (target.getBlock() instanceof TrappedChestBlock) {
 				BlockState state = getCorrespondingNormalChest(target.getBlockState());
 				if (state != target.getBlockState()) {
-					event.setAccessor(VanillaPlugin.REGISTRAR.createBlockAccessor(state, target.getBlockEntity(), target.getLevel(), player, target.getServerData(), target.getHitResult(), target.isServerConnected()));
+					event.setAccessor(VanillaPlugin.CLIENT_REGISTRATION.createBlockAccessor(state, target.getBlockEntity(), target.getLevel(), player, target.getServerData(), target.getHitResult(), target.isServerConnected()));
 				}
 			} else if (target.getBlock() instanceof InfestedBlock) {
 				Block block = ((InfestedBlock) target.getBlock()).getHostBlock();
-				event.setAccessor(VanillaPlugin.REGISTRAR.createBlockAccessor(block.defaultBlockState(), target.getBlockEntity(), target.getLevel(), player, target.getServerData(), target.getHitResult(), target.isServerConnected()));
+				event.setAccessor(VanillaPlugin.CLIENT_REGISTRATION.createBlockAccessor(block.defaultBlockState(), target.getBlockEntity(), target.getLevel(), player, target.getServerData(), target.getHitResult(), target.isServerConnected()));
 			} else if (target.getBlock() == Blocks.POWDER_SNOW) {
 				Block block = Blocks.SNOW_BLOCK;
-				event.setAccessor(VanillaPlugin.REGISTRAR.createBlockAccessor(block.defaultBlockState(), null, target.getLevel(), player, target.getServerData(), target.getHitResult(), target.isServerConnected()));
+				event.setAccessor(VanillaPlugin.CLIENT_REGISTRATION.createBlockAccessor(block.defaultBlockState(), null, target.getLevel(), player, target.getServerData(), target.getHitResult(), target.isServerConnected()));
 			}
 		}
 	}

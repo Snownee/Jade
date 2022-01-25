@@ -13,6 +13,8 @@ import mcp.mobius.waila.api.IWailaPlugin;
 import mcp.mobius.waila.api.WailaPlugin;
 import mcp.mobius.waila.api.config.WailaConfig;
 import mcp.mobius.waila.command.DumpHandlersCommand;
+import mcp.mobius.waila.impl.WailaClientRegistration;
+import mcp.mobius.waila.impl.WailaCommonRegistration;
 import mcp.mobius.waila.impl.WailaRegistrar;
 import mcp.mobius.waila.impl.config.PluginConfig;
 import mcp.mobius.waila.network.ReceiveDataPacket;
@@ -34,6 +36,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.forgespi.language.ModFileScanData.AnnotationData;
 import net.minecraftforge.network.NetworkConstants;
 import net.minecraftforge.network.NetworkDirection;
@@ -109,6 +112,10 @@ public class Waila {
 				if (IWailaPlugin.class.isAssignableFrom(clazz)) {
 					IWailaPlugin plugin = (IWailaPlugin) clazz.getDeclaredConstructor().newInstance();
 					plugin.register(WailaRegistrar.INSTANCE);
+					plugin.register(WailaCommonRegistration.INSTANCE);
+					if (FMLEnvironment.dist.isClient()) {
+						plugin.registerClient(WailaClientRegistration.INSTANCE);
+					}
 				}
 			} catch (Throwable e) {
 				LOGGER.error("Error loading plugin at {}", className, e);

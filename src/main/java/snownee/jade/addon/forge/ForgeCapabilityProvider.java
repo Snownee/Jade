@@ -44,8 +44,8 @@ public class ForgeCapabilityProvider implements IComponentProvider, IServerDataP
 						cur = storage.getEnergyStored();
 						max = storage.getMaxEnergyStored();
 					}
-					String curText = ChatFormatting.WHITE + VanillaPlugin.REGISTRAR.getDisplayHelper().humanReadableNumber(cur, "FE", false) + ChatFormatting.GRAY;
-					String maxText = VanillaPlugin.REGISTRAR.getDisplayHelper().humanReadableNumber(max, "FE", false);
+					String curText = ChatFormatting.WHITE + VanillaPlugin.getDisplayHelper().humanReadableNumber(cur, "FE", false) + ChatFormatting.GRAY;
+					String maxText = VanillaPlugin.getDisplayHelper().humanReadableNumber(max, "FE", false);
 					MutableComponent text = new TranslatableComponent("jade.fe", curText, maxText).withStyle(ChatFormatting.GRAY);
 					IProgressStyle progressStyle = helper.progressStyle().color(0xFFFF0000, 0xFF660000);
 					tooltip.add(helper.progress((float) cur / max, text, progressStyle, helper.borderStyle()).tag(VanillaPlugin.FORGE_ENERGY));
@@ -81,7 +81,7 @@ public class ForgeCapabilityProvider implements IComponentProvider, IServerDataP
 		if (fluidStack.isEmpty()) {
 			text = new TranslatableComponent("jade.fluid.empty");
 		} else {
-			String amountText = VanillaPlugin.REGISTRAR.getDisplayHelper().humanReadableNumber(fluidStack.getAmount(), "B", true);
+			String amountText = VanillaPlugin.getDisplayHelper().humanReadableNumber(fluidStack.getAmount(), "B", true);
 			text = new TranslatableComponent("jade.fluid", fluidStack.getDisplayName(), amountText);
 		}
 		IProgressStyle progressStyle = helper.progressStyle().overlay(helper.fluid(fluidStack));

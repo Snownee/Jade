@@ -9,7 +9,6 @@ import mcp.mobius.waila.api.TooltipPosition;
 import mcp.mobius.waila.api.config.IPluginConfig;
 import mcp.mobius.waila.api.ui.IElement;
 import mcp.mobius.waila.api.ui.IElementHelper;
-import mcp.mobius.waila.impl.ui.ItemStackElement;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.CompoundTag;
@@ -49,10 +48,10 @@ public class VanillaProvider implements IComponentProvider, IServerDataProvider<
 	@Override
 	public IElement getIcon(BlockAccessor accessor, IPluginConfig config, IElement currentIcon) {
 		if (accessor.getBlock() == Blocks.WHEAT)
-			return ItemStackElement.of(new ItemStack(Items.WHEAT));
+			return VanillaPlugin.getElementHelper().item(new ItemStack(Items.WHEAT));
 
 		if (accessor.getBlock() == Blocks.BEETROOTS)
-			return ItemStackElement.of(new ItemStack(Items.BEETROOT));
+			return VanillaPlugin.getElementHelper().item(new ItemStack(Items.BEETROOT));
 
 		return null;
 	}

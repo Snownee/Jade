@@ -69,7 +69,9 @@ public class WailaRegistrar implements IRegistrar {
 
 	@Override
 	public void addConfig(ResourceLocation key, boolean defaultValue) {
-		PluginConfig.INSTANCE.addConfig(new ConfigEntry(key, defaultValue, false));
+		if (FMLEnvironment.dist.isClient()) {
+			PluginConfig.INSTANCE.addConfig(new ConfigEntry(key, defaultValue, false));
+		}
 	}
 
 	@Override

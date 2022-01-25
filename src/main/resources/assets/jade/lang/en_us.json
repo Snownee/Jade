@@ -55,7 +55,7 @@
   "config.waila.overlay_anchor_x": "Horizontal Anchor",
   "config.waila.overlay_anchor_y": "Vertical Anchor",
   "config.waila.overlay_square": "Square Border",
-  "config.waila.flip_main_hand": "Flip Main Hand",
+  "config.waila.flip_main_hand": "Flip with Main Hand",
   "config.waila.flip_main_hand_desc": "Flip tooltip's location if main hand is left",
 
   "config.waila.overlay_color": "Color",

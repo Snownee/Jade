@@ -1,9 +1,12 @@
 package snownee.jade;
 
-import mcp.mobius.waila.api.IRegistrar;
+import mcp.mobius.waila.api.IWailaClientRegistration;
+import mcp.mobius.waila.api.IWailaCommonRegistration;
 import mcp.mobius.waila.api.IWailaPlugin;
 import mcp.mobius.waila.api.TooltipPosition;
 import mcp.mobius.waila.api.WailaPlugin;
+import mcp.mobius.waila.api.ui.IDisplayHelper;
+import mcp.mobius.waila.api.ui.IElementHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
@@ -38,7 +41,6 @@ import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
 import net.minecraft.world.level.block.entity.CommandBlockEntity;
 import net.minecraft.world.level.block.entity.JukeboxBlockEntity;
 import net.minecraft.world.level.block.entity.LecternBlockEntity;
-import net.minecraftforge.fml.loading.FMLEnvironment;
 import snownee.jade.addon.forge.ForgeCapabilityProvider;
 import snownee.jade.addon.forge.InventoryProvider;
 import snownee.jade.addon.vanilla.AgableMobProvider;
@@ -107,115 +109,104 @@ public class VanillaPlugin implements IWailaPlugin {
 	public static final ResourceLocation FORGE_ENERGY = MC("fe");
 	public static final ResourceLocation FORGE_FLUID = MC("fluid");
 
-	public static IRegistrar REGISTRAR;
+	public static IWailaClientRegistration CLIENT_REGISTRATION;
 
 	@Override
-	public void register(IRegistrar registrar) {
-		REGISTRAR = registrar;
-		registrar.registerComponentProvider(BrewingStandProvider.INSTANCE, TooltipPosition.BODY, BrewingStandBlock.class);
-		registrar.registerBlockDataProvider(BrewingStandProvider.INSTANCE, BrewingStandBlockEntity.class);
-		registrar.addConfig(BREWING_STAND, true);
+	public void register(IWailaCommonRegistration registration) {
+		registration.registerBlockDataProvider(BrewingStandProvider.INSTANCE, BrewingStandBlockEntity.class);
+		registration.registerBlockDataProvider(BeehiveProvider.INSTANCE, BeehiveBlockEntity.class);
+		registration.registerBlockDataProvider(CommandBlockProvider.INSTANCE, CommandBlockEntity.class);
+		registration.registerBlockDataProvider(VanillaProvider.INSTANCE, JukeboxBlockEntity.class);
+		registration.registerBlockDataProvider(VanillaProvider.INSTANCE, LecternBlockEntity.class);
+		registration.registerBlockDataProvider(FurnaceProvider.INSTANCE, AbstractFurnaceBlockEntity.class);
+		registration.registerBlockDataProvider(InventoryProvider.INSTANCE, BaseContainerBlockEntity.class);
+		registration.registerBlockDataProvider(ForgeCapabilityProvider.INSTANCE, BlockEntity.class);
 
-		registrar.registerComponentProvider(HorseProvider.INSTANCE, TooltipPosition.BODY, AbstractHorse.class);
-		registrar.addConfig(HORSE_STAT, true);
+		registration.registerEntityDataProvider(ChestedHorseProvider.INSTANCE, AbstractChestedHorse.class);
+		registration.registerEntityDataProvider(PotionEffectsProvider.INSTANCE, LivingEntity.class);
+		registration.registerEntityDataProvider(AgableMobProvider.INSTANCE, AgeableMob.class);
+		registration.registerEntityDataProvider(BreedingProvider.INSTANCE, Animal.class);
+		registration.registerEntityDataProvider(ChickenEggProvider.INSTANCE, Chicken.class);
 
-		registrar.registerComponentProvider(ChestedHorseProvider.INSTANCE, TooltipPosition.BODY, AbstractChestedHorse.class);
-		registrar.registerEntityDataProvider(ChestedHorseProvider.INSTANCE, AbstractChestedHorse.class);
-		registrar.addConfig(HORSE_INVENTORY, true);
+		registration.addConfig(BREWING_STAND, true);
+		registration.addConfig(HORSE_STAT, true);
+		registration.addConfig(HORSE_INVENTORY, true);
+		registration.addConfig(ITEM_FRAME, true);
+		registration.addConfig(EFFECTS, true);
+		registration.addConfig(MOB_GROWTH, true);
+		registration.addConfig(MOB_BREEDING, true);
+		registration.addConfig(TNT_STABILITY, true);
+		registration.addConfig(BEEHIVE, true);
+		registration.addConfig(NOTE_BLOCK, true);
+		registration.addConfig(ARMOR_STAND, true);
+		registration.addConfig(PAINTING, true);
+		registration.addConfig(CHICKEN_EGG, true);
+		registration.addConfig(HARVEST_TOOL, true);
+		registration.addConfig(HARVEST_TOOL_NEW_LINE, false);
+		registration.addConfig(EFFECTIVE_TOOL, true);
+		registration.addConfig(BREAKING_PROGRESS, true);
+		registration.addConfig(ENCH_POWER, true);
+		registration.addConfig(TOTAL_ENCH_POWER, true);
+		registration.addConfig(PLAYER_HEAD, true);
+		registration.addConfig(PROFESSION, true);
+		registration.addConfig(ITEM_TOOLTIP, true);
+		registration.addConfig(FURNACE, true);
+		registration.addConfig(SPAWNER_TYPE, true);
+		registration.addConfig(CROP_PROGRESS, true);
+		registration.addConfig(REDSTONE, true);
+		registration.addConfig(JUKEBOX, true);
+		registration.addConfig(LECTERN, true);
+		registration.addConfig(INVENTORY, true);
+		registration.addConfig(FORGE_ENERGY, true);
+		registration.addConfig(FORGE_FLUID, true);
+		registration.addConfig(ANIMAL_OWNER, false);
 
-		registrar.registerComponentProvider(ItemFrameProvider.INSTANCE, TooltipPosition.BODY, ItemFrame.class);
-		registrar.addConfig(ITEM_FRAME, true);
+		registration.addSyncedConfig(COMMAND_BLOCK, true);
+	}
 
-		registrar.registerComponentProvider(PotionEffectsProvider.INSTANCE, TooltipPosition.BODY, LivingEntity.class);
-		registrar.registerEntityDataProvider(PotionEffectsProvider.INSTANCE, LivingEntity.class);
-		registrar.addConfig(EFFECTS, true);
+	@Override
+	public void registerClient(IWailaClientRegistration registration) {
+		CLIENT_REGISTRATION = registration;
 
-		registrar.registerComponentProvider(AgableMobProvider.INSTANCE, TooltipPosition.BODY, AgeableMob.class);
-		registrar.registerEntityDataProvider(AgableMobProvider.INSTANCE, AgeableMob.class);
-		registrar.addConfig(MOB_GROWTH, true);
+		registration.registerComponentProvider(BrewingStandProvider.INSTANCE, TooltipPosition.BODY, BrewingStandBlock.class);
+		registration.registerComponentProvider(HorseProvider.INSTANCE, TooltipPosition.BODY, AbstractHorse.class);
+		registration.registerComponentProvider(ChestedHorseProvider.INSTANCE, TooltipPosition.BODY, AbstractChestedHorse.class);
+		registration.registerComponentProvider(ItemFrameProvider.INSTANCE, TooltipPosition.BODY, ItemFrame.class);
+		registration.registerComponentProvider(PotionEffectsProvider.INSTANCE, TooltipPosition.BODY, LivingEntity.class);
+		registration.registerComponentProvider(AgableMobProvider.INSTANCE, TooltipPosition.BODY, AgeableMob.class);
+		registration.registerComponentProvider(BreedingProvider.INSTANCE, TooltipPosition.BODY, Animal.class);
+		registration.registerComponentProvider(TNTProvider.INSTANCE, TooltipPosition.BODY, TntBlock.class);
+		registration.registerComponentProvider(BeehiveProvider.INSTANCE, TooltipPosition.BODY, BeehiveBlock.class);
+		registration.registerComponentProvider(NoteBlockProvider.INSTANCE, TooltipPosition.BODY, NoteBlock.class);
+		registration.registerComponentProvider(ArmorStandProvider.INSTANCE, TooltipPosition.BODY, ArmorStand.class);
+		registration.registerComponentProvider(PaintingProvider.INSTANCE, TooltipPosition.BODY, Painting.class);
+		registration.registerComponentProvider(ChickenEggProvider.INSTANCE, TooltipPosition.BODY, Chicken.class);
+		registration.registerComponentProvider(HarvestToolProvider.INSTANCE, TooltipPosition.BODY, Block.class);
+		registration.registerComponentProvider(HarvestToolProvider.INSTANCE, TooltipPosition.TAIL, Block.class);
+		registration.registerComponentProvider(CommandBlockProvider.INSTANCE, TooltipPosition.BODY, CommandBlock.class);
+		registration.registerComponentProvider(EnchantmentPowerProvider.INSTANCE, TooltipPosition.BODY, Block.class);
+		registration.registerComponentProvider(PlayerHeadProvider.INSTANCE, TooltipPosition.HEAD, AbstractSkullBlock.class);
+		registration.registerComponentProvider(VillagerProfessionProvider.INSTANCE, TooltipPosition.BODY, Villager.class);
+		registration.registerComponentProvider(VillagerProfessionProvider.INSTANCE, TooltipPosition.BODY, ZombieVillager.class);
+		registration.registerComponentProvider(ItemTooltipProvider.INSTANCE, TooltipPosition.BODY, ItemEntity.class);
+		registration.registerIconProvider(VanillaProvider.INSTANCE, CropBlock.class);
+		registration.registerComponentProvider(VanillaProvider.INSTANCE, TooltipPosition.HEAD, SpawnerBlock.class);
+		registration.registerComponentProvider(VanillaProvider.INSTANCE, TooltipPosition.BODY, Block.class);
+		registration.registerComponentProvider(FurnaceProvider.INSTANCE, TooltipPosition.BODY, AbstractFurnaceBlock.class);
+		registration.registerComponentProvider(InventoryProvider.INSTANCE, TooltipPosition.BODY, Block.class);
+		registration.registerComponentProvider(ForgeCapabilityProvider.INSTANCE, TooltipPosition.BODY, Block.class);
+		registration.registerComponentProvider(AnimalOwnerProvider.INSTANCE, TooltipPosition.BODY, Entity.class);
 
-		registrar.registerComponentProvider(BreedingProvider.INSTANCE, TooltipPosition.BODY, Animal.class);
-		registrar.registerEntityDataProvider(BreedingProvider.INSTANCE, Animal.class);
-		registrar.addConfig(MOB_BREEDING, true);
+		((ReloadableResourceManager) Minecraft.getInstance().getResourceManager()).registerReloadListener(HarvestToolProvider.INSTANCE);
+		HarvestToolProvider.init();
+	}
 
-		registrar.registerComponentProvider(TNTProvider.INSTANCE, TooltipPosition.BODY, TntBlock.class);
-		registrar.addConfig(TNT_STABILITY, true);
+	public static IDisplayHelper getDisplayHelper() {
+		return CLIENT_REGISTRATION.getDisplayHelper();
+	}
 
-		registrar.registerComponentProvider(BeehiveProvider.INSTANCE, TooltipPosition.BODY, BeehiveBlock.class);
-		registrar.registerBlockDataProvider(BeehiveProvider.INSTANCE, BeehiveBlockEntity.class);
-		registrar.addConfig(BEEHIVE, true);
-
-		registrar.registerComponentProvider(NoteBlockProvider.INSTANCE, TooltipPosition.BODY, NoteBlock.class);
-		registrar.addConfig(NOTE_BLOCK, true);
-
-		registrar.registerComponentProvider(ArmorStandProvider.INSTANCE, TooltipPosition.BODY, ArmorStand.class);
-		registrar.addConfig(ARMOR_STAND, true);
-
-		registrar.registerComponentProvider(PaintingProvider.INSTANCE, TooltipPosition.BODY, Painting.class);
-		registrar.addConfig(PAINTING, true);
-
-		registrar.registerComponentProvider(ChickenEggProvider.INSTANCE, TooltipPosition.BODY, Chicken.class);
-		registrar.registerEntityDataProvider(ChickenEggProvider.INSTANCE, Chicken.class);
-		registrar.addConfig(CHICKEN_EGG, true);
-
-		registrar.registerComponentProvider(HarvestToolProvider.INSTANCE, TooltipPosition.BODY, Block.class);
-		registrar.registerComponentProvider(HarvestToolProvider.INSTANCE, TooltipPosition.TAIL, Block.class);
-		registrar.addConfig(HARVEST_TOOL, true);
-		registrar.addConfig(HARVEST_TOOL_NEW_LINE, false);
-		registrar.addConfig(EFFECTIVE_TOOL, true);
-
-		registrar.registerComponentProvider(CommandBlockProvider.INSTANCE, TooltipPosition.BODY, CommandBlock.class);
-		registrar.registerBlockDataProvider(CommandBlockProvider.INSTANCE, CommandBlockEntity.class);
-		registrar.addSyncedConfig(COMMAND_BLOCK, true);
-
-		registrar.addConfig(BREAKING_PROGRESS, true);
-
-		registrar.registerComponentProvider(EnchantmentPowerProvider.INSTANCE, TooltipPosition.BODY, Block.class);
-		registrar.addConfig(ENCH_POWER, true);
-		registrar.addConfig(TOTAL_ENCH_POWER, true);
-
-		registrar.registerComponentProvider(PlayerHeadProvider.INSTANCE, TooltipPosition.HEAD, AbstractSkullBlock.class);
-		registrar.addConfig(PLAYER_HEAD, true);
-
-		registrar.registerComponentProvider(VillagerProfessionProvider.INSTANCE, TooltipPosition.BODY, Villager.class);
-		registrar.registerComponentProvider(VillagerProfessionProvider.INSTANCE, TooltipPosition.BODY, ZombieVillager.class);
-		registrar.addConfig(PROFESSION, true);
-
-		registrar.registerComponentProvider(ItemTooltipProvider.INSTANCE, TooltipPosition.BODY, ItemEntity.class);
-		registrar.addConfig(ITEM_TOOLTIP, true);
-
-		registrar.addConfig(FURNACE, true);
-		registrar.addConfig(SPAWNER_TYPE, true);
-		registrar.addConfig(CROP_PROGRESS, true);
-		registrar.addConfig(REDSTONE, true);
-		registrar.addConfig(JUKEBOX, true);
-		registrar.addConfig(LECTERN, true);
-
-		registrar.registerIconProvider(VanillaProvider.INSTANCE, CropBlock.class);
-		registrar.registerComponentProvider(VanillaProvider.INSTANCE, TooltipPosition.HEAD, SpawnerBlock.class);
-		registrar.registerComponentProvider(VanillaProvider.INSTANCE, TooltipPosition.BODY, Block.class);
-		registrar.registerBlockDataProvider(VanillaProvider.INSTANCE, JukeboxBlockEntity.class);
-		registrar.registerBlockDataProvider(VanillaProvider.INSTANCE, LecternBlockEntity.class);
-
-		registrar.registerComponentProvider(FurnaceProvider.INSTANCE, TooltipPosition.BODY, AbstractFurnaceBlock.class);
-		registrar.registerBlockDataProvider(FurnaceProvider.INSTANCE, AbstractFurnaceBlockEntity.class);
-
-		registrar.registerComponentProvider(InventoryProvider.INSTANCE, TooltipPosition.BODY, Block.class);
-		registrar.registerBlockDataProvider(InventoryProvider.INSTANCE, BaseContainerBlockEntity.class);
-		registrar.addConfig(INVENTORY, true);
-
-		registrar.registerComponentProvider(ForgeCapabilityProvider.INSTANCE, TooltipPosition.BODY, Block.class);
-		registrar.registerBlockDataProvider(ForgeCapabilityProvider.INSTANCE, BlockEntity.class);
-		registrar.addConfig(FORGE_ENERGY, true);
-		registrar.addConfig(FORGE_FLUID, true);
-
-		registrar.registerComponentProvider(AnimalOwnerProvider.INSTANCE, TooltipPosition.BODY, Entity.class);
-		registrar.addConfig(ANIMAL_OWNER, false);
-
-		if (FMLEnvironment.dist.isClient()) {
-			((ReloadableResourceManager) Minecraft.getInstance().getResourceManager()).registerReloadListener(HarvestToolProvider.INSTANCE);
-			HarvestToolProvider.init();
-		}
+	public static IElementHelper getElementHelper() {
+		return CLIENT_REGISTRATION.getElementHelper();
 	}
 
 }

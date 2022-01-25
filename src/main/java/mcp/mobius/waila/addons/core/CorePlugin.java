@@ -1,7 +1,8 @@
 package mcp.mobius.waila.addons.core;
 
 import mcp.mobius.waila.Waila;
-import mcp.mobius.waila.api.IRegistrar;
+import mcp.mobius.waila.api.IWailaClientRegistration;
+import mcp.mobius.waila.api.IWailaCommonRegistration;
 import mcp.mobius.waila.api.IWailaPlugin;
 import mcp.mobius.waila.api.TooltipPosition;
 import mcp.mobius.waila.api.WailaPlugin;
@@ -32,24 +33,28 @@ public class CorePlugin implements IWailaPlugin {
 	public static final ResourceLocation TAG_MOD_NAME = new ResourceLocation(Waila.MODID, "mod_name");
 
 	@Override
-	public void register(IRegistrar registrar) {
-		registrar.registerComponentProvider(BaseBlockProvider.INSTANCE, TooltipPosition.HEAD, Block.class);
-		registrar.registerComponentProvider(BaseBlockProvider.INSTANCE, TooltipPosition.BODY, Block.class);
-		registrar.registerComponentProvider(BaseBlockProvider.INSTANCE, TooltipPosition.TAIL, Block.class);
-		registrar.registerBlockDataProvider(BaseBlockProvider.INSTANCE, BlockEntity.class);
+	public void register(IWailaCommonRegistration registration) {
+		registration.registerBlockDataProvider(BaseBlockProvider.INSTANCE, BlockEntity.class);
 
-		registrar.registerComponentProvider(BaseEntityProvider.INSTANCE, TooltipPosition.HEAD, Entity.class);
-		registrar.registerComponentProvider(BaseEntityProvider.INSTANCE, TooltipPosition.BODY, LivingEntity.class);
-		registrar.registerComponentProvider(BaseEntityProvider.INSTANCE, TooltipPosition.TAIL, Entity.class);
+		registration.addConfig(CONFIG_REGISTRY_NAME, false);
+		registration.addConfig(CONFIG_ENTITY_HEALTH, true);
+		registration.addConfig(CONFIG_ENTITY_ARMOR, true);
+		registration.addConfig(CONFIG_BLOCK_STATES, false);
+		registration.addConfig(CONFIG_MOD_NAME, true);
+		registration.addConfig(CONFIG_ITEM_MOD_NAME, false);
+	}
 
-		registrar.addConfig(CONFIG_REGISTRY_NAME, false);
-		registrar.addConfig(CONFIG_ENTITY_HEALTH, true);
-		registrar.addConfig(CONFIG_ENTITY_ARMOR, true);
-		registrar.addConfig(CONFIG_BLOCK_STATES, false);
-		registrar.addConfig(CONFIG_MOD_NAME, true);
-		registrar.addConfig(CONFIG_ITEM_MOD_NAME, false);
+	@Override
+	public void registerClient(IWailaClientRegistration registration) {
+		registration.registerComponentProvider(BaseBlockProvider.INSTANCE, TooltipPosition.HEAD, Block.class);
+		registration.registerComponentProvider(BaseBlockProvider.INSTANCE, TooltipPosition.BODY, Block.class);
+		registration.registerComponentProvider(BaseBlockProvider.INSTANCE, TooltipPosition.TAIL, Block.class);
 
-		registrar.hideTarget(EntityType.AREA_EFFECT_CLOUD);
-		registrar.hideTarget(EntityType.FIREWORK_ROCKET);
+		registration.registerComponentProvider(BaseEntityProvider.INSTANCE, TooltipPosition.HEAD, Entity.class);
+		registration.registerComponentProvider(BaseEntityProvider.INSTANCE, TooltipPosition.BODY, LivingEntity.class);
+		registration.registerComponentProvider(BaseEntityProvider.INSTANCE, TooltipPosition.TAIL, Entity.class);
+
+		registration.hideTarget(EntityType.AREA_EFFECT_CLOUD);
+		registration.hideTarget(EntityType.FIREWORK_ROCKET);
 	}
 }
