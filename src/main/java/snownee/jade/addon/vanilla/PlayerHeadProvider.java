@@ -12,6 +12,8 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.SkullBlockEntity;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import snownee.jade.VanillaPlugin;
 
 public class PlayerHeadProvider implements IComponentProvider {
@@ -20,6 +22,7 @@ public class PlayerHeadProvider implements IComponentProvider {
 	static final ResourceLocation OBJECT_NAME_TAG = new ResourceLocation(Waila.MODID, "object_name");
 
 	@Override
+	@OnlyIn(Dist.CLIENT)
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		if (!config.get(VanillaPlugin.PLAYER_HEAD)) {
 			return;

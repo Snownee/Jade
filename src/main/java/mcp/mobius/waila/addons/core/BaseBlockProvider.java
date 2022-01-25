@@ -30,6 +30,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import snownee.jade.JadeCommonConfig;
 
 public class BaseBlockProvider implements IComponentProvider, IServerDataProvider<BlockEntity> {
@@ -37,6 +39,7 @@ public class BaseBlockProvider implements IComponentProvider, IServerDataProvide
 	public static final BaseBlockProvider INSTANCE = new BaseBlockProvider();
 
 	@Override
+	@OnlyIn(Dist.CLIENT)
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		TooltipPosition position = accessor.getTooltipPosition();
 		if (position == TooltipPosition.HEAD) {
@@ -48,6 +51,7 @@ public class BaseBlockProvider implements IComponentProvider, IServerDataProvide
 		}
 	}
 
+	@OnlyIn(Dist.CLIENT)
 	public void appendHead(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		Component name = null;
 		if (accessor.getServerData().contains("givenName", Tag.TAG_STRING)) {
@@ -80,6 +84,7 @@ public class BaseBlockProvider implements IComponentProvider, IServerDataProvide
 			tooltip.add(new TextComponent(accessor.getBlock().getRegistryName().toString()).withStyle(ChatFormatting.GRAY), CorePlugin.TAG_REGISTRY_NAME);
 	}
 
+	@OnlyIn(Dist.CLIENT)
 	public void appendBody(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		if (config.get(CorePlugin.CONFIG_BLOCK_STATES)) {
 			BlockState state = accessor.getBlockState();
@@ -99,6 +104,7 @@ public class BaseBlockProvider implements IComponentProvider, IServerDataProvide
 		}
 	}
 
+	@OnlyIn(Dist.CLIENT)
 	public void appendTail(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		if (!config.get(CorePlugin.CONFIG_MOD_NAME))
 			return;

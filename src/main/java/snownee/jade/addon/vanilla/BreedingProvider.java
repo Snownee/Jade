@@ -12,12 +12,15 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import snownee.jade.VanillaPlugin;
 
 public class BreedingProvider implements IEntityComponentProvider, IServerDataProvider<Entity> {
 	public static final BreedingProvider INSTANCE = new BreedingProvider();
 
 	@Override
+	@OnlyIn(Dist.CLIENT)
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		if (!config.get(VanillaPlugin.MOB_BREEDING) || !accessor.getServerData().contains("BreedingCD", Tag.TAG_INT)) {
 			return;

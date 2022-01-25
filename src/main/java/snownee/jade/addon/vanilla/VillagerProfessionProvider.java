@@ -14,6 +14,8 @@ import net.minecraft.world.entity.monster.ZombieVillager;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerData;
 import net.minecraft.world.entity.npc.VillagerProfession;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import snownee.jade.VanillaPlugin;
 
 // @MerchantScreen
@@ -23,6 +25,7 @@ public class VillagerProfessionProvider implements IEntityComponentProvider {
 	private static final Component LEVEL_SEPARATOR = new TextComponent(" - ");
 
 	@Override
+	@OnlyIn(Dist.CLIENT)
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		if (!config.get(VanillaPlugin.PROFESSION)) {
 			return;

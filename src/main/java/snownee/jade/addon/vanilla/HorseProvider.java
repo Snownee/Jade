@@ -8,12 +8,15 @@ import mcp.mobius.waila.overlay.DisplayHelper;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import snownee.jade.VanillaPlugin;
 
 public class HorseProvider implements IEntityComponentProvider {
 	public static final HorseProvider INSTANCE = new HorseProvider();
 
 	@Override
+	@OnlyIn(Dist.CLIENT)
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		if (!config.get(VanillaPlugin.HORSE_STAT)) {
 			return;

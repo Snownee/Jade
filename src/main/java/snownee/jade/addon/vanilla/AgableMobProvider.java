@@ -12,12 +12,15 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import snownee.jade.VanillaPlugin;
 
 public class AgableMobProvider implements IEntityComponentProvider, IServerDataProvider<Entity> {
 	public static final AgableMobProvider INSTANCE = new AgableMobProvider();
 
 	@Override
+	@OnlyIn(Dist.CLIENT)
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		if (!config.get(VanillaPlugin.MOB_GROWTH) || !accessor.getServerData().contains("GrowingTime", Tag.TAG_INT)) {
 			return;

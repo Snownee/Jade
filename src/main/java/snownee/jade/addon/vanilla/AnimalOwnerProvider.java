@@ -10,6 +10,8 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.UsernameCache;
 import snownee.jade.VanillaPlugin;
 
@@ -18,6 +20,7 @@ public class AnimalOwnerProvider implements IEntityComponentProvider {
 	public static final AnimalOwnerProvider INSTANCE = new AnimalOwnerProvider();
 
 	@Override
+	@OnlyIn(Dist.CLIENT)
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		if (!config.get(VanillaPlugin.ANIMAL_OWNER)) {
 			return;

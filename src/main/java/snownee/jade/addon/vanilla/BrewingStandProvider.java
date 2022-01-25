@@ -15,6 +15,8 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import snownee.jade.Jade;
 import snownee.jade.VanillaPlugin;
 
@@ -22,6 +24,7 @@ public class BrewingStandProvider implements IComponentProvider, IServerDataProv
 	public static final BrewingStandProvider INSTANCE = new BrewingStandProvider();
 
 	@Override
+	@OnlyIn(Dist.CLIENT)
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		if (!config.get(VanillaPlugin.BREWING_STAND) || !accessor.getServerData().contains("BrewingStand", Tag.TAG_COMPOUND)) {
 			return;

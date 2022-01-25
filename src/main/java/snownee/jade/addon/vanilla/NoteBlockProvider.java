@@ -9,6 +9,8 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.level.block.NoteBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import snownee.jade.VanillaPlugin;
 
 public class NoteBlockProvider implements IComponentProvider {
@@ -19,6 +21,7 @@ public class NoteBlockProvider implements IComponentProvider {
 	private static final ChatFormatting[] OCTAVE = { ChatFormatting.WHITE, ChatFormatting.YELLOW, ChatFormatting.GOLD };
 
 	@Override
+	@OnlyIn(Dist.CLIENT)
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		if (!config.get(VanillaPlugin.NOTE_BLOCK)) {
 			return;

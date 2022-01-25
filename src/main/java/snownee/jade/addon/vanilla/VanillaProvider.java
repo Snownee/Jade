@@ -36,6 +36,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.ComparatorMode;
 import net.minecraft.world.phys.Vec2;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.registries.ForgeRegistries;
 import snownee.jade.VanillaPlugin;
 
@@ -46,6 +48,7 @@ public class VanillaProvider implements IComponentProvider, IServerDataProvider<
 	static final ResourceLocation OBJECT_NAME_TAG = new ResourceLocation(Waila.MODID, "object_name");
 
 	@Override
+	@OnlyIn(Dist.CLIENT)
 	public IElement getIcon(BlockAccessor accessor, IPluginConfig config, IElement currentIcon) {
 		if (accessor.getBlock() == Blocks.WHEAT)
 			return VanillaPlugin.getElementHelper().item(new ItemStack(Items.WHEAT));
@@ -56,6 +59,7 @@ public class VanillaProvider implements IComponentProvider, IServerDataProvider<
 		return null;
 	}
 
+	@OnlyIn(Dist.CLIENT)
 	public void appendHead(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		if (accessor.getBlock() == Blocks.SPAWNER && config.get(VanillaPlugin.SPAWNER_TYPE)) {
 			SpawnerBlockEntity spawner = (SpawnerBlockEntity) accessor.getBlockEntity();
@@ -71,6 +75,7 @@ public class VanillaProvider implements IComponentProvider, IServerDataProvider<
 	}
 
 	@Override
+	@OnlyIn(Dist.CLIENT)
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		if (accessor.getTooltipPosition() == TooltipPosition.HEAD) {
 			appendHead(tooltip, accessor, config);
@@ -121,6 +126,7 @@ public class VanillaProvider implements IComponentProvider, IServerDataProvider<
 		}
 	}
 
+	@OnlyIn(Dist.CLIENT)
 	private void appendRedstone(ITooltip tooltip, BlockState state) {
 		Block block = state.getBlock();
 		if (block instanceof LeverBlock) {
@@ -167,6 +173,7 @@ public class VanillaProvider implements IComponentProvider, IServerDataProvider<
 		}
 	}
 
+	@OnlyIn(Dist.CLIENT)
 	private static void addMaturityTooltip(ITooltip tooltip, float growthValue) {
 		growthValue *= 100.0F;
 		if (growthValue < 100.0F)

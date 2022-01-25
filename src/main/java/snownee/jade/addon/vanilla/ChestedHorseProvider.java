@@ -12,6 +12,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.animal.horse.AbstractChestedHorse;
 import net.minecraft.world.entity.animal.horse.Llama;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.items.CapabilityItemHandler;
 import snownee.jade.JadeCommonConfig;
 import snownee.jade.VanillaPlugin;
@@ -21,6 +23,7 @@ public class ChestedHorseProvider implements IEntityComponentProvider, IServerDa
 	public static final ChestedHorseProvider INSTANCE = new ChestedHorseProvider();
 
 	@Override
+	@OnlyIn(Dist.CLIENT)
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		if (!config.get(VanillaPlugin.HORSE_INVENTORY)) {
 			return;

@@ -9,6 +9,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.EnchantmentTableBlock;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import snownee.jade.VanillaPlugin;
 
 public class EnchantmentPowerProvider implements IComponentProvider {
@@ -16,6 +18,7 @@ public class EnchantmentPowerProvider implements IComponentProvider {
 	public static final EnchantmentPowerProvider INSTANCE = new EnchantmentPowerProvider();
 
 	@Override
+	@OnlyIn(Dist.CLIENT)
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		Level world = accessor.getLevel();
 		BlockPos pos = accessor.getPosition();

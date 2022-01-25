@@ -14,6 +14,8 @@ import net.minecraft.world.level.block.BeehiveBlock;
 import net.minecraft.world.level.block.entity.BeehiveBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import snownee.jade.VanillaPlugin;
 
 public class BeehiveProvider implements IComponentProvider, IServerDataProvider<BlockEntity> {
@@ -21,6 +23,7 @@ public class BeehiveProvider implements IComponentProvider, IServerDataProvider<
 	public static final BeehiveProvider INSTANCE = new BeehiveProvider();
 
 	@Override
+	@OnlyIn(Dist.CLIENT)
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		if (!config.get(VanillaPlugin.BEEHIVE)) {
 			return;

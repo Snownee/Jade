@@ -7,7 +7,10 @@ import mcp.mobius.waila.api.EntityAccessor;
 import mcp.mobius.waila.api.IEntityComponentProvider;
 import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.config.IPluginConfig;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -31,6 +34,16 @@ public class ItemTooltipProvider implements IEntityComponentProvider {
 		if (!itemTooltip.isEmpty()) {
 			itemTooltip.remove(0);
 		}
-		tooltip.addAll(itemTooltip);
+		Font font = Minecraft.getInstance().font;
+		int maxWidth = 250;
+		for (Component component : itemTooltip) {
+			int width = font.width(component);
+			if (width > maxWidth) {
+				tooltip.add(new TextComponent(font.substrByWidth(component, maxWidth - 5).getString() + ".."));
+			} else {
+				tooltip.add(component);
+			}
+		}
 	}
+
 }

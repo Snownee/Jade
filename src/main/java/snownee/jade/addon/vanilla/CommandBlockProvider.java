@@ -12,6 +12,8 @@ import net.minecraft.world.level.BaseCommandBlock;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.CommandBlockEntity;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import snownee.jade.VanillaPlugin;
 
 public class CommandBlockProvider implements IComponentProvider, IServerDataProvider<BlockEntity> {
@@ -19,6 +21,7 @@ public class CommandBlockProvider implements IComponentProvider, IServerDataProv
 	public static final CommandBlockProvider INSTANCE = new CommandBlockProvider();
 
 	@Override
+	@OnlyIn(Dist.CLIENT)
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		if (!config.get(VanillaPlugin.COMMAND_BLOCK) || !accessor.getServerData().contains("Command")) {
 			return;

@@ -18,12 +18,15 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.npc.Villager;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class BaseEntityProvider implements IEntityComponentProvider {
 
 	static final IEntityComponentProvider INSTANCE = new BaseEntityProvider();
 
 	@Override
+	@OnlyIn(Dist.CLIENT)
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		TooltipPosition position = accessor.getTooltipPosition();
 		if (position == TooltipPosition.HEAD) {
@@ -35,6 +38,7 @@ public class BaseEntityProvider implements IEntityComponentProvider {
 		}
 	}
 
+	@OnlyIn(Dist.CLIENT)
 	public void appendHead(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		String name = getEntityName(accessor.getEntity());
 		WailaConfig wailaConfig = Waila.CONFIG.get();
@@ -55,6 +59,7 @@ public class BaseEntityProvider implements IEntityComponentProvider {
 		return entity.getName().getString();
 	}
 
+	@OnlyIn(Dist.CLIENT)
 	public void appendBody(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		if (!(accessor.getEntity() instanceof LivingEntity))
 			return;
@@ -64,12 +69,14 @@ public class BaseEntityProvider implements IEntityComponentProvider {
 			appendHealth((LivingEntity) accessor.getEntity(), tooltip);
 	}
 
+	@OnlyIn(Dist.CLIENT)
 	public void appendTail(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		if (!config.get(CorePlugin.CONFIG_MOD_NAME))
 			return;
 		tooltip.add(new TextComponent(String.format(Waila.CONFIG.get().getFormatting().getModName(), ModIdentification.getModName(accessor.getEntity()))));
 	}
 
+	@OnlyIn(Dist.CLIENT)
 	private void appendHealth(LivingEntity living, ITooltip tooltip) {
 		float health = living.getHealth();
 		float maxHealth = living.getMaxHealth();
@@ -84,6 +91,7 @@ public class BaseEntityProvider implements IEntityComponentProvider {
 		}
 	}
 
+	@OnlyIn(Dist.CLIENT)
 	private void appendArmor(LivingEntity living, ITooltip tooltip) {
 		float armor = living.getArmorValue();
 		if (armor == 0)

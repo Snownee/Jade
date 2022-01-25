@@ -23,12 +23,15 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import snownee.jade.VanillaPlugin;
 
 public class PotionEffectsProvider implements IEntityComponentProvider, IServerDataProvider<Entity> {
 	public static final PotionEffectsProvider INSTANCE = new PotionEffectsProvider();
 
 	@Override
+	@OnlyIn(Dist.CLIENT)
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		if (!config.get(VanillaPlugin.EFFECTS) || !accessor.getServerData().contains("Potions")) {
 			return;
@@ -54,6 +57,7 @@ public class PotionEffectsProvider implements IEntityComponentProvider, IServerD
 		tooltip.add(helper.box(box));
 	}
 
+	@OnlyIn(Dist.CLIENT)
 	public static String getPotionDurationString(int duration) {
 		if (duration >= 32767) {
 			return "**:**";
@@ -63,6 +67,7 @@ public class PotionEffectsProvider implements IEntityComponentProvider, IServerD
 		}
 	}
 
+	@OnlyIn(Dist.CLIENT)
 	public static String ticksToElapsedTime(int ticks) {
 		int i = ticks / 20;
 		int j = i / 60;

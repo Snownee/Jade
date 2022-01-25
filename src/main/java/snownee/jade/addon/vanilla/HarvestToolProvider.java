@@ -37,6 +37,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec2;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.IForgeShearable;
 import net.minecraftforge.common.Tags;
 import snownee.jade.VanillaPlugin;
@@ -106,6 +108,7 @@ public class HarvestToolProvider implements IComponentProvider, ResourceManagerR
 	}
 
 	@Override
+	@OnlyIn(Dist.CLIENT)
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		Player player = accessor.getPlayer();
 		if (player.isCreative() || player.isSpectator()) {
@@ -138,6 +141,7 @@ public class HarvestToolProvider implements IComponentProvider, ResourceManagerR
 		}
 	}
 
+	@OnlyIn(Dist.CLIENT)
 	public List<IElement> getText(BlockAccessor accessor, IPluginConfig config, IElementHelper helper) {
 		if (!config.get(VanillaPlugin.HARVEST_TOOL)) {
 			return Collections.EMPTY_LIST;
