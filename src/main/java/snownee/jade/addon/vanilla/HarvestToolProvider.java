@@ -24,6 +24,7 @@ import mcp.mobius.waila.impl.ui.SubTextElement;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
@@ -51,6 +52,8 @@ public class HarvestToolProvider implements IComponentProvider, ResourceManagerR
 	public static final List<TestCase> testTools = Lists.newLinkedList();
 
 	private static final Component UNBREAKABLE_TEXT = new TranslatableComponent("jade.harvest_tool.unbreakable").withStyle(ChatFormatting.DARK_RED);
+	private static final Component CHECK = new TextComponent("✔").withStyle(ChatFormatting.GREEN);
+	private static final Component X = new TextComponent("✕").withStyle(ChatFormatting.RED);
 	private static final Vec2 ITEM_SIZE = new Vec2(10, 0);
 	private static final TestCase SHEARS;
 
@@ -178,7 +181,7 @@ public class HarvestToolProvider implements IComponentProvider, ResourceManagerR
 				}
 			}
 			if (!stack.isEmpty()) {
-				elements.add(helper.item(stack, 0.75f).translate(new Vec2(-5, offsetY)).size(ITEM_SIZE));
+				elements.add(helper.item(stack, 0.75f).translate(new Vec2(-1, offsetY)).size(ITEM_SIZE));
 			}
 		}
 
@@ -190,10 +193,10 @@ public class HarvestToolProvider implements IComponentProvider, ResourceManagerR
 				canHarvest = true;
 			}
 			if (state.requiresCorrectToolForDrops()) {
-				String sub = canHarvest ? "§a✔" : "§4✕";
-				elements.add(new SubTextElement(sub).translate(new Vec2(-6, 7 + offsetY)));
+				Component sub = canHarvest ? CHECK : X;
+				elements.add(new SubTextElement(sub).translate(new Vec2(-2, 7 + offsetY)));
 			} else if (canHarvest) {
-				elements.add(new SubTextElement("§a✔").translate(new Vec2(-6, 7 + offsetY)));
+				elements.add(new SubTextElement(CHECK).translate(new Vec2(-2, 7 + offsetY)));
 			}
 		}
 

@@ -102,6 +102,8 @@ public class BaseBlockProvider implements IComponentProvider, IServerDataProvide
 			});
 			tooltip.add(helper.box(box));
 		}
+		//		tooltip.add(new TextComponent("TestTest"));
+		//		tooltip.append(tooltip.getElementHelper().text(new TextComponent("TestTest")).align(Align.RIGHT));
 	}
 
 	@OnlyIn(Dist.CLIENT)

@@ -79,6 +79,7 @@ public interface ITooltip {
 
 	/**
 	 * Append a text to the last line
+	 * IMPORTANT: DO NOT use this to concat texts
 	 */
 	default void append(Component component) {
 		append(component, null);
@@ -86,6 +87,7 @@ public interface ITooltip {
 
 	/**
 	 * Append a tagged text to the last line
+	 * IMPORTANT: DO NOT use this to concat texts
 	 */
 	default void append(Component component, ResourceLocation tag) {
 		append(getElementHelper().text(component).tag(tag));

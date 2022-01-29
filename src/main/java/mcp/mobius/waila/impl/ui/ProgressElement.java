@@ -39,7 +39,7 @@ public class ProgressElement extends Element {
 		}
 		if (text != null) {
 			Font font = Minecraft.getInstance().font;
-			width += font.width(text.getString());
+			width += font.width(text.getString()) + 3;
 		}
 		width = Math.max(20, width);
 		if (getTag() != null) {

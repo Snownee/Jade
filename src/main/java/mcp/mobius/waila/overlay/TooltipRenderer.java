@@ -67,7 +67,7 @@ public class TooltipRenderer {
 
 		for (Line line : tooltip.lines) {
 			Vec2 size = line.getSize();
-			line.render(matrixStack, x, y, totalSize.x, size.y);
+			line.render(matrixStack, x, y, totalSize.x - 4, size.y);
 			y += size.y;
 		}
 

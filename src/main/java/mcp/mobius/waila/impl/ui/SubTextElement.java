@@ -6,6 +6,7 @@ import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.config.WailaConfig;
 import mcp.mobius.waila.api.ui.Element;
 import mcp.mobius.waila.overlay.DisplayHelper;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -13,9 +14,9 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 @OnlyIn(Dist.CLIENT)
 public class SubTextElement extends Element {
 
-	private final String text;
+	private final Component text;
 
-	public SubTextElement(String text) {
+	public SubTextElement(Component text) {
 		this.text = text;
 	}
 
