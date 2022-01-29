@@ -13,7 +13,7 @@ import mcp.mobius.waila.api.TooltipPosition;
 import mcp.mobius.waila.api.config.IPluginConfig;
 import mcp.mobius.waila.api.config.WailaConfig;
 import mcp.mobius.waila.api.ui.IElementHelper;
-import mcp.mobius.waila.impl.WailaRegistrar;
+import mcp.mobius.waila.impl.WailaClientRegistration;
 import mcp.mobius.waila.utils.ModIdentification;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
@@ -57,7 +57,7 @@ public class BaseBlockProvider implements IComponentProvider, IServerDataProvide
 		if (accessor.getServerData().contains("givenName", Tag.TAG_STRING)) {
 			name = Component.Serializer.fromJson(accessor.getServerData().getString("givenName"));
 		} else {
-			if (WailaRegistrar.INSTANCE.shouldPick(accessor.getBlockState())) {
+			if (WailaClientRegistration.INSTANCE.shouldPick(accessor.getBlockState())) {
 				ItemStack pick = accessor.getPickedResult();
 				if (!pick.isEmpty())
 					name = pick.getHoverName();
@@ -109,7 +109,7 @@ public class BaseBlockProvider implements IComponentProvider, IServerDataProvide
 		if (!config.get(CorePlugin.CONFIG_MOD_NAME))
 			return;
 		String modName = null;
-		if (WailaRegistrar.INSTANCE.shouldPick(accessor.getBlockState())) {
+		if (WailaClientRegistration.INSTANCE.shouldPick(accessor.getBlockState())) {
 			ItemStack pick = accessor.getPickedResult();
 			if (!pick.isEmpty())
 				modName = ModIdentification.getModName(pick);

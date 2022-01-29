@@ -88,4 +88,10 @@ public interface IWailaClientRegistration {
 
 	EntityAccessor createEntityAccessor(Entity entity, Level level, Player player, CompoundTag serverData, EntityHitResult hit, boolean serverConnected);
 
+	boolean shouldHide(Entity target);
+
+	boolean shouldHide(BlockState state);
+
+	boolean shouldPick(BlockState blockState);
+
 }

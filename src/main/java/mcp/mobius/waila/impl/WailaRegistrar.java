@@ -1,11 +1,5 @@
 package mcp.mobius.waila.impl;
 
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Set;
-
-import com.google.common.collect.Sets;
-
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.BlockAccessor;
 import mcp.mobius.waila.api.EntityAccessor;
@@ -38,33 +32,6 @@ public class WailaRegistrar implements IRegistrar {
 
 	public static final WailaRegistrar INSTANCE = new WailaRegistrar();
 
-	public final HierarchyLookup<IComponentProvider> blockIconProviders;
-	public final EnumMap<TooltipPosition, HierarchyLookup<IComponentProvider>> blockComponentProviders;
-	public final HierarchyLookup<IServerDataProvider<BlockEntity>> blockDataProviders;
-
-	public final HierarchyLookup<IEntityComponentProvider> entityIconProviders;
-	public final EnumMap<TooltipPosition, HierarchyLookup<IEntityComponentProvider>> entityComponentProviders;
-	public final HierarchyLookup<IServerDataProvider<Entity>> entityDataProviders;
-
-	public final Set<Block> hideBlocks = Sets.newHashSet();
-	public final Set<EntityType<?>> hideEntities = Sets.newHashSet();
-	public final Set<Block> pickBlocks = Sets.newHashSet();
-
-	WailaRegistrar() {
-		blockIconProviders = new HierarchyLookup<>(Block.class);
-		blockComponentProviders = new EnumMap<>(TooltipPosition.class);
-		blockDataProviders = new HierarchyLookup<>(BlockEntity.class);
-
-		entityIconProviders = new HierarchyLookup<>(Entity.class);
-		entityComponentProviders = new EnumMap<>(TooltipPosition.class);
-		entityDataProviders = new HierarchyLookup<>(Entity.class);
-
-		for (TooltipPosition position : TooltipPosition.values()) {
-			blockComponentProviders.put(position, new HierarchyLookup<>(Block.class));
-			entityComponentProviders.put(position, new HierarchyLookup<>(Entity.class));
-		}
-	}
-
 	/* CONFIG HANDLING */
 
 	@Override
@@ -83,58 +50,32 @@ public class WailaRegistrar implements IRegistrar {
 
 	@Override
 	public void registerIconProvider(IComponentProvider dataProvider, Class<? extends Block> block) {
-		blockIconProviders.register(block, dataProvider);
+		WailaClientRegistration.INSTANCE.registerIconProvider(dataProvider, block);
 	}
 
 	@Override
 	public void registerComponentProvider(IComponentProvider dataProvider, TooltipPosition position, Class<? extends Block> block) {
-		blockComponentProviders.get(position).register(block, dataProvider);
-	}
-
-	@Override
-	public void registerBlockDataProvider(IServerDataProvider<BlockEntity> dataProvider, Class<? extends BlockEntity> block) {
-		blockDataProviders.register(block, dataProvider);
+		WailaClientRegistration.INSTANCE.registerComponentProvider(dataProvider, position, block);
 	}
 
 	@Override
 	public void registerIconProvider(IEntityComponentProvider dataProvider, Class<? extends Entity> entity) {
-		entityIconProviders.register(entity, dataProvider);
+		WailaClientRegistration.INSTANCE.registerIconProvider(dataProvider, entity);
 	}
 
 	@Override
 	public void registerComponentProvider(IEntityComponentProvider dataProvider, TooltipPosition position, Class<? extends Entity> entity) {
-		entityComponentProviders.get(position).register(entity, dataProvider);
+		WailaClientRegistration.INSTANCE.registerIconProvider(dataProvider, entity);
+	}
+
+	@Override
+	public void registerBlockDataProvider(IServerDataProvider<BlockEntity> dataProvider, Class<? extends BlockEntity> block) {
+		WailaCommonRegistration.INSTANCE.registerBlockDataProvider(dataProvider, block);
 	}
 
 	@Override
 	public void registerEntityDataProvider(IServerDataProvider<Entity> dataProvider, Class<? extends Entity> entity) {
-		entityDataProviders.register(entity, dataProvider);
-	}
-
-	/* PROVIDER GETTERS */
-
-	public List<IComponentProvider> getBlockProviders(Block block, TooltipPosition position) {
-		return blockComponentProviders.get(position).get(block);
-	}
-
-	public List<IComponentProvider> getBlockIconProviders(Block block) {
-		return blockIconProviders.get(block);
-	}
-
-	public List<IServerDataProvider<BlockEntity>> getBlockNBTProviders(BlockEntity block) {
-		return blockDataProviders.get(block);
-	}
-
-	public List<IEntityComponentProvider> getEntityProviders(Entity entity, TooltipPosition position) {
-		return entityComponentProviders.get(position).get(entity);
-	}
-
-	public List<IEntityComponentProvider> getEntityIconProviders(Entity entity) {
-		return entityIconProviders.get(entity);
-	}
-
-	public List<IServerDataProvider<Entity>> getEntityNBTProviders(Entity entity) {
-		return entityDataProviders.get(entity);
+		WailaCommonRegistration.INSTANCE.registerEntityDataProvider(dataProvider, entity);
 	}
 
 	@Override
@@ -154,39 +95,27 @@ public class WailaRegistrar implements IRegistrar {
 
 	@Override
 	public void hideTarget(Block block) {
-		hideBlocks.add(block);
+		WailaClientRegistration.INSTANCE.hideTarget(block);
 	}
 
 	@Override
 	public void hideTarget(EntityType<?> entityType) {
-		hideEntities.add(entityType);
+		WailaClientRegistration.INSTANCE.hideTarget(entityType);
 	}
 
 	@Override
 	public void usePickedResult(Block block) {
-		pickBlocks.add(block);
-	}
-
-	public boolean shouldHide(BlockState state) {
-		return hideBlocks.contains(state.getBlock());
-	}
-
-	public boolean shouldPick(BlockState state) {
-		return pickBlocks.contains(state.getBlock());
-	}
-
-	public boolean shouldHide(Entity entity) {
-		return hideEntities.contains(entity.getType());
+		WailaClientRegistration.INSTANCE.usePickedResult(block);
 	}
 
 	@Override
 	public BlockAccessor createBlockAccessor(BlockState blockState, BlockEntity blockEntity, Level level, Player player, CompoundTag serverData, BlockHitResult hit, boolean serverConnected) {
-		return new BlockAccessorImpl(blockState, blockEntity, level, player, serverData, hit, serverConnected);
+		return WailaClientRegistration.INSTANCE.createBlockAccessor(blockState, blockEntity, level, player, serverData, hit, serverConnected);
 	}
 
 	@Override
 	public EntityAccessor createEntityAccessor(Entity entity, Level level, Player player, CompoundTag serverData, EntityHitResult hit, boolean serverConnected) {
-		return new EntityAccessorImpl(entity, level, player, serverData, hit, serverConnected);
+		return WailaClientRegistration.INSTANCE.createEntityAccessor(entity, level, player, serverData, hit, serverConnected);
 	}
 
 }

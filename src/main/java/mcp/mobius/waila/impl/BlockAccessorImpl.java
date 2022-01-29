@@ -93,7 +93,7 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 			icon = new FluidStackElement(fluidStack);//.size(new Size(18, 18));
 		}
 
-		for (IComponentProvider provider : WailaRegistrar.INSTANCE.getBlockIconProviders(getBlock())) {
+		for (IComponentProvider provider : WailaClientRegistration.INSTANCE.getBlockIconProviders(getBlock())) {
 			try {
 				IElement element = provider.getIcon(this, PluginConfig.INSTANCE, icon);
 				if (!RayTracing.isEmptyElement(element))
@@ -107,7 +107,7 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 
 	@Override
 	public void _gatherComponents(ITooltip tooltip) {
-		List<IComponentProvider> providers = WailaRegistrar.INSTANCE.getBlockProviders(getBlock(), getTooltipPosition());
+		List<IComponentProvider> providers = WailaClientRegistration.INSTANCE.getBlockProviders(getBlock(), getTooltipPosition());
 		for (IComponentProvider provider : providers) {
 			try {
 				provider.appendTooltip(tooltip, this, PluginConfig.INSTANCE);
@@ -131,7 +131,7 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 	public boolean shouldRequestData() {
 		if (blockEntity == null)
 			return false;
-		return !WailaRegistrar.INSTANCE.getBlockNBTProviders(blockEntity).isEmpty();
+		return !WailaCommonRegistration.INSTANCE.getBlockNBTProviders(blockEntity).isEmpty();
 	}
 
 	@Override

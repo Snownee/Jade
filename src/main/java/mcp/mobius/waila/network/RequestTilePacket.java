@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.IServerDataProvider;
-import mcp.mobius.waila.impl.WailaRegistrar;
+import mcp.mobius.waila.impl.WailaCommonRegistration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -53,7 +53,7 @@ public class RequestTilePacket {
 				if (tile == null)
 					return;
 
-				List<IServerDataProvider<BlockEntity>> providers = WailaRegistrar.INSTANCE.getBlockNBTProviders(tile);
+				List<IServerDataProvider<BlockEntity>> providers = WailaCommonRegistration.INSTANCE.getBlockNBTProviders(tile);
 				if (providers.isEmpty())
 					return;
 

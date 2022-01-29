@@ -56,7 +56,7 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 				icon = ItemStackElement.of(stack);
 		}
 
-		for (IEntityComponentProvider provider : WailaRegistrar.INSTANCE.getEntityIconProviders(entity)) {
+		for (IEntityComponentProvider provider : WailaClientRegistration.INSTANCE.getEntityIconProviders(entity)) {
 			try {
 				IElement element = provider.getIcon(this, PluginConfig.INSTANCE, icon);
 				if (!RayTracing.isEmptyElement(element))
@@ -70,7 +70,7 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 
 	@Override
 	public void _gatherComponents(ITooltip tooltip) {
-		List<IEntityComponentProvider> providers = WailaRegistrar.INSTANCE.getEntityProviders(getEntity(), getTooltipPosition());
+		List<IEntityComponentProvider> providers = WailaClientRegistration.INSTANCE.getEntityProviders(getEntity(), getTooltipPosition());
 		for (IEntityComponentProvider provider : providers) {
 			try {
 				provider.appendTooltip(tooltip, this, PluginConfig.INSTANCE);
@@ -92,7 +92,7 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 
 	@Override
 	public boolean shouldRequestData() {
-		return !WailaRegistrar.INSTANCE.getEntityNBTProviders(entity).isEmpty();
+		return !WailaCommonRegistration.INSTANCE.getEntityNBTProviders(entity).isEmpty();
 	}
 
 	@Override

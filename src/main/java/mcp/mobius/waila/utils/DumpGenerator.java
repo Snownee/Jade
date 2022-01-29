@@ -4,7 +4,8 @@ import com.google.common.collect.Multimap;
 
 import mcp.mobius.waila.api.TooltipPosition;
 import mcp.mobius.waila.impl.HierarchyLookup;
-import mcp.mobius.waila.impl.WailaRegistrar;
+import mcp.mobius.waila.impl.WailaClientRegistration;
+import mcp.mobius.waila.impl.WailaCommonRegistration;
 
 @SuppressWarnings("unchecked")
 public class DumpGenerator {
@@ -13,18 +14,18 @@ public class DumpGenerator {
 		StringBuilder builder = new StringBuilder("# Waila Handler Dump");
 
 		builder.append("\n## Block");
-		createSection(builder, "Icon Providers", WailaRegistrar.INSTANCE.blockIconProviders);
-		createSection(builder, "Head Providers", WailaRegistrar.INSTANCE.blockComponentProviders.get(TooltipPosition.HEAD));
-		createSection(builder, "Body Providers", WailaRegistrar.INSTANCE.blockComponentProviders.get(TooltipPosition.BODY));
-		createSection(builder, "Tail Providers", WailaRegistrar.INSTANCE.blockComponentProviders.get(TooltipPosition.TAIL));
-		createSection(builder, "Data Providers", WailaRegistrar.INSTANCE.blockDataProviders);
+		createSection(builder, "Icon Providers", WailaClientRegistration.INSTANCE.blockIconProviders);
+		createSection(builder, "Head Providers", WailaClientRegistration.INSTANCE.blockComponentProviders.get(TooltipPosition.HEAD));
+		createSection(builder, "Body Providers", WailaClientRegistration.INSTANCE.blockComponentProviders.get(TooltipPosition.BODY));
+		createSection(builder, "Tail Providers", WailaClientRegistration.INSTANCE.blockComponentProviders.get(TooltipPosition.TAIL));
+		createSection(builder, "Data Providers", WailaCommonRegistration.INSTANCE.blockDataProviders);
 
 		builder.append("\n## Entity");
-		createSection(builder, "Icon Providers", WailaRegistrar.INSTANCE.entityIconProviders);
-		createSection(builder, "Head Providers", WailaRegistrar.INSTANCE.entityComponentProviders.get(TooltipPosition.HEAD));
-		createSection(builder, "Body Providers", WailaRegistrar.INSTANCE.entityComponentProviders.get(TooltipPosition.BODY));
-		createSection(builder, "Tail Providers", WailaRegistrar.INSTANCE.entityComponentProviders.get(TooltipPosition.TAIL));
-		createSection(builder, "Data Providers", WailaRegistrar.INSTANCE.entityDataProviders);
+		createSection(builder, "Icon Providers", WailaClientRegistration.INSTANCE.entityIconProviders);
+		createSection(builder, "Head Providers", WailaClientRegistration.INSTANCE.entityComponentProviders.get(TooltipPosition.HEAD));
+		createSection(builder, "Body Providers", WailaClientRegistration.INSTANCE.entityComponentProviders.get(TooltipPosition.BODY));
+		createSection(builder, "Tail Providers", WailaClientRegistration.INSTANCE.entityComponentProviders.get(TooltipPosition.TAIL));
+		createSection(builder, "Data Providers", WailaCommonRegistration.INSTANCE.entityDataProviders);
 
 		return builder.toString();
 	}

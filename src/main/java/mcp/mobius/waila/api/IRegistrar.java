@@ -1,5 +1,7 @@
 package mcp.mobius.waila.api;
 
+import org.jetbrains.annotations.ApiStatus.ScheduledForRemoval;
+
 import mcp.mobius.waila.api.config.IPluginConfig;
 import mcp.mobius.waila.api.config.WailaConfig;
 import mcp.mobius.waila.api.ui.IDisplayHelper;
@@ -17,6 +19,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 
+@ScheduledForRemoval(inVersion = "1.19")
 public interface IRegistrar {
 
 	/**

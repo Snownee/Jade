@@ -14,7 +14,7 @@ import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.level.ClipContext;
 
 /**
- * Get this instance from {@link mcp.mobius.waila.api.IRegistrar#getConfig}
+ * Get this instance from {@link mcp.mobius.waila.api.IWailaCommonRegistration#getConfig}
  */
 public class WailaConfig {
 

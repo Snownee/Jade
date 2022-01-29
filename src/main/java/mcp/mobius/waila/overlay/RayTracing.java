@@ -9,7 +9,7 @@ import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.Accessor;
 import mcp.mobius.waila.api.ui.IElement;
 import mcp.mobius.waila.impl.ObjectDataCenter;
-import mcp.mobius.waila.impl.WailaRegistrar;
+import mcp.mobius.waila.impl.WailaClientRegistration;
 import mcp.mobius.waila.impl.ui.ItemStackElement;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -99,7 +99,7 @@ public class RayTracing {
 		}
 		if (blockResult != null && blockResult.getType() == Type.BLOCK) {
 			BlockState state = world.getBlockState(blockResult.getBlockPos());
-			if (WailaRegistrar.INSTANCE.shouldHide(state)) {
+			if (WailaClientRegistration.INSTANCE.shouldHide(state)) {
 				return null;
 			}
 		}
@@ -118,7 +118,7 @@ public class RayTracing {
 			if (target.isInvisible())
 				return false;
 		}
-		return !WailaRegistrar.INSTANCE.shouldHide(target);
+		return !WailaClientRegistration.INSTANCE.shouldHide(target);
 	}
 
 	// from ProjectileUtil

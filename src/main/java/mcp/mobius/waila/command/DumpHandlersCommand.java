@@ -12,6 +12,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 
+//TODO client command
 public class DumpHandlersCommand {
 
 	public static void register(CommandDispatcher<CommandSourceStack> commandDispatcher) {

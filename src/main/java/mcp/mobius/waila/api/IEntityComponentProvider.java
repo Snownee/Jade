@@ -18,7 +18,7 @@ public interface IEntityComponentProvider {
 
 	/**
      * Callback used to set an element to display alongside the entity name in the tooltip, similar to how blocks are treated.
-     * Will only be called if the implementing class is registered via {@link IRegistrar#registerIconProvider}
+     * Will only be called if the implementing class is registered via {@link IWailaClientRegistration#registerIconProvider}
      *
      * This method is only called on the client side. If you require data from the server, you should also implement
      * {@link IServerDataProvider#appendServerData(net.minecraft.nbt.CompoundTag, net.minecraft.entity.player.ServerPlayer, Level, Object)}
@@ -37,7 +37,7 @@ public interface IEntityComponentProvider {
 
 	/**
      * Callback used to add lines to one of the three sections of the tooltip (Head, Body, Tail).</br>
-     * Will only be called if the implementing class is registered via {@link IRegistrar#registerComponentProvider(IEntityComponentProvider, TooltipPosition, Class)}.</br>
+     * Will only be called if the implementing class is registered via {@link IWailaClientRegistration#registerComponentProvider(IEntityComponentProvider, TooltipPosition, Class)}.</br>
      * You are supposed to always return the modified input currenttip.</br>
      *
      * This method is only called on the client side. If you require data from the server, you should also implement

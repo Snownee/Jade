@@ -18,7 +18,7 @@ public interface IComponentProvider {
 
 	/**
      * Callback used to override the default Waila lookup system.</br>
-     * Will only be called if the implementing class is registered via {@link IRegistrar#registerIconProvider}.</br>
+     * Will only be called if the implementing class is registered via {@link IWailaClientRegistration#registerIconProvider}.</br>
      * <p>
      * This method is only called on the client side. If you require data from the server, you should also implement
      * {@link IServerDataProvider#appendServerData(net.minecraft.nbt.CompoundTag, net.minecraft.entity.player.ServerPlayer, Level, Object)}
@@ -37,7 +37,7 @@ public interface IComponentProvider {
 
 	/**
      * Callback used to add lines to one of the three sections of the tooltip (Head, Body, Tail).</br>
-     * Will only be called if the implementing class is registered via {@link IRegistrar#registerComponentProvider(IComponentProvider, TooltipPosition, Class)}.</br>
+     * Will only be called if the implementing class is registered via {@link IWailaClientRegistration#registerComponentProvider(IComponentProvider, TooltipPosition, Class)}.</br>
      * You are supposed to always return the modified input tooltip.</br>
      * <p>
      * This method is only called on the client side. If you require data from the server, you should also implement

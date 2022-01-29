@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.IServerDataProvider;
-import mcp.mobius.waila.impl.WailaRegistrar;
+import mcp.mobius.waila.impl.WailaCommonRegistration;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -48,7 +48,7 @@ public class RequestEntityPacket {
 				if (entity == null || player.distanceToSqr(entity) > RequestTilePacket.MAX_DISTANCE_SQR)
 					return;
 
-				List<IServerDataProvider<Entity>> providers = WailaRegistrar.INSTANCE.getEntityNBTProviders(entity);
+				List<IServerDataProvider<Entity>> providers = WailaCommonRegistration.INSTANCE.getEntityNBTProviders(entity);
 				if (providers.isEmpty())
 					return;
 
