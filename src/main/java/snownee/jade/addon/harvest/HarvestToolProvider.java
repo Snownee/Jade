@@ -1,7 +1,8 @@
-package snownee.jade.addon.vanilla;
+package snownee.jade.addon.harvest;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -11,6 +12,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import mcp.mobius.waila.api.BlockAccessor;
 import mcp.mobius.waila.api.IComponentProvider;
@@ -29,13 +31,11 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.Tag;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.api.distmarker.Dist;
@@ -48,66 +48,39 @@ public class HarvestToolProvider implements IComponentProvider, ResourceManagerR
 
 	public static final HarvestToolProvider INSTANCE = new HarvestToolProvider();
 
-	public static final Cache<BlockState, ImmutableList<TestCase>> resultCache = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
-	public static final List<TestCase> testTools = Lists.newLinkedList();
+	public static final Cache<BlockState, ImmutableList<ItemStack>> resultCache = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
+	public static final Map<String, ToolHandler> TOOL_HANDLERS = Maps.newLinkedHashMap();
 
 	private static final Component UNBREAKABLE_TEXT = new TranslatableComponent("jade.harvest_tool.unbreakable").withStyle(ChatFormatting.DARK_RED);
 	private static final Component CHECK = new TextComponent("✔").withStyle(ChatFormatting.GREEN);
 	private static final Component X = new TextComponent("✕").withStyle(ChatFormatting.RED);
 	private static final Vec2 ITEM_SIZE = new Vec2(10, 0);
-	private static final TestCase SHEARS;
 
 	static {
-		/* off */
-		registerTool(new ItemStack(Items.WOODEN_PICKAXE), "pickaxe", BlockTags.MINEABLE_WITH_PICKAXE)
-			.addTool(Items.STONE_PICKAXE)
-			.addTool(Items.IRON_PICKAXE)
-			.addTool(Items.DIAMOND_PICKAXE)
-			.addTool(Items.NETHERITE_PICKAXE);
-		registerTool(new ItemStack(Items.WOODEN_AXE), "axe", BlockTags.MINEABLE_WITH_AXE)
-			.addTool(Items.STONE_AXE)
-			.addTool(Items.IRON_AXE)
-			.addTool(Items.DIAMOND_AXE)
-			.addTool(Items.NETHERITE_AXE);
-		registerTool(new ItemStack(Items.WOODEN_SHOVEL), "shovel", BlockTags.MINEABLE_WITH_SHOVEL)
-			.addTool(Items.STONE_SHOVEL)
-			.addTool(Items.IRON_SHOVEL)
-			.addTool(Items.DIAMOND_SHOVEL)
-			.addTool(Items.NETHERITE_SHOVEL);
-		registerTool(new ItemStack(Items.WOODEN_HOE), "hoe", BlockTags.MINEABLE_WITH_HOE)
-			.addTool(Items.STONE_HOE)
-			.addTool(Items.IRON_HOE)
-			.addTool(Items.DIAMOND_HOE)
-			.addTool(Items.NETHERITE_HOE);
-		SHEARS = registerTool(new ItemStack(Items.SHEARS), "shears", null);
-		/* on */
+		registerHandler(new SimpleToolHandler("pickaxe", BlockTags.MINEABLE_WITH_PICKAXE, Items.WOODEN_PICKAXE, Items.STONE_PICKAXE, Items.IRON_PICKAXE, Items.DIAMOND_PICKAXE, Items.NETHERITE_PICKAXE));
+		registerHandler(new SimpleToolHandler("axe", BlockTags.MINEABLE_WITH_AXE, Items.WOODEN_AXE, Items.STONE_AXE, Items.IRON_AXE, Items.DIAMOND_AXE, Items.NETHERITE_AXE));
+		registerHandler(new SimpleToolHandler("shovel", BlockTags.MINEABLE_WITH_SHOVEL, Items.WOODEN_SHOVEL, Items.STONE_SHOVEL, Items.IRON_SHOVEL, Items.DIAMOND_SHOVEL, Items.NETHERITE_SHOVEL));
+		registerHandler(new SimpleToolHandler("hoe", BlockTags.MINEABLE_WITH_HOE, Items.WOODEN_HOE, Items.STONE_HOE, Items.IRON_HOE, Items.DIAMOND_HOE, Items.NETHERITE_HOE));
+		SpecialToolHandler handler = new SpecialToolHandler("sword", Items.WOODEN_SWORD.getDefaultInstance());
+		handler.blocks.add(Blocks.COBWEB);
+		registerHandler(handler);
+		registerHandler(new ShearsToolHandler());
 	}
 
 	@Nullable
-	public static ImmutableList<TestCase> getTool(BlockState state, Level world, BlockPos pos) {
-		ImmutableList.Builder<TestCase> list = ImmutableList.builder();
-		for (TestCase testCase : testTools) {
-			if (testCase == SHEARS && state.getBlock() instanceof IForgeShearable) {
-				list.add(testCase);
-				continue;
-			}
-			if (testCase.blocks == null) {
-				if (!testCase.stack.isEmpty() && testCase.stack.isCorrectToolForDrops(state)) {
-					list.add(testCase);
-				}
-			} else {
-				if (state.is(testCase.blocks)) {
-					list.add(testCase);
-				}
+	public static ImmutableList<ItemStack> getTool(BlockState state, Level world, BlockPos pos) {
+		ImmutableList.Builder<ItemStack> tools = ImmutableList.builder();
+		for (ToolHandler handler : TOOL_HANDLERS.values()) {
+			ItemStack tool = handler.test(state, world, pos);
+			if (!tool.isEmpty()) {
+				tools.add(tool);
 			}
 		}
-		return list.build();
+		return tools.build();
 	}
 
-	public static synchronized TestCase registerTool(ItemStack stack, String name, @Nullable Tag<Block> toolType) {
-		TestCase testCase = new TestCase(stack, name, toolType);
-		testTools.add(testCase);
-		return testCase;
+	public static synchronized void registerHandler(ToolHandler handler) {
+		TOOL_HANDLERS.put(handler.getName(), handler);
 	}
 
 	@Override
@@ -150,13 +123,13 @@ public class HarvestToolProvider implements IComponentProvider, ResourceManagerR
 			return Collections.EMPTY_LIST;
 		}
 		BlockState state = accessor.getBlockState();
-		List<TestCase> results = Collections.EMPTY_LIST;
+		List<ItemStack> tools = Collections.EMPTY_LIST;
 		try {
-			results = resultCache.get(state, () -> getTool(state, accessor.getLevel(), accessor.getPosition()));
+			tools = resultCache.get(state, () -> getTool(state, accessor.getLevel(), accessor.getPosition()));
 		} catch (ExecutionException e) {
 			e.printStackTrace();
 		}
-		if (results.isEmpty()) {
+		if (tools.isEmpty()) {
 			return Collections.EMPTY_LIST;
 		}
 		if (!state.requiresCorrectToolForDrops() && !config.get(VanillaPlugin.EFFECTIVE_TOOL)) {
@@ -168,21 +141,8 @@ public class HarvestToolProvider implements IComponentProvider, ResourceManagerR
 			offsetY = -3;
 		}
 		List<IElement> elements = Lists.newArrayList();
-		for (TestCase result : results) {
-			ItemStack stack = ItemStack.EMPTY;
-			if (result.blocks == null) {
-				stack = result.stack;
-			} else {
-				for (ItemStack tool : result.tools) {
-					if (tool.isCorrectToolForDrops(state)) {
-						stack = tool;
-						break;
-					}
-				}
-			}
-			if (!stack.isEmpty()) {
-				elements.add(helper.item(stack, 0.75f).translate(new Vec2(-1, offsetY)).size(ITEM_SIZE));
-			}
+		for (ItemStack tool : tools) {
+			elements.add(helper.item(tool, 0.75f).translate(new Vec2(-1, offsetY)).size(ITEM_SIZE));
 		}
 
 		if (!elements.isEmpty()) {
@@ -209,58 +169,5 @@ public class HarvestToolProvider implements IComponentProvider, ResourceManagerR
 		resultCache.invalidateAll();
 		//}
 	}
-
-	public static class TestCase {
-		private ItemStack stack;
-		public final String name;
-		private final Tag<Block> blocks;
-		private final List<ItemStack> tools = Lists.newArrayList();
-
-		public TestCase(ItemStack stack, String name, @Nullable Tag<Block> blocks) {
-			this.stack = stack;
-			this.name = name;
-			this.blocks = blocks;
-			addTool(stack);
-		}
-
-		public TestCase addTool(Item tool) {
-			return addTool(new ItemStack(tool));
-		}
-
-		public TestCase addTool(ItemStack stack) {
-			if (!stack.isEmpty())
-				tools.add(stack);
-			return this;
-		}
-	}
-
-	public static void init() {
-		//		NonNullList<ItemStack> stacks = NonNullList.create();
-		//		Set<ToolType> newToolTypes = Sets.newHashSet();
-		//		for (Item item : ForgeRegistries.ITEMS.getValues()) {
-		//			item.fillItemCategory(CreativeModeTab.TAB_SEARCH, stacks);
-		//		}
-		//		for (ItemStack stack : stacks) {
-		//			if (stack.isEmpty())
-		//				continue;
-		//			Set<ToolType> toolTypes = stack.getToolTypes();
-		//			if (toolTypes == null)
-		//				throw new NullPointerException(stack.getItem().getRegistryName() + " getToolTypes returns null, report to their developer!");
-		//			for (ToolType toolType : toolTypes) {
-		//				if (newToolTypes.contains(toolType)) {
-		//					toolTypeMap.get(toolType).addTool(stack);
-		//					log(stack, toolType);
-		//				} else if (!toolTypeMap.containsKey(toolType)) {
-		//					registerTool(ItemStack.EMPTY, toolType.getName(), toolType).addTool(stack);
-		//					newToolTypes.add(toolType);
-		//					log(stack, toolType);
-		//				}
-		//			}
-	}
-
-	//	private static void log(ItemStack stack, ToolType toolType) {
-	//		if (Waila.CONFIG.get().getGeneral().isDebug())
-	//			Waila.LOGGER.info("Add tool: {} {} {}", stack, toolType.getName(), stack.getHarvestLevel(toolType, null, null));
-	//	}
 
 }

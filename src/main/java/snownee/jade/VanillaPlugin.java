@@ -43,6 +43,7 @@ import net.minecraft.world.level.block.entity.JukeboxBlockEntity;
 import net.minecraft.world.level.block.entity.LecternBlockEntity;
 import snownee.jade.addon.forge.ForgeCapabilityProvider;
 import snownee.jade.addon.forge.InventoryProvider;
+import snownee.jade.addon.harvest.HarvestToolProvider;
 import snownee.jade.addon.vanilla.AgableMobProvider;
 import snownee.jade.addon.vanilla.AnimalOwnerProvider;
 import snownee.jade.addon.vanilla.ArmorStandProvider;
@@ -54,7 +55,6 @@ import snownee.jade.addon.vanilla.ChickenEggProvider;
 import snownee.jade.addon.vanilla.CommandBlockProvider;
 import snownee.jade.addon.vanilla.EnchantmentPowerProvider;
 import snownee.jade.addon.vanilla.FurnaceProvider;
-import snownee.jade.addon.vanilla.HarvestToolProvider;
 import snownee.jade.addon.vanilla.HorseProvider;
 import snownee.jade.addon.vanilla.ItemFrameProvider;
 import snownee.jade.addon.vanilla.ItemTooltipProvider;
@@ -198,7 +198,6 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerComponentProvider(AnimalOwnerProvider.INSTANCE, TooltipPosition.BODY, Entity.class);
 
 		((ReloadableResourceManager) Minecraft.getInstance().getResourceManager()).registerReloadListener(HarvestToolProvider.INSTANCE);
-		HarvestToolProvider.init();
 	}
 
 	public static IDisplayHelper getDisplayHelper() {
