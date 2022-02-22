@@ -44,6 +44,7 @@ public class WailaTickHandler {
 	public TooltipRenderer tooltipRenderer = null;
 	public ProgressTracker progressTracker = new ProgressTracker();
 
+	@SuppressWarnings("deprecation")
 	public void tickClient() {
 		progressTracker.tick();
 
@@ -136,6 +137,7 @@ public class WailaTickHandler {
 		return INSTANCE;
 	}
 
+	@SuppressWarnings("deprecation")
 	public static void gatherComponents(Accessor<?> accessor, Tooltip tooltip, TooltipPosition position) {
 		accessor._setTooltipPosition(position);
 		accessor._gatherComponents(tooltip);

@@ -20,6 +20,7 @@ import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.entity.decoration.Painting;
+import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.ZombieVillager;
 import net.minecraft.world.entity.npc.Villager;
@@ -54,6 +55,7 @@ import snownee.jade.addon.vanilla.ChestedHorseProvider;
 import snownee.jade.addon.vanilla.ChickenEggProvider;
 import snownee.jade.addon.vanilla.CommandBlockProvider;
 import snownee.jade.addon.vanilla.EnchantmentPowerProvider;
+import snownee.jade.addon.vanilla.FallingBlockProvider;
 import snownee.jade.addon.vanilla.FurnaceProvider;
 import snownee.jade.addon.vanilla.HorseProvider;
 import snownee.jade.addon.vanilla.ItemFrameProvider;
@@ -196,6 +198,8 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerComponentProvider(InventoryProvider.INSTANCE, TooltipPosition.BODY, Block.class);
 		registration.registerComponentProvider(ForgeCapabilityProvider.INSTANCE, TooltipPosition.BODY, Block.class);
 		registration.registerComponentProvider(AnimalOwnerProvider.INSTANCE, TooltipPosition.BODY, Entity.class);
+		registration.registerComponentProvider(FallingBlockProvider.INSTANCE, TooltipPosition.HEAD, FallingBlockEntity.class);
+		registration.registerIconProvider(FallingBlockProvider.INSTANCE, FallingBlockEntity.class);
 
 		((ReloadableResourceManager) Minecraft.getInstance().getResourceManager()).registerReloadListener(HarvestToolProvider.INSTANCE);
 	}

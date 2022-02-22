@@ -36,15 +36,21 @@ public interface Accessor<T extends HitResult> {
 
 	boolean shouldRequestData();
 
+	@Deprecated
 	void _requestData(boolean showDetails);
 
+	@Deprecated
 	boolean _verifyData(CompoundTag serverData);
 
+	@Deprecated
 	IElement _getIcon();
 
+	@Deprecated
 	void _gatherComponents(ITooltip tooltip);
 
+	@Deprecated
 	void _setTooltipPosition(TooltipPosition tooltipPosition);
 
+	@Deprecated
 	Object _getTrackObject();
 }

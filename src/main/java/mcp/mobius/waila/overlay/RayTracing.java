@@ -145,6 +145,7 @@ public class RayTracing {
 		return entity == null ? null : new EntityHitResult(entity);
 	}
 
+	@SuppressWarnings("deprecation")
 	public IElement getIcon() {
 		Accessor<?> accessor = ObjectDataCenter.get();
 		if (accessor == null)
