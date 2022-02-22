@@ -106,7 +106,7 @@ dependencies {
 
     //compileOnly fg.deobf("mezz.jei:jei-1.17.1:8.0.0.14:api")
     //runtimeOnly fg.deobf("mezz.jei:jei-1.17.1:8.0.0.14")
-    implementation fg.deobf("curse.maven:jei-238222:3550020")
+    implementation fg.deobf("curse.maven:jei-238222:3599262")
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
