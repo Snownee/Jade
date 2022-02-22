@@ -4,7 +4,6 @@ import java.util.Collection;
 
 import com.google.common.base.Strings;
 
-import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.BlockAccessor;
 import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IServerDataProvider;
@@ -77,7 +76,7 @@ public class BaseBlockProvider implements IComponentProvider, IServerDataProvide
 			}
 		}
 		if (name != null) {
-			WailaConfig wailaConfig = Waila.CONFIG.get();
+			WailaConfig wailaConfig = config.getWailaConfig();
 			tooltip.add(new TextComponent(String.format(wailaConfig.getFormatting().getBlockName(), name.getString())).withStyle(wailaConfig.getOverlay().getColor().getTitle()), CorePlugin.TAG_OBJECT_NAME);
 		}
 		if (config.get(CorePlugin.CONFIG_REGISTRY_NAME))
@@ -120,7 +119,7 @@ public class BaseBlockProvider implements IComponentProvider, IServerDataProvide
 			modName = ModIdentification.getModName(accessor.getBlock());
 
 		if (!Strings.isNullOrEmpty(modName)) {
-			modName = String.format(Waila.CONFIG.get().getFormatting().getModName(), modName);
+			modName = String.format(config.getWailaConfig().getFormatting().getModName(), modName);
 			IElementHelper helper = tooltip.getElementHelper();
 			tooltip.add(helper.text(new TextComponent(modName)).tag(CorePlugin.TAG_MOD_NAME));
 		}

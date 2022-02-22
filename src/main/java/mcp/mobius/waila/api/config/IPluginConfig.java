@@ -42,4 +42,6 @@ public interface IPluginConfig {
      * @return The value returned from the config or the default value if none exist.
      */
 	boolean get(ResourceLocation key, boolean defaultValue);
+
+	WailaConfig getWailaConfig();
 }

@@ -1,11 +1,10 @@
-package snownee.jade.client;
+package snownee.jade;
 
 import java.util.Map;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
-import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.BlockAccessor;
 import mcp.mobius.waila.api.config.WailaConfig.ConfigOverlay.ConfigOverlayColor;
 import mcp.mobius.waila.api.event.WailaRayTraceEvent;
@@ -31,11 +30,10 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.registries.ForgeRegistries;
-import snownee.jade.VanillaPlugin;
 
 @OnlyIn(Dist.CLIENT)
 @EventBusSubscriber(Dist.CLIENT)
-public final class ClientHandler {
+public final class JadeClient {
 	private static float savedProgress;
 	private static float progressAlpha;
 	private static boolean canHarvest;
@@ -58,7 +56,7 @@ public final class ClientHandler {
 		Rect2i rect = event.getRect();
 		int height = rect.getHeight();
 		int width = rect.getWidth();
-		if (!Waila.CONFIG.get().getOverlay().getSquare()) {
+		if (!VanillaPlugin.CLIENT_REGISTRATION.getConfig().getOverlay().getSquare()) {
 			height -= 1;
 			width -= 2;
 		}

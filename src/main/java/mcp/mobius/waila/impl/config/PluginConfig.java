@@ -16,7 +16,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
+import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.config.IPluginConfig;
+import mcp.mobius.waila.api.config.WailaConfig;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fml.loading.FMLPaths;
 import snownee.jade.Jade;
@@ -129,5 +131,10 @@ public class PluginConfig implements IPluginConfig {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public WailaConfig getWailaConfig() {
+		return Waila.CONFIG.get();
 	}
 }

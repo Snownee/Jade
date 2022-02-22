@@ -1,6 +1,5 @@
 package mcp.mobius.waila.addons.core;
 
-import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.EntityAccessor;
 import mcp.mobius.waila.api.IEntityComponentProvider;
 import mcp.mobius.waila.api.ITooltip;
@@ -41,7 +40,7 @@ public class BaseEntityProvider implements IEntityComponentProvider {
 	@OnlyIn(Dist.CLIENT)
 	public void appendHead(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		String name = getEntityName(accessor.getEntity());
-		WailaConfig wailaConfig = Waila.CONFIG.get();
+		WailaConfig wailaConfig = config.getWailaConfig();
 		tooltip.add(new TextComponent(String.format(wailaConfig.getFormatting().getEntityName(), name)).withStyle(wailaConfig.getOverlay().getColor().getTitle()), CorePlugin.TAG_OBJECT_NAME);
 		if (config.get(CorePlugin.CONFIG_REGISTRY_NAME))
 			tooltip.add(new TextComponent(accessor.getEntity().getType().getRegistryName().toString()).withStyle(ChatFormatting.GRAY), CorePlugin.TAG_REGISTRY_NAME);
@@ -63,25 +62,26 @@ public class BaseEntityProvider implements IEntityComponentProvider {
 	public void appendBody(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		if (!(accessor.getEntity() instanceof LivingEntity))
 			return;
+		WailaConfig wailaConfig = config.getWailaConfig();
 		if (config.get(CorePlugin.CONFIG_ENTITY_ARMOR))
-			appendArmor((LivingEntity) accessor.getEntity(), tooltip);
+			appendArmor((LivingEntity) accessor.getEntity(), tooltip, wailaConfig);
 		if (config.get(CorePlugin.CONFIG_ENTITY_HEALTH))
-			appendHealth((LivingEntity) accessor.getEntity(), tooltip);
+			appendHealth((LivingEntity) accessor.getEntity(), tooltip, wailaConfig);
 	}
 
 	@OnlyIn(Dist.CLIENT)
 	public void appendTail(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		if (!config.get(CorePlugin.CONFIG_MOD_NAME))
 			return;
-		tooltip.add(new TextComponent(String.format(Waila.CONFIG.get().getFormatting().getModName(), ModIdentification.getModName(accessor.getEntity()))));
+		tooltip.add(new TextComponent(String.format(config.getWailaConfig().getFormatting().getModName(), ModIdentification.getModName(accessor.getEntity()))));
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	private void appendHealth(LivingEntity living, ITooltip tooltip) {
+	private void appendHealth(LivingEntity living, ITooltip tooltip, WailaConfig config) {
 		float health = living.getHealth();
 		float maxHealth = living.getMaxHealth();
 
-		if (living.getMaxHealth() > Waila.CONFIG.get().getGeneral().getMaxHealthForRender()) {
+		if (living.getMaxHealth() > config.getGeneral().getMaxHealthForRender()) {
 			HealthElement icon = new HealthElement(1, 1);
 			Component text = new TextComponent(String.format("  %s/%s", DisplayHelper.dfCommas.format(health), DisplayHelper.dfCommas.format(maxHealth)));
 			tooltip.add(0, icon);
@@ -92,11 +92,11 @@ public class BaseEntityProvider implements IEntityComponentProvider {
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	private void appendArmor(LivingEntity living, ITooltip tooltip) {
+	private void appendArmor(LivingEntity living, ITooltip tooltip, WailaConfig config) {
 		float armor = living.getArmorValue();
 		if (armor == 0)
 			return;
-		if (armor > Waila.CONFIG.get().getGeneral().getMaxHealthForRender()) {
+		if (armor > config.getGeneral().getMaxHealthForRender()) {
 			ArmorElement icon = new ArmorElement(-1);
 			Component text = new TextComponent(DisplayHelper.dfCommas.format(armor));
 			tooltip.add(0, icon);

@@ -67,9 +67,9 @@ public class VanillaProvider implements IComponentProvider, IServerDataProvider<
 			Entity entity = spawner.getSpawner().getOrCreateDisplayEntity(accessor.getLevel());
 			if (entity != null) {
 				name = I18n.get("jade.spawner", name, entity.getDisplayName().getString());
-				name = String.format(Waila.CONFIG.get().getFormatting().getBlockName(), name);
+				name = String.format(config.getWailaConfig().getFormatting().getBlockName(), name);
 				tooltip.remove(OBJECT_NAME_TAG);
-				tooltip.add(new TextComponent(name).withStyle(Waila.CONFIG.get().getOverlay().getColor().getTitle()), OBJECT_NAME_TAG);
+				tooltip.add(new TextComponent(name).withStyle(config.getWailaConfig().getOverlay().getColor().getTitle()), OBJECT_NAME_TAG);
 			}
 		}
 	}

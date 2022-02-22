@@ -33,7 +33,7 @@ public class PlayerHeadProvider implements IComponentProvider {
 			if (profile == null)
 				return;
 			tooltip.remove(OBJECT_NAME_TAG);
-			tooltip.add(0, new TextComponent(String.format(Waila.CONFIG.get().getFormatting().getBlockName(), I18n.get(Items.PLAYER_HEAD.getDescriptionId() + ".named", profile.getName()))).withStyle(Waila.CONFIG.get().getOverlay().getColor().getTitle()), OBJECT_NAME_TAG);
+			tooltip.add(0, new TextComponent(String.format(config.getWailaConfig().getFormatting().getBlockName(), I18n.get(Items.PLAYER_HEAD.getDescriptionId() + ".named", profile.getName()))).withStyle(Waila.CONFIG.get().getOverlay().getColor().getTitle()), OBJECT_NAME_TAG);
 		}
 	}
 

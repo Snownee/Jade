@@ -77,9 +77,6 @@ public interface IWailaClientRegistration {
 
 	IElementHelper getElementHelper();
 
-	/**
-	 * Client only
-	 */
 	IDisplayHelper getDisplayHelper();
 
 	WailaConfig getConfig();
