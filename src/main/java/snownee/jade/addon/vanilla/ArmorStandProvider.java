@@ -9,8 +9,6 @@ import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
 import snownee.jade.Jade;
 import snownee.jade.VanillaPlugin;
 
@@ -25,13 +23,8 @@ public class ArmorStandProvider implements IEntityComponentProvider {
 			return;
 		}
 		ArmorStand entity = (ArmorStand) accessor.getEntity();
-		IItemHandler itemHandler = entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
-		if (itemHandler == null) {
-			return;
-		}
 		IElementHelper helper = tooltip.getElementHelper();
-		for (int i = itemHandler.getSlots() - 1; i >= 0; i--) {
-			ItemStack stack = itemHandler.getStackInSlot(i);
+		for (ItemStack stack : entity.getArmorSlots()) {
 			if (stack.isEmpty())
 				continue;
 			tooltip.add(helper.item(stack, 0.75f));
