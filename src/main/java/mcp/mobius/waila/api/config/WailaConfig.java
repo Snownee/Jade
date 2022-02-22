@@ -44,7 +44,7 @@ public class WailaConfig {
 		private boolean enableTextToSpeech = false;
 		private int maxHealthForRender = 40;
 		private int maxHeartsPerLine = 10;
-		private ClipContext.Fluid fluldMode = ClipContext.Fluid.NONE;
+		private ClipContext.Fluid fluidMode = ClipContext.Fluid.NONE;
 		private float reachDistance = 0;
 		@Expose
 		private boolean debug = false;
@@ -94,11 +94,11 @@ public class WailaConfig {
 		}
 
 		public void setDisplayFluids(boolean displayFluids) {
-			fluldMode = displayFluids ? ClipContext.Fluid.ANY : ClipContext.Fluid.NONE;
+			fluidMode = displayFluids ? ClipContext.Fluid.ANY : ClipContext.Fluid.NONE;
 		}
 
 		public void setDisplayFluids(ClipContext.Fluid displayFluids) {
-			fluldMode = displayFluids;
+			fluidMode = displayFluids;
 		}
 
 		public boolean shouldDisplayTooltip() {
@@ -134,11 +134,11 @@ public class WailaConfig {
 		}
 
 		public boolean shouldDisplayFluids() {
-			return fluldMode != ClipContext.Fluid.NONE;
+			return fluidMode != ClipContext.Fluid.NONE;
 		}
 
 		public ClipContext.Fluid getDisplayFluids() {
-			return fluldMode;
+			return fluidMode;
 		}
 
 		public float getReachDistance() {
