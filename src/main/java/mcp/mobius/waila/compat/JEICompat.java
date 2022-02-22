@@ -26,6 +26,7 @@ public class JEICompat implements IModPlugin {
 	public static final ResourceLocation ID = new ResourceLocation(Jade.MODID, "main");
 	public static KeyMapping showRecipes;
 	public static KeyMapping showUses;
+	private static IJeiRuntime runtime;
 
 	public JEICompat() {
 		if (showRecipes == null) {
@@ -33,8 +34,8 @@ public class JEICompat implements IModPlugin {
 			showUses = new KeyMapping("key.waila.show_uses", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputConstants.Type.KEYSYM.getOrCreate(324), Jade.NAME);
 			ClientRegistry.registerKeyBinding(showRecipes);
 			ClientRegistry.registerKeyBinding(showUses);
+			MinecraftForge.EVENT_BUS.addListener(JEICompat::onKeyPressed);
 		}
-		MinecraftForge.EVENT_BUS.addListener(this::onKeyPressed);
 	}
 
 	@Override
@@ -42,14 +43,12 @@ public class JEICompat implements IModPlugin {
 		return ID;
 	}
 
-	private IJeiRuntime runtime;
-
 	@Override
 	public void onRuntimeAvailable(IJeiRuntime runtime) {
-		this.runtime = runtime;
+		JEICompat.runtime = runtime;
 	}
 
-	private void onKeyPressed(InputEvent.KeyInputEvent event) {
+	private static void onKeyPressed(InputEvent.KeyInputEvent event) {
 		if (runtime == null || showRecipes == null || showUses == null)
 			return;
 		if (event.getAction() != 1)
