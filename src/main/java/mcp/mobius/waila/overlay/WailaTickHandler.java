@@ -84,7 +84,7 @@ public class WailaTickHandler {
 			BlockHitResult blockTarget = (BlockHitResult) target;
 			BlockState state = world.getBlockState(blockTarget.getBlockPos());
 			BlockEntity tileEntity = world.getBlockEntity(blockTarget.getBlockPos());
-			accessor = new BlockAccessorImpl(state, tileEntity, world, player, ObjectDataCenter.getServerData(), blockTarget, ObjectDataCenter.serverConnected);
+			accessor = new BlockAccessorImpl(state, tileEntity, world, player, ObjectDataCenter.getServerData(), blockTarget, ObjectDataCenter.serverConnected, DatapackBlockManager.getFakeBlock(world, blockTarget.getBlockPos()));
 		} else if (target instanceof EntityHitResult) {
 			EntityHitResult entityTarget = (EntityHitResult) target;
 			accessor = new EntityAccessorImpl(entityTarget.getEntity(), world, player, ObjectDataCenter.getServerData(), entityTarget, ObjectDataCenter.serverConnected);

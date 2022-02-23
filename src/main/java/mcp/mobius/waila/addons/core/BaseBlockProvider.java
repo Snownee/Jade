@@ -21,6 +21,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Nameable;
 import net.minecraft.world.item.ItemStack;
@@ -55,23 +56,25 @@ public class BaseBlockProvider implements IComponentProvider, IServerDataProvide
 		Component name = null;
 		if (accessor.getServerData().contains("givenName", Tag.TAG_STRING)) {
 			name = Component.Serializer.fromJson(accessor.getServerData().getString("givenName"));
-		} else {
-			if (WailaClientRegistration.INSTANCE.shouldPick(accessor.getBlockState())) {
-				ItemStack pick = accessor.getPickedResult();
-				if (!pick.isEmpty())
-					name = pick.getHoverName();
-			}
-			if (name == null) {
-				String key = accessor.getBlock().getDescriptionId();
-				if (I18n.exists(key)) {
-					name = accessor.getBlock().getName();
+		}
+		if (name == null && accessor.isFakeBlock()) {
+			name = accessor.getFakeBlock().getHoverName();
+		}
+		if (name == null && WailaClientRegistration.INSTANCE.shouldPick(accessor.getBlockState())) {
+			ItemStack pick = accessor.getPickedResult();
+			if (!pick.isEmpty())
+				name = pick.getHoverName();
+		}
+		if (name == null) {
+			String key = accessor.getBlock().getDescriptionId();
+			if (I18n.exists(key)) {
+				name = accessor.getBlock().getName();
+			} else {
+				ItemStack stack = accessor.getBlockState().getCloneItemStack(accessor.getHitResult(), accessor.getLevel(), accessor.getPosition(), accessor.getPlayer());
+				if (stack != null && !stack.isEmpty()) {
+					name = stack.getHoverName();
 				} else {
-					ItemStack stack = accessor.getBlockState().getCloneItemStack(accessor.getHitResult(), accessor.getLevel(), accessor.getPosition(), accessor.getPlayer());
-					if (stack != null && !stack.isEmpty()) {
-						name = stack.getHoverName();
-					} else {
-						name = new TextComponent(key);
-					}
+					name = new TextComponent(key);
 				}
 			}
 		}
@@ -110,7 +113,16 @@ public class BaseBlockProvider implements IComponentProvider, IServerDataProvide
 		if (!config.get(CorePlugin.CONFIG_MOD_NAME))
 			return;
 		String modName = null;
-		if (WailaClientRegistration.INSTANCE.shouldPick(accessor.getBlockState())) {
+		if (accessor.isFakeBlock()) {
+			ItemStack fakeBlock = accessor.getFakeBlock();
+			if (fakeBlock.hasTag() && fakeBlock.getTag().contains("id")) {
+				ResourceLocation id = ResourceLocation.tryParse(fakeBlock.getTag().getString("id"));
+				if (id != null) {
+					modName = ModIdentification.getModName(id);
+				}
+			}
+		}
+		if (modName == null && WailaClientRegistration.INSTANCE.shouldPick(accessor.getBlockState())) {
 			ItemStack pick = accessor.getPickedResult();
 			if (!pick.isEmpty())
 				modName = ModIdentification.getModName(pick);

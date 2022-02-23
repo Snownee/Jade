@@ -36,11 +36,13 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 
 	private final BlockState blockState;
 	private final BlockEntity blockEntity;
+	private final ItemStack fakeBlock;
 
-	public BlockAccessorImpl(BlockState blockState, BlockEntity blockEntity, Level level, Player player, CompoundTag serverData, BlockHitResult hit, boolean serverConnected) {
+	public BlockAccessorImpl(BlockState blockState, BlockEntity blockEntity, Level level, Player player, CompoundTag serverData, BlockHitResult hit, boolean serverConnected, ItemStack fakeBlock) {
 		super(level, player, serverData, hit, serverConnected);
 		this.blockState = blockState;
 		this.blockEntity = blockEntity;
+		this.fakeBlock = fakeBlock;
 	}
 
 	@Override
@@ -79,9 +81,13 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 			return null;
 		IElement icon = null;
 
-		ItemStack pick = getPickedResult();
-		if (!pick.isEmpty())
-			icon = ItemStackElement.of(pick);
+		if (isFakeBlock()) {
+			icon = ItemStackElement.of(getFakeBlock());
+		} else {
+			ItemStack pick = getPickedResult();
+			if (!pick.isEmpty())
+				icon = ItemStackElement.of(pick);
+		}
 
 		if (RayTracing.isEmptyElement(icon) && getBlock().asItem() != Items.AIR)
 			icon = ItemStackElement.of(new ItemStack(getBlock()));
@@ -146,6 +152,16 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 	@Override
 	public Object _getTrackObject() {
 		return getBlockEntity();
+	}
+
+	@Override
+	public boolean isFakeBlock() {
+		return !fakeBlock.isEmpty();
+	}
+
+	@Override
+	public ItemStack getFakeBlock() {
+		return fakeBlock;
 	}
 
 }

@@ -155,5 +155,7 @@
   "config.waila.plugin_minecraft.redstone": "Power Level",
   "config.waila.plugin_minecraft.jukebox": "Active Record",
   "config.waila.plugin_minecraft.villager_profession": "Villager Profession",
-  "jade.spawner": "%s (%s)"
+  "jade.spawner": "%s (%s)",
+  
+  "jade.modName.cpp": "Crafting++"
 }

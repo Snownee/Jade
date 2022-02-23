@@ -15,6 +15,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.ClientRegistry;
 import net.minecraftforge.client.ConfigGuiHandler.ConfigGuiFactory;
@@ -50,6 +51,8 @@ public class WailaClient {
 		ClientRegistry.registerKeyBinding(WailaClient.showOverlay);
 		ClientRegistry.registerKeyBinding(WailaClient.toggleLiquid);
 		ClientRegistry.registerKeyBinding(WailaClient.showDetails);
+
+		((ReloadableResourceManager) Minecraft.getInstance().getResourceManager()).registerReloadListener(ModIdentification.INSTANCE);
 	}
 
 	@SubscribeEvent

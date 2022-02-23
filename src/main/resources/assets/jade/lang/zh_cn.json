@@ -155,5 +155,7 @@
   "config.waila.plugin_minecraft.redstone": "红石强度",
   "config.waila.plugin_minecraft.jukebox": "当前唱片",
   "config.waila.plugin_minecraft.villager_profession": "村民职业",
-  "jade.spawner": "%s（%s）"
+  "jade.spawner": "%s（%s）",
+  
+  "jade.modName.cpp": "更多的合成"
 }

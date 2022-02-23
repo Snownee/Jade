@@ -2,6 +2,7 @@ package snownee.jade.addon.forge;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import com.google.common.collect.Lists;
@@ -140,8 +141,16 @@ public class InventoryProvider implements IComponentProvider, IServerDataProvide
 			size = Math.min(size, itemHandler.getSlots());
 			ItemStackHandler mergedHandler = new ItemStackHandler(size);
 			boolean empty = true;
+			items:
 			for (int i = start; i < size; i++) {
 				ItemStack stack = itemHandler.getStackInSlot(i);
+				if (stack.hasTag() && stack.getTag().contains("CustomModelData")) {
+					for (String key : stack.getTag().getAllKeys()) {
+						if (key.toLowerCase(Locale.ENGLISH).endsWith("clear") && stack.getTag().getBoolean(key)) {
+							continue items;
+						}
+					}
+				}
 				if (!stack.isEmpty()) {
 					empty = false;
 					ItemHandlerHelper.insertItemStacked(mergedHandler, stack.copy(), false);
