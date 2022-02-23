@@ -1,8 +1,8 @@
-# Display a block created by datapack
+# Displaying a Block Created by Datapack
 
 Here is a page for datapack developers about how to display the correct information of a custom block.
 
-# Block name and icon
+## Block Name and Icon
 
 Here is a few requirements:
 
@@ -30,7 +30,7 @@ Then Jade will use the item inside the item frame, or the stored item in the `st
 
 In the above case, it will show a barrel with model **1002**.
 
-# Contents and background items
+## Contents and Background Items
 
 If you want Jade to ignore an content item, you need to tag the item with an entry that:
 
@@ -48,7 +48,7 @@ If you want Jade to ignore an content item, you need to tag the item with an ent
     }
     ```
 
-# Creator pack name
+## Creator Pack Name
 
 You can show your pack's name at the bottom of the HUD, instead of "Minecraft". To do so, you need to tag the icon item with your block id:
 

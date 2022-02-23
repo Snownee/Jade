@@ -6,8 +6,12 @@ edit_uri: ""
 
 nav:
     - Preface: README.md
-    - Datapacks:
-        - "Display a block": datapacks-block.md
+    - Plugins:
+        - "Getting Started": plugins/getting-started.md
+        - Overrides: plugins/overrides.md
+        - "Hiding Target": plugins/hiding-target.md
+    - Datapacks Support:
+        - "Displaying a Block": datapacks/block.md
 
 theme:
     name: material

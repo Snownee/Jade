@@ -157,5 +157,6 @@
   "config.waila.plugin_minecraft.villager_profession": "Villager Profession",
   "jade.spawner": "%s (%s)",
   
-  "jade.modName.cpp": "Crafting++"
+  "jade.modName.cpp": "Crafting++",
+  "mymod.fuel": "Fuel: %d ticks"
 }
