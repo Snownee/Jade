@@ -7,7 +7,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.eventbus.api.Event;
 
 /**
- * This event is fired after the Waila's ray-tracing is done. You can modify the target result or
+ * This event is fired after the Waila's ray-casting is done. You can modify the target result or
  * return null to cancel this process.
  */
 public class WailaRayTraceEvent extends Event {
@@ -31,8 +31,7 @@ public class WailaRayTraceEvent extends Event {
 		return accessor;
 	}
 
-	@Nullable
-	public void setAccessor(Accessor<?> accessor) {
+	public void setAccessor(@Nullable Accessor<?> accessor) {
 		this.accessor = accessor;
 	}
 
