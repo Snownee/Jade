@@ -33,7 +33,15 @@ public class ExamplePlugin implements IWailaPlugin {
 		Accessor<?> accessor = event.getAccessor();
 		if (accessor instanceof BlockAccessor blockAccessor) {
 			if (blockAccessor.getBlock() == Blocks.GRASS_BLOCK) {
-				accessor = client.createBlockAccessor(Blocks.TNT.defaultBlockState(), null, accessor.getLevel(), accessor.getPlayer(), null, blockAccessor.getHitResult(), accessor.isServerConnected());
+				accessor = client.createBlockAccessor(
+					Blocks.TNT.defaultBlockState(),
+					null,
+					accessor.getLevel(),
+					accessor.getPlayer(),
+					null,
+					blockAccessor.getHitResult(),
+					accessor.isServerConnected()
+				);
 				event.setAccessor(accessor);
 			}
 		}
