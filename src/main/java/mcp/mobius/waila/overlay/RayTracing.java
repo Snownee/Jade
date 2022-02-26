@@ -5,6 +5,8 @@ import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.Predicates;
+
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.Accessor;
 import mcp.mobius.waila.api.ui.IElement;
@@ -32,6 +34,7 @@ public class RayTracing {
 	public static final RayTracing INSTANCE = new RayTracing();
 	private HitResult target = null;
 	private Minecraft mc = Minecraft.getInstance();
+	public static Predicate<Entity> ENTITY_FILTER = Predicates.alwaysTrue();
 
 	private RayTracing() {
 	}
@@ -118,7 +121,7 @@ public class RayTracing {
 			if (target.isInvisible())
 				return false;
 		}
-		return !WailaClientRegistration.INSTANCE.shouldHide(target);
+		return !WailaClientRegistration.INSTANCE.shouldHide(target) && ENTITY_FILTER.test(target);
 	}
 
 	// from ProjectileUtil
@@ -131,6 +134,11 @@ public class RayTracing {
 			AABB axisalignedbb = entity1.getBoundingBox();
 			if (axisalignedbb.getSize() < 0.3) {
 				axisalignedbb = axisalignedbb.inflate(0.3);
+			}
+			if (axisalignedbb.contains(startVec)) {
+				entity = entity1;
+				d0 = 0;
+				break;
 			}
 			Optional<Vec3> optional = axisalignedbb.clip(startVec, endVec);
 			if (optional.isPresent()) {
