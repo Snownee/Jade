@@ -1,6 +1,7 @@
 package mcp.mobius.waila.impl.ui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.math.Vector3f;
 
 import mcp.mobius.waila.api.ui.IElement;
@@ -8,6 +9,7 @@ import mcp.mobius.waila.api.ui.IProgressStyle;
 import mcp.mobius.waila.overlay.DisplayHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec2;
 
@@ -19,6 +21,12 @@ public class ProgressStyle implements IProgressStyle {
 	public int textColor;
 	public boolean vertical;
 	public IElement overlay;
+	public boolean glowText;
+	public boolean shadow = true;
+
+	public ProgressStyle() {
+		color(0xFFFFFFFF);
+	}
 
 	@Override
 	public IProgressStyle color(int color, int color2) {
@@ -77,9 +85,9 @@ public class ProgressStyle implements IProgressStyle {
 			Font font = Minecraft.getInstance().font;
 			if (autoTextColor) {
 				autoTextColor = false;
-				Vector3f hsv = RGBtoHSV(color2);
-				if (hsv.z() > 0.5f) {
+				if (overlay == null && RGBtoHSV(color2).z() > 0.75f) {
 					textColor = 0xFF000000;
+					shadow = false;
 				} else {
 					textColor = 0xFFFFFFFF;
 				}
@@ -89,7 +97,15 @@ public class ProgressStyle implements IProgressStyle {
 				y -= progress;
 				y += font.lineHeight + 2;
 			}
-			font.drawShadow(matrixStack, text, x + 1, y, textColor);
+			if (glowText) {
+				MultiBufferSource.BufferSource multibuffersource$buffersource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+				font.drawInBatch8xOutline(text.getVisualOrderText(), x + 1, y, 0xFFFFFFFF, 0xFF333333, matrixStack.last().pose(), multibuffersource$buffersource, 15728880);
+				multibuffersource$buffersource.endBatch();
+			} else if (shadow) {
+				font.drawShadow(matrixStack, text, x + 1, y, textColor);
+			} else {
+				font.draw(matrixStack, text, x + 1, y, textColor);
+			}
 		}
 	}
 
@@ -130,6 +146,11 @@ public class ProgressStyle implements IProgressStyle {
 	public IProgressStyle textColor(int color) {
 		textColor = color;
 		autoTextColor = false;
+		return this;
+	}
+
+	public IProgressStyle glowText(boolean glowText) {
+		this.glowText = glowText;
 		return this;
 	}
 

@@ -1,5 +1,7 @@
 package mcp.mobius.waila.impl.ui;
 
+import java.util.Objects;
+
 import javax.annotation.Nullable;
 
 import mcp.mobius.waila.api.ITooltip;
@@ -48,6 +50,7 @@ public class ElementHelper implements IElementHelper {
 
 	@Override
 	public IElement progress(float progress, @Nullable Component text, IProgressStyle style, @Nullable IBorderStyle borderStyle) {
+		Objects.requireNonNull(style);
 		return new ProgressElement(progress, text, (ProgressStyle) style, (BorderStyle) borderStyle);
 	}
 

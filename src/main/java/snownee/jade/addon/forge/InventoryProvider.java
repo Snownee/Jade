@@ -17,6 +17,7 @@ import mcp.mobius.waila.api.config.IPluginConfig;
 import mcp.mobius.waila.api.ui.IElement;
 import mcp.mobius.waila.api.ui.IElementHelper;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
@@ -27,13 +28,13 @@ import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.EnderChestBlockEntity;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
-import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
+import snownee.jade.Jade;
 import snownee.jade.JadeCommonConfig;
 import snownee.jade.VanillaPlugin;
 
@@ -89,9 +90,13 @@ public class InventoryProvider implements IComponentProvider, IServerDataProvide
 					drawnCount = 0;
 				}
 
-				elements.add(helper.item(stack).tag(VanillaPlugin.INVENTORY));
 				if (showName) {
-					elements.add(helper.text(stack.getHoverName()).translate(new Vec2(0, 4)).tag(VanillaPlugin.INVENTORY));
+					ItemStack copy = stack.copy();
+					copy.setCount(1);
+					elements.add(Jade.smallItem(helper, copy).tag(VanillaPlugin.INVENTORY));
+					elements.add(helper.text(new TextComponent(Integer.toString(stack.getCount())).append("× ").append(stack.getHoverName())).tag(VanillaPlugin.INVENTORY));
+				} else {
+					elements.add(helper.item(stack).tag(VanillaPlugin.INVENTORY));
 				}
 				drawnCount += 1;
 			}
@@ -137,28 +142,32 @@ public class InventoryProvider implements IComponentProvider, IServerDataProvide
 	}
 
 	public static void putInvData(CompoundTag tag, IItemHandler itemHandler, int size, int start) {
-		if (itemHandler != null) {
-			size = Math.min(size, itemHandler.getSlots());
-			ItemStackHandler mergedHandler = new ItemStackHandler(size);
-			boolean empty = true;
-			items:
-			for (int i = start; i < size; i++) {
-				ItemStack stack = itemHandler.getStackInSlot(i);
-				if (stack.hasTag() && stack.getTag().contains("CustomModelData")) {
-					for (String key : stack.getTag().getAllKeys()) {
-						if (key.toLowerCase(Locale.ENGLISH).endsWith("clear") && stack.getTag().getBoolean(key)) {
-							continue items;
-						}
+		if (itemHandler == null || size == 0) {
+			return;
+		}
+		ItemStackHandler mergedHandler = new ItemStackHandler(size);
+		boolean empty = true;
+		int max = Math.min(itemHandler.getSlots(), start + size * 3);
+		items:
+		for (int i = start; i < max; i++) {
+			ItemStack stack = itemHandler.getStackInSlot(i);
+			if (stack.hasTag() && stack.getTag().contains("CustomModelData")) {
+				for (String key : stack.getTag().getAllKeys()) {
+					if (key.toLowerCase(Locale.ENGLISH).endsWith("clear") && stack.getTag().getBoolean(key)) {
+						continue items;
 					}
 				}
-				if (!stack.isEmpty()) {
-					empty = false;
-					ItemHandlerHelper.insertItemStacked(mergedHandler, stack.copy(), false);
+			}
+			if (!stack.isEmpty()) {
+				empty = false;
+				ItemHandlerHelper.insertItemStacked(mergedHandler, stack.copy(), false);
+				if (!mergedHandler.getStackInSlot(size - 1).isEmpty()) {
+					break;
 				}
 			}
-			if (!empty) {
-				tag.put("jadeHandler", mergedHandler.serializeNBT());
-			}
+		}
+		if (!empty) {
+			tag.put("jadeHandler", mergedHandler.serializeNBT());
 		}
 	}
 

@@ -20,7 +20,7 @@ import snownee.jade.addon.forge.InventoryProvider;
 public final class JadeCommonConfig {
 
 	public static int inventoryDetailedShowAmount = 54;
-	public static int inventoryNormalShowAmount = 0;
+	public static int inventoryNormalShowAmount = 9;
 	public static int inventoryShowItemPreLine = 9;
 	private static final Set<String> inventoryBlacklist = Sets.newHashSet();
 	public static boolean bypassLockedContainer = false;

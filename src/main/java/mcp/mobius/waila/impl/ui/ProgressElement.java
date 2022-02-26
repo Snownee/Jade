@@ -52,10 +52,11 @@ public class ProgressElement extends Element {
 	@Override
 	public void render(PoseStack matrixStack, float x, float y, float maxX, float maxY) {
 		Vec2 size = getCachedSize();
+		int b = 0;
 		if (borderStyle != null) {
 			DisplayHelper.INSTANCE.drawBorder(matrixStack, x, y, maxX - 2, y + size.y - 2, borderStyle);
+			b = borderStyle.width;
 		}
-		int b = borderStyle.width;
 		float progress = this.progress;
 		if (track == null && getTag() != null) {
 			track = WailaTickHandler.instance().progressTracker.createInfo(getTag(), progress, getSize().y);

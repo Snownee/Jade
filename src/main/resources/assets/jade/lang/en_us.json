@@ -93,8 +93,6 @@
   "config.waila.plugin_minecraft.mob_breeding": "Mob Breeding",
   "jade.mobbreeding.time": "Breeding CD: %ds",
   "config.waila.plugin_minecraft.brewing_stand": "Brewing Stand",
-  "jade.brewingStand.time": "Time: %ds",
-  "jade.brewingStand.fuel": "Fuel: %d",
   "config.waila.plugin_minecraft.tnt_stability": "TNT Stability",
   "jade.tnt.unstable": "Unstable",
   "config.waila.plugin_minecraft.beehive": "Beehive",
@@ -145,6 +143,8 @@
   "config.waila.plugin_minecraft.lectern": "Lectern",
   "config.waila.plugin_minecraft.animal_owner": "Animal Owner",
   "jade.owner": "Owner: %s",
+  "jade.infinity": "+∞",
+  "jade.seconds": "%ds",
 
   "config.waila.plugin_minecraft.display_furnace_contents": "Furnace Contents",
   "config.waila.plugin_minecraft.spawner_type": "Spawner Type",

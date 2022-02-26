@@ -1,6 +1,9 @@
 package snownee.jade;
 
+import mcp.mobius.waila.api.ui.IElement;
+import mcp.mobius.waila.api.ui.IElementHelper;
 import mcp.mobius.waila.gui.HomeConfigScreen;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -19,7 +22,13 @@ import net.minecraftforge.network.NetworkConstants;
 public class Jade {
 	public static final String MODID = "jade";
 	public static final String NAME = "Jade";
-	public static final Vec2 VERTICAL_OFFSET = new Vec2(0, 2);
+
+	public static final Vec2 SMALL_ITEM_SIZE = new Vec2(10, 10);
+	public static final Vec2 SMALL_ITEM_OFFSET = Vec2.NEG_UNIT_Y;
+
+	public static IElement smallItem(IElementHelper elements, ItemStack stack) {
+		return elements.item(stack, 0.5F).size(SMALL_ITEM_SIZE).translate(SMALL_ITEM_OFFSET);
+	}
 
 	public Jade() {
 		ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (a, b) -> true));

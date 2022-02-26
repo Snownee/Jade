@@ -35,7 +35,6 @@ import net.minecraft.world.level.block.NoteBlock;
 import net.minecraft.world.level.block.SpawnerBlock;
 import net.minecraft.world.level.block.TntBlock;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
-import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.BeehiveBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
@@ -121,7 +120,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerBlockDataProvider(VanillaProvider.INSTANCE, JukeboxBlockEntity.class);
 		registration.registerBlockDataProvider(VanillaProvider.INSTANCE, LecternBlockEntity.class);
 		registration.registerBlockDataProvider(FurnaceProvider.INSTANCE, AbstractFurnaceBlockEntity.class);
-		registration.registerBlockDataProvider(InventoryProvider.INSTANCE, BaseContainerBlockEntity.class);
+		registration.registerBlockDataProvider(InventoryProvider.INSTANCE, BlockEntity.class);
 		registration.registerBlockDataProvider(ForgeCapabilityProvider.INSTANCE, BlockEntity.class);
 
 		registration.registerEntityDataProvider(ChestedHorseProvider.INSTANCE, AbstractChestedHorse.class);

@@ -8,6 +8,7 @@ import mcp.mobius.waila.api.config.IPluginConfig;
 import mcp.mobius.waila.api.ui.IElementHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -30,15 +31,15 @@ public class BrewingStandProvider implements IComponentProvider, IServerDataProv
 			return;
 		}
 		CompoundTag tag = accessor.getServerData().getCompound("BrewingStand");
-		int fuel = tag.getInt("fuel");
-		int time = tag.getInt("time");
+		int fuel = tag.getInt("Fuel");
+		int time = tag.getInt("Time");
 		IElementHelper helper = tooltip.getElementHelper();
-		tooltip.add(helper.item(new ItemStack(Items.BLAZE_POWDER), 0.75f));
-		tooltip.append(helper.text(new TranslatableComponent("jade.brewingStand.fuel", fuel)).translate(Jade.VERTICAL_OFFSET));
+		tooltip.add(Jade.smallItem(helper, new ItemStack(Items.BLAZE_POWDER)));
+		tooltip.append(helper.text(new TextComponent(Integer.toString(fuel))));
 		if (time > 0) {
 			tooltip.append(helper.spacer(5, 0));
-			tooltip.append(helper.item(new ItemStack(Items.CLOCK), 0.75f));
-			tooltip.append(helper.text(new TranslatableComponent("jade.brewingStand.time", time / 20)).translate(Jade.VERTICAL_OFFSET));
+			tooltip.append(Jade.smallItem(helper, new ItemStack(Items.CLOCK)));
+			tooltip.append(helper.text(new TranslatableComponent("jade.seconds", time / 20)));
 		}
 	}
 
@@ -47,8 +48,8 @@ public class BrewingStandProvider implements IComponentProvider, IServerDataProv
 		if (te instanceof BrewingStandBlockEntity) {
 			BrewingStandBlockEntity brewingStand = (BrewingStandBlockEntity) te;
 			CompoundTag compound = new CompoundTag();
-			compound.putInt("time", brewingStand.brewTime);
-			compound.putInt("fuel", brewingStand.fuel);
+			compound.putInt("Time", brewingStand.brewTime);
+			compound.putInt("Fuel", brewingStand.fuel);
 			tag.put("BrewingStand", compound);
 		}
 	}

@@ -7,6 +7,8 @@ import com.google.common.collect.Sets;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -26,17 +28,19 @@ public class DatapackBlockManager {
 
 	@SubscribeEvent
 	public static void onEntityJoin(EntityJoinWorldEvent event) {
-		if (event.getEntity() instanceof ItemFrame) {
-			itemFrames.add(event.getEntity().blockPosition());
+		Entity entity = event.getEntity();
+		if (entity.getType() == EntityType.ITEM_FRAME || entity.getType() == EntityType.GLOW_ITEM_FRAME) {
+			itemFrames.add(entity.blockPosition());
 		}
 	}
 
 	@SubscribeEvent
 	public static void onEntityLeave(EntityLeaveWorldEvent event) {
-		if (event.getEntity() instanceof ItemFrame) {
-			BlockPos pos = event.getEntity().blockPosition();
+		Entity entity = event.getEntity();
+		if (entity.getType() == EntityType.ITEM_FRAME || entity.getType() == EntityType.GLOW_ITEM_FRAME) {
+			BlockPos pos = entity.blockPosition();
 			getFakeBlock(event.getWorld(), pos);
-		} else if (event.getEntity() == Minecraft.getInstance().player) {
+		} else if (entity == Minecraft.getInstance().player) {
 			itemFrames.clear();
 		}
 	}
