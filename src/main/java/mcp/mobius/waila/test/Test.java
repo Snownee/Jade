@@ -12,12 +12,12 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 @EventBusSubscriber(bus = Bus.MOD, modid = "waila")
 public class Test {
 
-	public static final TestBlock BLOCK = new TestBlock();
-	public static final BlockEntityType<TestBlockEntity> TILE = BlockEntityType.Builder.of(TestBlockEntity::new, BLOCK).build(null);
+	public static TestBlock BLOCK;
+	public static BlockEntityType<TestBlockEntity> TILE;
 
 	@SubscribeEvent
 	public static void registerBlocks(Register<Block> event) {
-		event.getRegistry().register(BLOCK.setRegistryName("test"));
+		event.getRegistry().register((BLOCK = new TestBlock()).setRegistryName("test"));
 	}
 
 	@SubscribeEvent
@@ -27,7 +27,7 @@ public class Test {
 
 	@SubscribeEvent
 	public static void registerTileTypes(Register<BlockEntityType<?>> event) {
-		event.getRegistry().register(TILE.setRegistryName("test"));
+		event.getRegistry().register((TILE = BlockEntityType.Builder.of(TestBlockEntity::new, BLOCK).build(null)).setRegistryName("test"));
 	}
 
 }

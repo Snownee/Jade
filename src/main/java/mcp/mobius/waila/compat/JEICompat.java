@@ -6,8 +6,11 @@ import mcp.mobius.waila.api.Accessor;
 import mcp.mobius.waila.impl.ObjectDataCenter;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
-import mezz.jei.api.recipe.IFocus;
-import mezz.jei.api.recipe.IRecipeManager;
+import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.helpers.IJeiHelpers;
+import mezz.jei.api.recipe.IFocusFactory;
+import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.api.runtime.IRecipesGui;
 import net.minecraft.client.KeyMapping;
@@ -27,6 +30,7 @@ public class JEICompat implements IModPlugin {
 	public static KeyMapping showRecipes;
 	public static KeyMapping showUses;
 	private static IJeiRuntime runtime;
+	private static IJeiHelpers helpers;
 
 	public JEICompat() {
 		if (showRecipes == null) {
@@ -41,6 +45,11 @@ public class JEICompat implements IModPlugin {
 	@Override
 	public ResourceLocation getPluginUid() {
 		return ID;
+	}
+
+	@Override
+	public void registerRecipes(IRecipeRegistration registration) {
+		JEICompat.helpers = registration.getJeiHelpers();
 	}
 
 	@Override
@@ -63,8 +72,8 @@ public class JEICompat implements IModPlugin {
 			return;
 
 		IRecipesGui gui = runtime.getRecipesGui();
-		IRecipeManager manager = runtime.getRecipeManager();
+		IFocusFactory factory = helpers.getFocusFactory();
 
-		gui.show(manager.createFocus(showUses.isDown() ? IFocus.Mode.INPUT : IFocus.Mode.OUTPUT, stack));
+		gui.show(factory.createFocus(showUses.isDown() ? RecipeIngredientRole.INPUT : RecipeIngredientRole.OUTPUT, VanillaTypes.ITEM, stack));
 	}
 }
