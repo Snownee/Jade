@@ -65,7 +65,7 @@ public class WailaRegistrar implements IRegistrar {
 
 	@Override
 	public void registerComponentProvider(IEntityComponentProvider dataProvider, TooltipPosition position, Class<? extends Entity> entity) {
-		WailaClientRegistration.INSTANCE.registerIconProvider(dataProvider, entity);
+		WailaClientRegistration.INSTANCE.registerComponentProvider(dataProvider, position, entity);
 	}
 
 	@Override
