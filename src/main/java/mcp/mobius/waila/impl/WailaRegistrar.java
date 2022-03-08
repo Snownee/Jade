@@ -28,6 +28,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 
+@SuppressWarnings("removal")
 public class WailaRegistrar implements IRegistrar {
 
 	public static final WailaRegistrar INSTANCE = new WailaRegistrar();
@@ -65,7 +66,7 @@ public class WailaRegistrar implements IRegistrar {
 
 	@Override
 	public void registerComponentProvider(IEntityComponentProvider dataProvider, TooltipPosition position, Class<? extends Entity> entity) {
-		WailaClientRegistration.INSTANCE.registerIconProvider(dataProvider, entity);
+		WailaClientRegistration.INSTANCE.registerComponentProvider(dataProvider, position, entity);
 	}
 
 	@Override
