@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 
 import mcp.mobius.waila.addons.core.CorePlugin;
 import mcp.mobius.waila.api.config.WailaConfig;
+import mcp.mobius.waila.api.config.WailaConfig.ConfigGeneral.TTSMode;
 import mcp.mobius.waila.api.config.WailaConfig.DisplayMode;
 import mcp.mobius.waila.gui.HomeConfigScreen;
 import mcp.mobius.waila.impl.ObjectDataCenter;
@@ -38,6 +39,7 @@ public class WailaClient {
 	public static KeyMapping showOverlay;
 	public static KeyMapping toggleLiquid;
 	public static KeyMapping showDetails;
+	public static KeyMapping narrate;
 
 	public static void initClient() {
 		ModLoadingContext.get().registerExtensionPoint(ConfigGuiFactory.class, () -> new ConfigGuiFactory((minecraft, screen) -> new HomeConfigScreen(screen)));
@@ -45,11 +47,13 @@ public class WailaClient {
 		WailaClient.openConfig = new KeyMapping("key.waila.config", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputConstants.Type.KEYSYM.getOrCreate(320), Jade.NAME);
 		WailaClient.showOverlay = new KeyMapping("key.waila.show_overlay", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputConstants.Type.KEYSYM.getOrCreate(321), Jade.NAME);
 		WailaClient.toggleLiquid = new KeyMapping("key.waila.toggle_liquid", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputConstants.Type.KEYSYM.getOrCreate(322), Jade.NAME);
+		WailaClient.narrate = new KeyMapping("key.waila.narrate", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputConstants.Type.KEYSYM.getOrCreate(326), Jade.NAME);
 		WailaClient.showDetails = new KeyMapping("key.waila.show_details", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputConstants.Type.KEYSYM.getOrCreate(340), Jade.NAME);
 
 		ClientRegistry.registerKeyBinding(WailaClient.openConfig);
 		ClientRegistry.registerKeyBinding(WailaClient.showOverlay);
 		ClientRegistry.registerKeyBinding(WailaClient.toggleLiquid);
+		ClientRegistry.registerKeyBinding(WailaClient.narrate);
 		ClientRegistry.registerKeyBinding(WailaClient.showDetails);
 
 		((ReloadableResourceManager) Minecraft.getInstance().getResourceManager()).registerReloadListener(ModIdentification.INSTANCE);
@@ -57,8 +61,6 @@ public class WailaClient {
 
 	@SubscribeEvent
 	public static void onKeyPressed(InputEvent.KeyInputEvent event) {
-		if (openConfig == null || showOverlay == null || toggleLiquid == null)
-			return;
 		if (event.getAction() != 1)
 			return;
 
@@ -76,6 +78,14 @@ public class WailaClient {
 
 		if (toggleLiquid.isDown()) {
 			Waila.CONFIG.get().getGeneral().setDisplayFluids(!Waila.CONFIG.get().getGeneral().shouldDisplayFluids());
+		}
+
+		if (narrate.isDown()) {
+			if (Waila.CONFIG.get().getGeneral().getTTSMode() == TTSMode.TOGGLE) {
+				Waila.CONFIG.get().getGeneral().toggleTTS();
+			} else if (WailaTickHandler.instance().tooltipRenderer != null) {
+				WailaTickHandler.narrate(WailaTickHandler.instance().tooltipRenderer.getTooltip(), false);
+			}
 		}
 	}
 

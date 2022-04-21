@@ -2,7 +2,7 @@ package mcp.mobius.waila.impl.ui;
 
 import java.util.Objects;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.ui.IBorderStyle;

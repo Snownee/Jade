@@ -1,17 +1,20 @@
 package mcp.mobius.waila.gui.config.value;
 
+import java.util.List;
 import java.util.function.Consumer;
 
+import com.google.common.collect.Lists;
 import com.mojang.blaze3d.vertex.PoseStack;
 
-import mcp.mobius.waila.gui.config.OptionsListWidget;
+import mcp.mobius.waila.gui.config.WailaOptionsList;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 
-public abstract class OptionValue<T> extends OptionsListWidget.Entry {
+public abstract class OptionValue<T> extends WailaOptionsList.Entry {
 
 	private final Component title;
 	private final String description;
@@ -50,11 +53,16 @@ public abstract class OptionValue<T> extends OptionsListWidget.Entry {
 
 	@Override
 	public void updateNarration(NarrationElementOutput output) {
-		output.add(NarratedElementType.TITLE, getTitle());
+		getListener().updateNarration(output);
 		if (I18n.exists(getDescription())) {
 			output.add(NarratedElementType.HINT, new TranslatableComponent(getDescription()));
 		}
 	}
 
 	protected abstract void drawValue(PoseStack matrixStack, int entryWidth, int entryHeight, int x, int y, int mouseX, int mouseY, boolean selected, float partialTicks);
+
+	@Override
+	public List<? extends AbstractWidget> children() {
+		return Lists.newArrayList(getListener());
+	}
 }

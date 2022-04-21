@@ -1,7 +1,10 @@
 package mcp.mobius.waila.api.ui;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.mojang.blaze3d.vertex.PoseStack;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec2;
 
@@ -55,6 +58,16 @@ public interface IElement {
 	IElement tag(ResourceLocation tag);
 
 	ResourceLocation getTag();
+
+	@Nullable
+	default Component getMessage() {
+		return null;
+	}
+
+	@Nullable
+	Component getCachedMessage();
+
+	IElement message(@Nullable Component message);
 
 	public enum Align {
 		LEFT, RIGHT

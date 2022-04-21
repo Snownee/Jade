@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -90,11 +90,12 @@ public class HarvestToolProvider implements IComponentProvider, ResourceManagerR
 		if (player.isCreative() || player.isSpectator()) {
 			return;
 		}
+		IElementHelper helper = tooltip.getElementHelper();
 		BlockState state = accessor.getBlockState();
 		float hardness = state.getDestroySpeed(accessor.getLevel(), accessor.getPosition());
 		if (hardness < 0) {
 			if (accessor.getTooltipPosition() == TooltipPosition.BODY) {
-				tooltip.add(UNBREAKABLE_TEXT);
+				tooltip.add(helper.text(UNBREAKABLE_TEXT).message(null));
 			}
 			return;
 		}
@@ -109,6 +110,7 @@ public class HarvestToolProvider implements IComponentProvider, ResourceManagerR
 		if (elements.isEmpty()) {
 			return;
 		}
+		elements.forEach(e -> e.message(null));
 		if (newLine) {
 			tooltip.add(elements);
 		} else {

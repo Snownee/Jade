@@ -22,7 +22,14 @@ description="You are using Jade, a fork of Hwyla."
     modId="forge"
     mandatory=true
     versionRange="[38, )"
-    ordering="BEFORE"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.jade]]
+    modId="jei"
+    mandatory=false
+    versionRange="[9.7, )"
+    ordering="NONE"
     side="BOTH"
 
 [modproperties.jade]

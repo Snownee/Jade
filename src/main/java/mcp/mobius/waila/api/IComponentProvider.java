@@ -1,6 +1,6 @@
 package mcp.mobius.waila.api;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import mcp.mobius.waila.api.config.IPluginConfig;
 import mcp.mobius.waila.api.ui.IElement;

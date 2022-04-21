@@ -3,12 +3,15 @@ package mcp.mobius.waila.impl;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Stream;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import mcp.mobius.waila.Waila;
+import mcp.mobius.waila.addons.core.CorePlugin;
 import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.ui.IBorderStyle;
 import mcp.mobius.waila.api.ui.IElement;
@@ -18,6 +21,7 @@ import mcp.mobius.waila.impl.ui.BorderStyle;
 import mcp.mobius.waila.impl.ui.ElementHelper;
 import mcp.mobius.waila.overlay.DisplayHelper;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.StringDecomposer;
 import net.minecraft.world.phys.Vec2;
 
 public class Tooltip implements ITooltip {
@@ -146,6 +150,25 @@ public class Tooltip implements ITooltip {
 				DisplayHelper.INSTANCE.drawBorder(matrixStack, x + translate.x, y + translate.y, x + translate.x + size.x, y + translate.y + size.y, BLUE);
 			}
 		}
+	}
+
+	@Override
+	public String getMessage() {
+		List<String> msgs = Lists.newArrayList();
+		for (Line line : lines) {
+			/* off */
+			msgs.add(Joiner.on(' ').join(
+					Stream.concat(line.left.stream(), line.right.stream())
+							.filter(e -> !CorePlugin.TAG_MOD_NAME.equals(e.getTag()))
+							.map(IElement::getCachedMessage)
+							.filter(java.util.Objects::nonNull)
+							.map(StringDecomposer::getPlainText)
+							.toList()
+					)
+			);
+			/* on */
+		}
+		return Joiner.on('\n').join(msgs);
 	}
 
 }

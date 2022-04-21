@@ -1,6 +1,6 @@
 package mcp.mobius.waila.api.ui;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import mcp.mobius.waila.api.ITooltip;
 import net.minecraft.network.chat.Component;

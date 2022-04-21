@@ -3,6 +3,7 @@ package mcp.mobius.waila.api.event;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import mcp.mobius.waila.api.Accessor;
+import mcp.mobius.waila.api.ITooltip;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraftforge.eventbus.api.Cancelable;
 import net.minecraftforge.eventbus.api.Event;
@@ -17,12 +18,18 @@ import net.minecraftforge.eventbus.api.Event;
  */
 public class WailaRenderEvent extends Event {
 
+	private final ITooltip tooltip;
 	private final Rect2i rect;
 	private final PoseStack matrixStack;
 
-	public WailaRenderEvent(Rect2i rect, PoseStack matrixStack) {
+	public WailaRenderEvent(ITooltip tooltip, Rect2i rect, PoseStack matrixStack) {
+		this.tooltip = tooltip;
 		this.rect = rect;
 		this.matrixStack = matrixStack;
+	}
+
+	public ITooltip getTooltip() {
+		return tooltip;
 	}
 
 	public Rect2i getRect() {
@@ -45,8 +52,8 @@ public class WailaRenderEvent extends Event {
 
 		private final Accessor<?> accessor;
 
-		public Pre(Accessor<?> accessor, Rect2i rect, PoseStack matrixStack) {
-			super(rect, matrixStack);
+		public Pre(ITooltip tooltip, Accessor<?> accessor, Rect2i rect, PoseStack matrixStack) {
+			super(tooltip, rect, matrixStack);
 
 			this.accessor = accessor;
 		}
@@ -65,8 +72,8 @@ public class WailaRenderEvent extends Event {
      */
 	public static class Post extends WailaRenderEvent {
 
-		public Post(Rect2i rect, PoseStack matrixStack) {
-			super(rect, matrixStack);
+		public Post(ITooltip tooltip, Rect2i rect, PoseStack matrixStack) {
+			super(tooltip, rect, matrixStack);
 		}
 	}
 

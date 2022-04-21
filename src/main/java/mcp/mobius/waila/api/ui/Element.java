@@ -1,5 +1,9 @@
 package mcp.mobius.waila.api.ui;
 
+import org.jetbrains.annotations.Nullable;
+
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec2;
 
@@ -14,6 +18,8 @@ public abstract class Element implements IElement {
 	protected Vec2 translation = Vec2.ZERO;
 	protected ResourceLocation tag;
 	protected Vec2 size;
+	private static final Component DEFAULT_MESSAGE = TextComponent.EMPTY.copy();
+	protected Component message = DEFAULT_MESSAGE;
 
 	@Override
 	public IElement size(Vec2 size) {
@@ -59,6 +65,20 @@ public abstract class Element implements IElement {
 	@Override
 	public ResourceLocation getTag() {
 		return tag;
+	}
+
+	@Override
+	public @Nullable Component getCachedMessage() {
+		if (message == DEFAULT_MESSAGE) {
+			message = getMessage();
+		}
+		return message;
+	}
+
+	@Override
+	public IElement message(@Nullable Component message) {
+		this.message = message;
+		return this;
 	}
 
 }

@@ -9,9 +9,11 @@ import com.google.common.collect.Sets;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 
-import mcp.mobius.waila.gui.config.OptionsListWidget;
+import mcp.mobius.waila.gui.config.WailaOptionsList;
 import mcp.mobius.waila.gui.config.value.OptionValue;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.TooltipAccessor;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
@@ -25,7 +27,7 @@ public abstract class OptionsScreen extends Screen {
 	private final Screen parent;
 	private final Runnable saver;
 	private final Runnable canceller;
-	private OptionsListWidget options;
+	private WailaOptionsList options;
 	private final Set<GuiEventListener> entryWidgets = Sets.newIdentityHashSet();
 
 	public OptionsScreen(Screen parent, Component title, Runnable saver, Runnable canceller) {
@@ -37,7 +39,7 @@ public abstract class OptionsScreen extends Screen {
 	}
 
 	public OptionsScreen(Screen parent, String title, Runnable saver, Runnable canceller) {
-		this(parent, OptionsListWidget.Entry.makeTitle(title), saver, canceller);
+		this(parent, WailaOptionsList.Entry.makeTitle(title), saver, canceller);
 	}
 
 	public OptionsScreen(Screen parent, String title) {
@@ -78,11 +80,14 @@ public abstract class OptionsScreen extends Screen {
 		if (mouseY < 32 || mouseY > height - 32)
 			return;
 
-		OptionsListWidget.Entry entry = options.getSelected();
+		WailaOptionsList.Entry entry = options.getSelected();
 		if (entry instanceof OptionValue) {
 			OptionValue<?> value = (OptionValue<?>) entry;
 
-			if (I18n.exists(value.getDescription())) {
+			AbstractWidget widget = value.getListener();
+			if (widget instanceof TooltipAccessor && widget.isMouseOver(mouseX, mouseY)) {
+				renderTooltip(matrixStack, ((TooltipAccessor) widget).getTooltip(), mouseX, mouseY);
+			} else if (I18n.exists(value.getDescription())) {
 				int valueX = value.getX() + 10;
 				String title = value.getTitle().getString();
 				if (mouseX < valueX || mouseX > valueX + font.width(title))
@@ -115,7 +120,7 @@ public abstract class OptionsScreen extends Screen {
 		}
 	}
 
-	public abstract OptionsListWidget getOptions();
+	public abstract WailaOptionsList getOptions();
 
 	@Override
 	public boolean mouseScrolled(double mouseX, double mouseY, double delta) {

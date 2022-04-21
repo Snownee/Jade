@@ -1,5 +1,7 @@
 package mcp.mobius.waila.impl.ui;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import mcp.mobius.waila.Waila;
@@ -32,6 +34,11 @@ public class TextElement extends Element {
 	public void render(PoseStack matrixStack, float x, float y, float maxX, float maxY) {
 		WailaConfig.ConfigOverlay.ConfigOverlayColor color = Waila.CONFIG.get().getOverlay().getColor();
 		DisplayHelper.INSTANCE.drawText(matrixStack, component, x, y, color.getTheme().textColor);
+	}
+
+	@Override
+	public @Nullable Component getMessage() {
+		return component;
 	}
 
 }

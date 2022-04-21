@@ -124,4 +124,6 @@ public interface ITooltip {
 	List<IElement> get(ResourceLocation tag);
 
 	List<IElement> get(int index, Align align);
+
+	String getMessage();
 }

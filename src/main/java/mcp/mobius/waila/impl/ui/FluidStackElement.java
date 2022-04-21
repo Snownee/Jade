@@ -1,10 +1,13 @@
 package mcp.mobius.waila.impl.ui;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import mcp.mobius.waila.api.ui.Element;
 import mcp.mobius.waila.overlay.DisplayHelper;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -28,4 +31,10 @@ public class FluidStackElement extends Element {
 		Vec2 size = getCachedSize();
 		DisplayHelper.INSTANCE.drawFluid(matrixStack, x, y, fluidStack, size.x, size.y, fluidStack.getAmount());
 	}
+
+	@Override
+	public @Nullable Component getMessage() {
+		return fluidStack.getDisplayName();
+	}
+
 }

@@ -1,6 +1,6 @@
 package mcp.mobius.waila.api.event;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import mcp.mobius.waila.api.Accessor;
 import net.minecraft.world.phys.HitResult;

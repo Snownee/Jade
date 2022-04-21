@@ -1,13 +1,15 @@
 package mcp.mobius.waila.gui.config;
 
+import java.util.List;
+
+import com.google.common.collect.Lists;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 
-public class OptionButton extends OptionsListWidget.Entry {
+public class OptionButton extends WailaOptionsList.Entry {
 
 	private final Component title;
 	private final Button button;
@@ -36,7 +38,8 @@ public class OptionButton extends OptionsListWidget.Entry {
 	}
 
 	@Override
-	public void updateNarration(NarrationElementOutput output) {
-		button.updateNarration(output);
+	public List<? extends AbstractWidget> children() {
+		return Lists.newArrayList(button);
 	}
+
 }

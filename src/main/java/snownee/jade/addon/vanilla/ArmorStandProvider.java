@@ -27,7 +27,7 @@ public class ArmorStandProvider implements IEntityComponentProvider {
 		for (ItemStack stack : entity.getArmorSlots()) {
 			if (stack.isEmpty())
 				continue;
-			tooltip.add(Jade.smallItem(helper, stack));
+			tooltip.add(Jade.smallItem(helper, stack).message(null));
 			tooltip.append(helper.text(stack.getHoverName()));
 		}
 	}

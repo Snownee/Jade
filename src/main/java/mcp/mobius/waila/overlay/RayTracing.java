@@ -3,7 +3,7 @@ package mcp.mobius.waila.overlay;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Predicates;
 

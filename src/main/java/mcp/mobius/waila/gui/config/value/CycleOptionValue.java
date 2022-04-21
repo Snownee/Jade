@@ -1,36 +1,23 @@
 package mcp.mobius.waila.gui.config.value;
 
-import java.util.List;
 import java.util.function.Consumer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.client.gui.components.CycleButton;
 
 public class CycleOptionValue<T> extends OptionValue<T> {
 
-	private final Button button;
-	private final List<Component> names;
-	private final List<T> values;
+	private final CycleButton<T> button;
 
-	public CycleOptionValue(String optionName, List<Component> names, List<T> values, T value, Consumer<T> setter) {
+	public CycleOptionValue(String optionName, CycleButton.Builder<T> cycleBtn, T value, Consumer<T> setter) {
 		super(optionName, setter);
-		this.names = names;
-		this.values = values;
-		this.button = new Button(0, 0, 100, 20, TextComponent.EMPTY, w -> {
-			this.value = values.get((values.indexOf(this.value) + 1) % values.size());
-			updateName();
+		this.button = cycleBtn.displayOnlyValue().withInitialValue(value).create(0, 0, 100, 20, getTitle(), (btn, v) -> {
+			this.value = v;
 			save();
 		});
 		this.value = value;
-		updateName();
-	}
-
-	private void updateName() {
-		button.setMessage(names.get(values.indexOf(value)));
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package mcp.mobius.waila.gui;
 
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import mcp.mobius.waila.Waila;
@@ -7,7 +8,8 @@ import mcp.mobius.waila.api.config.WailaConfig.ConfigFormatting;
 import mcp.mobius.waila.api.config.WailaConfig.ConfigGeneral;
 import mcp.mobius.waila.api.config.WailaConfig.ConfigOverlay;
 import mcp.mobius.waila.api.config.WailaConfig.ConfigOverlay.ConfigOverlayColor;
-import mcp.mobius.waila.gui.config.OptionsListWidget;
+import mcp.mobius.waila.gui.config.WailaOptionsList;
+import mcp.mobius.waila.gui.config.WailaOptionsList.Entry;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.TranslatableComponent;
 import snownee.jade.Jade;
@@ -19,8 +21,8 @@ public class WailaConfigScreen extends OptionsScreen {
 	}
 
 	@Override
-	public OptionsListWidget getOptions() {
-		OptionsListWidget options = new OptionsListWidget(this, minecraft, width, height, 32, height - 32, 30, Waila.CONFIG::save);
+	public WailaOptionsList getOptions() {
+		WailaOptionsList options = new WailaOptionsList(this, minecraft, width, height, 32, height - 32, 30, Waila.CONFIG::save);
 
 		ConfigGeneral general = Waila.CONFIG.get().getGeneral();
 		options.title("general");
@@ -28,11 +30,13 @@ public class WailaConfigScreen extends OptionsScreen {
 		options.choices("display_entities", general.getDisplayEntities(), general::setDisplayEntities);
 		options.choices("display_blocks", general.getDisplayBlocks(), general::setDisplayBlocks);
 		options.choices("display_fluids", general.getDisplayFluids(), general::setDisplayFluids);
-		options.choices("display_mode", general.getDisplayMode(), general::setDisplayMode);
+		options.choices("display_mode", general.getDisplayMode(), general::setDisplayMode, builder -> {
+			builder.withTooltip(mode -> minecraft.font.split(Entry.makeTitle("display_mode_" + mode.name().toLowerCase(Locale.ENGLISH) + "_desc"), 200));
+		});
 		options.choices("hide_from_debug", general.shouldHideFromDebug(), general::setHideFromDebug);
 		options.choices("display_item", general.getIconMode(), general::setIconMode);
 		options.slider("reach_distance", general.getReachDistance(), general::setReachDistance, 0, 20);
-		options.choices("tts", general.shouldEnableTextToSpeech(), general::setEnableTextToSpeech);
+		options.choices("tts_mode", general.getTTSMode(), general::setTTSMode);
 
 		ConfigOverlay overlay = Waila.CONFIG.get().getOverlay();
 		ConfigOverlayColor color = overlay.getColor();

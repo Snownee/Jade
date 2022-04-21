@@ -1,6 +1,6 @@
 package mcp.mobius.waila.impl.ui;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -10,6 +10,8 @@ import mcp.mobius.waila.impl.Tooltip;
 import mcp.mobius.waila.overlay.DisplayHelper;
 import mcp.mobius.waila.overlay.TooltipRenderer;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -47,6 +49,14 @@ public class BoxElement extends Element {
 			DisplayHelper.INSTANCE.drawBorder(matrixStack, 0, 0, rect.getWidth(), rect.getHeight(), border);
 		tooltip.draw(matrixStack);
 		matrixStack.popPose();
+	}
+
+	@Override
+	public @Nullable Component getMessage() {
+		if (tooltip.getTooltip().isEmpty()) {
+			return null;
+		}
+		return new TextComponent(tooltip.getTooltip().getMessage());
 	}
 
 }

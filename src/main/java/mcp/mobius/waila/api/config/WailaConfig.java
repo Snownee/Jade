@@ -42,6 +42,7 @@ public class WailaConfig {
 		private boolean hideFromDebug = true;
 		private IconMode iconMode = IconMode.TOP;
 		private boolean enableTextToSpeech = false;
+		private TTSMode ttsMode = TTSMode.PRESS;
 		private int maxHealthForRender = 40;
 		private int maxHeartsPerLine = 10;
 		private ClipContext.Fluid fluidMode = ClipContext.Fluid.NONE;
@@ -81,8 +82,12 @@ public class WailaConfig {
 			this.iconMode = iconMode;
 		}
 
-		public void setEnableTextToSpeech(boolean enableTextToSpeech) {
-			this.enableTextToSpeech = enableTextToSpeech;
+		public void toggleTTS() {
+			enableTextToSpeech = !enableTextToSpeech;
+		}
+
+		public void setTTSMode(TTSMode ttsMode) {
+			this.ttsMode = ttsMode;
 		}
 
 		public void setMaxHealthForRender(int maxHealthForRender) {
@@ -122,7 +127,11 @@ public class WailaConfig {
 		}
 
 		public boolean shouldEnableTextToSpeech() {
-			return enableTextToSpeech;
+			return ttsMode == TTSMode.TOGGLE && enableTextToSpeech;
+		}
+
+		public TTSMode getTTSMode() {
+			return ttsMode;
 		}
 
 		public int getMaxHealthForRender() {
@@ -159,6 +168,10 @@ public class WailaConfig {
 
 		public enum IconMode {
 			TOP, CENTERED, HIDE;
+		}
+
+		public enum TTSMode {
+			TOGGLE, PRESS
 		}
 	}
 

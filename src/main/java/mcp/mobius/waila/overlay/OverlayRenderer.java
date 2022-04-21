@@ -80,7 +80,7 @@ public class OverlayRenderer {
 			position.setWidth(position.getWidth() + 2);
 			position.setHeight(position.getHeight() + 2);
 		}
-		WailaRenderEvent.Pre preEvent = new WailaRenderEvent.Pre(ObjectDataCenter.get(), position, matrixStack);
+		WailaRenderEvent.Pre preEvent = new WailaRenderEvent.Pre(tooltip.getTooltip(), ObjectDataCenter.get(), position, matrixStack);
 		if (MinecraftForge.EVENT_BUS.post(preEvent)) {
 			matrixStack.popPose();
 			return;
@@ -137,12 +137,16 @@ public class OverlayRenderer {
 			tooltip.icon.render(matrixStack, offsetX, offsetY, offsetX + size.x, offsetY + size.y);
 		}
 
-		WailaRenderEvent.Post postEvent = new WailaRenderEvent.Post(position, matrixStack);
+		WailaRenderEvent.Post postEvent = new WailaRenderEvent.Post(tooltip.getTooltip(), position, matrixStack);
 		MinecraftForge.EVENT_BUS.post(postEvent);
 
 		RenderSystem.enableDepthTest();
 		matrixStack.popPose();
 		Minecraft.getInstance().getProfiler().pop();
+
+		if (Waila.CONFIG.get().getGeneral().shouldEnableTextToSpeech() && Minecraft.getInstance().level != null && Minecraft.getInstance().level.getGameTime() % 5 == 0) {
+			WailaTickHandler.narrate(tooltip.getTooltip(), true);
+		}
 	}
 
 	public static void drawTooltipBox(PoseStack matrixStack, int x, int y, int w, int h, int bg, int grad1, int grad2, boolean square) {

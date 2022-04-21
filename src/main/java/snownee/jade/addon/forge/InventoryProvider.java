@@ -94,7 +94,7 @@ public class InventoryProvider implements IComponentProvider, IServerDataProvide
 					ItemStack copy = stack.copy();
 					copy.setCount(1);
 					elements.add(Jade.smallItem(helper, copy).tag(VanillaPlugin.INVENTORY));
-					elements.add(helper.text(new TextComponent(Integer.toString(stack.getCount())).append("× ").append(stack.getHoverName())).tag(VanillaPlugin.INVENTORY));
+					elements.add(helper.text(new TextComponent(Integer.toString(stack.getCount())).append("× ").append(stack.getHoverName())).tag(VanillaPlugin.INVENTORY).message(null));
 				} else {
 					elements.add(helper.item(stack).tag(VanillaPlugin.INVENTORY));
 				}

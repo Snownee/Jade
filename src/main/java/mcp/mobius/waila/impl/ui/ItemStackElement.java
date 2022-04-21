@@ -1,11 +1,12 @@
 package mcp.mobius.waila.impl.ui;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import mcp.mobius.waila.api.ui.Element;
 import mcp.mobius.waila.overlay.DisplayHelper;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec2;
@@ -49,6 +50,13 @@ public class ItemStackElement extends Element {
 		if (stack.isEmpty())
 			return;
 		DisplayHelper.INSTANCE.drawItem(matrixStack, x + 1, y + 1, stack, scale, text);
+	}
+
+	@Override
+	public @Nullable Component getMessage() {
+		if (stack.isEmpty())
+			return null;
+		return stack.getHoverName();
 	}
 
 }

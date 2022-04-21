@@ -1,13 +1,15 @@
 package mcp.mobius.waila.gui.config;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.google.common.base.Predicates;
-import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
@@ -25,11 +27,10 @@ import mcp.mobius.waila.gui.config.value.OptionValue;
 import mcp.mobius.waila.gui.config.value.SliderOptionValue;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.AbstractSelectionList;
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.narration.NarratedElementType;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.gui.narration.NarrationSupplier;
+import net.minecraft.client.gui.components.ContainerObjectSelectionList;
+import net.minecraft.client.gui.components.CycleButton;
+import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
@@ -37,20 +38,18 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
-public class OptionsListWidget extends AbstractSelectionList<OptionsListWidget.Entry> {
+public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsList.Entry> {
 
-	private final OptionsScreen owner;
 	private final Runnable diskWriter;
 
-	public OptionsListWidget(OptionsScreen owner, Minecraft client, int width, int height, int y0, int y1, int entryHeight, Runnable diskWriter) {
+	public WailaOptionsList(OptionsScreen owner, Minecraft client, int width, int height, int y0, int y1, int entryHeight, Runnable diskWriter) {
 		super(client, width, height, y0, y1, entryHeight);
 
-		this.owner = owner;
 		this.diskWriter = diskWriter;
 		setRenderSelection(false);
 	}
 
-	public OptionsListWidget(OptionsScreen owner, Minecraft client, int width, int height, int y0, int y1, int entryHeight) {
+	public WailaOptionsList(OptionsScreen owner, Minecraft client, int width, int height, int y0, int y1, int entryHeight) {
 		this(owner, client, width, height, y0, y1, entryHeight, null);
 	}
 
@@ -147,9 +146,6 @@ public class OptionsListWidget extends AbstractSelectionList<OptionsListWidget.E
 	}
 
 	public void add(Entry entry) {
-		AbstractWidget element = entry.getListener();
-		if (element != null)
-			owner.addEntryWidget(element);
 		addEntry(entry);
 	}
 
@@ -173,42 +169,28 @@ public class OptionsListWidget extends AbstractSelectionList<OptionsListWidget.E
 		input(optionName, value, setter, Predicates.alwaysTrue());
 	}
 
-	private static final List<Component> boolNames = Arrays.asList(new TranslatableComponent("gui.yes"), new TranslatableComponent("gui.no"));
-	private static final List<Boolean> boolValues = Arrays.asList(Boolean.TRUE, Boolean.FALSE);
-
 	public void choices(String optionName, boolean value, BooleanConsumer setter) {
-		add(new CycleOptionValue<>(optionName, boolNames, boolValues, value, setter));
+		add(new CycleOptionValue<>(optionName, CycleButton.onOffBuilder(), value, setter));
 	}
 
 	public <T extends Enum<T>> void choices(String optionName, T value, Consumer<T> setter) {
+		choices(optionName, value, setter, null);
+	}
+
+	public <T extends Enum<T>> void choices(String optionName, T value, Consumer<T> setter, @Nullable Consumer<CycleButton.Builder<T>> builderConsumer) {
 		List<T> values = (List<T>) Arrays.asList(value.getClass().getEnumConstants());
-		List<Component> names = Lists.transform(values, v -> Entry.makeTitle(optionName + "_" + v.name().toLowerCase(Locale.ENGLISH)));
-		add(new CycleOptionValue<>(optionName, names, values, value, setter));
+		CycleButton.Builder<T> builder = CycleButton.<T>builder(v -> Entry.makeTitle(optionName + "_" + v.name().toLowerCase(Locale.ENGLISH))).withValues(values);
+		if (builderConsumer != null) {
+			builderConsumer.accept(builder);
+		}
+		add(new CycleOptionValue<>(optionName, builder, value, setter));
 	}
 
 	public <T> void choices(String optionName, T value, List<T> values, Consumer<T> setter) {
-		List<Component> names = Lists.transform(values, v -> new TextComponent(v.toString()));
-		add(new CycleOptionValue<>(optionName, names, values, value, setter));
+		add(new CycleOptionValue<>(optionName, CycleButton.<T>builder(v -> new TextComponent(v.toString())).withValues(values), value, setter));
 	}
 
-	@Override
-	public void updateNarration(NarrationElementOutput output) {
-		Entry e = getHovered();
-		if (e != null) {
-			e.updateNarration(output.nest());
-			narrateListElementPosition(output, e);
-		} else {
-			Entry e1 = getFocused();
-			if (e1 != null) {
-				e1.updateNarration(output.nest());
-				narrateListElementPosition(output, e1);
-			}
-		}
-
-		output.add(NarratedElementType.USAGE, new TranslatableComponent("narration.component_list.usage"));
-	}
-
-	public abstract static class Entry extends AbstractSelectionList.Entry<Entry> implements NarrationSupplier {
+	public abstract static class Entry extends ContainerObjectSelectionList.Entry<Entry> {
 
 		protected final Minecraft client;
 
@@ -229,7 +211,16 @@ public class OptionsListWidget extends AbstractSelectionList<OptionsListWidget.E
 		}
 
 		@Override
+		public abstract List<? extends AbstractWidget> children();
+
+		@Override
+		public List<? extends NarratableEntry> narratables() {
+			return children();
+		}
+
+		@Override
 		public abstract void render(PoseStack matrixStack, int index, int rowTop, int rowLeft, int width, int height, int mouseX, int mouseY, boolean hovered, float deltaTime);
+
 	}
 
 	public static class Title extends Entry {
@@ -241,13 +232,13 @@ public class OptionsListWidget extends AbstractSelectionList<OptionsListWidget.E
 		}
 
 		@Override
-		public void updateNarration(NarrationElementOutput output) {
-			output.add(NarratedElementType.TITLE, title);
+		public void render(PoseStack matrixStack, int index, int rowTop, int rowLeft, int width, int height, int mouseX, int mouseY, boolean hovered, float deltaTime) {
+			client.font.drawShadow(matrixStack, title, rowLeft + (width - client.font.width(title)) / 2, rowTop + (height / 4) + (client.font.lineHeight / 2), 16777215);
 		}
 
 		@Override
-		public void render(PoseStack matrixStack, int index, int rowTop, int rowLeft, int width, int height, int mouseX, int mouseY, boolean hovered, float deltaTime) {
-			client.font.drawShadow(matrixStack, title, rowLeft + (width - client.font.width(title)) / 2, rowTop + (height / 4) + (client.font.lineHeight / 2), 16777215);
+		public List<? extends AbstractWidget> children() {
+			return Collections.EMPTY_LIST;
 		}
 
 	}

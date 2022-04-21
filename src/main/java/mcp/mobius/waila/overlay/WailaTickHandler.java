@@ -1,27 +1,22 @@
 package mcp.mobius.waila.overlay;
 
-import java.util.List;
-
 import com.mojang.text2speech.Narrator;
 
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.WailaClient;
-import mcp.mobius.waila.addons.core.CorePlugin;
 import mcp.mobius.waila.api.Accessor;
+import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.TooltipPosition;
 import mcp.mobius.waila.api.config.WailaConfig.ConfigGeneral;
 import mcp.mobius.waila.api.config.WailaConfig.DisplayMode;
 import mcp.mobius.waila.api.event.WailaRayTraceEvent;
 import mcp.mobius.waila.api.event.WailaTooltipEvent;
-import mcp.mobius.waila.api.ui.IElement;
 import mcp.mobius.waila.gui.OptionsScreen;
 import mcp.mobius.waila.impl.BlockAccessorImpl;
 import mcp.mobius.waila.impl.EntityAccessorImpl;
 import mcp.mobius.waila.impl.ObjectDataCenter;
 import mcp.mobius.waila.impl.Tooltip;
-import mcp.mobius.waila.impl.ui.TextElement;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.StringDecomposer;
 import net.minecraft.world.entity.player.ChatVisiblity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -158,18 +153,16 @@ public class WailaTickHandler {
 		if (Minecraft.getInstance().level != null && Minecraft.getInstance().level.getGameTime() % 5 > 0) {
 			return;
 		}
+	}
 
-		List<IElement> elements = event.getTooltip().get(CorePlugin.TAG_OBJECT_NAME);
-		for (IElement element : elements) {
-			if (element instanceof TextElement) {
-				String narrate = StringDecomposer.getPlainText(((TextElement) element).component);
-				if (lastNarration.equalsIgnoreCase(narrate))
-					return;
-				getNarrator().clear();
-				getNarrator().say(narrate, true);
-				lastNarration = narrate;
-			}
-		}
-
+	public static void narrate(ITooltip tooltip, boolean dedupe) {
+		if (!getNarrator().active() || tooltip.isEmpty())
+			return;
+		String narration = tooltip.getMessage();
+		if (dedupe && narration.equals(lastNarration))
+			return;
+		Narrator narrator = getNarrator();
+		narrator.say(narration, true);
+		lastNarration = narration;
 	}
 }

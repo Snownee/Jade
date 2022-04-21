@@ -8,10 +8,8 @@ import mcp.mobius.waila.api.config.IPluginConfig;
 import mcp.mobius.waila.api.config.WailaConfig;
 import mcp.mobius.waila.impl.ui.ArmorElement;
 import mcp.mobius.waila.impl.ui.HealthElement;
-import mcp.mobius.waila.overlay.DisplayHelper;
 import mcp.mobius.waila.utils.ModIdentification;
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -73,22 +71,14 @@ public class BaseEntityProvider implements IEntityComponentProvider {
 	public void appendTail(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		if (!config.get(CorePlugin.CONFIG_MOD_NAME))
 			return;
-		tooltip.add(new TextComponent(String.format(config.getWailaConfig().getFormatting().getModName(), ModIdentification.getModName(accessor.getEntity()))));
+		tooltip.add(new TextComponent(String.format(config.getWailaConfig().getFormatting().getModName(), ModIdentification.getModName(accessor.getEntity()))), CorePlugin.TAG_MOD_NAME);
 	}
 
 	@OnlyIn(Dist.CLIENT)
 	private void appendHealth(LivingEntity living, ITooltip tooltip, WailaConfig config) {
 		float health = living.getHealth();
 		float maxHealth = living.getMaxHealth();
-
-		if (living.getMaxHealth() > config.getGeneral().getMaxHealthForRender()) {
-			HealthElement icon = new HealthElement(1, 1);
-			Component text = new TextComponent(String.format("  %s/%s", DisplayHelper.dfCommas.format(health), DisplayHelper.dfCommas.format(maxHealth)));
-			tooltip.add(0, icon);
-			tooltip.append(0, tooltip.getElementHelper().text(text));
-		} else {
-			tooltip.add(0, new HealthElement(maxHealth * 0.5F, health * 0.5F));
-		}
+		tooltip.add(0, new HealthElement(maxHealth, health));
 	}
 
 	@OnlyIn(Dist.CLIENT)
@@ -96,14 +86,7 @@ public class BaseEntityProvider implements IEntityComponentProvider {
 		float armor = living.getArmorValue();
 		if (armor == 0)
 			return;
-		if (armor > config.getGeneral().getMaxHealthForRender()) {
-			ArmorElement icon = new ArmorElement(-1);
-			Component text = new TextComponent(DisplayHelper.dfCommas.format(armor));
-			tooltip.add(0, icon);
-			tooltip.append(0, tooltip.getElementHelper().text(text));
-		} else {
-			tooltip.add(0, new ArmorElement(armor * 0.5F));
-		}
+		tooltip.add(0, new ArmorElement(armor));
 	}
 
 }

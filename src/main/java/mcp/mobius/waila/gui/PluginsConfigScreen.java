@@ -3,7 +3,7 @@ package mcp.mobius.waila.gui;
 import java.util.Set;
 
 import mcp.mobius.waila.gui.config.OptionButton;
-import mcp.mobius.waila.gui.config.OptionsListWidget;
+import mcp.mobius.waila.gui.config.WailaOptionsList;
 import mcp.mobius.waila.impl.config.ConfigEntry;
 import mcp.mobius.waila.impl.config.PluginConfig;
 import mcp.mobius.waila.utils.ModIdentification;
@@ -22,8 +22,8 @@ public class PluginsConfigScreen extends OptionsScreen {
 	}
 
 	@Override
-	public OptionsListWidget getOptions() {
-		OptionsListWidget options = new OptionsListWidget(this, minecraft, width, height, 32, height - 32, 30, PluginConfig.INSTANCE::save);
+	public WailaOptionsList getOptions() {
+		WailaOptionsList options = new WailaOptionsList(this, minecraft, width, height, 32, height - 32, 30, PluginConfig.INSTANCE::save);
 		PluginConfig.INSTANCE.getNamespaces().forEach(namespace -> {
 			Component title;
 			String translationKey = "plugin_" + namespace;
@@ -36,8 +36,8 @@ public class PluginsConfigScreen extends OptionsScreen {
 			options.add(new OptionButton(title, new Button(0, 0, 100, 20, TextComponent.EMPTY, w -> {
 				minecraft.setScreen(new OptionsScreen(PluginsConfigScreen.this, title, null, null) {
 					@Override
-					public OptionsListWidget getOptions() {
-						OptionsListWidget options = new OptionsListWidget(this, minecraft, width, height, 32, height - 32, 30);
+					public WailaOptionsList getOptions() {
+						WailaOptionsList options = new WailaOptionsList(this, minecraft, width, height, 32, height - 32, 30);
 						keys.stream().sorted((o1, o2) -> o1.getPath().compareToIgnoreCase(o2.getPath())).forEach(i -> {
 							ConfigEntry entry = PluginConfig.INSTANCE.getEntry(i);
 							if (!entry.isSynced() || Minecraft.getInstance().getCurrentServer() == null)
