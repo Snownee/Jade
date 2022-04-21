@@ -1,5 +1,7 @@
 package mcp.mobius.waila.api;
 
+import org.jetbrains.annotations.NotNull;
+
 import mcp.mobius.waila.api.ui.IElement;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
@@ -16,6 +18,7 @@ public interface Accessor<T extends HitResult> {
 
 	Player getPlayer();
 
+	@NotNull
 	CompoundTag getServerData();
 
 	T getHitResult();

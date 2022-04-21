@@ -39,6 +39,7 @@ import net.minecraft.world.level.block.entity.BeehiveBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
 import net.minecraft.world.level.block.entity.CommandBlockEntity;
+import net.minecraft.world.level.block.entity.ComparatorBlockEntity;
 import net.minecraft.world.level.block.entity.JukeboxBlockEntity;
 import net.minecraft.world.level.block.entity.LecternBlockEntity;
 import snownee.jade.addon.forge.ForgeCapabilityProvider;
@@ -119,6 +120,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerBlockDataProvider(CommandBlockProvider.INSTANCE, CommandBlockEntity.class);
 		registration.registerBlockDataProvider(VanillaProvider.INSTANCE, JukeboxBlockEntity.class);
 		registration.registerBlockDataProvider(VanillaProvider.INSTANCE, LecternBlockEntity.class);
+		registration.registerBlockDataProvider(VanillaProvider.INSTANCE, ComparatorBlockEntity.class);
 		registration.registerBlockDataProvider(FurnaceProvider.INSTANCE, AbstractFurnaceBlockEntity.class);
 		registration.registerBlockDataProvider(InventoryProvider.INSTANCE, BlockEntity.class);
 		registration.registerBlockDataProvider(ForgeCapabilityProvider.INSTANCE, BlockEntity.class);

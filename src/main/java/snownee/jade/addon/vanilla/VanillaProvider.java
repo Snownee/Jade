@@ -29,6 +29,7 @@ import net.minecraft.world.level.block.JukeboxBlock;
 import net.minecraft.world.level.block.LecternBlock;
 import net.minecraft.world.level.block.LeverBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.ComparatorBlockEntity;
 import net.minecraft.world.level.block.entity.JukeboxBlockEntity;
 import net.minecraft.world.level.block.entity.LecternBlockEntity;
 import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
@@ -97,7 +98,7 @@ public class VanillaProvider implements IComponentProvider, IServerDataProvider<
 		}
 
 		if (config.get(VanillaPlugin.REDSTONE)) {
-			appendRedstone(tooltip, state);
+			appendRedstone(tooltip, state, accessor.getServerData());
 		}
 
 		if (config.get(VanillaPlugin.JUKEBOX) && block instanceof JukeboxBlock) {
@@ -127,7 +128,7 @@ public class VanillaProvider implements IComponentProvider, IServerDataProvider<
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	private void appendRedstone(ITooltip tooltip, BlockState state) {
+	private void appendRedstone(ITooltip tooltip, BlockState state, CompoundTag serverData) {
 		Block block = state.getBlock();
 		if (block instanceof LeverBlock) {
 			boolean active = state.getValue(BlockStateProperties.POWERED);
@@ -144,6 +145,9 @@ public class VanillaProvider implements IComponentProvider, IServerDataProvider<
 		if (block == Blocks.COMPARATOR) {
 			ComparatorMode mode = state.getValue(BlockStateProperties.MODE_COMPARATOR);
 			tooltip.add(new TranslatableComponent("tooltip.waila.mode", new TranslatableComponent("tooltip.waila.mode_" + (mode == ComparatorMode.COMPARE ? "comparator" : "subtractor")).withStyle(ChatFormatting.WHITE)));
+			if (serverData.contains("signal")) {
+				tooltip.add(new TranslatableComponent("tooltip.waila.power", ChatFormatting.WHITE.toString() + serverData.getInt("signal")));
+			}
 			return;
 		}
 
@@ -154,22 +158,24 @@ public class VanillaProvider implements IComponentProvider, IServerDataProvider<
 
 	@Override
 	public void appendServerData(CompoundTag data, ServerPlayer player, Level world, BlockEntity blockEntity, boolean showDetails) {
-		if (blockEntity instanceof JukeboxBlockEntity) {
-			JukeboxBlockEntity jukebox = (JukeboxBlockEntity) blockEntity;
+		if (blockEntity instanceof JukeboxBlockEntity jukebox) {
 			ItemStack stack = jukebox.getRecord();
 			if (!stack.isEmpty()) {
 				data.putString("record", stack.getItem().getRegistryName().toString());
 			}
 		}
 
-		if (blockEntity instanceof LecternBlockEntity) {
-			LecternBlockEntity lectern = (LecternBlockEntity) blockEntity;
+		if (blockEntity instanceof LecternBlockEntity lectern) {
 			ItemStack stack = lectern.getBook();
 			if (!stack.isEmpty()) {
 				if (stack.hasCustomHoverName() || stack.getItem() != Items.WRITABLE_BOOK) {
 					data.put("book", stack.serializeNBT());
 				}
 			}
+		}
+
+		if (blockEntity instanceof ComparatorBlockEntity comparator) {
+			data.putInt("signal", comparator.getOutputSignal());
 		}
 	}
 
