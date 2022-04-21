@@ -145,8 +145,9 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 			diskWriter.run();
 	}
 
-	public void add(Entry entry) {
+	public Entry add(Entry entry) {
 		addEntry(entry);
+		return entry;
 	}
 
 	public void title(String string) {
@@ -169,25 +170,33 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 		input(optionName, value, setter, Predicates.alwaysTrue());
 	}
 
-	public void choices(String optionName, boolean value, BooleanConsumer setter) {
-		add(new CycleOptionValue<>(optionName, CycleButton.onOffBuilder(), value, setter));
+	public Entry choices(String optionName, boolean value, BooleanConsumer setter) {
+		return choices(optionName, value, setter, null);
 	}
 
-	public <T extends Enum<T>> void choices(String optionName, T value, Consumer<T> setter) {
-		choices(optionName, value, setter, null);
+	public Entry choices(String optionName, boolean value, BooleanConsumer setter, @Nullable Consumer<CycleButton.Builder<Boolean>> builderConsumer) {
+		CycleButton.Builder<Boolean> builder = CycleButton.onOffBuilder();
+		if (builderConsumer != null) {
+			builderConsumer.accept(builder);
+		}
+		return add(new CycleOptionValue<>(optionName, builder, value, setter));
 	}
 
-	public <T extends Enum<T>> void choices(String optionName, T value, Consumer<T> setter, @Nullable Consumer<CycleButton.Builder<T>> builderConsumer) {
+	public <T extends Enum<T>> Entry choices(String optionName, T value, Consumer<T> setter) {
+		return choices(optionName, value, setter, null);
+	}
+
+	public <T extends Enum<T>> Entry choices(String optionName, T value, Consumer<T> setter, @Nullable Consumer<CycleButton.Builder<T>> builderConsumer) {
 		List<T> values = (List<T>) Arrays.asList(value.getClass().getEnumConstants());
 		CycleButton.Builder<T> builder = CycleButton.<T>builder(v -> Entry.makeTitle(optionName + "_" + v.name().toLowerCase(Locale.ENGLISH))).withValues(values);
 		if (builderConsumer != null) {
 			builderConsumer.accept(builder);
 		}
-		add(new CycleOptionValue<>(optionName, builder, value, setter));
+		return add(new CycleOptionValue<>(optionName, builder, value, setter));
 	}
 
-	public <T> void choices(String optionName, T value, List<T> values, Consumer<T> setter) {
-		add(new CycleOptionValue<>(optionName, CycleButton.<T>builder(v -> new TextComponent(v.toString())).withValues(values), value, setter));
+	public <T> Entry choices(String optionName, T value, List<T> values, Consumer<T> setter) {
+		return add(new CycleOptionValue<>(optionName, CycleButton.<T>builder(v -> new TextComponent(v.toString())).withValues(values), value, setter));
 	}
 
 	public abstract static class Entry extends ContainerObjectSelectionList.Entry<Entry> {
@@ -220,6 +229,12 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 
 		@Override
 		public abstract void render(PoseStack matrixStack, int index, int rowTop, int rowLeft, int width, int height, int mouseX, int mouseY, boolean hovered, float deltaTime);
+
+		public void setDisabled(boolean b) {
+			if (getListener() != null) {
+				getListener().active = !b;
+			}
+		}
 
 	}
 

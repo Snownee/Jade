@@ -15,6 +15,7 @@
   "gui.waila.configuration": "%s配置",
   "gui.waila.waila_settings": "%s设置",
   "gui.waila.plugin_settings": "插件设置",
+  "gui.waila.forced_plugin_config": "此选项由服务器设置",
 
   "key.waila.config": "打开配置",
   "key.waila.show_overlay": "显示叠加层",

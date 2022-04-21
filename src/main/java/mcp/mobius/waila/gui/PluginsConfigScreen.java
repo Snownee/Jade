@@ -1,14 +1,16 @@
 package mcp.mobius.waila.gui;
 
 import java.util.Set;
+import java.util.function.Consumer;
 
 import mcp.mobius.waila.gui.config.OptionButton;
 import mcp.mobius.waila.gui.config.WailaOptionsList;
+import mcp.mobius.waila.gui.config.WailaOptionsList.Entry;
 import mcp.mobius.waila.impl.config.ConfigEntry;
 import mcp.mobius.waila.impl.config.PluginConfig;
 import mcp.mobius.waila.utils.ModIdentification;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.CycleButton.Builder;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
@@ -39,9 +41,14 @@ public class PluginsConfigScreen extends OptionsScreen {
 					public WailaOptionsList getOptions() {
 						WailaOptionsList options = new WailaOptionsList(this, minecraft, width, height, 32, height - 32, 30);
 						keys.stream().sorted((o1, o2) -> o1.getPath().compareToIgnoreCase(o2.getPath())).forEach(i -> {
-							ConfigEntry entry = PluginConfig.INSTANCE.getEntry(i);
-							if (!entry.isSynced() || Minecraft.getInstance().getCurrentServer() == null)
-								options.choices(translationKey + "." + i.getPath(), entry.getValue(), b -> PluginConfig.INSTANCE.set(i, b));
+							ConfigEntry configEntry = PluginConfig.INSTANCE.getEntry(i);
+							Consumer<Builder<Boolean>> tooltip = null;
+							boolean synced = configEntry.isSynced() && minecraft.level != null && !minecraft.hasSingleplayerServer();
+							if (synced)
+								tooltip = b -> b.withTooltip(bl -> minecraft.font.split(new TranslatableComponent("gui.waila.forced_plugin_config"), 200));
+							Entry entry = options.choices(translationKey + "." + i.getPath(), configEntry.getValue(), b -> PluginConfig.INSTANCE.set(i, b), tooltip);
+							if (synced)
+								entry.setDisabled(true);
 						});
 						return options;
 					}

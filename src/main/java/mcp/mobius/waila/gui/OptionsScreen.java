@@ -85,7 +85,7 @@ public abstract class OptionsScreen extends Screen {
 			OptionValue<?> value = (OptionValue<?>) entry;
 
 			AbstractWidget widget = value.getListener();
-			if (widget instanceof TooltipAccessor && widget.isMouseOver(mouseX, mouseY)) {
+			if (widget instanceof TooltipAccessor && widget.visible && mouseX >= widget.x && mouseY >= widget.y && mouseX < (widget.x + widget.getWidth()) && mouseY < (widget.y + widget.getHeight())) {
 				renderTooltip(matrixStack, ((TooltipAccessor) widget).getTooltip(), mouseX, mouseY);
 			} else if (I18n.exists(value.getDescription())) {
 				int valueX = value.getX() + 10;

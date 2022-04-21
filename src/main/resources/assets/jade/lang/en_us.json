@@ -15,6 +15,7 @@
   "gui.waila.configuration": "%s Configuration",
   "gui.waila.waila_settings": "%s Settings",
   "gui.waila.plugin_settings": "Plugin Settings",
+  "gui.waila.forced_plugin_config": "This option is controlled by the server",
 
   "key.waila.config": "Open Config",
   "key.waila.show_overlay": "Show Overlay",
