@@ -146,10 +146,6 @@
   "config.waila.plugin_minecraft.display_furnace_contents": "화로 내용물",
   "config.waila.plugin_minecraft.spawner_type": "생성기 종류",
   "config.waila.plugin_minecraft.crop_progress": "작물 진행도",
-  "config.waila.plugin_minecraft.lever": "레버 상태",
-  "config.waila.plugin_minecraft.repeater": "중계기 지연",
-  "config.waila.plugin_minecraft.comparator": "비교기 모드",
-  "config.waila.plugin_minecraft.redstone": "레드스톤 전력",
   "config.waila.plugin_minecraft.jukebox": "재생 중인 음반",
   "config.waila.plugin_minecraft.villager_profession": "주민 직업",
   "jade.spawner": "%s (%s)"

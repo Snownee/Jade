@@ -149,10 +149,6 @@
   "config.waila.plugin_minecraft.display_furnace_contents": "Вміст печі",
   "config.waila.plugin_minecraft.spawner_type": "Тип спавнера",
   "config.waila.plugin_minecraft.crop_progress": "Прогрес посіву",
-  "config.waila.plugin_minecraft.lever": "Стан важеля",
-  "config.waila.plugin_minecraft.repeater": "Затримка повторювача",
-  "config.waila.plugin_minecraft.comparator": "Режим компаратора",
-  "config.waila.plugin_minecraft.redstone": "Рівень енергії",
   "config.waila.plugin_minecraft.jukebox": "Активний запис",
   "config.waila.plugin_minecraft.villager_profession": "Професія селянина",
   "jade.spawner": "%s (%s)"

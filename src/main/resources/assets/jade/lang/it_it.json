@@ -143,10 +143,6 @@
   "config.waila.plugin_minecraft.display_furnace_contents": "Contenuti fornace",
   "config.waila.plugin_minecraft.spawner_type": "Tipo di generatore",
   "config.waila.plugin_minecraft.crop_progress": "Progresso coltura",
-  "config.waila.plugin_minecraft.lever": "Stato leva",
-  "config.waila.plugin_minecraft.repeater": "Delay ripetitore",
-  "config.waila.plugin_minecraft.comparator": "Modalità comparatore",
-  "config.waila.plugin_minecraft.redstone": "Livello di energia",
   "config.waila.plugin_minecraft.jukebox": "Disco attivo",
   "config.waila.plugin_minecraft.villager_profession": "Professione del villico",
   "jade.spawner": "%s (%s)"

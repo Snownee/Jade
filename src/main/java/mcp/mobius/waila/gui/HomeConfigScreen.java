@@ -15,7 +15,6 @@ public class HomeConfigScreen extends Screen {
 
 	public HomeConfigScreen(Screen parent) {
 		super(new TranslatableComponent("gui.waila.configuration"));
-
 		this.parent = parent;
 	}
 

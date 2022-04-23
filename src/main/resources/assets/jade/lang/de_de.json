@@ -148,10 +148,6 @@
   "config.waila.plugin_minecraft.display_furnace_contents": "Ofen enthält",
   "config.waila.plugin_minecraft.spawner_type": "Spawner-Typ",
   "config.waila.plugin_minecraft.crop_progress": "Pflanzenwachtumsfortschritt",
-  "config.waila.plugin_minecraft.lever": "Hebelzustand",
-  "config.waila.plugin_minecraft.repeater": "Verzögerung des Komparators",
-  "config.waila.plugin_minecraft.comparator": "Vergleichsmodus",
-  "config.waila.plugin_minecraft.redstone": "Stärke-Level",
   "config.waila.plugin_minecraft.jukebox": "Aktive Schallplatte",
   "config.waila.plugin_minecraft.villager_profession": "Dorfbewohnerberuf",
   "jade.spawner": "%s (%s)"

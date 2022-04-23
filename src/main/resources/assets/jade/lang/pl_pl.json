@@ -53,10 +53,6 @@
   "config.waila.plugin_minecraft.display_furnace_contents": "Zawartość pieca",
   "config.waila.plugin_minecraft.spawner_type": "Rodzaj spawnera",
   "config.waila.plugin_minecraft.crop_progress": "Stadium rozwoju plonu",
-  "config.waila.plugin_minecraft.lever": "Stan dźwigni",
-  "config.waila.plugin_minecraft.repeater": "Opóźnienie przekaźnika",
-  "config.waila.plugin_minecraft.comparator": "Tryb komparatora",
-  "config.waila.plugin_minecraft.redstone": "Moc zasilania ",
   "config.waila.plugin_minecraft.jukebox": "Odtwarzana płyta",
   "config.waila.plugin_minecraft.villager_profession": "Profesja osadnika",
 
