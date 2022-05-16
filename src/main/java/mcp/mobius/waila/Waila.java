@@ -15,7 +15,6 @@ import mcp.mobius.waila.api.config.WailaConfig;
 import mcp.mobius.waila.command.DumpHandlersCommand;
 import mcp.mobius.waila.impl.WailaClientRegistration;
 import mcp.mobius.waila.impl.WailaCommonRegistration;
-import mcp.mobius.waila.impl.WailaRegistrar;
 import mcp.mobius.waila.impl.config.PluginConfig;
 import mcp.mobius.waila.network.ReceiveDataPacket;
 import mcp.mobius.waila.network.RequestEntityPacket;
@@ -111,7 +110,6 @@ public class Waila {
 				Class<?> clazz = Class.forName(className);
 				if (IWailaPlugin.class.isAssignableFrom(clazz)) {
 					IWailaPlugin plugin = (IWailaPlugin) clazz.getDeclaredConstructor().newInstance();
-					plugin.register(WailaRegistrar.INSTANCE);
 					plugin.register(WailaCommonRegistration.INSTANCE);
 					if (FMLEnvironment.dist.isClient()) {
 						plugin.registerClient(WailaClientRegistration.INSTANCE);
