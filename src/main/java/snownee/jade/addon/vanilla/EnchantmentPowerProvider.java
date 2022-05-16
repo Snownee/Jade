@@ -1,10 +1,5 @@
 package snownee.jade.addon.vanilla;
 
-import mcp.mobius.waila.api.BlockAccessor;
-import mcp.mobius.waila.api.IComponentProvider;
-import mcp.mobius.waila.api.ITooltip;
-import mcp.mobius.waila.api.config.IPluginConfig;
-import mcp.mobius.waila.overlay.DisplayHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.level.Level;
@@ -12,6 +7,11 @@ import net.minecraft.world.level.block.EnchantmentTableBlock;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import snownee.jade.VanillaPlugin;
+import snownee.jade.api.BlockAccessor;
+import snownee.jade.api.IComponentProvider;
+import snownee.jade.api.ITooltip;
+import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.overlay.DisplayHelper;
 
 public class EnchantmentPowerProvider implements IComponentProvider {
 

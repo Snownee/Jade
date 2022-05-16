@@ -1,14 +1,5 @@
 package snownee.jade.addon.vanilla;
 
-import mcp.mobius.waila.Waila;
-import mcp.mobius.waila.api.BlockAccessor;
-import mcp.mobius.waila.api.IComponentProvider;
-import mcp.mobius.waila.api.IServerDataProvider;
-import mcp.mobius.waila.api.ITooltip;
-import mcp.mobius.waila.api.TooltipPosition;
-import mcp.mobius.waila.api.config.IPluginConfig;
-import mcp.mobius.waila.api.ui.IElement;
-import mcp.mobius.waila.api.ui.IElementHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.CompoundTag;
@@ -41,6 +32,15 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.registries.ForgeRegistries;
 import snownee.jade.VanillaPlugin;
+import snownee.jade.Waila;
+import snownee.jade.api.BlockAccessor;
+import snownee.jade.api.IComponentProvider;
+import snownee.jade.api.IServerDataProvider;
+import snownee.jade.api.ITooltip;
+import snownee.jade.api.TooltipPosition;
+import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.ui.IElement;
+import snownee.jade.api.ui.IElementHelper;
 
 public class VanillaProvider implements IComponentProvider, IServerDataProvider<BlockEntity> {
 

@@ -1,8 +1,5 @@
 package snownee.jade;
 
-import mcp.mobius.waila.api.ui.IElement;
-import mcp.mobius.waila.api.ui.IElementHelper;
-import mcp.mobius.waila.gui.HomeConfigScreen;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.api.distmarker.Dist;
@@ -17,6 +14,9 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.network.NetworkConstants;
+import snownee.jade.api.ui.IElement;
+import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.gui.HomeConfigScreen;
 
 @Mod(Jade.MODID)
 public class Jade {

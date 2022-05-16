@@ -1,12 +1,5 @@
 package snownee.jade;
 
-import mcp.mobius.waila.api.IWailaClientRegistration;
-import mcp.mobius.waila.api.IWailaCommonRegistration;
-import mcp.mobius.waila.api.IWailaPlugin;
-import mcp.mobius.waila.api.TooltipPosition;
-import mcp.mobius.waila.api.WailaPlugin;
-import mcp.mobius.waila.api.ui.IDisplayHelper;
-import mcp.mobius.waila.api.ui.IElementHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
@@ -67,6 +60,13 @@ import snownee.jade.addon.vanilla.PotionEffectsProvider;
 import snownee.jade.addon.vanilla.TNTProvider;
 import snownee.jade.addon.vanilla.VanillaProvider;
 import snownee.jade.addon.vanilla.VillagerProfessionProvider;
+import snownee.jade.api.IWailaClientRegistration;
+import snownee.jade.api.IWailaCommonRegistration;
+import snownee.jade.api.IWailaPlugin;
+import snownee.jade.api.TooltipPosition;
+import snownee.jade.api.WailaPlugin;
+import snownee.jade.api.ui.IDisplayHelper;
+import snownee.jade.api.ui.IElementHelper;
 
 @WailaPlugin
 public class VanillaPlugin implements IWailaPlugin {

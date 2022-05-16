@@ -1,12 +1,5 @@
 package snownee.jade.addon.forge;
 
-import mcp.mobius.waila.api.BlockAccessor;
-import mcp.mobius.waila.api.IComponentProvider;
-import mcp.mobius.waila.api.IServerDataProvider;
-import mcp.mobius.waila.api.ITooltip;
-import mcp.mobius.waila.api.config.IPluginConfig;
-import mcp.mobius.waila.api.ui.IElementHelper;
-import mcp.mobius.waila.api.ui.IProgressStyle;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -23,6 +16,13 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import snownee.jade.VanillaPlugin;
+import snownee.jade.api.BlockAccessor;
+import snownee.jade.api.IComponentProvider;
+import snownee.jade.api.IServerDataProvider;
+import snownee.jade.api.ITooltip;
+import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.ui.IProgressStyle;
 
 public class ForgeCapabilityProvider implements IComponentProvider, IServerDataProvider<BlockEntity> {
 

@@ -5,12 +5,6 @@ import java.util.Map;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
-import mcp.mobius.waila.api.BlockAccessor;
-import mcp.mobius.waila.api.config.WailaConfig.ConfigOverlay.ConfigOverlayColor;
-import mcp.mobius.waila.api.event.WailaRayTraceEvent;
-import mcp.mobius.waila.api.event.WailaRenderEvent;
-import mcp.mobius.waila.impl.config.PluginConfig;
-import mcp.mobius.waila.overlay.DisplayHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.renderer.Rect2i;
@@ -30,6 +24,12 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.registries.ForgeRegistries;
+import snownee.jade.api.BlockAccessor;
+import snownee.jade.api.config.WailaConfig.ConfigOverlay.ConfigOverlayColor;
+import snownee.jade.api.event.WailaRayTraceEvent;
+import snownee.jade.api.event.WailaRenderEvent;
+import snownee.jade.impl.config.PluginConfig;
+import snownee.jade.overlay.DisplayHelper;
 
 @OnlyIn(Dist.CLIENT)
 @EventBusSubscriber(Dist.CLIENT)
