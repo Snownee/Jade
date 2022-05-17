@@ -11,7 +11,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.items.CapabilityItemHandler;
 import snownee.jade.JadeCommonConfig;
-import snownee.jade.VanillaPlugin;
 import snownee.jade.addon.forge.InventoryProvider;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;

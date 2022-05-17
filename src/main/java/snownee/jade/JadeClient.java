@@ -24,8 +24,9 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.registries.ForgeRegistries;
+import snownee.jade.addon.vanilla.VanillaPlugin;
 import snownee.jade.api.BlockAccessor;
-import snownee.jade.api.config.WailaConfig.ConfigOverlay.ConfigOverlayColor;
+import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
 import snownee.jade.api.event.WailaRayTraceEvent;
 import snownee.jade.api.event.WailaRenderEvent;
 import snownee.jade.impl.config.PluginConfig;
@@ -73,7 +74,7 @@ public final class JadeClient {
 		} else {
 			progressAlpha = Math.max(progressAlpha, 0);
 		}
-		color = ConfigOverlayColor.applyAlpha(color, progressAlpha);
+		color = IConfigOverlay.applyAlpha(color, progressAlpha);
 		DisplayHelper.fill(event.getPoseStack(), 0, height - 1, width * savedProgress, height, color);
 	}
 

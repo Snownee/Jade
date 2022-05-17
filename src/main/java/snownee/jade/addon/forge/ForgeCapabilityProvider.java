@@ -15,7 +15,7 @@ import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import snownee.jade.VanillaPlugin;
+import snownee.jade.addon.vanilla.VanillaPlugin;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IComponentProvider;
 import snownee.jade.api.IServerDataProvider;

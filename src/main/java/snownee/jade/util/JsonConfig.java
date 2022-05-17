@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.function.Supplier;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -20,7 +22,7 @@ public class JsonConfig<T> {
 	private final CachedSupplier<T> configGetter;
 	private Gson gson = DEFAULT_GSON;
 
-	public JsonConfig(String fileName, Class<T> configClass, Supplier<T> defaultFactory) {
+	public JsonConfig(String fileName, Class<T> configClass, @Nullable Runnable onUpdate, Supplier<T> defaultFactory) {
 		this.configFile = new File(FMLPaths.CONFIGDIR.get().toFile(), fileName + (fileName.endsWith(".json") ? "" : ".json"));
 		this.configGetter = new CachedSupplier<>(() -> {
 			if (!configFile.exists()) {
@@ -30,8 +32,10 @@ public class JsonConfig<T> {
 			}
 			try (FileReader reader = new FileReader(configFile, StandardCharsets.UTF_8)) {
 				T ret = gson.fromJson(reader, configClass);
-				if (ret == null)
-					throw new NullPointerException();
+				if (ret == null) {
+					T def = defaultFactory.get();
+					write(def, false);
+				}
 				return ret;
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -44,10 +48,11 @@ public class JsonConfig<T> {
 				return def;
 			}
 		});
+		configGetter.onUpdate = onUpdate;
 	}
 
-	public JsonConfig(String fileName, Class<T> configClass) {
-		this(fileName, configClass, () -> {
+	public JsonConfig(String fileName, Class<T> configClass, @Nullable Runnable onUpdate) {
+		this(fileName, configClass, onUpdate, () -> {
 			try {
 				return configClass.getDeclaredConstructor().newInstance();
 			} catch (Exception e) {
@@ -90,13 +95,20 @@ public class JsonConfig<T> {
 
 		private final Supplier<T> supplier;
 		private T value;
+		private Runnable onUpdate;
 
 		public CachedSupplier(Supplier<T> supplier) {
 			this.supplier = supplier;
 		}
 
 		public T get() {
-			return value == null ? value = supplier.get() : value;
+			if (value == null) {
+				value = supplier.get();
+				if (onUpdate != null) {
+					onUpdate.run();
+				}
+			}
+			return value;
 		}
 
 		public void invalidate() {

@@ -8,8 +8,8 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.common.MinecraftForge;
-import snownee.jade.Waila;
-import snownee.jade.api.config.WailaConfig.ConfigOverlay;
+import snownee.jade.WailaClient;
+import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
 import snownee.jade.api.event.WailaTooltipEvent;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.impl.ObjectDataCenter;
@@ -90,12 +90,12 @@ public class TooltipRenderer {
 	}
 
 	public boolean hasIcon() {
-		return showIcon && Waila.CONFIG.get().getGeneral().shouldShowIcon() && icon != null;
+		return showIcon && WailaClient.CONFIG.get().getGeneral().shouldShowIcon() && icon != null;
 	}
 
 	public Rect2i getPosition() {
 		Window window = Minecraft.getInstance().getWindow();
-		ConfigOverlay overlay = Waila.CONFIG.get().getOverlay();
+		IConfigOverlay overlay = WailaClient.CONFIG.get().getOverlay();
 		int x = (int) (window.getGuiScaledWidth() * overlay.tryFlip(overlay.getOverlayPosX()));
 		int y = (int) (window.getGuiScaledHeight() * (1.0F - overlay.getOverlayPosY()));
 		int width = (int) totalSize.x;

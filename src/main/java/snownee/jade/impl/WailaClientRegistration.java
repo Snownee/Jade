@@ -17,14 +17,14 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
-import snownee.jade.Waila;
+import snownee.jade.WailaClient;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IComponentProvider;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.IWailaClientRegistration;
 import snownee.jade.api.TooltipPosition;
-import snownee.jade.api.config.WailaConfig;
+import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.impl.ui.ElementHelper;
@@ -144,8 +144,8 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	}
 
 	@Override
-	public WailaConfig getConfig() {
-		return Waila.CONFIG.get();
+	public IWailaConfig getConfig() {
+		return WailaClient.CONFIG.get();
 	}
 
 }

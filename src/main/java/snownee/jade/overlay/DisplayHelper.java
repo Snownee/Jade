@@ -42,7 +42,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
-import snownee.jade.Waila;
+import snownee.jade.WailaClient;
 import snownee.jade.api.ui.IBorderStyle;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.impl.ui.BorderStyle;
@@ -460,7 +460,7 @@ public class DisplayHelper implements IDisplayHelper {
 
 	@Override
 	public void drawText(PoseStack poseStack, String text, float x, float y, int color) {
-		boolean shadow = Waila.CONFIG.get().getOverlay().getColor().getTheme().textShadow;
+		boolean shadow = WailaClient.CONFIG.get().getOverlay().getTheme().textShadow;
 		if (shadow) {
 			CLIENT.font.drawShadow(poseStack, text, x, y, color);
 		} else {
@@ -470,7 +470,7 @@ public class DisplayHelper implements IDisplayHelper {
 
 	@Override
 	public void drawText(PoseStack poseStack, Component text, float x, float y, int color) {
-		boolean shadow = Waila.CONFIG.get().getOverlay().getColor().getTheme().textShadow;
+		boolean shadow = WailaClient.CONFIG.get().getOverlay().getTheme().textShadow;
 		if (shadow) {
 			CLIENT.font.drawShadow(poseStack, text, x, y, color);
 		} else {

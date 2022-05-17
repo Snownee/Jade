@@ -10,10 +10,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import snownee.jade.Waila;
-import snownee.jade.api.config.WailaConfig;
 import snownee.jade.api.ui.Element;
 import snownee.jade.overlay.DisplayHelper;
+import snownee.jade.overlay.OverlayRenderer;
 
 @OnlyIn(Dist.CLIENT)
 public class TextElement extends Element {
@@ -32,8 +31,7 @@ public class TextElement extends Element {
 
 	@Override
 	public void render(PoseStack matrixStack, float x, float y, float maxX, float maxY) {
-		WailaConfig.ConfigOverlay.ConfigOverlayColor color = Waila.CONFIG.get().getOverlay().getColor();
-		DisplayHelper.INSTANCE.drawText(matrixStack, component, x, y, color.getTheme().textColor);
+		DisplayHelper.INSTANCE.drawText(matrixStack, component, x, y, OverlayRenderer.normalTextColorRaw);
 	}
 
 	@Override

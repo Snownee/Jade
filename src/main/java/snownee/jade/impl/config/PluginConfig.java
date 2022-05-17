@@ -19,9 +19,9 @@ import com.google.gson.reflect.TypeToken;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fml.loading.FMLPaths;
 import snownee.jade.Jade;
-import snownee.jade.Waila;
+import snownee.jade.WailaClient;
 import snownee.jade.api.config.IPluginConfig;
-import snownee.jade.api.config.WailaConfig;
+import snownee.jade.api.config.IWailaConfig;
 
 public class PluginConfig implements IPluginConfig {
 
@@ -134,7 +134,7 @@ public class PluginConfig implements IPluginConfig {
 	}
 
 	@Override
-	public WailaConfig getWailaConfig() {
-		return Waila.CONFIG.get();
+	public IWailaConfig getWailaConfig() {
+		return WailaClient.CONFIG.get();
 	}
 }

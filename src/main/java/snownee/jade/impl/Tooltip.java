@@ -13,7 +13,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.StringDecomposer;
 import net.minecraft.world.phys.Vec2;
-import snownee.jade.Waila;
+import snownee.jade.WailaClient;
 import snownee.jade.addon.core.CorePlugin;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.ui.IBorderStyle;
@@ -142,7 +142,7 @@ public class Tooltip implements ITooltip {
 	private static final IBorderStyle BLUE = new BorderStyle().color(0x880000FF);
 
 	public static void drawBorder(PoseStack matrixStack, float x, float y, IElement element) {
-		if (Waila.CONFIG.get().getGeneral().isDebug()) {
+		if (WailaClient.CONFIG.get().getGeneral().isDebug()) {
 			Vec2 translate = element.getTranslation();
 			Vec2 size = element.getCachedSize();
 			DisplayHelper.INSTANCE.drawBorder(matrixStack, x, y, x + size.x, y + size.y, RED);

@@ -53,7 +53,7 @@ public class Color {
 	}
 
 	public int toInt() {
-		return ((r & 0xff) << 16) + ((g & 0xff) << 8) + (b & 0xff);
+		return ((a & 0xff) << 24) + ((r & 0xff) << 16) + ((g & 0xff) << 8) + (b & 0xff);
 	}
 
 	public int[] toIntArray() {

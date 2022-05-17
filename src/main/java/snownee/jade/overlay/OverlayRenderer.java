@@ -10,28 +10,34 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.common.MinecraftForge;
-import snownee.jade.Waila;
 import snownee.jade.WailaClient;
-import snownee.jade.api.config.WailaConfig;
-import snownee.jade.api.config.WailaConfig.ConfigGeneral.IconMode;
-import snownee.jade.api.config.WailaConfig.ConfigOverlay;
+import snownee.jade.api.config.IWailaConfig;
+import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
+import snownee.jade.api.config.IWailaConfig.IconMode;
+import snownee.jade.api.config.Theme;
 import snownee.jade.api.event.WailaRenderEvent;
 import snownee.jade.gui.BaseOptionsScreen;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.Tooltip;
+import snownee.jade.util.Color;
 
 public class OverlayRenderer {
 
 	public static float ticks;
+	public static int backgroundColorRaw;
+	public static int gradientStartRaw;
+	public static int gradientEndRaw;
+	public static int stressedTextColorRaw;
+	public static int normalTextColorRaw;
 
 	public static void renderOverlay() {
 		if (WailaTickHandler.instance().tooltipRenderer == null)
 			return;
 
-		if (!Waila.CONFIG.get().getGeneral().shouldDisplayTooltip())
+		if (!WailaClient.CONFIG.get().getGeneral().shouldDisplayTooltip())
 			return;
 
-		if (Waila.CONFIG.get().getGeneral().getDisplayMode() == WailaConfig.DisplayMode.HOLD_KEY && !WailaClient.showOverlay.isDown())
+		if (WailaClient.CONFIG.get().getGeneral().getDisplayMode() == IWailaConfig.DisplayMode.HOLD_KEY && !WailaClient.showOverlay.isDown())
 			return;
 
 		Minecraft mc = Minecraft.getInstance();
@@ -47,7 +53,7 @@ public class OverlayRenderer {
 				return;
 			} else {
 				Rect2i position = WailaTickHandler.instance().tooltipRenderer.getPosition();
-				ConfigOverlay overlay = Waila.CONFIG.get().getOverlay();
+				IConfigOverlay overlay = WailaClient.CONFIG.get().getOverlay();
 				Window window = mc.getWindow();
 				double x = mc.mouseHandler.xpos() * window.getGuiScaledWidth() / window.getScreenWidth();
 				double y = mc.mouseHandler.ypos() * window.getGuiScaledHeight() / window.getScreenHeight();
@@ -62,7 +68,7 @@ public class OverlayRenderer {
 		if (mc.gui.getTabList().visible || mc.getOverlay() != null || mc.options.hideGui)
 			return;
 
-		if (mc.options.renderDebug && Waila.CONFIG.get().getGeneral().shouldHideFromDebug())
+		if (mc.options.renderDebug && WailaClient.CONFIG.get().getGeneral().shouldHideFromDebug())
 			return;
 
 		ticks += mc.getDeltaFrameTime();
@@ -75,7 +81,7 @@ public class OverlayRenderer {
 		matrixStack.pushPose();
 
 		Rect2i position = tooltip.getPosition();
-		ConfigOverlay overlay = Waila.CONFIG.get().getOverlay();
+		IConfigOverlay overlay = WailaClient.CONFIG.get().getOverlay();
 		if (!overlay.getSquare()) {
 			position.setWidth(position.getWidth() + 2);
 			position.setHeight(position.getHeight() + 2);
@@ -92,15 +98,14 @@ public class OverlayRenderer {
 		//RenderSystem.disableDepthTest();
 
 		position = preEvent.getRect();
-		ConfigOverlay configOverlay = Waila.CONFIG.get().getOverlay();
-		if (!configOverlay.getSquare()) {
+		if (!overlay.getSquare()) {
 			position.setPosition(position.getX() + 1, position.getY() + 1);
 		}
 		matrixStack.translate(position.getX(), position.getY(), 1);
 
-		float scale = configOverlay.getOverlayScale();
+		float scale = overlay.getOverlayScale();
 		Window window = Minecraft.getInstance().getWindow();
-		float thresholdHeight = window.getGuiScaledHeight() * configOverlay.getAutoScaleThreshold();
+		float thresholdHeight = window.getGuiScaledHeight() * overlay.getAutoScaleThreshold();
 		if (position.getHeight() * scale > thresholdHeight) {
 			scale = Math.max(scale * 0.5f, thresholdHeight / position.getHeight());
 		}
@@ -108,13 +113,13 @@ public class OverlayRenderer {
 		if (scale != 1) {
 			matrixStack.scale(scale, scale, 1.0F);
 		}
-		matrixStack.translate(-position.getWidth() * configOverlay.tryFlip(configOverlay.getAnchorX()), -position.getHeight() * configOverlay.getAnchorY(), 0);
+		matrixStack.translate(-position.getWidth() * overlay.tryFlip(overlay.getAnchorX()), -position.getHeight() * overlay.getAnchorY(), 0);
 
-		WailaConfig.ConfigOverlay.ConfigOverlayColor color = Waila.CONFIG.get().getOverlay().getColor();
-		if (color.getAlpha() > 0) {
-			WailaRenderEvent.Color colorEvent = new WailaRenderEvent.Color(color.getAlpha(), color.getBackgroundColor(), color.getGradientStart(), color.getGradientEnd());
+		float a = overlay.getAlpha();
+		if (a > 0) {
+			WailaRenderEvent.Color colorEvent = new WailaRenderEvent.Color(overlay.getAlpha(), IConfigOverlay.applyAlpha(backgroundColorRaw, a), IConfigOverlay.applyAlpha(gradientStartRaw, a), IConfigOverlay.applyAlpha(gradientEndRaw, a));
 			MinecraftForge.EVENT_BUS.post(colorEvent);
-			drawTooltipBox(matrixStack, 0, 0, position.getWidth(), position.getHeight(), colorEvent.getBackground(), colorEvent.getGradientStart(), colorEvent.getGradientEnd(), Waila.CONFIG.get().getOverlay().getSquare());
+			drawTooltipBox(matrixStack, 0, 0, position.getWidth(), position.getHeight(), colorEvent.getBackground(), colorEvent.getGradientStart(), colorEvent.getGradientEnd(), WailaClient.CONFIG.get().getOverlay().getSquare());
 		}
 
 		RenderSystem.enableBlend();
@@ -127,7 +132,7 @@ public class OverlayRenderer {
 			Vec2 size = tooltip.icon.getCachedSize();
 			Vec2 offset = tooltip.icon.getTranslation();
 			float offsetY;
-			if (Waila.CONFIG.get().getGeneral().getIconMode() == IconMode.TOP) {
+			if (WailaClient.CONFIG.get().getGeneral().getIconMode() == IconMode.TOP) {
 				offsetY = offset.y + 2;
 			} else {
 				offsetY = (position.getHeight() - size.y) / 2 - 1;
@@ -144,7 +149,7 @@ public class OverlayRenderer {
 		matrixStack.popPose();
 		Minecraft.getInstance().getProfiler().pop();
 
-		if (Waila.CONFIG.get().getGeneral().shouldEnableTextToSpeech() && Minecraft.getInstance().level != null && Minecraft.getInstance().level.getGameTime() % 5 == 0) {
+		if (WailaClient.CONFIG.get().getGeneral().shouldEnableTextToSpeech() && Minecraft.getInstance().level != null && Minecraft.getInstance().level.getGameTime() % 5 == 0) {
 			WailaTickHandler.narrate(tooltip.getTooltip(), true);
 		}
 	}
@@ -165,5 +170,14 @@ public class OverlayRenderer {
 		DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x + w - 1, y + 1, 1, h - 2, grad1, grad2);
 		DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x, y, w, 1, grad1, grad1);
 		DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x, y + h - 1, w, 1, grad2, grad2);
+	}
+
+	public static void updateTheme() {
+		Theme theme = WailaClient.CONFIG.get().getOverlay().getTheme();
+		backgroundColorRaw = Color.fromString(theme.backgroundColor).toInt();
+		gradientEndRaw = Color.fromString(theme.gradientEnd).toInt();
+		gradientStartRaw = Color.fromString(theme.gradientStart).toInt();
+		normalTextColorRaw = IConfigOverlay.applyAlpha(Color.fromString(theme.normalTextColor).toInt(), 1);
+		stressedTextColorRaw = IConfigOverlay.applyAlpha(Color.fromString(theme.stressedTextColor).toInt(), 1);
 	}
 }

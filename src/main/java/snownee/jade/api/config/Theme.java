@@ -1,0 +1,34 @@
+package snownee.jade.api.config;
+
+import org.jetbrains.annotations.ApiStatus.Internal;
+
+import net.minecraft.resources.ResourceLocation;
+
+public class Theme {
+
+	public static final Theme WAILA = new Theme(new ResourceLocation("jade:waila"), "#100010", "#5000ff", "#28007f", "#fff", "#a0a0a0", true);
+	public static final Theme DARK = new Theme(new ResourceLocation("jade:dark"), "#131313", "#383838", "#242424", "#fff", "#a0a0a0", true);
+	public static final Theme CREATE = new Theme(new ResourceLocation("jade:create"), "#000", "#2a2626", "#1a1717", "#fff", "#a0a0a0", true);
+	public static final Theme TOP = new Theme(new ResourceLocation("jade:top"), "#0695", "#999f", "#999f", "#fff", "#a0a0a0", true);
+	//public static final HUDTheme GRAY = new HUDTheme(new ResourceLocation("jade:gray"), 0x606060, 0x101010, 0x101010, 0xFFFFFF, 0xA0A0A0, true);
+
+	public final ResourceLocation id;
+	public final String backgroundColor;
+	public final String gradientStart;
+	public final String gradientEnd;
+	public final String stressedTextColor;
+	public final String normalTextColor;
+	public final boolean textShadow;
+
+	@Internal
+	public Theme(ResourceLocation id, String backgroundColor, String gradientStart, String gradientEnd, String titleColor, String textColor, boolean textShadow) {
+		this.id = id;
+		this.backgroundColor = backgroundColor;
+		this.gradientStart = gradientStart;
+		this.gradientEnd = gradientEnd;
+		this.stressedTextColor = titleColor;
+		this.normalTextColor = textColor;
+		this.textShadow = textShadow;
+	}
+
+}

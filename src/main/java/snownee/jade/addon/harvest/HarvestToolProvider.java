@@ -33,7 +33,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.IForgeShearable;
 import net.minecraftforge.common.Tags;
-import snownee.jade.VanillaPlugin;
+import snownee.jade.addon.vanilla.VanillaPlugin;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IComponentProvider;
 import snownee.jade.api.ITooltip;

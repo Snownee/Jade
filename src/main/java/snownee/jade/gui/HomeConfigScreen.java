@@ -6,7 +6,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.TranslatableComponent;
 import snownee.jade.Jade;
-import snownee.jade.Waila;
+import snownee.jade.WailaClient;
 import snownee.jade.impl.config.PluginConfig;
 
 public class HomeConfigScreen extends Screen {
@@ -27,7 +27,7 @@ public class HomeConfigScreen extends Screen {
 			minecraft.setScreen(new PluginsConfigScreen(HomeConfigScreen.this));
 		}));
 		addRenderableWidget(new Button(width / 2 - 50, height / 2 + 20, 100, 20, new TranslatableComponent("gui.done"), w -> {
-			Waila.CONFIG.save();
+			WailaClient.CONFIG.save();
 			PluginConfig.INSTANCE.save();
 			minecraft.setScreen(parent);
 		}));

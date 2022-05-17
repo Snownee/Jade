@@ -3,13 +3,11 @@ package snownee.jade.addon.vanilla;
 import com.mojang.authlib.GameProfile;
 
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.SkullBlockEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import snownee.jade.VanillaPlugin;
 import snownee.jade.Waila;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IComponentProvider;
@@ -33,7 +31,7 @@ public class PlayerHeadProvider implements IComponentProvider {
 			if (profile == null)
 				return;
 			tooltip.remove(OBJECT_NAME_TAG);
-			tooltip.add(0, new TextComponent(String.format(config.getWailaConfig().getFormatting().getBlockName(), I18n.get(Items.PLAYER_HEAD.getDescriptionId() + ".named", profile.getName()))).withStyle(Waila.CONFIG.get().getOverlay().getColor().getTitle()), OBJECT_NAME_TAG);
+			tooltip.add(0, config.getWailaConfig().getFormatting().title(I18n.get(Items.PLAYER_HEAD.getDescriptionId() + ".named", profile.getName())), OBJECT_NAME_TAG);
 		}
 	}
 

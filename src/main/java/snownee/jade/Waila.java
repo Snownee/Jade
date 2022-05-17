@@ -7,8 +7,6 @@ import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.google.gson.GsonBuilder;
-
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.common.MinecraftForge;
@@ -31,7 +29,6 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.WailaPlugin;
-import snownee.jade.api.config.WailaConfig;
 import snownee.jade.command.DumpHandlersCommand;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
@@ -40,7 +37,6 @@ import snownee.jade.network.ReceiveDataPacket;
 import snownee.jade.network.RequestEntityPacket;
 import snownee.jade.network.RequestTilePacket;
 import snownee.jade.network.ServerPingPacket;
-import snownee.jade.util.JsonConfig;
 
 @Mod(Waila.MODID)
 public class Waila {
@@ -49,17 +45,6 @@ public class Waila {
 	public static final String NAME = "Waila";
 	public static final Logger LOGGER = LogManager.getLogger(NAME);
 	public static final SimpleChannel NETWORK = NetworkRegistry.ChannelBuilder.named(new ResourceLocation(MODID, "networking")).clientAcceptedVersions(s -> true).serverAcceptedVersions(s -> true).networkProtocolVersion(() -> "1.0.0").simpleChannel();
-	/** addons: Use {@link mcp.mobius.waila.api.IWailaCommonRegistration#getConfig} */
-	/* off */
-	public static final JsonConfig<WailaConfig> CONFIG =
-			new JsonConfig<>(Jade.MODID + "/" + Jade.MODID, WailaConfig.class).withGson(
-					new GsonBuilder()
-					.setPrettyPrinting()
-					.enableComplexMapKeySerialization()
-					.registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
-					.create()
-			);
-	/* on */
 
 	public Waila() {
 		ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (a, b) -> true));

@@ -13,7 +13,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import snownee.jade.api.config.IPluginConfig;
-import snownee.jade.api.config.WailaConfig;
+import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElementHelper;
@@ -79,7 +79,7 @@ public interface IWailaClientRegistration {
 
 	IDisplayHelper getDisplayHelper();
 
-	WailaConfig getConfig();
+	IWailaConfig getConfig();
 
 	BlockAccessor createBlockAccessor(BlockState blockState, BlockEntity blockEntity, Level level, Player player, CompoundTag serverData, BlockHitResult hit, boolean serverConnected);
 

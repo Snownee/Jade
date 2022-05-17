@@ -72,8 +72,7 @@
 
   "config.waila.formatting": "Formatting",
   "config.waila.format_mod_name": "Mod Name",
-  "config.waila.format_block_name": "Block Name",
-  "config.waila.format_entity_name": "Entity Name",
+  "config.waila.format_title_name": "Title Name",
   "config.waila.format_registry_name": "Registry ID",
 
   "config.waila.plugin_jade.registry_name": "Registry Name",

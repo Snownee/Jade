@@ -20,8 +20,8 @@ import snownee.jade.WailaClient;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.TooltipPosition;
-import snownee.jade.api.config.WailaConfig.ConfigGeneral;
-import snownee.jade.api.config.WailaConfig.DisplayMode;
+import snownee.jade.api.config.IWailaConfig.DisplayMode;
+import snownee.jade.api.config.IWailaConfig.IConfigGeneral;
 import snownee.jade.api.event.WailaRayTraceEvent;
 import snownee.jade.api.event.WailaTooltipEvent;
 import snownee.jade.gui.BaseOptionsScreen;
@@ -43,7 +43,7 @@ public class WailaTickHandler {
 	public void tickClient() {
 		progressTracker.tick();
 
-		ConfigGeneral config = Waila.CONFIG.get().getGeneral();
+		IConfigGeneral config = WailaClient.CONFIG.get().getGeneral();
 		if (!config.shouldDisplayTooltip()) {
 			tooltipRenderer = null;
 			return;
@@ -144,7 +144,7 @@ public class WailaTickHandler {
 		if (event.getTooltip().isEmpty())
 			return;
 
-		if (!getNarrator().active() || !Waila.CONFIG.get().getGeneral().shouldEnableTextToSpeech())
+		if (!getNarrator().active() || !WailaClient.CONFIG.get().getGeneral().shouldEnableTextToSpeech())
 			return;
 
 		if (Minecraft.getInstance().screen != null && Minecraft.getInstance().options.chatVisibility != ChatVisiblity.HIDDEN)

@@ -59,8 +59,6 @@
   "config.waila.overlay_theme": "主題",
   "config.waila.formatting": "顯示格式",
   "config.waila.format_mod_name": "模組名稱",
-  "config.waila.format_block_name": "方塊名稱",
-  "config.waila.format_entity_name": "實體名稱",
   "config.waila.format_registry_name": "登錄名稱",
   "config.waila.plugin_jade.registry_name": "登錄名稱",
   "config.waila.plugin_jade.entity_hp": "實體生命值",

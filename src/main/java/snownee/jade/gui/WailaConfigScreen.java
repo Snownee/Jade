@@ -6,25 +6,24 @@ import java.util.stream.Collectors;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.TranslatableComponent;
 import snownee.jade.Jade;
-import snownee.jade.Waila;
-import snownee.jade.api.config.WailaConfig.ConfigFormatting;
-import snownee.jade.api.config.WailaConfig.ConfigGeneral;
-import snownee.jade.api.config.WailaConfig.ConfigOverlay;
-import snownee.jade.api.config.WailaConfig.ConfigOverlay.ConfigOverlayColor;
+import snownee.jade.WailaClient;
+import snownee.jade.api.config.IWailaConfig.IConfigFormatting;
+import snownee.jade.api.config.IWailaConfig.IConfigGeneral;
+import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
 import snownee.jade.gui.config.WailaOptionsList;
 import snownee.jade.gui.config.WailaOptionsList.Entry;
 
 public class WailaConfigScreen extends BaseOptionsScreen {
 
 	public WailaConfigScreen(Screen parent) {
-		super(parent, new TranslatableComponent("gui.waila.configuration", Jade.NAME), Waila.CONFIG::save, Waila.CONFIG::invalidate);
+		super(parent, new TranslatableComponent("gui.waila.configuration", Jade.NAME), WailaClient.CONFIG::save, WailaClient.CONFIG::invalidate);
 	}
 
 	@Override
 	public WailaOptionsList getOptions() {
-		WailaOptionsList options = new WailaOptionsList(this, minecraft, width, height, 32, height - 32, 30, Waila.CONFIG::save);
+		WailaOptionsList options = new WailaOptionsList(this, minecraft, width, height, 32, height - 32, 30, WailaClient.CONFIG::save);
 
-		ConfigGeneral general = Waila.CONFIG.get().getGeneral();
+		IConfigGeneral general = WailaClient.CONFIG.get().getGeneral();
 		options.title("general");
 		options.choices("display_tooltip", general.shouldDisplayTooltip(), general::setDisplayTooltip);
 		options.choices("display_entities", general.getDisplayEntities(), general::setDisplayEntities);
@@ -38,11 +37,10 @@ public class WailaConfigScreen extends BaseOptionsScreen {
 		options.slider("reach_distance", general.getReachDistance(), general::setReachDistance, 0, 20);
 		options.choices("tts_mode", general.getTTSMode(), general::setTTSMode);
 
-		ConfigOverlay overlay = Waila.CONFIG.get().getOverlay();
-		ConfigOverlayColor color = overlay.getColor();
+		IConfigOverlay overlay = WailaClient.CONFIG.get().getOverlay();
 		options.title("overlay");
-		options.slider("overlay_alpha", color.getAlpha(), color::setAlpha);
-		options.choices("overlay_theme", color.getTheme().id, color.getThemes().stream().map($ -> $.id).collect(Collectors.toList()), color::applyTheme);
+		options.slider("overlay_alpha", overlay.getAlpha(), overlay::setAlpha);
+		options.choices("overlay_theme", overlay.getTheme().id, overlay.getThemes().stream().map($ -> $.id).collect(Collectors.toList()), overlay::applyTheme);
 		options.choices("overlay_square", overlay.getSquare(), overlay::setSquare);
 		options.slider("overlay_scale", overlay.getOverlayScale(), overlay::setOverlayScale, 0.2f, 2);
 		options.slider("overlay_pos_x", overlay.getOverlayPosX(), overlay::setOverlayPosX);
@@ -51,11 +49,10 @@ public class WailaConfigScreen extends BaseOptionsScreen {
 		options.slider("overlay_anchor_y", overlay.getAnchorY(), overlay::setAnchorY);
 		options.choices("flip_main_hand", overlay.getFlipMainHand(), overlay::setFlipMainHand);
 
-		ConfigFormatting formatting = Waila.CONFIG.get().getFormatting();
+		IConfigFormatting formatting = WailaClient.CONFIG.get().getFormatting();
 		options.title("formatting");
 		options.input("format_mod_name", formatting.getModName(), val -> formatting.setModName(val.isEmpty() || !val.contains("%s") ? formatting.getModName() : val));
-		options.input("format_block_name", formatting.getBlockName(), val -> formatting.setBlockName(val.isEmpty() || !val.contains("%s") ? formatting.getBlockName() : val));
-		options.input("format_entity_name", formatting.getEntityName(), val -> formatting.setEntityName(val.isEmpty() || !val.contains("%s") ? formatting.getEntityName() : val));
+		options.input("format_title_name", formatting.getTitleName(), val -> formatting.setTitleName(val.isEmpty() || !val.contains("%s") ? formatting.getTitleName() : val));
 		options.input("format_registry_name", formatting.getRegistryName(), val -> formatting.setRegistryName(val.isEmpty() || !val.contains("%s") ? formatting.getRegistryName() : val));
 
 		return options;

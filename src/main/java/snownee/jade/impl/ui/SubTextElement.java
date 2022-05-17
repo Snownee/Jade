@@ -6,10 +6,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import snownee.jade.Waila;
-import snownee.jade.api.config.WailaConfig;
 import snownee.jade.api.ui.Element;
 import snownee.jade.overlay.DisplayHelper;
+import snownee.jade.overlay.OverlayRenderer;
 
 @OnlyIn(Dist.CLIENT)
 public class SubTextElement extends Element {
@@ -28,10 +27,9 @@ public class SubTextElement extends Element {
 	@Override
 	public void render(PoseStack matrixStack, float x, float y, float maxX, float maxY) {
 		matrixStack.pushPose();
-		WailaConfig.ConfigOverlay.ConfigOverlayColor color = Waila.CONFIG.get().getOverlay().getColor();
 		matrixStack.translate(x, y, 800);
 		matrixStack.scale(0.75f, 0.75f, 0);
-		DisplayHelper.INSTANCE.drawText(matrixStack, text, 0, 0, color.getTheme().textColor);
+		DisplayHelper.INSTANCE.drawText(matrixStack, text, 0, 0, OverlayRenderer.normalTextColorRaw);
 		matrixStack.popPose();
 	}
 

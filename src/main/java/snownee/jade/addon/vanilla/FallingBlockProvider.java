@@ -1,13 +1,11 @@
 package snownee.jade.addon.vanilla;
 
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import snownee.jade.VanillaPlugin;
 import snownee.jade.Waila;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
@@ -24,7 +22,7 @@ public class FallingBlockProvider implements IEntityComponentProvider {
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		FallingBlockEntity entity = (FallingBlockEntity) accessor.getEntity();
 		tooltip.remove(OBJECT_NAME_TAG);
-		tooltip.add(0, new TextComponent(String.format(config.getWailaConfig().getFormatting().getBlockName(), I18n.get(entity.getBlockState().getBlock().getDescriptionId()))).withStyle(Waila.CONFIG.get().getOverlay().getColor().getTitle()), OBJECT_NAME_TAG);
+		tooltip.add(0, config.getWailaConfig().getFormatting().title(I18n.get(entity.getBlockState().getBlock().getDescriptionId())), OBJECT_NAME_TAG);
 	}
 
 	@Override

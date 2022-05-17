@@ -28,7 +28,7 @@ import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 import snownee.jade.Jade;
 import snownee.jade.JadeCommonConfig;
-import snownee.jade.VanillaPlugin;
+import snownee.jade.addon.vanilla.VanillaPlugin;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IComponentProvider;

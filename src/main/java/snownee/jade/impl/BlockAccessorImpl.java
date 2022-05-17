@@ -17,6 +17,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.fluids.FluidStack;
 import snownee.jade.Waila;
+import snownee.jade.WailaClient;
 import snownee.jade.api.AccessorImpl;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IComponentProvider;
@@ -125,7 +126,7 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 
 	@Override
 	public boolean shouldDisplay() {
-		return Waila.CONFIG.get().getGeneral().getDisplayBlocks();
+		return WailaClient.CONFIG.get().getGeneral().getDisplayBlocks();
 	}
 
 	@Override

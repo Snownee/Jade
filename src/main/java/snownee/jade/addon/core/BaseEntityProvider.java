@@ -13,7 +13,7 @@ import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IPluginConfig;
-import snownee.jade.api.config.WailaConfig;
+import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.impl.ui.ArmorElement;
 import snownee.jade.impl.ui.HealthElement;
 import snownee.jade.util.ModIdentification;
@@ -38,8 +38,8 @@ public class BaseEntityProvider implements IEntityComponentProvider {
 	@OnlyIn(Dist.CLIENT)
 	public void appendHead(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		String name = getEntityName(accessor.getEntity());
-		WailaConfig wailaConfig = config.getWailaConfig();
-		tooltip.add(new TextComponent(String.format(wailaConfig.getFormatting().getEntityName(), name)).withStyle(wailaConfig.getOverlay().getColor().getTitle()), CorePlugin.TAG_OBJECT_NAME);
+		IWailaConfig wailaConfig = config.getWailaConfig();
+		tooltip.add(wailaConfig.getFormatting().title(name), CorePlugin.TAG_OBJECT_NAME);
 		if (config.get(CorePlugin.CONFIG_REGISTRY_NAME))
 			tooltip.add(new TextComponent(accessor.getEntity().getType().getRegistryName().toString()).withStyle(ChatFormatting.GRAY), CorePlugin.TAG_REGISTRY_NAME);
 	}
@@ -60,7 +60,7 @@ public class BaseEntityProvider implements IEntityComponentProvider {
 	public void appendBody(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		if (!(accessor.getEntity() instanceof LivingEntity))
 			return;
-		WailaConfig wailaConfig = config.getWailaConfig();
+		IWailaConfig wailaConfig = config.getWailaConfig();
 		if (config.get(CorePlugin.CONFIG_ENTITY_ARMOR))
 			appendArmor((LivingEntity) accessor.getEntity(), tooltip, wailaConfig);
 		if (config.get(CorePlugin.CONFIG_ENTITY_HEALTH))
@@ -75,14 +75,14 @@ public class BaseEntityProvider implements IEntityComponentProvider {
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	private void appendHealth(LivingEntity living, ITooltip tooltip, WailaConfig config) {
+	private void appendHealth(LivingEntity living, ITooltip tooltip, IWailaConfig config) {
 		float health = living.getHealth();
 		float maxHealth = living.getMaxHealth();
 		tooltip.add(0, new HealthElement(maxHealth, health));
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	private void appendArmor(LivingEntity living, ITooltip tooltip, WailaConfig config) {
+	private void appendArmor(LivingEntity living, ITooltip tooltip, IWailaConfig config) {
 		float armor = living.getArmorValue();
 		if (armor == 0)
 			return;

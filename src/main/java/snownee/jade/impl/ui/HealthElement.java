@@ -10,12 +10,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec2;
-import snownee.jade.Waila;
-import snownee.jade.api.config.WailaConfig;
-import snownee.jade.api.config.WailaConfig.ConfigGeneral;
+import snownee.jade.WailaClient;
+import snownee.jade.api.config.IWailaConfig.IConfigGeneral;
 import snownee.jade.api.ui.Element;
 import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.overlay.IconUI;
+import snownee.jade.overlay.OverlayRenderer;
 
 public class HealthElement extends Element {
 
@@ -31,7 +31,7 @@ public class HealthElement extends Element {
 
 	@Override
 	public Vec2 getSize() {
-		ConfigGeneral config = Waila.CONFIG.get().getGeneral();
+		IConfigGeneral config = WailaClient.CONFIG.get().getGeneral();
 		if (maxHealth > config.getMaxHealthForRender()) {
 			Font font = Minecraft.getInstance().font;
 			return new Vec2(8 + font.width(text), 10);
@@ -48,7 +48,7 @@ public class HealthElement extends Element {
 
 	@Override
 	public void render(PoseStack matrixStack, float x, float y, float maxX, float maxY) {
-		ConfigGeneral config = Waila.CONFIG.get().getGeneral();
+		IConfigGeneral config = WailaClient.CONFIG.get().getGeneral();
 		float maxHearts = config.getMaxHeartsPerLine();
 
 		int heartCount = maxHealth > config.getMaxHealthForRender() ? 1 : Mth.ceil(maxHealth * 0.5F);
@@ -80,8 +80,7 @@ public class HealthElement extends Element {
 		}
 
 		if (maxHealth > config.getMaxHealthForRender()) {
-			WailaConfig.ConfigOverlay.ConfigOverlayColor color = Waila.CONFIG.get().getOverlay().getColor();
-			DisplayHelper.INSTANCE.drawText(matrixStack, text, x + 8, y, color.getTheme().textColor);
+			DisplayHelper.INSTANCE.drawText(matrixStack, text, x + 8, y, OverlayRenderer.normalTextColorRaw);
 		}
 	}
 

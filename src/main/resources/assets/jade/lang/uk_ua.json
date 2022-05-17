@@ -64,8 +64,6 @@
 
   "config.waila.formatting": "Форматування",
   "config.waila.format_mod_name": "Назва мода",
-  "config.waila.format_block_name": "Назва блока",
-  "config.waila.format_entity_name": "Назва сутності",
   "config.waila.format_registry_name": "Назва реєстру",
 
   "config.waila.plugin_jade.registry_name": "Назва реєстру",

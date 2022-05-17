@@ -43,5 +43,5 @@ public interface IPluginConfig {
      */
 	boolean get(ResourceLocation key, boolean defaultValue);
 
-	WailaConfig getWailaConfig();
+	IWailaConfig getWailaConfig();
 }

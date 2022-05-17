@@ -58,8 +58,6 @@
 
   "config.waila.formatting": "Formattazione",
   "config.waila.format_mod_name": "Nome della mod",
-  "config.waila.format_block_name": "Nome del blocco",
-  "config.waila.format_entity_name": "Nome dell'entità",
   "config.waila.format_registry_name": "Nome del registro di sistema",
 
   "config.waila.plugin_jade.registry_name": "Nome del registro di sistema",

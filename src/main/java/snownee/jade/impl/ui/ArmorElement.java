@@ -10,12 +10,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec2;
-import snownee.jade.Waila;
-import snownee.jade.api.config.WailaConfig;
-import snownee.jade.api.config.WailaConfig.ConfigGeneral;
+import snownee.jade.WailaClient;
+import snownee.jade.api.config.IWailaConfig.IConfigGeneral;
 import snownee.jade.api.ui.Element;
 import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.overlay.IconUI;
+import snownee.jade.overlay.OverlayRenderer;
 
 public class ArmorElement extends Element {
 
@@ -27,7 +27,7 @@ public class ArmorElement extends Element {
 
 	@Override
 	public Vec2 getSize() {
-		ConfigGeneral config = Waila.CONFIG.get().getGeneral();
+		IConfigGeneral config = WailaClient.CONFIG.get().getGeneral();
 		if (armor > config.getMaxHealthForRender()) {
 			String text = "  " + DisplayHelper.dfCommas.format(armor);
 			Font font = Minecraft.getInstance().font;
@@ -41,12 +41,11 @@ public class ArmorElement extends Element {
 
 	@Override
 	public void render(PoseStack matrixStack, float x, float y, float maxX, float maxY) {
-		ConfigGeneral config = Waila.CONFIG.get().getGeneral();
+		IConfigGeneral config = WailaClient.CONFIG.get().getGeneral();
 		if (armor > config.getMaxHealthForRender()) {
 			DisplayHelper.renderIcon(matrixStack, x, y, 8, 8, IconUI.ARMOR);
 			String text = "  " + DisplayHelper.dfCommas.format(armor);
-			WailaConfig.ConfigOverlay.ConfigOverlayColor color = Waila.CONFIG.get().getOverlay().getColor();
-			DisplayHelper.INSTANCE.drawText(matrixStack, text, x + 8, y, color.getTheme().textColor);
+			DisplayHelper.INSTANCE.drawText(matrixStack, text, x + 8, y, OverlayRenderer.normalTextColorRaw);
 		} else {
 			float armor = this.armor * 0.5F;
 			int maxHearts = config.getMaxHeartsPerLine();

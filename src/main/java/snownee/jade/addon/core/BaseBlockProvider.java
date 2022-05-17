@@ -29,7 +29,7 @@ import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IPluginConfig;
-import snownee.jade.api.config.WailaConfig;
+import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.util.ModIdentification;
@@ -79,8 +79,8 @@ public class BaseBlockProvider implements IComponentProvider, IServerDataProvide
 			}
 		}
 		if (name != null) {
-			WailaConfig wailaConfig = config.getWailaConfig();
-			tooltip.add(new TextComponent(String.format(wailaConfig.getFormatting().getBlockName(), name.getString())).withStyle(wailaConfig.getOverlay().getColor().getTitle()), CorePlugin.TAG_OBJECT_NAME);
+			IWailaConfig wailaConfig = config.getWailaConfig();
+			tooltip.add(wailaConfig.getFormatting().title(name), CorePlugin.TAG_OBJECT_NAME);
 		}
 		if (config.get(CorePlugin.CONFIG_REGISTRY_NAME))
 			tooltip.add(new TextComponent(accessor.getBlock().getRegistryName().toString()).withStyle(ChatFormatting.GRAY), CorePlugin.TAG_REGISTRY_NAME);

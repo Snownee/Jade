@@ -1,11 +1,13 @@
 package snownee.jade;
 
+import com.google.gson.GsonBuilder;
 import com.mojang.blaze3d.platform.InputConstants;
 
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.ClientRegistry;
@@ -21,18 +23,37 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import snownee.jade.addon.core.CorePlugin;
-import snownee.jade.api.config.WailaConfig;
-import snownee.jade.api.config.WailaConfig.ConfigGeneral.TTSMode;
-import snownee.jade.api.config.WailaConfig.DisplayMode;
+import snownee.jade.api.config.IWailaConfig;
+import snownee.jade.api.config.IWailaConfig.DisplayMode;
+import snownee.jade.api.config.IWailaConfig.TTSMode;
+import snownee.jade.api.config.Theme;
 import snownee.jade.gui.HomeConfigScreen;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.config.PluginConfig;
+import snownee.jade.impl.config.WailaConfig;
 import snownee.jade.overlay.OverlayRenderer;
 import snownee.jade.overlay.WailaTickHandler;
+import snownee.jade.util.JsonConfig;
 import snownee.jade.util.ModIdentification;
+import snownee.jade.util.ThemeSerializer;
 
 @Mod.EventBusSubscriber(modid = Waila.MODID, value = Dist.CLIENT)
 public class WailaClient {
+
+	/** addons: Use {@link mcp.mobius.waila.api.IWailaClientRegistration#getConfig} */
+	/* off */
+	public static final JsonConfig<WailaConfig> CONFIG =
+			new JsonConfig<>(Jade.MODID + "/" + Jade.MODID, WailaConfig.class, () -> {
+				OverlayRenderer.updateTheme();
+			}).withGson(
+					new GsonBuilder()
+					.setPrettyPrinting()
+					.enableComplexMapKeySerialization()
+					.registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
+					.registerTypeAdapter(Theme.class, new ThemeSerializer())
+					.create()
+			);
+	/* on */
 
 	public static KeyMapping openConfig;
 	public static KeyMapping showOverlay;
@@ -64,24 +85,24 @@ public class WailaClient {
 			return;
 
 		if (openConfig.isDown()) {
-			Waila.CONFIG.invalidate();
+			CONFIG.invalidate();
 			Minecraft.getInstance().setScreen(new HomeConfigScreen(null));
 		}
 
 		if (showOverlay.isDown()) {
-			DisplayMode mode = Waila.CONFIG.get().getGeneral().getDisplayMode();
-			if (mode == WailaConfig.DisplayMode.TOGGLE) {
-				Waila.CONFIG.get().getGeneral().setDisplayTooltip(!Waila.CONFIG.get().getGeneral().shouldDisplayTooltip());
+			DisplayMode mode = CONFIG.get().getGeneral().getDisplayMode();
+			if (mode == IWailaConfig.DisplayMode.TOGGLE) {
+				CONFIG.get().getGeneral().setDisplayTooltip(!CONFIG.get().getGeneral().shouldDisplayTooltip());
 			}
 		}
 
 		if (toggleLiquid.isDown()) {
-			Waila.CONFIG.get().getGeneral().setDisplayFluids(!Waila.CONFIG.get().getGeneral().shouldDisplayFluids());
+			CONFIG.get().getGeneral().setDisplayFluids(!CONFIG.get().getGeneral().shouldDisplayFluids());
 		}
 
 		if (narrate.isDown()) {
-			if (Waila.CONFIG.get().getGeneral().getTTSMode() == TTSMode.TOGGLE) {
-				Waila.CONFIG.get().getGeneral().toggleTTS();
+			if (CONFIG.get().getGeneral().getTTSMode() == TTSMode.TOGGLE) {
+				CONFIG.get().getGeneral().toggleTTS();
 			} else if (WailaTickHandler.instance().tooltipRenderer != null) {
 				WailaTickHandler.narrate(WailaTickHandler.instance().tooltipRenderer.getTooltip(), false);
 			}
@@ -94,7 +115,7 @@ public class WailaClient {
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public static void onTooltip(ItemTooltipEvent event) {
 		appendModName(event);
-		if (Waila.CONFIG.get().getGeneral().isDebug() && event.getItemStack().hasTag()) {
+		if (CONFIG.get().getGeneral().isDebug() && event.getItemStack().hasTag()) {
 			event.getToolTip().add(NbtUtils.toPrettyComponent(event.getItemStack().getTag()));
 		}
 	}
@@ -116,7 +137,7 @@ public class WailaClient {
 		//				}
 		//			}
 		//		}
-		String name = String.format(Waila.CONFIG.get().getFormatting().getModName(), ModIdentification.getModName(event.getItemStack()));
+		String name = String.format(CONFIG.get().getFormatting().getModName(), ModIdentification.getModName(event.getItemStack()));
 		event.getToolTip().add(new TextComponent(name));
 	}
 

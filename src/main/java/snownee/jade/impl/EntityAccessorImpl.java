@@ -12,6 +12,7 @@ import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
 import snownee.jade.Waila;
+import snownee.jade.WailaClient;
 import snownee.jade.api.AccessorImpl;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
@@ -82,7 +83,7 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 
 	@Override
 	public boolean shouldDisplay() {
-		return Waila.CONFIG.get().getGeneral().getDisplayEntities();
+		return WailaClient.CONFIG.get().getGeneral().getDisplayEntities();
 	}
 
 	@Override

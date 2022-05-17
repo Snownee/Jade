@@ -3,7 +3,6 @@ package snownee.jade.addon.vanilla;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -31,8 +30,8 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.registries.ForgeRegistries;
-import snownee.jade.VanillaPlugin;
 import snownee.jade.Waila;
+import snownee.jade.WailaClient;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IComponentProvider;
 import snownee.jade.api.IServerDataProvider;
@@ -68,9 +67,8 @@ public class VanillaProvider implements IComponentProvider, IServerDataProvider<
 			Entity entity = spawner.getSpawner().getOrCreateDisplayEntity(accessor.getLevel());
 			if (entity != null) {
 				name = I18n.get("jade.spawner", name, entity.getDisplayName().getString());
-				name = String.format(config.getWailaConfig().getFormatting().getBlockName(), name);
 				tooltip.remove(OBJECT_NAME_TAG);
-				tooltip.add(new TextComponent(name).withStyle(config.getWailaConfig().getOverlay().getColor().getTitle()), OBJECT_NAME_TAG);
+				tooltip.add(WailaClient.CONFIG.get().getFormatting().title(name), OBJECT_NAME_TAG);
 			}
 		}
 	}
