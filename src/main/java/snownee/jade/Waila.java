@@ -42,8 +42,7 @@ import snownee.jade.network.ServerPingPacket;
 public class Waila {
 
 	public static final String MODID = "waila";
-	public static final String NAME = "Waila";
-	public static final Logger LOGGER = LogManager.getLogger(NAME);
+	public static final Logger LOGGER = LogManager.getLogger(Jade.NAME);
 	public static final SimpleChannel NETWORK = NetworkRegistry.ChannelBuilder.named(new ResourceLocation(MODID, "networking")).clientAcceptedVersions(s -> true).serverAcceptedVersions(s -> true).networkProtocolVersion(() -> "1.0.0").simpleChannel();
 
 	public Waila() {
