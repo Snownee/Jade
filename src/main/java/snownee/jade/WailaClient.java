@@ -14,6 +14,7 @@ import net.minecraftforge.client.ClientRegistry;
 import net.minecraftforge.client.ConfigGuiHandler.ConfigGuiFactory;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.InputEvent;
+import net.minecraftforge.client.event.RegisterClientCommandsEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.event.TickEvent;
@@ -27,6 +28,7 @@ import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.IWailaConfig.DisplayMode;
 import snownee.jade.api.config.IWailaConfig.TTSMode;
 import snownee.jade.api.config.Theme;
+import snownee.jade.command.DumpHandlersCommand;
 import snownee.jade.gui.HomeConfigScreen;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.config.PluginConfig;
@@ -156,5 +158,10 @@ public class WailaClient {
 	@SubscribeEvent
 	public static void onPlayerLeave(ClientPlayerNetworkEvent.LoggedOutEvent event) {
 		ObjectDataCenter.serverConnected = false;
+	}
+
+	@SubscribeEvent
+	public static void registerCommands(RegisterClientCommandsEvent event) {
+		DumpHandlersCommand.register(event.getDispatcher());
 	}
 }

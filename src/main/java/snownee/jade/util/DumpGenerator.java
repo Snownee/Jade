@@ -11,7 +11,7 @@ import snownee.jade.impl.WailaCommonRegistration;
 public class DumpGenerator {
 
 	public static String generateInfoDump() {
-		StringBuilder builder = new StringBuilder("# Waila Handler Dump");
+		StringBuilder builder = new StringBuilder("# Jade Handler Dump");
 
 		builder.append("\n## Block");
 		createSection(builder, "Icon Providers", WailaClientRegistration.INSTANCE.blockIconProviders);

@@ -9,8 +9,8 @@ import org.apache.logging.log4j.Logger;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.client.event.RegisterClientCommandsEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.IExtensionPoint;
@@ -112,7 +112,7 @@ public class Waila {
 	}
 
 	@SubscribeEvent
-	public void registerCommands(RegisterCommandsEvent event) {
+	public void registerCommands(RegisterClientCommandsEvent event) {
 		DumpHandlersCommand.register(event.getDispatcher());
 	}
 
