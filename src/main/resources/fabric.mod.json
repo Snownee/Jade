@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "id": "jade",
+  "version": "${version}",
+
+  "name": "Jade",
+  "description": "Minecraft mod shows what you are looking at. (Hwyla fork)",
+  "authors": ["Snownee"],
+  "contact": {
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/jade",
+    "sources": "https://github.com/Snownee/Jade",
+    "issues": "https://github.com/Snownee/Jade/issues"
+  },
+
+  "license": "CC BY-NC-SA 4.0",
+
+  "entrypoints": {
+    "main": [
+      "snownee.jade.Jade"
+    ],
+    "rei": [
+      "snownee.jade.compat.REICompat"
+    ]
+  },
+  "mixins": [ "jade.mixins.json" ],
+  "accessWidener" : "jade.accesswidener",
+
+  "depends": {
+    "fabricloader": ">=0.13",
+    "minecraft": ">=1.18.2",
+    "java": ">=17"
+  },
+
+  "custom": {
+    "modmenu": {
+      "links": {
+        "modmenu.discord": "https://discord.gg/KzGQW7a"
+      }
+    }
+  }
+}

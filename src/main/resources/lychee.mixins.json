@@ -1,0 +1,38 @@
+{
+  "required": true,
+  "package": "snownee.lychee.mixin",
+  "compatibilityLevel": "JAVA_16",
+  "refmap": "lychee.refmap.json",
+  "mixins": [
+    "BlockPredicateAccess",
+    "DoublesAccess",
+    "IntRangeAccess",
+    "IntsAccess",
+    "ItemEntityAccess",
+    "LightPredicateAccess",
+    "LocationCheckAccess",
+    "LocationPredicateAccess",
+    "LootContextBuilderAccess",
+    "LootContextParamSetsAccess",
+    "NbtPredicateAccess",
+    "RecipeManagerAccess",
+    "StatePropertiesPredicateAccess",
+    "TimeCheckAccess",
+    "AnvilMenuMixin",
+    "DefaultDispenseItemBehaviorMixin",
+    "EntityMixin",
+    "ExplosionMixin",
+    "FallingBlockEntityMixin",
+    "ItemEntityMixin",
+    "LightningBoltMixin",
+    "RecipeManagerMixin",
+    "ReloadableServerResourcesMixin"
+  ],
+  "client": [
+    "GameRendererAccess"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "minVersion": "0.8"
+}

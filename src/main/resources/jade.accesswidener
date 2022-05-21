@@ -1,0 +1,16 @@
+accessWidener   v1  named
+accessible field net/minecraft/world/level/block/entity/BrewingStandBlockEntity brewTime I
+accessible field net/minecraft/world/level/block/entity/BrewingStandBlockEntity fuel I
+
+accessible field net/minecraft/client/multiplayer/MultiPlayerGameMode destroyProgress F
+accessible field net/minecraft/client/multiplayer/MultiPlayerGameMode destroyBlockPos Lnet/minecraft/core/BlockPos;
+
+accessible field net/minecraft/client/gui/components/PlayerTabOverlay visible Z
+
+accessible field net/minecraft/world/level/block/entity/RandomizableContainerBlockEntity lootTable Lnet/minecraft/resources/ResourceLocation;
+
+accessible field net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity litTime I
+
+accessible method net/minecraft/client/gui/components/ContainerObjectSelectionList$Entry updateNarration (Lnet/minecraft/client/gui/narration/NarrationElementOutput;)V
+
+mutable field com/mojang/blaze3d/platform/InputConstants$Key displayName Lnet/minecraft/util/LazyLoadedValue;
