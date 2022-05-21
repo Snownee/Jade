@@ -3,27 +3,23 @@ package snownee.jade.addon.vanilla;
 import java.util.UUID;
 
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.UsernameCache;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
+import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
 
-public class AnimalOwnerProvider implements IEntityComponentProvider {
+public enum AnimalOwnerProvider implements IEntityComponentProvider {
 
-	public static final AnimalOwnerProvider INSTANCE = new AnimalOwnerProvider();
+	INSTANCE;
 
 	@Override
-	@OnlyIn(Dist.CLIENT)
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
-		if (!config.get(VanillaPlugin.ANIMAL_OWNER)) {
-			return;
-		}
 		Entity entity = accessor.getEntity();
 		UUID ownerUUID = null;
 		if (entity instanceof OwnableEntity) {
@@ -38,6 +34,11 @@ public class AnimalOwnerProvider implements IEntityComponentProvider {
 			}
 			tooltip.add(new TranslatableComponent("jade.owner", name));
 		}
+	}
+
+	@Override
+	public ResourceLocation getUid() {
+		return Identifiers.MC_ANIMAL_OWNER;
 	}
 
 }

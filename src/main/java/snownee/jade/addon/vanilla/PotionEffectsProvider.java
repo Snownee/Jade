@@ -10,6 +10,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectCategory;
@@ -17,22 +18,21 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
+import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.IElementHelper;
 
-public class PotionEffectsProvider implements IEntityComponentProvider, IServerDataProvider<Entity> {
-	public static final PotionEffectsProvider INSTANCE = new PotionEffectsProvider();
+public enum PotionEffectsProvider implements IEntityComponentProvider, IServerDataProvider<Entity> {
+
+	INSTANCE;
 
 	@Override
-	@OnlyIn(Dist.CLIENT)
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
-		if (!config.get(VanillaPlugin.EFFECTS) || !accessor.getServerData().contains("Potions")) {
+		if (!accessor.getServerData().contains("Potions")) {
 			return;
 		}
 		IElementHelper helper = tooltip.getElementHelper();
@@ -56,7 +56,6 @@ public class PotionEffectsProvider implements IEntityComponentProvider, IServerD
 		tooltip.add(helper.box(box));
 	}
 
-	@OnlyIn(Dist.CLIENT)
 	public static String getPotionDurationString(int duration) {
 		if (duration >= 32767) {
 			return "**:**";
@@ -66,7 +65,6 @@ public class PotionEffectsProvider implements IEntityComponentProvider, IServerD
 		}
 	}
 
-	@OnlyIn(Dist.CLIENT)
 	public static String ticksToElapsedTime(int ticks) {
 		int i = ticks / 20;
 		int j = i / 60;
@@ -92,5 +90,10 @@ public class PotionEffectsProvider implements IEntityComponentProvider, IServerD
 			list.add(compound);
 		}
 		tag.put("Potions", list);
+	}
+
+	@Override
+	public ResourceLocation getUid() {
+		return Identifiers.MC_POTION_EFFECTS;
 	}
 }

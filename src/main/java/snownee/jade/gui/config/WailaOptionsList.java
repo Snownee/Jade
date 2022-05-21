@@ -16,11 +16,13 @@ import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat.Mode;
 
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.CycleButton;
@@ -31,7 +33,7 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import snownee.jade.Waila;
+import snownee.jade.Jade;
 import snownee.jade.gui.BaseOptionsScreen;
 import snownee.jade.gui.config.value.CycleOptionValue;
 import snownee.jade.gui.config.value.InputOptionValue;
@@ -80,18 +82,50 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 		int scrollJump = y0 + 4 - (int) getScrollAmount();
 
 		renderList(matrixStack, rowLeft, scrollJump, mouseX, mouseY, delta);
-		RenderSystem.setShaderTexture(0, BACKGROUND_LOCATION);
+		//		RenderSystem.setShaderTexture(0, BACKGROUND_LOCATION);
+		//		RenderSystem.enableDepthTest();
+		//		RenderSystem.depthFunc(519);
+		//		bufferBuilder.begin(Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
+		//		bufferBuilder.vertex(x0, y0, -100.0D).color(64, 64, 64, 255).uv(0.0F, y0 / 32.0F).endVertex();
+		//		bufferBuilder.vertex((x0 + width), y0, -100.0D).color(64, 64, 64, 255).uv(width / 32.0F, y0 / 32.0F).endVertex();
+		//		bufferBuilder.vertex((x0 + width), 0.0D, -100.0D).color(64, 64, 64, 255).uv(width / 32.0F, 0.0F).endVertex();
+		//		bufferBuilder.vertex(x0, 0.0D, -100.0D).color(64, 64, 64, 255).uv(0.0F, 0.0F).endVertex();
+		//		bufferBuilder.vertex(x0, height, -100.0D).color(64, 64, 64, 255).color(64, 64, 64, 255).uv(0.0F, height / 32.0F).endVertex();
+		//		bufferBuilder.vertex((x0 + width), height, -100.0D).color(64, 64, 64, 255).uv(width / 32.0F, height / 32.0F).endVertex();
+		//		bufferBuilder.vertex((x0 + width), y1, -100.0D).color(64, 64, 64, 255).uv(width / 32.0F, y1 / 32.0F).endVertex();
+		//		bufferBuilder.vertex(x0, y1, -100.0D).color(64, 64, 64, 255).uv(0.0F, y1 / 32.0F).endVertex();
+		//		tessellator.end();
+		//
+		//		RenderSystem.depthFunc(515);
+		//		RenderSystem.disableDepthTest();
+		//		RenderSystem.enableBlend();
+		//		RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
+		//		RenderSystem.disableTexture();
+		//		RenderSystem.setShader(GameRenderer::getPositionColorShader);
+		//		bufferBuilder.begin(Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
+		//		bufferBuilder.vertex(x0, y0 + 4, 0.0D).color(0, 0, 0, 0).uv(0.0f, 1.0f).endVertex();
+		//		bufferBuilder.vertex(x1, y0 + 4, 0.0D).color(0, 0, 0, 0).uv(1.0f, 1.0f).endVertex();
+		//		bufferBuilder.vertex(x1, y0, 0.0D).color(0, 0, 0, 255).uv(1.0f, 0.0f).endVertex();
+		//		bufferBuilder.vertex(x0, y0, 0.0D).color(0, 0, 0, 255).uv(0.0f, 0.0f).endVertex();
+		//		bufferBuilder.vertex(x0, y1, 0.0D).color(0, 0, 0, 255).uv(0.0f, 1.0f).endVertex();
+		//		bufferBuilder.vertex(x1, y1, 0.0D).color(0, 0, 0, 255).uv(1.0f, 1.0f).endVertex();
+		//		bufferBuilder.vertex(x1, y1 - 4, 0.0D).color(0, 0, 0, 0).uv(1.0f, 0.0f).endVertex();
+		//		bufferBuilder.vertex(x0, y1 - 4, 0.0D).color(0, 0, 0, 0).uv(0.0f, 0.0f).endVertex();
+		//		tessellator.end();
+
+		RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+		RenderSystem.setShaderTexture(0, GuiComponent.BACKGROUND_LOCATION);
 		RenderSystem.enableDepthTest();
 		RenderSystem.depthFunc(519);
-		bufferBuilder.begin(Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
-		bufferBuilder.vertex(x0, y0, -100.0D).color(64, 64, 64, 255).uv(0.0F, y0 / 32.0F).endVertex();
-		bufferBuilder.vertex((x0 + width), y0, -100.0D).color(64, 64, 64, 255).uv(width / 32.0F, y0 / 32.0F).endVertex();
-		bufferBuilder.vertex((x0 + width), 0.0D, -100.0D).color(64, 64, 64, 255).uv(width / 32.0F, 0.0F).endVertex();
-		bufferBuilder.vertex(x0, 0.0D, -100.0D).color(64, 64, 64, 255).uv(0.0F, 0.0F).endVertex();
-		bufferBuilder.vertex(x0, height, -100.0D).color(64, 64, 64, 255).color(64, 64, 64, 255).uv(0.0F, height / 32.0F).endVertex();
-		bufferBuilder.vertex((x0 + width), height, -100.0D).color(64, 64, 64, 255).uv(width / 32.0F, height / 32.0F).endVertex();
-		bufferBuilder.vertex((x0 + width), y1, -100.0D).color(64, 64, 64, 255).uv(width / 32.0F, y1 / 32.0F).endVertex();
-		bufferBuilder.vertex(x0, y1, -100.0D).color(64, 64, 64, 255).uv(0.0F, y1 / 32.0F).endVertex();
+		bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+		bufferBuilder.vertex((double) this.x0, (double) this.y0, -100.0D).uv(0.0F, (float) this.y0 / 32.0F).color(64, 64, 64, 255).endVertex();
+		bufferBuilder.vertex((double) (this.x0 + this.width), (double) this.y0, -100.0D).uv((float) this.width / 32.0F, (float) this.y0 / 32.0F).color(64, 64, 64, 255).endVertex();
+		bufferBuilder.vertex((double) (this.x0 + this.width), 0.0D, -100.0D).uv((float) this.width / 32.0F, 0.0F).color(64, 64, 64, 255).endVertex();
+		bufferBuilder.vertex((double) this.x0, 0.0D, -100.0D).uv(0.0F, 0.0F).color(64, 64, 64, 255).endVertex();
+		bufferBuilder.vertex((double) this.x0, (double) this.height, -100.0D).uv(0.0F, (float) this.height / 32.0F).color(64, 64, 64, 255).endVertex();
+		bufferBuilder.vertex((double) (this.x0 + this.width), (double) this.height, -100.0D).uv((float) this.width / 32.0F, (float) this.height / 32.0F).color(64, 64, 64, 255).endVertex();
+		bufferBuilder.vertex((double) (this.x0 + this.width), (double) this.y1, -100.0D).uv((float) this.width / 32.0F, (float) this.y1 / 32.0F).color(64, 64, 64, 255).endVertex();
+		bufferBuilder.vertex((double) this.x0, (double) this.y1, -100.0D).uv(0.0F, (float) this.y1 / 32.0F).color(64, 64, 64, 255).endVertex();
 		tessellator.end();
 		RenderSystem.depthFunc(515);
 		RenderSystem.disableDepthTest();
@@ -99,18 +133,21 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 		RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
 		RenderSystem.disableTexture();
 		RenderSystem.setShader(GameRenderer::getPositionColorShader);
-		bufferBuilder.begin(Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
-		bufferBuilder.vertex(x0, y0 + 4, 0.0D).color(0, 0, 0, 0).uv(0.0f, 1.0f).endVertex();
-		bufferBuilder.vertex(x1, y0 + 4, 0.0D).color(0, 0, 0, 0).uv(1.0f, 1.0f).endVertex();
-		bufferBuilder.vertex(x1, y0, 0.0D).color(0, 0, 0, 255).uv(1.0f, 0.0f).endVertex();
-		bufferBuilder.vertex(x0, y0, 0.0D).color(0, 0, 0, 255).uv(0.0f, 0.0f).endVertex();
-		bufferBuilder.vertex(x0, y1, 0.0D).color(0, 0, 0, 255).uv(0.0f, 1.0f).endVertex();
-		bufferBuilder.vertex(x1, y1, 0.0D).color(0, 0, 0, 255).uv(1.0f, 1.0f).endVertex();
-		bufferBuilder.vertex(x1, y1 - 4, 0.0D).color(0, 0, 0, 0).uv(1.0f, 0.0f).endVertex();
-		bufferBuilder.vertex(x0, y1 - 4, 0.0D).color(0, 0, 0, 0).uv(0.0f, 0.0f).endVertex();
+		bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+		bufferBuilder.vertex((double) this.x0, (double) (this.y0 + 4), 0.0D).color(0, 0, 0, 0).endVertex();
+		bufferBuilder.vertex((double) this.x1, (double) (this.y0 + 4), 0.0D).color(0, 0, 0, 0).endVertex();
+		bufferBuilder.vertex((double) this.x1, (double) this.y0, 0.0D).color(0, 0, 0, 255).endVertex();
+		bufferBuilder.vertex((double) this.x0, (double) this.y0, 0.0D).color(0, 0, 0, 255).endVertex();
+		bufferBuilder.vertex((double) this.x0, (double) this.y1, 0.0D).color(0, 0, 0, 255).endVertex();
+		bufferBuilder.vertex((double) this.x1, (double) this.y1, 0.0D).color(0, 0, 0, 255).endVertex();
+		bufferBuilder.vertex((double) this.x1, (double) (this.y1 - 4), 0.0D).color(0, 0, 0, 0).endVertex();
+		bufferBuilder.vertex((double) this.x0, (double) (this.y1 - 4), 0.0D).color(0, 0, 0, 0).endVertex();
 		tessellator.end();
+
 		int int_8 = Math.max(0, getMaxPosition() - (y1 - y0 - 4));
 		if (int_8 > 0) {
+			RenderSystem.disableTexture();
+			RenderSystem.setShader(GameRenderer::getPositionColorShader);
 			int int_9 = (int) ((float) ((y1 - y0) * (y1 - y0)) / (float) getMaxPosition());
 			int_9 = Mth.clamp(int_9, 32, y1 - y0 - 8);
 			int int_10 = (int) getScrollAmount() * (y1 - y0 - int_9) / int_8 + y0;
@@ -208,7 +245,7 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 		}
 
 		public static String makeKey(String key) {
-			return Util.makeDescriptionId("config", new ResourceLocation(Waila.MODID, key));
+			return Util.makeDescriptionId("config", new ResourceLocation(Jade.MODID, key));
 		}
 
 		public Entry() {

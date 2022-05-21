@@ -19,7 +19,7 @@ import com.google.gson.reflect.TypeToken;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fml.loading.FMLPaths;
 import snownee.jade.Jade;
-import snownee.jade.WailaClient;
+import snownee.jade.api.IToggleableProvider;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
 
@@ -48,6 +48,14 @@ public class PluginConfig implements IPluginConfig {
 	}
 
 	@Override
+	public boolean get(IToggleableProvider provider) {
+		if (provider.isRequired()) {
+			return true;
+		}
+		return get(provider.getUid(), provider.enabledByDefault());
+	}
+
+	@Override
 	public boolean get(ResourceLocation key, boolean defaultValue) {
 		ConfigEntry entry = configs.get(key);
 		return entry == null ? defaultValue : entry.getValue();
@@ -71,7 +79,7 @@ public class PluginConfig implements IPluginConfig {
 	}
 
 	public void reload() {
-		File configFile = new File(FMLPaths.CONFIGDIR.get().toFile(), Jade.MODID + "/" + Jade.MODID + "_plugins.json");
+		File configFile = new File(FMLPaths.CONFIGDIR.get().toFile(), Jade.MODID + "/plugins.json");
 
 		if (!configFile.exists()) { // Write defaults, but don't read
 			writeConfig(configFile, true);
@@ -135,6 +143,6 @@ public class PluginConfig implements IPluginConfig {
 
 	@Override
 	public IWailaConfig getWailaConfig() {
-		return WailaClient.CONFIG.get();
+		return Jade.CONFIG.get();
 	}
 }

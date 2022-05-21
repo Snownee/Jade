@@ -10,14 +10,6 @@ authors="Snownee"
 displayURL="https://minecraft.curseforge.com/projects/jade"
 description="HWYLA fork & addons"
 
-[[mods]]
-modId="waila"
-version="${file.jarVersion}"
-displayName="Waila (Jade)"
-authors="Snownee, TehNut, ProfMobius"
-description="You are using Jade, a fork of Hwyla."
-
-
 [[dependencies.jade]]
     modId="forge"
     mandatory=true

@@ -10,7 +10,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec2;
-import snownee.jade.WailaClient;
+import snownee.jade.Jade;
 import snownee.jade.api.config.IWailaConfig.IConfigGeneral;
 import snownee.jade.api.ui.Element;
 import snownee.jade.overlay.DisplayHelper;
@@ -31,7 +31,7 @@ public class HealthElement extends Element {
 
 	@Override
 	public Vec2 getSize() {
-		IConfigGeneral config = WailaClient.CONFIG.get().getGeneral();
+		IConfigGeneral config = Jade.CONFIG.get().getGeneral();
 		if (maxHealth > config.getMaxHealthForRender()) {
 			Font font = Minecraft.getInstance().font;
 			return new Vec2(8 + font.width(text), 10);
@@ -48,7 +48,7 @@ public class HealthElement extends Element {
 
 	@Override
 	public void render(PoseStack matrixStack, float x, float y, float maxX, float maxY) {
-		IConfigGeneral config = WailaClient.CONFIG.get().getGeneral();
+		IConfigGeneral config = Jade.CONFIG.get().getGeneral();
 		float maxHearts = config.getMaxHeartsPerLine();
 
 		int heartCount = maxHealth > config.getMaxHealthForRender() ? 1 : Mth.ceil(maxHealth * 0.5F);
@@ -86,6 +86,6 @@ public class HealthElement extends Element {
 
 	@Override
 	public @Nullable Component getMessage() {
-		return new TranslatableComponent("narration.waila.health", DisplayHelper.dfCommas.format(health));
+		return new TranslatableComponent("narration.jade.health", DisplayHelper.dfCommas.format(health));
 	}
 }

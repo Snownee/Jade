@@ -13,9 +13,9 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.StringDecomposer;
 import net.minecraft.world.phys.Vec2;
-import snownee.jade.WailaClient;
-import snownee.jade.addon.core.CorePlugin;
+import snownee.jade.Jade;
 import snownee.jade.api.ITooltip;
+import snownee.jade.api.Identifiers;
 import snownee.jade.api.ui.IBorderStyle;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElement.Align;
@@ -142,7 +142,7 @@ public class Tooltip implements ITooltip {
 	private static final IBorderStyle BLUE = new BorderStyle().color(0x880000FF);
 
 	public static void drawBorder(PoseStack matrixStack, float x, float y, IElement element) {
-		if (WailaClient.CONFIG.get().getGeneral().isDebug()) {
+		if (Jade.CONFIG.get().getGeneral().isDebug()) {
 			Vec2 translate = element.getTranslation();
 			Vec2 size = element.getCachedSize();
 			DisplayHelper.INSTANCE.drawBorder(matrixStack, x, y, x + size.x, y + size.y, RED);
@@ -159,7 +159,7 @@ public class Tooltip implements ITooltip {
 			/* off */
 			msgs.add(Joiner.on(' ').join(
 					Stream.concat(line.left.stream(), line.right.stream())
-							.filter(e -> !CorePlugin.TAG_MOD_NAME.equals(e.getTag()))
+							.filter(e -> !Identifiers.CORE_MOD_NAME.equals(e.getTag()))
 							.map(IElement::getCachedMessage)
 							.filter(java.util.Objects::nonNull)
 							.map(StringDecomposer::getPlainText)

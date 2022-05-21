@@ -22,11 +22,11 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.HitResult.Type;
 import net.minecraft.world.phys.Vec3;
-import snownee.jade.WailaClient;
+import snownee.jade.Jade;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.ui.IElement;
-import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.WailaClientRegistration;
+import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.ui.ItemStackElement;
 
 public class RayTracing {
@@ -52,7 +52,7 @@ public class RayTracing {
 			}
 		}
 
-		float reach = mc.gameMode.getPickRange() + WailaClient.CONFIG.get().getGeneral().getReachDistance();
+		float reach = mc.gameMode.getPickRange() + Jade.CONFIG.get().getGeneral().getReachDistance();
 		target = rayTrace(viewpoint, reach, mc.getFrameTime());
 	}
 
@@ -84,7 +84,7 @@ public class RayTracing {
 		Block eyeBlock = world.getBlockState(new BlockPos(eyePosition.x, eyePosition.y, eyePosition.z)).getBlock();
 		ClipContext.Fluid fluidView = ClipContext.Fluid.NONE;
 		if (!(eyeBlock instanceof LiquidBlock)) {
-			fluidView = WailaClient.CONFIG.get().getGeneral().getDisplayFluids();
+			fluidView = Jade.CONFIG.get().getGeneral().getDisplayFluids();
 		}
 		ClipContext context = new ClipContext(eyePosition, traceEnd, ClipContext.Block.OUTLINE, fluidView, entity);
 

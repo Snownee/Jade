@@ -34,8 +34,8 @@ public class JEICompat implements IModPlugin {
 
 	public JEICompat() {
 		if (showRecipes == null) {
-			showRecipes = new KeyMapping("key.waila.show_recipes", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputConstants.Type.KEYSYM.getOrCreate(323), Jade.NAME);
-			showUses = new KeyMapping("key.waila.show_uses", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputConstants.Type.KEYSYM.getOrCreate(324), Jade.NAME);
+			showRecipes = new KeyMapping("key.jade.show_recipes", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputConstants.Type.KEYSYM.getOrCreate(323), Jade.NAME);
+			showUses = new KeyMapping("key.jade.show_uses", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputConstants.Type.KEYSYM.getOrCreate(324), Jade.NAME);
 			ClientRegistry.registerKeyBinding(showRecipes);
 			ClientRegistry.registerKeyBinding(showUses);
 			MinecraftForge.EVENT_BUS.addListener(JEICompat::onKeyPressed);

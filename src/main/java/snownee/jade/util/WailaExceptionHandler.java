@@ -4,35 +4,39 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
-import net.minecraft.network.chat.TextComponent;
-import snownee.jade.Waila;
+import com.google.common.collect.Sets;
+
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.TranslatableComponent;
+import snownee.jade.Jade;
+import snownee.jade.api.IJadeProvider;
 import snownee.jade.api.ITooltip;
 
 public class WailaExceptionHandler {
 
-	private static final ArrayList<String> ERRORS = new ArrayList<>();
+	private static final Set<IJadeProvider> ERRORS = Sets.newHashSet();
 	private static final File ERROR_OUTPUT = new File("logs", "JadeErrorOutput.txt");
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy - HH:mm:ss");
 
-	public static void handleErr(Throwable e, String className, ITooltip tooltip) {
-		if (!ERRORS.contains(className)) {
-			ERRORS.add(className);
+	public static void handleErr(Throwable e, IJadeProvider provider, ITooltip tooltip) {
+		if (!ERRORS.contains(provider)) {
+			ERRORS.add(provider);
 
-			Waila.LOGGER.error("Caught unhandled exception : [{}] {}", className, e);
-			Waila.LOGGER.error("See JadeErrorOutput.txt for more information");
+			Jade.LOGGER.error("Caught unhandled exception : [{}] {}", provider, e);
+			Jade.LOGGER.error("See JadeErrorOutput.txt for more information");
 			try {
-				FileUtils.writeStringToFile(ERROR_OUTPUT, DATE_FORMAT.format(new Date()) + "\n" + className + "\n" + ExceptionUtils.getStackTrace(e) + "\n", StandardCharsets.UTF_8, true);
+				FileUtils.writeStringToFile(ERROR_OUTPUT, DATE_FORMAT.format(new Date()) + "\n" + provider + "\n" + ExceptionUtils.getStackTrace(e) + "\n", StandardCharsets.UTF_8, true);
 			} catch (Exception what) {
 				// no
 			}
 		}
 		if (tooltip != null)
-			tooltip.add(new TextComponent("<ERROR>")); //TODO detail: who to blame
+			tooltip.add(new TranslatableComponent("jade.error", ModIdentification.getModName(provider.getUid())).withStyle(ChatFormatting.DARK_RED));
 	}
 }

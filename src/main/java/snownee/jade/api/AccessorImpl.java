@@ -17,8 +17,6 @@ public abstract class AccessorImpl<T extends HitResult> implements Accessor<T> {
 	private final T hit;
 	private final boolean serverConnected;
 
-	private TooltipPosition tooltipPosition;
-
 	public AccessorImpl(Level level, Player player, CompoundTag serverData, T hit, boolean serverConnected) {
 		this.level = level;
 		this.player = player;
@@ -53,19 +51,6 @@ public abstract class AccessorImpl<T extends HitResult> implements Accessor<T> {
 	@Override
 	public boolean isServerConnected() {
 		return serverConnected;
-	}
-
-	/**
-	 * Get {@link TooltipPosition} the {@link ITooltip} currently gathering
-	 */
-	@Override
-	public TooltipPosition getTooltipPosition() {
-		return tooltipPosition;
-	}
-
-	@Override
-	public void _setTooltipPosition(TooltipPosition tooltipPosition) {
-		this.tooltipPosition = tooltipPosition;
 	}
 
 	@Override

@@ -12,7 +12,7 @@ import com.google.gson.Gson;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.network.NetworkEvent;
-import snownee.jade.Waila;
+import snownee.jade.Jade;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.config.ConfigEntry;
 import snownee.jade.impl.config.PluginConfig;
@@ -56,7 +56,7 @@ public class ServerPingPacket {
 			context.get().enqueueWork(() -> {
 				ObjectDataCenter.serverConnected = true;
 				message.forcedKeys.forEach(PluginConfig.INSTANCE::set);
-				Waila.LOGGER.info("Received config from the server: {}", new Gson().toJson(message.forcedKeys));
+				Jade.LOGGER.info("Received config from the server: {}", new Gson().toJson(message.forcedKeys));
 			});
 			context.get().setPacketHandled(true);
 		}

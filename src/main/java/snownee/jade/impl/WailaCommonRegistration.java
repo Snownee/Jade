@@ -2,14 +2,12 @@ package snownee.jade.impl;
 
 import java.util.List;
 
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.fml.loading.FMLEnvironment;
-import snownee.jade.api.IServerDataProvider;
+import snownee.jade.Jade;
 import snownee.jade.api.IWailaCommonRegistration;
-import snownee.jade.impl.config.ConfigEntry;
-import snownee.jade.impl.config.PluginConfig;
+import snownee.jade.api.IJadeProvider;
+import snownee.jade.api.IServerDataProvider;
 
 public class WailaCommonRegistration implements IWailaCommonRegistration {
 
@@ -17,22 +15,12 @@ public class WailaCommonRegistration implements IWailaCommonRegistration {
 
 	public final HierarchyLookup<IServerDataProvider<BlockEntity>> blockDataProviders;
 	public final HierarchyLookup<IServerDataProvider<Entity>> entityDataProviders;
+	public final PriorityStore<IJadeProvider> priorities;
 
 	WailaCommonRegistration() {
 		blockDataProviders = new HierarchyLookup<>(BlockEntity.class);
 		entityDataProviders = new HierarchyLookup<>(Entity.class);
-	}
-
-	@Override
-	public void addConfig(ResourceLocation key, boolean defaultValue) {
-		if (FMLEnvironment.dist.isClient()) {
-			PluginConfig.INSTANCE.addConfig(new ConfigEntry(key, defaultValue, false));
-		}
-	}
-
-	@Override
-	public void addSyncedConfig(ResourceLocation key, boolean defaultValue) {
-		PluginConfig.INSTANCE.addConfig(new ConfigEntry(key, defaultValue, true));
+		priorities = new PriorityStore<>(Jade.MODID + "/sort-order", IJadeProvider::getDefaultPriority);
 	}
 
 	@Override
@@ -53,6 +41,11 @@ public class WailaCommonRegistration implements IWailaCommonRegistration {
 
 	public List<IServerDataProvider<Entity>> getEntityNBTProviders(Entity entity) {
 		return entityDataProviders.get(entity);
+	}
+
+	public void loadComplete() {
+		blockDataProviders.loadComplete(priorities);
+		entityDataProviders.loadComplete(priorities);
 	}
 
 }

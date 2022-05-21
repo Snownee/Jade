@@ -1,8 +1,9 @@
 package snownee.jade.api;
 
-import org.jetbrains.annotations.ApiStatus.Experimental;
+import org.jetbrains.annotations.ApiStatus.NonExtendable;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
@@ -18,46 +19,52 @@ import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElementHelper;
 
-@Experimental
+@NonExtendable
 public interface IWailaClientRegistration {
 
 	/**
-     * Register an {@link IComponentProvider} instance to allow overriding the icon for a block via the
-     * {@link IComponentProvider#getIcon(BlockAccessor, IPluginConfig, IElement)} method.
+     * Register a namespaced config key to be accessed within data providers.
      *
-     * @param dataProvider The data provider instance
-     * @param block The highest level class to apply to
+     * @param key the namespaced key
+     * @param defaultValue the default value
      */
-	void registerIconProvider(IComponentProvider dataProvider, Class<? extends Block> block);
+	void addConfig(ResourceLocation key, boolean defaultValue);
 
 	/**
-     * Register an {@link IComponentProvider} instance for appending informations to
-     * the tooltip.
+     * Register an {@link IJadeProvider} instance to allow overriding the icon for a block via the
+     * {@link IJadeProvider#getIcon(BlockAccessor, IPluginConfig, IElement)} method.
      *
-     * @param dataProvider The data provider instance
-     * @param position The position on the tooltip this applies to
+     * @param provider The data provider instance
      * @param block The highest level class to apply to
      */
-	void registerComponentProvider(IComponentProvider dataProvider, TooltipPosition position, Class<? extends Block> block);
+	void registerBlockIcon(IBlockComponentProvider provider, Class<? extends Block> block);
+
+	/**
+     * Register an {@link IJadeProvider} instance for appending informations to
+     * the tooltip.
+     *
+     * @param provider The data provider instance
+     * @param block The highest level class to apply to
+     */
+	void registerBlockComponent(IBlockComponentProvider provider, Class<? extends Block> block);
 
 	/**
      * Register an {@link IEntityComponentProvider} instance to allow overriding the icon for a entity via the
      * {@link IEntityComponentProvider#getIcon(EntityAccessor, IPluginConfig, IElement)} method.
      *
-     * @param dataProvider The data provider instance
+     * @param provider The data provider instance
      * @param entity The highest level class to apply to
      */
-	void registerIconProvider(IEntityComponentProvider dataProvider, Class<? extends Entity> entity);
+	void registerEntityIcon(IEntityComponentProvider provider, Class<? extends Entity> entity);
 
 	/**
      * Register an {@link IEntityComponentProvider} instance for appending {@link net.minecraft.util.text.Component}
      * to the tooltip.
      *
-     * @param dataProvider The data provider instance
-     * @param position The position on the tooltip this applies to
+     * @param provider The data provider instance
      * @param entity The highest level class to apply to
      */
-	void registerComponentProvider(IEntityComponentProvider dataProvider, TooltipPosition position, Class<? extends Entity> entity);
+	void registerEntityComponent(IEntityComponentProvider provider, Class<? extends Entity> entity);
 
 	/**
 	 * Mark a block as hidden in tooltip.

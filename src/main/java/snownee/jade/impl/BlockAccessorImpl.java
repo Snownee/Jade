@@ -1,6 +1,7 @@
 package snownee.jade.impl;
 
 import java.util.List;
+import java.util.function.Function;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -16,11 +17,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.fluids.FluidStack;
-import snownee.jade.Waila;
-import snownee.jade.WailaClient;
+import snownee.jade.Jade;
 import snownee.jade.api.AccessorImpl;
 import snownee.jade.api.BlockAccessor;
-import snownee.jade.api.IComponentProvider;
+import snownee.jade.api.IBlockComponentProvider;
+import snownee.jade.api.IJadeProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.impl.config.PluginConfig;
@@ -100,38 +101,39 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 			icon = new FluidStackElement(fluidStack);//.size(new Size(18, 18));
 		}
 
-		for (IComponentProvider provider : WailaClientRegistration.INSTANCE.getBlockIconProviders(getBlock())) {
+		for (IBlockComponentProvider provider : WailaClientRegistration.INSTANCE.getBlockIconProviders(getBlock(), PluginConfig.INSTANCE::get)) {
 			try {
 				IElement element = provider.getIcon(this, PluginConfig.INSTANCE, icon);
 				if (!RayTracing.isEmptyElement(element))
 					icon = element;
 			} catch (Throwable e) {
-				WailaExceptionHandler.handleErr(e, provider.getClass().toString(), null);
+				WailaExceptionHandler.handleErr(e, provider, null);
 			}
 		}
 		return icon;
 	}
 
 	@Override
-	public void _gatherComponents(ITooltip tooltip) {
-		List<IComponentProvider> providers = WailaClientRegistration.INSTANCE.getBlockProviders(getBlock(), getTooltipPosition());
-		for (IComponentProvider provider : providers) {
+	public void _gatherComponents(Function<IJadeProvider, ITooltip> tooltipProvider) {
+		List<IBlockComponentProvider> providers = WailaClientRegistration.INSTANCE.getBlockProviders(getBlock(), PluginConfig.INSTANCE::get);
+		for (IBlockComponentProvider provider : providers) {
+			ITooltip tooltip = tooltipProvider.apply(provider);
 			try {
 				provider.appendTooltip(tooltip, this, PluginConfig.INSTANCE);
 			} catch (Throwable e) {
-				WailaExceptionHandler.handleErr(e, provider.getClass().toString(), tooltip);
+				WailaExceptionHandler.handleErr(e, provider, tooltip);
 			}
 		}
 	}
 
 	@Override
 	public boolean shouldDisplay() {
-		return WailaClient.CONFIG.get().getGeneral().getDisplayBlocks();
+		return Jade.CONFIG.get().getGeneral().getDisplayBlocks();
 	}
 
 	@Override
 	public void _requestData(boolean showDetails) {
-		Waila.NETWORK.sendToServer(new RequestTilePacket(blockEntity, showDetails));
+		Jade.NETWORK.sendToServer(new RequestTilePacket(blockEntity, showDetails));
 	}
 
 	@Override

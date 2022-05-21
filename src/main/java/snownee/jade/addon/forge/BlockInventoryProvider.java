@@ -11,6 +11,7 @@ import com.google.common.collect.Sets;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
@@ -28,38 +29,38 @@ import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 import snownee.jade.Jade;
 import snownee.jade.JadeCommonConfig;
-import snownee.jade.addon.vanilla.VanillaPlugin;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.BlockAccessor;
-import snownee.jade.api.IComponentProvider;
+import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
+import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElementHelper;
 
-public class InventoryProvider implements IComponentProvider, IServerDataProvider<BlockEntity> {
+public enum BlockInventoryProvider implements IBlockComponentProvider, IServerDataProvider<BlockEntity> {
 
-	public static final InventoryProvider INSTANCE = new InventoryProvider();
+	INSTANCE;
+
 	// A set of tile names that need to be ignored in order to avoid network overload
 	// Yay hardcoding, but it's better than nothing for now
 	public static final Set<String> INVENTORY_IGNORE = Collections.synchronizedSet(Sets.newHashSet());
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		if (!config.get(VanillaPlugin.INVENTORY) || accessor.getBlockEntity() == null || accessor.getBlockEntity() instanceof AbstractFurnaceBlockEntity)
+		if (accessor.getBlockEntity() == null || accessor.getBlockEntity() instanceof AbstractFurnaceBlockEntity)
 			return;
-
 		append(tooltip, accessor);
 	}
 
 	public static void append(ITooltip tooltip, Accessor<?> accessor) {
 		if (accessor.getServerData().getBoolean("Loot")) {
-			tooltip.add(new TranslatableComponent("jade.not_generated"), VanillaPlugin.INVENTORY);
+			tooltip.add(new TranslatableComponent("jade.not_generated"));
 			return;
 		}
 		if (accessor.getServerData().getBoolean("Locked")) {
-			tooltip.add(new TranslatableComponent("jade.locked"), VanillaPlugin.INVENTORY);
+			tooltip.add(new TranslatableComponent("jade.locked"));
 			return;
 		}
 
@@ -93,10 +94,10 @@ public class InventoryProvider implements IComponentProvider, IServerDataProvide
 				if (showName) {
 					ItemStack copy = stack.copy();
 					copy.setCount(1);
-					elements.add(Jade.smallItem(helper, copy).tag(VanillaPlugin.INVENTORY));
-					elements.add(helper.text(new TextComponent(Integer.toString(stack.getCount())).append("× ").append(stack.getHoverName())).tag(VanillaPlugin.INVENTORY).message(null));
+					elements.add(Jade.smallItem(helper, copy));
+					elements.add(helper.text(new TextComponent(Integer.toString(stack.getCount())).append("× ").append(stack.getHoverName())).message(null));
 				} else {
-					elements.add(helper.item(stack).tag(VanillaPlugin.INVENTORY));
+					elements.add(helper.item(stack));
 				}
 				drawnCount += 1;
 			}
@@ -169,6 +170,11 @@ public class InventoryProvider implements IComponentProvider, IServerDataProvide
 		if (!empty) {
 			tag.put("jadeHandler", mergedHandler.serializeNBT());
 		}
+	}
+
+	@Override
+	public ResourceLocation getUid() {
+		return Identifiers.FORGE_BLOCK_INVENTORY;
 	}
 
 }

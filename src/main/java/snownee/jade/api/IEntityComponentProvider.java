@@ -9,16 +9,16 @@ import snownee.jade.api.ui.IElement;
 /**
  * Callback class interface used to provide Entity tooltip informations to Waila.<br>
  * All methods in this interface shouldn't to be called by the implementing mod. An instance of the class is to be
- * registered to Waila via the {@link IRegistrar} instance provided in the original registration callback method
- * (cf. {@link IRegistrar} documentation for more information).
+ * registered to Waila via the {@link IWailaClientRegistration} instance provided in the original registration callback method
+ * (cf. {@link IWailaClientRegistration} documentation for more information).
  *
  * @author ProfMobius
  */
-public interface IEntityComponentProvider {
+public interface IEntityComponentProvider extends IToggleableProvider {
 
 	/**
      * Callback used to set an element to display alongside the entity name in the tooltip, similar to how blocks are treated.
-     * Will only be called if the implementing class is registered via {@link IWailaClientRegistration#registerIconProvider}
+     * Will only be called if the implementing class is registered via {@link IWailaClientRegistration#registerEntityIcon}
      *
      * This method is only called on the client side. If you require data from the server, you should also implement
      * {@link IServerDataProvider#appendServerData(net.minecraft.nbt.CompoundTag, net.minecraft.entity.player.ServerPlayer, Level, Object)}
@@ -37,7 +37,7 @@ public interface IEntityComponentProvider {
 
 	/**
      * Callback used to add lines to one of the three sections of the tooltip (Head, Body, Tail).</br>
-     * Will only be called if the implementing class is registered via {@link IWailaClientRegistration#registerComponentProvider(IEntityComponentProvider, TooltipPosition, Class)}.</br>
+     * Will only be called if the implementing class is registered via {@link IWailaClientRegistration#registerEntityComponent(IEntityComponentProvider, TooltipPosition, Class)}.</br>
      * You are supposed to always return the modified input currenttip.</br>
      *
      * This method is only called on the client side. If you require data from the server, you should also implement

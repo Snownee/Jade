@@ -20,12 +20,9 @@ import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.forgespi.language.IModInfo;
 
-@OnlyIn(Dist.CLIENT)
 public class ModIdentification implements ResourceManagerReloadListener {
 
 	public static final Map<String, String> NAMES = Maps.newConcurrentMap();
@@ -54,7 +51,7 @@ public class ModIdentification implements ResourceManagerReloadListener {
 			if (I18n.exists(key)) {
 				return I18n.get(key);
 			} else {
-				return "Minecraft";
+				return namespace;
 			}
 		});
 	}

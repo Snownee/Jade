@@ -9,14 +9,11 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.phys.Vec2;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import snownee.jade.api.ui.Element;
 import snownee.jade.impl.Tooltip;
 import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.overlay.TooltipRenderer;
 
-@OnlyIn(Dist.CLIENT)
 public class BoxElement extends Element {
 	private final TooltipRenderer tooltip;
 	@Nullable

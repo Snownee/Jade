@@ -9,7 +9,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 
-@EventBusSubscriber(bus = Bus.MOD, modid = "waila")
+@EventBusSubscriber(bus = Bus.MOD)
 public class Test {
 
 	public static TestBlock BLOCK;

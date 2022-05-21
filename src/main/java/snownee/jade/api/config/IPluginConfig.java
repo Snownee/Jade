@@ -3,6 +3,7 @@ package snownee.jade.api.config;
 import java.util.Set;
 
 import net.minecraft.resources.ResourceLocation;
+import snownee.jade.api.IToggleableProvider;
 
 /**
  * Read-only interface for Waila internal config storage.<br>
@@ -26,6 +27,8 @@ public interface IPluginConfig {
      * @return all registered keys.
      */
 	Set<ResourceLocation> getKeys();
+
+	boolean get(IToggleableProvider provider);
 
 	/**
      * @see #get(ResourceLocation, boolean)

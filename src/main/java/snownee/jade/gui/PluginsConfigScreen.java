@@ -13,6 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 import snownee.jade.gui.config.OptionButton;
 import snownee.jade.gui.config.WailaOptionsList;
 import snownee.jade.gui.config.WailaOptionsList.Entry;
+import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.impl.config.ConfigEntry;
 import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.util.ModIdentification;
@@ -20,7 +21,7 @@ import snownee.jade.util.ModIdentification;
 public class PluginsConfigScreen extends BaseOptionsScreen {
 
 	public PluginsConfigScreen(Screen parent) {
-		super(parent, new TranslatableComponent("gui.waila.plugin_settings"), PluginConfig.INSTANCE::save, PluginConfig.INSTANCE::reload);
+		super(parent, new TranslatableComponent("gui.jade.plugin_settings"), PluginConfig.INSTANCE::save, PluginConfig.INSTANCE::reload);
 	}
 
 	@Override
@@ -40,12 +41,12 @@ public class PluginsConfigScreen extends BaseOptionsScreen {
 					@Override
 					public WailaOptionsList getOptions() {
 						WailaOptionsList options = new WailaOptionsList(this, minecraft, width, height, 32, height - 32, 30);
-						keys.stream().sorted((o1, o2) -> o1.getPath().compareToIgnoreCase(o2.getPath())).forEach(i -> {
+						keys.stream().sorted((o1, o2) -> WailaCommonRegistration.INSTANCE.priorities.get(o1) - WailaCommonRegistration.INSTANCE.priorities.get(o2)).forEach(i -> {
 							ConfigEntry configEntry = PluginConfig.INSTANCE.getEntry(i);
 							Consumer<Builder<Boolean>> tooltip = null;
 							boolean synced = configEntry.isSynced() && minecraft.level != null && !minecraft.hasSingleplayerServer();
 							if (synced)
-								tooltip = b -> b.withTooltip(bl -> minecraft.font.split(new TranslatableComponent("gui.waila.forced_plugin_config"), 200));
+								tooltip = b -> b.withTooltip(bl -> minecraft.font.split(new TranslatableComponent("gui.jade.forced_plugin_config"), 200));
 							Entry entry = options.choices(translationKey + "." + i.getPath(), configEntry.getValue(), b -> PluginConfig.INSTANCE.set(i, b), tooltip);
 							if (synced)
 								entry.setDisabled(true);

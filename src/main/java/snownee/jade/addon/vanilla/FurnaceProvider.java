@@ -4,31 +4,27 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import snownee.jade.api.BlockAccessor;
-import snownee.jade.api.IComponentProvider;
+import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
+import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.impl.ui.ProgressArrowElement;
 
-public class FurnaceProvider implements IComponentProvider, IServerDataProvider<BlockEntity> {
+public enum FurnaceProvider implements IBlockComponentProvider, IServerDataProvider<BlockEntity> {
 
-	public static final FurnaceProvider INSTANCE = new FurnaceProvider();
+	INSTANCE;
 
 	@Override
-	@OnlyIn(Dist.CLIENT)
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		if (!config.get(VanillaPlugin.FURNACE))
-			return;
-
 		int progress = accessor.getServerData().getInt("progress");
 		if (progress == 0)
 			return;
@@ -58,6 +54,11 @@ public class FurnaceProvider implements IComponentProvider, IServerDataProvider<
 		CompoundTag furnaceTag = furnace.saveWithoutMetadata();
 		data.putInt("progress", furnaceTag.getInt("CookTime"));
 		data.putInt("total", furnaceTag.getInt("CookTimeTotal"));
+	}
+
+	@Override
+	public ResourceLocation getUid() {
+		return Identifiers.MC_FURNACE;
 	}
 
 }

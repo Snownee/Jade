@@ -42,11 +42,10 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
-import snownee.jade.WailaClient;
+import snownee.jade.Jade;
 import snownee.jade.api.ui.IBorderStyle;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.impl.ui.BorderStyle;
-import snownee.jade.util.WailaExceptionHandler;
 
 @SuppressWarnings("deprecation")
 public class DisplayHelper implements IDisplayHelper {
@@ -64,15 +63,10 @@ public class DisplayHelper implements IDisplayHelper {
 	public void drawItem(PoseStack matrixStack, float x, float y, ItemStack stack, float scale, @Nullable String text) {
 		matrixStack.pushPose();
 		RenderSystem.enableDepthTest();
-		try {
-			//CLIENT.getItemRenderer().renderGuiItem(stack, (int) x, (int) y + 20);
-			tryRenderGuiItem(matrixStack, stack, x, y, scale);
-			renderGuiItemDecorations(matrixStack, CLIENT.font, stack, x, y, text);
-			//renderStackSize(matrixStack, CLIENT.font, stack, x, y);
-		} catch (Exception e) {
-			String stackStr = stack != null ? stack.toString() : "NullStack";
-			WailaExceptionHandler.handleErr(e, "drawItem | " + stackStr, null);
-		}
+		//CLIENT.getItemRenderer().renderGuiItem(stack, (int) x, (int) y + 20);
+		tryRenderGuiItem(matrixStack, stack, x, y, scale);
+		renderGuiItemDecorations(matrixStack, CLIENT.font, stack, x, y, text);
+		//renderStackSize(matrixStack, CLIENT.font, stack, x, y);
 		RenderSystem.disableDepthTest();
 		matrixStack.popPose();
 	}
@@ -460,7 +454,7 @@ public class DisplayHelper implements IDisplayHelper {
 
 	@Override
 	public void drawText(PoseStack poseStack, String text, float x, float y, int color) {
-		boolean shadow = WailaClient.CONFIG.get().getOverlay().getTheme().textShadow;
+		boolean shadow = Jade.CONFIG.get().getOverlay().getTheme().textShadow;
 		if (shadow) {
 			CLIENT.font.drawShadow(poseStack, text, x, y, color);
 		} else {
@@ -470,7 +464,7 @@ public class DisplayHelper implements IDisplayHelper {
 
 	@Override
 	public void drawText(PoseStack poseStack, Component text, float x, float y, int color) {
-		boolean shadow = WailaClient.CONFIG.get().getOverlay().getTheme().textShadow;
+		boolean shadow = Jade.CONFIG.get().getOverlay().getTheme().textShadow;
 		if (shadow) {
 			CLIENT.font.drawShadow(poseStack, text, x, y, color);
 		} else {

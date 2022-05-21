@@ -1,5 +1,7 @@
 package snownee.jade.api;
 
+import java.util.function.Function;
+
 import org.jetbrains.annotations.NotNull;
 
 import net.minecraft.nbt.CompoundTag;
@@ -28,11 +30,6 @@ public interface Accessor<T extends HitResult> {
 	 */
 	boolean isServerConnected();
 
-	/**
-	 * Get {@link TooltipPosition} the {@link ITooltip} currently gathering
-	 */
-	TooltipPosition getTooltipPosition();
-
 	ItemStack getPickedResult();
 
 	boolean shouldDisplay();
@@ -49,10 +46,7 @@ public interface Accessor<T extends HitResult> {
 	IElement _getIcon();
 
 	@Deprecated
-	void _gatherComponents(ITooltip tooltip);
-
-	@Deprecated
-	void _setTooltipPosition(TooltipPosition tooltipPosition);
+	void _gatherComponents(Function<IJadeProvider, ITooltip> tooltipProvider);
 
 	@Deprecated
 	Object _getTrackObject();

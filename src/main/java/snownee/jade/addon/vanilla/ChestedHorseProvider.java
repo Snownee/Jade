@@ -2,37 +2,34 @@ package snownee.jade.addon.vanilla;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.animal.horse.AbstractChestedHorse;
 import net.minecraft.world.entity.animal.horse.Llama;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.items.CapabilityItemHandler;
 import snownee.jade.JadeCommonConfig;
-import snownee.jade.addon.forge.InventoryProvider;
+import snownee.jade.addon.forge.BlockInventoryProvider;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
+import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
 
-public class ChestedHorseProvider implements IEntityComponentProvider, IServerDataProvider<Entity> {
-	public static final ChestedHorseProvider INSTANCE = new ChestedHorseProvider();
+public enum ChestedHorseProvider implements IEntityComponentProvider, IServerDataProvider<Entity> {
+
+	INSTANCE;
 
 	@Override
-	@OnlyIn(Dist.CLIENT)
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
-		if (!config.get(VanillaPlugin.HORSE_INVENTORY)) {
-			return;
-		}
 		AbstractChestedHorse horse = (AbstractChestedHorse) accessor.getEntity();
 		if (horse instanceof Llama) {
 			tooltip.add(new TranslatableComponent("jade.llamaStrength", ((Llama) horse).getStrength()));
 		}
 		if (horse.hasChest()) {
-			InventoryProvider.append(tooltip, accessor);
+			BlockInventoryProvider.append(tooltip, accessor);
 		}
 	}
 
@@ -45,7 +42,12 @@ public class ChestedHorseProvider implements IEntityComponentProvider, IServerDa
 
 		AbstractChestedHorse horse = (AbstractChestedHorse) t;
 		if (horse.hasChest()) {
-			horse.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(h -> InventoryProvider.putInvData(data, h, size, 2));
+			horse.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(h -> BlockInventoryProvider.putInvData(data, h, size, 2));
 		}
+	}
+
+	@Override
+	public ResourceLocation getUid() {
+		return Identifiers.MC_CHESTED_HORSE;
 	}
 }

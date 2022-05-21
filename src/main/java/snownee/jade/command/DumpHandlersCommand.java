@@ -20,7 +20,7 @@ public class DumpHandlersCommand {
 			File file = new File("jade_handlers.md");
 			try (FileWriter writer = new FileWriter(file)) {
 				writer.write(DumpGenerator.generateInfoDump());
-				context.getSource().sendSuccess(new TranslatableComponent("command.waila.dump.success"), false);
+				context.getSource().sendSuccess(new TranslatableComponent("command.jade.dump.success"), false);
 				return 1;
 			} catch (IOException e) {
 				context.getSource().sendFailure(new TextComponent(e.getClass().getSimpleName() + ": " + e.getMessage()));

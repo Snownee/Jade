@@ -10,9 +10,10 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
-import snownee.jade.Waila;
+import snownee.jade.Jade;
 import snownee.jade.api.IServerDataProvider;
 import snownee.jade.impl.WailaCommonRegistration;
+import snownee.jade.util.WailaExceptionHandler;
 
 public class RequestEntityPacket {
 
@@ -54,12 +55,16 @@ public class RequestEntityPacket {
 
 				CompoundTag tag = new CompoundTag();
 				for (IServerDataProvider<Entity> provider : providers) {
-					provider.appendServerData(tag, player, world, entity, message.showDetails);
+					try {
+						provider.appendServerData(tag, player, world, entity, message.showDetails);
+					} catch (Exception e) {
+						WailaExceptionHandler.handleErr(e, provider, null);
+					}
 				}
 
 				tag.putInt("WailaEntityID", entity.getId());
 
-				Waila.NETWORK.sendTo(new ReceiveDataPacket(tag), player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+				Jade.NETWORK.sendTo(new ReceiveDataPacket(tag), player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
 			});
 			context.get().setPacketHandled(true);
 		}

@@ -9,16 +9,16 @@ import snownee.jade.api.ui.IElement;
 /**
  * Callback class interface used to provide Block/BlockEntity tooltip informations to Waila.<br>
  * All methods in this interface shouldn't to be called by the implementing mod. An instance of the class is to be
- * registered to Waila via the {@link IRegistrar} instance provided in the original registration callback method
- * (cf. {@link IRegistrar} documentation for more information).
+ * registered to Waila via the {@link IWailaClientRegistration} instance provided in the original registration callback method
+ * (cf. {@link IWailaClientRegistration} documentation for more information).
  *
  * @author ProfMobius
  */
-public interface IComponentProvider {
+public interface IBlockComponentProvider extends IToggleableProvider {
 
 	/**
      * Callback used to override the default Waila lookup system.</br>
-     * Will only be called if the implementing class is registered via {@link IWailaClientRegistration#registerIconProvider}.</br>
+     * Will only be called if the implementing class is registered via {@link IWailaClientRegistration#registerBlockIcon}.</br>
      * <p>
      * This method is only called on the client side. If you require data from the server, you should also implement
      * {@link IServerDataProvider#appendServerData(net.minecraft.nbt.CompoundTag, net.minecraft.entity.player.ServerPlayer, Level, Object)}
@@ -37,7 +37,7 @@ public interface IComponentProvider {
 
 	/**
      * Callback used to add lines to one of the three sections of the tooltip (Head, Body, Tail).</br>
-     * Will only be called if the implementing class is registered via {@link IWailaClientRegistration#registerComponentProvider(IComponentProvider, TooltipPosition, Class)}.</br>
+     * Will only be called if the implementing class is registered via {@link IWailaClientRegistration#registerBlockComponent(IBlockComponentProvider, TooltipPosition, Class)}.</br>
      * You are supposed to always return the modified input tooltip.</br>
      * <p>
      * This method is only called on the client side. If you require data from the server, you should also implement

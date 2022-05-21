@@ -15,7 +15,7 @@ import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
 import net.minecraftforge.common.ForgeConfigSpec.IntValue;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
-import snownee.jade.addon.forge.InventoryProvider;
+import snownee.jade.addon.forge.BlockInventoryProvider;
 
 public final class JadeCommonConfig {
 
@@ -56,7 +56,7 @@ public final class JadeCommonConfig {
 		inventoryShowItemPreLine = inventoryShowItemPreLineVal.get();
 		bypassLockedContainer = bypassLockedContainerVal.get();
 		inventoryBlacklist.clear();
-		inventoryBlacklist.addAll(InventoryProvider.INVENTORY_IGNORE);
+		inventoryBlacklist.addAll(BlockInventoryProvider.INVENTORY_IGNORE);
 		inventoryBlacklist.addAll(inventoryBlacklistVal.get());
 
 		onlyShowVanilla = onlyShowVanillaVal.get();

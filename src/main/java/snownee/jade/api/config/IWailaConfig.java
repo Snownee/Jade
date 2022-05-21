@@ -31,8 +31,6 @@ public interface IWailaConfig {
 
 		void setHideFromDebug(boolean hideFromDebug);
 
-		void setIconMode(IconMode iconMode);
-
 		void toggleTTS();
 
 		void setTTSMode(TTSMode ttsMode);
@@ -45,15 +43,13 @@ public interface IWailaConfig {
 
 		void setDisplayFluids(ClipContext.Fluid displayFluids);
 
+		void setItemModNameTooltip(boolean itemModNameTooltip);
+
 		boolean shouldDisplayTooltip();
 
 		DisplayMode getDisplayMode();
 
 		boolean shouldHideFromDebug();
-
-		IconMode getIconMode();
-
-		boolean shouldShowIcon();
 
 		boolean shouldEnableTextToSpeech();
 
@@ -66,6 +62,8 @@ public interface IWailaConfig {
 		boolean shouldDisplayFluids();
 
 		ClipContext.Fluid getDisplayFluids();
+
+		boolean showItemModNameTooltip();
 
 		float getReachDistance();
 
@@ -127,6 +125,12 @@ public interface IWailaConfig {
 			int alphaChannel = (int) (0xFF * Mth.clamp(alpha, 0, 1));
 			return (color & 0xFFFFFF) | alphaChannel << 24;
 		}
+
+		boolean shouldShowIcon();
+
+		void setIconMode(IconMode iconMode);
+
+		IconMode getIconMode();
 	}
 
 	public interface IConfigFormatting {

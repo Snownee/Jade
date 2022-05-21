@@ -1,30 +1,12 @@
 package snownee.jade.api;
 
-import org.jetbrains.annotations.ApiStatus.Experimental;
+import org.jetbrains.annotations.ApiStatus.NonExtendable;
 
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
-@Experimental
+@NonExtendable
 public interface IWailaCommonRegistration {
-
-	/**
-     * Register a namespaced config key to be accessed within data providers.
-     *
-     * @param key the namespaced key
-     * @param defaultValue the default value
-     */
-	void addConfig(ResourceLocation key, boolean defaultValue);
-
-	/**
-     * Register a namespaced config key to be accessed within data providers. These values are sent from the server to
-     * the client upon connection.
-     *
-     * @param key The namespaced key
-     * @param defaultValue The default value
-     */
-	void addSyncedConfig(ResourceLocation key, boolean defaultValue);
 
 	/**
 	 * Register an {@link IServerDataProvider<BlockEntity>} instance for data syncing purposes.

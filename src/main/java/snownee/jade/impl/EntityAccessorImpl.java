@@ -1,6 +1,7 @@
 package snownee.jade.impl;
 
 import java.util.List;
+import java.util.function.Function;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
@@ -11,11 +12,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
-import snownee.jade.Waila;
-import snownee.jade.WailaClient;
+import snownee.jade.Jade;
 import snownee.jade.api.AccessorImpl;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
+import snownee.jade.api.IJadeProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.impl.config.PluginConfig;
@@ -57,38 +58,39 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 				icon = ItemStackElement.of(stack);
 		}
 
-		for (IEntityComponentProvider provider : WailaClientRegistration.INSTANCE.getEntityIconProviders(entity)) {
+		for (IEntityComponentProvider provider : WailaClientRegistration.INSTANCE.getEntityIconProviders(entity, PluginConfig.INSTANCE::get)) {
 			try {
 				IElement element = provider.getIcon(this, PluginConfig.INSTANCE, icon);
 				if (!RayTracing.isEmptyElement(element))
 					icon = element;
 			} catch (Throwable e) {
-				WailaExceptionHandler.handleErr(e, provider.getClass().toString(), null);
+				WailaExceptionHandler.handleErr(e, provider, null);
 			}
 		}
 		return icon;
 	}
 
 	@Override
-	public void _gatherComponents(ITooltip tooltip) {
-		List<IEntityComponentProvider> providers = WailaClientRegistration.INSTANCE.getEntityProviders(getEntity(), getTooltipPosition());
+	public void _gatherComponents(Function<IJadeProvider, ITooltip> tooltipProvider) {
+		List<IEntityComponentProvider> providers = WailaClientRegistration.INSTANCE.getEntityProviders(getEntity(), PluginConfig.INSTANCE::get);
 		for (IEntityComponentProvider provider : providers) {
+			ITooltip tooltip = tooltipProvider.apply(provider);
 			try {
 				provider.appendTooltip(tooltip, this, PluginConfig.INSTANCE);
 			} catch (Throwable e) {
-				WailaExceptionHandler.handleErr(e, provider.getClass().toString(), tooltip);
+				WailaExceptionHandler.handleErr(e, provider, tooltip);
 			}
 		}
 	}
 
 	@Override
 	public boolean shouldDisplay() {
-		return WailaClient.CONFIG.get().getGeneral().getDisplayEntities();
+		return Jade.CONFIG.get().getGeneral().getDisplayEntities();
 	}
 
 	@Override
 	public void _requestData(boolean showDetails) {
-		Waila.NETWORK.sendToServer(new RequestEntityPacket(entity, showDetails));
+		Jade.NETWORK.sendToServer(new RequestEntityPacket(entity, showDetails));
 	}
 
 	@Override

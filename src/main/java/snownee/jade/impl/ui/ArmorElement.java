@@ -10,7 +10,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec2;
-import snownee.jade.WailaClient;
+import snownee.jade.Jade;
 import snownee.jade.api.config.IWailaConfig.IConfigGeneral;
 import snownee.jade.api.ui.Element;
 import snownee.jade.overlay.DisplayHelper;
@@ -27,7 +27,7 @@ public class ArmorElement extends Element {
 
 	@Override
 	public Vec2 getSize() {
-		IConfigGeneral config = WailaClient.CONFIG.get().getGeneral();
+		IConfigGeneral config = Jade.CONFIG.get().getGeneral();
 		if (armor > config.getMaxHealthForRender()) {
 			String text = "  " + DisplayHelper.dfCommas.format(armor);
 			Font font = Minecraft.getInstance().font;
@@ -41,7 +41,7 @@ public class ArmorElement extends Element {
 
 	@Override
 	public void render(PoseStack matrixStack, float x, float y, float maxX, float maxY) {
-		IConfigGeneral config = WailaClient.CONFIG.get().getGeneral();
+		IConfigGeneral config = Jade.CONFIG.get().getGeneral();
 		if (armor > config.getMaxHealthForRender()) {
 			DisplayHelper.renderIcon(matrixStack, x, y, 8, 8, IconUI.ARMOR);
 			String text = "  " + DisplayHelper.dfCommas.format(armor);
@@ -78,6 +78,6 @@ public class ArmorElement extends Element {
 
 	@Override
 	public @Nullable Component getMessage() {
-		return new TranslatableComponent("narration.waila.armor", DisplayHelper.dfCommas.format(armor));
+		return new TranslatableComponent("narration.jade.armor", DisplayHelper.dfCommas.format(armor));
 	}
 }

@@ -19,6 +19,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.tags.BlockTags;
@@ -29,14 +30,12 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec2;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.IForgeShearable;
 import net.minecraftforge.common.Tags;
-import snownee.jade.addon.vanilla.VanillaPlugin;
 import snownee.jade.api.BlockAccessor;
-import snownee.jade.api.IComponentProvider;
+import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.ITooltip;
+import snownee.jade.api.Identifiers;
 import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.IElement;
@@ -44,9 +43,9 @@ import snownee.jade.api.ui.IElement.Align;
 import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.impl.ui.SubTextElement;
 
-public class HarvestToolProvider implements IComponentProvider, ResourceManagerReloadListener {
+public enum HarvestToolProvider implements IBlockComponentProvider, ResourceManagerReloadListener {
 
-	public static final HarvestToolProvider INSTANCE = new HarvestToolProvider();
+	INSTANCE;
 
 	public static final Cache<BlockState, ImmutableList<ItemStack>> resultCache = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
 	public static final Map<String, ToolHandler> TOOL_HANDLERS = Maps.newLinkedHashMap();
@@ -84,7 +83,6 @@ public class HarvestToolProvider implements IComponentProvider, ResourceManagerR
 	}
 
 	@Override
-	@OnlyIn(Dist.CLIENT)
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		Player player = accessor.getPlayer();
 		if (player.isCreative() || player.isSpectator()) {
@@ -94,18 +92,11 @@ public class HarvestToolProvider implements IComponentProvider, ResourceManagerR
 		BlockState state = accessor.getBlockState();
 		float hardness = state.getDestroySpeed(accessor.getLevel(), accessor.getPosition());
 		if (hardness < 0) {
-			if (accessor.getTooltipPosition() == TooltipPosition.BODY) {
-				tooltip.add(helper.text(UNBREAKABLE_TEXT).message(null));
-			}
+			tooltip.add(helper.text(UNBREAKABLE_TEXT).message(null));
 			return;
 		}
 
-		boolean newLine = config.get(VanillaPlugin.HARVEST_TOOL_NEW_LINE);
-		if (!newLine && accessor.getTooltipPosition() != TooltipPosition.TAIL) {
-			return;
-		} else if (newLine && accessor.getTooltipPosition() != TooltipPosition.BODY) {
-			return;
-		}
+		boolean newLine = config.get(Identifiers.MC_HARVEST_TOOL_NEW_LINE);
 		List<IElement> elements = getText(accessor, config, tooltip.getElementHelper());
 		if (elements.isEmpty()) {
 			return;
@@ -119,11 +110,7 @@ public class HarvestToolProvider implements IComponentProvider, ResourceManagerR
 		}
 	}
 
-	@OnlyIn(Dist.CLIENT)
 	public List<IElement> getText(BlockAccessor accessor, IPluginConfig config, IElementHelper helper) {
-		if (!config.get(VanillaPlugin.HARVEST_TOOL)) {
-			return Collections.EMPTY_LIST;
-		}
 		BlockState state = accessor.getBlockState();
 		List<ItemStack> tools = Collections.EMPTY_LIST;
 		try {
@@ -134,12 +121,12 @@ public class HarvestToolProvider implements IComponentProvider, ResourceManagerR
 		if (tools.isEmpty()) {
 			return Collections.EMPTY_LIST;
 		}
-		if (!state.requiresCorrectToolForDrops() && !config.get(VanillaPlugin.EFFECTIVE_TOOL)) {
+		if (!state.requiresCorrectToolForDrops() && !config.get(Identifiers.MC_EFFECTIVE_TOOL)) {
 			return Collections.EMPTY_LIST;
 		}
 
 		int offsetY = 0;
-		if (!config.get(VanillaPlugin.HARVEST_TOOL_NEW_LINE)) {
+		if (!config.get(Identifiers.MC_HARVEST_TOOL_NEW_LINE)) {
 			offsetY = -3;
 		}
 		List<IElement> elements = Lists.newArrayList();
@@ -170,6 +157,16 @@ public class HarvestToolProvider implements IComponentProvider, ResourceManagerR
 		//if (resourcePredicate.test(VanillaResourceType.LANGUAGES)) {
 		resultCache.invalidateAll();
 		//}
+	}
+
+	@Override
+	public ResourceLocation getUid() {
+		return Identifiers.MC_HARVEST_TOOL;
+	}
+
+	@Override
+	public int getDefaultPriority() {
+		return TooltipPosition.HEAD + 2000;
 	}
 
 }

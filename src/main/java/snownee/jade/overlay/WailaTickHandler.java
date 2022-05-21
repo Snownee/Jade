@@ -3,7 +3,6 @@ package snownee.jade.overlay;
 import com.mojang.text2speech.Narrator;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.entity.player.ChatVisiblity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -11,26 +10,21 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import snownee.jade.Waila;
-import snownee.jade.WailaClient;
+import snownee.jade.Jade;
+import snownee.jade.JadeClient;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.ITooltip;
-import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IWailaConfig.DisplayMode;
 import snownee.jade.api.config.IWailaConfig.IConfigGeneral;
 import snownee.jade.api.event.WailaRayTraceEvent;
-import snownee.jade.api.event.WailaTooltipEvent;
 import snownee.jade.gui.BaseOptionsScreen;
 import snownee.jade.impl.BlockAccessorImpl;
 import snownee.jade.impl.EntityAccessorImpl;
+import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.Tooltip;
 
-@Mod.EventBusSubscriber(modid = Waila.MODID, value = Dist.CLIENT)
 public class WailaTickHandler {
 
 	private static WailaTickHandler INSTANCE = new WailaTickHandler();
@@ -43,7 +37,7 @@ public class WailaTickHandler {
 	public void tickClient() {
 		progressTracker.tick();
 
-		IConfigGeneral config = WailaClient.CONFIG.get().getGeneral();
+		IConfigGeneral config = Jade.CONFIG.get().getGeneral();
 		if (!config.shouldDisplayTooltip()) {
 			tooltipRenderer = null;
 			return;
@@ -66,8 +60,7 @@ public class WailaTickHandler {
 		RayTracing.INSTANCE.fire();
 		HitResult target = RayTracing.INSTANCE.getTarget();
 
-		Tooltip currentTip = new Tooltip();
-		Tooltip currentTipBody = new Tooltip();
+		Tooltip tooltip = new Tooltip();
 
 		if (target == null || target.getType() == HitResult.Type.MISS) {
 			tooltipRenderer = null;
@@ -97,7 +90,7 @@ public class WailaTickHandler {
 			tooltipRenderer = null;
 			return;
 		}
-		boolean showDetails = WailaClient.showDetails.isDown();
+		boolean showDetails = JadeClient.showDetails.isDown();
 		if (accessor.isServerConnected()) {
 			boolean request = accessor.shouldRequestData();
 			if (ObjectDataCenter.isTimeElapsed(ObjectDataCenter.rateLimiter)) {
@@ -110,16 +103,23 @@ public class WailaTickHandler {
 			}
 		}
 
-		gatherComponents(accessor, currentTip, TooltipPosition.HEAD);
-		gatherComponents(accessor, currentTipBody, TooltipPosition.BODY);
-		if (config.getDisplayMode() == DisplayMode.LITE && !currentTipBody.isEmpty() && !showDetails) {
-			currentTip.sneakyDetails = true;
+		if (config.getDisplayMode() == DisplayMode.LITE && !showDetails) {
+			Tooltip dummyTooltip = new Tooltip();
+			accessor._gatherComponents($ -> {
+				if (Math.abs(WailaCommonRegistration.INSTANCE.priorities.get($)) > 5000) {
+					return tooltip;
+				} else {
+					return dummyTooltip;
+				}
+			});
+			if (!dummyTooltip.isEmpty()) {
+				tooltip.sneakyDetails = true;
+			}
 		} else {
-			currentTip.lines.addAll(currentTipBody.lines);
+			accessor._gatherComponents($ -> tooltip);
 		}
-		gatherComponents(accessor, currentTip, TooltipPosition.TAIL);
 
-		tooltipRenderer = new TooltipRenderer(currentTip, true);
+		tooltipRenderer = new TooltipRenderer(tooltip, true);
 	}
 
 	private static Narrator getNarrator() {
@@ -130,29 +130,6 @@ public class WailaTickHandler {
 		if (INSTANCE == null)
 			INSTANCE = new WailaTickHandler();
 		return INSTANCE;
-	}
-
-	@SuppressWarnings("deprecation")
-	public static void gatherComponents(Accessor<?> accessor, Tooltip tooltip, TooltipPosition position) {
-		accessor._setTooltipPosition(position);
-		accessor._gatherComponents(tooltip);
-		accessor._setTooltipPosition(null);
-	}
-
-	@SubscribeEvent
-	public static void onTooltip(WailaTooltipEvent event) {
-		if (event.getTooltip().isEmpty())
-			return;
-
-		if (!getNarrator().active() || !WailaClient.CONFIG.get().getGeneral().shouldEnableTextToSpeech())
-			return;
-
-		if (Minecraft.getInstance().screen != null && Minecraft.getInstance().options.chatVisibility != ChatVisiblity.HIDDEN)
-			return;
-
-		if (Minecraft.getInstance().level != null && Minecraft.getInstance().level.getGameTime() % 5 > 0) {
-			return;
-		}
 	}
 
 	public static void narrate(ITooltip tooltip, boolean dedupe) {

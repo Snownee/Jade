@@ -10,7 +10,8 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.common.MinecraftForge;
-import snownee.jade.WailaClient;
+import snownee.jade.Jade;
+import snownee.jade.JadeClient;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
 import snownee.jade.api.config.IWailaConfig.IconMode;
@@ -34,10 +35,10 @@ public class OverlayRenderer {
 		if (WailaTickHandler.instance().tooltipRenderer == null)
 			return;
 
-		if (!WailaClient.CONFIG.get().getGeneral().shouldDisplayTooltip())
+		if (!Jade.CONFIG.get().getGeneral().shouldDisplayTooltip())
 			return;
 
-		if (WailaClient.CONFIG.get().getGeneral().getDisplayMode() == IWailaConfig.DisplayMode.HOLD_KEY && !WailaClient.showOverlay.isDown())
+		if (Jade.CONFIG.get().getGeneral().getDisplayMode() == IWailaConfig.DisplayMode.HOLD_KEY && !JadeClient.showOverlay.isDown())
 			return;
 
 		Minecraft mc = Minecraft.getInstance();
@@ -53,7 +54,7 @@ public class OverlayRenderer {
 				return;
 			} else {
 				Rect2i position = WailaTickHandler.instance().tooltipRenderer.getPosition();
-				IConfigOverlay overlay = WailaClient.CONFIG.get().getOverlay();
+				IConfigOverlay overlay = Jade.CONFIG.get().getOverlay();
 				Window window = mc.getWindow();
 				double x = mc.mouseHandler.xpos() * window.getGuiScaledWidth() / window.getScreenWidth();
 				double y = mc.mouseHandler.ypos() * window.getGuiScaledHeight() / window.getScreenHeight();
@@ -68,7 +69,7 @@ public class OverlayRenderer {
 		if (mc.gui.getTabList().visible || mc.getOverlay() != null || mc.options.hideGui)
 			return;
 
-		if (mc.options.renderDebug && WailaClient.CONFIG.get().getGeneral().shouldHideFromDebug())
+		if (mc.options.renderDebug && Jade.CONFIG.get().getGeneral().shouldHideFromDebug())
 			return;
 
 		ticks += mc.getDeltaFrameTime();
@@ -81,7 +82,7 @@ public class OverlayRenderer {
 		matrixStack.pushPose();
 
 		Rect2i position = tooltip.getPosition();
-		IConfigOverlay overlay = WailaClient.CONFIG.get().getOverlay();
+		IConfigOverlay overlay = Jade.CONFIG.get().getOverlay();
 		if (!overlay.getSquare()) {
 			position.setWidth(position.getWidth() + 2);
 			position.setHeight(position.getHeight() + 2);
@@ -119,7 +120,7 @@ public class OverlayRenderer {
 		if (a > 0) {
 			WailaRenderEvent.Color colorEvent = new WailaRenderEvent.Color(overlay.getAlpha(), IConfigOverlay.applyAlpha(backgroundColorRaw, a), IConfigOverlay.applyAlpha(gradientStartRaw, a), IConfigOverlay.applyAlpha(gradientEndRaw, a));
 			MinecraftForge.EVENT_BUS.post(colorEvent);
-			drawTooltipBox(matrixStack, 0, 0, position.getWidth(), position.getHeight(), colorEvent.getBackground(), colorEvent.getGradientStart(), colorEvent.getGradientEnd(), WailaClient.CONFIG.get().getOverlay().getSquare());
+			drawTooltipBox(matrixStack, 0, 0, position.getWidth(), position.getHeight(), colorEvent.getBackground(), colorEvent.getGradientStart(), colorEvent.getGradientEnd(), Jade.CONFIG.get().getOverlay().getSquare());
 		}
 
 		RenderSystem.enableBlend();
@@ -132,7 +133,7 @@ public class OverlayRenderer {
 			Vec2 size = tooltip.icon.getCachedSize();
 			Vec2 offset = tooltip.icon.getTranslation();
 			float offsetY;
-			if (WailaClient.CONFIG.get().getGeneral().getIconMode() == IconMode.TOP) {
+			if (overlay.getIconMode() == IconMode.TOP) {
 				offsetY = offset.y + 2;
 			} else {
 				offsetY = (position.getHeight() - size.y) / 2 - 1;
@@ -149,7 +150,7 @@ public class OverlayRenderer {
 		matrixStack.popPose();
 		Minecraft.getInstance().getProfiler().pop();
 
-		if (WailaClient.CONFIG.get().getGeneral().shouldEnableTextToSpeech() && Minecraft.getInstance().level != null && Minecraft.getInstance().level.getGameTime() % 5 == 0) {
+		if (Jade.CONFIG.get().getGeneral().shouldEnableTextToSpeech() && Minecraft.getInstance().level != null && Minecraft.getInstance().level.getGameTime() % 5 == 0) {
 			WailaTickHandler.narrate(tooltip.getTooltip(), true);
 		}
 	}
@@ -173,7 +174,7 @@ public class OverlayRenderer {
 	}
 
 	public static void updateTheme() {
-		Theme theme = WailaClient.CONFIG.get().getOverlay().getTheme();
+		Theme theme = Jade.CONFIG.get().getOverlay().getTheme();
 		backgroundColorRaw = Color.fromString(theme.backgroundColor).toInt();
 		gradientEndRaw = Color.fromString(theme.gradientEnd).toInt();
 		gradientStartRaw = Color.fromString(theme.gradientStart).toInt();

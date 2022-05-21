@@ -18,7 +18,7 @@ import snownee.jade.api.config.Theme;
 import snownee.jade.overlay.OverlayRenderer;
 
 /**
- * Get this instance from {@link mcp.mobius.waila.api.IWailaCommonRegistration#getConfig}
+ * Get this instance from {@link mcp.IWailaCommonRegistration.waila.api.IWailaCommonRegistration#getConfig}
  */
 public class WailaConfig implements IWailaConfig {
 
@@ -47,7 +47,6 @@ public class WailaConfig implements IWailaConfig {
 		private boolean displayEntities = true;
 		private DisplayMode displayMode = DisplayMode.TOGGLE;
 		private boolean hideFromDebug = true;
-		private IconMode iconMode = IconMode.TOP;
 		private boolean enableTextToSpeech = false;
 		private TTSMode ttsMode = TTSMode.PRESS;
 		private int maxHealthForRender = 40;
@@ -56,6 +55,7 @@ public class WailaConfig implements IWailaConfig {
 		private float reachDistance = 0;
 		@Expose
 		private boolean debug = false;
+		private boolean itemModNameTooltip = true;
 
 		@Override
 		public void setDisplayTooltip(boolean displayTooltip) {
@@ -90,11 +90,6 @@ public class WailaConfig implements IWailaConfig {
 		@Override
 		public void setHideFromDebug(boolean hideFromDebug) {
 			this.hideFromDebug = hideFromDebug;
-		}
-
-		@Override
-		public void setIconMode(IconMode iconMode) {
-			this.iconMode = iconMode;
 		}
 
 		@Override
@@ -140,16 +135,6 @@ public class WailaConfig implements IWailaConfig {
 		@Override
 		public boolean shouldHideFromDebug() {
 			return hideFromDebug;
-		}
-
-		@Override
-		public IconMode getIconMode() {
-			return iconMode;
-		}
-
-		@Override
-		public boolean shouldShowIcon() {
-			return iconMode != IconMode.HIDE;
 		}
 
 		@Override
@@ -202,6 +187,16 @@ public class WailaConfig implements IWailaConfig {
 			return debug;
 		}
 
+		@Override
+		public void setItemModNameTooltip(boolean itemModNameTooltip) {
+			this.itemModNameTooltip = itemModNameTooltip;
+		}
+
+		@Override
+		public boolean showItemModNameTooltip() {
+			return itemModNameTooltip;
+		}
+
 	}
 
 	public static class ConfigOverlay implements IConfigOverlay {
@@ -217,6 +212,7 @@ public class WailaConfig implements IWailaConfig {
 		private float alpha = 0.7f;
 		private Map<ResourceLocation, Theme> themes = Maps.newLinkedHashMap();
 		private ResourceLocation activeTheme = Theme.DARK.id;
+		private IconMode iconMode = IconMode.TOP;
 
 		public ConfigOverlay() {
 			themes.put(Theme.WAILA.id, Theme.WAILA);
@@ -332,6 +328,21 @@ public class WailaConfig implements IWailaConfig {
 		public void applyTheme(ResourceLocation id) {
 			activeTheme = themes.containsKey(id) ? id : activeTheme;
 			OverlayRenderer.updateTheme();
+		}
+
+		@Override
+		public void setIconMode(IconMode iconMode) {
+			this.iconMode = iconMode;
+		}
+
+		@Override
+		public IconMode getIconMode() {
+			return iconMode;
+		}
+
+		@Override
+		public boolean shouldShowIcon() {
+			return iconMode != IconMode.HIDE;
 		}
 
 	}

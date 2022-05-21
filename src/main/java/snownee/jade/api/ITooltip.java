@@ -2,6 +2,8 @@ package snownee.jade.api;
 
 import java.util.List;
 
+import org.jetbrains.annotations.ApiStatus.NonExtendable;
+
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.api.ui.IElement;
@@ -13,6 +15,7 @@ import snownee.jade.api.ui.IElementHelper;
  *
  * @author Snownee
  */
+@NonExtendable
 public interface ITooltip {
 
 	void clear();

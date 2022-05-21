@@ -20,7 +20,7 @@ import net.minecraftforge.event.entity.EntityLeaveWorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 
-@OnlyIn(Dist.CLIENT)
+@OnlyIn(Dist.CLIENT) //TODO
 @EventBusSubscriber(Dist.CLIENT)
 public class DatapackBlockManager {
 

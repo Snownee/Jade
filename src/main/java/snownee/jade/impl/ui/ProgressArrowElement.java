@@ -5,13 +5,13 @@ import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec2;
-import snownee.jade.Waila;
+import snownee.jade.Jade;
 import snownee.jade.api.ui.Element;
 import snownee.jade.overlay.DisplayHelper;
 
 public class ProgressArrowElement extends Element {
 
-	private static final ResourceLocation SHEET = new ResourceLocation(Waila.MODID, "textures/sprites.png");
+	private static final ResourceLocation SHEET = new ResourceLocation(Jade.MODID, "textures/sprites.png");
 
 	private final float progress;
 
