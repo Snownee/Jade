@@ -154,14 +154,14 @@ public final class JadeClient {
 			if (target.getBlock() instanceof TrappedChestBlock) {
 				BlockState state = VanillaPlugin.getCorrespondingNormalChest(target.getBlockState());
 				if (state != target.getBlockState()) {
-					return client.createBlockAccessor(state, target.getBlockEntity(), target.getLevel(), player, target.getServerData(), target.getHitResult(), target.isServerConnected());
+					return client.blockAccessor().from(target).blockState(state).build();
 				}
 			} else if (target.getBlock() instanceof InfestedBlock) {
 				Block block = ((InfestedBlock) target.getBlock()).getHostBlock();
-				return client.createBlockAccessor(block.defaultBlockState(), target.getBlockEntity(), target.getLevel(), player, target.getServerData(), target.getHitResult(), target.isServerConnected());
+				return client.blockAccessor().from(target).blockState(block.defaultBlockState()).build();
 			} else if (target.getBlock() == Blocks.POWDER_SNOW) {
 				Block block = Blocks.SNOW_BLOCK;
-				return client.createBlockAccessor(block.defaultBlockState(), null, target.getLevel(), player, target.getServerData(), target.getHitResult(), target.isServerConnected());
+				return client.blockAccessor().from(target).blockState(block.defaultBlockState()).build();
 			}
 		}
 		return accessor;

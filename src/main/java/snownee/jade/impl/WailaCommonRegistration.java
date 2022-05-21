@@ -5,9 +5,9 @@ import java.util.List;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import snownee.jade.Jade;
-import snownee.jade.api.IWailaCommonRegistration;
 import snownee.jade.api.IJadeProvider;
 import snownee.jade.api.IServerDataProvider;
+import snownee.jade.api.IWailaCommonRegistration;
 
 public class WailaCommonRegistration implements IWailaCommonRegistration {
 

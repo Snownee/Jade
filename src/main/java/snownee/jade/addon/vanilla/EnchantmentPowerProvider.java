@@ -25,7 +25,7 @@ public enum EnchantmentPowerProvider implements IBlockComponentProvider {
 	public ResourceLocation getUid() {
 		return Identifiers.MC_ENCHANTMENT_POWER;
 	}
-	
+
 	@Override
 	public int getDefaultPriority() {
 		return -400;

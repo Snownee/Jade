@@ -33,9 +33,9 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 
 	private final Entity entity;
 
-	public EntityAccessorImpl(Entity entity, Level level, Player player, CompoundTag serverData, EntityHitResult hit, boolean serverConnected) {
-		super(level, player, serverData, hit, serverConnected);
-		this.entity = entity;
+	public EntityAccessorImpl(Builder builder) {
+		super(builder.level, builder.player, builder.serverData, builder.hit, builder.connected);
+		entity = builder.entity;
 	}
 
 	@Override
@@ -112,6 +112,69 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 	@Override
 	public Object _getTrackObject() {
 		return getEntity();
+	}
+
+	public static class Builder implements EntityAccessor.Builder {
+
+		private Level level;
+		private Player player;
+		private CompoundTag serverData;
+		private boolean connected;
+		private EntityHitResult hit;
+		private Entity entity;
+
+		@Override
+		public Builder level(Level level) {
+			this.level = level;
+			return this;
+		}
+
+		@Override
+		public Builder player(Player player) {
+			this.player = player;
+			return this;
+		}
+
+		@Override
+		public Builder serverData(CompoundTag serverData) {
+			this.serverData = serverData;
+			return this;
+		}
+
+		@Override
+		public Builder serverConnected(boolean connected) {
+			this.connected = connected;
+			return this;
+		}
+
+		@Override
+		public Builder hit(EntityHitResult hit) {
+			this.hit = hit;
+			return this;
+		}
+
+		@Override
+		public Builder entity(Entity entity) {
+			this.entity = entity;
+			return this;
+		}
+
+		@Override
+		public Builder from(EntityAccessor accessor) {
+			level = accessor.getLevel();
+			player = accessor.getPlayer();
+			serverData = accessor.getServerData();
+			connected = accessor.isServerConnected();
+			hit = accessor.getHitResult();
+			entity = accessor.getEntity();
+			return this;
+		}
+
+		@Override
+		public EntityAccessor build() {
+			return new EntityAccessorImpl(this);
+		}
+
 	}
 
 }

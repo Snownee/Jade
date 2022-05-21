@@ -32,7 +32,7 @@ public class ExamplePlugin implements IWailaPlugin {
 		registration.addRayTraceCallback((hitResult, accessor, originalAccessor) -> {
 			if (accessor instanceof BlockAccessor blockAccessor) {
 				if (blockAccessor.getBlock() == Blocks.GRASS_BLOCK) {
-					return client.createBlockAccessor(Blocks.TNT.defaultBlockState(), null, accessor.getLevel(), accessor.getPlayer(), null, blockAccessor.getHitResult(), accessor.isServerConnected());
+					return client.blockAccessor().from(blockAccessor).blockState(Blocks.TNT.defaultBlockState()).build();
 				}
 			}
 			return accessor;

@@ -27,8 +27,8 @@ public class Theme {
 		this.backgroundColor = backgroundColor;
 		this.gradientStart = gradientStart;
 		this.gradientEnd = gradientEnd;
-		this.stressedTextColor = titleColor;
-		this.normalTextColor = textColor;
+		stressedTextColor = titleColor;
+		normalTextColor = textColor;
 		this.textShadow = textShadow;
 	}
 

@@ -11,6 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -41,11 +42,11 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 	private final BlockEntity blockEntity;
 	private final ItemStack fakeBlock;
 
-	public BlockAccessorImpl(BlockState blockState, BlockEntity blockEntity, Level level, Player player, CompoundTag serverData, BlockHitResult hit, boolean serverConnected, ItemStack fakeBlock) {
-		super(level, player, serverData, hit, serverConnected);
-		this.blockState = blockState;
-		this.blockEntity = blockEntity;
-		this.fakeBlock = fakeBlock;
+	private BlockAccessorImpl(Builder builder) {
+		super(builder.level, builder.player, builder.serverData, builder.hit, builder.connected);
+		blockState = builder.blockState;
+		blockEntity = builder.blockEntity;
+		fakeBlock = builder.fakeBlock;
 	}
 
 	@Override
@@ -169,6 +170,85 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 	@Override
 	public ItemStack getFakeBlock() {
 		return fakeBlock;
+	}
+
+	public static class Builder implements BlockAccessor.Builder {
+
+		private Level level;
+		private Player player;
+		private CompoundTag serverData;
+		private boolean connected;
+		private BlockHitResult hit;
+		private BlockState blockState = Blocks.AIR.defaultBlockState();
+		private BlockEntity blockEntity;
+		private ItemStack fakeBlock = ItemStack.EMPTY;
+
+		@Override
+		public Builder level(Level level) {
+			this.level = level;
+			return this;
+		}
+
+		@Override
+		public Builder player(Player player) {
+			this.player = player;
+			return this;
+		}
+
+		@Override
+		public Builder serverData(CompoundTag serverData) {
+			this.serverData = serverData;
+			return this;
+		}
+
+		@Override
+		public Builder serverConnected(boolean connected) {
+			this.connected = connected;
+			return this;
+		}
+
+		@Override
+		public Builder hit(BlockHitResult hit) {
+			this.hit = hit;
+			return this;
+		}
+
+		@Override
+		public Builder blockState(BlockState blockState) {
+			this.blockState = blockState;
+			return this;
+		}
+
+		@Override
+		public Builder blockEntity(BlockEntity blockEntity) {
+			this.blockEntity = blockEntity;
+			return this;
+		}
+
+		@Override
+		public Builder fakeBlock(ItemStack stack) {
+			fakeBlock = stack;
+			return this;
+		}
+
+		@Override
+		public Builder from(BlockAccessor accessor) {
+			level = accessor.getLevel();
+			player = accessor.getPlayer();
+			serverData = accessor.getServerData();
+			connected = accessor.isServerConnected();
+			hit = accessor.getHitResult();
+			blockEntity = accessor.getBlockEntity();
+			blockState = accessor.getBlockState();
+			fakeBlock = accessor.getFakeBlock();
+			return this;
+		}
+
+		@Override
+		public BlockAccessor build() {
+			return new BlockAccessorImpl(this);
+		}
+
 	}
 
 }

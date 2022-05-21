@@ -50,4 +50,5 @@ public interface Accessor<T extends HitResult> {
 
 	@Deprecated
 	Object _getTrackObject();
+
 }

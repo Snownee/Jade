@@ -7,21 +7,13 @@ import java.util.function.Predicate;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.EntityHitResult;
 import snownee.jade.Jade;
-import snownee.jade.api.BlockAccessor;
-import snownee.jade.api.EntityAccessor;
+import snownee.jade.api.BlockAccessor.Builder;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.IToggleableProvider;
@@ -136,16 +128,6 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	}
 
 	@Override
-	public BlockAccessor createBlockAccessor(BlockState blockState, BlockEntity blockEntity, Level level, Player player, CompoundTag serverData, BlockHitResult hit, boolean serverConnected) {
-		return new BlockAccessorImpl(blockState, blockEntity, level, player, serverData, hit, serverConnected, ItemStack.EMPTY);
-	}
-
-	@Override
-	public EntityAccessor createEntityAccessor(Entity entity, Level level, Player player, CompoundTag serverData, EntityHitResult hit, boolean serverConnected) {
-		return new EntityAccessorImpl(entity, level, player, serverData, hit, serverConnected);
-	}
-
-	@Override
 	public IElementHelper getElementHelper() {
 		return ElementHelper.INSTANCE;
 	}
@@ -199,6 +181,16 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	@Override
 	public void addTooltipCollectedCallback(JadeTooltipCollectedCallback callback) {
 		tooltipCollectedCallbacks.add(callback);
+	}
+
+	@Override
+	public Builder blockAccessor() {
+		return new BlockAccessorImpl.Builder();
+	}
+
+	@Override
+	public snownee.jade.api.EntityAccessor.Builder entityAccessor() {
+		return new EntityAccessorImpl.Builder();
 	}
 
 }

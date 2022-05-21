@@ -19,8 +19,6 @@ import snownee.jade.api.callback.JadeTooltipCollectedCallback;
 import snownee.jade.api.config.IWailaConfig.DisplayMode;
 import snownee.jade.api.config.IWailaConfig.IConfigGeneral;
 import snownee.jade.gui.BaseOptionsScreen;
-import snownee.jade.impl.BlockAccessorImpl;
-import snownee.jade.impl.EntityAccessorImpl;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.Tooltip;
 import snownee.jade.impl.WailaClientRegistration;
@@ -73,10 +71,30 @@ public class WailaTickHandler {
 			BlockHitResult blockTarget = (BlockHitResult) target;
 			BlockState state = world.getBlockState(blockTarget.getBlockPos());
 			BlockEntity tileEntity = world.getBlockEntity(blockTarget.getBlockPos());
-			accessor = new BlockAccessorImpl(state, tileEntity, world, player, ObjectDataCenter.getServerData(), blockTarget, ObjectDataCenter.serverConnected, DatapackBlockManager.getFakeBlock(world, blockTarget.getBlockPos()));
+			/* off */
+			accessor = WailaClientRegistration.INSTANCE.blockAccessor()
+					.blockState(state)
+					.blockEntity(tileEntity)
+					.level(world)
+					.player(player)
+					.serverData(ObjectDataCenter.getServerData())
+					.serverConnected(ObjectDataCenter.serverConnected)
+					.hit(blockTarget)
+					.fakeBlock(DatapackBlockManager.getFakeBlock(world, blockTarget.getBlockPos()))
+					.build();
+			/* on */
 		} else if (target instanceof EntityHitResult) {
 			EntityHitResult entityTarget = (EntityHitResult) target;
-			accessor = new EntityAccessorImpl(entityTarget.getEntity(), world, player, ObjectDataCenter.getServerData(), entityTarget, ObjectDataCenter.serverConnected);
+			/* off */
+			accessor = WailaClientRegistration.INSTANCE.entityAccessor()
+					.level(world)
+					.player(player)
+					.serverData(ObjectDataCenter.getServerData())
+					.serverConnected(ObjectDataCenter.serverConnected)
+					.hit(entityTarget)
+					.entity(entityTarget.getEntity())
+					.build();
+			/* on */
 		}
 
 		Accessor<?> originalAccessor = accessor;
