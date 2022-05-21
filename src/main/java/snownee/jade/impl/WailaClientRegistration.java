@@ -37,7 +37,6 @@ import snownee.jade.impl.config.ConfigEntry;
 import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.impl.ui.ElementHelper;
 import snownee.jade.overlay.DisplayHelper;
-import snownee.jade.util.PlatformProxy;
 
 public class WailaClientRegistration implements IWailaClientRegistration {
 
@@ -180,10 +179,6 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 		blockIconProviders.loadComplete(priorities);
 		entityComponentProviders.loadComplete(priorities);
 		entityIconProviders.loadComplete(priorities);
-
-		if (PlatformProxy.isDevEnv()) {
-
-		}
 	}
 
 	@Override

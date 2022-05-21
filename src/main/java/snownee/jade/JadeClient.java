@@ -4,17 +4,23 @@ import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.util.LazyLoadedValue;
 import net.minecraft.util.Mth;
@@ -99,6 +105,24 @@ public final class JadeClient {
 				Jade.CONFIG.get().getGeneral().toggleTTS();
 			} else if (WailaTickHandler.instance().tooltipRenderer != null) {
 				WailaTickHandler.narrate(WailaTickHandler.instance().tooltipRenderer.getTooltip(), false);
+			}
+		}
+	}
+
+	private static boolean translationChecked;
+
+	public static void onGui(Screen screen) {
+		if (!translationChecked && screen instanceof TitleScreen && PlatformProxy.isDevEnv()) {
+			translationChecked = true;
+			List<String> keys = Lists.newArrayList();
+			for (ResourceLocation id : PluginConfig.INSTANCE.getKeys()) {
+				String key = "config.jade.plugin_%s.%s".formatted(id.getNamespace(), id.getPath());
+				if (!I18n.exists(key)) {
+					keys.add(key);
+				}
+			}
+			if (!keys.isEmpty()) {
+				throw new AssertionError("Missing config translation: %s".formatted(Joiner.on(',').join(keys)));
 			}
 		}
 	}

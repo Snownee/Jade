@@ -18,6 +18,7 @@ import net.minecraftforge.client.ConfigGuiHandler.ConfigGuiFactory;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RegisterClientCommandsEvent;
+import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.common.MinecraftForge;
@@ -67,6 +68,7 @@ public final class ClientPlatformProxy {
 		MinecraftForge.EVENT_BUS.addListener(ClientPlatformProxy::onPlayerLeave);
 		MinecraftForge.EVENT_BUS.addListener(ClientPlatformProxy::registerCommands);
 		MinecraftForge.EVENT_BUS.addListener(ClientPlatformProxy::onKeyPressed);
+		MinecraftForge.EVENT_BUS.addListener(ClientPlatformProxy::onGui);
 		ModLoadingContext.get().registerExtensionPoint(ConfigGuiFactory.class, () -> new ConfigGuiFactory((minecraft, screen) -> new HomeConfigScreen(screen)));
 
 	}
@@ -103,6 +105,10 @@ public final class ClientPlatformProxy {
 
 	public static void onKeyPressed(InputEvent.KeyInputEvent event) {
 		JadeClient.onKeyPressed(event.getAction());
+	}
+
+	public static void onGui(ScreenEvent.InitScreenEvent event) {
+		JadeClient.onGui(event.getScreen());
 	}
 
 	public static KeyMapping registerKeyBinding(String desc, int defaultKey) {
