@@ -8,6 +8,8 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CropBlock;
+import net.minecraft.world.level.block.NetherWartBlock;
+import net.minecraft.world.level.block.SweetBerryBushBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import snownee.jade.api.BlockAccessor;
@@ -43,7 +45,11 @@ public enum CropProgressProvider implements IBlockComponentProvider {
 		} else if (state.hasProperty(BlockStateProperties.AGE_7)) {
 			addMaturityTooltip(tooltip, state.getValue(BlockStateProperties.AGE_7) / 7F);
 		} else if (state.hasProperty(BlockStateProperties.AGE_2)) {
-			addMaturityTooltip(tooltip, state.getValue(BlockStateProperties.AGE_2) / 2.0F);
+			addMaturityTooltip(tooltip, state.getValue(BlockStateProperties.AGE_2) / 2F);
+		} else if (state.hasProperty(BlockStateProperties.AGE_3)) {
+			if (block instanceof SweetBerryBushBlock || block instanceof NetherWartBlock) {
+				addMaturityTooltip(tooltip, state.getValue(BlockStateProperties.AGE_3) / 3F);
+			}
 		}
 	}
 
