@@ -1,12 +1,7 @@
 package snownee.jade.util;
 
-import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
-
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 
 import net.minecraft.client.resources.language.I18n;
@@ -20,8 +15,6 @@ import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.forgespi.language.IModInfo;
 
 public class ModIdentification implements ResourceManagerReloadListener {
 
@@ -34,15 +27,7 @@ public class ModIdentification implements ResourceManagerReloadListener {
 
 	public static void init() {
 		NAMES.clear();
-		List<IModInfo> mods = ImmutableList.copyOf(ModList.get().getMods());
-		for (IModInfo mod : mods) {
-			String modid = mod.getModId();
-			String name = mod.getDisplayName();
-			if (Strings.isNullOrEmpty(name)) {
-				StringUtils.capitalize(modid);
-			}
-			NAMES.put(modid, name);
-		}
+		ClientPlatformProxy.initModNames(NAMES);
 	}
 
 	public static String getModName(String namespace) {
@@ -65,7 +50,7 @@ public class ModIdentification implements ResourceManagerReloadListener {
 	}
 
 	public static String getModName(ItemStack stack) {
-		return getModName(stack.getItem().getCreatorModId(stack));
+		return getModName(PlatformProxy.getModIdFromItem(stack));
 	}
 
 	public static String getModName(Entity entity) {

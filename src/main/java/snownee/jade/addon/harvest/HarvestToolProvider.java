@@ -30,8 +30,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec2;
-import net.minecraftforge.common.IForgeShearable;
-import net.minecraftforge.common.Tags;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.ITooltip;
@@ -42,6 +40,7 @@ import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElement.Align;
 import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.impl.ui.SubTextElement;
+import snownee.jade.util.PlatformProxy;
 
 public enum HarvestToolProvider implements IBlockComponentProvider, ResourceManagerReloadListener {
 
@@ -138,7 +137,7 @@ public enum HarvestToolProvider implements IBlockComponentProvider, ResourceMana
 			elements.add(0, helper.spacer(5, 0));
 			ItemStack held = accessor.getPlayer().getMainHandItem();
 			boolean canHarvest = held.isCorrectToolForDrops(state);
-			if (state.getBlock() instanceof IForgeShearable && held.is(Tags.Items.SHEARS)) {
+			if (PlatformProxy.isShearable(state) && PlatformProxy.isShears(held)) {
 				canHarvest = true;
 			}
 			if (state.requiresCorrectToolForDrops()) {

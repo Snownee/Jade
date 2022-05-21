@@ -6,6 +6,7 @@ import net.minecraft.client.renderer.Rect2i;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.ITooltip;
 
+@FunctionalInterface
 public interface JadeBeforeRenderCallback {
 
 	public static class ColorSetting {

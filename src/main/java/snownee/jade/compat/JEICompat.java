@@ -1,7 +1,5 @@
 package snownee.jade.compat;
 
-import com.mojang.blaze3d.platform.InputConstants;
-
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.VanillaTypes;
@@ -11,15 +9,12 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.api.runtime.IRecipesGui;
-import net.minecraft.client.KeyMapping;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.ClientRegistry;
 import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.client.settings.KeyConflictContext;
-import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.common.MinecraftForge;
 import snownee.jade.Jade;
+import snownee.jade.JadeClient;
 import snownee.jade.api.Accessor;
 import snownee.jade.impl.ObjectDataCenter;
 
@@ -27,17 +22,11 @@ import snownee.jade.impl.ObjectDataCenter;
 public class JEICompat implements IModPlugin {
 
 	public static final ResourceLocation ID = new ResourceLocation(Jade.MODID, "main");
-	public static KeyMapping showRecipes;
-	public static KeyMapping showUses;
 	private static IJeiRuntime runtime;
 	private static IJeiHelpers helpers;
 
 	public JEICompat() {
-		if (showRecipes == null) {
-			showRecipes = new KeyMapping("key.jade.show_recipes", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputConstants.Type.KEYSYM.getOrCreate(323), Jade.NAME);
-			showUses = new KeyMapping("key.jade.show_uses", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputConstants.Type.KEYSYM.getOrCreate(324), Jade.NAME);
-			ClientRegistry.registerKeyBinding(showRecipes);
-			ClientRegistry.registerKeyBinding(showUses);
+		if (runtime == null) {
 			MinecraftForge.EVENT_BUS.addListener(JEICompat::onKeyPressed);
 		}
 	}
@@ -58,11 +47,11 @@ public class JEICompat implements IModPlugin {
 	}
 
 	private static void onKeyPressed(InputEvent.KeyInputEvent event) {
-		if (runtime == null || showRecipes == null || showUses == null)
+		if (runtime == null || JadeClient.showRecipes == null || JadeClient.showUses == null)
 			return;
 		if (event.getAction() != 1)
 			return;
-		if (!showRecipes.isDown() && !showUses.isDown())
+		if (!JadeClient.showRecipes.isDown() && !JadeClient.showUses.isDown())
 			return;
 		Accessor<?> accessor = ObjectDataCenter.get();
 		if (accessor == null)
@@ -74,6 +63,6 @@ public class JEICompat implements IModPlugin {
 		IRecipesGui gui = runtime.getRecipesGui();
 		IFocusFactory factory = helpers.getFocusFactory();
 
-		gui.show(factory.createFocus(showUses.isDown() ? RecipeIngredientRole.INPUT : RecipeIngredientRole.OUTPUT, VanillaTypes.ITEM_STACK, stack));
+		gui.show(factory.createFocus(JadeClient.showUses.isDown() ? RecipeIngredientRole.INPUT : RecipeIngredientRole.OUTPUT, VanillaTypes.ITEM_STACK, stack));
 	}
 }

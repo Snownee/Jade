@@ -8,7 +8,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.animal.horse.AbstractChestedHorse;
 import net.minecraft.world.entity.animal.horse.Llama;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.items.CapabilityItemHandler;
 import snownee.jade.JadeCommonConfig;
 import snownee.jade.addon.forge.BlockInventoryProvider;
 import snownee.jade.api.EntityAccessor;
@@ -17,6 +16,7 @@ import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.util.PlatformProxy;
 
 public enum ChestedHorseProvider implements IEntityComponentProvider, IServerDataProvider<Entity> {
 
@@ -42,7 +42,7 @@ public enum ChestedHorseProvider implements IEntityComponentProvider, IServerDat
 
 		AbstractChestedHorse horse = (AbstractChestedHorse) t;
 		if (horse.hasChest()) {
-			horse.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(h -> BlockInventoryProvider.putInvData(data, h, size, 2));
+			PlatformProxy.putHorseInvData(horse, data, size);
 		}
 	}
 

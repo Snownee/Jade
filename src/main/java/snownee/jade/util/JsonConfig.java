@@ -12,8 +12,6 @@ import org.jetbrains.annotations.Nullable;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import net.minecraftforge.fml.loading.FMLPaths;
-
 public class JsonConfig<T> {
 
 	private static final Gson DEFAULT_GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -23,7 +21,7 @@ public class JsonConfig<T> {
 	private Gson gson = DEFAULT_GSON;
 
 	public JsonConfig(String fileName, Class<T> configClass, @Nullable Runnable onUpdate, Supplier<T> defaultFactory) {
-		this.configFile = new File(FMLPaths.CONFIGDIR.get().toFile(), fileName + (fileName.endsWith(".json") ? "" : ".json"));
+		this.configFile = new File(PlatformProxy.getConfigDirectory(), fileName + (fileName.endsWith(".json") ? "" : ".json"));
 		this.configGetter = new CachedSupplier<>(() -> {
 			if (!configFile.exists()) {
 				T def = defaultFactory.get();

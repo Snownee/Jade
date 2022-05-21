@@ -19,12 +19,17 @@ public enum EntityArmorProvider implements IEntityComponentProvider {
 		float armor = living.getArmorValue();
 		if (armor == 0)
 			return;
-		tooltip.add(0, new ArmorElement(armor));
+		tooltip.add(new ArmorElement(armor));
 	}
 
 	@Override
 	public ResourceLocation getUid() {
 		return Identifiers.MC_ENTITY_ARMOR;
+	}
+
+	@Override
+	public int getDefaultPriority() {
+		return -4500;
 	}
 
 }

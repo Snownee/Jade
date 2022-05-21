@@ -13,33 +13,21 @@ import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.event.entity.EntityLeaveWorldEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 
-@OnlyIn(Dist.CLIENT) //TODO
-@EventBusSubscriber(Dist.CLIENT)
 public class DatapackBlockManager {
 
 	private static final Set<BlockPos> itemFrames = Sets.newConcurrentHashSet();
 
-	@SubscribeEvent
-	public static void onEntityJoin(EntityJoinWorldEvent event) {
-		Entity entity = event.getEntity();
+	public static void onEntityJoin(Entity entity) {
 		if (entity.getType() == EntityType.ITEM_FRAME || entity.getType() == EntityType.GLOW_ITEM_FRAME) {
 			itemFrames.add(entity.blockPosition());
 		}
 	}
 
-	@SubscribeEvent
-	public static void onEntityLeave(EntityLeaveWorldEvent event) {
-		Entity entity = event.getEntity();
+	public static void onEntityLeave(Entity entity) {
 		if (entity.getType() == EntityType.ITEM_FRAME || entity.getType() == EntityType.GLOW_ITEM_FRAME) {
 			BlockPos pos = entity.blockPosition();
-			getFakeBlock(event.getWorld(), pos);
+			getFakeBlock(entity.level, pos);
 		} else if (entity == Minecraft.getInstance().player) {
 			itemFrames.clear();
 		}

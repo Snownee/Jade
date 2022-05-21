@@ -18,12 +18,17 @@ public enum EntityHealthProvider implements IEntityComponentProvider {
 		LivingEntity living = (LivingEntity) accessor.getEntity();
 		float health = living.getHealth();
 		float maxHealth = living.getMaxHealth();
-		tooltip.add(0, new HealthElement(maxHealth, health));
+		tooltip.add(new HealthElement(maxHealth, health));
 	}
 
 	@Override
 	public ResourceLocation getUid() {
 		return Identifiers.MC_ENTITY_HEALTH;
+	}
+
+	@Override
+	public int getDefaultPriority() {
+		return -4501;
 	}
 
 }

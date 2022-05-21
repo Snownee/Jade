@@ -64,9 +64,9 @@ public enum BlockInventoryProvider implements IBlockComponentProvider, IServerDa
 			return;
 		}
 
-		if (accessor.getServerData().contains("jadeHandler")) {
+		if (accessor.getServerData().contains("JadeHandler")) {
 			ItemStackHandler itemHandler = new ItemStackHandler();
-			itemHandler.deserializeNBT(accessor.getServerData().getCompound("jadeHandler"));
+			itemHandler.deserializeNBT(accessor.getServerData().getCompound("JadeHandler"));
 
 			int drawnCount = 0;
 			int realSize = 0;
@@ -168,7 +168,7 @@ public enum BlockInventoryProvider implements IBlockComponentProvider, IServerDa
 			}
 		}
 		if (!empty) {
-			tag.put("jadeHandler", mergedHandler.serializeNBT());
+			tag.put("JadeHandler", mergedHandler.serializeNBT());
 		}
 	}
 

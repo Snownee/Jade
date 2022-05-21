@@ -24,7 +24,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.forgespi.language.ModFileScanData.AnnotationData;
 import net.minecraftforge.network.NetworkConstants;
 import net.minecraftforge.network.NetworkDirection;
@@ -45,6 +44,7 @@ import snownee.jade.network.RequestTilePacket;
 import snownee.jade.network.ServerPingPacket;
 import snownee.jade.overlay.OverlayRenderer;
 import snownee.jade.util.JsonConfig;
+import snownee.jade.util.PlatformProxy;
 import snownee.jade.util.ThemeSerializer;
 
 @Mod(Jade.MODID)
@@ -82,10 +82,11 @@ public class Jade {
 		FMLJavaModLoadingContext.get().getModEventBus().register(JadeCommonConfig.class);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::loadComplete);
-		if (FMLEnvironment.dist.isClient()) {
+		if (PlatformProxy.isPhysicallyClient()) {
 			FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setupClient);
 		}
 		MinecraftForge.EVENT_BUS.addListener(this::playerJoin);
+		PlatformProxy.init();
 	}
 
 	private void setup(FMLCommonSetupEvent event) {
@@ -125,7 +126,7 @@ public class Jade {
 				if (IWailaPlugin.class.isAssignableFrom(clazz)) {
 					IWailaPlugin plugin = (IWailaPlugin) clazz.getDeclaredConstructor().newInstance();
 					plugin.register(WailaCommonRegistration.INSTANCE);
-					if (FMLEnvironment.dist.isClient()) {
+					if (PlatformProxy.isPhysicallyClient()) {
 						plugin.registerClient(WailaClientRegistration.INSTANCE);
 					}
 				}
@@ -135,7 +136,7 @@ public class Jade {
 		}
 
 		WailaCommonRegistration.INSTANCE.loadComplete();
-		if (FMLEnvironment.dist.isClient()) {
+		if (PlatformProxy.isPhysicallyClient()) {
 			WailaClientRegistration.INSTANCE.loadComplete();
 		}
 		PluginConfig.INSTANCE.reload();
