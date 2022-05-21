@@ -10,20 +10,21 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraftforge.common.MinecraftForge;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.ITooltip;
+import snownee.jade.api.callback.JadeRayTraceCallback;
+import snownee.jade.api.callback.JadeTooltipCollectedCallback;
 import snownee.jade.api.config.IWailaConfig.DisplayMode;
 import snownee.jade.api.config.IWailaConfig.IConfigGeneral;
-import snownee.jade.api.event.WailaRayTraceEvent;
 import snownee.jade.gui.BaseOptionsScreen;
 import snownee.jade.impl.BlockAccessorImpl;
 import snownee.jade.impl.EntityAccessorImpl;
-import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.Tooltip;
+import snownee.jade.impl.WailaClientRegistration;
+import snownee.jade.impl.WailaCommonRegistration;
 
 public class WailaTickHandler {
 
@@ -78,9 +79,11 @@ public class WailaTickHandler {
 			accessor = new EntityAccessorImpl(entityTarget.getEntity(), world, player, ObjectDataCenter.getServerData(), entityTarget, ObjectDataCenter.serverConnected);
 		}
 
-		WailaRayTraceEvent event = new WailaRayTraceEvent(accessor, target);
-		MinecraftForge.EVENT_BUS.post(event);
-		ObjectDataCenter.set(accessor = event.getAccessor());
+		Accessor<?> originalAccessor = accessor;
+		for (JadeRayTraceCallback callback : WailaClientRegistration.INSTANCE.rayTraceCallbacks) {
+			accessor = callback.onRayTrace(target, accessor, originalAccessor);
+		}
+		ObjectDataCenter.set(accessor);
 		if (accessor == null || accessor.getHitResult() == null) {
 			tooltipRenderer = null;
 			return;
@@ -119,6 +122,9 @@ public class WailaTickHandler {
 			accessor._gatherComponents($ -> tooltip);
 		}
 
+		for (JadeTooltipCollectedCallback callback : WailaClientRegistration.INSTANCE.tooltipCollectedCallbacks) {
+			callback.onTooltipCollected(tooltip, accessor);
+		}
 		tooltipRenderer = new TooltipRenderer(tooltip, true);
 	}
 

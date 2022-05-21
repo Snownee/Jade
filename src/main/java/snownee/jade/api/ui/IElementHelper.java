@@ -40,4 +40,5 @@ public interface IElementHelper {
 	IBorderStyle borderStyle();
 
 	IProgressStyle progressStyle();
+
 }

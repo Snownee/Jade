@@ -13,6 +13,10 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
+import snownee.jade.api.callback.JadeAfterRenderCallback;
+import snownee.jade.api.callback.JadeBeforeRenderCallback;
+import snownee.jade.api.callback.JadeRayTraceCallback;
+import snownee.jade.api.callback.JadeTooltipCollectedCallback;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.ui.IDisplayHelper;
@@ -97,5 +101,13 @@ public interface IWailaClientRegistration {
 	boolean shouldHide(BlockState state);
 
 	boolean shouldPick(BlockState blockState);
+
+	void addAfterRenderCallback(JadeAfterRenderCallback callback);
+
+	void addBeforeRenderCallback(JadeBeforeRenderCallback callback);
+
+	void addRayTraceCallback(JadeRayTraceCallback callback);
+
+	void addTooltipCollectedCallback(JadeTooltipCollectedCallback callback);
 
 }

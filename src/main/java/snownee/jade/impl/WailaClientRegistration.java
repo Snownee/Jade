@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import net.minecraft.nbt.CompoundTag;
@@ -23,8 +24,12 @@ import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.IEntityComponentProvider;
-import snownee.jade.api.IWailaClientRegistration;
 import snownee.jade.api.IToggleableProvider;
+import snownee.jade.api.IWailaClientRegistration;
+import snownee.jade.api.callback.JadeAfterRenderCallback;
+import snownee.jade.api.callback.JadeBeforeRenderCallback;
+import snownee.jade.api.callback.JadeRayTraceCallback;
+import snownee.jade.api.callback.JadeTooltipCollectedCallback;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.IElementHelper;
@@ -46,6 +51,11 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	public final Set<Block> hideBlocks = Sets.newHashSet();
 	public final Set<EntityType<?>> hideEntities = Sets.newHashSet();
 	public final Set<Block> pickBlocks = Sets.newHashSet();
+
+	public final List<JadeAfterRenderCallback> afterRenderCallbacks = Lists.newArrayList();
+	public final List<JadeBeforeRenderCallback> beforeRenderCallbacks = Lists.newArrayList();
+	public final List<JadeRayTraceCallback> rayTraceCallbacks = Lists.newArrayList();
+	public final List<JadeTooltipCollectedCallback> tooltipCollectedCallbacks = Lists.newArrayList();
 
 	WailaClientRegistration() {
 		blockIconProviders = new HierarchyLookup<>(Block.class);
@@ -169,6 +179,26 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 		blockIconProviders.loadComplete(priorities);
 		entityComponentProviders.loadComplete(priorities);
 		entityIconProviders.loadComplete(priorities);
+	}
+
+	@Override
+	public void addAfterRenderCallback(JadeAfterRenderCallback callback) {
+		afterRenderCallbacks.add(callback);
+	}
+
+	@Override
+	public void addBeforeRenderCallback(JadeBeforeRenderCallback callback) {
+		beforeRenderCallbacks.add(callback);
+	}
+
+	@Override
+	public void addRayTraceCallback(JadeRayTraceCallback callback) {
+		rayTraceCallbacks.add(callback);
+	}
+
+	@Override
+	public void addTooltipCollectedCallback(JadeTooltipCollectedCallback callback) {
+		tooltipCollectedCallbacks.add(callback);
 	}
 
 }

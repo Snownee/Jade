@@ -1,7 +1,10 @@
 package snownee.jade.impl.ui;
 
+import org.jetbrains.annotations.ApiStatus.NonExtendable;
+
 import snownee.jade.api.ui.IBorderStyle;
 
+@NonExtendable
 public class BorderStyle implements IBorderStyle {
 
 	public int width = 1;

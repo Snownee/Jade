@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import com.google.common.base.Preconditions;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.fluids.FluidStack;
@@ -17,6 +18,7 @@ import snownee.jade.impl.Tooltip;
 
 public class ElementHelper implements IElementHelper {
 	public static final ElementHelper INSTANCE = new ElementHelper();
+	private ResourceLocation uid;
 
 	@Override
 	public IElement text(Component component) {
@@ -72,6 +74,15 @@ public class ElementHelper implements IElementHelper {
 	@Override
 	public IProgressStyle progressStyle() {
 		return new ProgressStyle();
+	}
+
+	@Nullable
+	public ResourceLocation currentUid() {
+		return uid;
+	}
+
+	public void setCurrentUid(ResourceLocation uid) {
+		this.uid = uid;
 	}
 
 	//

@@ -85,6 +85,9 @@ public class Tooltip implements ITooltip {
 
 	@Override
 	public void append(int index, IElement element) {
+		if (element.getTag() == null) {
+			element.tag(ElementHelper.INSTANCE.currentUid());
+		}
 		if (isEmpty() || index == size()) {
 			add(element);
 		} else {
@@ -105,6 +108,9 @@ public class Tooltip implements ITooltip {
 
 	@Override
 	public void add(int index, IElement element) {
+		if (element.getTag() == null) {
+			element.tag(ElementHelper.INSTANCE.currentUid());
+		}
 		Line line = new Line();
 		line.getAlignedElements(element.getAlignment()).add(element);
 		lines.add(index, line);

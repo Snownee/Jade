@@ -9,17 +9,19 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec2;
-import net.minecraftforge.common.MinecraftForge;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
+import snownee.jade.api.callback.JadeAfterRenderCallback;
+import snownee.jade.api.callback.JadeBeforeRenderCallback;
+import snownee.jade.api.callback.JadeBeforeRenderCallback.ColorSetting;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
 import snownee.jade.api.config.IWailaConfig.IconMode;
 import snownee.jade.api.config.Theme;
-import snownee.jade.api.event.WailaRenderEvent;
 import snownee.jade.gui.BaseOptionsScreen;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.Tooltip;
+import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.util.Color;
 
 public class OverlayRenderer {
@@ -87,10 +89,17 @@ public class OverlayRenderer {
 			position.setWidth(position.getWidth() + 2);
 			position.setHeight(position.getHeight() + 2);
 		}
-		WailaRenderEvent.Pre preEvent = new WailaRenderEvent.Pre(tooltip.getTooltip(), ObjectDataCenter.get(), position, matrixStack);
-		if (MinecraftForge.EVENT_BUS.post(preEvent)) {
-			matrixStack.popPose();
-			return;
+
+		ColorSetting colorSetting = new ColorSetting();
+		colorSetting.alpha = overlay.getAlpha();
+		colorSetting.backgroundColor = backgroundColorRaw;
+		colorSetting.gradientStart = gradientStartRaw;
+		colorSetting.gradientEnd = gradientEndRaw;
+		for (JadeBeforeRenderCallback callback : WailaClientRegistration.INSTANCE.beforeRenderCallbacks) {
+			if (callback.beforeRender(tooltip.getTooltip(), position, matrixStack, ObjectDataCenter.get(), colorSetting)) {
+				matrixStack.popPose();
+				return;
+			}
 		}
 
 		//RenderSystem.disableRescaleNormal();
@@ -98,7 +107,6 @@ public class OverlayRenderer {
 		//RenderSystem.disableLighting();
 		//RenderSystem.disableDepthTest();
 
-		position = preEvent.getRect();
 		if (!overlay.getSquare()) {
 			position.setPosition(position.getX() + 1, position.getY() + 1);
 		}
@@ -116,11 +124,8 @@ public class OverlayRenderer {
 		}
 		matrixStack.translate(-position.getWidth() * overlay.tryFlip(overlay.getAnchorX()), -position.getHeight() * overlay.getAnchorY(), 0);
 
-		float a = overlay.getAlpha();
-		if (a > 0) {
-			WailaRenderEvent.Color colorEvent = new WailaRenderEvent.Color(overlay.getAlpha(), IConfigOverlay.applyAlpha(backgroundColorRaw, a), IConfigOverlay.applyAlpha(gradientStartRaw, a), IConfigOverlay.applyAlpha(gradientEndRaw, a));
-			MinecraftForge.EVENT_BUS.post(colorEvent);
-			drawTooltipBox(matrixStack, 0, 0, position.getWidth(), position.getHeight(), colorEvent.getBackground(), colorEvent.getGradientStart(), colorEvent.getGradientEnd(), Jade.CONFIG.get().getOverlay().getSquare());
+		if (colorSetting.alpha > 0) {
+			drawTooltipBox(matrixStack, 0, 0, position.getWidth(), position.getHeight(), IConfigOverlay.applyAlpha(colorSetting.backgroundColor, colorSetting.alpha), IConfigOverlay.applyAlpha(colorSetting.gradientStart, colorSetting.alpha), IConfigOverlay.applyAlpha(colorSetting.gradientEnd, colorSetting.alpha), overlay.getSquare());
 		}
 
 		RenderSystem.enableBlend();
@@ -143,8 +148,9 @@ public class OverlayRenderer {
 			tooltip.icon.render(matrixStack, offsetX, offsetY, offsetX + size.x, offsetY + size.y);
 		}
 
-		WailaRenderEvent.Post postEvent = new WailaRenderEvent.Post(tooltip.getTooltip(), position, matrixStack);
-		MinecraftForge.EVENT_BUS.post(postEvent);
+		for (JadeAfterRenderCallback callback : WailaClientRegistration.INSTANCE.afterRenderCallbacks) {
+			callback.afterRender(tooltip.getTooltip(), position, matrixStack, ObjectDataCenter.get());
+		}
 
 		RenderSystem.enableDepthTest();
 		matrixStack.popPose();

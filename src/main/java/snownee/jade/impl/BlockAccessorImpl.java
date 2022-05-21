@@ -25,6 +25,7 @@ import snownee.jade.api.IJadeProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.impl.config.PluginConfig;
+import snownee.jade.impl.ui.ElementHelper;
 import snownee.jade.impl.ui.FluidStackElement;
 import snownee.jade.impl.ui.ItemStackElement;
 import snownee.jade.network.RequestTilePacket;
@@ -119,9 +120,12 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 		for (IBlockComponentProvider provider : providers) {
 			ITooltip tooltip = tooltipProvider.apply(provider);
 			try {
+				ElementHelper.INSTANCE.setCurrentUid(provider.getUid());
 				provider.appendTooltip(tooltip, this, PluginConfig.INSTANCE);
 			} catch (Throwable e) {
 				WailaExceptionHandler.handleErr(e, provider, tooltip);
+			} finally {
+				ElementHelper.INSTANCE.setCurrentUid(null);
 			}
 		}
 	}

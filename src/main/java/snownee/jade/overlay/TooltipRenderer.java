@@ -7,12 +7,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec2;
-import net.minecraftforge.common.MinecraftForge;
 import snownee.jade.Jade;
 import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
-import snownee.jade.api.event.WailaTooltipEvent;
 import snownee.jade.api.ui.IElement;
-import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.Tooltip;
 import snownee.jade.impl.Tooltip.Line;
 
@@ -25,8 +22,6 @@ public class TooltipRenderer {
 	IElement icon;
 
 	public TooltipRenderer(Tooltip tooltip, boolean showIcon) {
-		WailaTooltipEvent event = new WailaTooltipEvent(tooltip, ObjectDataCenter.get());
-		MinecraftForge.EVENT_BUS.post(event);
 		this.showIcon = showIcon;
 		this.tooltip = tooltip;
 		if (showIcon) {
