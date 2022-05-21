@@ -51,4 +51,8 @@ public final class PlatformProxy {
 		horse.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(h -> BlockInventoryProvider.putInvData(data, h, size, 2));
 	}
 
+	public static boolean isDevEnv() {
+		return !FMLEnvironment.production;
+	}
+
 }

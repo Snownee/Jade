@@ -25,8 +25,8 @@ import net.minecraft.world.phys.Vec3;
 import snownee.jade.Jade;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.ui.IElement;
-import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.ObjectDataCenter;
+import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.ui.ItemStackElement;
 
 public class RayTracing {
@@ -84,7 +84,7 @@ public class RayTracing {
 		Block eyeBlock = world.getBlockState(new BlockPos(eyePosition.x, eyePosition.y, eyePosition.z)).getBlock();
 		ClipContext.Fluid fluidView = ClipContext.Fluid.NONE;
 		if (!(eyeBlock instanceof LiquidBlock)) {
-			fluidView = Jade.CONFIG.get().getGeneral().getDisplayFluids();
+			fluidView = Jade.CONFIG.get().getGeneral().getDisplayFluids().ctx;
 		}
 		ClipContext context = new ClipContext(eyePosition, traceEnd, ClipContext.Block.OUTLINE, fluidView, entity);
 

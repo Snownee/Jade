@@ -12,7 +12,6 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.HumanoidArm;
-import net.minecraft.world.level.ClipContext;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.Theme;
 import snownee.jade.overlay.OverlayRenderer;
@@ -51,7 +50,7 @@ public class WailaConfig implements IWailaConfig {
 		private TTSMode ttsMode = TTSMode.PRESS;
 		private int maxHealthForRender = 40;
 		private int maxHeartsPerLine = 10;
-		private ClipContext.Fluid fluidMode = ClipContext.Fluid.NONE;
+		private FluidMode fluidMode = FluidMode.ANY;
 		private float reachDistance = 0;
 		@Expose
 		private boolean debug = false;
@@ -114,11 +113,11 @@ public class WailaConfig implements IWailaConfig {
 
 		@Override
 		public void setDisplayFluids(boolean displayFluids) {
-			fluidMode = displayFluids ? ClipContext.Fluid.ANY : ClipContext.Fluid.NONE;
+			fluidMode = displayFluids ? FluidMode.ANY : FluidMode.NONE;
 		}
 
 		@Override
-		public void setDisplayFluids(ClipContext.Fluid displayFluids) {
+		public void setDisplayFluids(FluidMode displayFluids) {
 			fluidMode = displayFluids;
 		}
 
@@ -159,11 +158,11 @@ public class WailaConfig implements IWailaConfig {
 
 		@Override
 		public boolean shouldDisplayFluids() {
-			return fluidMode != ClipContext.Fluid.NONE;
+			return fluidMode != FluidMode.NONE;
 		}
 
 		@Override
-		public ClipContext.Fluid getDisplayFluids() {
+		public FluidMode getDisplayFluids() {
 			return fluidMode;
 		}
 

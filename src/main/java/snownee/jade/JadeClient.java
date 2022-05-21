@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.KeyMapping;
@@ -13,7 +14,9 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
+import net.minecraft.util.LazyLoadedValue;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -41,6 +44,7 @@ import snownee.jade.util.ClientPlatformProxy;
 import snownee.jade.util.ModIdentification;
 import snownee.jade.util.PlatformProxy;
 
+@SuppressWarnings("deprecation")
 public final class JadeClient {
 
 	public static KeyMapping openConfig;
@@ -52,6 +56,11 @@ public final class JadeClient {
 	public static KeyMapping showUses;
 
 	public static void initClient() {
+		for (int i = 320; i < 330; i++) {
+			InputConstants.Key key = InputConstants.Type.KEYSYM.getOrCreate(i);
+			key.displayName = new LazyLoadedValue<>(() -> new TranslatableComponent(key.getName()));
+		}
+
 		openConfig = ClientPlatformProxy.registerKeyBinding("config", 320);
 		showOverlay = ClientPlatformProxy.registerKeyBinding("show_overlay", 321);
 		toggleLiquid = ClientPlatformProxy.registerKeyBinding("toggle_liquid", 322);

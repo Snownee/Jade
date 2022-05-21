@@ -12,6 +12,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
 import snownee.jade.api.IJadeProvider;
@@ -43,9 +44,9 @@ public class HierarchyLookup<T extends IJadeProvider> {
 	public List<T> get(Class<?> clazz) {
 		try {
 			return resultCache.get(clazz, () -> {
-				ImmutableList.Builder<T> list = ImmutableList.builder();
+				List<T> list = Lists.newArrayList();
 				getInternal(clazz, list);
-				return list.build();
+				return ImmutableList.sortedCopyOf(Comparator.comparingInt(WailaCommonRegistration.INSTANCE.priorities::get), list);
 			});
 		} catch (ExecutionException e) {
 			e.printStackTrace();
@@ -53,7 +54,7 @@ public class HierarchyLookup<T extends IJadeProvider> {
 		return Collections.EMPTY_LIST;
 	}
 
-	private void getInternal(Class<?> clazz, ImmutableList.Builder<T> list) {
+	private void getInternal(Class<?> clazz, List<T> list) {
 		if (clazz != baseClass && clazz != Object.class) {
 			getInternal(clazz.getSuperclass(), list);
 		}

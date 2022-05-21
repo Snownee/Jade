@@ -64,8 +64,8 @@
   "config.jade.overlay_anchor_x": "Horizontal Anchor",
   "config.jade.overlay_anchor_y": "Vertical Anchor",
   "config.jade.overlay_square": "Square Border",
-  "config.jade.flip_main_hand": "Flip with Main Hand",
-  "config.jade.flip_main_hand_desc": "Flip tooltip's location if main hand is left",
+  "config.jade.flip_main_hand": "Flip Position with Main Hand",
+  "config.jade.flip_main_hand_desc": "Flip tooltip's position if main hand is left",
 
   "config.jade.overlay_color": "Color",
   "config.jade.overlay_alpha": "Alpha",
@@ -76,6 +76,8 @@
   "config.jade.format_title_name": "Title Name",
   "config.jade.format_registry_name": "Registry ID",
 
+  "config.jade.accessibility": "Accessibility",
+  
   "config.jade.plugin_jade.registry_name": "Registry Name",
   "config.jade.plugin_minecraft.entity_health": "Entity Health",
   "config.jade.plugin_minecraft.entity_armor": "Entity Armor",

@@ -41,7 +41,7 @@ public interface IWailaConfig {
 
 		void setDisplayFluids(boolean displayFluids);
 
-		void setDisplayFluids(ClipContext.Fluid displayFluids);
+		void setDisplayFluids(FluidMode displayFluids);
 
 		void setItemModNameTooltip(boolean itemModNameTooltip);
 
@@ -61,7 +61,7 @@ public interface IWailaConfig {
 
 		boolean shouldDisplayFluids();
 
-		ClipContext.Fluid getDisplayFluids();
+		FluidMode getDisplayFluids();
 
 		boolean showItemModNameTooltip();
 
@@ -160,5 +160,15 @@ public interface IWailaConfig {
 
 	public enum DisplayMode {
 		HOLD_KEY, TOGGLE, LITE
+	}
+
+	public enum FluidMode {
+		NONE(ClipContext.Fluid.NONE), ANY(ClipContext.Fluid.ANY), SOURCE_ONLY(ClipContext.Fluid.SOURCE_ONLY);
+
+		public final ClipContext.Fluid ctx;
+
+		FluidMode(ClipContext.Fluid ctx) {
+			this.ctx = ctx;
+		}
 	}
 }

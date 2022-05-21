@@ -33,7 +33,6 @@ public class WailaConfigScreen extends BaseOptionsScreen {
 		options.choices("item_mod_name", general.showItemModNameTooltip(), general::setItemModNameTooltip);
 		options.choices("hide_from_debug", general.shouldHideFromDebug(), general::setHideFromDebug);
 		options.slider("reach_distance", general.getReachDistance(), general::setReachDistance, 0, 20);
-		options.choices("tts_mode", general.getTTSMode(), general::setTTSMode);
 
 		IConfigOverlay overlay = Jade.CONFIG.get().getOverlay();
 		options.title("overlay");
@@ -46,13 +45,16 @@ public class WailaConfigScreen extends BaseOptionsScreen {
 		options.slider("overlay_anchor_x", overlay.getAnchorX(), overlay::setAnchorX);
 		options.slider("overlay_anchor_y", overlay.getAnchorY(), overlay::setAnchorY);
 		options.choices("display_item", overlay.getIconMode(), overlay::setIconMode);
-		options.choices("flip_main_hand", overlay.getFlipMainHand(), overlay::setFlipMainHand);
 
 		//		IConfigFormatting formatting = JadeClient.CONFIG.get().getFormatting();
 		//		options.title("formatting");
 		//		options.input("format_mod_name", formatting.getModName(), val -> formatting.setModName(val.isEmpty() || !val.contains("%s") ? formatting.getModName() : val));
 		//		options.input("format_title_name", formatting.getTitleName(), val -> formatting.setTitleName(val.isEmpty() || !val.contains("%s") ? formatting.getTitleName() : val));
 		//		options.input("format_registry_name", formatting.getRegistryName(), val -> formatting.setRegistryName(val.isEmpty() || !val.contains("%s") ? formatting.getRegistryName() : val));
+
+		options.title("accessibility");
+		options.choices("flip_main_hand", overlay.getFlipMainHand(), overlay::setFlipMainHand);
+		options.choices("tts_mode", general.getTTSMode(), general::setTTSMode);
 
 		return options;
 	}
