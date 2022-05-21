@@ -53,6 +53,7 @@ import snownee.jade.api.Identifiers;
 import snownee.jade.api.WailaPlugin;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.util.PlatformProxy;
 
 @WailaPlugin
 public class VanillaPlugin implements IWailaPlugin {
@@ -138,7 +139,7 @@ public class VanillaPlugin implements IWailaPlugin {
 	public static BlockState getCorrespondingNormalChest(BlockState state) {
 		try {
 			return CHEST_CACHE.get(state, () -> {
-				ResourceLocation trappedName = state.getBlock().getRegistryName();
+				ResourceLocation trappedName = PlatformProxy.getId(state.getBlock());
 				if (trappedName.getPath().startsWith("trapped_")) {
 					ResourceLocation chestName = new ResourceLocation(trappedName.getNamespace(), trappedName.getPath().substring(8));
 					Block block = Registry.BLOCK.get(chestName);

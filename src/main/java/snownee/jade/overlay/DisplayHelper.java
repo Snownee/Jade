@@ -135,7 +135,7 @@ public class DisplayHelper implements IDisplayHelper {
 
 	private static void renderGuiItem(PoseStack posestack, ItemStack p_115128_, float p_115129_, float p_115130_, BakedModel p_115131_, float scale) {
 		ItemRenderer renderer = CLIENT.getItemRenderer();
-		TextureManager textureManager = CLIENT.textureManager;
+		TextureManager textureManager = CLIENT.getTextureManager();
 		textureManager.getTexture(TextureAtlas.LOCATION_BLOCKS).setFilter(false, false);
 		RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
 		RenderSystem.enableBlend();

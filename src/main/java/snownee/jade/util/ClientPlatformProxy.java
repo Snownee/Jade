@@ -13,6 +13,15 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.InputConstants;
 
 import net.minecraft.client.KeyMapping;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
 import net.minecraftforge.client.ClientRegistry;
 import net.minecraftforge.client.ConfigGuiHandler.ConfigGuiFactory;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
@@ -28,14 +37,19 @@ import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.EntityLeaveWorldEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.forgespi.language.IModInfo;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
+import snownee.jade.api.ui.IElement;
 import snownee.jade.command.DumpHandlersCommand;
 import snownee.jade.gui.HomeConfigScreen;
 import snownee.jade.impl.ObjectDataCenter;
+import snownee.jade.impl.ui.FluidStackElement;
+import snownee.jade.network.RequestEntityPacket;
+import snownee.jade.network.RequestTilePacket;
 import snownee.jade.overlay.DatapackBlockManager;
 import snownee.jade.overlay.OverlayRenderer;
 import snownee.jade.overlay.WailaTickHandler;
@@ -119,6 +133,28 @@ public final class ClientPlatformProxy {
 
 	public static boolean shouldRegisterRecipeViewerKeys() {
 		return ModList.get().isLoaded("jei");
+	}
+
+	public static void requestBlockData(BlockEntity blockEntity, boolean showDetails) {
+		Jade.NETWORK.sendToServer(new RequestTilePacket(blockEntity, showDetails));
+	}
+
+	public static void requestEntityData(Entity entity, boolean showDetails) {
+		Jade.NETWORK.sendToServer(new RequestEntityPacket(entity, showDetails));
+	}
+
+	public static ItemStack getEntityPickedResult(Entity entity, Player player, EntityHitResult hitResult) {
+		return entity.getPickedResult(hitResult);
+	}
+
+	public static ItemStack getBlockPickedResult(BlockState state, Player player, BlockHitResult hitResult) {
+		return state.getCloneItemStack(hitResult, player.level, hitResult.getBlockPos(), player);
+	}
+
+	public static IElement elementFromLiquid(LiquidBlock block) {
+		Fluid fluid = block.getFluid();
+		FluidStack fluidStack = new FluidStack(fluid, 1);
+		return new FluidStackElement(fluidStack);//.size(new Size(18, 18));
 	}
 
 }

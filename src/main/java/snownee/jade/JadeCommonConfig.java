@@ -16,6 +16,7 @@ import net.minecraftforge.common.ForgeConfigSpec.IntValue;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 import snownee.jade.addon.forge.BlockInventoryProvider;
+import snownee.jade.util.PlatformProxy;
 
 public final class JadeCommonConfig {
 
@@ -75,7 +76,7 @@ public final class JadeCommonConfig {
 	}
 
 	public static boolean shouldShowCustomName(BlockEntity t) {
-		String modid = t.getType().getRegistryName().getNamespace();
+		String modid = PlatformProxy.getId(t.getType()).getNamespace();
 		if (onlyShowVanilla) {
 			return "minecraft".equals(modid);
 		} else {

@@ -2,10 +2,17 @@ package snownee.jade.util;
 
 import java.io.File;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.horse.AbstractChestedHorse;
+import net.minecraft.world.entity.decoration.Motive;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.IForgeShearable;
@@ -53,6 +60,26 @@ public final class PlatformProxy {
 
 	public static boolean isDevEnv() {
 		return !FMLEnvironment.production;
+	}
+
+	public static float getEnchantPowerBonus(BlockState state, Level world, BlockPos pos) {
+		return state.getEnchantPowerBonus(world, pos);
+	}
+
+	public static ResourceLocation getId(Block block) {
+		return block.getRegistryName();
+	}
+
+	public static ResourceLocation getId(EntityType<?> entityType) {
+		return entityType.getRegistryName();
+	}
+
+	public static ResourceLocation getId(BlockEntityType<?> blockEntityType) {
+		return blockEntityType.getRegistryName();
+	}
+
+	public static ResourceLocation getId(Motive motive) {
+		return motive.getRegistryName();
 	}
 
 }

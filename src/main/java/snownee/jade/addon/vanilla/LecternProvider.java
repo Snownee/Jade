@@ -41,7 +41,7 @@ public enum LecternProvider implements IBlockComponentProvider, IServerDataProvi
 		ItemStack stack = ((LecternBlockEntity) blockEntity).getBook();
 		if (!stack.isEmpty()) {
 			if (stack.hasCustomHoverName() || stack.getItem() != Items.WRITABLE_BOOK) {
-				data.put("Book", stack.serializeNBT());
+				data.put("Book", stack.save(new CompoundTag()));
 			}
 		}
 	}

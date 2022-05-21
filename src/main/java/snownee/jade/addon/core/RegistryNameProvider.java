@@ -11,6 +11,7 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.util.PlatformProxy;
 
 public enum RegistryNameProvider implements IBlockComponentProvider, IEntityComponentProvider {
 
@@ -18,12 +19,12 @@ public enum RegistryNameProvider implements IBlockComponentProvider, IEntityComp
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		tooltip.add(new TextComponent(accessor.getBlock().getRegistryName().toString()).withStyle(ChatFormatting.GRAY));
+		tooltip.add(new TextComponent(PlatformProxy.getId(accessor.getBlock()).toString()).withStyle(ChatFormatting.GRAY));
 	}
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
-		tooltip.add(new TextComponent(accessor.getEntity().getType().getRegistryName().toString()).withStyle(ChatFormatting.GRAY));
+		tooltip.add(new TextComponent(PlatformProxy.getId(accessor.getEntity().getType()).toString()).withStyle(ChatFormatting.GRAY));
 	}
 
 	@Override

@@ -75,7 +75,7 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 task apiJar(type: Jar) {
     classifier = 'api'
-    include 'mcp/mobius/waila/api/**/*'
+    include 'snownee/jade/api/**/*'
     from sourceSets.main.allSource
     from sourceSets.main.output
 }
@@ -111,7 +111,7 @@ dependencies {
 
 // Example for how to get properties into the manifest for reading by the runtime..
 jar {
-    exclude '/mcp/mobius/waila/test'
+    exclude '/snownee/jade/test'
     manifest {
         attributes([
             "Implementation-Title": project.name,

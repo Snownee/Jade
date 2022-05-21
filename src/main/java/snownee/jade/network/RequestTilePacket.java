@@ -14,6 +14,7 @@ import net.minecraftforge.network.NetworkEvent;
 import snownee.jade.Jade;
 import snownee.jade.api.IServerDataProvider;
 import snownee.jade.impl.WailaCommonRegistration;
+import snownee.jade.util.PlatformProxy;
 import snownee.jade.util.WailaExceptionHandler;
 
 public class RequestTilePacket {
@@ -70,7 +71,7 @@ public class RequestTilePacket {
 				tag.putInt("x", message.pos.getX());
 				tag.putInt("y", message.pos.getY());
 				tag.putInt("z", message.pos.getZ());
-				tag.putString("id", tile.getType().getRegistryName().toString());
+				tag.putString("id", PlatformProxy.getId(tile.getType()).toString());
 
 				Jade.NETWORK.sendTo(new ReceiveDataPacket(tag), player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
 			});

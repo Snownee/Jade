@@ -46,7 +46,7 @@ public class ModIdentification implements ResourceManagerReloadListener {
 	}
 
 	public static String getModName(Block block) {
-		return getModName(block.getRegistryName());
+		return getModName(PlatformProxy.getId(block));
 	}
 
 	public static String getModName(ItemStack stack) {
@@ -57,7 +57,7 @@ public class ModIdentification implements ResourceManagerReloadListener {
 		if (entity instanceof Painting) {
 			Motive motive = ((Painting) entity).motive;
 			if (motive != null) {
-				return getModName(motive.getRegistryName().getNamespace());
+				return getModName(PlatformProxy.getId(motive).getNamespace());
 			}
 		}
 		if (entity instanceof ItemEntity) {
@@ -66,7 +66,7 @@ public class ModIdentification implements ResourceManagerReloadListener {
 		if (entity instanceof FallingBlockEntity) {
 			return getModName(((FallingBlockEntity) entity).getBlockState().getBlock());
 		}
-		return getModName(entity.getType().getRegistryName());
+		return getModName(PlatformProxy.getId(entity.getType()));
 	}
 
 	@Override
