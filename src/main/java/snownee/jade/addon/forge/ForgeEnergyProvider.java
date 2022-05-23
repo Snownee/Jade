@@ -1,4 +1,4 @@
-package snownee.jade.addon.forge;
+/*package snownee.jade.addon.forge;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
@@ -63,4 +63,4 @@ public enum ForgeEnergyProvider implements IBlockComponentProvider, IServerDataP
 		return Identifiers.FORGE_ENERGY;
 	}
 
-}
+}*/

@@ -1,11 +1,9 @@
 package snownee.jade.addon.vanilla;
 
-import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.RecordItem;
 import net.minecraft.world.level.Level;
@@ -26,14 +24,13 @@ public enum JukeboxProvider implements IBlockComponentProvider, IServerDataProvi
 	INSTANCE;
 
 	@Override
-	@SuppressWarnings("deprecation")
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		BlockState state = accessor.getBlockState();
 		if (state.getValue(JukeboxBlock.HAS_RECORD) && accessor.getServerData().contains("Record")) {
 			try {
-				Item item = Registry.ITEM.get(new ResourceLocation(accessor.getServerData().getString("Record")));
-				if (item instanceof RecordItem) {
-					tooltip.add(new TranslatableComponent("record.nowPlaying", ((RecordItem) item).getDisplayName()));
+				ItemStack stack = ItemStack.of(accessor.getServerData().getCompound("Record"));
+				if (stack.getItem() instanceof RecordItem) {
+					tooltip.add(new TranslatableComponent("record.nowPlaying", stack.getHoverName()));
 				}
 			} catch (Exception e) {
 				Jade.LOGGER.catching(e);
@@ -48,7 +45,7 @@ public enum JukeboxProvider implements IBlockComponentProvider, IServerDataProvi
 		if (blockEntity instanceof JukeboxBlockEntity jukebox) {
 			ItemStack stack = jukebox.getRecord();
 			if (!stack.isEmpty()) {
-				data.putString("Record", stack.getItem().getRegistryName().toString());
+				data.put("Record", stack.save(new CompoundTag()));
 			}
 		}
 	}

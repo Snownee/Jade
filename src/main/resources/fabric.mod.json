@@ -6,6 +6,8 @@
   "name": "Jade",
   "description": "Minecraft mod shows what you are looking at. (Hwyla fork)",
   "authors": ["Snownee"],
+  "contributors": ["TehNut", "ProfMobius", "kalkafox"],
+  "icon": "icon.png",
   "contact": {
     "homepage": "https://www.curseforge.com/minecraft/mc-mods/jade",
     "sources": "https://github.com/Snownee/Jade",
@@ -18,8 +20,18 @@
     "main": [
       "snownee.jade.Jade"
     ],
+    "client": [
+      "snownee.jade.JadeClient"
+    ],
     "rei": [
       "snownee.jade.compat.REICompat"
+    ],
+    "jade": [
+      "snownee.jade.addon.core.CorePlugin",
+      "snownee.jade.addon.vanilla.VanillaPlugin"
+    ],
+    "modmenu": [
+      "snownee.jade.compat.ModMenuCompat"
     ]
   },
   "mixins": [ "jade.mixins.json" ],

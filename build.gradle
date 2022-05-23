@@ -61,9 +61,9 @@ dependencies {
 }
 
 loom {
-    //mixin {
-    //    defaultRefmapName = "${project.mod_id}.refmap.json"
-    //}
+    mixin {
+        defaultRefmapName = "${project.mod_id}.refmap.json"
+    }
     
     accessWidenerPath = file("src/main/resources/${project.mod_id}.accesswidener")
 }
@@ -87,6 +87,17 @@ tasks.withType(JavaCompile).configureEach {
     it.options.release = 17
 }
 
+task apiJar(type: Jar) {
+classifier = 'api'
+    include 'snownee/jade/api/**/*'
+    from sourceSets.main.allSource
+    from sourceSets.main.output
+}
+
+artifacts {
+    archives apiJar
+}
+
 java {
     // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
     // if it is present.
@@ -96,7 +107,7 @@ java {
 
 jar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    exclude '/data/lychee/recipes'
+    exclude '/snownee/jade/test'
     exclude '**/*.bat'
     from("LICENSE") {
         rename { "${it}_${project.archivesBaseName}"}

@@ -15,9 +15,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.fluids.FluidStack;
 import snownee.jade.Jade;
 import snownee.jade.api.AccessorImpl;
 import snownee.jade.api.BlockAccessor;
@@ -27,10 +25,9 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.impl.ui.ElementHelper;
-import snownee.jade.impl.ui.FluidStackElement;
 import snownee.jade.impl.ui.ItemStackElement;
-import snownee.jade.network.RequestTilePacket;
 import snownee.jade.overlay.RayTracing;
+import snownee.jade.util.ClientPlatformProxy;
 import snownee.jade.util.WailaExceptionHandler;
 
 /**
@@ -76,7 +73,7 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 
 	@Override
 	public ItemStack getPickedResult() {
-		return getBlockState().getCloneItemStack(getHitResult(), getLevel(), getPosition(), getPlayer());
+		return ClientPlatformProxy.getBlockPickedResult(blockState, getPlayer(), getHitResult());
 	}
 
 	@Override
@@ -93,14 +90,12 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 				icon = ItemStackElement.of(pick);
 		}
 
-		if (RayTracing.isEmptyElement(icon) && getBlock().asItem() != Items.AIR)
+		if (RayTracing.isEmptyElement(icon) && getBlock().asItem() != Items.AIR) {
 			icon = ItemStackElement.of(new ItemStack(getBlock()));
+		}
 
 		if (RayTracing.isEmptyElement(icon) && getBlock() instanceof LiquidBlock) {
-			LiquidBlock block = (LiquidBlock) getBlock();
-			Fluid fluid = block.getFluid();
-			FluidStack fluidStack = new FluidStack(fluid, 1);
-			icon = new FluidStackElement(fluidStack);//.size(new Size(18, 18));
+			icon = ClientPlatformProxy.elementFromLiquid((LiquidBlock) getBlock());
 		}
 
 		for (IBlockComponentProvider provider : WailaClientRegistration.INSTANCE.getBlockIconProviders(getBlock(), PluginConfig.INSTANCE::get)) {
@@ -138,7 +133,7 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 
 	@Override
 	public void _requestData(boolean showDetails) {
-		Jade.NETWORK.sendToServer(new RequestTilePacket(blockEntity, showDetails));
+		ClientPlatformProxy.requestBlockData(blockEntity, showDetails);
 	}
 
 	@Override

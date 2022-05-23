@@ -12,5 +12,3 @@ accessible field net/minecraft/world/level/block/entity/RandomizableContainerBlo
 accessible field net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity litTime I
 
 accessible method net/minecraft/client/gui/components/ContainerObjectSelectionList$Entry updateNarration (Lnet/minecraft/client/gui/narration/NarrationElementOutput;)V
-
-mutable field com/mojang/blaze3d/platform/InputConstants$Key displayName Lnet/minecraft/util/LazyLoadedValue;

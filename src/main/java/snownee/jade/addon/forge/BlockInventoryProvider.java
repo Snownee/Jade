@@ -1,4 +1,4 @@
-package snownee.jade.addon.forge;
+/*package snownee.jade.addon.forge;
 
 import java.util.Collections;
 import java.util.List;
@@ -178,3 +178,4 @@ public enum BlockInventoryProvider implements IBlockComponentProvider, IServerDa
 	}
 
 }
+*/

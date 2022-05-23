@@ -1,4 +1,4 @@
-package snownee.jade.test;
+/*package snownee.jade.test;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
@@ -36,3 +36,4 @@ public class TestBlock extends BaseEntityBlock {
 		return createTickerHelper(type, Test.TILE, TestBlockEntity::tick);
 	}
 }
+*/

@@ -1,4 +1,4 @@
-package snownee.jade.addon.forge;
+/*package snownee.jade.addon.forge;
 
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -25,3 +25,4 @@ public class ForgePlugin implements IWailaPlugin {
 	}
 
 }
+*/

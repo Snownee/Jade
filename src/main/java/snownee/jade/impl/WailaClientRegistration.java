@@ -1,10 +1,12 @@
 package snownee.jade.impl;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import net.minecraft.resources.ResourceLocation;
@@ -13,7 +15,8 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import snownee.jade.Jade;
-import snownee.jade.api.BlockAccessor.Builder;
+import snownee.jade.api.BlockAccessor;
+import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.IToggleableProvider;
@@ -23,6 +26,7 @@ import snownee.jade.api.callback.JadeBeforeRenderCallback;
 import snownee.jade.api.callback.JadeRayTraceCallback;
 import snownee.jade.api.callback.JadeTooltipCollectedCallback;
 import snownee.jade.api.config.IWailaConfig;
+import snownee.jade.api.fabric.CustomEnchantPower;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.impl.config.ConfigEntry;
@@ -48,6 +52,8 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	public final List<JadeBeforeRenderCallback> beforeRenderCallbacks = Lists.newArrayList();
 	public final List<JadeRayTraceCallback> rayTraceCallbacks = Lists.newArrayList();
 	public final List<JadeTooltipCollectedCallback> tooltipCollectedCallbacks = Lists.newArrayList();
+
+	public final Map<Block, CustomEnchantPower> customEnchantPowers = Maps.newHashMap();
 
 	WailaClientRegistration() {
 		blockIconProviders = new HierarchyLookup<>(Block.class);
@@ -184,13 +190,18 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	}
 
 	@Override
-	public Builder blockAccessor() {
+	public BlockAccessor.Builder blockAccessor() {
 		return new BlockAccessorImpl.Builder();
 	}
 
 	@Override
-	public snownee.jade.api.EntityAccessor.Builder entityAccessor() {
+	public EntityAccessor.Builder entityAccessor() {
 		return new EntityAccessorImpl.Builder();
+	}
+
+	@Override
+	public void registerCustomEnchantPower(Block block, CustomEnchantPower customEnchantPower) {
+		customEnchantPowers.put(block, customEnchantPower);
 	}
 
 }

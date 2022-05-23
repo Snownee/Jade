@@ -51,7 +51,7 @@ public enum ObjectNameProvider
 			if (I18n.exists(key)) {
 				name = accessor.getBlock().getName();
 			} else {
-				ItemStack stack = accessor.getBlockState().getCloneItemStack(accessor.getHitResult(), accessor.getLevel(), accessor.getPosition(), accessor.getPlayer());
+				ItemStack stack = accessor.getPickedResult();
 				if (stack != null && !stack.isEmpty()) {
 					name = stack.getHoverName();
 				} else {

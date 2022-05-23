@@ -5,10 +5,8 @@ import java.util.Map;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -53,6 +51,8 @@ import snownee.jade.api.Identifiers;
 import snownee.jade.api.WailaPlugin;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.util.ClientPlatformProxy;
+import snownee.jade.util.PlatformProxy;
 
 @WailaPlugin
 public class VanillaPlugin implements IWailaPlugin {
@@ -103,7 +103,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerEntityComponent(VillagerProfessionProvider.INSTANCE, ZombieVillager.class);
 		registration.registerEntityComponent(ItemTooltipProvider.INSTANCE, ItemEntity.class);
 		registration.registerBlockComponent(FurnaceProvider.INSTANCE, AbstractFurnaceBlock.class);
-		registration.registerEntityComponent(AnimalOwnerProvider.INSTANCE, Entity.class);
+		//registration.registerEntityComponent(AnimalOwnerProvider.INSTANCE, Entity.class);
 		registration.registerEntityComponent(FallingBlockProvider.INSTANCE, FallingBlockEntity.class);
 		registration.registerEntityIcon(FallingBlockProvider.INSTANCE, FallingBlockEntity.class);
 		registration.registerEntityComponent(EntityHealthProvider.INSTANCE, LivingEntity.class);
@@ -114,7 +114,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerBlockComponent(LecternProvider.INSTANCE, LecternBlock.class);
 		registration.registerBlockComponent(MobSpawnerProvider.INSTANCE, SpawnerBlock.class);
 
-		((ReloadableResourceManager) Minecraft.getInstance().getResourceManager()).registerReloadListener(HarvestToolProvider.INSTANCE);
+		ClientPlatformProxy.registerReloadListener(HarvestToolProvider.INSTANCE);
 
 		registration.addConfig(Identifiers.MC_EFFECTIVE_TOOL, true);
 		registration.addConfig(Identifiers.MC_HARVEST_TOOL_NEW_LINE, false);
@@ -138,7 +138,7 @@ public class VanillaPlugin implements IWailaPlugin {
 	public static BlockState getCorrespondingNormalChest(BlockState state) {
 		try {
 			return CHEST_CACHE.get(state, () -> {
-				ResourceLocation trappedName = state.getBlock().getRegistryName();
+				ResourceLocation trappedName = PlatformProxy.getId(state.getBlock());
 				if (trappedName.getPath().startsWith("trapped_")) {
 					ResourceLocation chestName = new ResourceLocation(trappedName.getNamespace(), trappedName.getPath().substring(8));
 					Block block = Registry.BLOCK.get(chestName);

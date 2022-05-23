@@ -48,7 +48,7 @@ public enum FurnaceProvider implements IBlockComponentProvider, IServerDataProvi
 		AbstractFurnaceBlockEntity furnace = (AbstractFurnaceBlockEntity) blockEntity;
 		ListTag items = new ListTag();
 		for (int i = 0; i < 3; i++) {
-			items.add(furnace.getItem(i).serializeNBT());
+			items.add(furnace.getItem(i).save(new CompoundTag()));
 		}
 		data.put("furnace", items);
 		CompoundTag furnaceTag = furnace.saveWithoutMetadata();

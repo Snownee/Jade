@@ -8,6 +8,7 @@ import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.util.PlatformProxy;
 
 public enum PaintingProvider implements IEntityComponentProvider {
 
@@ -19,7 +20,7 @@ public enum PaintingProvider implements IEntityComponentProvider {
 		if (painting.motive == null) {
 			return;
 		}
-		String name = painting.motive.getRegistryName().getPath().replace('_', ' ');
+		String name = PlatformProxy.getId(painting.motive).getPath().replace('_', ' ');
 		tooltip.add(new TextComponent(name));
 	}
 

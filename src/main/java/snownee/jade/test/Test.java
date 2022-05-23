@@ -1,4 +1,4 @@
-package snownee.jade.test;
+/*package snownee.jade.test;
 
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -31,3 +31,4 @@ public class Test {
 	}
 
 }
+*/

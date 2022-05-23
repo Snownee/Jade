@@ -1,5 +1,6 @@
 package snownee.jade.addon.vanilla;
 
+import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
@@ -23,6 +24,7 @@ public enum VillagerProfessionProvider implements IEntityComponentProvider {
 
 	private static final Component LEVEL_SEPARATOR = new TextComponent(" - ");
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		VillagerData data = null;
@@ -35,7 +37,7 @@ public enum VillagerProfessionProvider implements IEntityComponentProvider {
 			return;
 		}
 		int level = data.getLevel();
-		ResourceLocation profName = data.getProfession().getRegistryName();
+		ResourceLocation profName = Registry.VILLAGER_PROFESSION.getKey(data.getProfession());
 		MutableComponent component = new TranslatableComponent(EntityType.VILLAGER.getDescriptionId() + '.' + (!"minecraft".equals(profName.getNamespace()) ? profName.getNamespace() + '.' : "") + profName.getPath());
 		VillagerProfession profession = data.getProfession();
 		if (profession != VillagerProfession.NONE && profession != VillagerProfession.NITWIT) {

@@ -22,8 +22,8 @@ import snownee.jade.api.ui.IElement;
 import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.impl.ui.ElementHelper;
 import snownee.jade.impl.ui.ItemStackElement;
-import snownee.jade.network.RequestEntityPacket;
 import snownee.jade.overlay.RayTracing;
+import snownee.jade.util.ClientPlatformProxy;
 import snownee.jade.util.WailaExceptionHandler;
 
 /**
@@ -45,7 +45,7 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 
 	@Override
 	public ItemStack getPickedResult() {
-		return getEntity().getPickedResult(getHitResult());
+		return ClientPlatformProxy.getEntityPickedResult(entity, getPlayer(), getHitResult());
 	}
 
 	@Override
@@ -94,7 +94,7 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 
 	@Override
 	public void _requestData(boolean showDetails) {
-		Jade.NETWORK.sendToServer(new RequestEntityPacket(entity, showDetails));
+		ClientPlatformProxy.requestEntityData(entity, showDetails);
 	}
 
 	@Override

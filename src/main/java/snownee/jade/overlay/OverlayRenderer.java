@@ -33,7 +33,7 @@ public class OverlayRenderer {
 	public static int stressedTextColorRaw;
 	public static int normalTextColorRaw;
 
-	public static void renderOverlay() {
+	public static void renderOverlay(PoseStack poseStack) {
 		if (WailaTickHandler.instance().tooltipRenderer == null)
 			return;
 
@@ -76,7 +76,7 @@ public class OverlayRenderer {
 
 		ticks += mc.getDeltaFrameTime();
 		if (RayTracing.INSTANCE.getTarget().getType() != HitResult.Type.MISS)
-			renderOverlay(WailaTickHandler.instance().tooltipRenderer, new PoseStack());
+			renderOverlay(WailaTickHandler.instance().tooltipRenderer, poseStack);
 	}
 
 	public static void renderOverlay(TooltipRenderer tooltip, PoseStack matrixStack) {

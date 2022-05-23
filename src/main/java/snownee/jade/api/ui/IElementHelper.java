@@ -4,7 +4,7 @@ import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fluids.FluidStack;
+import net.minecraft.world.level.material.FluidState;
 import snownee.jade.api.ITooltip;
 
 public interface IElementHelper {
@@ -19,7 +19,7 @@ public interface IElementHelper {
 
 	IElement item(ItemStack itemStack, float scale, @Nullable String text);
 
-	IElement fluid(FluidStack fluidStack);
+	IElement fluid(FluidState fluidState);
 
 	IElement progress(float progress, @Nullable Component text, IProgressStyle style, @Nullable IBorderStyle borderStyle);
 

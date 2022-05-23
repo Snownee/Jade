@@ -1,4 +1,4 @@
-package snownee.jade.addon.forge;
+/*package snownee.jade.addon.forge;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -89,4 +89,4 @@ public enum ForgeFluidProvider implements IBlockComponentProvider, IServerDataPr
 		return Identifiers.FORGE_FLUID;
 	}
 
-}
+}*/

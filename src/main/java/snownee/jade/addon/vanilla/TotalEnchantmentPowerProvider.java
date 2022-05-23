@@ -10,6 +10,7 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.overlay.DisplayHelper;
+import snownee.jade.util.PlatformProxy;
 
 public enum TotalEnchantmentPowerProvider implements IBlockComponentProvider {
 
@@ -42,7 +43,7 @@ public enum TotalEnchantmentPowerProvider implements IBlockComponentProvider {
 	}
 
 	public static float getPower(Level world, BlockPos pos) {
-		return world.getBlockState(pos).getEnchantPowerBonus(world, pos);
+		return PlatformProxy.getEnchantPowerBonus(world.getBlockState(pos), world, pos);
 	}
 
 	@Override

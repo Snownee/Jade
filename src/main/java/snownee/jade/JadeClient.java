@@ -9,6 +9,7 @@ import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 
+import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -21,7 +22,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.util.LazyLoadedValue;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
@@ -44,6 +44,7 @@ import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
 import snownee.jade.api.config.IWailaConfig.TTSMode;
 import snownee.jade.gui.HomeConfigScreen;
 import snownee.jade.impl.config.PluginConfig;
+import snownee.jade.mixin.KeyAccess;
 import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.overlay.WailaTickHandler;
 import snownee.jade.util.ClientPlatformProxy;
@@ -51,7 +52,7 @@ import snownee.jade.util.ModIdentification;
 import snownee.jade.util.PlatformProxy;
 
 @SuppressWarnings("deprecation")
-public final class JadeClient {
+public final class JadeClient implements ClientModInitializer {
 
 	public static KeyMapping openConfig;
 	public static KeyMapping showOverlay;
@@ -61,10 +62,11 @@ public final class JadeClient {
 	public static KeyMapping showRecipes;
 	public static KeyMapping showUses;
 
-	public static void initClient() {
+	@Override
+	public void onInitializeClient() {
 		for (int i = 320; i < 330; i++) {
 			InputConstants.Key key = InputConstants.Type.KEYSYM.getOrCreate(i);
-			key.displayName = new LazyLoadedValue<>(() -> new TranslatableComponent(key.getName()));
+			((KeyAccess) (Object) key).setDisplayName(new LazyLoadedValue<>(() -> new TranslatableComponent(key.getName())));
 		}
 
 		openConfig = ClientPlatformProxy.registerKeyBinding("config", 320);
@@ -77,7 +79,7 @@ public final class JadeClient {
 		narrate = ClientPlatformProxy.registerKeyBinding("narrate", 325);
 		showDetails = ClientPlatformProxy.registerKeyBinding("show_details", 340);
 
-		((ReloadableResourceManager) Minecraft.getInstance().getResourceManager()).registerReloadListener(ModIdentification.INSTANCE);
+		ClientPlatformProxy.registerReloadListener(ModIdentification.INSTANCE);
 	}
 
 	public static void onKeyPressed(int action) {

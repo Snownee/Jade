@@ -19,6 +19,9 @@ import com.mojang.blaze3d.vertex.VertexFormat.Mode;
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3f;
 
+import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandler;
+import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandlerRegistry;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiComponent;
@@ -34,14 +37,12 @@ import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.fluids.FluidAttributes;
-import net.minecraftforge.fluids.FluidStack;
+import net.minecraft.world.level.material.FluidState;
 import snownee.jade.Jade;
 import snownee.jade.api.ui.IBorderStyle;
 import snownee.jade.api.ui.IDisplayHelper;
@@ -135,7 +136,7 @@ public class DisplayHelper implements IDisplayHelper {
 
 	private static void renderGuiItem(PoseStack posestack, ItemStack p_115128_, float p_115129_, float p_115130_, BakedModel p_115131_, float scale) {
 		ItemRenderer renderer = CLIENT.getItemRenderer();
-		TextureManager textureManager = CLIENT.textureManager;
+		TextureManager textureManager = CLIENT.getTextureManager();
 		textureManager.getTexture(TextureAtlas.LOCATION_BLOCKS).setFilter(false, false);
 		RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
 		RenderSystem.enableBlend();
@@ -289,21 +290,19 @@ public class DisplayHelper implements IDisplayHelper {
 	private static final int TEX_HEIGHT = 16;
 	private static final int MIN_FLUID_HEIGHT = 1; // ensure tiny amounts of fluid are still visible
 
-	public void drawFluid(PoseStack matrixStack, final float xPosition, final float yPosition, @Nullable FluidStack fluidStack, float width, float height, int capacityMb) {
-		if (fluidStack == null || fluidStack.isEmpty()) {
+	public void drawFluid(PoseStack matrixStack, final float xPosition, final float yPosition, @Nullable FluidState fluidState, float width, float height, long capacityMb) {
+		if (fluidState == null || fluidState.isEmpty()) {
 			return;
 		}
-		Fluid fluid = fluidStack.getFluid();
+		Fluid fluid = fluidState.getType();
 		if (fluid == null) {
 			return;
 		}
+		FluidRenderHandler handler = FluidRenderHandlerRegistry.INSTANCE.get(fluid);
+		TextureAtlasSprite fluidStillSprite = handler.getFluidSprites(null, null, fluidState)[0];
+		int fluidColor = handler.getFluidColor(null, null, fluidState);
 
-		TextureAtlasSprite fluidStillSprite = getStillFluidSprite(fluidStack);
-
-		FluidAttributes attributes = fluid.getAttributes();
-		int fluidColor = attributes.getColor(fluidStack);
-
-		int amount = fluidStack.getAmount();
+		long amount = FluidConstants.BUCKET;
 		float scaledAmount = (amount * height) / capacityMb;
 		if (amount > 0 && scaledAmount < MIN_FLUID_HEIGHT) {
 			scaledAmount = MIN_FLUID_HEIGHT;
@@ -341,14 +340,6 @@ public class DisplayHelper implements IDisplayHelper {
 				}
 			}
 		}
-	}
-
-	private static TextureAtlasSprite getStillFluidSprite(FluidStack fluidStack) {
-		Minecraft minecraft = Minecraft.getInstance();
-		Fluid fluid = fluidStack.getFluid();
-		FluidAttributes attributes = fluid.getAttributes();
-		ResourceLocation fluidStill = attributes.getStillTexture(fluidStack);
-		return minecraft.getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(fluidStill);
 	}
 
 	private static void setGLColorFromInt(int color) {

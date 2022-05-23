@@ -13,6 +13,11 @@ public class Identifiers {
 		return new ResourceLocation("minecraft", path);
 	}
 
+	public static final ResourceLocation PACKET_RECEIVE_DATA = JADE("receive_data");
+	public static final ResourceLocation PACKET_SERVER_PING = JADE("server_ping");
+	public static final ResourceLocation PACKET_REQUEST_ENTITY = JADE("request_entity");
+	public static final ResourceLocation PACKET_REQUEST_TILE = JADE("request_tile");
+
 	public static final ResourceLocation CORE_OBJECT_NAME = JADE("object_name");
 	public static final ResourceLocation CORE_REGISTRY_NAME = JADE("registry_name");
 	public static final ResourceLocation CORE_MOD_NAME = JADE("mod_name");

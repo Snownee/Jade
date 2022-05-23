@@ -13,12 +13,13 @@ import snownee.jade.api.callback.JadeRayTraceCallback;
 import snownee.jade.api.callback.JadeTooltipCollectedCallback;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
+import snownee.jade.api.fabric.FabricWailaClientRegistration;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElementHelper;
 
 @NonExtendable
-public interface IWailaClientRegistration {
+public interface IWailaClientRegistration extends FabricWailaClientRegistration {
 
 	/**
      * Register a namespaced config key to be accessed within data providers.
