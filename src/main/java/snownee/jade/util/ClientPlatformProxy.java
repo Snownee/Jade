@@ -185,7 +185,8 @@ public final class ClientPlatformProxy {
 		if (entity instanceof EntityPickInteractionAware) {
 			return ((EntityPickInteractionAware) entity).getPickedStack(player, hitResult);
 		}
-		return entity.getPickResult();
+		ItemStack stack = entity.getPickResult();
+		return stack == null ? ItemStack.EMPTY : stack;
 	}
 
 	public static ItemStack getBlockPickedResult(BlockState state, Player player, BlockHitResult hitResult) {
