@@ -84,7 +84,7 @@ public class RayTracing {
 		Block eyeBlock = world.getBlockState(new BlockPos(eyePosition.x, eyePosition.y, eyePosition.z)).getBlock();
 		ClipContext.Fluid fluidView = ClipContext.Fluid.NONE;
 		if (!(eyeBlock instanceof LiquidBlock)) {
-			fluidView = Waila.CONFIG.get().getGeneral().getDisplayFluids();
+			fluidView = Waila.CONFIG.get().getGeneral().getDisplayFluids().ctx;
 		}
 		ClipContext context = new ClipContext(eyePosition, traceEnd, ClipContext.Block.OUTLINE, fluidView, entity);
 

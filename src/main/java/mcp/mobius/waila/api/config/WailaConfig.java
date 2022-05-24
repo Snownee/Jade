@@ -45,7 +45,7 @@ public class WailaConfig {
 		private TTSMode ttsMode = TTSMode.PRESS;
 		private int maxHealthForRender = 40;
 		private int maxHeartsPerLine = 10;
-		private ClipContext.Fluid fluidMode = ClipContext.Fluid.NONE;
+		private FluidMode fluidMode = FluidMode.NONE;
 		private float reachDistance = 0;
 		@Expose
 		private boolean debug = false;
@@ -99,10 +99,10 @@ public class WailaConfig {
 		}
 
 		public void setDisplayFluids(boolean displayFluids) {
-			fluidMode = displayFluids ? ClipContext.Fluid.ANY : ClipContext.Fluid.NONE;
+			fluidMode = displayFluids ? FluidMode.ANY : FluidMode.NONE;
 		}
 
-		public void setDisplayFluids(ClipContext.Fluid displayFluids) {
+		public void setDisplayFluids(FluidMode displayFluids) {
 			fluidMode = displayFluids;
 		}
 
@@ -143,10 +143,10 @@ public class WailaConfig {
 		}
 
 		public boolean shouldDisplayFluids() {
-			return fluidMode != ClipContext.Fluid.NONE;
+			return fluidMode != FluidMode.NONE;
 		}
 
-		public ClipContext.Fluid getDisplayFluids() {
+		public FluidMode getDisplayFluids() {
 			return fluidMode;
 		}
 
@@ -361,5 +361,15 @@ public class WailaConfig {
 
 	public enum DisplayMode {
 		HOLD_KEY, TOGGLE, LITE
+	}
+
+	public enum FluidMode {
+		NONE(ClipContext.Fluid.NONE), ANY(ClipContext.Fluid.ANY), SOURCE_ONLY(ClipContext.Fluid.SOURCE_ONLY);
+
+		public final ClipContext.Fluid ctx;
+
+		FluidMode(ClipContext.Fluid ctx) {
+			this.ctx = ctx;
+		}
 	}
 }
