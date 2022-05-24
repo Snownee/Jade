@@ -21,7 +21,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.util.LazyLoadedValue;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
@@ -77,7 +76,7 @@ public final class JadeClient {
 		narrate = ClientPlatformProxy.registerKeyBinding("narrate", 325);
 		showDetails = ClientPlatformProxy.registerKeyBinding("show_details", 340);
 
-		((ReloadableResourceManager) Minecraft.getInstance().getResourceManager()).registerReloadListener(ModIdentification.INSTANCE);
+		ClientPlatformProxy.registerReloadListener(ModIdentification.INSTANCE);
 	}
 
 	public static void onKeyPressed(int action) {

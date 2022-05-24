@@ -11,8 +11,10 @@ import org.apache.commons.lang3.StringUtils;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.KeyMapping;
+import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -101,7 +103,7 @@ public final class ClientPlatformProxy {
 
 	public static void onRenderTick(TickEvent.RenderTickEvent event) {
 		if (event.phase == TickEvent.Phase.END)
-			OverlayRenderer.renderOverlay();
+			OverlayRenderer.renderOverlay(new PoseStack());
 	}
 
 	public static void onClientTick(TickEvent.ClientTickEvent event) {
@@ -155,6 +157,10 @@ public final class ClientPlatformProxy {
 		Fluid fluid = block.getFluid();
 		FluidStack fluidStack = new FluidStack(fluid, 1);
 		return new FluidStackElement(fluidStack);//.size(new Size(18, 18));
+	}
+
+	public static void registerReloadListener(ResourceManagerReloadListener listener) {
+
 	}
 
 }

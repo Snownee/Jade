@@ -47,4 +47,9 @@ public enum BlockStatesProvider implements IBlockComponentProvider {
 	public int getDefaultPriority() {
 		return -4500;
 	}
+
+	@Override
+	public boolean enabledByDefault() {
+		return false;
+	}
 }

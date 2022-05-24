@@ -31,7 +31,7 @@ public class ServerPingPacket {
 	}
 
 	public static ServerPingPacket read(FriendlyByteBuf buffer) {
-		int size = buffer.readInt();
+		int size = buffer.readVarInt();
 		Map<ResourceLocation, Boolean> temp = Maps.newHashMap();
 		for (int i = 0; i < size; i++) {
 			ResourceLocation id = new ResourceLocation(buffer.readUtf(128));
@@ -43,7 +43,7 @@ public class ServerPingPacket {
 	}
 
 	public static void write(ServerPingPacket message, FriendlyByteBuf buffer) {
-		buffer.writeInt(message.forcedKeys.size());
+		buffer.writeVarInt(message.forcedKeys.size());
 		message.forcedKeys.forEach((k, v) -> {
 			buffer.writeUtf(k.toString());
 			buffer.writeBoolean(v);

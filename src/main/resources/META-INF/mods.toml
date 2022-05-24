@@ -8,7 +8,9 @@ version="${file.jarVersion}"
 displayName="Jade"
 authors="Snownee"
 displayURL="https://minecraft.curseforge.com/projects/jade"
-description="HWYLA fork & addons"
+description="Minecraft mod shows what you are looking at. (Hwyla fork)"
+logoFile="icon.png"
+credits="TehNut, ProfMobius, kalkafox"
 
 [[dependencies.jade]]
     modId="forge"
@@ -23,6 +25,3 @@ description="HWYLA fork & addons"
     versionRange="[9.7, )"
     ordering="NONE"
     side="BOTH"
-
-[modproperties.jade]
-    catalogueItemIcon="minecraft:spyglass" #Support for Catalogue mod

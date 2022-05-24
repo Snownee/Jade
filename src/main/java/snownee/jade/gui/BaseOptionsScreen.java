@@ -75,30 +75,28 @@ public abstract class BaseOptionsScreen extends Screen {
 		renderBackground(matrixStack);
 		super.render(matrixStack, mouseX, mouseY, partialTicks);
 
-		if (mouseY < 32 || mouseY > height - 32)
-			return;
+		if (mouseY >= 32 && mouseY <= height - 32) {
+			WailaOptionsList.Entry entry = options.getSelected();
+			if (entry instanceof OptionValue) {
+				OptionValue<?> value = (OptionValue<?>) entry;
 
-		WailaOptionsList.Entry entry = options.getSelected();
-		if (entry instanceof OptionValue) {
-			OptionValue<?> value = (OptionValue<?>) entry;
-
-			AbstractWidget widget = value.getListener();
-			if (widget instanceof TooltipAccessor && widget.visible && mouseX >= widget.x && mouseY >= widget.y && mouseX < (widget.x + widget.getWidth()) && mouseY < (widget.y + widget.getHeight())) {
-				renderTooltip(matrixStack, ((TooltipAccessor) widget).getTooltip(), mouseX, mouseY);
-			} else if (I18n.exists(value.getDescription())) {
-				int valueX = value.getX() + 10;
-				String title = value.getTitle().getString();
-				if (mouseX < valueX || mouseX > valueX + font.width(title))
-					return;
-
-				List<FormattedCharSequence> tooltip = Lists.newArrayList(value.getTitle().getVisualOrderText());
-				List<FormattedCharSequence> tooltip2 = font.split(new TranslatableComponent(value.getDescription()), 200);
-				tooltip.addAll(tooltip2);
-				matrixStack.pushPose();
-				matrixStack.translate(0, 0, 100);
-				renderTooltip(matrixStack, tooltip, mouseX, mouseY);
-				RenderSystem.enableDepthTest();
-				matrixStack.popPose();
+				AbstractWidget widget = value.getListener();
+				if (widget instanceof TooltipAccessor && widget.visible && mouseX >= widget.x && mouseY >= widget.y && mouseX < (widget.x + widget.getWidth()) && mouseY < (widget.y + widget.getHeight())) {
+					renderTooltip(matrixStack, ((TooltipAccessor) widget).getTooltip(), mouseX, mouseY);
+				} else if (I18n.exists(value.getDescription())) {
+					int valueX = value.getX() + 10;
+					String title = value.getTitle().getString();
+					if (mouseX >= valueX && mouseX <= valueX + font.width(title)) {
+						List<FormattedCharSequence> tooltip = Lists.newArrayList(value.getTitle().getVisualOrderText());
+						List<FormattedCharSequence> tooltip2 = font.split(new TranslatableComponent(value.getDescription()), 200);
+						tooltip.addAll(tooltip2);
+						matrixStack.pushPose();
+						matrixStack.translate(0, 0, 100);
+						renderTooltip(matrixStack, tooltip, mouseX, mouseY);
+						RenderSystem.enableDepthTest();
+						matrixStack.popPose();
+					}
+				}
 			}
 		}
 	}
