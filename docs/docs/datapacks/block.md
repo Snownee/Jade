@@ -6,8 +6,8 @@ Here is a page for datapack developers about how to display the correct informat
 
 Here is a few requirements:
 
- - The fake block should be displayed by an item frame or a glow item frame
- - The item frame should be invisible
+ - The fake block must be displayed by an item frame or a glow item frame
+ - The item frame must be invisible
 
 Then Jade will use the item inside the item frame, or the stored item in the `storedItem` tag of the said item.
 
