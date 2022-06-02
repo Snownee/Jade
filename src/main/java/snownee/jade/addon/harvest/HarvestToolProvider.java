@@ -18,8 +18,6 @@ import net.fabricmc.fabric.api.mininglevel.v1.FabricMineableTags;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
@@ -49,9 +47,9 @@ public enum HarvestToolProvider implements IBlockComponentProvider, ResourceMana
 	public static final Cache<BlockState, ImmutableList<ItemStack>> resultCache = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
 	public static final Map<String, ToolHandler> TOOL_HANDLERS = Maps.newLinkedHashMap();
 
-	private static final Component UNBREAKABLE_TEXT = new TranslatableComponent("jade.harvest_tool.unbreakable").withStyle(ChatFormatting.DARK_RED);
-	private static final Component CHECK = new TextComponent("✔").withStyle(ChatFormatting.GREEN);
-	private static final Component X = new TextComponent("✕").withStyle(ChatFormatting.RED);
+	private static final Component UNBREAKABLE_TEXT = Component.translatable("jade.harvest_tool.unbreakable").withStyle(ChatFormatting.DARK_RED);
+	private static final Component CHECK = Component.literal("✔").withStyle(ChatFormatting.GREEN);
+	private static final Component X = Component.literal("✕").withStyle(ChatFormatting.RED);
 	private static final Vec2 ITEM_SIZE = new Vec2(10, 0);
 
 	static {

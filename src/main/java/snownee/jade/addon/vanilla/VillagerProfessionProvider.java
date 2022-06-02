@@ -3,8 +3,6 @@ package snownee.jade.addon.vanilla;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.monster.ZombieVillager;
@@ -22,7 +20,7 @@ public enum VillagerProfessionProvider implements IEntityComponentProvider {
 
 	INSTANCE;
 
-	private static final Component LEVEL_SEPARATOR = new TextComponent(" - ");
+	private static final Component LEVEL_SEPARATOR = Component.literal(" - ");
 
 	@SuppressWarnings("deprecation")
 	@Override
@@ -38,10 +36,10 @@ public enum VillagerProfessionProvider implements IEntityComponentProvider {
 		}
 		int level = data.getLevel();
 		ResourceLocation profName = Registry.VILLAGER_PROFESSION.getKey(data.getProfession());
-		MutableComponent component = new TranslatableComponent(EntityType.VILLAGER.getDescriptionId() + '.' + (!"minecraft".equals(profName.getNamespace()) ? profName.getNamespace() + '.' : "") + profName.getPath());
+		MutableComponent component = Component.translatable(EntityType.VILLAGER.getDescriptionId() + '.' + (!"minecraft".equals(profName.getNamespace()) ? profName.getNamespace() + '.' : "") + profName.getPath());
 		VillagerProfession profession = data.getProfession();
 		if (profession != VillagerProfession.NONE && profession != VillagerProfession.NITWIT) {
-			component.append(LEVEL_SEPARATOR).append(new TranslatableComponent("merchant.level." + level));
+			component.append(LEVEL_SEPARATOR).append(Component.translatable("merchant.level." + level));
 		}
 		tooltip.add(component);
 	}

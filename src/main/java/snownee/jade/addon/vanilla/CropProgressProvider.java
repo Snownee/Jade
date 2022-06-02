@@ -1,7 +1,7 @@
 package snownee.jade.addon.vanilla;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -56,9 +56,9 @@ public enum CropProgressProvider implements IBlockComponentProvider {
 	private static void addMaturityTooltip(ITooltip tooltip, float growthValue) {
 		growthValue *= 100.0F;
 		if (growthValue < 100.0F)
-			tooltip.add(new TranslatableComponent("tooltip.jade.crop_growth", String.format("%.0f%%", growthValue)));
+			tooltip.add(Component.translatable("tooltip.jade.crop_growth", String.format("%.0f%%", growthValue)));
 		else
-			tooltip.add(new TranslatableComponent("tooltip.jade.crop_growth", new TranslatableComponent("tooltip.jade.crop_mature").withStyle(ChatFormatting.GREEN)));
+			tooltip.add(Component.translatable("tooltip.jade.crop_growth", Component.translatable("tooltip.jade.crop_mature").withStyle(ChatFormatting.GREEN)));
 	}
 
 	@Override

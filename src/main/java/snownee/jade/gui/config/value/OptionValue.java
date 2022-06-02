@@ -11,7 +11,6 @@ import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import snownee.jade.gui.config.WailaOptionsList;
 
 public abstract class OptionValue<T> extends WailaOptionsList.Entry {
@@ -55,7 +54,7 @@ public abstract class OptionValue<T> extends WailaOptionsList.Entry {
 	public void updateNarration(NarrationElementOutput output) {
 		getListener().updateNarration(output);
 		if (I18n.exists(getDescription())) {
-			output.add(NarratedElementType.HINT, new TranslatableComponent(getDescription()));
+			output.add(NarratedElementType.HINT, Component.translatable(getDescription()));
 		}
 	}
 

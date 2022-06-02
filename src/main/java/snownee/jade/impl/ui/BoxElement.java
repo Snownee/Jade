@@ -7,7 +7,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.ui.Element;
 import snownee.jade.impl.Tooltip;
@@ -53,7 +52,7 @@ public class BoxElement extends Element {
 		if (tooltip.getTooltip().isEmpty()) {
 			return null;
 		}
-		return new TextComponent(tooltip.getTooltip().getMessage());
+		return Component.literal(tooltip.getTooltip().getMessage());
 	}
 
 }

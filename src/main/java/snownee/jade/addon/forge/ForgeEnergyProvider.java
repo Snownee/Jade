@@ -43,7 +43,7 @@ public enum ForgeEnergyProvider implements IBlockComponentProvider, IServerDataP
 			}
 			String curText = ChatFormatting.WHITE + VanillaPlugin.getDisplayHelper().humanReadableNumber(cur, "FE", false) + ChatFormatting.GRAY;
 			String maxText = VanillaPlugin.getDisplayHelper().humanReadableNumber(max, "FE", false);
-			MutableComponent text = new TranslatableComponent("jade.fe", curText, maxText).withStyle(ChatFormatting.GRAY);
+			MutableComponent text = Component.translatable("jade.fe", curText, maxText).withStyle(ChatFormatting.GRAY);
 			IProgressStyle progressStyle = helper.progressStyle().color(0xFFFF0000, 0xFF660000);
 			tooltip.add(helper.progress((float) cur / max, text, progressStyle, helper.borderStyle()));
 		}

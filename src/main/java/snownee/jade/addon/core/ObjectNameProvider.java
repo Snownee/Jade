@@ -4,7 +4,6 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Nameable;
@@ -55,7 +54,7 @@ public enum ObjectNameProvider
 				if (stack != null && !stack.isEmpty()) {
 					name = stack.getHoverName();
 				} else {
-					name = new TextComponent(key);
+					name = Component.literal(key);
 				}
 			}
 		}

@@ -3,7 +3,6 @@ package snownee.jade.api.ui;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec2;
 
@@ -18,7 +17,7 @@ public abstract class Element implements IElement {
 	protected Vec2 translation = Vec2.ZERO;
 	protected ResourceLocation tag;
 	protected Vec2 size;
-	private static final Component DEFAULT_MESSAGE = TextComponent.EMPTY.copy();
+	private static final Component DEFAULT_MESSAGE = Component.empty();
 	protected Component message = DEFAULT_MESSAGE;
 
 	@Override

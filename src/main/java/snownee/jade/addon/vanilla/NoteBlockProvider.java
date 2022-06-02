@@ -1,7 +1,7 @@
 package snownee.jade.addon.vanilla;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.NoteBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -26,7 +26,7 @@ public enum NoteBlockProvider implements IBlockComponentProvider {
 		String pitch = PITCH[note % PITCH.length];
 		ChatFormatting octave = OCTAVE[note / PITCH.length];
 		NoteBlockInstrument instrument = state.getValue(NoteBlock.INSTRUMENT);
-		tooltip.add(new TranslatableComponent("%s %s", new TranslatableComponent("jade.instrument." + instrument.getSerializedName()), octave + pitch));
+		tooltip.add(Component.translatable("%s %s", Component.translatable("jade.instrument." + instrument.getSerializedName()), octave + pitch));
 	}
 
 	@Override

@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '0.10-SNAPSHOT'
+    id 'fabric-loom' version '0.12-SNAPSHOT'
     id 'maven-publish'
 }
 
@@ -7,7 +7,7 @@ sourceCompatibility = JavaVersion.VERSION_17
 targetCompatibility = JavaVersion.VERSION_17
 
 archivesBaseName = project.archives_base_name
-version = project.minecraft_version + "-fabric-" + project.mod_version
+version = project.archive_minecraft_version + "-fabric-" + project.mod_version
 group = project.maven_group
 
 repositories {
@@ -45,13 +45,13 @@ dependencies {
     // PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
     // You may need to force-disable transitiveness on them.
     
-    modApi("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}") {
-        exclude(group: "net.fabricmc.fabric-api")
-    }
+    //modApi("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}") {
+    //    exclude(group: "net.fabricmc.fabric-api")
+    //}
     modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
     
-    modCompileOnly "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
-    modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
+    //modCompileOnly "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
+    //modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
     
     //modImplementation "libs:Kiwi-1.18.1-fabric:${project.kiwi_version}"
     //annotationProcessor "libs:Kiwi-1.18.1-fabric:${project.kiwi_version}"

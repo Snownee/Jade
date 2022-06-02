@@ -7,7 +7,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.Jade;
@@ -78,6 +77,6 @@ public class ArmorElement extends Element {
 
 	@Override
 	public @Nullable Component getMessage() {
-		return new TranslatableComponent("narration.jade.armor", DisplayHelper.dfCommas.format(armor));
+		return Component.translatable("narration.jade.armor", DisplayHelper.dfCommas.format(armor));
 	}
 }

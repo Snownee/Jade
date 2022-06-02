@@ -8,7 +8,6 @@ import com.google.gson.annotations.Expose;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.HumanoidArm;
@@ -283,7 +282,7 @@ public class WailaConfig implements IWailaConfig {
 
 		@Override
 		public float tryFlip(float f) {
-			if (Minecraft.getInstance().options.mainHand == HumanoidArm.LEFT)
+			if (Minecraft.getInstance().options.mainHand().get() == HumanoidArm.LEFT)
 				f = 1 - f;
 			return f;
 		}
@@ -386,7 +385,7 @@ public class WailaConfig implements IWailaConfig {
 			if (title instanceof Component) {
 				title = ((Component) title).getString();
 			}
-			return new TextComponent(String.format(titleName, title)).withStyle($ -> $.withColor(OverlayRenderer.stressedTextColorRaw));
+			return Component.literal(String.format(titleName, title)).withStyle($ -> $.withColor(OverlayRenderer.stressedTextColorRaw));
 		}
 	}
 

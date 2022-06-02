@@ -13,9 +13,11 @@ import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.brigadier.CommandDispatcher;
 
 import net.fabricmc.fabric.api.block.BlockPickInteractionAware;
-import net.fabricmc.fabric.api.client.command.v1.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
@@ -34,6 +36,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -56,7 +59,6 @@ import snownee.jade.JadeClient;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.command.DumpHandlersCommand;
-import snownee.jade.compat.REICompat;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.impl.ui.FluidStackElement;
@@ -116,8 +118,11 @@ public final class ClientPlatformProxy {
 			});
 		});
 
-		DumpHandlersCommand.register(ClientCommandManager.DISPATCHER);
+		ClientCommandRegistrationCallback.EVENT.register(ClientPlatformProxy::registerClientCommand);
+	}
 
+	public static void registerClientCommand(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandBuildContext registryAccess) {
+		DumpHandlersCommand.register(dispatcher);
 	}
 
 	public static void onEntityJoin(Entity entity, ClientLevel level) {
@@ -149,7 +154,7 @@ public final class ClientPlatformProxy {
 	public static void onKeyPressed(Minecraft mc) {
 		JadeClient.onKeyPressed(1);
 		if (JadeClient.showUses != null) {
-			REICompat.onKeyPressed(1);
+			//REICompat.onKeyPressed(1);
 		}
 	}
 
