@@ -26,6 +26,7 @@ import snownee.jade.util.PlatformProxy;
 public class PluginConfig implements IPluginConfig {
 
 	public static final PluginConfig INSTANCE = new PluginConfig();
+	public static final String FILE_NAME = Jade.MODID + "/plugins.json";
 
 	private final Map<ResourceLocation, ConfigEntry> configs;
 
@@ -79,7 +80,7 @@ public class PluginConfig implements IPluginConfig {
 	}
 
 	public void reload() {
-		File configFile = new File(PlatformProxy.getConfigDirectory(), Jade.MODID + "/plugins.json");
+		File configFile = new File(PlatformProxy.getConfigDirectory(), FILE_NAME);
 
 		if (!configFile.exists()) { // Write defaults, but don't read
 			writeConfig(configFile, true);
@@ -118,7 +119,7 @@ public class PluginConfig implements IPluginConfig {
 	}
 
 	public void save() {
-		File configFile = new File(PlatformProxy.getConfigDirectory(), Jade.MODID + "/" + Jade.MODID + "_plugins.json");
+		File configFile = new File(PlatformProxy.getConfigDirectory(), FILE_NAME);
 		writeConfig(configFile, false);
 	}
 
