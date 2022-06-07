@@ -28,7 +28,8 @@
     ],
     "jade": [
       "snownee.jade.addon.core.CorePlugin",
-      "snownee.jade.addon.vanilla.VanillaPlugin"
+      "snownee.jade.addon.vanilla.VanillaPlugin",
+      "snownee.jade.addon.fabric.FabricPlugin"
     ],
     "modmenu": [
       "snownee.jade.compat.ModMenuCompat"

@@ -26,8 +26,8 @@ public class Identifiers {
 	public static final ResourceLocation FORGE_FLUID = MC("fluid");
 	public static final ResourceLocation FORGE_ENERGY = MC("fe");
 
-	public static final ResourceLocation FABRIC_BLOCK_INVENTORY = MC("block_inventory");
-	public static final ResourceLocation FABRIC_FLUID = MC("fluid");
+	public static final ResourceLocation FABRIC_BLOCK_INVENTORY = FORGE_BLOCK_INVENTORY;
+	public static final ResourceLocation FABRIC_FLUID = FORGE_FLUID;
 
 	public static final ResourceLocation MC_ANIMAL_OWNER = MC("animal_owner");
 	public static final ResourceLocation MC_ARMOR_STAND = MC("armor_stand");
