@@ -11,7 +11,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import snownee.jade.Jade;
-import snownee.jade.JadeClient;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.callback.JadeRayTraceCallback;
@@ -111,7 +110,7 @@ public class WailaTickHandler {
 			tooltipRenderer = null;
 			return;
 		}
-		boolean showDetails = JadeClient.showDetails.isDown();
+		boolean showDetails = player.isCrouching();
 		if (accessor.isServerConnected()) {
 			boolean request = accessor.shouldRequestData();
 			if (ObjectDataCenter.isTimeElapsed(ObjectDataCenter.rateLimiter)) {

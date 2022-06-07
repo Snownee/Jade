@@ -16,7 +16,7 @@ public class REICompat implements REIClientPlugin {
 			return;
 		if (action != 1)
 			return;
-		if (!JadeClient.showRecipes.isDown() && !JadeClient.showUses.isDown())
+		if (!JadeClient.showRecipes.consumeClick() && !JadeClient.showUses.consumeClick())
 			return;
 		Accessor<?> accessor = ObjectDataCenter.get();
 		if (accessor == null)
@@ -25,7 +25,7 @@ public class REICompat implements REIClientPlugin {
 		if (stack.isEmpty())
 			return;
 
-		if (JadeClient.showUses.isDown()) {
+		if (JadeClient.showUses.consumeClick()) {
 			ViewSearchBuilder.builder().addUsagesFor(EntryStack.of(VanillaEntryTypes.ITEM, stack)).open();
 		} else {
 			ViewSearchBuilder.builder().addRecipesFor(EntryStack.of(VanillaEntryTypes.ITEM, stack)).open();
