@@ -12,3 +12,5 @@ accessible field net/minecraft/world/level/block/entity/RandomizableContainerBlo
 accessible field net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity litTime I
 
 accessible method net/minecraft/client/gui/components/ContainerObjectSelectionList$Entry updateNarration (Lnet/minecraft/client/gui/narration/NarrationElementOutput;)V
+
+accessible method net/minecraft/world/entity/animal/frog/Tadpole getTicksLeftUntilAdult ()I
