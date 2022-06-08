@@ -8,9 +8,11 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.HopperBlock;
 import net.minecraft.world.level.block.LeverBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.ComparatorBlockEntity;
+import net.minecraft.world.level.block.entity.HopperBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.ComparatorMode;
@@ -53,12 +55,21 @@ public enum RedstoneProvider implements IBlockComponentProvider, IServerDataProv
 		if (state.hasProperty(BlockStateProperties.POWER)) {
 			tooltip.add(Component.translatable("tooltip.jade.power", ChatFormatting.WHITE.toString() + state.getValue(BlockStateProperties.POWER)));
 		}
+
+		if (state.getBlock() instanceof HopperBlock && accessor.getServerData().contains("HopperLocked")) {
+			tooltip.add(Component.translatable("jade.hopper.locked").withStyle(ChatFormatting.RED));
+		}
 	}
 
 	@Override
 	public void appendServerData(CompoundTag data, ServerPlayer player, Level world, BlockEntity blockEntity, boolean showDetails) {
 		if (blockEntity instanceof ComparatorBlockEntity comparator) {
 			data.putInt("Signal", comparator.getOutputSignal());
+		} else if (blockEntity instanceof HopperBlockEntity hopper) {
+			BlockState state = blockEntity.getBlockState();
+			if (state.hasProperty(BlockStateProperties.ENABLED) && !state.getValue(BlockStateProperties.ENABLED)) {
+				data.putBoolean("HopperLocked", true);
+			}
 		}
 	}
 

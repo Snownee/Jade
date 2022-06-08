@@ -83,7 +83,6 @@
   "config.jade.plugin_minecraft.potion_effects": "Entitätseffekte",
   "jade.potion": "%s %s (%s)",
   "config.jade.plugin_minecraft.item_frame": "Item-Rahmen",
-  "config.jade.plugin_minecraft.chested_horse": "Lama-Stärke",
   "jade.llamaStrength": "Stärke: %s",
   "config.jade.plugin_minecraft.mob_growth": "Mobwachstum",
   "jade.mobgrowth.time": "Wachstumszeit: %ds",

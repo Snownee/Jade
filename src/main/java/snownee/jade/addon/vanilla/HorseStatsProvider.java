@@ -4,6 +4,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
+import net.minecraft.world.entity.animal.horse.Llama;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
@@ -24,6 +25,9 @@ public enum HorseStatsProvider implements IEntityComponentProvider {
 		double speed = horse.getAttributeValue(Attributes.MOVEMENT_SPEED) * 43.17;
 		tooltip.add(Component.translatable("jade.horseStat.jump", DisplayHelper.dfCommas.format(jumpHeight)));
 		tooltip.add(Component.translatable("jade.horseStat.speed", DisplayHelper.dfCommas.format(speed)));
+		if (horse instanceof Llama llama) {
+			tooltip.add(Component.translatable("jade.llamaStrength", llama.getStrength()));
+		}
 	}
 
 	@Override

@@ -78,7 +78,6 @@
   "config.jade.plugin_minecraft.potion_effects": "Effetti di stato dell'entità",
   "jade.potion": "%s %s (%s)",
   "config.jade.plugin_minecraft.item_frame": "Cornice",
-  "config.jade.plugin_minecraft.chested_horse": "Forza del lama",
   "jade.llamaStrength": "Forza: %s",
   "config.jade.plugin_minecraft.mob_growth": "Crescità mob",
   "jade.mobgrowth.time": "Tempo di crescità: %ds",

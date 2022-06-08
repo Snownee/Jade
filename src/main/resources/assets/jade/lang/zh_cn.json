@@ -93,7 +93,7 @@
   "config.jade.plugin_minecraft.potion_effects": "生物效果",
   "jade.potion": "%s %s（%s）",
   "config.jade.plugin_minecraft.item_frame": "物品展示框",
-  "config.jade.plugin_minecraft.chested_horse": "羊驼力量值",
+  "config.jade.plugin_minecraft.container_entity": "实体物品栏",
   "jade.llamaStrength": "力量：%d",
   "config.jade.plugin_minecraft.mob_growth": "生物生长时间",
   "jade.mobgrowth.time": "生长时间：%d秒",
@@ -152,6 +152,7 @@
   "config.jade.plugin_minecraft.lectern": "讲台",
   "config.jade.plugin_minecraft.animal_owner": "动物主人",
   "jade.owner": "主人：%s",
+  "jade.hopper.locked": "漏斗已关闭",
 
   "config.jade.plugin_minecraft.furnace": "熔炉物品",
   "config.jade.plugin_minecraft.mob_spawner": "刷怪笼类型",

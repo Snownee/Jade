@@ -84,7 +84,6 @@
   "config.jade.plugin_minecraft.potion_effects": "엔티티 효과",
   "jade.potion": "%s %s (%s)",
   "config.jade.plugin_minecraft.item_frame": "아이템 액자",
-  "config.jade.plugin_minecraft.chested_horse": "라마 힘",
   "jade.llamaStrength": "힘: %s",
   "config.jade.plugin_minecraft.mob_growth": "몹 성장",
   "jade.mobgrowth.time": "성장 시간: %d초",
