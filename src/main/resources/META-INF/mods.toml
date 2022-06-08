@@ -28,7 +28,7 @@ description="You are using Jade, a fork of Hwyla."
 [[dependencies.jade]]
     modId="jei"
     mandatory=false
-    versionRange="[9.7, )"
+    versionRange="[9.5, )"
     ordering="NONE"
     side="BOTH"
 

@@ -1,6 +1,5 @@
 package mcp.mobius.waila.api;
 
-import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.ApiStatus.ScheduledForRemoval;
 
 /**
@@ -17,12 +16,10 @@ public interface IWailaPlugin {
 
 	}
 
-	@Experimental
 	default void register(IWailaCommonRegistration registration) {
 
 	}
 
-	@Experimental
 	default void registerClient(IWailaClientRegistration registration) {
 
 	}

@@ -17,7 +17,7 @@ apply plugin: 'maven-publish'
 
 version = "${version_major}.${version_minor}.${version_patch}"
 group = "snownee.jade"
-archivesBaseName = "Jade-${minecraft_version}"
+archivesBaseName = "Jade-${minecraft_version}-forge"
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
@@ -106,7 +106,7 @@ dependencies {
 
     //compileOnly fg.deobf("mezz.jei:jei-1.17.1:8.0.0.14:api")
     //runtimeOnly fg.deobf("mezz.jei:jei-1.17.1:8.0.0.14")
-    implementation fg.deobf("curse.maven:jei-238222:3758750")
+    implementation fg.deobf("curse.maven:jei-238222:3723913")
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..

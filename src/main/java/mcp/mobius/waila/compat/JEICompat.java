@@ -74,6 +74,6 @@ public class JEICompat implements IModPlugin {
 		IRecipesGui gui = runtime.getRecipesGui();
 		IFocusFactory factory = helpers.getFocusFactory();
 
-		gui.show(factory.createFocus(showUses.isDown() ? RecipeIngredientRole.INPUT : RecipeIngredientRole.OUTPUT, VanillaTypes.ITEM_STACK, stack));
+		gui.show(factory.createFocus(showUses.isDown() ? RecipeIngredientRole.INPUT : RecipeIngredientRole.OUTPUT, VanillaTypes.ITEM, stack));
 	}
 }
