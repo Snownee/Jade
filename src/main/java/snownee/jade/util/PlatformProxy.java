@@ -3,11 +3,12 @@ package snownee.jade.util;
 import java.io.File;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.horse.AbstractChestedHorse;
-import net.minecraft.world.entity.decoration.Motive;
+import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -66,20 +67,24 @@ public final class PlatformProxy {
 		return state.getEnchantPowerBonus(world, pos);
 	}
 
+	@SuppressWarnings("deprecation")
 	public static ResourceLocation getId(Block block) {
-		return block.getRegistryName();
+		return Registry.BLOCK.getKey(block);
 	}
 
+	@SuppressWarnings("deprecation")
 	public static ResourceLocation getId(EntityType<?> entityType) {
-		return entityType.getRegistryName();
+		return Registry.ENTITY_TYPE.getKey(entityType);
 	}
 
+	@SuppressWarnings("deprecation")
 	public static ResourceLocation getId(BlockEntityType<?> blockEntityType) {
-		return blockEntityType.getRegistryName();
+		return Registry.BLOCK_ENTITY_TYPE.getKey(blockEntityType);
 	}
 
-	public static ResourceLocation getId(Motive motive) {
-		return motive.getRegistryName();
+	@SuppressWarnings("deprecation")
+	public static ResourceLocation getId(PaintingVariant motive) {
+		return Registry.PAINTING_VARIANT.getKey(motive);
 	}
 
 }

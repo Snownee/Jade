@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[38,)"
+loaderVersion="[41,)"
 license="CC BY-NC-SA 4.0"
 
 [[mods]]
@@ -15,13 +15,6 @@ credits="TehNut, ProfMobius, kalkafox"
 [[dependencies.jade]]
     modId="forge"
     mandatory=true
-    versionRange="[38, )"
-    ordering="NONE"
-    side="BOTH"
-
-[[dependencies.jade]]
-    modId="jei"
-    mandatory=false
-    versionRange="[9.7, )"
+    versionRange="[41, )"
     ordering="NONE"
     side="BOTH"

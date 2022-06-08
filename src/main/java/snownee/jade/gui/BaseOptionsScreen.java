@@ -17,7 +17,6 @@ import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.FormattedCharSequence;
 import snownee.jade.gui.config.WailaOptionsList;
 import snownee.jade.gui.config.value.OptionValue;
@@ -53,17 +52,17 @@ public abstract class BaseOptionsScreen extends Screen {
 		addRenderableWidget(options);
 
 		if (saver != null && canceller != null) {
-			addRenderableWidget(new Button(width / 2 - 100, height - 25, 100, 20, new TranslatableComponent("gui.done"), w -> {
+			addRenderableWidget(new Button(width / 2 - 100, height - 25, 100, 20, Component.translatable("gui.done"), w -> {
 				options.save();
 				saver.run();
 				minecraft.setScreen(parent);
 			}));
-			addRenderableWidget(new Button(width / 2 + 5, height - 25, 100, 20, new TranslatableComponent("gui.cancel"), w -> {
+			addRenderableWidget(new Button(width / 2 + 5, height - 25, 100, 20, Component.translatable("gui.cancel"), w -> {
 				canceller.run();
 				minecraft.setScreen(parent);
 			}));
 		} else {
-			addRenderableWidget(new Button(width / 2 - 50, height - 25, 100, 20, new TranslatableComponent("gui.done"), w -> {
+			addRenderableWidget(new Button(width / 2 - 50, height - 25, 100, 20, Component.translatable("gui.done"), w -> {
 				options.save();
 				minecraft.setScreen(parent);
 			}));
@@ -88,7 +87,7 @@ public abstract class BaseOptionsScreen extends Screen {
 					String title = value.getTitle().getString();
 					if (mouseX >= valueX && mouseX <= valueX + font.width(title)) {
 						List<FormattedCharSequence> tooltip = Lists.newArrayList(value.getTitle().getVisualOrderText());
-						List<FormattedCharSequence> tooltip2 = font.split(new TranslatableComponent(value.getDescription()), 200);
+						List<FormattedCharSequence> tooltip2 = font.split(Component.translatable(value.getDescription()), 200);
 						tooltip.addAll(tooltip2);
 						matrixStack.pushPose();
 						matrixStack.translate(0, 0, 100);

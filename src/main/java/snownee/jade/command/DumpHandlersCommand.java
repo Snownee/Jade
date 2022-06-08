@@ -8,8 +8,7 @@ import com.mojang.brigadier.CommandDispatcher;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import snownee.jade.Jade;
 import snownee.jade.util.DumpGenerator;
 
@@ -20,10 +19,10 @@ public class DumpHandlersCommand {
 			File file = new File("jade_handlers.md");
 			try (FileWriter writer = new FileWriter(file)) {
 				writer.write(DumpGenerator.generateInfoDump());
-				context.getSource().sendSuccess(new TranslatableComponent("command.jade.dump.success"), false);
+				context.getSource().sendSuccess(Component.translatable("command.jade.dump.success"), false);
 				return 1;
 			} catch (IOException e) {
-				context.getSource().sendFailure(new TextComponent(e.getClass().getSimpleName() + ": " + e.getMessage()));
+				context.getSource().sendFailure(Component.literal(e.getClass().getSimpleName() + ": " + e.getMessage()));
 				return 0;
 			}
 		})));

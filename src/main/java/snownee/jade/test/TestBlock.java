@@ -33,6 +33,6 @@ public class TestBlock extends BaseEntityBlock {
 
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-		return createTickerHelper(type, Test.TILE, TestBlockEntity::tick);
+		return createTickerHelper(type, Test.TILE.get(), TestBlockEntity::tick);
 	}
 }

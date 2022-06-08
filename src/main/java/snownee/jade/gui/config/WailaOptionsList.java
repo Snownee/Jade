@@ -29,8 +29,6 @@ import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import snownee.jade.Jade;
@@ -233,7 +231,7 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 	}
 
 	public <T> Entry choices(String optionName, T value, List<T> values, Consumer<T> setter) {
-		return add(new CycleOptionValue<>(optionName, CycleButton.<T>builder(v -> new TextComponent(v.toString())).withValues(values), value, setter));
+		return add(new CycleOptionValue<>(optionName, CycleButton.<T>builder(v -> Component.literal(v.toString())).withValues(values), value, setter));
 	}
 
 	public abstract static class Entry extends ContainerObjectSelectionList.Entry<Entry> {
@@ -241,7 +239,7 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 		protected final Minecraft client;
 
 		public static Component makeTitle(String key) {
-			return new TranslatableComponent(makeKey(key));
+			return Component.translatable(makeKey(key));
 		}
 
 		public static String makeKey(String key) {

@@ -4,7 +4,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
@@ -56,10 +55,10 @@ public enum ForgeFluidProvider implements IBlockComponentProvider, IServerDataPr
 		IElementHelper helper = tooltip.getElementHelper();
 		Component text;
 		if (fluidStack.isEmpty()) {
-			text = new TranslatableComponent("jade.fluid.empty");
+			text = Component.translatable("jade.fluid.empty");
 		} else {
 			String amountText = VanillaPlugin.getDisplayHelper().humanReadableNumber(fluidStack.getAmount(), "B", true);
-			text = new TranslatableComponent("jade.fluid", fluidStack.getDisplayName(), amountText);
+			text = Component.translatable("jade.fluid", fluidStack.getDisplayName(), amountText);
 		}
 		IProgressStyle progressStyle = helper.progressStyle().overlay(helper.fluid(fluidStack));
 		tooltip.add(helper.progress((float) fluidStack.getAmount() / capacity, text, progressStyle, helper.borderStyle()));

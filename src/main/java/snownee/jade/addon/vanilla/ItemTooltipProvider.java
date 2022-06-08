@@ -5,7 +5,6 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
@@ -35,7 +34,7 @@ public enum ItemTooltipProvider implements IEntityComponentProvider {
 		for (Component component : itemTooltip) {
 			int width = font.width(component);
 			if (width > maxWidth) {
-				tooltip.add(new TextComponent(font.substrByWidth(component, maxWidth - 5).getString() + ".."));
+				tooltip.add(Component.literal(font.substrByWidth(component, maxWidth - 5).getString() + ".."));
 			} else {
 				tooltip.add(component);
 			}

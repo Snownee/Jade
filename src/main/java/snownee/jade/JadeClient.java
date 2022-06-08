@@ -18,8 +18,6 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.LazyLoadedValue;
 import net.minecraft.util.Mth;
@@ -63,7 +61,7 @@ public final class JadeClient {
 	public static void initClient() {
 		for (int i = 320; i < 330; i++) {
 			InputConstants.Key key = InputConstants.Type.KEYSYM.getOrCreate(i);
-			key.displayName = new LazyLoadedValue<>(() -> new TranslatableComponent(key.getName()));
+			key.displayName = new LazyLoadedValue<>(() -> Component.translatable(key.getName()));
 		}
 
 		openConfig = ClientPlatformProxy.registerKeyBinding("config", 320);
@@ -140,7 +138,7 @@ public final class JadeClient {
 		if (hideModName || !Jade.CONFIG.get().getGeneral().showItemModNameTooltip())
 			return;
 		String name = String.format(Jade.CONFIG.get().getFormatting().getModName(), ModIdentification.getModName(stack));
-		tooltip.add(new TextComponent(name));
+		tooltip.add(Component.literal(name));
 	}
 
 	@Nullable

@@ -2,7 +2,7 @@ package snownee.jade.addon.vanilla;
 
 import java.util.UUID;
 
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.OwnableEntity;
@@ -32,7 +32,7 @@ public enum AnimalOwnerProvider implements IEntityComponentProvider {
 			if (name == null) {
 				name = "???";
 			}
-			tooltip.add(new TranslatableComponent("jade.owner", name));
+			tooltip.add(Component.translatable("jade.owner", name));
 		}
 	}
 

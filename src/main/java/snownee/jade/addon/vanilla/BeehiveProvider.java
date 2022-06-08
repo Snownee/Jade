@@ -2,7 +2,7 @@ package snownee.jade.addon.vanilla;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
@@ -25,11 +25,11 @@ public enum BeehiveProvider implements IBlockComponentProvider, IServerDataProvi
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		BlockState state = accessor.getBlockState();
 		int level = state.getValue(BeehiveBlock.HONEY_LEVEL); // 0~5
-		tooltip.add(new TranslatableComponent("jade.beehive.honey", new TranslatableComponent("jade.fraction", level, 5).withStyle(level == 5 ? ChatFormatting.GREEN : ChatFormatting.WHITE)));
+		tooltip.add(Component.translatable("jade.beehive.honey", Component.translatable("jade.fraction", level, 5).withStyle(level == 5 ? ChatFormatting.GREEN : ChatFormatting.WHITE)));
 		if (accessor.getServerData().contains("Full")) {
 			boolean full = accessor.getServerData().getBoolean("Full");
 			int bees = accessor.getServerData().getByte("Bees");
-			tooltip.add(new TranslatableComponent("jade.beehive.bees", (full ? ChatFormatting.GREEN.toString() : "") + bees));
+			tooltip.add(Component.translatable("jade.beehive.bees", (full ? ChatFormatting.GREEN.toString() : "") + bees));
 		}
 	}
 

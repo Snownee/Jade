@@ -33,7 +33,6 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.inventory.InventoryMenu;
@@ -124,8 +123,7 @@ public class DisplayHelper implements IDisplayHelper {
 		renderer.vertex(matrix, x, y + height, 0).color(red, green, blue, alpha).endVertex();
 		renderer.vertex(matrix, x + width, y + height, 0).color(red, green, blue, alpha).endVertex();
 		renderer.vertex(matrix, x + width, y, 0).color(red, green, blue, alpha).endVertex();
-		renderer.end();
-		BufferUploader.end(renderer);
+		BufferUploader.drawWithShader(renderer.end());
 	}
 
 	public static void tryRenderGuiItem(PoseStack matrixStack, ItemStack stack, float x, float y, float scale) {
@@ -261,9 +259,9 @@ public class DisplayHelper implements IDisplayHelper {
 			namelist = new ArrayList<>();
 
 		if (namelist.isEmpty())
-			namelist.add(new TextComponent("Unnamed"));
+			namelist.add(Component.literal("Unnamed"));
 
-		namelist.set(0, new TextComponent(itemstack.getRarity().color.toString() + namelist.get(0)));
+		namelist.set(0, Component.literal(itemstack.getRarity().color.toString() + namelist.get(0)));
 		for (int i = 1; i < namelist.size(); i++)
 			namelist.set(i, namelist.get(i));
 
@@ -410,8 +408,7 @@ public class DisplayHelper implements IDisplayHelper {
 		bufferbuilder.vertex(matrix, maxX, maxY, 0.0F).color(f, f1, f2, f3).endVertex();
 		bufferbuilder.vertex(matrix, maxX, minY, 0.0F).color(f, f1, f2, f3).endVertex();
 		bufferbuilder.vertex(matrix, minX, minY, 0.0F).color(f, f1, f2, f3).endVertex();
-		bufferbuilder.end();
-		BufferUploader.end(bufferbuilder);
+		BufferUploader.drawWithShader(bufferbuilder.end());
 		RenderSystem.enableTexture();
 		RenderSystem.disableBlend();
 	}

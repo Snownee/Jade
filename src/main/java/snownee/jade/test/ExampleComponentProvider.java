@@ -1,7 +1,7 @@
 package snownee.jade.test;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -28,7 +28,7 @@ public enum ExampleComponentProvider implements IBlockComponentProvider, IServer
 			IElementHelper elements = tooltip.getElementHelper();
 			IElement icon = elements.item(new ItemStack(Items.CLOCK), 0.5f).size(new Vec2(10, 10)).translate(new Vec2(0, -1));
 			tooltip.add(icon);
-			tooltip.append(new TranslatableComponent("mymod.fuel", accessor.getServerData().getInt("Fuel")));
+			tooltip.append(Component.translatable("mymod.fuel", accessor.getServerData().getInt("Fuel")));
 		}
 	}
 

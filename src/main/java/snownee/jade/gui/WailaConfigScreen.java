@@ -4,7 +4,7 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import snownee.jade.Jade;
 import snownee.jade.api.config.IWailaConfig.IConfigGeneral;
 import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
@@ -14,7 +14,7 @@ import snownee.jade.gui.config.WailaOptionsList.Entry;
 public class WailaConfigScreen extends BaseOptionsScreen {
 
 	public WailaConfigScreen(Screen parent) {
-		super(parent, new TranslatableComponent("gui.jade.configuration", Jade.NAME), Jade.CONFIG::save, Jade.CONFIG::invalidate);
+		super(parent, Component.translatable("gui.jade.configuration", Jade.NAME), Jade.CONFIG::save, Jade.CONFIG::invalidate);
 	}
 
 	@Override

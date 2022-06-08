@@ -1,7 +1,7 @@
 package snownee.jade.addon.vanilla;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import snownee.jade.api.BlockAccessor;
@@ -37,7 +37,7 @@ public enum TotalEnchantmentPowerProvider implements IBlockComponentProvider {
 			}
 		}
 		if (power > 0) {
-			tooltip.add(new TranslatableComponent("jade.ench_power", DisplayHelper.dfCommas.format(power)));
+			tooltip.add(Component.translatable("jade.ench_power", DisplayHelper.dfCommas.format(power)));
 		}
 	}
 

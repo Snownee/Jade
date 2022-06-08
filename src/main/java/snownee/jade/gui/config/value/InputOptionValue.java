@@ -8,7 +8,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 
 public class InputOptionValue<T> extends OptionValue<T> {
 
@@ -67,7 +67,7 @@ public class InputOptionValue<T> extends OptionValue<T> {
 		private final InputOptionValue<?> watcher;
 
 		public WatchedTextfield(InputOptionValue<?> watcher, Font fontRenderer, int x, int y, int width, int height) {
-			super(fontRenderer, x, y, width, height, new TextComponent(""));
+			super(fontRenderer, x, y, width, height, Component.literal(""));
 
 			this.watcher = watcher;
 		}

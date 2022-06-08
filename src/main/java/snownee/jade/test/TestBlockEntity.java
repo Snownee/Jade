@@ -21,7 +21,7 @@ public class TestBlockEntity extends BlockEntity {
 	LazyOptional<FluidTank> fluidCap = LazyOptional.of(() -> fluidStorage);
 
 	public TestBlockEntity(BlockPos pos, BlockState state) {
-		super(Test.TILE, pos, state);
+		super(Test.TILE.get(), pos, state);
 	}
 
 	@Override

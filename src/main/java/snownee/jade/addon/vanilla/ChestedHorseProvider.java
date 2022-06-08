@@ -1,7 +1,7 @@
 package snownee.jade.addon.vanilla;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -26,7 +26,7 @@ public enum ChestedHorseProvider implements IEntityComponentProvider, IServerDat
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		AbstractChestedHorse horse = (AbstractChestedHorse) accessor.getEntity();
 		if (horse instanceof Llama) {
-			tooltip.add(new TranslatableComponent("jade.llamaStrength", ((Llama) horse).getStrength()));
+			tooltip.add(Component.translatable("jade.llamaStrength", ((Llama) horse).getStrength()));
 		}
 		if (horse.hasChest()) {
 			BlockInventoryProvider.append(tooltip, accessor);

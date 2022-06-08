@@ -2,8 +2,8 @@ package snownee.jade.addon.forge;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
@@ -43,7 +43,7 @@ public enum ForgeEnergyProvider implements IBlockComponentProvider, IServerDataP
 			}
 			String curText = ChatFormatting.WHITE + VanillaPlugin.getDisplayHelper().humanReadableNumber(cur, "FE", false) + ChatFormatting.GRAY;
 			String maxText = VanillaPlugin.getDisplayHelper().humanReadableNumber(max, "FE", false);
-			MutableComponent text = new TranslatableComponent("jade.fe", curText, maxText).withStyle(ChatFormatting.GRAY);
+			MutableComponent text = Component.translatable("jade.fe", curText, maxText).withStyle(ChatFormatting.GRAY);
 			IProgressStyle progressStyle = helper.progressStyle().color(0xFFFF0000, 0xFF660000);
 			tooltip.add(helper.progress((float) cur / max, text, progressStyle, helper.borderStyle()));
 		}

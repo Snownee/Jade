@@ -4,30 +4,35 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraftforge.event.RegistryEvent.Register;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
+import snownee.jade.Jade;
 
 @EventBusSubscriber(bus = Bus.MOD)
 public class Test {
 
-	public static TestBlock BLOCK;
-	public static BlockEntityType<TestBlockEntity> TILE;
+	private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, Jade.MODID);
 
-	@SubscribeEvent
-	public static void registerBlocks(Register<Block> event) {
-		event.getRegistry().register((BLOCK = new TestBlock()).setRegistryName("test"));
-	}
+	public static final RegistryObject<TestBlock> BLOCK = BLOCKS.register("test", TestBlock::new);
 
-	@SubscribeEvent
-	public static void registerItems(Register<Item> event) {
-		event.getRegistry().register(new BlockItem(BLOCK, new Item.Properties()).setRegistryName("test"));
-	}
+	private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Jade.MODID);
 
-	@SubscribeEvent
-	public static void registerTileTypes(Register<BlockEntityType<?>> event) {
-		event.getRegistry().register((TILE = BlockEntityType.Builder.of(TestBlockEntity::new, BLOCK).build(null)).setRegistryName("test"));
+	public static final RegistryObject<BlockItem> ITEM = ITEMS.register("test", () -> new BlockItem(BLOCK.get(), new Item.Properties()));
+
+	private static final DeferredRegister<BlockEntityType<?>> TILES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, Jade.MODID);
+
+	public static final RegistryObject<BlockEntityType<TestBlockEntity>> TILE = TILES.register("test", () -> BlockEntityType.Builder.of(TestBlockEntity::new, BLOCK.get()).build(null));
+
+	static {
+		IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+		BLOCKS.register(bus);
+		ITEMS.register(bus);
+		TILES.register(bus);
 	}
 
 }

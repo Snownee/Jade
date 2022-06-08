@@ -2,7 +2,7 @@ package snownee.jade.addon.vanilla;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.AgeableMob;
@@ -26,7 +26,7 @@ public enum MobGrowthProvider implements IEntityComponentProvider, IServerDataPr
 		}
 		int time = accessor.getServerData().getInt("GrowingTime");
 		if (time < 0) {
-			tooltip.add(new TranslatableComponent("jade.mobgrowth.time", (time * -1) / 20));
+			tooltip.add(Component.translatable("jade.mobgrowth.time", (time * -1) / 20));
 		}
 	}
 

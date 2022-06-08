@@ -13,7 +13,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import com.google.common.collect.Sets;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import snownee.jade.Jade;
 import snownee.jade.api.IJadeProvider;
 import snownee.jade.api.ITooltip;
@@ -37,6 +37,6 @@ public class WailaExceptionHandler {
 			}
 		}
 		if (tooltip != null)
-			tooltip.add(new TranslatableComponent("jade.error", ModIdentification.getModName(provider.getUid())).withStyle(ChatFormatting.DARK_RED));
+			tooltip.add(Component.translatable("jade.error", ModIdentification.getModName(provider.getUid())).withStyle(ChatFormatting.DARK_RED));
 	}
 }

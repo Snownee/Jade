@@ -3,8 +3,8 @@ package snownee.jade.addon.vanilla;
 import java.util.Collection;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
@@ -30,10 +30,10 @@ public enum BlockStatesProvider implements IBlockComponentProvider {
 		ITooltip box = helper.tooltip();
 		properties.forEach(p -> {
 			Comparable<?> value = state.getValue(p);
-			MutableComponent valueText = new TextComponent(" " + value.toString()).withStyle();
+			MutableComponent valueText = Component.literal(" " + value.toString()).withStyle();
 			if (p instanceof BooleanProperty)
 				valueText = valueText.withStyle(value == Boolean.TRUE ? ChatFormatting.GREEN : ChatFormatting.RED);
-			box.add(new TextComponent(p.getName() + ":").append(valueText));
+			box.add(Component.literal(p.getName() + ":").append(valueText));
 		});
 		tooltip.add(helper.box(box));
 	}

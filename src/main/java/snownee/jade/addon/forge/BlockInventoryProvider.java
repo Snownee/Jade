@@ -9,8 +9,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
@@ -56,11 +55,11 @@ public enum BlockInventoryProvider implements IBlockComponentProvider, IServerDa
 
 	public static void append(ITooltip tooltip, Accessor<?> accessor) {
 		if (accessor.getServerData().getBoolean("Loot")) {
-			tooltip.add(new TranslatableComponent("jade.not_generated"));
+			tooltip.add(Component.translatable("jade.not_generated"));
 			return;
 		}
 		if (accessor.getServerData().getBoolean("Locked")) {
-			tooltip.add(new TranslatableComponent("jade.locked"));
+			tooltip.add(Component.translatable("jade.locked"));
 			return;
 		}
 
@@ -95,7 +94,7 @@ public enum BlockInventoryProvider implements IBlockComponentProvider, IServerDa
 					ItemStack copy = stack.copy();
 					copy.setCount(1);
 					elements.add(Jade.smallItem(helper, copy));
-					elements.add(helper.text(new TextComponent(Integer.toString(stack.getCount())).append("× ").append(stack.getHoverName())).message(null));
+					elements.add(helper.text(Component.literal(Integer.toString(stack.getCount())).append("× ").append(stack.getHoverName())).message(null));
 				} else {
 					elements.add(helper.item(stack));
 				}

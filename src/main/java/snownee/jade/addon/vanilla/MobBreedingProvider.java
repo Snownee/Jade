@@ -2,7 +2,7 @@ package snownee.jade.addon.vanilla;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -26,7 +26,7 @@ public enum MobBreedingProvider implements IEntityComponentProvider, IServerData
 		}
 		int time = accessor.getServerData().getInt("BreedingCD");
 		if (time > 0) {
-			tooltip.add(new TranslatableComponent("jade.mobbreeding.time", time / 20));
+			tooltip.add(Component.translatable("jade.mobbreeding.time", time / 20));
 		}
 	}
 

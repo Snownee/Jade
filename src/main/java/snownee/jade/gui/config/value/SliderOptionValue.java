@@ -8,7 +8,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.Mth;
 import snownee.jade.overlay.DisplayHelper;
 
@@ -69,7 +68,7 @@ public class SliderOptionValue extends OptionValue<Float> {
 		//get title
 		@Override
 		protected void applyValue() {
-			setMessage(new TextComponent(DisplayHelper.dfCommas.format(toScaled())));
+			setMessage(Component.literal(DisplayHelper.dfCommas.format(toScaled())));
 		}
 	}
 }
