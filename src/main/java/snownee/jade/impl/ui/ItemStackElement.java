@@ -56,7 +56,7 @@ public class ItemStackElement extends Element {
 	public @Nullable Component getMessage() {
 		if (stack.isEmpty())
 			return null;
-		return stack.getHoverName();
+		return Component.literal("%s %s".formatted(stack.getCount(), stack.getHoverName().getString()));
 	}
 
 }

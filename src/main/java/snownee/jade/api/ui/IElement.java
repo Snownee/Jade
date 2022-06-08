@@ -67,6 +67,8 @@ public interface IElement {
 	@Nullable
 	Component getCachedMessage();
 
+	IElement clearCachedMessage();
+
 	IElement message(@Nullable Component message);
 
 	public enum Align {

@@ -73,7 +73,7 @@ public class Jade {
 	/* on */
 
 	public static IElement smallItem(IElementHelper elements, ItemStack stack) {
-		return elements.item(stack, 0.5F).size(SMALL_ITEM_SIZE).translate(SMALL_ITEM_OFFSET);
+		return elements.item(stack, 0.5F).size(SMALL_ITEM_SIZE).translate(SMALL_ITEM_OFFSET).message(null);
 	}
 
 	public Jade() {

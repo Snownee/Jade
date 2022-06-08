@@ -75,6 +75,12 @@ public abstract class Element implements IElement {
 	}
 
 	@Override
+	public IElement clearCachedMessage() {
+		message = DEFAULT_MESSAGE;
+		return this;
+	}
+
+	@Override
 	public IElement message(@Nullable Component message) {
 		this.message = message;
 		return this;

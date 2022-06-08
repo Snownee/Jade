@@ -93,7 +93,7 @@ public enum BlockInventoryProvider implements IBlockComponentProvider, IServerDa
 				if (showName) {
 					ItemStack copy = stack.copy();
 					copy.setCount(1);
-					elements.add(Jade.smallItem(helper, copy));
+					elements.add(Jade.smallItem(helper, copy).clearCachedMessage());
 					elements.add(helper.text(Component.literal(Integer.toString(stack.getCount())).append("× ").append(stack.getHoverName())).message(null));
 				} else {
 					elements.add(helper.item(stack));

@@ -32,11 +32,11 @@ public enum BrewingStandProvider implements IBlockComponentProvider, IServerData
 		int fuel = tag.getInt("Fuel");
 		int time = tag.getInt("Time");
 		IElementHelper helper = tooltip.getElementHelper();
-		tooltip.add(Jade.smallItem(helper, new ItemStack(Items.BLAZE_POWDER)).message(null));
+		tooltip.add(Jade.smallItem(helper, new ItemStack(Items.BLAZE_POWDER)));
 		tooltip.append(Component.literal(Integer.toString(fuel)));
 		if (time > 0) {
 			tooltip.append(helper.spacer(5, 0));
-			tooltip.append(Jade.smallItem(helper, new ItemStack(Items.CLOCK)).message(null));
+			tooltip.append(Jade.smallItem(helper, new ItemStack(Items.CLOCK)));
 			tooltip.append(Component.translatable("jade.seconds", time / 20));
 		}
 	}
