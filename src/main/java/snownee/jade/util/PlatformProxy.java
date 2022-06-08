@@ -9,6 +9,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.horse.AbstractChestedHorse;
 import net.minecraft.world.entity.decoration.Motive;
@@ -20,7 +21,9 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import snownee.jade.addon.fabric.BlockInventoryProvider;
 import snownee.jade.impl.WailaClientRegistration;
+import snownee.jade.mixin.AbstractHorseAccess;
 
 public final class PlatformProxy {
 
@@ -55,7 +58,8 @@ public final class PlatformProxy {
 	}
 
 	public static void putHorseInvData(AbstractChestedHorse horse, CompoundTag data, int size) {
-		//TODO
+		SimpleContainer container = ((AbstractHorseAccess) horse).getInventory();
+		BlockInventoryProvider.putInvData(data, container, size, 2);
 	}
 
 	public static boolean isDevEnv() {

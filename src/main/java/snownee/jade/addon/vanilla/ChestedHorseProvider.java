@@ -9,6 +9,7 @@ import net.minecraft.world.entity.animal.horse.AbstractChestedHorse;
 import net.minecraft.world.entity.animal.horse.Llama;
 import net.minecraft.world.level.Level;
 import snownee.jade.JadeCommonConfig;
+import snownee.jade.addon.fabric.BlockInventoryProvider;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.IServerDataProvider;
@@ -28,7 +29,7 @@ public enum ChestedHorseProvider implements IEntityComponentProvider, IServerDat
 			tooltip.add(new TranslatableComponent("jade.llamaStrength", ((Llama) horse).getStrength()));
 		}
 		if (horse.hasChest()) {
-			//TODO BlockInventoryProvider.append(tooltip, accessor);
+			BlockInventoryProvider.append(tooltip, accessor);
 		}
 	}
 
@@ -41,7 +42,7 @@ public enum ChestedHorseProvider implements IEntityComponentProvider, IServerDat
 
 		AbstractChestedHorse horse = (AbstractChestedHorse) t;
 		if (horse.hasChest()) {
-			//			PlatformProxy.putHorseInvData(horse, data, size);
+			PlatformProxy.putHorseInvData(horse, data, size);
 		}
 	}
 

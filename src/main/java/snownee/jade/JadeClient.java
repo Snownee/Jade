@@ -57,7 +57,7 @@ public final class JadeClient implements ClientModInitializer {
 	public static KeyMapping openConfig;
 	public static KeyMapping showOverlay;
 	public static KeyMapping toggleLiquid;
-	public static KeyMapping showDetails;
+	//public static KeyMapping showDetails;
 	public static KeyMapping narrate;
 	public static KeyMapping showRecipes;
 	public static KeyMapping showUses;
@@ -77,32 +77,29 @@ public final class JadeClient implements ClientModInitializer {
 			showRecipes = ClientPlatformProxy.registerKeyBinding("show_uses", 324);
 		}
 		narrate = ClientPlatformProxy.registerKeyBinding("narrate", 325);
-		showDetails = ClientPlatformProxy.registerKeyBinding("show_details", 340);
+		//showDetails = ClientPlatformProxy.registerKeyBinding("show_details", 340);
 
 		ClientPlatformProxy.registerReloadListener(ModIdentification.INSTANCE);
 	}
 
 	public static void onKeyPressed(int action) {
-		if (action != 1)
-			return;
-
-		if (openConfig.isDown()) {
+		while (openConfig.consumeClick()) {
 			Jade.CONFIG.invalidate();
 			Minecraft.getInstance().setScreen(new HomeConfigScreen(null));
 		}
 
-		if (showOverlay.isDown()) {
+		while (showOverlay.consumeClick()) {
 			DisplayMode mode = Jade.CONFIG.get().getGeneral().getDisplayMode();
 			if (mode == IWailaConfig.DisplayMode.TOGGLE) {
 				Jade.CONFIG.get().getGeneral().setDisplayTooltip(!Jade.CONFIG.get().getGeneral().shouldDisplayTooltip());
 			}
 		}
 
-		if (toggleLiquid.isDown()) {
+		while (toggleLiquid.consumeClick()) {
 			Jade.CONFIG.get().getGeneral().setDisplayFluids(!Jade.CONFIG.get().getGeneral().shouldDisplayFluids());
 		}
 
-		if (narrate.isDown()) {
+		while (narrate.consumeClick()) {
 			if (Jade.CONFIG.get().getGeneral().getTTSMode() == TTSMode.TOGGLE) {
 				Jade.CONFIG.get().getGeneral().toggleTTS();
 			} else if (WailaTickHandler.instance().tooltipRenderer != null) {
