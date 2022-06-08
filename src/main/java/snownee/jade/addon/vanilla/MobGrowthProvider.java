@@ -26,7 +26,7 @@ public enum MobGrowthProvider implements IEntityComponentProvider, IServerDataPr
 			return;
 		}
 		int time = accessor.getServerData().getInt("GrowingTime");
-		if (time >= 0) {
+		if (time > 0) {
 			tooltip.add(Component.translatable("jade.mobgrowth.time", time / 20));
 		}
 	}
@@ -39,7 +39,7 @@ public enum MobGrowthProvider implements IEntityComponentProvider, IServerDataPr
 		} else if (entity instanceof Tadpole tadpole) {
 			time = tadpole.getTicksLeftUntilAdult();
 		}
-		if (time >= 0) {
+		if (time > 0) {
 			tag.putInt("GrowingTime", time);
 		}
 	}
