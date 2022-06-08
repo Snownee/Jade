@@ -23,9 +23,6 @@
     "client": [
       "snownee.jade.JadeClient"
     ],
-    "rei": [
-      "snownee.jade.compat.REICompat"
-    ],
     "jade": [
       "snownee.jade.addon.core.CorePlugin",
       "snownee.jade.addon.vanilla.VanillaPlugin",
