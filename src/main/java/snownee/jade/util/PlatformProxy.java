@@ -52,9 +52,6 @@ public final class PlatformProxy {
 	}
 
 	public static void init() {
-		if (isPhysicallyClient()) {
-			ClientPlatformProxy.init();
-		}
 	}
 
 	public static void putHorseInvData(AbstractChestedHorse horse, CompoundTag data, int size) {

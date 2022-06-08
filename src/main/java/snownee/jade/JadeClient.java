@@ -62,6 +62,7 @@ public final class JadeClient implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
+		ClientPlatformProxy.init();
 		for (int i = 320; i < 330; i++) {
 			InputConstants.Key key = InputConstants.Type.KEYSYM.getOrCreate(i);
 			((KeyAccess) (Object) key).setDisplayName(new LazyLoadedValue<>(() -> Component.translatable(key.getName())));
