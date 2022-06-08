@@ -126,7 +126,7 @@ public enum HarvestToolProvider implements IBlockComponentProvider, ResourceMana
 		}
 		List<IElement> elements = Lists.newArrayList();
 		for (ItemStack tool : tools) {
-			elements.add(helper.item(tool, 0.75f).translate(new Vec2(-1, offsetY)).size(ITEM_SIZE));
+			elements.add(helper.item(tool, 0.75f).translate(new Vec2(-1, offsetY)).size(ITEM_SIZE).message(null));
 		}
 
 		if (!elements.isEmpty()) {
