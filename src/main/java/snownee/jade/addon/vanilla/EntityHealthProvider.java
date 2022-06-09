@@ -2,6 +2,7 @@ package snownee.jade.addon.vanilla;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.decoration.ArmorStand;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
@@ -15,6 +16,9 @@ public enum EntityHealthProvider implements IEntityComponentProvider {
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
+		if (accessor.getEntity() instanceof ArmorStand) {
+			return;
+		}
 		LivingEntity living = (LivingEntity) accessor.getEntity();
 		float health = living.getHealth();
 		float maxHealth = living.getMaxHealth();
