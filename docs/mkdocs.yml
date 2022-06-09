@@ -15,8 +15,8 @@ nav:
     - Datapacks Support:
         - "Displaying a Block": datapacks/block.md
     - Upgrading Guides:
-        - "1.18 -> 1.19": upgrading/119.md
-        - "1.16 -> 1.17": upgrading/117.md
+        - "1.18 -> 1.19": changes/119.md
+        - "1.16 -> 1.17": changes/117.md
 
 theme:
     name: material
