@@ -20,7 +20,7 @@ public class WailaCommonRegistration implements IWailaCommonRegistration {
 	WailaCommonRegistration() {
 		blockDataProviders = new HierarchyLookup<>(BlockEntity.class);
 		entityDataProviders = new HierarchyLookup<>(Entity.class);
-		priorities = new PriorityStore<>(Jade.MODID + "/sort-order", IJadeProvider::getDefaultPriority);
+		priorities = new PriorityStore<>(Jade.MODID + "/sort-order", IJadeProvider::getDefaultPriority, IJadeProvider::getUid);
 	}
 
 	@Override
