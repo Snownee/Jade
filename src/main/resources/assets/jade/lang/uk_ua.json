@@ -84,7 +84,6 @@
   "config.jade.plugin_minecraft.potion_effects": "Ефекти сутності",
   "jade.potion": "%s %s (%s)",
   "config.jade.plugin_minecraft.item_frame": "Рамка",
-  "config.jade.plugin_minecraft.chested_horse": "Сила лами",
   "jade.llamaStrength": "Сила: %s",
   "config.jade.plugin_minecraft.mob_growth": "Зростання тварин",
   "jade.mobgrowth.time": "Час зростання: %d секунд",

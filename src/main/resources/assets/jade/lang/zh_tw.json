@@ -75,7 +75,6 @@
   "config.jade.plugin_minecraft.potion_effects": "實體效果",
   "jade.potion": "%s %s (%s)",
   "config.jade.plugin_minecraft.item_frame": "物品展示框",
-  "config.jade.plugin_minecraft.chested_horse": "駱馬強度",
   "jade.llamaStrength": "強度： %s",
   "config.jade.plugin_minecraft.mob_growth": "生物成長",
   "jade.mobgrowth.time": "成年時間： %d秒",

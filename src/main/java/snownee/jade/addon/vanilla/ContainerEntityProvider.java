@@ -1,12 +1,11 @@
 package snownee.jade.addon.vanilla;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.animal.horse.AbstractChestedHorse;
-import net.minecraft.world.entity.animal.horse.Llama;
+import net.minecraft.world.entity.vehicle.ContainerEntity;
 import net.minecraft.world.level.Level;
 import snownee.jade.JadeCommonConfig;
 import snownee.jade.addon.fabric.BlockInventoryProvider;
@@ -18,19 +17,13 @@ import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.util.PlatformProxy;
 
-public enum ChestedHorseProvider implements IEntityComponentProvider, IServerDataProvider<Entity> {
+public enum ContainerEntityProvider implements IEntityComponentProvider, IServerDataProvider<Entity> {
 
 	INSTANCE;
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
-		AbstractChestedHorse horse = (AbstractChestedHorse) accessor.getEntity();
-		if (horse instanceof Llama) {
-			tooltip.add(Component.translatable("jade.llamaStrength", ((Llama) horse).getStrength()));
-		}
-		if (horse.hasChest()) {
-			BlockInventoryProvider.append(tooltip, accessor);
-		}
+		BlockInventoryProvider.append(tooltip, accessor);
 	}
 
 	@Override
@@ -40,14 +33,22 @@ public enum ChestedHorseProvider implements IEntityComponentProvider, IServerDat
 			return;
 		}
 
-		AbstractChestedHorse horse = (AbstractChestedHorse) t;
-		if (horse.hasChest()) {
+		if (t instanceof AbstractChestedHorse horse && horse.hasChest()) {
 			PlatformProxy.putHorseInvData(horse, data, size);
+			return;
+		} else if (t instanceof ContainerEntity entity) {
+			if (entity.getLootTable() != null) {
+				data.putBoolean("Loot", true);
+				return;
+			}
+			if (!entity.isEmpty()) {
+				BlockInventoryProvider.putInvData(data, entity, size, 0);
+			}
 		}
 	}
 
 	@Override
 	public ResourceLocation getUid() {
-		return Identifiers.MC_CHESTED_HORSE;
+		return Identifiers.MC_CONTAINER_ENTITY;
 	}
 }
