@@ -192,7 +192,7 @@ public final class ClientPlatformProxy {
 	public static ItemStack getBlockPickedResult(BlockState state, Player player, BlockHitResult hitResult) {
 		Block block = state.getBlock();
 		if (block instanceof BlockPickInteractionAware) {
-			return ((BlockPickInteractionAware) block).getPickedStack(state, null, null, player, hitResult);
+			return ((BlockPickInteractionAware) block).getPickedStack(state, player.level, hitResult.getBlockPos(), player, hitResult);
 		}
 		return block.getCloneItemStack(player.level, hitResult.getBlockPos(), state);
 	}
