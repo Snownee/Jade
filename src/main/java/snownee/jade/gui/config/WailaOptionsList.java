@@ -13,6 +13,7 @@ import com.google.common.base.Predicates;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
@@ -124,7 +125,7 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 		bufferBuilder.vertex(x0 + width, height, -100.0D).uv(width / 32.0F, height / 32.0F).color(64, 64, 64, 255).endVertex();
 		bufferBuilder.vertex(x0 + width, y1, -100.0D).uv(width / 32.0F, y1 / 32.0F).color(64, 64, 64, 255).endVertex();
 		bufferBuilder.vertex(x0, y1, -100.0D).uv(0.0F, y1 / 32.0F).color(64, 64, 64, 255).endVertex();
-		tessellator.end();
+		BufferUploader.drawWithShader(bufferBuilder.end());
 		RenderSystem.depthFunc(515);
 		RenderSystem.disableDepthTest();
 		RenderSystem.enableBlend();

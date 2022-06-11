@@ -219,7 +219,7 @@ public class DisplayHelper implements IDisplayHelper {
 			buffer.vertex(matrix, left, top + bottom, zLevel).color(f5, f6, f7, f4).endVertex();
 			buffer.vertex(matrix, left + right, top + bottom, zLevel).color(f5, f6, f7, f4).endVertex();
 		}
-		tessellator.end();
+		BufferUploader.drawWithShader(buffer.end());
 		RenderSystem.disableBlend();
 		RenderSystem.enableTexture();
 	}
@@ -246,7 +246,7 @@ public class DisplayHelper implements IDisplayHelper {
 		buffer.vertex(matrix, x + width, y + height, zLevel).uv(((textureX + tw) * f), ((textureY + th) * f1)).endVertex();
 		buffer.vertex(matrix, x + width, y, zLevel).uv(((textureX + tw) * f), ((textureY) * f1)).endVertex();
 		buffer.vertex(matrix, x, y, zLevel).uv(((textureX) * f), ((textureY) * f1)).endVertex();
-		tessellator.end();
+		BufferUploader.drawWithShader(buffer.end());
 	}
 
 	public static List<Component> itemDisplayNameMultiline(ItemStack itemstack) {
@@ -270,17 +270,17 @@ public class DisplayHelper implements IDisplayHelper {
 	}
 
 	public static void renderIcon(PoseStack matrixStack, float x, float y, int sx, int sy, IconUI icon) {
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-		RenderSystem.setShaderTexture(0, GuiComponent.GUI_ICONS_LOCATION);
-
 		if (icon == null)
 			return;
 
-		//RenderSystem.enableAlphaTest();
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.setShaderTexture(0, GuiComponent.GUI_ICONS_LOCATION);
+		RenderSystem.enableBlend();
+		RenderSystem.defaultBlendFunc();
+
 		if (icon.bu != -1)
 			DisplayHelper.drawTexturedModalRect(matrixStack, x, y, icon.bu, icon.bv, sx, sy, icon.bsu, icon.bsv);
 		DisplayHelper.drawTexturedModalRect(matrixStack, x, y, icon.u, icon.v, sx, sy, icon.su, icon.sv);
-		//RenderSystem.disableAlphaTest();
 	}
 
 	//https://github.com/mezz/JustEnoughItems/blob/1.16/src/main/java/mezz/jei/plugins/vanilla/ingredients/fluid/FluidStackRenderer.java
@@ -365,7 +365,7 @@ public class DisplayHelper implements IDisplayHelper {
 		bufferBuilder.vertex(matrix, xCoord + 16 - maskRight, yCoord + 16, zLevel).uv(uMax, vMax).endVertex();
 		bufferBuilder.vertex(matrix, xCoord + 16 - maskRight, yCoord + maskTop, zLevel).uv(uMax, vMin).endVertex();
 		bufferBuilder.vertex(matrix, xCoord, yCoord + maskTop, zLevel).uv(uMin, vMin).endVertex();
-		tessellator.end();
+		BufferUploader.drawWithShader(bufferBuilder.end());
 	}
 
 	public static void fill(PoseStack matrixStack, float minX, float minY, float maxX, float maxY, int color) {
