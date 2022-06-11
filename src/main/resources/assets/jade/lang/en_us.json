@@ -51,7 +51,7 @@
   "config.jade.display_item_hide": "Hide",
   "config.jade.display_item_top": "Top",
   "config.jade.display_item_centered": "Centered",
-  "config.jade.tts_mode": "Text to Speech Mode",
+  "config.jade.tts_mode": "Text to Speech (Narrator)",
   "config.jade.tts_mode_press": "Press",
   "config.jade.tts_mode_toggle": "Toggle",
   "config.jade.reach_distance": "Extended Reach",
