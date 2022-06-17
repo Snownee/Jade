@@ -24,21 +24,16 @@ public enum ModNameProvider implements IBlockComponentProvider, IEntityComponent
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		String modName = null;
 		if (accessor.isFakeBlock()) {
-			ItemStack fakeBlock = accessor.getFakeBlock();
-			if (fakeBlock.hasTag() && fakeBlock.getTag().contains("id")) {
-				ResourceLocation id = ResourceLocation.tryParse(fakeBlock.getTag().getString("id"));
-				if (id != null) {
-					modName = ModIdentification.getModName(id);
-				}
-			}
+			modName = ModIdentification.getModName(accessor.getFakeBlock());
 		}
 		if (modName == null && WailaClientRegistration.INSTANCE.shouldPick(accessor.getBlockState())) {
 			ItemStack pick = accessor.getPickedResult();
 			if (!pick.isEmpty())
 				modName = ModIdentification.getModName(pick);
 		}
-		if (modName == null)
+		if (modName == null) {
 			modName = ModIdentification.getModName(accessor.getBlock());
+		}
 
 		if (!Strings.isNullOrEmpty(modName)) {
 			modName = String.format(config.getWailaConfig().getFormatting().getModName(), modName);

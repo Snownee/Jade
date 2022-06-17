@@ -1,8 +1,8 @@
 package snownee.jade.impl.ui;
 
-import org.jetbrains.annotations.Nullable;
+import java.util.Objects;
 
-import com.google.common.base.Preconditions;
+import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -52,7 +52,7 @@ public class ElementHelper implements IElementHelper {
 
 	@Override
 	public IElement progress(float progress, @Nullable Component text, IProgressStyle style, @Nullable IBorderStyle borderStyle) {
-		Preconditions.checkNotNull(style);
+		Objects.nonNull(style);
 		return new ProgressElement(progress, text, (ProgressStyle) style, (BorderStyle) borderStyle);
 	}
 

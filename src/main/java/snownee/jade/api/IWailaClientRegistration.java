@@ -9,6 +9,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import snownee.jade.api.callback.JadeAfterRenderCallback;
 import snownee.jade.api.callback.JadeBeforeRenderCallback;
+import snownee.jade.api.callback.JadeItemModNameCallback;
 import snownee.jade.api.callback.JadeRayTraceCallback;
 import snownee.jade.api.callback.JadeTooltipCollectedCallback;
 import snownee.jade.api.config.IPluginConfig;
@@ -104,5 +105,7 @@ public interface IWailaClientRegistration extends FabricWailaClientRegistration 
 	void addRayTraceCallback(JadeRayTraceCallback callback);
 
 	void addTooltipCollectedCallback(JadeTooltipCollectedCallback callback);
+
+	void addItemModNameCallback(JadeItemModNameCallback callback);
 
 }

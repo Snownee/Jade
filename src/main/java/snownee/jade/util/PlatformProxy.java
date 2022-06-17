@@ -44,6 +44,15 @@ public final class PlatformProxy {
 	}
 
 	public static String getModIdFromItem(ItemStack stack) {
+		if (stack.hasTag() && stack.getTag().contains("id")) {
+			String s = stack.getTag().getString("id");
+			if (s.contains(":")) {
+				ResourceLocation id = ResourceLocation.tryParse(s);
+				if (id != null) {
+					return id.getNamespace();
+				}
+			}
+		}
 		return Registry.ITEM.getKey(stack.getItem()).getNamespace();
 	}
 

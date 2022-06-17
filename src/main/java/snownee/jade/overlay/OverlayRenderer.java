@@ -80,7 +80,7 @@ public class OverlayRenderer {
 	}
 
 	public static void renderOverlay(TooltipRenderer tooltip, PoseStack matrixStack) {
-		Minecraft.getInstance().getProfiler().push("Waila Overlay");
+		Minecraft.getInstance().getProfiler().push("Jade Overlay");
 		matrixStack.pushPose();
 
 		Rect2i position = tooltip.getPosition();

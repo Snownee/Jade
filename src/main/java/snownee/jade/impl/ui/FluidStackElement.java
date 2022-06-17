@@ -1,8 +1,9 @@
 package snownee.jade.impl.ui;
 
+import java.util.Objects;
+
 import org.jetbrains.annotations.Nullable;
 
-import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
@@ -19,7 +20,7 @@ public class FluidStackElement extends Element {
 
 	public FluidStackElement(FluidState fluidState) {
 		this.fluidState = fluidState;
-		Preconditions.checkNotNull(fluidState);
+		Objects.nonNull(fluidState);
 	}
 
 	@Override
