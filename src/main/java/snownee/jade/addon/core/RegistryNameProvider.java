@@ -1,7 +1,5 @@
 package snownee.jade.addon.core;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
@@ -19,12 +17,12 @@ public enum RegistryNameProvider implements IBlockComponentProvider, IEntityComp
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		tooltip.add(Component.literal(PlatformProxy.getId(accessor.getBlock()).toString()).withStyle(ChatFormatting.GRAY));
+		tooltip.add(config.getWailaConfig().getFormatting().registryName(PlatformProxy.getId(accessor.getBlock()).toString()));
 	}
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
-		tooltip.add(Component.literal(PlatformProxy.getId(accessor.getEntity().getType()).toString()).withStyle(ChatFormatting.GRAY));
+		tooltip.add(config.getWailaConfig().getFormatting().registryName(PlatformProxy.getId(accessor.getEntity().getType()).toString()));
 	}
 
 	@Override

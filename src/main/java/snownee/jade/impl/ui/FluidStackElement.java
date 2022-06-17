@@ -1,8 +1,9 @@
 package snownee.jade.impl.ui;
 
+import java.util.Objects;
+
 import org.jetbrains.annotations.Nullable;
 
-import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.network.chat.Component;
@@ -18,7 +19,7 @@ public class FluidStackElement extends Element {
 
 	public FluidStackElement(FluidStack fluidStack) {
 		this.fluidStack = fluidStack;
-		Preconditions.checkNotNull(fluidStack);
+		Objects.nonNull(fluidStack);
 	}
 
 	@Override

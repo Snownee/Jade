@@ -137,15 +137,9 @@ public interface IWailaConfig {
 
 		void setModName(String modName);
 
-		void setTitleName(String titleName);
-
-		void setRegistryName(String registryName);
-
 		String getModName();
 
-		String getTitleName();
-
-		String getRegistryName();
+		Component registryName(String name);
 
 		Component title(Object title);
 	}
