@@ -1,6 +1,6 @@
 buildscript {
     repositories {
-        maven { url = 'https://files.minecraftforge.net/maven' }
+        maven { url = 'https://maven.minecraftforge.net/' }
         maven { url = 'https://maven.parchmentmc.org' }
         mavenCentral()
     }
@@ -92,10 +92,6 @@ repositories {
     maven {
         url = "https://www.cursemaven.com"
     }
-    //maven {
-    //    name = "tehnut"
-    //    url = "https://maven.tehnut.info"
-    //}
 }
 
 dependencies {

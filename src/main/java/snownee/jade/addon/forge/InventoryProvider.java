@@ -21,6 +21,7 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
+import net.minecraft.world.LockCode;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
@@ -123,7 +124,7 @@ public class InventoryProvider implements IComponentProvider, IServerDataProvide
 		}
 		if (!JadeCommonConfig.bypassLockedContainer && !player.isCreative() && !player.isSpectator() && te instanceof BaseContainerBlockEntity) {
 			BaseContainerBlockEntity lockableBlockEntity = (BaseContainerBlockEntity) te;
-			if (!lockableBlockEntity.canOpen(player)) {
+			if (lockableBlockEntity.lockKey != LockCode.NO_LOCK) {
 				tag.putBoolean("Locked", true);
 				return;
 			}
