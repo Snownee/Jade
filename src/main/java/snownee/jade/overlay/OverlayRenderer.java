@@ -139,11 +139,11 @@ public class OverlayRenderer {
 			Vec2 offset = tooltip.icon.getTranslation();
 			float offsetY;
 			if (overlay.getIconMode() == IconMode.TOP) {
-				offsetY = offset.y + 2;
+				offsetY = offset.y + tooltip.getPadding();
 			} else {
 				offsetY = (position.getHeight() - size.y) / 2 - 1;
 			}
-			float offsetX = offset.x + 5;
+			float offsetX = offset.x + tooltip.getPadding() + 2;
 			Tooltip.drawBorder(matrixStack, offsetX, offsetY, tooltip.icon);
 			tooltip.icon.render(matrixStack, offsetX, offsetY, offsetX + size.x, offsetY + size.y);
 		}
