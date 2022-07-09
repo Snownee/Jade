@@ -31,6 +31,10 @@ public class TooltipRenderer {
 		computeSize();
 	}
 
+	public float getPadding() {
+		return 2;
+	}
+
 	public void computeSize() {
 		float width = 0, height = 0;
 		for (Line line : tooltip.lines) {
@@ -39,22 +43,23 @@ public class TooltipRenderer {
 			height += size.y;
 		}
 		contentHeight = height;
+		float padding = getPadding() * 2;
 		if (hasIcon()) {
 			Vec2 size = icon.getCachedSize();
-			width += 12 + size.x;
+			width += 2 + size.x;
 			height = Math.max(height, size.y - 2);
-		} else {
-			width += 10;
 		}
-		height += 6;
+		width += padding + 4;
+		height += padding;
 		totalSize = new Vec2(width, height);
 	}
 
 	public void draw(PoseStack matrixStack) {
-		float x = 6;
-		float y = 4;
+		float padding = getPadding();
+		float x = padding + 3;
+		float y = padding + 1;
 		if (hasIcon()) {
-			x = icon.getCachedSize().x + 8;
+			x += icon.getCachedSize().x + 2;
 			if (icon.getCachedSize().y > contentHeight) {
 				y += (icon.getCachedSize().y - contentHeight) / 2 - 1;
 			}
@@ -62,7 +67,7 @@ public class TooltipRenderer {
 
 		for (Line line : tooltip.lines) {
 			Vec2 size = line.getSize();
-			line.render(matrixStack, x, y, totalSize.x - 4, size.y);
+			line.render(matrixStack, x, y, totalSize.x - padding - 1, size.y);
 			y += size.y;
 		}
 
@@ -75,7 +80,7 @@ public class TooltipRenderer {
 			y = totalSize.y - 6 + yOffset;
 			float alpha = 1 - Math.abs(yOffset) / 2;
 			int alphaChannel = (int) (0xFF * Mth.clamp(alpha, 0, 1));
-			if (alphaChannel > 4) //dont know why
+			if (alphaChannel > 4)
 				mc.font.draw(matrixStack, "▾", x, y, 0xFFFFFF | alphaChannel << 24);
 		}
 	}
