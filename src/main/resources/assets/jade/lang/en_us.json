@@ -157,6 +157,7 @@
   "jade.infinity": "+∞",
   "jade.seconds": "%ds",
   "jade.error": "<Error from %s mod, plz report>",
+  "jade.hopper.locked": "Hopper is locked",
 
   "config.jade.plugin_minecraft.furnace": "Furnace Contents",
   "config.jade.plugin_minecraft.mob_spawner": "Mob Spawner Type",
