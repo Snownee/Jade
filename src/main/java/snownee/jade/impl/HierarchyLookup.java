@@ -30,7 +30,7 @@ public class HierarchyLookup<T extends IJadeProvider> {
 	public void register(Class<?> clazz, T provider) {
 		Preconditions.checkNotNull(clazz);
 		Preconditions.checkNotNull(provider.getUid());
-		WailaCommonRegistration.INSTANCE.priorities.put(provider.getUid(), provider);
+		WailaCommonRegistration.INSTANCE.priorities.put(provider);
 		objects.put(clazz, provider);
 	}
 
