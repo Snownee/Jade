@@ -11,6 +11,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.LecternBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec2;
+import snownee.jade.Jade;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.IServerDataProvider;
@@ -30,7 +31,7 @@ public enum LecternProvider implements IBlockComponentProvider, IServerDataProvi
 			ItemStack stack = ItemStack.of(accessor.getServerData().getCompound("Book"));
 			if (!stack.isEmpty()) {
 				IElementHelper helper = tooltip.getElementHelper();
-				tooltip.add(helper.item(stack, 0.75f));
+				tooltip.add(Jade.smallItem(helper, stack));
 				tooltip.append(helper.text(stack.getHoverName()).translate(new Vec2(3, 3)));
 			}
 		}

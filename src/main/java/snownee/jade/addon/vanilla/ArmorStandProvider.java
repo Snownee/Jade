@@ -22,7 +22,7 @@ public enum ArmorStandProvider implements IEntityComponentProvider {
 		for (ItemStack stack : entity.getArmorSlots()) {
 			if (stack.isEmpty())
 				continue;
-			tooltip.add(Jade.smallItem(helper, stack).message(null));
+			tooltip.add(Jade.smallItem(helper, stack));
 			tooltip.append(stack.getHoverName());
 		}
 	}
