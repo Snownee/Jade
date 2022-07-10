@@ -27,6 +27,7 @@
   
   "narration.jade.health": "生命值：%s",
   "narration.jade.armor": "护甲值：%s",
+  "narration.jade.bookName": "书名：《%s》",
 
   "config.jade.general": "通用",
   "config.jade.display_tooltip": "显示提示框",
