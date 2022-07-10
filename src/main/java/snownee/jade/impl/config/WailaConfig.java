@@ -2,12 +2,15 @@ package snownee.jade.impl.config;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 
 import com.google.common.collect.Maps;
 import com.google.gson.annotations.Expose;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -348,22 +351,10 @@ public class WailaConfig implements IWailaConfig {
 
 	public static class ConfigFormatting implements IConfigFormatting {
 		private String modName = "§9§o%s";
-		private String titleName = "%s";
-		private String registryName = "§7[%s]";
 
 		@Override
 		public void setModName(String modName) {
 			this.modName = modName;
-		}
-
-		@Override
-		public void setTitleName(String titleName) {
-			this.titleName = titleName;
-		}
-
-		@Override
-		public void setRegistryName(String registryName) {
-			this.registryName = registryName;
 		}
 
 		@Override
@@ -372,21 +363,19 @@ public class WailaConfig implements IWailaConfig {
 		}
 
 		@Override
-		public String getTitleName() {
-			return titleName;
-		}
-
-		@Override
-		public String getRegistryName() {
-			return registryName;
-		}
-
-		@Override
 		public Component title(Object title) {
-			if (title instanceof Component) {
-				title = ((Component) title).getString();
+			MutableComponent component;
+			if (title instanceof MutableComponent) {
+				component = (MutableComponent) title;
+			} else {
+				component = new TextComponent(Objects.toString(title));
 			}
-			return new TextComponent(String.format(titleName, title)).withStyle($ -> $.withColor(OverlayRenderer.stressedTextColorRaw));
+			return component.withStyle($ -> $.withColor(OverlayRenderer.stressedTextColorRaw));
+		}
+
+		@Override
+		public Component registryName(String name) {
+			return new TextComponent(name).withStyle(ChatFormatting.GRAY);
 		}
 	}
 

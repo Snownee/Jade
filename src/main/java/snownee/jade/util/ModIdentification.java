@@ -2,6 +2,7 @@ package snownee.jade.util;
 
 import java.util.Map;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
 import net.minecraft.client.resources.language.I18n;
@@ -15,6 +16,8 @@ import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
+import snownee.jade.api.callback.JadeItemModNameCallback;
+import snownee.jade.impl.WailaClientRegistration;
 
 public class ModIdentification implements ResourceManagerReloadListener {
 
@@ -50,6 +53,12 @@ public class ModIdentification implements ResourceManagerReloadListener {
 	}
 
 	public static String getModName(ItemStack stack) {
+		for (JadeItemModNameCallback callback : WailaClientRegistration.INSTANCE.itemModNameCallbacks) {
+			String s = callback.gatherItemModName(stack);
+			if (!Strings.isNullOrEmpty(s)) {
+				return s;
+			}
+		}
 		return getModName(PlatformProxy.getModIdFromItem(stack));
 	}
 
