@@ -20,11 +20,14 @@ import net.minecraft.world.LockCode;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.entity.EnderChestBlockEntity;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import snownee.jade.Jade;
 import snownee.jade.JadeCommonConfig;
 import snownee.jade.api.Accessor;
@@ -122,7 +125,10 @@ public enum BlockInventoryProvider implements IBlockComponentProvider, IServerDa
 		}
 
 		Container container = null;
-		if (te instanceof Container) {
+		BlockState state = te.getBlockState();
+		if (state.getBlock() instanceof ChestBlock chestBlock && te instanceof ChestBlockEntity chest) {
+			container = ChestBlock.getContainer(chestBlock, state, world, te.getBlockPos(), true);
+		} else if (te instanceof Container) {
 			container = (Container) te;
 		} else if (te instanceof EnderChestBlockEntity) {
 			container = player.getEnderChestInventory();
@@ -134,12 +140,12 @@ public enum BlockInventoryProvider implements IBlockComponentProvider, IServerDa
 		if (container == null || size == 0) {
 			return;
 		}
-		SimpleContainer merged = new SimpleContainer(size);
+		SimpleContainer merged = new SimpleContainer(size + 1);
 		boolean empty = true;
-		int max = Math.min(container.getContainerSize(), start + size * 3);
+		int maxSlot = Math.min(container.getContainerSize(), start + 162);
 		items:
-		for (int i = start; i < max; i++) {
-			ItemStack stack = container.getItem(i);
+		for (int slot = start; slot < maxSlot; slot++) {
+			ItemStack stack = container.getItem(slot);
 			if (stack.hasTag() && stack.getTag().contains("CustomModelData")) {
 				for (String key : stack.getTag().getAllKeys()) {
 					if (key.toLowerCase(Locale.ENGLISH).endsWith("clear") && stack.getTag().getBoolean(key)) {
