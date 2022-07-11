@@ -27,6 +27,7 @@
   
   "narration.jade.health": "Health: %s",
   "narration.jade.armor": "Armor: %s",
+  "narration.jade.bookName": "Book Name: %s",
 
   "config.jade.general": "General",
   "config.jade.display_tooltip": "Display Tooltip",
