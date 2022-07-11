@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 
@@ -24,11 +25,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
-import net.minecraftforge.client.ClientRegistry;
 import net.minecraftforge.client.ConfigGuiHandler.ConfigGuiFactory;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RegisterClientCommandsEvent;
+import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;
@@ -42,6 +43,7 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.forgespi.language.IModInfo;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
@@ -85,8 +87,8 @@ public final class ClientPlatformProxy {
 		MinecraftForge.EVENT_BUS.addListener(ClientPlatformProxy::registerCommands);
 		MinecraftForge.EVENT_BUS.addListener(ClientPlatformProxy::onKeyPressed);
 		MinecraftForge.EVENT_BUS.addListener(ClientPlatformProxy::onGui);
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientPlatformProxy::onKeyMappingEvent);
 		ModLoadingContext.get().registerExtensionPoint(ConfigGuiFactory.class, () -> new ConfigGuiFactory((minecraft, screen) -> new HomeConfigScreen(screen)));
-
 	}
 
 	public static void onEntityJoin(EntityJoinWorldEvent event) {
@@ -111,7 +113,7 @@ public final class ClientPlatformProxy {
 			WailaTickHandler.instance().tickClient();
 	}
 
-	public static void onPlayerLeave(ClientPlayerNetworkEvent.LoggedOutEvent event) {
+	public static void onPlayerLeave(ClientPlayerNetworkEvent.LoggingOut event) {
 		ObjectDataCenter.serverConnected = false;
 	}
 
@@ -119,18 +121,24 @@ public final class ClientPlatformProxy {
 		DumpHandlersCommand.register(event.getDispatcher());
 	}
 
-	public static void onKeyPressed(InputEvent.KeyInputEvent event) {
+	public static void onKeyPressed(InputEvent.Key event) {
 		JadeClient.onKeyPressed(event.getAction());
 	}
 
-	public static void onGui(ScreenEvent.InitScreenEvent event) {
+	public static void onGui(ScreenEvent.Init event) {
 		JadeClient.onGui(event.getScreen());
 	}
 
+	private static final List<KeyMapping> keys = Lists.newArrayList();
+
 	public static KeyMapping registerKeyBinding(String desc, int defaultKey) {
 		KeyMapping key = new KeyMapping("key.jade." + desc, KeyConflictContext.IN_GAME, KeyModifier.NONE, InputConstants.Type.KEYSYM.getOrCreate(defaultKey), Jade.NAME);
-		ClientRegistry.registerKeyBinding(key);
+		keys.add(key);
 		return key;
+	}
+
+	private static void onKeyMappingEvent(RegisterKeyMappingsEvent event) {
+		keys.forEach(event::register);
 	}
 
 	public static boolean shouldRegisterRecipeViewerKeys() {

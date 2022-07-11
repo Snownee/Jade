@@ -85,10 +85,10 @@ artifacts {
 }
 
 repositories {
-    //maven {
-    //    name = "jei"
-    //    url = "https://dvs1.progwml6.com/files/maven"
-    //}
+    maven {
+        name = "jei"
+        url = "https://dvs1.progwml6.com/files/maven"
+    }
     maven {
         url = "https://www.cursemaven.com"
     }
@@ -104,9 +104,10 @@ dependencies {
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
-    //compileOnly fg.deobf("mezz.jei:jei-1.17.1:8.0.0.14:api")
+    compileOnly fg.deobf("mezz.jei:jei-1.19-common-api:11.0.0.206")
+    compileOnly fg.deobf("mezz.jei:jei-1.19-forge-api:11.0.0.206")
     //runtimeOnly fg.deobf("mezz.jei:jei-1.17.1:8.0.0.14")
-    implementation fg.deobf("curse.maven:jei-238222:3834070")
+    //implementation fg.deobf("curse.maven:jei-238222:3834070")
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..

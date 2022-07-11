@@ -39,7 +39,7 @@ import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.client.RenderProperties;
+import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.minecraftforge.fluids.FluidStack;
 import snownee.jade.Jade;
 import snownee.jade.api.ui.IBorderStyle;
@@ -298,7 +298,7 @@ public class DisplayHelper implements IDisplayHelper {
 
 		TextureAtlasSprite fluidStillSprite = getStillFluidSprite(fluidStack);
 
-		int fluidColor = RenderProperties.get(fluid).getColorTint(fluidStack);
+		int fluidColor = IClientFluidTypeExtensions.of(fluid).getTintColor(fluidStack);
 
 		int amount = fluidStack.getAmount();
 		float scaledAmount = (amount * height) / capacityMb;
@@ -343,7 +343,7 @@ public class DisplayHelper implements IDisplayHelper {
 	private static TextureAtlasSprite getStillFluidSprite(FluidStack fluidStack) {
 		Minecraft minecraft = Minecraft.getInstance();
 		Fluid fluid = fluidStack.getFluid();
-		ResourceLocation fluidStill = RenderProperties.get(fluid).getStillTexture(fluidStack);
+		ResourceLocation fluidStill = IClientFluidTypeExtensions.of(fluid).getStillTexture(fluidStack);
 		return minecraft.getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(fluidStill);
 	}
 

@@ -46,7 +46,7 @@ public class JEICompat implements IModPlugin {
 		JEICompat.runtime = runtime;
 	}
 
-	private static void onKeyPressed(InputEvent.KeyInputEvent event) {
+	private static void onKeyPressed(InputEvent.Key event) {
 		if (runtime == null || JadeClient.showRecipes == null || JadeClient.showUses == null)
 			return;
 		if (event.getAction() != 1)
