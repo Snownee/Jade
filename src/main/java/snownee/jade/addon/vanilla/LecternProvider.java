@@ -1,6 +1,7 @@
 package snownee.jade.addon.vanilla;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -10,7 +11,6 @@ import net.minecraft.world.level.block.LecternBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.LecternBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.Vec2;
 import snownee.jade.Jade;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
@@ -32,7 +32,7 @@ public enum LecternProvider implements IBlockComponentProvider, IServerDataProvi
 			if (!stack.isEmpty()) {
 				IElementHelper helper = tooltip.getElementHelper();
 				tooltip.add(Jade.smallItem(helper, stack));
-				tooltip.append(helper.text(stack.getHoverName()).translate(new Vec2(3, 3)));
+				tooltip.append(helper.text(stack.getHoverName()).message(Component.translatable("narration.jade.bookName", stack.getHoverName().getString())));
 			}
 		}
 	}
