@@ -15,6 +15,6 @@ credits="TehNut, ProfMobius, kalkafox"
 [[dependencies.jade]]
     modId="forge"
     mandatory=true
-    versionRange="[41.0.28, )"
+    versionRange="[41.0.75, )"
     ordering="NONE"
     side="BOTH"

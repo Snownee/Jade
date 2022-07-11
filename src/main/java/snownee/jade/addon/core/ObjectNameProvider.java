@@ -42,7 +42,7 @@ public enum ObjectNameProvider
 		}
 		if (name == null && WailaClientRegistration.INSTANCE.shouldPick(accessor.getBlockState())) {
 			ItemStack pick = accessor.getPickedResult();
-			if (!pick.isEmpty())
+			if (pick != null && !pick.isEmpty())
 				name = pick.getHoverName();
 		}
 		if (name == null) {
@@ -50,9 +50,9 @@ public enum ObjectNameProvider
 			if (I18n.exists(key)) {
 				name = accessor.getBlock().getName();
 			} else {
-				ItemStack stack = accessor.getPickedResult();
-				if (stack != null && !stack.isEmpty()) {
-					name = stack.getHoverName();
+				ItemStack pick = accessor.getPickedResult();
+				if (pick != null && !pick.isEmpty()) {
+					name = pick.getHoverName();
 				} else {
 					name = Component.literal(key);
 				}
