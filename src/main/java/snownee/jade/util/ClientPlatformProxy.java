@@ -25,7 +25,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
-import net.minecraftforge.client.ConfigGuiHandler.ConfigGuiFactory;
+import net.minecraftforge.client.ConfigScreenHandler.ConfigScreenFactory;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RegisterClientCommandsEvent;
@@ -36,8 +36,8 @@ import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.UsernameCache;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.event.entity.EntityLeaveWorldEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.EntityLeaveLevelEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.fluids.FluidStack;
@@ -88,14 +88,14 @@ public final class ClientPlatformProxy {
 		MinecraftForge.EVENT_BUS.addListener(ClientPlatformProxy::onKeyPressed);
 		MinecraftForge.EVENT_BUS.addListener(ClientPlatformProxy::onGui);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientPlatformProxy::onKeyMappingEvent);
-		ModLoadingContext.get().registerExtensionPoint(ConfigGuiFactory.class, () -> new ConfigGuiFactory((minecraft, screen) -> new HomeConfigScreen(screen)));
+		ModLoadingContext.get().registerExtensionPoint(ConfigScreenFactory.class, () -> new ConfigScreenFactory((minecraft, screen) -> new HomeConfigScreen(screen)));
 	}
 
-	public static void onEntityJoin(EntityJoinWorldEvent event) {
+	public static void onEntityJoin(EntityJoinLevelEvent event) {
 		DatapackBlockManager.onEntityJoin(event.getEntity());
 	}
 
-	public static void onEntityLeave(EntityLeaveWorldEvent event) {
+	public static void onEntityLeave(EntityLeaveLevelEvent event) {
 		DatapackBlockManager.onEntityLeave(event.getEntity());
 	}
 

@@ -24,7 +24,7 @@ public class Test {
 
 	public static final RegistryObject<BlockItem> ITEM = ITEMS.register("test", () -> new BlockItem(BLOCK.get(), new Item.Properties()));
 
-	private static final DeferredRegister<BlockEntityType<?>> TILES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, Jade.MODID);
+	private static final DeferredRegister<BlockEntityType<?>> TILES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, Jade.MODID);
 
 	public static final RegistryObject<BlockEntityType<TestBlockEntity>> TILE = TILES.register("test", () -> BlockEntityType.Builder.of(TestBlockEntity::new, BLOCK.get()).build(null));
 
