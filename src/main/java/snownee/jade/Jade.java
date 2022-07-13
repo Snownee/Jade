@@ -20,6 +20,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
@@ -41,6 +42,7 @@ import snownee.jade.overlay.OverlayRenderer;
 import snownee.jade.util.JsonConfig;
 import snownee.jade.util.PlatformProxy;
 import snownee.jade.util.ThemeSerializer;
+import snownee.jade.util.UsernameCache;
 import snownee.jade.util.WailaExceptionHandler;
 
 public class Jade implements ModInitializer {
@@ -140,6 +142,7 @@ public class Jade implements ModInitializer {
 		});
 
 		ServerPlayConnectionEvents.JOIN.register(this::playerJoin);
+		UsernameCache.load();
 
 		loadComplete();
 	}
@@ -170,7 +173,8 @@ public class Jade implements ModInitializer {
 	}
 
 	private void playerJoin(ServerGamePacketListenerImpl handler, PacketSender sender, MinecraftServer server) {
-		LOGGER.info("Syncing config to {} ({})", handler.player.getGameProfile().getName(), handler.player.getGameProfile().getId());
+		ServerPlayer player = handler.player;
+		LOGGER.info("Syncing config to {} ({})", player.getGameProfile().getName(), player.getGameProfile().getId());
 		Set<ConfigEntry> entries = PluginConfig.INSTANCE.getSyncableConfigs();
 		FriendlyByteBuf buf = PacketByteBufs.create();
 		buf.writeVarInt(entries.size());
@@ -178,7 +182,10 @@ public class Jade implements ModInitializer {
 			buf.writeUtf(e.getId().toString());
 			buf.writeBoolean(e.getValue());
 		});
-		ServerPlayNetworking.send(handler.player, Identifiers.PACKET_SERVER_PING, buf);
+		ServerPlayNetworking.send(player, Identifiers.PACKET_SERVER_PING, buf);
+
+		if (server.isDedicatedServer())
+			UsernameCache.setUsername(player.getUUID(), player.getGameProfile().getName());
 	}
 
 }

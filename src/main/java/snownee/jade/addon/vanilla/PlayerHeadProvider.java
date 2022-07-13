@@ -11,6 +11,7 @@ import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.util.PlatformProxy;
 
 public enum PlayerHeadProvider implements IBlockComponentProvider {
 
@@ -23,8 +24,15 @@ public enum PlayerHeadProvider implements IBlockComponentProvider {
 			GameProfile profile = tile.getOwnerProfile();
 			if (profile == null)
 				return;
+			String name = profile.getName();
+			if (name == null) {
+				name = PlatformProxy.getLastKnownUsername(profile.getId());
+			}
+			if (name == null) {
+				return;
+			}
 			tooltip.remove(Identifiers.CORE_OBJECT_NAME);
-			tooltip.add(0, config.getWailaConfig().getFormatting().title(I18n.get(Items.PLAYER_HEAD.getDescriptionId() + ".named", profile.getName())), Identifiers.CORE_OBJECT_NAME);
+			tooltip.add(0, config.getWailaConfig().getFormatting().title(I18n.get(Items.PLAYER_HEAD.getDescriptionId() + ".named", name)), Identifiers.CORE_OBJECT_NAME);
 		}
 	}
 

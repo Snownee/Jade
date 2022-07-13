@@ -8,6 +8,7 @@ import com.google.common.cache.CacheBuilder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.AgeableMob;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.Chicken;
@@ -73,6 +74,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerBlockDataProvider(RedstoneProvider.INSTANCE, HopperBlockEntity.class);
 		registration.registerBlockDataProvider(FurnaceProvider.INSTANCE, AbstractFurnaceBlockEntity.class);
 
+		registration.registerEntityDataProvider(AnimalOwnerProvider.INSTANCE, Entity.class);
 		registration.registerEntityDataProvider(ContainerEntityProvider.INSTANCE, AbstractChestedHorse.class);
 		registration.registerEntityDataProvider(ContainerEntityProvider.INSTANCE, MinecartChest.class);
 		registration.registerEntityDataProvider(ContainerEntityProvider.INSTANCE, ChestBoat.class);
@@ -113,7 +115,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerEntityComponent(VillagerProfessionProvider.INSTANCE, ZombieVillager.class);
 		registration.registerEntityComponent(ItemTooltipProvider.INSTANCE, ItemEntity.class);
 		registration.registerBlockComponent(FurnaceProvider.INSTANCE, AbstractFurnaceBlock.class);
-		//registration.registerEntityComponent(AnimalOwnerProvider.INSTANCE, Entity.class);
+		registration.registerEntityComponent(AnimalOwnerProvider.INSTANCE, Entity.class);
 		registration.registerEntityComponent(FallingBlockProvider.INSTANCE, FallingBlockEntity.class);
 		registration.registerEntityIcon(FallingBlockProvider.INSTANCE, FallingBlockEntity.class);
 		registration.registerEntityComponent(EntityHealthProvider.INSTANCE, LivingEntity.class);

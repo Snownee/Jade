@@ -2,10 +2,8 @@ package snownee.jade.util;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
@@ -67,11 +65,6 @@ import snownee.jade.overlay.OverlayRenderer;
 import snownee.jade.overlay.WailaTickHandler;
 
 public final class ClientPlatformProxy {
-
-	@Nullable
-	public static String getLastKnownUsername(UUID uuid) {
-		return null;// UsernameCache.getLastKnownUsername(uuid);
-	}
 
 	public static void initModNames(Map<String, String> map) {
 		List<ModContainer> mods = ImmutableList.copyOf(FabricLoader.getInstance().getAllMods());
