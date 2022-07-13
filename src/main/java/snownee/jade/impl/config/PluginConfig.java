@@ -21,6 +21,7 @@ import snownee.jade.Jade;
 import snownee.jade.api.IToggleableProvider;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
+import snownee.jade.util.JsonConfig;
 import snownee.jade.util.PlatformProxy;
 
 public class PluginConfig implements IPluginConfig {
@@ -132,7 +133,7 @@ public class PluginConfig implements IPluginConfig {
 			modConfig.put(e.getId().getPath(), e.getValue());
 		});
 
-		String json = new GsonBuilder().setPrettyPrinting().create().toJson(config);
+		String json = JsonConfig.DEFAULT_GSON.toJson(config);
 		if (!file.getParentFile().exists())
 			file.getParentFile().mkdirs();
 		try (FileWriter writer = new FileWriter(file, StandardCharsets.UTF_8)) {

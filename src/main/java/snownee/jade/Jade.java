@@ -165,6 +165,7 @@ public class Jade implements ModInitializer {
 			}
 		});
 
+		WailaCommonRegistration.INSTANCE.priorities.updateConfig();
 		WailaCommonRegistration.INSTANCE.loadComplete();
 		if (PlatformProxy.isPhysicallyClient()) {
 			WailaClientRegistration.INSTANCE.loadComplete();

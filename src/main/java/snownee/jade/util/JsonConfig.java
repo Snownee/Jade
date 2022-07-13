@@ -12,9 +12,18 @@ import org.jetbrains.annotations.Nullable;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import net.minecraft.resources.ResourceLocation;
+
 public class JsonConfig<T> {
 
-	private static final Gson DEFAULT_GSON = new GsonBuilder().setPrettyPrinting().create();
+	/* off */
+	public static final Gson DEFAULT_GSON = new GsonBuilder()
+			.setPrettyPrinting()
+			.serializeNulls()
+			.enableComplexMapKeySerialization()
+			.registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
+			.create();
+	/* on */
 
 	private final File configFile;
 	private final CachedSupplier<T> configGetter;
