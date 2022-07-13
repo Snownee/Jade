@@ -8,6 +8,7 @@ accessible field net/minecraft/client/multiplayer/MultiPlayerGameMode destroyBlo
 accessible field net/minecraft/client/gui/components/PlayerTabOverlay visible Z
 
 accessible field net/minecraft/world/level/block/entity/RandomizableContainerBlockEntity lootTable Lnet/minecraft/resources/ResourceLocation;
+accessible field net/minecraft/world/level/block/entity/BaseContainerBlockEntity lockKey Lnet/minecraft/world/LockCode;
 
 accessible field net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity litTime I
 

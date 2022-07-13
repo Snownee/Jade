@@ -15,6 +15,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
+import net.minecraft.world.LockCode;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -113,7 +114,7 @@ public enum BlockInventoryProvider implements IBlockComponentProvider, IServerDa
 		}
 		if (!JadeCommonConfig.bypassLockedContainer && !player.isCreative() && !player.isSpectator() && te instanceof BaseContainerBlockEntity) {
 			BaseContainerBlockEntity lockableBlockEntity = (BaseContainerBlockEntity) te;
-			if (!lockableBlockEntity.canOpen(player)) {
+			if (lockableBlockEntity.lockKey != LockCode.NO_LOCK) {
 				tag.putBoolean("Locked", true);
 				return;
 			}
