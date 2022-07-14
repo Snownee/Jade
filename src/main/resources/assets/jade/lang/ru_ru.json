@@ -2,6 +2,7 @@
   "config.waila.plugin_jade": "Jade",
   "config.waila.plugin_jade.inventory": "Инвентарь",
   "jade.locked": "Инвентарь заблокирован",
+  "jade.not_generated": "Инвентарь не сгенерирован",
   "config.waila.plugin_jade.horse_stat": "Статистика лошади",
   "jade.horseStat.jump": "Высота прыжка: %d",
   "jade.horseStat.speed": "Скорость: %d",

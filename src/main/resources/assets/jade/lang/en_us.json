@@ -2,6 +2,7 @@
   "config.waila.plugin_jade": "Jade",
   "config.waila.plugin_jade.inventory": "Inventory",
   "jade.locked": "Inventory is locked",
+  "jade.not_generated": "Inventory isn't generated",
   "config.waila.plugin_jade.horse_stat": "Horse Stats",
   "jade.horseStat.jump": "Jump height: %d",
   "jade.horseStat.speed": "Speed: %d",
