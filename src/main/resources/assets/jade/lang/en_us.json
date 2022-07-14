@@ -85,7 +85,7 @@
   "config.jade.plugin_minecraft.block_states": "Block States",
   "config.jade.plugin_jade.item_mod_name": "Mod Name in Item Tooltip",
   "config.jade.plugin_jade.mod_name": "Mod Name",
-  "config.jade.plugin_jade.test": "Test",
+  "config.jade.plugin_jade.furnace_fuel": "Test",
   
   "entity.minecraft.villager.none": "Unemployed",
   "entity.minecraft.villager.nitwit": "Nitwit",

@@ -1,7 +1,6 @@
 package snownee.jade.addon.core;
 
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import snownee.jade.api.IWailaClientRegistration;
@@ -26,8 +25,5 @@ public class CorePlugin implements IWailaPlugin {
 		registration.registerEntityComponent(ObjectNameProvider.INSTANCE, Entity.class);
 		registration.registerEntityComponent(RegistryNameProvider.INSTANCE, Entity.class);
 		registration.registerEntityComponent(ModNameProvider.INSTANCE, Entity.class);
-
-		registration.hideTarget(EntityType.AREA_EFFECT_CLOUD);
-		registration.hideTarget(EntityType.FIREWORK_ROCKET);
 	}
 }

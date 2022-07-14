@@ -36,15 +36,15 @@ import mcp.mobius.waila.api.WailaPlugin;
 @WailaPlugin
 public class ExamplePlugin implements IWailaPlugin {
 
-	@Override
-	public void register(IWailaCommonRegistration registration) {
-		//TODO register data providers and config options here
-	}
+  @Override
+  public void register(IWailaCommonRegistration registration) {
+    //TODO register data providers and config options here
+  }
 
-	@Override
-	public void registerClient(IWailaClientRegistration registration) {
-		//TODO register component providers and icon providers here
-	}
+  @Override
+  public void registerClient(IWailaClientRegistration registration) {
+    //TODO register component providers and icon providers here
+  }
 
 }
 ```
@@ -66,12 +66,12 @@ import net.minecraft.network.chat.TranslatableComponent;
 
 public enum ExampleComponentProvider implements IComponentProvider {
 
-	INSTANCE;
+  INSTANCE;
 
-	@Override
-	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		tooltip.add(new TranslatableComponent("mymod.fuel"));
-	}
+  @Override
+  public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
+    tooltip.add(new TranslatableComponent("mymod.fuel"));
+  }
 
 }
 ```
@@ -95,15 +95,15 @@ import net.minecraft.world.level.block.AbstractFurnaceBlock;
 @WailaPlugin
 public class ExamplePlugin implements IWailaPlugin {
 
-	@Override
-	public void register(IWailaCommonRegistration registration) {
-		//TODO register data providers and config options here
-	}
+  @Override
+  public void register(IWailaCommonRegistration registration) {
+    //TODO register data providers and config options here
+  }
 
-	@Override
-	public void registerClient(IWailaClientRegistration registration) {
-		registration.registerComponentProvider(ExampleComponentProvider.INSTANCE, TooltipPosition.BODY, AbstractFurnaceBlock.class);
-	}
+  @Override
+  public void registerClient(IWailaClientRegistration registration) {
+    registration.registerComponentProvider(ExampleComponentProvider.INSTANCE, TooltipPosition.BODY, AbstractFurnaceBlock.class);
+  }
 
 }
 ```
@@ -145,25 +145,25 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 
 public enum ExampleComponentProvider implements IComponentProvider, IServerDataProvider<BlockEntity> {
 
-	INSTANCE;
+  INSTANCE;
 
-	@Override
-	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		if (accessor.getServerData().contains("Fuel")) {
-			tooltip.add(new TranslatableComponent("mymod.fuel", accessor.getServerData().getInt("Fuel")));
-		}
-	}
+  @Override
+  public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
+    if (accessor.getServerData().contains("Fuel")) {
+      tooltip.add(new TranslatableComponent("mymod.fuel", accessor.getServerData().getInt("Fuel")));
+    }
+  }
 
-	@Override
-	public void appendServerData(CompoundTag data, ServerPlayer player, Level world, BlockEntity t, boolean showDetails) {
-		AbstractFurnaceBlockEntity furnace = (AbstractFurnaceBlockEntity) t;
-		data.putInt("Fuel", furnace.litTime);
-	}
+  @Override
+  public void appendServerData(CompoundTag data, ServerPlayer player, Level world, BlockEntity t, boolean showDetails) {
+    AbstractFurnaceBlockEntity furnace = (AbstractFurnaceBlockEntity) t;
+    data.putInt("Fuel", furnace.litTime);
+  }
 
 }
 ```
 
-Here we used [Access Transformer](https://forge.gemwire.uk/wiki/Access_Transformers) to get access to the protected field.
+Here we used [Access Transformer](https://forge.gemwire.uk/wiki/Access_Transformers) or [Access Wideners](https://fabricmc.net/wiki/tutorial:accesswideners) to get access to the protected field.
 
 Register `IServerDataProvider`:
 
@@ -181,15 +181,15 @@ import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 @WailaPlugin
 public class ExamplePlugin implements IWailaPlugin {
 
-	@Override
-	public void register(IWailaCommonRegistration registration) {
-		registration.registerBlockDataProvider(ExampleComponentProvider.INSTANCE, AbstractFurnaceBlockEntity.class);
-	}
+  @Override
+  public void register(IWailaCommonRegistration registration) {
+    registration.registerBlockDataProvider(ExampleComponentProvider.INSTANCE, AbstractFurnaceBlockEntity.class);
+  }
 
-	@Override
-	public void registerClient(IWailaClientRegistration registration) {
-		registration.registerComponentProvider(ExampleComponentProvider.INSTANCE, TooltipPosition.BODY, AbstractFurnaceBlock.class);
-	}
+  @Override
+  public void registerClient(IWailaClientRegistration registration) {
+    registration.registerComponentProvider(ExampleComponentProvider.INSTANCE, TooltipPosition.BODY, AbstractFurnaceBlock.class);
+  }
 
 }
 ```

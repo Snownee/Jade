@@ -1,12 +1,6 @@
 package snownee.jade.test;
 
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.AbstractFurnaceBlock;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
-import snownee.jade.Jade;
-import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IWailaClientRegistration;
 import snownee.jade.api.IWailaCommonRegistration;
 import snownee.jade.api.IWailaPlugin;
@@ -15,28 +9,15 @@ import snownee.jade.api.WailaPlugin;
 @WailaPlugin
 public class ExamplePlugin implements IWailaPlugin {
 
-	public static final ResourceLocation UID_TEST = new ResourceLocation(Jade.MODID, "test");
-	private static IWailaClientRegistration client;
-
 	@Override
 	public void register(IWailaCommonRegistration registration) {
-		registration.registerBlockDataProvider(ExampleComponentProvider.INSTANCE, AbstractFurnaceBlockEntity.class);
+		//TODO register data providers
 	}
 
 	@Override
 	public void registerClient(IWailaClientRegistration registration) {
-		ExamplePlugin.client = registration;
-		registration.registerBlockComponent(ExampleComponentProvider.INSTANCE, AbstractFurnaceBlock.class);
-		registration.hideTarget(EntityType.AREA_EFFECT_CLOUD);
-
-		registration.addRayTraceCallback((hitResult, accessor, originalAccessor) -> {
-			if (accessor instanceof BlockAccessor blockAccessor) {
-				if (blockAccessor.getBlock() == Blocks.GRASS_BLOCK) {
-					return client.blockAccessor().from(blockAccessor).blockState(Blocks.TNT.defaultBlockState()).build();
-				}
-			}
-			return accessor;
-		});
+		//TODO register component providers, icon providers, callbacks, and config options here
+		//registration.registerBlockComponent(ExampleComponentProvider.INSTANCE, AbstractFurnaceBlock.class);
 	}
 
 }
