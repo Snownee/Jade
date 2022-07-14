@@ -28,6 +28,7 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
+import snownee.jade.Jade;
 import snownee.jade.JadeCommonConfig;
 import snownee.jade.JadePlugin;
 import snownee.jade.Renderables;
@@ -42,10 +43,16 @@ public class HUDHandlerBlocks implements IComponentProvider, IServerDataProvider
 
 	@Override
 	public void appendHead(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {
-		ITextComponent name;
+		ITextComponent name = null;
 		if (accessor.getServerData().contains("givenName", Constants.NBT.TAG_STRING)) {
 			name = ITextComponent.Serializer.getComponentFromJson(accessor.getServerData().getString("givenName"));
-		} else {
+		}
+		if (name == null && accessor.getBlockState().isIn(Jade.PICK)) {
+			ItemStack pick = accessor.getBlockState().getPickBlock(accessor.getHitResult(), accessor.getWorld(), accessor.getPosition(), accessor.getPlayer());
+			if (pick != null && !pick.isEmpty())
+				name = pick.getDisplayName();
+		}
+		if (name == null) {
 			String key = accessor.getBlock().getTranslationKey();
 			if (I18n.hasKey(key)) {
 				name = accessor.getBlock().getTranslatedName();
