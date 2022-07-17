@@ -1,6 +1,9 @@
 package snownee.jade.util;
 
 import java.io.File;
+import java.util.UUID;
+
+import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
@@ -24,6 +27,11 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import snownee.jade.addon.forge.BlockInventoryProvider;
 
 public final class PlatformProxy {
+
+	@Nullable
+	public static String getLastKnownUsername(UUID uuid) {
+		return UsernameCache.getLastKnownUsername(uuid);
+	}
 
 	public static File getConfigDirectory() {
 		return FMLPaths.CONFIGDIR.get().toFile();

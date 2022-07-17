@@ -53,7 +53,7 @@ public enum ModNameProvider implements IBlockComponentProvider, IEntityComponent
 
 	@Override
 	public int getDefaultPriority() {
-		return TooltipPosition.TAIL;
+		return TooltipPosition.TAIL - 1;
 	}
 
 }

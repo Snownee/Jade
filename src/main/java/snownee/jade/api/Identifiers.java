@@ -16,6 +16,10 @@ public class Identifiers {
 	public static final ResourceLocation CORE_OBJECT_NAME = JADE("object_name");
 	public static final ResourceLocation CORE_REGISTRY_NAME = JADE("registry_name");
 	public static final ResourceLocation CORE_MOD_NAME = JADE("mod_name");
+	public static final ResourceLocation CORE_DISTANCE = JADE("distance");
+	public static final ResourceLocation CORE_COORDINATES = JADE("coordinates");
+	public static final ResourceLocation CORE_REL_COORDINATES = JADE("rel_coordinates");
+	public static final ResourceLocation CORE_BLOCK_FACE = JADE("block_face");
 
 	public static final ResourceLocation FORGE_BLOCK_INVENTORY = MC("block_inventory");
 	public static final ResourceLocation FORGE_FLUID = MC("fluid");

@@ -60,11 +60,6 @@ import snownee.jade.overlay.WailaTickHandler;
 
 public final class ClientPlatformProxy {
 
-	@Nullable
-	public static String getLastKnownUsername(UUID uuid) {
-		return UsernameCache.getLastKnownUsername(uuid);
-	}
-
 	public static void initModNames(Map<String, String> map) {
 		List<IModInfo> mods = ImmutableList.copyOf(ModList.get().getMods());
 		for (IModInfo mod : mods) {
