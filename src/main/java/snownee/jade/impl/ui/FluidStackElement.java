@@ -20,7 +20,7 @@ public class FluidStackElement extends Element {
 
 	public FluidStackElement(FluidState fluidState) {
 		this.fluidState = fluidState;
-		Objects.nonNull(fluidState);
+		Objects.requireNonNull(fluidState);
 	}
 
 	@Override

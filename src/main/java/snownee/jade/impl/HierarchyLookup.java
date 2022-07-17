@@ -28,8 +28,8 @@ public class HierarchyLookup<T extends IJadeProvider> {
 	}
 
 	public void register(Class<?> clazz, T provider) {
-		Objects.nonNull(clazz);
-		Objects.nonNull(provider.getUid());
+		Objects.requireNonNull(clazz);
+		Objects.requireNonNull(provider.getUid());
 		WailaCommonRegistration.INSTANCE.priorities.put(provider);
 		objects.put(clazz, provider);
 	}

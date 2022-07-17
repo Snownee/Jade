@@ -52,7 +52,7 @@ public class ElementHelper implements IElementHelper {
 
 	@Override
 	public IElement progress(float progress, @Nullable Component text, IProgressStyle style, @Nullable IBorderStyle borderStyle) {
-		Objects.nonNull(style);
+		Objects.requireNonNull(style);
 		return new ProgressElement(progress, text, (ProgressStyle) style, (BorderStyle) borderStyle);
 	}
 
