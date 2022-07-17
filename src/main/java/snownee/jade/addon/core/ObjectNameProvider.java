@@ -105,7 +105,7 @@ public enum ObjectNameProvider
 
 	@Override
 	public int getDefaultPriority() {
-		return TooltipPosition.HEAD;
+		return TooltipPosition.HEAD - 1;
 	}
 
 }

@@ -35,9 +35,10 @@ public enum AnimalOwnerProvider implements IEntityComponentProvider, IServerData
 			} else if (entity instanceof AbstractHorse) {
 				ownerUUID = ((AbstractHorse) entity).getOwnerUUID();
 			}
-			if (ownerUUID != null) {
-				name = PlatformProxy.getLastKnownUsername(ownerUUID);
+			if (ownerUUID == null) {
+				return;
 			}
+			name = PlatformProxy.getLastKnownUsername(ownerUUID);
 			if (name == null) {
 				name = "???";
 			}
