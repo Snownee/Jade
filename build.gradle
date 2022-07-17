@@ -14,6 +14,7 @@ repositories {
     maven { url = "https://maven.parchmentmc.org" }
     maven { url "https://maven.shedaniel.me/" }
     maven { url "https://maven.terraformersmc.com/releases/" }
+    maven { url = "https://dvs1.progwml6.com/files/maven/" }
     maven {
         url "https://cursemaven.com"
         content {
@@ -52,6 +53,8 @@ dependencies {
     
     //modCompileOnly "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
     //modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
+    
+    modImplementation "mezz.jei:jei-${minecraft_version}-fabric:${jei_version}"
 }
 
 loom {

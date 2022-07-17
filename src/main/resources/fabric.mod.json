@@ -30,6 +30,9 @@
     ],
     "modmenu": [
       "snownee.jade.compat.ModMenuCompat"
+    ],
+    "jei_mod_plugin": [
+      "snownee.jade.compat.JEICompat"
     ]
   },
   "mixins": [ "jade.mixins.json" ],

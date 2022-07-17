@@ -57,6 +57,7 @@ import snownee.jade.JadeClient;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.command.DumpHandlersCommand;
+import snownee.jade.compat.JEICompat;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.impl.ui.FluidStackElement;
@@ -65,6 +66,9 @@ import snownee.jade.overlay.OverlayRenderer;
 import snownee.jade.overlay.WailaTickHandler;
 
 public final class ClientPlatformProxy {
+
+	public static boolean hasJEI = FabricLoader.getInstance().isModLoaded("jei");
+	public static boolean hasREI = FabricLoader.getInstance().isModLoaded("roughlyenoughitems");
 
 	public static void initModNames(Map<String, String> map) {
 		List<ModContainer> mods = ImmutableList.copyOf(FabricLoader.getInstance().getAllMods());
@@ -148,6 +152,9 @@ public final class ClientPlatformProxy {
 		JadeClient.onKeyPressed(1);
 		if (JadeClient.showUses != null) {
 			//REICompat.onKeyPressed(1);
+			if (hasJEI) {
+				JEICompat.onKeyPressed(1);
+			}
 		}
 	}
 
@@ -162,7 +169,7 @@ public final class ClientPlatformProxy {
 	}
 
 	public static boolean shouldRegisterRecipeViewerKeys() {
-		return FabricLoader.getInstance().isModLoaded("roughlyenoughitems");
+		return hasJEI || hasREI;
 	}
 
 	public static void requestBlockData(BlockEntity blockEntity, boolean showDetails) {
