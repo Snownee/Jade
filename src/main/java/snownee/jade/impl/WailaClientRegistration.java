@@ -168,31 +168,31 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 
 	@Override
 	public void addAfterRenderCallback(JadeAfterRenderCallback callback) {
-		Objects.nonNull(callback);
+		Objects.requireNonNull(callback);
 		afterRenderCallbacks.add(callback);
 	}
 
 	@Override
 	public void addBeforeRenderCallback(JadeBeforeRenderCallback callback) {
-		Objects.nonNull(callback);
+		Objects.requireNonNull(callback);
 		beforeRenderCallbacks.add(callback);
 	}
 
 	@Override
 	public void addRayTraceCallback(JadeRayTraceCallback callback) {
-		Objects.nonNull(callback);
+		Objects.requireNonNull(callback);
 		rayTraceCallbacks.add(callback);
 	}
 
 	@Override
 	public void addTooltipCollectedCallback(JadeTooltipCollectedCallback callback) {
-		Objects.nonNull(callback);
+		Objects.requireNonNull(callback);
 		tooltipCollectedCallbacks.add(callback);
 	}
 
 	@Override
 	public void addItemModNameCallback(JadeItemModNameCallback callback) {
-		Objects.nonNull(callback);
+		Objects.requireNonNull(callback);
 		itemModNameCallbacks.add(callback);
 	}
 
