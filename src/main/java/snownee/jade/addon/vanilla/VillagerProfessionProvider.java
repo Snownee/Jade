@@ -38,7 +38,7 @@ public enum VillagerProfessionProvider implements IEntityComponentProvider {
 		ResourceLocation profName = Registry.VILLAGER_PROFESSION.getKey(data.getProfession());
 		MutableComponent component = Component.translatable(EntityType.VILLAGER.getDescriptionId() + '.' + (!"minecraft".equals(profName.getNamespace()) ? profName.getNamespace() + '.' : "") + profName.getPath());
 		VillagerProfession profession = data.getProfession();
-		if (profession != VillagerProfession.NONE && profession != VillagerProfession.NITWIT) {
+		if (profession != VillagerProfession.NONE && profession != VillagerProfession.NITWIT && level > 0 && level <= 5) {
 			component.append(LEVEL_SEPARATOR).append(Component.translatable("merchant.level." + level));
 		}
 		tooltip.add(component);
