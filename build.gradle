@@ -15,7 +15,7 @@ apply plugin: 'org.parchmentmc.librarian.forgegradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-version = "${version_major}.${version_minor}.${version_patch}"
+version = mod_version
 group = "snownee.jade"
 archivesBaseName = "Jade-${minecraft_version}-forge"
 
@@ -29,7 +29,7 @@ if (System.getenv().BUILD_NUMBER != null) {
 
 minecraft {
     //mappings channel: 'parchment', version: '2021.09.05-1.17.1'
-    mappings channel: 'official', version: '1.19'
+    mappings channel: 'official', version: minecraft_version
 
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
@@ -104,8 +104,8 @@ dependencies {
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
-    compileOnly fg.deobf("mezz.jei:jei-1.19-common-api:11.0.0.206")
-    compileOnly fg.deobf("mezz.jei:jei-1.19-forge-api:11.0.0.206")
+    compileOnly fg.deobf("mezz.jei:jei-1.19-common-api:${jei_version}")
+    compileOnly fg.deobf("mezz.jei:jei-1.19-forge-api:${jei_version}")
     //runtimeOnly fg.deobf("mezz.jei:jei-1.17.1:8.0.0.14")
     //implementation fg.deobf("curse.maven:jei-238222:3834070")
 }
