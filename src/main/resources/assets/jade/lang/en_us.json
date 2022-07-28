@@ -112,6 +112,7 @@
   "jade.mobgrowth.time": "Growing time: %ds",
   "config.jade.plugin_minecraft.mob_breeding": "Mob Breeding",
   "jade.mobbreeding.time": "Breeding CD: %ds",
+  "jade.mobduplication.time": "Duplication CD: %ds",
   "config.jade.plugin_minecraft.brewing_stand": "Brewing Stand",
   "config.jade.plugin_minecraft.tnt_stability": "TNT Stability",
   "jade.tnt.unstable": "Unstable",

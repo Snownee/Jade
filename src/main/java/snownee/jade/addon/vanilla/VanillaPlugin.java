@@ -13,6 +13,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.Chicken;
+import net.minecraft.world.entity.animal.allay.Allay;
 import net.minecraft.world.entity.animal.horse.AbstractChestedHorse;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.decoration.ArmorStand;
@@ -80,6 +81,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerEntityDataProvider(PotionEffectsProvider.INSTANCE, LivingEntity.class);
 		registration.registerEntityDataProvider(MobGrowthProvider.INSTANCE, AgeableMob.class);
 		registration.registerEntityDataProvider(MobBreedingProvider.INSTANCE, Animal.class);
+		registration.registerEntityDataProvider(MobBreedingProvider.INSTANCE, Allay.class);
 		registration.registerEntityDataProvider(ChickenEggProvider.INSTANCE, Chicken.class);
 	}
 
@@ -97,6 +99,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerEntityComponent(PotionEffectsProvider.INSTANCE, LivingEntity.class);
 		registration.registerEntityComponent(MobGrowthProvider.INSTANCE, AgeableMob.class);
 		registration.registerEntityComponent(MobBreedingProvider.INSTANCE, Animal.class);
+		registration.registerEntityComponent(MobBreedingProvider.INSTANCE, Allay.class);
 		registration.registerBlockComponent(TNTStabilityProvider.INSTANCE, TntBlock.class);
 		registration.registerBlockComponent(BeehiveProvider.INSTANCE, BeehiveBlock.class);
 		registration.registerBlockComponent(NoteBlockProvider.INSTANCE, NoteBlock.class);
