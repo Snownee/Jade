@@ -107,6 +107,7 @@
   "jade.mobgrowth.time": "生长时间：%d秒",
   "config.jade.plugin_minecraft.mob_breeding": "生物繁殖冷却",
   "jade.mobbreeding.time": "繁殖冷却：%d秒",
+  "jade.mobduplication.time": "复制冷却：%d秒",
   "config.jade.plugin_minecraft.brewing_stand": "酿造台",
   "jade.brewingStand.time": "时间：%d秒",
   "jade.brewingStand.fuel": "燃料：%d",
