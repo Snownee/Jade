@@ -77,10 +77,10 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 		BufferBuilder bufferBuilder = tessellator.getBuilder();
 		RenderSystem.setShaderTexture(0, BACKGROUND_LOCATION);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-		int rowLeft = getRowLeft();
-		int scrollJump = y0 + 4 - (int) getScrollAmount();
+		//		int rowLeft = getRowLeft();
+		//		int scrollJump = y0 + 4 - (int) getScrollAmount();
 
-		renderList(matrixStack, rowLeft, scrollJump, mouseX, mouseY, delta);
+		renderList(matrixStack, mouseX, mouseY, delta);
 		//		RenderSystem.setShaderTexture(0, BACKGROUND_LOCATION);
 		//		RenderSystem.enableDepthTest();
 		//		RenderSystem.depthFunc(519);
