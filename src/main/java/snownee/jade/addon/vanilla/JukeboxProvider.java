@@ -29,7 +29,9 @@ public enum JukeboxProvider implements IBlockComponentProvider, IServerDataProvi
 		if (state.getValue(JukeboxBlock.HAS_RECORD) && accessor.getServerData().contains("Record")) {
 			try {
 				ItemStack stack = ItemStack.of(accessor.getServerData().getCompound("Record"));
-				if (stack.getItem() instanceof RecordItem) {
+				if (stack.getItem() instanceof RecordItem record) {
+					tooltip.add(Component.translatable("record.nowPlaying", record.getDisplayName()));
+				} else {
 					tooltip.add(Component.translatable("record.nowPlaying", stack.getHoverName()));
 				}
 			} catch (Exception e) {
