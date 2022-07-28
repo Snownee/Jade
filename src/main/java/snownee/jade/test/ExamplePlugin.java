@@ -15,7 +15,7 @@ import snownee.jade.api.WailaPlugin;
 @WailaPlugin
 public class ExamplePlugin implements IWailaPlugin {
 
-	public static final ResourceLocation UID_TEST = new ResourceLocation(Jade.MODID, "test");
+	public static final ResourceLocation UID_TEST = new ResourceLocation(Jade.MODID, "furnace_fuel");
 	private static IWailaClientRegistration client;
 
 	@Override

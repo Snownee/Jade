@@ -2,9 +2,6 @@ package snownee.jade.util;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
-
-import javax.annotation.Nullable;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -34,7 +31,6 @@ import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.UsernameCache;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.EntityLeaveLevelEvent;
@@ -49,6 +45,7 @@ import snownee.jade.Jade;
 import snownee.jade.JadeClient;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.command.DumpHandlersCommand;
+import snownee.jade.compat.JEICompat;
 import snownee.jade.gui.HomeConfigScreen;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.ui.FluidStackElement;
@@ -59,6 +56,17 @@ import snownee.jade.overlay.OverlayRenderer;
 import snownee.jade.overlay.WailaTickHandler;
 
 public final class ClientPlatformProxy {
+
+	public static boolean hasJEI = isModLoaded("jei");
+	public static boolean hasREI = isModLoaded("roughlyenoughitems");
+
+	private static boolean isModLoaded(String modid) {
+		try {
+			return ModList.get().isLoaded(modid);
+		} catch (Throwable e) {
+			return false;
+		}
+	}
 
 	public static void initModNames(Map<String, String> map) {
 		List<IModInfo> mods = ImmutableList.copyOf(ModList.get().getMods());
@@ -118,6 +126,12 @@ public final class ClientPlatformProxy {
 
 	public static void onKeyPressed(InputEvent.Key event) {
 		JadeClient.onKeyPressed(event.getAction());
+		if (JadeClient.showUses != null) {
+			//REICompat.onKeyPressed(1);
+			if (hasJEI) {
+				JEICompat.onKeyPressed(1);
+			}
+		}
 	}
 
 	public static void onGui(ScreenEvent.Init event) {
@@ -137,7 +151,7 @@ public final class ClientPlatformProxy {
 	}
 
 	public static boolean shouldRegisterRecipeViewerKeys() {
-		return ModList.get().isLoaded("jei");
+		return hasJEI || hasREI;
 	}
 
 	public static void requestBlockData(BlockEntity blockEntity, boolean showDetails) {

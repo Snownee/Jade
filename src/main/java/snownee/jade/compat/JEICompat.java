@@ -11,8 +11,6 @@ import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.api.runtime.IRecipesGui;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.common.MinecraftForge;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
 import snownee.jade.api.Accessor;
@@ -24,12 +22,6 @@ public class JEICompat implements IModPlugin {
 	public static final ResourceLocation ID = new ResourceLocation(Jade.MODID, "main");
 	private static IJeiRuntime runtime;
 	private static IJeiHelpers helpers;
-
-	public JEICompat() {
-		if (runtime == null) {
-			MinecraftForge.EVENT_BUS.addListener(JEICompat::onKeyPressed);
-		}
-	}
 
 	@Override
 	public ResourceLocation getPluginUid() {
@@ -46,12 +38,12 @@ public class JEICompat implements IModPlugin {
 		JEICompat.runtime = runtime;
 	}
 
-	private static void onKeyPressed(InputEvent.Key event) {
+	public static void onKeyPressed(int action) {
 		if (runtime == null || JadeClient.showRecipes == null || JadeClient.showUses == null)
 			return;
-		if (event.getAction() != 1)
+		if (action != 1)
 			return;
-		if (!JadeClient.showRecipes.isDown() && !JadeClient.showUses.isDown())
+		if (!JadeClient.showRecipes.consumeClick() && !JadeClient.showUses.consumeClick())
 			return;
 		Accessor<?> accessor = ObjectDataCenter.get();
 		if (accessor == null)
@@ -63,6 +55,6 @@ public class JEICompat implements IModPlugin {
 		IRecipesGui gui = runtime.getRecipesGui();
 		IFocusFactory factory = helpers.getFocusFactory();
 
-		gui.show(factory.createFocus(JadeClient.showUses.isDown() ? RecipeIngredientRole.INPUT : RecipeIngredientRole.OUTPUT, VanillaTypes.ITEM_STACK, stack));
+		gui.show(factory.createFocus(JadeClient.showUses.consumeClick() ? RecipeIngredientRole.INPUT : RecipeIngredientRole.OUTPUT, VanillaTypes.ITEM_STACK, stack));
 	}
 }

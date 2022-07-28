@@ -69,7 +69,7 @@ public final class JadeClient {
 		toggleLiquid = ClientPlatformProxy.registerKeyBinding("toggle_liquid", 322);
 		if (ClientPlatformProxy.shouldRegisterRecipeViewerKeys()) {
 			showRecipes = ClientPlatformProxy.registerKeyBinding("show_recipes", 323);
-			showRecipes = ClientPlatformProxy.registerKeyBinding("show_uses", 324);
+			showUses = ClientPlatformProxy.registerKeyBinding("show_uses", 324);
 		}
 		narrate = ClientPlatformProxy.registerKeyBinding("narrate", 325);
 		showDetails = ClientPlatformProxy.registerKeyBinding("show_details", 340);
