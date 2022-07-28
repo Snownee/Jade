@@ -14,6 +14,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.Chicken;
 import net.minecraft.world.entity.animal.allay.Allay;
+import net.minecraft.world.entity.animal.frog.Tadpole;
 import net.minecraft.world.entity.animal.horse.AbstractChestedHorse;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.decoration.ArmorStand;
@@ -75,11 +76,13 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerBlockDataProvider(RedstoneProvider.INSTANCE, HopperBlockEntity.class);
 		registration.registerBlockDataProvider(FurnaceProvider.INSTANCE, AbstractFurnaceBlockEntity.class);
 
+		//registration.registerEntityDataProvider(AnimalOwnerProvider.INSTANCE, Entity.class);
 		registration.registerEntityDataProvider(ContainerEntityProvider.INSTANCE, AbstractChestedHorse.class);
 		registration.registerEntityDataProvider(ContainerEntityProvider.INSTANCE, MinecartChest.class);
 		registration.registerEntityDataProvider(ContainerEntityProvider.INSTANCE, ChestBoat.class);
 		registration.registerEntityDataProvider(PotionEffectsProvider.INSTANCE, LivingEntity.class);
 		registration.registerEntityDataProvider(MobGrowthProvider.INSTANCE, AgeableMob.class);
+		registration.registerEntityDataProvider(MobGrowthProvider.INSTANCE, Tadpole.class);
 		registration.registerEntityDataProvider(MobBreedingProvider.INSTANCE, Animal.class);
 		registration.registerEntityDataProvider(MobBreedingProvider.INSTANCE, Allay.class);
 		registration.registerEntityDataProvider(ChickenEggProvider.INSTANCE, Chicken.class);
@@ -98,6 +101,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerEntityComponent(ItemFrameProvider.INSTANCE, ItemFrame.class);
 		registration.registerEntityComponent(PotionEffectsProvider.INSTANCE, LivingEntity.class);
 		registration.registerEntityComponent(MobGrowthProvider.INSTANCE, AgeableMob.class);
+		registration.registerEntityComponent(MobGrowthProvider.INSTANCE, Tadpole.class);
 		registration.registerEntityComponent(MobBreedingProvider.INSTANCE, Animal.class);
 		registration.registerEntityComponent(MobBreedingProvider.INSTANCE, Allay.class);
 		registration.registerBlockComponent(TNTStabilityProvider.INSTANCE, TntBlock.class);

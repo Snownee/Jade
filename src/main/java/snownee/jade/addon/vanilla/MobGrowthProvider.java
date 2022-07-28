@@ -7,6 +7,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.animal.frog.Tadpole;
 import net.minecraft.world.level.Level;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
@@ -25,15 +26,20 @@ public enum MobGrowthProvider implements IEntityComponentProvider, IServerDataPr
 			return;
 		}
 		int time = accessor.getServerData().getInt("GrowingTime");
-		if (time < 0) {
-			tooltip.add(Component.translatable("jade.mobgrowth.time", (time * -1) / 20));
+		if (time > 0) {
+			tooltip.add(Component.translatable("jade.mobgrowth.time", time / 20));
 		}
 	}
 
 	@Override
 	public void appendServerData(CompoundTag tag, ServerPlayer player, Level world, Entity entity, boolean showDetails) {
-		int time = ((AgeableMob) entity).getAge();
-		if (time < 0) {
+		int time = -1;
+		if (entity instanceof AgeableMob ageable) {
+			time = -ageable.getAge();
+		} else if (entity instanceof Tadpole tadpole) {
+			time = tadpole.getTicksLeftUntilAdult();
+		}
+		if (time > 0) {
 			tag.putInt("GrowingTime", time);
 		}
 	}
