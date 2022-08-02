@@ -143,11 +143,11 @@ public final class JadeClient {
 
 	@Nullable
 	public static Accessor<?> builtInOverrides(HitResult hitResult, @Nullable Accessor<?> accessor, @Nullable Accessor<?> originalAccessor) {
-		Player player = accessor.getPlayer();
-		if (player.isCreative() || player.isSpectator())
-			return accessor;
-		IWailaClientRegistration client = VanillaPlugin.CLIENT_REGISTRATION;
 		if (accessor instanceof BlockAccessor target) {
+			Player player = accessor.getPlayer();
+			if (player.isCreative() || player.isSpectator())
+				return accessor;
+			IWailaClientRegistration client = VanillaPlugin.CLIENT_REGISTRATION;
 			if (target.getBlock() instanceof TrappedChestBlock) {
 				BlockState state = VanillaPlugin.getCorrespondingNormalChest(target.getBlockState());
 				if (state != target.getBlockState()) {
