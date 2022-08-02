@@ -148,6 +148,8 @@ public final class JadeClient {
 			if (player.isCreative() || player.isSpectator())
 				return accessor;
 			IWailaClientRegistration client = VanillaPlugin.CLIENT_REGISTRATION;
+			if (client.getConfig().getPlugin().get(Identifiers.CORE_BLOCK_FACE))
+				return accessor;
 			if (target.getBlock() instanceof TrappedChestBlock) {
 				BlockState state = VanillaPlugin.getCorrespondingNormalChest(target.getBlockState());
 				if (state != target.getBlockState()) {
