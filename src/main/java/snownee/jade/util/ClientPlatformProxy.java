@@ -12,6 +12,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.KeyMapping;
+import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -26,6 +27,7 @@ import net.minecraftforge.client.ConfigScreenHandler.ConfigScreenFactory;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RegisterClientCommandsEvent;
+import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
@@ -91,6 +93,7 @@ public final class ClientPlatformProxy {
 		MinecraftForge.EVENT_BUS.addListener(ClientPlatformProxy::onKeyPressed);
 		MinecraftForge.EVENT_BUS.addListener(ClientPlatformProxy::onGui);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientPlatformProxy::onKeyMappingEvent);
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientPlatformProxy::onRegisterReloadListener);
 		ModLoadingContext.get().registerExtensionPoint(ConfigScreenFactory.class, () -> new ConfigScreenFactory((minecraft, screen) -> new HomeConfigScreen(screen)));
 	}
 
@@ -148,6 +151,7 @@ public final class ClientPlatformProxy {
 
 	private static void onKeyMappingEvent(RegisterKeyMappingsEvent event) {
 		keys.forEach(event::register);
+		keys.clear();
 	}
 
 	public static boolean shouldRegisterRecipeViewerKeys() {
@@ -176,8 +180,15 @@ public final class ClientPlatformProxy {
 		return new FluidStackElement(fluidStack);//.size(new Size(18, 18));
 	}
 
+	private static final List<PreparableReloadListener> listeners = Lists.newArrayList();
+	
 	public static void registerReloadListener(ResourceManagerReloadListener listener) {
+		listeners.add(listener);
+	}
 
+	private static void onRegisterReloadListener(RegisterClientReloadListenersEvent event) {
+		listeners.forEach(event::registerReloadListener);
+		listeners.clear();
 	}
 
 }
