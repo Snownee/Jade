@@ -14,10 +14,12 @@ import snownee.jade.JadeClient;
 import snownee.jade.api.callback.JadeAfterRenderCallback;
 import snownee.jade.api.callback.JadeBeforeRenderCallback;
 import snownee.jade.api.callback.JadeBeforeRenderCallback.ColorSetting;
+import snownee.jade.api.callback.JadeRenderBackgroundCallback;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
 import snownee.jade.api.config.IWailaConfig.IconMode;
 import snownee.jade.api.config.Theme;
+import snownee.jade.api.ui.IElement;
 import snownee.jade.gui.BaseOptionsScreen;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.Tooltip;
@@ -124,7 +126,14 @@ public class OverlayRenderer {
 		}
 		matrixStack.translate(-position.getWidth() * overlay.tryFlip(overlay.getAnchorX()), -position.getHeight() * overlay.getAnchorY(), 0);
 
-		if (colorSetting.alpha > 0) {
+		boolean doDefault = true;
+		for (JadeRenderBackgroundCallback callback : WailaClientRegistration.INSTANCE.renderBackgroundCallbacks) {
+			if (callback.onRender(tooltip, position, matrixStack, ObjectDataCenter.get(), colorSetting)) {
+				doDefault = false;
+				break;
+			}
+		}
+		if (doDefault && colorSetting.alpha > 0) {
 			drawTooltipBox(matrixStack, 0, 0, position.getWidth(), position.getHeight(), IConfigOverlay.applyAlpha(colorSetting.backgroundColor, colorSetting.alpha), IConfigOverlay.applyAlpha(colorSetting.gradientStart, colorSetting.alpha), IConfigOverlay.applyAlpha(colorSetting.gradientEnd, colorSetting.alpha), overlay.getSquare());
 		}
 
@@ -134,9 +143,10 @@ public class OverlayRenderer {
 		RenderSystem.disableBlend();
 
 		//RenderSystem.enableRescaleNormal();
-		if (tooltip.hasIcon()) {
-			Vec2 size = tooltip.icon.getCachedSize();
-			Vec2 offset = tooltip.icon.getTranslation();
+		IElement icon = tooltip.getIcon();
+		if (icon != null) {
+			Vec2 size = tooltip.getIcon().getCachedSize();
+			Vec2 offset = tooltip.getIcon().getTranslation();
 			float offsetY;
 			if (overlay.getIconMode() == IconMode.TOP) {
 				offsetY = offset.y + tooltip.getPadding();
@@ -144,8 +154,8 @@ public class OverlayRenderer {
 				offsetY = (position.getHeight() - size.y) / 2 - 1;
 			}
 			float offsetX = offset.x + tooltip.getPadding() + 2;
-			Tooltip.drawBorder(matrixStack, offsetX, offsetY, tooltip.icon);
-			tooltip.icon.render(matrixStack, offsetX, offsetY, offsetX + size.x, offsetY + size.y);
+			Tooltip.drawBorder(matrixStack, offsetX, offsetY, icon);
+			icon.render(matrixStack, offsetX, offsetY, offsetX + size.x, offsetY + size.y);
 		}
 
 		for (JadeAfterRenderCallback callback : WailaClientRegistration.INSTANCE.afterRenderCallbacks) {
