@@ -11,6 +11,7 @@ import snownee.jade.api.callback.JadeAfterRenderCallback;
 import snownee.jade.api.callback.JadeBeforeRenderCallback;
 import snownee.jade.api.callback.JadeItemModNameCallback;
 import snownee.jade.api.callback.JadeRayTraceCallback;
+import snownee.jade.api.callback.JadeRenderBackgroundCallback;
 import snownee.jade.api.callback.JadeTooltipCollectedCallback;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
@@ -106,5 +107,7 @@ public interface IWailaClientRegistration {
 	void addTooltipCollectedCallback(JadeTooltipCollectedCallback callback);
 
 	void addItemModNameCallback(JadeItemModNameCallback callback);
+
+	void addRenderBackgroundCallback(JadeRenderBackgroundCallback callback);
 
 }

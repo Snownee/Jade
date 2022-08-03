@@ -14,7 +14,8 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import snownee.jade.Jade;
-import snownee.jade.api.BlockAccessor.Builder;
+import snownee.jade.api.BlockAccessor;
+import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.IToggleableProvider;
@@ -23,6 +24,7 @@ import snownee.jade.api.callback.JadeAfterRenderCallback;
 import snownee.jade.api.callback.JadeBeforeRenderCallback;
 import snownee.jade.api.callback.JadeItemModNameCallback;
 import snownee.jade.api.callback.JadeRayTraceCallback;
+import snownee.jade.api.callback.JadeRenderBackgroundCallback;
 import snownee.jade.api.callback.JadeTooltipCollectedCallback;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.ui.IDisplayHelper;
@@ -51,6 +53,7 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	public final List<JadeRayTraceCallback> rayTraceCallbacks = Lists.newArrayList();
 	public final List<JadeTooltipCollectedCallback> tooltipCollectedCallbacks = Lists.newArrayList();
 	public final List<JadeItemModNameCallback> itemModNameCallbacks = Lists.newArrayList();
+	public final List<JadeRenderBackgroundCallback> renderBackgroundCallbacks = Lists.newArrayList();
 
 	WailaClientRegistration() {
 		blockIconProviders = new HierarchyLookup<>(Block.class);
@@ -197,12 +200,18 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	}
 
 	@Override
-	public Builder blockAccessor() {
+	public void addRenderBackgroundCallback(JadeRenderBackgroundCallback callback) {
+		Objects.requireNonNull(callback);
+		renderBackgroundCallbacks.add(callback);
+	}
+
+	@Override
+	public BlockAccessor.Builder blockAccessor() {
 		return new BlockAccessorImpl.Builder();
 	}
 
 	@Override
-	public snownee.jade.api.EntityAccessor.Builder entityAccessor() {
+	public EntityAccessor.Builder entityAccessor() {
 		return new EntityAccessorImpl.Builder();
 	}
 
