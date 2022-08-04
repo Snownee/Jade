@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
@@ -12,6 +13,8 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.world.entity.Entity;
@@ -25,6 +28,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraftforge.client.ConfigScreenHandler.ConfigScreenFactory;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
+import net.minecraftforge.client.event.CustomizeGuiOverlayEvent;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RegisterClientCommandsEvent;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
@@ -45,6 +49,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.forgespi.language.IModInfo;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
+import snownee.jade.api.config.IWailaConfig.BossBarOverlapMode;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.command.DumpHandlersCommand;
 import snownee.jade.compat.JEICompat;
@@ -92,34 +97,37 @@ public final class ClientPlatformProxy {
 		MinecraftForge.EVENT_BUS.addListener(ClientPlatformProxy::registerCommands);
 		MinecraftForge.EVENT_BUS.addListener(ClientPlatformProxy::onKeyPressed);
 		MinecraftForge.EVENT_BUS.addListener(ClientPlatformProxy::onGui);
+		MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, true, ClientPlatformProxy::onDrawBossBar);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientPlatformProxy::onKeyMappingEvent);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientPlatformProxy::onRegisterReloadListener);
 		ModLoadingContext.get().registerExtensionPoint(ConfigScreenFactory.class, () -> new ConfigScreenFactory((minecraft, screen) -> new HomeConfigScreen(screen)));
 	}
 
-	public static void onEntityJoin(EntityJoinLevelEvent event) {
+	private static void onEntityJoin(EntityJoinLevelEvent event) {
 		DatapackBlockManager.onEntityJoin(event.getEntity());
 	}
 
-	public static void onEntityLeave(EntityLeaveLevelEvent event) {
+	private static void onEntityLeave(EntityLeaveLevelEvent event) {
 		DatapackBlockManager.onEntityLeave(event.getEntity());
 	}
 
-	public static void onTooltip(ItemTooltipEvent event) {
+	private static void onTooltip(ItemTooltipEvent event) {
 		JadeClient.onTooltip(event.getToolTip(), event.getItemStack());
 	}
 
-	public static void onRenderTick(TickEvent.RenderTickEvent event) {
-		if (event.phase == TickEvent.Phase.END)
+	private static void onRenderTick(TickEvent.RenderTickEvent event) {
+		if (event.phase == TickEvent.Phase.END) {
 			OverlayRenderer.renderOverlay(new PoseStack());
+			bossbarShown = false;
+		}
 	}
 
-	public static void onClientTick(TickEvent.ClientTickEvent event) {
+	private static void onClientTick(TickEvent.ClientTickEvent event) {
 		if (event.phase == TickEvent.Phase.END)
 			WailaTickHandler.instance().tickClient();
 	}
 
-	public static void onPlayerLeave(ClientPlayerNetworkEvent.LoggingOut event) {
+	private static void onPlayerLeave(ClientPlayerNetworkEvent.LoggingOut event) {
 		ObjectDataCenter.serverConnected = false;
 	}
 
@@ -127,7 +135,7 @@ public final class ClientPlatformProxy {
 		DumpHandlersCommand.register(event.getDispatcher());
 	}
 
-	public static void onKeyPressed(InputEvent.Key event) {
+	private static void onKeyPressed(InputEvent.Key event) {
 		JadeClient.onKeyPressed(event.getAction());
 		if (JadeClient.showUses != null) {
 			//REICompat.onKeyPressed(1);
@@ -137,7 +145,7 @@ public final class ClientPlatformProxy {
 		}
 	}
 
-	public static void onGui(ScreenEvent.Init event) {
+	private static void onGui(ScreenEvent.Init event) {
 		JadeClient.onGui(event.getScreen());
 	}
 
@@ -181,7 +189,7 @@ public final class ClientPlatformProxy {
 	}
 
 	private static final List<PreparableReloadListener> listeners = Lists.newArrayList();
-	
+
 	public static void registerReloadListener(ResourceManagerReloadListener listener) {
 		listeners.add(listener);
 	}
@@ -189,6 +197,34 @@ public final class ClientPlatformProxy {
 	private static void onRegisterReloadListener(RegisterClientReloadListenersEvent event) {
 		listeners.forEach(event::registerReloadListener);
 		listeners.clear();
+	}
+
+	private static boolean bossbarShown;
+	private static int bossbarHeight;
+
+	private static void onDrawBossBar(CustomizeGuiOverlayEvent.BossEventProgress event) {
+		BossBarOverlapMode mode = Jade.CONFIG.get().getGeneral().getBossBarOverlapMode();
+		if (mode == BossBarOverlapMode.NO_OPERATION)
+			return;
+		if (mode == BossBarOverlapMode.HIDE_BOSS_BAR && OverlayRenderer.shown) {
+			event.setCanceled(true);
+			return;
+		}
+		if (mode == BossBarOverlapMode.PUSH_DOWN) {
+			if (event.isCanceled())
+				return;
+			bossbarHeight = event.getY() + event.getIncrement();
+			bossbarShown = true;
+		}
+	}
+
+	@Nullable
+	public static Rect2i getBossBarRect() {
+		if (!bossbarShown)
+			return null;
+		int i = Minecraft.getInstance().getWindow().getGuiScaledWidth();
+		int k = i / 2 - 91;
+		return new Rect2i(k, 12, 182, bossbarHeight - 12);
 	}
 
 }
