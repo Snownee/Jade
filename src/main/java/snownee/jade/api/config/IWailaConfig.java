@@ -15,6 +15,8 @@ public interface IWailaConfig {
 
 	IConfigFormatting getFormatting();
 
+	IPluginConfig getPlugin();
+
 	public interface IConfigGeneral {
 
 		void setDisplayTooltip(boolean displayTooltip);

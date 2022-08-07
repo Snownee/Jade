@@ -15,6 +15,7 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.HumanoidArm;
+import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.Theme;
 import snownee.jade.overlay.OverlayRenderer;
@@ -41,6 +42,11 @@ public class WailaConfig implements IWailaConfig {
 	@Override
 	public ConfigFormatting getFormatting() {
 		return formatting;
+	}
+
+	@Override
+	public IPluginConfig getPlugin() {
+		return PluginConfig.INSTANCE;
 	}
 
 	public static class ConfigGeneral implements IConfigGeneral {
