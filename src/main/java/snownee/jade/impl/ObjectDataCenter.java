@@ -1,5 +1,7 @@
 package snownee.jade.impl;
 
+import org.jetbrains.annotations.Nullable;
+
 import net.minecraft.nbt.CompoundTag;
 import snownee.jade.api.Accessor;
 import snownee.jade.overlay.WailaTickHandler;
@@ -18,7 +20,7 @@ public final class ObjectDataCenter {
 	public static boolean serverConnected;
 
 	@SuppressWarnings("deprecation")
-	public static void set(Accessor<?> accessor) {
+	public static void set(@Nullable Accessor<?> accessor) {
 		ObjectDataCenter.accessor = accessor;
 		if (accessor == null) {
 			WailaTickHandler.instance().progressTracker.clear();

@@ -60,14 +60,13 @@ public class WailaTickHandler {
 
 		Tooltip tooltip = new Tooltip();
 
-		if (target == null || target.getType() == HitResult.Type.MISS) {
+		if (target == null) {
 			tooltipRenderer = null;
 			return;
 		}
 
 		Accessor<?> accessor = null;
-		if (target instanceof BlockHitResult) {
-			BlockHitResult blockTarget = (BlockHitResult) target;
+		if (target instanceof BlockHitResult blockTarget && blockTarget.getType() != HitResult.Type.MISS) {
 			BlockState state = world.getBlockState(blockTarget.getBlockPos());
 			BlockEntity tileEntity = world.getBlockEntity(blockTarget.getBlockPos());
 			/* off */
@@ -82,8 +81,7 @@ public class WailaTickHandler {
 					.fakeBlock(DatapackBlockManager.getFakeBlock(world, blockTarget.getBlockPos()))
 					.build();
 			/* on */
-		} else if (target instanceof EntityHitResult) {
-			EntityHitResult entityTarget = (EntityHitResult) target;
+		} else if (target instanceof EntityHitResult entityTarget) {
 			/* off */
 			accessor = WailaClientRegistration.INSTANCE.entityAccessor()
 					.level(world)
