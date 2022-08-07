@@ -16,6 +16,7 @@ import snownee.jade.api.callback.JadeBeforeRenderCallback;
 import snownee.jade.api.callback.JadeBeforeRenderCallback.ColorSetting;
 import snownee.jade.api.callback.JadeRenderBackgroundCallback;
 import snownee.jade.api.config.IWailaConfig;
+import snownee.jade.api.config.IWailaConfig.BossBarOverlapMode;
 import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
 import snownee.jade.api.config.IWailaConfig.IconMode;
 import snownee.jade.api.config.Theme;
@@ -24,6 +25,7 @@ import snownee.jade.gui.BaseOptionsScreen;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.Tooltip;
 import snownee.jade.impl.WailaClientRegistration;
+import snownee.jade.util.ClientPlatformProxy;
 import snownee.jade.util.Color;
 
 public class OverlayRenderer {
@@ -34,8 +36,10 @@ public class OverlayRenderer {
 	public static int gradientEndRaw;
 	public static int stressedTextColorRaw;
 	public static int normalTextColorRaw;
+	public static boolean shown;
 
 	public static void renderOverlay(PoseStack poseStack) {
+		shown = false;
 		if (WailaTickHandler.instance().tooltipRenderer == null)
 			return;
 
@@ -90,6 +94,30 @@ public class OverlayRenderer {
 		if (!overlay.getSquare()) {
 			position.setWidth(position.getWidth() + 2);
 			position.setHeight(position.getHeight() + 2);
+			position.setPosition(position.getX() + 1, position.getY() + 1);
+		}
+
+		BossBarOverlapMode mode = Jade.CONFIG.get().getGeneral().getBossBarOverlapMode();
+		if (mode == BossBarOverlapMode.PUSH_DOWN) {
+			Rect2i rect = ClientPlatformProxy.getBossBarRect();
+			if (rect != null) {
+				int tw = position.getWidth();
+				int th = position.getHeight();
+				int rw = rect.getWidth();
+				int rh = rect.getHeight();
+				int tx = position.getX();
+				int ty = position.getY();
+				int rx = rect.getX();
+				int ry = rect.getY();
+				rw += rx;
+				rh += ry;
+				tw += tx;
+				th += ty;
+				// check if tooltip intersects with boss bar
+				if (rw > tx && rh > ty && tw > rx && th > ry) {
+					position.setY(rect.getHeight());
+				}
+			}
 		}
 
 		ColorSetting colorSetting = new ColorSetting();
@@ -109,9 +137,6 @@ public class OverlayRenderer {
 		//RenderSystem.disableLighting();
 		//RenderSystem.disableDepthTest();
 
-		if (!overlay.getSquare()) {
-			position.setPosition(position.getX() + 1, position.getY() + 1);
-		}
 		matrixStack.translate(position.getX(), position.getY(), 1);
 
 		float scale = overlay.getOverlayScale();
@@ -169,6 +194,8 @@ public class OverlayRenderer {
 		if (Jade.CONFIG.get().getGeneral().shouldEnableTextToSpeech() && Minecraft.getInstance().level != null && Minecraft.getInstance().level.getGameTime() % 5 == 0) {
 			WailaTickHandler.narrate(tooltip.getTooltip(), true);
 		}
+
+		shown = true;
 	}
 
 	public static void drawTooltipBox(PoseStack matrixStack, int x, int y, int w, int h, int bg, int grad1, int grad2, boolean square) {

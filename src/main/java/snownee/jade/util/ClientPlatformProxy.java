@@ -34,6 +34,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -120,40 +121,40 @@ public final class ClientPlatformProxy {
 
 	}
 
-	public static void onEntityJoin(Entity entity, ClientLevel level) {
+	private static void onEntityJoin(Entity entity, ClientLevel level) {
 		DatapackBlockManager.onEntityJoin(entity);
 	}
 
-	public static void onEntityLeave(Entity entity, ClientLevel level) {
+	private static void onEntityLeave(Entity entity, ClientLevel level) {
 		DatapackBlockManager.onEntityLeave(entity);
 	}
 
-	public static void onTooltip(ItemStack stack, TooltipFlag context, List<Component> lines) {
+	private static void onTooltip(ItemStack stack, TooltipFlag context, List<Component> lines) {
 		JadeClient.onTooltip(lines, stack);
 	}
 
-	public static void onRenderTick(PoseStack matrixStack, float tickDelta) {
+	private static void onRenderTick(PoseStack matrixStack, float tickDelta) {
 		if (Minecraft.getInstance().screen == null) {
 			OverlayRenderer.renderOverlay(matrixStack);
 		}
 	}
 
-	public static void onClientTick(Minecraft mc) {
+	private static void onClientTick(Minecraft mc) {
 		WailaTickHandler.instance().tickClient();
 	}
 
-	public static void onPlayerLeave(ClientPacketListener handler, Minecraft client) {
+	private static void onPlayerLeave(ClientPacketListener handler, Minecraft client) {
 		ObjectDataCenter.serverConnected = false;
 	}
 
-	public static void onKeyPressed(Minecraft mc) {
+	private static void onKeyPressed(Minecraft mc) {
 		JadeClient.onKeyPressed(1);
 		if (JadeClient.showUses != null) {
 			REICompat.onKeyPressed(1);
 		}
 	}
 
-	public static void onGui(Screen screen, PoseStack matrices, int mouseX, int mouseY, float tickDelta) {
+	private static void onGui(Screen screen, PoseStack matrices, int mouseX, int mouseY, float tickDelta) {
 		JadeClient.onGui(screen);
 	}
 
@@ -210,4 +211,15 @@ public final class ClientPlatformProxy {
 		});
 	}
 
+	@Nullable
+	public static Rect2i getBossBarRect() {
+		Minecraft mc = Minecraft.getInstance();
+		int size = mc.gui.getBossOverlay().events.size();
+		if (size == 0) {
+			return null;
+		}
+		int i = mc.getWindow().getGuiScaledWidth();
+		int k = i / 2 - 91;
+		return new Rect2i(k, 12, 182, (10 + mc.font.lineHeight) * size);
+	}
 }

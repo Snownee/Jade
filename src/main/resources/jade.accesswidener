@@ -13,3 +13,5 @@ accessible field net/minecraft/world/level/block/entity/BaseContainerBlockEntity
 accessible field net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity litTime I
 
 accessible method net/minecraft/client/gui/components/ContainerObjectSelectionList$Entry updateNarration (Lnet/minecraft/client/gui/narration/NarrationElementOutput;)V
+
+accessible field net/minecraft/client/gui/components/BossHealthOverlay events Ljava/util/Map;

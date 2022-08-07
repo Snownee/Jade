@@ -46,7 +46,7 @@
   "config.jade.display_mode_hold_key_desc": "按住显示按键",
   "config.jade.display_mode_lite": "简洁",
   "config.jade.display_mode_lite_desc": "按住[显示细节]按键显示细节",
-  "config.jade.hide_from_debug": "调试隐藏",
+  "config.jade.hide_from_debug": "调试时隐藏",
   "config.jade.hide_from_debug_desc": "当调试菜单打开时隐藏提示框",
   "config.jade.display_item": "显示图标",
   "config.jade.display_item_hide": "隐藏",

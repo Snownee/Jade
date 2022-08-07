@@ -19,7 +19,6 @@ public class TooltipRenderer implements ITooltipRenderer {
 	private final Tooltip tooltip;
 	private final boolean showIcon;
 	private Vec2 totalSize;
-	private float contentHeight;
 	private IElement icon;
 	private Vec2 contentStart;
 
@@ -45,7 +44,7 @@ public class TooltipRenderer implements ITooltipRenderer {
 			width = Math.max(width, size.x);
 			height += size.y;
 		}
-		contentHeight = height;
+		float contentHeight = height;
 		float padding = getPadding();
 		if (hasIcon()) {
 			Vec2 size = icon.getCachedSize();
@@ -111,10 +110,12 @@ public class TooltipRenderer implements ITooltipRenderer {
 		this.icon = icon;
 	}
 
+	@Override
 	public Vec2 getContentStart() {
 		return contentStart;
 	}
 
+	@Override
 	public void setContentStart(Vec2 contentStart) {
 		this.contentStart = contentStart;
 	}
