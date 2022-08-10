@@ -8,6 +8,8 @@ import com.google.common.cache.CacheBuilder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.AgeableMob;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.Chicken;
@@ -70,6 +72,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerBlockDataProvider(RedstoneProvider.INSTANCE, HopperBlockEntity.class);
 		registration.registerBlockDataProvider(FurnaceProvider.INSTANCE, AbstractFurnaceBlockEntity.class);
 
+		registration.registerEntityDataProvider(AnimalOwnerProvider.INSTANCE, Entity.class);
 		registration.registerEntityDataProvider(ChestedHorseProvider.INSTANCE, AbstractChestedHorse.class);
 		registration.registerEntityDataProvider(PotionEffectsProvider.INSTANCE, LivingEntity.class);
 		registration.registerEntityDataProvider(MobGrowthProvider.INSTANCE, AgeableMob.class);
@@ -104,7 +107,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerEntityComponent(VillagerProfessionProvider.INSTANCE, ZombieVillager.class);
 		registration.registerEntityComponent(ItemTooltipProvider.INSTANCE, ItemEntity.class);
 		registration.registerBlockComponent(FurnaceProvider.INSTANCE, AbstractFurnaceBlock.class);
-		//registration.registerEntityComponent(AnimalOwnerProvider.INSTANCE, Entity.class);
+		registration.registerEntityComponent(AnimalOwnerProvider.INSTANCE, Entity.class);
 		registration.registerEntityComponent(FallingBlockProvider.INSTANCE, FallingBlockEntity.class);
 		registration.registerEntityIcon(FallingBlockProvider.INSTANCE, FallingBlockEntity.class);
 		registration.registerEntityComponent(EntityHealthProvider.INSTANCE, LivingEntity.class);
@@ -123,6 +126,9 @@ public class VanillaPlugin implements IWailaPlugin {
 
 		registration.addRayTraceCallback(JadeClient::builtInOverrides);
 		registration.addAfterRenderCallback(JadeClient::drawBreakingProgress);
+
+		registration.hideTarget(EntityType.AREA_EFFECT_CLOUD);
+		registration.hideTarget(EntityType.FIREWORK_ROCKET);
 	}
 
 	public static IDisplayHelper getDisplayHelper() {

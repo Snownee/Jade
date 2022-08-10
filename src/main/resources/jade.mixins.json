@@ -8,7 +8,8 @@
   ],
   "client": [
     "KeyAccess",
-    "BossHealthOverlayMixin"
+    "BossHealthOverlayMixin",
+    "ClientLevelMixin"
   ],
   "injectors": {
     "defaultRequire": 1
