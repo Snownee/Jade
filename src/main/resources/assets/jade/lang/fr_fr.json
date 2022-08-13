@@ -50,7 +50,7 @@
   "config.jade.display_mode_hold_key_desc": "Vous devez garder la touche enfoncée",
 
   "config.jade.display_mode_lite": "Minimal",
-  "config.jade.display_mode_lite_desc": "Enfoncez la touche [Montrer détails] pour plus d'informations",
+  "config.jade.display_mode_lite_desc": "Enfoncez la touche [Montrer les détails] pour plus d'informations",
 
   "config.jade.hide_from_debug": "Masquer si debug",
   "config.jade.hide_from_debug_desc": "Masquer l'infobulle quand le menu debug est ouvert",
