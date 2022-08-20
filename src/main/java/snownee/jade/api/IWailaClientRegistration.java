@@ -13,6 +13,7 @@ import snownee.jade.api.callback.JadeAfterRenderCallback;
 import snownee.jade.api.callback.JadeBeforeRenderCallback;
 import snownee.jade.api.callback.JadeItemModNameCallback;
 import snownee.jade.api.callback.JadeRayTraceCallback;
+import snownee.jade.api.callback.JadeRenderBackgroundCallback;
 import snownee.jade.api.callback.JadeTooltipCollectedCallback;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
@@ -27,11 +28,11 @@ import java.util.function.Predicate;
 public interface IWailaClientRegistration extends FabricWailaClientRegistration {
 
 	/**
-     * Register a namespaced config key to be accessed within data providers.
-     *
-     * @param key the namespaced key
-     * @param defaultValue the default value
-     */
+	 * Register a namespaced config key to be accessed within data providers.
+	 *
+	 * @param key          the namespaced key
+	 * @param defaultValue the default value
+	 */
 	void addConfig(ResourceLocation key, boolean defaultValue);
 
 	void addConfig(ResourceLocation key, Enum<?> defaultValue);
@@ -43,39 +44,39 @@ public interface IWailaClientRegistration extends FabricWailaClientRegistration 
 	void addConfig(ResourceLocation key, float defaultValue, float min, float max, boolean slider);
 
 	/**
-     * Register an {@link IJadeProvider} instance to allow overriding the icon for a block via the
-     * {@link IBlockComponentProvider#getIcon(BlockAccessor, IPluginConfig, IElement)} method.
-     *
-     * @param provider The data provider instance
-     * @param block The highest level class to apply to
-     */
+	 * Register an {@link IJadeProvider} instance to allow overriding the icon for a block via the
+	 * {@link IBlockComponentProvider#getIcon(BlockAccessor, IPluginConfig, IElement)} method.
+	 *
+	 * @param provider The data provider instance
+	 * @param block    The highest level class to apply to
+	 */
 	void registerBlockIcon(IBlockComponentProvider provider, Class<? extends Block> block);
 
 	/**
-     * Register an {@link IJadeProvider} instance for appending informations to
-     * the tooltip.
-     *
-     * @param provider The data provider instance
-     * @param block The highest level class to apply to
-     */
+	 * Register an {@link IJadeProvider} instance for appending informations to
+	 * the tooltip.
+	 *
+	 * @param provider The data provider instance
+	 * @param block    The highest level class to apply to
+	 */
 	void registerBlockComponent(IBlockComponentProvider provider, Class<? extends Block> block);
 
 	/**
-     * Register an {@link IEntityComponentProvider} instance to allow overriding the icon for a entity via the
-     * {@link IEntityComponentProvider#getIcon(EntityAccessor, IPluginConfig, IElement)} method.
-     *
-     * @param provider The data provider instance
-     * @param entity The highest level class to apply to
-     */
+	 * Register an {@link IEntityComponentProvider} instance to allow overriding the icon for a entity via the
+	 * {@link IEntityComponentProvider#getIcon(EntityAccessor, IPluginConfig, IElement)} method.
+	 *
+	 * @param provider The data provider instance
+	 * @param entity   The highest level class to apply to
+	 */
 	void registerEntityIcon(IEntityComponentProvider provider, Class<? extends Entity> entity);
 
 	/**
-     * Register an {@link IEntityComponentProvider} instance for appending {@link net.minecraft.util.text.Component}
-     * to the tooltip.
-     *
-     * @param provider The data provider instance
-     * @param entity The highest level class to apply to
-     */
+	 * Register an {@link IEntityComponentProvider} instance for appending {@link net.minecraft.util.text.Component}
+	 * to the tooltip.
+	 *
+	 * @param provider The data provider instance
+	 * @param entity   The highest level class to apply to
+	 */
 	void registerEntityComponent(IEntityComponentProvider provider, Class<? extends Entity> entity);
 
 	/**
@@ -119,6 +120,8 @@ public interface IWailaClientRegistration extends FabricWailaClientRegistration 
 	void addTooltipCollectedCallback(JadeTooltipCollectedCallback callback);
 
 	void addItemModNameCallback(JadeItemModNameCallback callback);
+
+	void addRenderBackgroundCallback(JadeRenderBackgroundCallback callback);
 
 	Screen createPluginConfigScreen(@Nullable Screen parent, String namespace);
 

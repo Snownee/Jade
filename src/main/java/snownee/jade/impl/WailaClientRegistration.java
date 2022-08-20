@@ -29,6 +29,7 @@ import snownee.jade.api.callback.JadeAfterRenderCallback;
 import snownee.jade.api.callback.JadeBeforeRenderCallback;
 import snownee.jade.api.callback.JadeItemModNameCallback;
 import snownee.jade.api.callback.JadeRayTraceCallback;
+import snownee.jade.api.callback.JadeRenderBackgroundCallback;
 import snownee.jade.api.callback.JadeTooltipCollectedCallback;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.fabric.CustomEnchantPower;
@@ -63,6 +64,7 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	public final List<JadeRayTraceCallback> rayTraceCallbacks = Lists.newArrayList();
 	public final List<JadeTooltipCollectedCallback> tooltipCollectedCallbacks = Lists.newArrayList();
 	public final List<JadeItemModNameCallback> itemModNameCallbacks = Lists.newArrayList();
+	public final List<JadeRenderBackgroundCallback> renderBackgroundCallbacks = Lists.newArrayList();
 
 	public final Map<Block, CustomEnchantPower> customEnchantPowers = Maps.newHashMap();
 
@@ -230,6 +232,12 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	public void addItemModNameCallback(JadeItemModNameCallback callback) {
 		Objects.requireNonNull(callback);
 		itemModNameCallbacks.add(callback);
+	}
+
+	@Override
+	public void addRenderBackgroundCallback(JadeRenderBackgroundCallback callback) {
+		Objects.requireNonNull(callback);
+		renderBackgroundCallbacks.add(callback);
 	}
 
 	@Override
