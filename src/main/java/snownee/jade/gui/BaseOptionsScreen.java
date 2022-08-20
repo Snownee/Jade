@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import com.google.common.collect.Lists;
+import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -15,7 +15,6 @@ import net.minecraft.client.gui.components.TooltipAccessor;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 import snownee.jade.gui.config.WailaOptionsList;
@@ -83,13 +82,11 @@ public abstract class BaseOptionsScreen extends Screen {
 				AbstractWidget widget = value.getListener();
 				if (widget instanceof TooltipAccessor && widget.visible && mouseX >= widget.x && mouseY >= widget.y && mouseX < (widget.x + widget.getWidth()) && mouseY < (widget.y + widget.getHeight())) {
 					renderTooltip(matrixStack, ((TooltipAccessor) widget).getTooltip(), mouseX, mouseY);
-				} else if (I18n.exists(value.getDescription())) {
-					int valueX = value.getX() + 10;
+				} else if (!Strings.isNullOrEmpty(value.getDescription())) {
+					int valueX = value.getX() + value.indent + 10;
 					String title = value.getTitle().getString();
 					if (mouseX >= valueX && mouseX <= valueX + font.width(title)) {
-						List<FormattedCharSequence> tooltip = Lists.newArrayList(value.getTitle().getVisualOrderText());
-						List<FormattedCharSequence> tooltip2 = font.split(Component.translatable(value.getDescription()), 200);
-						tooltip.addAll(tooltip2);
+						List<FormattedCharSequence> tooltip = font.split(Component.literal(value.getDescription()), 200);
 						matrixStack.pushPose();
 						matrixStack.translate(0, 0, 100);
 						renderTooltip(matrixStack, tooltip, mouseX, mouseY);
@@ -114,6 +111,7 @@ public abstract class BaseOptionsScreen extends Screen {
 	public void onClose() {
 		if (canceller != null)
 			canceller.run();
+		options.onClose();
 		super.onClose();
 	}
 
@@ -143,7 +141,7 @@ public abstract class BaseOptionsScreen extends Screen {
 
 	@Override
 	public Optional<GuiEventListener> getChildAt(double mouseX, double mouseY) {
-		boolean onList = options.isMouseOver(mouseX, mouseY);
+		boolean onList = options != null && options.isMouseOver(mouseX, mouseY);
 		for (GuiEventListener guieventlistener : children()) {
 			if (!onList && entryWidgets.contains(guieventlistener)) {
 				continue;

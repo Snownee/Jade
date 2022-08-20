@@ -23,7 +23,7 @@ public class Identifiers {
 	public static final ResourceLocation CORE_MOD_NAME = JADE("mod_name");
 	public static final ResourceLocation CORE_DISTANCE = JADE("distance");
 	public static final ResourceLocation CORE_COORDINATES = JADE("coordinates");
-	public static final ResourceLocation CORE_REL_COORDINATES = JADE("rel_coordinates");
+	public static final ResourceLocation CORE_REL_COORDINATES = JADE("coordinates.rel");
 	public static final ResourceLocation CORE_BLOCK_FACE = JADE("block_face");
 
 	public static final ResourceLocation FORGE_BLOCK_INVENTORY = MC("block_inventory");
@@ -32,6 +32,11 @@ public class Identifiers {
 
 	public static final ResourceLocation FABRIC_BLOCK_INVENTORY = FORGE_BLOCK_INVENTORY;
 	public static final ResourceLocation FABRIC_FLUID = FORGE_FLUID;
+
+	public static final ResourceLocation BLOCK_INVENTORY_DETAILED_AMOUNT = MC("block_inventory.detailed_amount");
+	public static final ResourceLocation BLOCK_INVENTORY_NORMAL_AMOUNT = MC("block_inventory.normal_amount");
+	public static final ResourceLocation BLOCK_INVENTORY_SHOW_NAME_AMOUNT = MC("block_inventory.show_name_amount");
+	public static final ResourceLocation BLOCK_INVENTORY_ITEMS_PER_LINE = MC("block_inventory.items_per_line");
 
 	public static final ResourceLocation MC_ANIMAL_OWNER = MC("animal_owner");
 	public static final ResourceLocation MC_ARMOR_STAND = MC("armor_stand");
@@ -48,6 +53,8 @@ public class Identifiers {
 	public static final ResourceLocation MC_FALLING_BLOCK = MC("falling_block");
 	public static final ResourceLocation MC_FURNACE = MC("furnace");
 	public static final ResourceLocation MC_HARVEST_TOOL = MC("harvest_tool");
+	public static final ResourceLocation MC_HARVEST_TOOL_NEW_LINE = MC("harvest_tool.new_line");
+	public static final ResourceLocation MC_EFFECTIVE_TOOL = MC("harvest_tool.effective_tool");
 	public static final ResourceLocation MC_HORSE_STATS = MC("horse_stats");
 	public static final ResourceLocation MC_ITEM_FRAME = MC("item_frame");
 	public static final ResourceLocation MC_ITEM_TOOLTIP = MC("item_tooltip");
@@ -66,7 +73,5 @@ public class Identifiers {
 	public static final ResourceLocation MC_VILLAGER_PROFESSION = MC("villager_profession");
 
 	public static final ResourceLocation MC_BREAKING_PROGRESS = MC("breaking_progress");
-	public static final ResourceLocation MC_HARVEST_TOOL_NEW_LINE = MC("harvest_tool_new_line");
-	public static final ResourceLocation MC_EFFECTIVE_TOOL = MC("effective_tool");
 
 }

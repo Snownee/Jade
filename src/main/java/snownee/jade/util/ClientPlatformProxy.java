@@ -7,8 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Maps;
-import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.brigadier.CommandDispatcher;
@@ -101,17 +100,20 @@ public final class ClientPlatformProxy {
 			});
 		});
 		ClientPlayNetworking.registerGlobalReceiver(Identifiers.PACKET_SERVER_PING, (client, handler, buf, responseSender) -> {
-			int size = buf.readVarInt();
-			Map<ResourceLocation, Boolean> forcedKeys = Maps.newHashMap();
-			for (int i = 0; i < size; i++) {
-				ResourceLocation id = new ResourceLocation(buf.readUtf(128));
-				boolean value = buf.readBoolean();
-				forcedKeys.put(id, value);
+			String s = buf.readUtf();
+			JsonObject json;
+			try {
+				json = s.isEmpty() ? null : JsonConfig.DEFAULT_GSON.fromJson(s, JsonObject.class);
+			} catch (Throwable e) {
+				Jade.LOGGER.error("Received malformed config from the server: {}", s);
+				return;
 			}
 			client.execute(() -> {
 				ObjectDataCenter.serverConnected = true;
-				forcedKeys.forEach(PluginConfig.INSTANCE::set);
-				Jade.LOGGER.info("Received config from the server: {}", new Gson().toJson(forcedKeys));
+				PluginConfig.INSTANCE.reload(); // clear the server config last time we applied
+				if (json != null && !json.keySet().isEmpty())
+					PluginConfig.INSTANCE.applyServerConfigs(json);
+				Jade.LOGGER.info("Received config from the server: {}", s);
 			});
 		});
 
@@ -215,4 +217,7 @@ public final class ClientPlatformProxy {
 		});
 	}
 
+	public static boolean isShowDetailsPressed() {
+		return Screen.hasShiftDown();
+	}
 }

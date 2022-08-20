@@ -28,11 +28,7 @@ public enum ContainerEntityProvider implements IEntityComponentProvider, IServer
 
 	@Override
 	public void appendServerData(CompoundTag data, ServerPlayer player, Level world, Entity t, boolean showDetails) {
-		int size = showDetails ? JadeCommonConfig.inventoryDetailedShowAmount : JadeCommonConfig.inventoryNormalShowAmount;
-		if (size == 0) {
-			return;
-		}
-
+		int size = 54;
 		if (t instanceof AbstractChestedHorse horse && horse.hasChest()) {
 			PlatformProxy.putHorseInvData(horse, data, size);
 			return;

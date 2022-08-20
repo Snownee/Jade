@@ -1,11 +1,11 @@
 package snownee.jade;
 
 import java.util.List;
-import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.google.common.base.Strings;
 import com.google.gson.GsonBuilder;
 
 import net.fabricmc.api.ModInitializer;
@@ -35,7 +35,6 @@ import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
-import snownee.jade.impl.config.ConfigEntry;
 import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.impl.config.WailaConfig;
 import snownee.jade.overlay.OverlayRenderer;
@@ -53,18 +52,21 @@ public class Jade implements ModInitializer {
 	public static final Vec2 SMALL_ITEM_SIZE = new Vec2(10, 10);
 	public static final Vec2 SMALL_ITEM_OFFSET = Vec2.NEG_UNIT_Y;
 
-	/** addons: Use {@link mcp.IWailaCommonRegistration.waila.api.IWailaClientRegistration#getConfig} */
+	/**
+	 * addons: Use {@link snownee.jade.api.IWailaClientRegistration#getConfig}
+	 */
 	/* off */
 	public static final JsonConfig<WailaConfig> CONFIG =
 			new JsonConfig<>(Jade.MODID + "/" + Jade.MODID, WailaConfig.class, () -> {
 				OverlayRenderer.updateTheme();
 			}).withGson(
 					new GsonBuilder()
-					.setPrettyPrinting()
-					.enableComplexMapKeySerialization()
-					.registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
-					.registerTypeAdapter(Theme.class, new ThemeSerializer())
-					.create()
+							.setPrettyPrinting()
+							.enableComplexMapKeySerialization()
+							.registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
+							.registerTypeAdapter(Theme.class, new ThemeSerializer())
+							.setLenient()
+							.create()
 			);
 	/* on */
 
@@ -76,7 +78,6 @@ public class Jade implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		//		JadeCommonConfig.refresh();
 		PlatformProxy.init();
 
 		ServerPlayNetworking.registerGlobalReceiver(Identifiers.PACKET_REQUEST_ENTITY, (server, player, handler, buf, responseSender) -> {
@@ -176,13 +177,8 @@ public class Jade implements ModInitializer {
 	private void playerJoin(ServerGamePacketListenerImpl handler, PacketSender sender, MinecraftServer server) {
 		ServerPlayer player = handler.player;
 		LOGGER.info("Syncing config to {} ({})", player.getGameProfile().getName(), player.getGameProfile().getId());
-		Set<ConfigEntry> entries = PluginConfig.INSTANCE.getSyncableConfigs();
 		FriendlyByteBuf buf = PacketByteBufs.create();
-		buf.writeVarInt(entries.size());
-		entries.forEach(e -> {
-			buf.writeUtf(e.getId().toString());
-			buf.writeBoolean(e.getValue());
-		});
+		buf.writeUtf(Strings.nullToEmpty(PluginConfig.INSTANCE.getServerConfigs()));
 		ServerPlayNetworking.send(player, Identifiers.PACKET_SERVER_PING, buf);
 
 		if (server.isDedicatedServer())

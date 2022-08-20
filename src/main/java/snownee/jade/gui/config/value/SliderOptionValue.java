@@ -5,6 +5,7 @@ import java.util.function.Predicate;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 
+import it.unimi.dsi.fastutil.floats.FloatUnaryOperator;
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.network.chat.Component;
@@ -20,12 +21,14 @@ public class SliderOptionValue extends OptionValue<Float> {
 	private final Slider slider;
 	private float min;
 	private float max;
+	private FloatUnaryOperator aligner;
 
-	public SliderOptionValue(String optionName, float value, Consumer<Float> save, float min, float max) {
+	public SliderOptionValue(String optionName, float value, Consumer<Float> save, float min, float max, FloatUnaryOperator aligner) {
 		super(optionName, save);
 		this.value = value;
 		this.min = min;
 		this.max = max;
+		this.aligner = aligner;
 		slider = new Slider(this, 0, 0, 100, 20, getTitle());
 	}
 
@@ -51,7 +54,7 @@ public class SliderOptionValue extends OptionValue<Float> {
 		}
 
 		public float toScaled() {
-			return parent.min + (parent.max - parent.min) * (float) value;
+			return parent.aligner.apply(parent.min + (parent.max - parent.min) * (float) value);
 		}
 
 		public static double fromScaled(float f, float min, float max) {

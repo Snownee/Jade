@@ -9,9 +9,6 @@ import snownee.jade.util.PlatformProxy;
 
 public final class JadeCommonConfig {
 
-	public static int inventoryDetailedShowAmount = 54;
-	public static int inventoryNormalShowAmount = 9;
-	public static int inventoryShowItemPreLine = 9;
 	private static final Set<String> inventoryBlacklist = Sets.newHashSet();
 	public static boolean bypassLockedContainer = false;
 	private static boolean onlyShowVanilla = false;

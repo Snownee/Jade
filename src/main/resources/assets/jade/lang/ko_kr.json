@@ -72,7 +72,7 @@
   "config.jade.plugin_minecraft.block_states": "블록 상태",
   "config.jade.plugin_jade.item_mod_name": "아이템 설명에서 모드 이름",
   "config.jade.plugin_jade.mod_name": "모드 이름",
-  
+
   "entity.minecraft.villager.none": "실업자",
   "entity.minecraft.villager.nitwit": "멍청이",
 
@@ -122,8 +122,8 @@
   "config.jade.plugin_minecraft.breaking_progress": "부수기 진행률",
   "config.jade.plugin_minecraft.command_block": "명령 블록",
   "config.jade.plugin_minecraft.harvest_tool": "수확 도구 표시",
-  "config.jade.plugin_minecraft.harvest_tool_new_line": "새로운 줄에 도구 표시",
-  "config.jade.plugin_minecraft.effective_tool": "효과적인 도구 표시",
+  "config.jade.plugin_minecraft.harvest_tool.new_line": "새로운 줄에 도구 표시",
+  "config.jade.plugin_minecraft.harvest_tool.effective_tool": "효과적인 도구 표시",
   "jade.harvest_tool.unbreakable": "부서지지 않습니다",
   "config.jade.plugin_minecraft.enchantment_power": "부여력",
   "config.jade.plugin_minecraft.total_enchantment_power": "총 부여력",

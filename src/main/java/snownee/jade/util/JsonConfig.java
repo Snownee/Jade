@@ -22,6 +22,7 @@ public class JsonConfig<T> {
 			.serializeNulls()
 			.enableComplexMapKeySerialization()
 			.registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
+			.setLenient()
 			.create();
 	/* on */
 

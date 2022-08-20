@@ -24,7 +24,7 @@
   "key.jade.show_recipes": "显示配方",
   "key.jade.show_uses": "显示用途",
   "key.jade.narrate": "语音复述",
-  
+
   "narration.jade.health": "生命值：%s",
   "narration.jade.armor": "护甲值：%s",
   "narration.jade.bookName": "书名：《%s》",
@@ -86,8 +86,8 @@
   "config.jade.plugin_jade.mod_name": "模组名称",
   "config.jade.plugin_jade.distance": "距离",
   "config.jade.plugin_jade.coordinates": "坐标",
-  "config.jade.plugin_jade.rel_coordinates": "相对坐标",
-  "config.jade.plugin_jade.rel_coordinates_desc": "需要按住Ctrl键",
+  "config.jade.plugin_jade.coordinates.rel": "相对坐标",
+  "config.jade.plugin_jade.coordinates.rel_desc": "需要按住Ctrl键",
   "config.jade.plugin_jade.block_face": "方块目标面朝向",
 
   "entity.minecraft.villager.none": "无业",
@@ -141,8 +141,8 @@
   "config.jade.plugin_minecraft.breaking_progress": "破坏进度",
   "config.jade.plugin_minecraft.command_block": "命令方块",
   "config.jade.plugin_minecraft.harvest_tool": "采掘工具",
-  "config.jade.plugin_minecraft.harvest_tool_new_line": "采掘工具换行",
-  "config.jade.plugin_minecraft.effective_tool": "高效工具",
+  "config.jade.plugin_minecraft.harvest_tool.new_line": "另起一行",
+  "config.jade.plugin_minecraft.harvest_tool.effective_tool": "高效工具",
   "jade.harvest_tool.unbreakable": "无法破坏",
   "config.jade.plugin_minecraft.enchantment_power": "附魔能力",
   "config.jade.plugin_minecraft.total_enchantment_power": "总附魔能力",
@@ -178,6 +178,6 @@
   "config.jade.plugin_minecraft.jukebox": "当前唱片",
   "config.jade.plugin_minecraft.villager_profession": "村民职业",
   "jade.spawner": "%s（%s）",
-  
+
   "jade.modName.cpp": "更多的合成"
 }

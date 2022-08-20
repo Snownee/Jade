@@ -72,7 +72,7 @@
   "config.jade.plugin_minecraft.block_states": "Состояние блока",
   "config.jade.plugin_jade.item_mod_name": "Название мода в подсказке предмета",
   "config.jade.plugin_jade.mod_name": "Название мода",
-  
+
   "entity.minecraft.villager.none": "Безработный",
   "entity.minecraft.villager.nitwit": "Глупый",
 
@@ -122,8 +122,8 @@
   "config.jade.plugin_minecraft.breaking_progress": "Прогресс ломания",
   "config.jade.plugin_minecraft.command_block": "Командный блок",
   "config.jade.plugin_minecraft.harvest_tool": "Жатвенный инструмент",
-  "config.jade.plugin_minecraft.harvest_tool_new_line": "Инструмент в новой строке",
-  "config.jade.plugin_minecraft.effective_tool": "Эффективный инструмент",
+  "config.jade.plugin_minecraft.harvest_tool.new_line": "Инструмент в новой строке",
+  "config.jade.plugin_minecraft.harvest_tool.effective_tool": "Эффективный инструмент",
   "jade.harvest_tool.unbreakable": "Нельзя сломать",
   "config.jade.plugin_minecraft.enchantment_power": "Сила чара",
   "config.jade.plugin_minecraft.total_enchantment_power": "Общая сила чара",

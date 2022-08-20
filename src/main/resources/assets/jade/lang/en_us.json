@@ -24,7 +24,7 @@
   "key.jade.show_recipes": "Show Recipes",
   "key.jade.show_uses": "Show Uses",
   "key.jade.narrate": "Narrate",
-  
+
   "narration.jade.health": "Health: %s",
   "narration.jade.armor": "Armor: %s",
   "narration.jade.bookName": "Book Name: %s",
@@ -81,8 +81,12 @@
   "config.jade.format_registry_name": "Registry ID",
 
   "config.jade.accessibility": "Accessibility",
-  
+
   "config.jade.plugin_jade.registry_name": "Registry Name",
+  "config.jade.plugin_jade.registry_name_on": "ON",
+  "config.jade.plugin_jade.registry_name_off": "OFF",
+  "config.jade.plugin_jade.registry_name_advanced_tooltips": "Advanced Tooltips",
+  "config.jade.plugin_jade.registry_name_advanced_tooltips_desc": "Follow the advanced tooltips option",
   "config.jade.plugin_minecraft.entity_health": "Entity Health",
   "config.jade.plugin_minecraft.entity_armor": "Entity Armor",
   "config.jade.plugin_minecraft.block_states": "Block States",
@@ -91,10 +95,10 @@
   "config.jade.plugin_jade.furnace_fuel": "Test",
   "config.jade.plugin_jade.distance": "Distance",
   "config.jade.plugin_jade.coordinates": "Coordinates",
-  "config.jade.plugin_jade.rel_coordinates": "Relative Coordinates",
-  "config.jade.plugin_jade.rel_coordinates_desc": "Requires holding Ctrl",
+  "config.jade.plugin_jade.coordinates.rel": "Relative Coordinates",
+  "config.jade.plugin_jade.coordinates.rel_desc": "Requires holding Ctrl",
   "config.jade.plugin_jade.block_face": "Block Face",
-  
+
   "entity.minecraft.villager.none": "Unemployed",
   "entity.minecraft.villager.nitwit": "Nitwit",
 
@@ -144,8 +148,8 @@
   "config.jade.plugin_minecraft.breaking_progress": "Breaking Progress",
   "config.jade.plugin_minecraft.command_block": "Command Block",
   "config.jade.plugin_minecraft.harvest_tool": "Harvest Tool",
-  "config.jade.plugin_minecraft.harvest_tool_new_line": "Tool in New Line",
-  "config.jade.plugin_minecraft.effective_tool": "Effective Tool",
+  "config.jade.plugin_minecraft.harvest_tool.new_line": "Start in New Line",
+  "config.jade.plugin_minecraft.harvest_tool.effective_tool": "Effective Tool",
   "jade.harvest_tool.unbreakable": "Can't break",
   "config.jade.plugin_minecraft.enchantment_power": "Enchantment Power",
   "config.jade.plugin_minecraft.total_enchantment_power": "Total Enchantment Power",
@@ -153,7 +157,11 @@
   "config.jade.plugin_minecraft.player_head": "Player Head",
   "config.jade.plugin_minecraft.profession": "Villager Profession",
   "config.jade.plugin_minecraft.item_tooltip": "Item Tooltip",
-  "config.jade.plugin_minecraft.block_inventory": "Inventory",
+  "config.jade.plugin_minecraft.block_inventory": "Block Inventory",
+  "config.jade.plugin_minecraft.block_inventory.detailed_amount": "Detailed Amount",
+  "config.jade.plugin_minecraft.block_inventory.normal_amount": "Normal Amount",
+  "config.jade.plugin_minecraft.block_inventory.show_name_amount": "Show Name Threshold",
+  "config.jade.plugin_minecraft.block_inventory.items_per_line": "Items per Line",
   "jade.locked": "Inventory is locked",
   "jade.not_generated": "Inventory isn't generated",
   "config.jade.plugin_minecraft.fe": "Forge Energy",
@@ -186,7 +194,7 @@
   "config.jade.plugin_minecraft.jukebox": "Jukebox Record",
   "config.jade.plugin_minecraft.villager_profession": "Villager Profession",
   "jade.spawner": "%s (%s)",
-  
+
   "jade.modName.cpp": "Crafting++",
   "mymod.fuel": "Fuel: %d ticks"
 }

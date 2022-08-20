@@ -136,6 +136,11 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.addConfig(Identifiers.MC_HARVEST_TOOL_NEW_LINE, false);
 		registration.addConfig(Identifiers.MC_BREAKING_PROGRESS, true);
 
+		registration.addConfig(Identifiers.BLOCK_INVENTORY_DETAILED_AMOUNT, 54, 1, 54, false);
+		registration.addConfig(Identifiers.BLOCK_INVENTORY_NORMAL_AMOUNT, 9, 1, 54, false);
+		registration.addConfig(Identifiers.BLOCK_INVENTORY_SHOW_NAME_AMOUNT, 5, 0, 9, true);
+		registration.addConfig(Identifiers.BLOCK_INVENTORY_ITEMS_PER_LINE, 9, 3, 27, true);
+
 		registration.addRayTraceCallback(JadeClient::builtInOverrides);
 		registration.addAfterRenderCallback(JadeClient::drawBreakingProgress);
 

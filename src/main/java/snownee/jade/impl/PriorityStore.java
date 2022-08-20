@@ -86,4 +86,12 @@ public class PriorityStore<T> {
 		return priorities.getInt(id);
 	}
 
+	public int getInternal(ResourceLocation id) {
+		int i = 0;
+		if (id.getPath().contains(".")) {
+			id = new ResourceLocation(id.getNamespace(), id.getPath().substring(0, id.getPath().indexOf('.')));
+			i = 1;
+		}
+		return get(id) * 2 + i;
+	}
 }

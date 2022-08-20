@@ -2,11 +2,14 @@ package snownee.jade.api.config;
 
 import java.util.Collection;
 
+import org.jetbrains.annotations.ApiStatus.NonExtendable;
+
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.ClipContext;
 
+@NonExtendable
 public interface IWailaConfig {
 
 	IConfigGeneral getGeneral();
@@ -15,6 +18,7 @@ public interface IWailaConfig {
 
 	IConfigFormatting getFormatting();
 
+	@NonExtendable
 	public interface IConfigGeneral {
 
 		void setDisplayTooltip(boolean displayTooltip);
@@ -74,6 +78,7 @@ public interface IWailaConfig {
 		boolean isDebug();
 	}
 
+	@NonExtendable
 	public interface IConfigOverlay {
 
 		void setOverlayPosX(float overlayPosX);
@@ -133,6 +138,7 @@ public interface IWailaConfig {
 		IconMode getIconMode();
 	}
 
+	@NonExtendable
 	public interface IConfigFormatting {
 
 		void setModName(String modName);

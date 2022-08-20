@@ -2,6 +2,7 @@ package snownee.jade.api;
 
 import java.util.function.Function;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import net.minecraft.nbt.CompoundTag;
@@ -36,19 +37,19 @@ public interface Accessor<T extends HitResult> {
 
 	boolean shouldRequestData();
 
-	@Deprecated
+	@ApiStatus.Internal
 	void _requestData(boolean showDetails);
 
-	@Deprecated
+	@ApiStatus.Internal
 	boolean _verifyData(CompoundTag serverData);
 
-	@Deprecated
+	@ApiStatus.Internal
 	IElement _getIcon();
 
-	@Deprecated
+	@ApiStatus.Internal
 	void _gatherComponents(Function<IJadeProvider, ITooltip> tooltipProvider);
 
-	@Deprecated
+	@ApiStatus.Internal
 	Object _getTrackObject();
 
 }
