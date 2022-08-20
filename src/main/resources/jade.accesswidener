@@ -17,3 +17,5 @@ accessible method net/minecraft/client/gui/components/ContainerObjectSelectionLi
 accessible method net/minecraft/world/entity/animal/frog/Tadpole getTicksLeftUntilAdult ()I
 
 accessible field net/minecraft/world/entity/animal/allay/Allay duplicationCooldown J
+
+accessible field net/minecraft/client/gui/components/BossHealthOverlay events Ljava/util/Map;

@@ -75,6 +75,10 @@ public interface IWailaConfig {
 
 		void setReachDistance(float reachDistance);
 
+		BossBarOverlapMode getBossBarOverlapMode();
+
+		void setBossBarOverlapMode(BossBarOverlapMode mode);
+
 		void setDebug(boolean debug);
 
 		boolean isDebug();
@@ -172,5 +176,9 @@ public interface IWailaConfig {
 		FluidMode(ClipContext.Fluid ctx) {
 			this.ctx = ctx;
 		}
+	}
+
+	public enum BossBarOverlapMode {
+		NO_OPERATION, HIDE_BOSS_BAR, PUSH_DOWN
 	}
 }

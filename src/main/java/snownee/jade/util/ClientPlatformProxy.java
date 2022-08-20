@@ -124,33 +124,33 @@ public final class ClientPlatformProxy {
 		DumpHandlersCommand.register(dispatcher);
 	}
 
-	public static void onEntityJoin(Entity entity, ClientLevel level) {
+	private static void onEntityJoin(Entity entity, ClientLevel level) {
 		DatapackBlockManager.onEntityJoin(entity);
 	}
 
-	public static void onEntityLeave(Entity entity, ClientLevel level) {
+	private static void onEntityLeave(Entity entity, ClientLevel level) {
 		DatapackBlockManager.onEntityLeave(entity);
 	}
 
-	public static void onTooltip(ItemStack stack, TooltipFlag context, List<Component> lines) {
+	private static void onTooltip(ItemStack stack, TooltipFlag context, List<Component> lines) {
 		JadeClient.onTooltip(lines, stack);
 	}
 
-	public static void onRenderTick(PoseStack matrixStack, float tickDelta) {
+	private static void onRenderTick(PoseStack matrixStack, float tickDelta) {
 		if (Minecraft.getInstance().screen == null) {
 			OverlayRenderer.renderOverlay(matrixStack);
 		}
 	}
 
-	public static void onClientTick(Minecraft mc) {
+	private static void onClientTick(Minecraft mc) {
 		WailaTickHandler.instance().tickClient();
 	}
 
-	public static void onPlayerLeave(ClientPacketListener handler, Minecraft client) {
+	private static void onPlayerLeave(ClientPacketListener handler, Minecraft client) {
 		ObjectDataCenter.serverConnected = false;
 	}
 
-	public static void onKeyPressed(Minecraft mc) {
+	private static void onKeyPressed(Minecraft mc) {
 		JadeClient.onKeyPressed(1);
 		if (JadeClient.showUses != null) {
 			//REICompat.onKeyPressed(1);
@@ -160,7 +160,7 @@ public final class ClientPlatformProxy {
 		}
 	}
 
-	public static void onGui(Screen screen, PoseStack matrices, int mouseX, int mouseY, float tickDelta) {
+	private static void onGui(Screen screen, PoseStack matrices, int mouseX, int mouseY, float tickDelta) {
 		JadeClient.onGui(screen);
 	}
 

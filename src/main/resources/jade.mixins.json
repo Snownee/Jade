@@ -7,8 +7,9 @@
     "AbstractHorseAccess"
   ],
   "client": [
-    "ClientLevelMixin",
-    "KeyAccess"
+    "KeyAccess",
+    "BossHealthOverlayMixin",
+    "ClientLevelMixin"
   ],
   "injectors": {
     "defaultRequire": 1
