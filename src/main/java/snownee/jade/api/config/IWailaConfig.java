@@ -18,6 +18,8 @@ public interface IWailaConfig {
 
 	IConfigFormatting getFormatting();
 
+	IPluginConfig getPlugin();
+
 	@NonExtendable
 	public interface IConfigGeneral {
 
