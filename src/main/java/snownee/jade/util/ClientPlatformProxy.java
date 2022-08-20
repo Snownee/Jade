@@ -3,6 +3,8 @@ package snownee.jade.util;
 import java.util.List;
 import java.util.Map;
 
+import net.minecraft.client.renderer.Rect2i;
+
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.base.Strings;
@@ -51,6 +53,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
+
+import org.jetbrains.annotations.Nullable;
+
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
 import snownee.jade.api.Identifiers;
@@ -215,6 +220,18 @@ public final class ClientPlatformProxy {
 			manager.registerReloadListener(listener);
 			listener.onResourceManagerReload(manager);
 		});
+	}
+
+	@Nullable
+	public static Rect2i getBossBarRect() {
+		Minecraft mc = Minecraft.getInstance();
+		int size = mc.gui.getBossOverlay().events.size();
+		if (size == 0) {
+			return null;
+		}
+		int i = mc.getWindow().getGuiScaledWidth();
+		int k = i / 2 - 91;
+		return new Rect2i(k, 12, 182, (10 + mc.font.lineHeight) * size);
 	}
 
 	public static boolean isShowDetailsPressed() {

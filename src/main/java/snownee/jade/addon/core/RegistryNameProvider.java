@@ -18,17 +18,21 @@ public enum RegistryNameProvider implements IBlockComponentProvider, IEntityComp
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
+		append(tooltip, PlatformProxy.getId(accessor.getBlock()).toString(), config);
+	}
+
+	@Override
+	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
+		append(tooltip, PlatformProxy.getId(accessor.getEntity().getType()).toString(), config);
+	}
+
+	public void append(ITooltip tooltip, String id, IPluginConfig config) {
 		Mode mode = config.getEnum(Identifiers.CORE_REGISTRY_NAME);
 		if (mode == Mode.OFF)
 			return;
 		if (mode == Mode.ADVANCED_TOOLTIPS && !Minecraft.getInstance().options.advancedItemTooltips)
 			return;
-		tooltip.add(config.getWailaConfig().getFormatting().registryName(PlatformProxy.getId(accessor.getBlock()).toString()));
-	}
-
-	@Override
-	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
-		tooltip.add(config.getWailaConfig().getFormatting().registryName(PlatformProxy.getId(accessor.getEntity().getType()).toString()));
+		tooltip.add(config.getWailaConfig().getFormatting().registryName(id));
 	}
 
 	@Override
