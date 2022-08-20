@@ -30,6 +30,7 @@ import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.Identifiers;
+import snownee.jade.api.WailaPlugin;
 import snownee.jade.api.config.Theme;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElementHelper;
@@ -156,6 +157,9 @@ public class Jade implements ModInitializer {
 			String className = null;
 			try {
 				IWailaPlugin plugin = entrypoint.getEntrypoint();
+				WailaPlugin a = plugin.getClass().getDeclaredAnnotation(WailaPlugin.class);
+				if (a != null && !Strings.isNullOrEmpty(a.value()) && !FabricLoader.getInstance().isModLoaded(a.value()))
+					return;
 				className = plugin.getClass().getName();
 				plugin.register(WailaCommonRegistration.INSTANCE);
 				if (PlatformProxy.isPhysicallyClient()) {
