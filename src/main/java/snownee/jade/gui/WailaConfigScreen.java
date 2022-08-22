@@ -7,10 +7,12 @@ import it.unimi.dsi.fastutil.floats.FloatUnaryOperator;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import snownee.jade.Jade;
+import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.IWailaConfig.IConfigGeneral;
 import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
 import snownee.jade.gui.config.WailaOptionsList;
 import snownee.jade.gui.config.WailaOptionsList.Entry;
+import snownee.jade.util.PlatformProxy;
 
 public class WailaConfigScreen extends BaseOptionsScreen {
 
@@ -29,7 +31,12 @@ public class WailaConfigScreen extends BaseOptionsScreen {
 		options.choices("display_blocks", general.getDisplayBlocks(), general::setDisplayBlocks);
 		options.choices("display_fluids", general.getDisplayFluids(), general::setDisplayFluids);
 		options.choices("display_mode", general.getDisplayMode(), general::setDisplayMode, builder -> {
-			builder.withTooltip(mode -> minecraft.font.split(Entry.makeTitle("display_mode_" + mode.name().toLowerCase(Locale.ENGLISH) + "_desc"), 200));
+			builder.withTooltip(mode -> {
+				String key = "display_mode_" + mode.name().toLowerCase(Locale.ENGLISH) + "_desc";
+				if (mode == IWailaConfig.DisplayMode.LITE && "fabric".equals(PlatformProxy.getPlatformIdentifier()))
+					key += ".fabric";
+				return minecraft.font.split(Entry.makeTitle(key), 200);
+			});
 		});
 		options.choices("item_mod_name", general.showItemModNameTooltip(), general::setItemModNameTooltip);
 		options.choices("hide_from_debug", general.shouldHideFromDebug(), general::setHideFromDebug);

@@ -71,15 +71,15 @@ public enum BlockInventoryProvider implements IBlockComponentProvider, IServerDa
 			container.fromTag(list);
 
 			int drawnCount = 0;
-			int realSize = PluginConfig.INSTANCE.getInt(ClientPlatformProxy.isShowDetailsPressed() ? Identifiers.BLOCK_INVENTORY_DETAILED_AMOUNT : Identifiers.BLOCK_INVENTORY_NORMAL_AMOUNT);
+			int realSize = PluginConfig.INSTANCE.getInt(ClientPlatformProxy.isShowDetailsPressed() ? Identifiers.MC_BLOCK_INVENTORY_DETAILED_AMOUNT : Identifiers.MC_BLOCK_INVENTORY_NORMAL_AMOUNT);
 			realSize = Math.min(container.getContainerSize(), realSize);
-			boolean showName = realSize < PluginConfig.INSTANCE.getInt(Identifiers.BLOCK_INVENTORY_SHOW_NAME_AMOUNT);
+			boolean showName = realSize < PluginConfig.INSTANCE.getInt(Identifiers.MC_BLOCK_INVENTORY_SHOW_NAME_AMOUNT);
 			IElementHelper helper = tooltip.getElementHelper();
 			List<IElement> elements = Lists.newArrayList();
 			for (int i = 0; i < realSize; i++) {
 				ItemStack stack = container.getItem(i);
 				if (stack.isEmpty()) break;
-				if (i > 0 && (showName || drawnCount >= PluginConfig.INSTANCE.getInt(Identifiers.BLOCK_INVENTORY_ITEMS_PER_LINE))) {
+				if (i > 0 && (showName || drawnCount >= PluginConfig.INSTANCE.getInt(Identifiers.MC_BLOCK_INVENTORY_ITEMS_PER_LINE))) {
 					tooltip.add(elements);
 					elements.clear();
 					drawnCount = 0;

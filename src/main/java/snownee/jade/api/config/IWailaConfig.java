@@ -41,10 +41,6 @@ public interface IWailaConfig {
 
 		void setTTSMode(TTSMode ttsMode);
 
-		void setMaxHealthForRender(int maxHealthForRender);
-
-		void setMaxHeartsPerLine(int maxHeartsPerLine);
-
 		void setDisplayFluids(boolean displayFluids);
 
 		void setDisplayFluids(FluidMode displayFluids);
@@ -60,10 +56,6 @@ public interface IWailaConfig {
 		boolean shouldEnableTextToSpeech();
 
 		TTSMode getTTSMode();
-
-		int getMaxHealthForRender();
-
-		int getMaxHeartsPerLine();
 
 		boolean shouldDisplayFluids();
 
@@ -157,7 +149,7 @@ public interface IWailaConfig {
 	}
 
 	public enum IconMode {
-		TOP, CENTERED, HIDE;
+		TOP, CENTERED, HIDE
 	}
 
 	public enum TTSMode {

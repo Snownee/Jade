@@ -5,13 +5,19 @@ import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
+import java.util.stream.Collectors;
 
 import com.google.common.base.Charsets;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
 
@@ -28,6 +34,7 @@ public class PriorityStore<T> {
 	private final Function<T, ResourceLocation> uidGetter;
 	private final ToIntFunction<T> defaultGetter;
 	private final String fileName;
+	private ImmutableList<ResourceLocation> sortedList = ImmutableList.of();
 
 	public PriorityStore(String filename, ToIntFunction<T> defaultGetter, Function<T, ResourceLocation> uidGetter) {
 		this.fileName = filename;
@@ -42,7 +49,7 @@ public class PriorityStore<T> {
 		priorities.put(uid, defaultGetter.applyAsInt(provider));
 	}
 
-	public void updateConfig() {
+	public void updateConfig(Set<ResourceLocation> allKeys) {
 		Path saveFile = PlatformProxy.getConfigDirectory().toPath().resolve(fileName + ".json");
 		Map<ResourceLocation, Integer> map = null;
 		if (Files.exists(saveFile)) {
@@ -76,6 +83,19 @@ public class PriorityStore<T> {
 				Jade.LOGGER.catching(e);
 			}
 		}).start();
+
+		List<ResourceLocation> keys = allKeys.stream()
+				.filter($ -> !$.getPath().contains("."))
+				.sorted(Comparator.comparingInt(this::get))
+				.collect(Collectors.toCollection(LinkedList::new));
+		allKeys.stream()
+				.filter($ -> $.getPath().contains("."))
+				.forEach($ -> {
+					ResourceLocation parent = new ResourceLocation($.getNamespace(), $.getPath().substring(0, $.getPath().indexOf('.')));
+					int index = keys.indexOf(parent);
+					keys.add(index + 1, $);
+				});
+		sortedList = ImmutableList.copyOf(keys);
 	}
 
 	public int get(T value) {
@@ -86,12 +106,7 @@ public class PriorityStore<T> {
 		return priorities.getInt(id);
 	}
 
-	public int getInternal(ResourceLocation id) {
-		int i = 0;
-		if (id.getPath().contains(".")) {
-			id = new ResourceLocation(id.getNamespace(), id.getPath().substring(0, id.getPath().indexOf('.')));
-			i = 1;
-		}
-		return get(id) * 2 + i;
+	public ImmutableList<ResourceLocation> getSortedList() {
+		return sortedList;
 	}
 }

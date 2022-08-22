@@ -103,4 +103,7 @@ public final class PlatformProxy {
 		return Registry.PAINTING_VARIANT.getKey(motive);
 	}
 
+	public static String getPlatformIdentifier() {
+		return "fabric";
+	}
 }

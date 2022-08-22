@@ -57,7 +57,7 @@ public class PluginsConfigScreen extends BaseOptionsScreen {
 			public WailaOptionsList getOptions() {
 				Set<ResourceLocation> keys = PluginConfig.INSTANCE.getKeys(namespace);
 				WailaOptionsList options = new WailaOptionsList(this, minecraft, width, height, 32, height - 32, 30);
-				keys.stream().sorted(Comparator.comparingInt(WailaCommonRegistration.INSTANCE.priorities::getInternal)).forEach(i -> {
+				keys.stream().sorted(Comparator.comparingInt(WailaCommonRegistration.INSTANCE.priorities.getSortedList()::indexOf)).forEach(i -> {
 					ConfigEntry<?> configEntry = PluginConfig.INSTANCE.getEntry(i);
 					OptionValue<?> entry = configEntry.createUI(options, translationKey + "." + i.getPath());
 					if (configEntry.isSynced()) {

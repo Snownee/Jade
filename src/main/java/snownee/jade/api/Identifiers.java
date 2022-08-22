@@ -33,10 +33,10 @@ public class Identifiers {
 	public static final ResourceLocation FABRIC_BLOCK_INVENTORY = FORGE_BLOCK_INVENTORY;
 	public static final ResourceLocation FABRIC_FLUID = FORGE_FLUID;
 
-	public static final ResourceLocation BLOCK_INVENTORY_DETAILED_AMOUNT = MC("block_inventory.detailed_amount");
-	public static final ResourceLocation BLOCK_INVENTORY_NORMAL_AMOUNT = MC("block_inventory.normal_amount");
-	public static final ResourceLocation BLOCK_INVENTORY_SHOW_NAME_AMOUNT = MC("block_inventory.show_name_amount");
-	public static final ResourceLocation BLOCK_INVENTORY_ITEMS_PER_LINE = MC("block_inventory.items_per_line");
+	public static final ResourceLocation MC_BLOCK_INVENTORY_DETAILED_AMOUNT = MC("block_inventory.detailed_amount");
+	public static final ResourceLocation MC_BLOCK_INVENTORY_NORMAL_AMOUNT = MC("block_inventory.normal_amount");
+	public static final ResourceLocation MC_BLOCK_INVENTORY_SHOW_NAME_AMOUNT = MC("block_inventory.show_name_amount");
+	public static final ResourceLocation MC_BLOCK_INVENTORY_ITEMS_PER_LINE = MC("block_inventory.items_per_line");
 
 	public static final ResourceLocation MC_ANIMAL_OWNER = MC("animal_owner");
 	public static final ResourceLocation MC_ARMOR_STAND = MC("armor_stand");
@@ -49,7 +49,10 @@ public class Identifiers {
 	public static final ResourceLocation MC_CROP_PROGRESS = MC("crop_progress");
 	public static final ResourceLocation MC_ENCHANTMENT_POWER = MC("enchantment_power");
 	public static final ResourceLocation MC_ENTITY_ARMOR = MC("entity_armor");
+	public static final ResourceLocation MC_ENTITY_ARMOR_MAX_FOR_RENDER = MC("entity_armor.max_for_render");
 	public static final ResourceLocation MC_ENTITY_HEALTH = MC("entity_health");
+	public static final ResourceLocation MC_ENTITY_HEALTH_MAX_FOR_RENDER = MC("entity_health.max_for_render");
+	public static final ResourceLocation MC_ENTITY_HEALTH_ICONS_PER_LINE = MC("entity_health.icons_per_line");
 	public static final ResourceLocation MC_FALLING_BLOCK = MC("falling_block");
 	public static final ResourceLocation MC_FURNACE = MC("furnace");
 	public static final ResourceLocation MC_HARVEST_TOOL = MC("harvest_tool");
@@ -73,5 +76,4 @@ public class Identifiers {
 	public static final ResourceLocation MC_VILLAGER_PROFESSION = MC("villager_profession");
 
 	public static final ResourceLocation MC_BREAKING_PROGRESS = MC("breaking_progress");
-
 }

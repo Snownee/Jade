@@ -10,8 +10,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.Jade;
+import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IWailaConfig.IConfigGeneral;
 import snownee.jade.api.ui.Element;
+import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.overlay.IconUI;
 import snownee.jade.overlay.OverlayRenderer;
@@ -26,13 +28,12 @@ public class ArmorElement extends Element {
 
 	@Override
 	public Vec2 getSize() {
-		IConfigGeneral config = Jade.CONFIG.get().getGeneral();
-		if (armor > config.getMaxHealthForRender()) {
+		if (armor > PluginConfig.INSTANCE.getInt(Identifiers.MC_ENTITY_ARMOR_MAX_FOR_RENDER)) {
 			String text = "  " + DisplayHelper.dfCommas.format(armor);
 			Font font = Minecraft.getInstance().font;
 			return new Vec2(8 + font.width(text), 10);
 		} else {
-			int maxHearts = config.getMaxHeartsPerLine();
+			int maxHearts = PluginConfig.INSTANCE.getInt(Identifiers.MC_ENTITY_HEALTH_ICONS_PER_LINE);
 			int lineCount = (int) (Math.ceil(armor / maxHearts * 0.5F));
 			return new Vec2(8 * maxHearts, 10 * lineCount);
 		}
@@ -41,13 +42,13 @@ public class ArmorElement extends Element {
 	@Override
 	public void render(PoseStack matrixStack, float x, float y, float maxX, float maxY) {
 		IConfigGeneral config = Jade.CONFIG.get().getGeneral();
-		if (armor > config.getMaxHealthForRender()) {
+		if (armor > PluginConfig.INSTANCE.getInt(Identifiers.MC_ENTITY_ARMOR_MAX_FOR_RENDER)) {
 			DisplayHelper.renderIcon(matrixStack, x, y, 8, 8, IconUI.ARMOR);
 			String text = "  " + DisplayHelper.dfCommas.format(armor);
 			DisplayHelper.INSTANCE.drawText(matrixStack, text, x + 8, y, OverlayRenderer.normalTextColorRaw);
 		} else {
 			float armor = this.armor * 0.5F;
-			int maxHearts = config.getMaxHeartsPerLine();
+			int maxHearts = PluginConfig.INSTANCE.getInt(Identifiers.MC_ENTITY_HEALTH_ICONS_PER_LINE);
 			int lineCount = (int) (Math.ceil(armor / maxHearts));
 			int armorCount = lineCount * maxHearts;
 			int xOffset = 0;

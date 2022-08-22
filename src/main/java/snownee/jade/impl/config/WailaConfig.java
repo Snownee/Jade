@@ -20,7 +20,7 @@ import snownee.jade.api.config.Theme;
 import snownee.jade.overlay.OverlayRenderer;
 
 /**
- * Get this instance from {@link mcp.IWailaCommonRegistration.waila.api.IWailaCommonRegistration#getConfig}
+ * Get this instance from {@link snownee.jade.api.IWailaClientRegistration#getConfig}
  */
 public class WailaConfig implements IWailaConfig {
 
@@ -56,8 +56,6 @@ public class WailaConfig implements IWailaConfig {
 		private boolean hideFromDebug = true;
 		private boolean enableTextToSpeech = false;
 		private TTSMode ttsMode = TTSMode.PRESS;
-		private int maxHealthForRender = 40;
-		private int maxHeartsPerLine = 10;
 		private FluidMode fluidMode = FluidMode.ANY;
 		private float reachDistance = 0;
 		@Expose
@@ -111,16 +109,6 @@ public class WailaConfig implements IWailaConfig {
 		}
 
 		@Override
-		public void setMaxHealthForRender(int maxHealthForRender) {
-			this.maxHealthForRender = maxHealthForRender;
-		}
-
-		@Override
-		public void setMaxHeartsPerLine(int maxHeartsPerLine) {
-			this.maxHeartsPerLine = maxHeartsPerLine;
-		}
-
-		@Override
 		public void setDisplayFluids(boolean displayFluids) {
 			fluidMode = displayFluids ? FluidMode.ANY : FluidMode.NONE;
 		}
@@ -153,16 +141,6 @@ public class WailaConfig implements IWailaConfig {
 		@Override
 		public TTSMode getTTSMode() {
 			return ttsMode;
-		}
-
-		@Override
-		public int getMaxHealthForRender() {
-			return maxHealthForRender;
-		}
-
-		@Override
-		public int getMaxHeartsPerLine() {
-			return Math.max(1, maxHeartsPerLine);
 		}
 
 		@Override
