@@ -13,14 +13,15 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec2;
+import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.fml.IExtensionPoint;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -83,7 +84,7 @@ public class Jade {
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::loadComplete);
 		if (PlatformProxy.isPhysicallyClient()) {
-			FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setupClient);
+			FMLJavaModLoadingContext.get().getModEventBus().addListener(EventPriority.HIGH, this::setupClient);
 		}
 		MinecraftForge.EVENT_BUS.addListener(this::playerJoin);
 		PlatformProxy.init();
@@ -97,7 +98,7 @@ public class Jade {
 		NETWORK.registerMessage(3, RequestTilePacket.class, RequestTilePacket::write, RequestTilePacket::read, RequestTilePacket.Handler::onMessage, Optional.of(NetworkDirection.PLAY_TO_SERVER));
 	}
 
-	private void setupClient(FMLClientSetupEvent event) {
+	private void setupClient(RegisterClientReloadListenersEvent event) {
 		JadeClient.initClient();
 	}
 
