@@ -34,3 +34,6 @@ description="You are using Jade, a fork of Hwyla."
 
 [modproperties.jade]
     catalogueItemIcon="minecraft:spyglass" #Support for Catalogue mod
+
+[modproperties.waila]
+    catalogueItemIcon="minecraft:spyglass" #Support for Catalogue mod
