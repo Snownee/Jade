@@ -13,6 +13,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraftforge.api.distmarker.Dist;
@@ -76,6 +77,8 @@ public class BaseEntityProvider implements IEntityComponentProvider {
 
 	@OnlyIn(Dist.CLIENT)
 	private void appendHealth(LivingEntity living, ITooltip tooltip, WailaConfig config) {
+		if (living instanceof ArmorStand)
+			return;
 		float health = living.getHealth();
 		float maxHealth = living.getMaxHealth();
 		tooltip.add(0, new HealthElement(maxHealth, health));
