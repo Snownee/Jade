@@ -38,6 +38,8 @@ import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.impl.config.PluginConfig;
+import snownee.jade.util.ClientPlatformProxy;
 
 public enum BlockInventoryProvider implements IBlockComponentProvider, IServerDataProvider<BlockEntity> {
 
@@ -78,14 +80,20 @@ public enum BlockInventoryProvider implements IBlockComponentProvider, IServerDa
 					break;
 				}
 			}
-			boolean showName = realSize < 5;
+			realSize = Math.min(PluginConfig.INSTANCE.getInt(
+					ClientPlatformProxy.isShowDetailsPressed() ?
+							Identifiers.MC_BLOCK_INVENTORY_DETAILED_AMOUNT :
+							Identifiers.MC_BLOCK_INVENTORY_NORMAL_AMOUNT
+			), realSize);
+			boolean showName = realSize < PluginConfig.INSTANCE.getInt(Identifiers.MC_BLOCK_INVENTORY_SHOW_NAME_AMOUNT);
+
 			IElementHelper helper = tooltip.getElementHelper();
 			List<IElement> elements = Lists.newArrayList();
 			for (int i = 0; i < itemHandler.getSlots(); i++) {
 				ItemStack stack = itemHandler.getStackInSlot(i);
 				if (stack.isEmpty())
 					break;
-				if (i > 0 && (showName || drawnCount >= JadeCommonConfig.inventoryShowItemPreLine)) {
+				if (i > 0 && (showName || drawnCount >= PluginConfig.INSTANCE.getInt(Identifiers.MC_BLOCK_INVENTORY_ITEMS_PER_LINE))) {
 					tooltip.add(elements);
 					elements.clear();
 					drawnCount = 0;
@@ -109,14 +117,14 @@ public enum BlockInventoryProvider implements IBlockComponentProvider, IServerDa
 
 	@Override
 	public void appendServerData(CompoundTag tag, ServerPlayer player, Level world, BlockEntity te, boolean showDetails) {
-		if (te == null || JadeCommonConfig.shouldIgnoreTE(tag.getString("id")) || te instanceof AbstractFurnaceBlockEntity) {
+		if (JadeCommonConfig.shouldIgnoreTE(tag.getString("id")) || te instanceof AbstractFurnaceBlockEntity) {
 			return;
 		}
 
-		int size = showDetails ? JadeCommonConfig.inventoryDetailedShowAmount : JadeCommonConfig.inventoryNormalShowAmount;
-		if (size == 0) {
-			return;
-		}
+		int size = 54;
+//		if (size == 0) {
+//			return;
+//		}
 
 		if (te instanceof RandomizableContainerBlockEntity && ((RandomizableContainerBlockEntity) te).lootTable != null) {
 			tag.putBoolean("Loot", true);

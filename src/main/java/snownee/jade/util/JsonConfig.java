@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.function.Supplier;
 
+import net.minecraft.resources.ResourceLocation;
+
 import org.jetbrains.annotations.Nullable;
 
 import com.google.gson.Gson;
@@ -14,7 +16,15 @@ import com.google.gson.GsonBuilder;
 
 public class JsonConfig<T> {
 
-	private static final Gson DEFAULT_GSON = new GsonBuilder().setPrettyPrinting().create();
+	/* off */
+	public static final Gson DEFAULT_GSON = new GsonBuilder()
+			.setPrettyPrinting()
+			.serializeNulls()
+			.enableComplexMapKeySerialization()
+			.registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
+			.setLenient()
+			.create();
+	/* on */
 
 	private final File configFile;
 	private final CachedSupplier<T> configGetter;

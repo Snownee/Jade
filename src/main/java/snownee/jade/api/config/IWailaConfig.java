@@ -2,11 +2,14 @@ package snownee.jade.api.config;
 
 import java.util.Collection;
 
+import org.jetbrains.annotations.ApiStatus.NonExtendable;
+
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.ClipContext;
 
+@NonExtendable
 public interface IWailaConfig {
 
 	IConfigGeneral getGeneral();
@@ -17,6 +20,7 @@ public interface IWailaConfig {
 
 	IPluginConfig getPlugin();
 
+	@NonExtendable
 	public interface IConfigGeneral {
 
 		void setDisplayTooltip(boolean displayTooltip);
@@ -37,10 +41,6 @@ public interface IWailaConfig {
 
 		void setTTSMode(TTSMode ttsMode);
 
-		void setMaxHealthForRender(int maxHealthForRender);
-
-		void setMaxHeartsPerLine(int maxHeartsPerLine);
-
 		void setDisplayFluids(boolean displayFluids);
 
 		void setDisplayFluids(FluidMode displayFluids);
@@ -56,10 +56,6 @@ public interface IWailaConfig {
 		boolean shouldEnableTextToSpeech();
 
 		TTSMode getTTSMode();
-
-		int getMaxHealthForRender();
-
-		int getMaxHeartsPerLine();
 
 		boolean shouldDisplayFluids();
 
@@ -80,6 +76,7 @@ public interface IWailaConfig {
 		boolean isDebug();
 	}
 
+	@NonExtendable
 	public interface IConfigOverlay {
 
 		void setOverlayPosX(float overlayPosX);
@@ -139,6 +136,7 @@ public interface IWailaConfig {
 		IconMode getIconMode();
 	}
 
+	@NonExtendable
 	public interface IConfigFormatting {
 
 		void setModName(String modName);
@@ -151,7 +149,7 @@ public interface IWailaConfig {
 	}
 
 	public enum IconMode {
-		TOP, CENTERED, HIDE;
+		TOP, CENTERED, HIDE
 	}
 
 	public enum TTSMode {

@@ -227,4 +227,7 @@ public final class ClientPlatformProxy {
 		return new Rect2i(k, 12, 182, bossbarHeight - 12);
 	}
 
+	public static boolean isShowDetailsPressed() {
+		return JadeClient.showDetails.isDown();
+	}
 }

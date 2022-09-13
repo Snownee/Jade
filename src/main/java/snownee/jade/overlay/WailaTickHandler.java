@@ -23,6 +23,7 @@ import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.Tooltip;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
+import snownee.jade.util.ClientPlatformProxy;
 
 public class WailaTickHandler {
 
@@ -109,7 +110,7 @@ public class WailaTickHandler {
 			tooltipRenderer = null;
 			return;
 		}
-		boolean showDetails = JadeClient.showDetails.isDown();
+		boolean showDetails = ClientPlatformProxy.isShowDetailsPressed();
 		if (accessor.isServerConnected()) {
 			boolean request = accessor.shouldRequestData();
 			if (ObjectDataCenter.isTimeElapsed(ObjectDataCenter.rateLimiter)) {

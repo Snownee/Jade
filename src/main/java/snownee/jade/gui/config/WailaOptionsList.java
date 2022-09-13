@@ -4,8 +4,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+
+import net.minecraft.client.gui.components.AbstractSelectionList;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -21,6 +24,7 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat.Mode;
 
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
+import it.unimi.dsi.fastutil.floats.FloatUnaryOperator;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
@@ -41,13 +45,14 @@ import snownee.jade.gui.config.value.SliderOptionValue;
 
 public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsList.Entry> {
 
+	private BaseOptionsScreen owner;
 	private final Runnable diskWriter;
+	private double targetScroll;
 
 	public WailaOptionsList(BaseOptionsScreen owner, Minecraft client, int width, int height, int y0, int y1, int entryHeight, Runnable diskWriter) {
 		super(client, width, height, y0, y1, entryHeight);
-
+		this.owner = owner;
 		this.diskWriter = diskWriter;
-		setRenderSelection(false);
 	}
 
 	public WailaOptionsList(BaseOptionsScreen owner, Minecraft client, int width, int height, int y0, int y1, int entryHeight) {
@@ -65,7 +70,35 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 	}
 
 	@Override
+	public void setScrollAmount(double d) {
+		super.setScrollAmount(d);
+		targetScroll = getScrollAmount();
+	}
+
+	@Override
+	public boolean mouseScrolled(double d, double e, double f) {
+		targetScroll = this.getScrollAmount() - f * (double) this.itemHeight * 1.5;
+		return true;
+	}
+
+	@Override
+	protected boolean isFocused() {
+		return owner.getFocused() == this;
+	}
+
+	@Override
+	protected boolean isSelectedItem(int i) {
+		return Objects.equals(this.getSelected(), this.children().get(i));
+	}
+
+	@Override
+	protected void renderSelection(PoseStack poseStack, int i, int j, int k, int l, int m) {
+		AbstractSelectionList.fill(poseStack, 0, i - 2, owner.width, i + k + 2, 0x33FFFFFF);
+	}
+
+	@Override
 	public void render(PoseStack matrixStack, int mouseX, int mouseY, float delta) {
+		super.setScrollAmount((targetScroll + super.getScrollAmount()) / 2);
 		Entry entry = getEntryAtPosition(mouseX, mouseY);
 		setSelected(entry);
 
@@ -81,37 +114,6 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 		//		int scrollJump = y0 + 4 - (int) getScrollAmount();
 
 		renderList(matrixStack, mouseX, mouseY, delta);
-		//		RenderSystem.setShaderTexture(0, BACKGROUND_LOCATION);
-		//		RenderSystem.enableDepthTest();
-		//		RenderSystem.depthFunc(519);
-		//		bufferBuilder.begin(Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
-		//		bufferBuilder.vertex(x0, y0, -100.0D).color(64, 64, 64, 255).uv(0.0F, y0 / 32.0F).endVertex();
-		//		bufferBuilder.vertex((x0 + width), y0, -100.0D).color(64, 64, 64, 255).uv(width / 32.0F, y0 / 32.0F).endVertex();
-		//		bufferBuilder.vertex((x0 + width), 0.0D, -100.0D).color(64, 64, 64, 255).uv(width / 32.0F, 0.0F).endVertex();
-		//		bufferBuilder.vertex(x0, 0.0D, -100.0D).color(64, 64, 64, 255).uv(0.0F, 0.0F).endVertex();
-		//		bufferBuilder.vertex(x0, height, -100.0D).color(64, 64, 64, 255).color(64, 64, 64, 255).uv(0.0F, height / 32.0F).endVertex();
-		//		bufferBuilder.vertex((x0 + width), height, -100.0D).color(64, 64, 64, 255).uv(width / 32.0F, height / 32.0F).endVertex();
-		//		bufferBuilder.vertex((x0 + width), y1, -100.0D).color(64, 64, 64, 255).uv(width / 32.0F, y1 / 32.0F).endVertex();
-		//		bufferBuilder.vertex(x0, y1, -100.0D).color(64, 64, 64, 255).uv(0.0F, y1 / 32.0F).endVertex();
-		//		tessellator.end();
-		//
-		//		RenderSystem.depthFunc(515);
-		//		RenderSystem.disableDepthTest();
-		//		RenderSystem.enableBlend();
-		//		RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
-		//		RenderSystem.disableTexture();
-		//		RenderSystem.setShader(GameRenderer::getPositionColorShader);
-		//		bufferBuilder.begin(Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
-		//		bufferBuilder.vertex(x0, y0 + 4, 0.0D).color(0, 0, 0, 0).uv(0.0f, 1.0f).endVertex();
-		//		bufferBuilder.vertex(x1, y0 + 4, 0.0D).color(0, 0, 0, 0).uv(1.0f, 1.0f).endVertex();
-		//		bufferBuilder.vertex(x1, y0, 0.0D).color(0, 0, 0, 255).uv(1.0f, 0.0f).endVertex();
-		//		bufferBuilder.vertex(x0, y0, 0.0D).color(0, 0, 0, 255).uv(0.0f, 0.0f).endVertex();
-		//		bufferBuilder.vertex(x0, y1, 0.0D).color(0, 0, 0, 255).uv(0.0f, 1.0f).endVertex();
-		//		bufferBuilder.vertex(x1, y1, 0.0D).color(0, 0, 0, 255).uv(1.0f, 1.0f).endVertex();
-		//		bufferBuilder.vertex(x1, y1 - 4, 0.0D).color(0, 0, 0, 0).uv(1.0f, 0.0f).endVertex();
-		//		bufferBuilder.vertex(x0, y1 - 4, 0.0D).color(0, 0, 0, 0).uv(0.0f, 0.0f).endVertex();
-		//		tessellator.end();
-
 		RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
 		RenderSystem.setShaderTexture(0, GuiComponent.BACKGROUND_LOCATION);
 		RenderSystem.enableDepthTest();
@@ -181,7 +183,7 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 			diskWriter.run();
 	}
 
-	public Entry add(Entry entry) {
+	public <T extends Entry> T add(T entry) {
 		addEntry(entry);
 		return entry;
 	}
@@ -190,27 +192,27 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 		add(new Title(string));
 	}
 
-	public void slider(String optionName, float value, Consumer<Float> setter) {
-		slider(optionName, value, setter, 0, 1);
+	public OptionValue<?> slider(String optionName, float value, Consumer<Float> setter) {
+		return slider(optionName, value, setter, 0, 1, FloatUnaryOperator.identity());
 	}
 
-	public void slider(String optionName, float value, Consumer<Float> setter, float min, float max) {
-		add(new SliderOptionValue(optionName, value, setter, min, max));
+	public OptionValue<?> slider(String optionName, float value, Consumer<Float> setter, float min, float max, FloatUnaryOperator aligner) {
+		return add(new SliderOptionValue(optionName, value, setter, min, max, aligner));
 	}
 
-	public <T> void input(String optionName, T value, Consumer<T> setter, Predicate<String> validator) {
-		add(new InputOptionValue<>(optionName, value, setter, validator));
+	public <T> OptionValue<?> input(String optionName, T value, Consumer<T> setter, Predicate<String> validator) {
+		return add(new InputOptionValue<>(optionName, value, setter, validator));
 	}
 
-	public <T> void input(String optionName, T value, Consumer<T> setter) {
-		input(optionName, value, setter, Predicates.alwaysTrue());
+	public <T> OptionValue<?> input(String optionName, T value, Consumer<T> setter) {
+		return input(optionName, value, setter, Predicates.alwaysTrue());
 	}
 
-	public Entry choices(String optionName, boolean value, BooleanConsumer setter) {
+	public OptionValue<?> choices(String optionName, boolean value, BooleanConsumer setter) {
 		return choices(optionName, value, setter, null);
 	}
 
-	public Entry choices(String optionName, boolean value, BooleanConsumer setter, @Nullable Consumer<CycleButton.Builder<Boolean>> builderConsumer) {
+	public OptionValue<?> choices(String optionName, boolean value, BooleanConsumer setter, @Nullable Consumer<CycleButton.Builder<Boolean>> builderConsumer) {
 		CycleButton.Builder<Boolean> builder = CycleButton.onOffBuilder();
 		if (builderConsumer != null) {
 			builderConsumer.accept(builder);
@@ -218,11 +220,11 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 		return add(new CycleOptionValue<>(optionName, builder, value, setter));
 	}
 
-	public <T extends Enum<T>> Entry choices(String optionName, T value, Consumer<T> setter) {
+	public <T extends Enum<T>> OptionValue<?> choices(String optionName, T value, Consumer<T> setter) {
 		return choices(optionName, value, setter, null);
 	}
 
-	public <T extends Enum<T>> Entry choices(String optionName, T value, Consumer<T> setter, @Nullable Consumer<CycleButton.Builder<T>> builderConsumer) {
+	public <T extends Enum<T>> OptionValue<?> choices(String optionName, T value, Consumer<T> setter, @Nullable Consumer<CycleButton.Builder<T>> builderConsumer) {
 		List<T> values = (List<T>) Arrays.asList(value.getClass().getEnumConstants());
 		CycleButton.Builder<T> builder = CycleButton.<T>builder(v -> Entry.makeTitle(optionName + "_" + v.name().toLowerCase(Locale.ENGLISH))).withValues(values);
 		if (builderConsumer != null) {
@@ -231,7 +233,7 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 		return add(new CycleOptionValue<>(optionName, builder, value, setter));
 	}
 
-	public <T> Entry choices(String optionName, T value, List<T> values, Consumer<T> setter) {
+	public <T> OptionValue<?> choices(String optionName, T value, List<T> values, Consumer<T> setter) {
 		return add(new CycleOptionValue<>(optionName, CycleButton.<T>builder(v -> Component.literal(v.toString())).withValues(values), value, setter));
 	}
 
@@ -292,6 +294,10 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 			return Collections.EMPTY_LIST;
 		}
 
+	}
+
+	public void onClose() {
+		owner = null;
 	}
 
 }

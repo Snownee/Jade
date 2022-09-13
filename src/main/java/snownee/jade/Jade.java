@@ -58,18 +58,20 @@ public class Jade {
 	public static final Vec2 SMALL_ITEM_SIZE = new Vec2(10, 10);
 	public static final Vec2 SMALL_ITEM_OFFSET = Vec2.NEG_UNIT_Y;
 
-	/** addons: Use {@link mcp.IWailaCommonRegistration.waila.api.IWailaClientRegistration#getConfig} */
+	/**
+	 * addons: Use {@link snownee.jade.api.IWailaClientRegistration#getConfig}
+	 */
 	/* off */
 	public static final JsonConfig<WailaConfig> CONFIG =
 			new JsonConfig<>(Jade.MODID + "/" + Jade.MODID, WailaConfig.class, () -> {
 				OverlayRenderer.updateTheme();
 			}).withGson(
 					new GsonBuilder()
-					.setPrettyPrinting()
-					.enableComplexMapKeySerialization()
-					.registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
-					.registerTypeAdapter(Theme.class, new ThemeSerializer())
-					.create()
+							.setPrettyPrinting()
+							.enableComplexMapKeySerialization()
+							.registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
+							.registerTypeAdapter(Theme.class, new ThemeSerializer())
+							.create()
 			);
 	/* on */
 
@@ -79,7 +81,6 @@ public class Jade {
 
 	public Jade() {
 		ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (a, b) -> true));
-		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, JadeCommonConfig.spec, "jade-addons.toml");
 		FMLJavaModLoadingContext.get().getModEventBus().register(JadeCommonConfig.class);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::loadComplete);
@@ -91,7 +92,6 @@ public class Jade {
 	}
 
 	private void setup(FMLCommonSetupEvent event) {
-		JadeCommonConfig.refresh();
 		NETWORK.registerMessage(0, ReceiveDataPacket.class, ReceiveDataPacket::write, ReceiveDataPacket::read, ReceiveDataPacket.Handler::onMessage, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
 		NETWORK.registerMessage(1, ServerPingPacket.class, ServerPingPacket::write, ServerPingPacket::read, ServerPingPacket.Handler::onMessage, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
 		NETWORK.registerMessage(2, RequestEntityPacket.class, RequestEntityPacket::write, RequestEntityPacket::read, RequestEntityPacket.Handler::onMessage, Optional.of(NetworkDirection.PLAY_TO_SERVER));
