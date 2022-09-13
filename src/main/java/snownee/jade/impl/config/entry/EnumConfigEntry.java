@@ -1,5 +1,8 @@
 package snownee.jade.impl.config.entry;
 
+import java.util.Collections;
+import java.util.Locale;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
@@ -7,9 +10,6 @@ import net.minecraft.resources.ResourceLocation;
 import snownee.jade.gui.config.WailaOptionsList;
 import snownee.jade.gui.config.value.OptionValue;
 import snownee.jade.impl.config.PluginConfig;
-
-import java.util.Collections;
-import java.util.Locale;
 
 public class EnumConfigEntry<E extends Enum<E>> extends ConfigEntry<E> {
 

@@ -75,8 +75,7 @@ public abstract class BaseOptionsScreen extends Screen {
 
 		if (mouseY >= 32 && mouseY <= height - 32) {
 			WailaOptionsList.Entry entry = options.getSelected();
-			if (entry instanceof OptionValue) {
-				OptionValue<?> value = (OptionValue<?>) entry;
+			if (entry instanceof OptionValue<?> value) {
 
 				AbstractWidget widget = value.getListener();
 				if (widget instanceof TooltipAccessor && widget.visible && mouseX >= widget.x && mouseY >= widget.y && mouseX < (widget.x + widget.getWidth()) && mouseY < (widget.y + widget.getHeight())) {

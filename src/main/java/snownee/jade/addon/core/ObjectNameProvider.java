@@ -73,8 +73,7 @@ public enum ObjectNameProvider
 
 	@Override
 	public void appendServerData(CompoundTag data, ServerPlayer player, Level world, BlockEntity t, boolean showDetails) {
-		if (t instanceof Nameable && JadeCommonConfig.shouldShowCustomName(t)) {
-			Nameable nameable = (Nameable) t;
+		if (t instanceof Nameable nameable && JadeCommonConfig.shouldShowCustomName(t)) {
 			if (nameable.hasCustomName()) {
 				data.putString("givenName", Component.Serializer.toJson(nameable.getCustomName()));
 			}

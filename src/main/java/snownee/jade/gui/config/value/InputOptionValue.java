@@ -3,7 +3,6 @@ package snownee.jade.gui.config.value;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import com.google.common.base.Predicates;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.gui.Font;

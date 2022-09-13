@@ -8,7 +8,6 @@ import net.minecraft.world.entity.animal.horse.AbstractChestedHorse;
 import net.minecraft.world.entity.vehicle.ContainerEntity;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.items.wrapper.InvWrapper;
-import snownee.jade.JadeCommonConfig;
 import snownee.jade.addon.forge.BlockInventoryProvider;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
@@ -32,7 +31,6 @@ public enum ContainerEntityProvider implements IEntityComponentProvider, IServer
 		int size = 54;
 		if (t instanceof AbstractChestedHorse horse && horse.hasChest()) {
 			PlatformProxy.putHorseInvData(horse, data, size);
-			return;
 		} else if (t instanceof ContainerEntity entity) {
 			if (entity.getLootTable() != null) {
 				data.putBoolean("Loot", true);

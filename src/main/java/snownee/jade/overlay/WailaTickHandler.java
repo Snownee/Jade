@@ -11,7 +11,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import snownee.jade.Jade;
-import snownee.jade.JadeClient;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.callback.JadeRayTraceCallback;

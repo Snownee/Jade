@@ -1,5 +1,7 @@
 package snownee.jade.api;
 
+import java.util.function.Predicate;
+
 import org.jetbrains.annotations.ApiStatus.NonExtendable;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,8 +22,6 @@ import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElementHelper;
-
-import java.util.function.Predicate;
 
 @NonExtendable
 public interface IWailaClientRegistration {

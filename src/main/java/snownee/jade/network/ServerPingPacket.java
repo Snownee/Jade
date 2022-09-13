@@ -1,20 +1,11 @@
 package snownee.jade.network;
 
-import java.util.Map;
-import java.util.Set;
 import java.util.function.Supplier;
 
 import com.google.common.base.Strings;
-
 import com.google.gson.JsonObject;
 
-import org.jetbrains.annotations.Nullable;
-
-import com.google.common.collect.Maps;
-import com.google.gson.Gson;
-
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.network.NetworkEvent;
 import snownee.jade.Jade;
 import snownee.jade.impl.ObjectDataCenter;

@@ -3,13 +3,12 @@ package snownee.jade.gui.config.value;
 import java.util.List;
 import java.util.function.Consumer;
 
-import net.minecraft.ChatFormatting;
-
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.vertex.PoseStack;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;

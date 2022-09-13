@@ -33,7 +33,7 @@ public class RayTracing {
 
 	public static final RayTracing INSTANCE = new RayTracing();
 	private HitResult target = null;
-	private Minecraft mc = Minecraft.getInstance();
+	private final Minecraft mc = Minecraft.getInstance();
 	public static Predicate<Entity> ENTITY_FILTER = Predicates.alwaysTrue();
 
 	private RayTracing() {

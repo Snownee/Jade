@@ -3,10 +3,9 @@ package snownee.jade.gui;
 import java.util.Comparator;
 import java.util.Set;
 
-import net.minecraft.ChatFormatting;
-
 import org.jetbrains.annotations.Nullable;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;

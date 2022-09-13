@@ -7,12 +7,12 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.function.Supplier;
 
-import net.minecraft.resources.ResourceLocation;
-
 import org.jetbrains.annotations.Nullable;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import net.minecraft.resources.ResourceLocation;
 
 public class JsonConfig<T> {
 

@@ -130,8 +130,7 @@ public enum BlockInventoryProvider implements IBlockComponentProvider, IServerDa
 			tag.putBoolean("Loot", true);
 			return;
 		}
-		if (!JadeCommonConfig.bypassLockedContainer && !player.isCreative() && !player.isSpectator() && te instanceof BaseContainerBlockEntity) {
-			BaseContainerBlockEntity lockableBlockEntity = (BaseContainerBlockEntity) te;
+		if (!JadeCommonConfig.bypassLockedContainer && !player.isCreative() && !player.isSpectator() && te instanceof BaseContainerBlockEntity lockableBlockEntity) {
 			if (lockableBlockEntity.lockKey != LockCode.NO_LOCK) {
 				tag.putBoolean("Locked", true);
 				return;

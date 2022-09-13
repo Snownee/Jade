@@ -1,20 +1,20 @@
-modLoader="javafml"
-loaderVersion="[42,)"
-license="CC BY-NC-SA 4.0"
+modLoader = "javafml"
+loaderVersion = "[42,)"
+license = "CC BY-NC-SA 4.0"
 
 [[mods]]
-modId="jade"
-version="${file.jarVersion}"
-displayName="Jade"
-authors="Snownee"
-displayURL="https://minecraft.curseforge.com/projects/jade"
-description="Minecraft mod shows what you are looking at. (Hwyla fork)"
-logoFile="icon.png"
-credits="TehNut, ProfMobius, kalkafox"
+modId = "jade"
+version = "${file.jarVersion}"
+displayName = "Jade"
+authors = "Snownee"
+displayURL = "https://minecraft.curseforge.com/projects/jade"
+description = "Minecraft mod shows what you are looking at. (Hwyla fork)"
+logoFile = "icon.png"
+credits = "TehNut, ProfMobius, kalkafox"
 
 [[dependencies.jade]]
-    modId="forge"
-    mandatory=true
-    versionRange="[42, )"
-    ordering="NONE"
-    side="BOTH"
+modId = "forge"
+mandatory = true
+versionRange = "[42, )"
+ordering = "NONE"
+side = "BOTH"

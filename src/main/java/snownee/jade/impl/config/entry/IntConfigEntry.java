@@ -9,9 +9,9 @@ import snownee.jade.impl.config.PluginConfig;
 
 public class IntConfigEntry extends ConfigEntry<Integer> {
 
-	private boolean slider;
-	private int min;
-	private int max;
+	private final boolean slider;
+	private final int min;
+	private final int max;
 
 	public IntConfigEntry(ResourceLocation id, int defaultValue, int min, int max, boolean slider) {
 		super(id, defaultValue);

@@ -206,7 +206,7 @@ public class WailaConfig implements IWailaConfig {
 		@Expose
 		private float autoScaleThreshold = 0.5f;
 		private float alpha = 0.7f;
-		private Map<ResourceLocation, Theme> themes = Maps.newLinkedHashMap();
+		private final Map<ResourceLocation, Theme> themes = Maps.newLinkedHashMap();
 		private ResourceLocation activeTheme = Theme.DARK.id;
 		private IconMode iconMode = IconMode.TOP;
 

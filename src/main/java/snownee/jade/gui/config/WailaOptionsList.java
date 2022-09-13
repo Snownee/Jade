@@ -8,8 +8,6 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import net.minecraft.client.gui.components.AbstractSelectionList;
-
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Predicates;
@@ -28,6 +26,7 @@ import it.unimi.dsi.fastutil.floats.FloatUnaryOperator;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.components.AbstractSelectionList;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.CycleButton;

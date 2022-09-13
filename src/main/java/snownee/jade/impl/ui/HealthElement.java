@@ -9,9 +9,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec2;
-import snownee.jade.Jade;
 import snownee.jade.api.Identifiers;
-import snownee.jade.api.config.IWailaConfig.IConfigGeneral;
 import snownee.jade.api.ui.Element;
 import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.overlay.DisplayHelper;
@@ -22,7 +20,7 @@ public class HealthElement extends Element {
 
 	private final float maxHealth;
 	private final float health;
-	private String text;
+	private final String text;
 
 	public HealthElement(float maxHealth, float health) {
 		this.maxHealth = maxHealth;

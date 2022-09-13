@@ -19,9 +19,9 @@ public class SliderOptionValue extends OptionValue<Float> {
 	public static final Predicate<String> FLOAT = s -> s.matches("[-+]?([0-9]*\\.[0-9]+|[0-9]+)") || s.endsWith(".") || s.isEmpty();
 
 	private final Slider slider;
-	private float min;
-	private float max;
-	private FloatUnaryOperator aligner;
+	private final float min;
+	private final float max;
+	private final FloatUnaryOperator aligner;
 
 	public SliderOptionValue(String optionName, float value, Consumer<Float> save, float min, float max, FloatUnaryOperator aligner) {
 		super(optionName, save);

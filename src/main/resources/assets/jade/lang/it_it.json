@@ -11,18 +11,15 @@
   "tooltip.jade.state_off": "Off",
   "tooltip.jade.power": "Energia: %d",
   "tooltip.jade.villager_profession": "Professione: %s",
-
   "gui.jade.configuration": "%s Configurazione",
   "gui.jade.jade_settings": "%s Impostazioni",
   "gui.jade.plugin_settings": "Impostazioni plug-in",
-
   "key.jade.config": "Apri config",
   "key.jade.show_overlay": "Mostra overlay",
   "key.jade.toggle_liquid": "Toggle liquidi",
   "key.jade.show_details": "Mostra dettagli",
   "key.jade.show_recipes": "Mostra ricette",
   "key.jade.show_uses": "Mostra usi",
-
   "config.jade.general": "Generale",
   "config.jade.display_tooltip": "Visualizza tooltip",
   "config.jade.display_tooltip_desc": "Raccogli dati e rendi il tooltip",
@@ -41,7 +38,6 @@
   "config.jade.display_item_top": "Sopra",
   "config.jade.display_item_centered": "Centrato",
   "config.jade.reach_distance": "Portata estesa",
-
   "config.jade.overlay": "Overlay",
   "config.jade.overlay_pos_x": "Rapporto orizzontale",
   "config.jade.overlay_pos_y": "Rapporto verticale",
@@ -51,27 +47,21 @@
   "config.jade.overlay_square": "Bordo quadrato",
   "config.jade.flip_main_hand": "Capovolgi la mano principale",
   "config.jade.flip_main_hand_desc": "Capovolgi la posizione del tooltip se la mano principale è a sinistra",
-
   "config.jade.overlay_color": "Colore",
   "config.jade.overlay_alpha": "Alfa",
   "config.jade.overlay_theme": "Tema",
-
   "config.jade.formatting": "Formattazione",
   "config.jade.format_mod_name": "Nome della mod",
   "config.jade.format_registry_name": "Nome del registro di sistema",
-
   "config.jade.plugin_jade.registry_name": "Nome del registro di sistema",
   "config.jade.plugin_minecraft.entity_health": "Salute dell'entita",
   "config.jade.plugin_minecraft.entity_armor": "Armatura dell'entità",
   "config.jade.plugin_minecraft.block_states": "Block States",
   "config.jade.plugin_jade.item_mod_name": "Nome della mod nel tooltip dell'oggetto",
   "config.jade.plugin_jade.mod_name": "Nome della mod",
-
   "entity.minecraft.villager.none": "Disoccupato",
   "entity.minecraft.villager.nitwit": "Fesso",
-
   "command.jade.dump.success": "Scarico riuscito",
-
   "config.jade.plugin_minecraft.horse_stats": "Statistiche del cavallo",
   "jade.horseStat.jump": "Altezza del salto: %d",
   "jade.horseStat.speed": "Velocità: %d",
@@ -136,7 +126,6 @@
   "config.jade.plugin_minecraft.lectern": "Leggio",
   "config.jade.plugin_minecraft.animal_owner": "Proprietario/a di animali",
   "jade.owner": "Proprietario/a: %s",
-
   "config.jade.plugin_minecraft.furnace": "Contenuti fornace",
   "config.jade.plugin_minecraft.mob_spawner": "Tipo di generatore",
   "config.jade.plugin_minecraft.crop_progress": "Progresso coltura",

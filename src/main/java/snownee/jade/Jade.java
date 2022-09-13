@@ -21,7 +21,6 @@ import net.minecraftforge.fml.IExtensionPoint;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -110,9 +109,7 @@ public class Jade {
 				.filter($ -> {
 					if ($.annotationType().getClassName().equals(WailaPlugin.class.getName())) {
 						String required = (String) $.annotationData().getOrDefault("value", "");
-						if (required.isEmpty() || ModList.get().isLoaded(required)) {
-							return true;
-						}
+						return required.isEmpty() || ModList.get().isLoaded(required);
 					}
 					return false;
 				})

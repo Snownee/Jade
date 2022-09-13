@@ -30,7 +30,7 @@ public enum BlockStatesProvider implements IBlockComponentProvider {
 		ITooltip box = helper.tooltip();
 		properties.forEach(p -> {
 			Comparable<?> value = state.getValue(p);
-			MutableComponent valueText = Component.literal(" " + value.toString()).withStyle();
+			MutableComponent valueText = Component.literal(" " + value).withStyle();
 			if (p instanceof BooleanProperty)
 				valueText = valueText.withStyle(value == Boolean.TRUE ? ChatFormatting.GREEN : ChatFormatting.RED);
 			box.add(Component.literal(p.getName() + ":").append(valueText));

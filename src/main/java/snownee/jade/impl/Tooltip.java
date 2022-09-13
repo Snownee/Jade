@@ -134,7 +134,7 @@ public class Tooltip implements ITooltip {
 
 	@Override
 	public void remove(ResourceLocation tag) {
-		for (Iterator<Line> iterator = lines.iterator(); iterator.hasNext();) {
+		for (Iterator<Line> iterator = lines.iterator(); iterator.hasNext(); ) {
 			Line line = iterator.next();
 			line.left.removeIf(e -> Objects.equal(tag, e.getTag()));
 			line.right.removeIf(e -> Objects.equal(tag, e.getTag()));
@@ -164,12 +164,12 @@ public class Tooltip implements ITooltip {
 		for (Line line : lines) {
 			/* off */
 			msgs.add(Joiner.on(' ').join(
-					Stream.concat(line.left.stream(), line.right.stream())
-							.filter(e -> !Identifiers.CORE_MOD_NAME.equals(e.getTag()))
-							.map(IElement::getCachedMessage)
-							.filter(java.util.Objects::nonNull)
-							.map(StringDecomposer::getPlainText)
-							.toList()
+							Stream.concat(line.left.stream(), line.right.stream())
+									.filter(e -> !Identifiers.CORE_MOD_NAME.equals(e.getTag()))
+									.map(IElement::getCachedMessage)
+									.filter(java.util.Objects::nonNull)
+									.map(StringDecomposer::getPlainText)
+									.toList()
 					)
 			);
 			/* on */
