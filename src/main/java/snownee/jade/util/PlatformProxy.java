@@ -1,14 +1,16 @@
 package snownee.jade.util;
 
 import java.io.File;
+import java.util.List;
 import java.util.UUID;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.Container;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.horse.AbstractChestedHorse;
 import net.minecraft.world.entity.decoration.PaintingVariant;
@@ -16,16 +18,21 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.EnderChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.IForgeShearable;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.UsernameCache;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 import snownee.jade.addon.forge.BlockInventoryProvider;
+import snownee.jade.api.view.ItemView;
 
 public final class PlatformProxy {
 
@@ -74,7 +81,22 @@ public final class PlatformProxy {
 	}
 
 	public static void putHorseInvData(AbstractChestedHorse horse, CompoundTag data, int size) {
-		horse.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(h -> BlockInventoryProvider.putInvData(data, h, size, 2));
+		horse.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(h -> BlockInventoryProvider.putInvData(data, ItemView.fromItemHandler(h, size, 2)));
+	}
+
+	public static List<ItemView> wrapBlockInv(BlockEntity te, @Nullable Player player) {
+		int size = 54;
+		LazyOptional<IItemHandler> optional = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
+		if (optional.isPresent()) {
+			return optional.map($ -> ItemView.fromItemHandler($, size, 0)).get();
+		}
+		if (te instanceof Container) {
+			return ItemView.fromContainer((Container) te, size, 0);
+		}
+		if (player != null && te instanceof EnderChestBlockEntity) {
+			return ItemView.fromContainer(player.getEnderChestInventory(), size, 0);
+		}
+		return null;
 	}
 
 	public static boolean isDevEnv() {

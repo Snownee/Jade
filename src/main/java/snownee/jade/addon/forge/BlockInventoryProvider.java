@@ -2,31 +2,24 @@ package snownee.jade.addon.forge;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.Container;
 import net.minecraft.world.LockCode;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.EnderChestBlockEntity;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.items.wrapper.InvWrapper;
 import snownee.jade.Jade;
 import snownee.jade.JadeCommonConfig;
 import snownee.jade.api.Accessor;
@@ -38,8 +31,10 @@ import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.view.ItemView;
 import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.util.ClientPlatformProxy;
+import snownee.jade.util.PlatformProxy;
 
 public enum BlockInventoryProvider implements IBlockComponentProvider, IServerDataProvider<BlockEntity> {
 
@@ -67,32 +62,21 @@ public enum BlockInventoryProvider implements IBlockComponentProvider, IServerDa
 		}
 
 		if (accessor.getServerData().contains("JadeHandler")) {
-			ItemStackHandler itemHandler = new ItemStackHandler();
-			itemHandler.deserializeNBT(accessor.getServerData().getCompound("JadeHandler"));
+			ListTag nbtList = accessor.getServerData().getCompound("JadeHandler").getList("Items", Tag.TAG_COMPOUND);
 
 			int drawnCount = 0;
-			int realSize = 0;
-			for (int i = 0; i < itemHandler.getSlots(); i++) {
-				ItemStack stack = itemHandler.getStackInSlot(i);
-				if (!stack.isEmpty()) {
-					++realSize;
-				} else {
-					break;
-				}
-			}
-			realSize = Math.min(PluginConfig.INSTANCE.getInt(
-					ClientPlatformProxy.isShowDetailsPressed() ?
-							Identifiers.MC_BLOCK_INVENTORY_DETAILED_AMOUNT :
-							Identifiers.MC_BLOCK_INVENTORY_NORMAL_AMOUNT
-			), realSize);
+			int realSize = PluginConfig.INSTANCE.getInt(ClientPlatformProxy.isShowDetailsPressed() ? Identifiers.MC_BLOCK_INVENTORY_DETAILED_AMOUNT : Identifiers.MC_BLOCK_INVENTORY_NORMAL_AMOUNT);
+			realSize = Math.min(nbtList.size(), realSize);
 			boolean showName = realSize < PluginConfig.INSTANCE.getInt(Identifiers.MC_BLOCK_INVENTORY_SHOW_NAME_AMOUNT);
-
 			IElementHelper helper = tooltip.getElementHelper();
 			List<IElement> elements = Lists.newArrayList();
-			for (int i = 0; i < itemHandler.getSlots(); i++) {
-				ItemStack stack = itemHandler.getStackInSlot(i);
+			for (int i = 0; i < realSize; i++) {
+				CompoundTag itemTag = nbtList.getCompound(i);
+				ItemStack stack = ItemStack.of(itemTag);
 				if (stack.isEmpty())
-					break;
+					continue;
+				if (itemTag.contains("NewCount"))
+					stack.setCount(itemTag.getInt("NewCount"));
 				if (i > 0 && (showName || drawnCount >= PluginConfig.INSTANCE.getInt(Identifiers.MC_BLOCK_INVENTORY_ITEMS_PER_LINE))) {
 					tooltip.add(elements);
 					elements.clear();
@@ -104,6 +88,8 @@ public enum BlockInventoryProvider implements IBlockComponentProvider, IServerDa
 					copy.setCount(1);
 					elements.add(Jade.smallItem(helper, copy).clearCachedMessage());
 					elements.add(helper.text(Component.literal(Integer.toString(stack.getCount())).append("× ").append(stack.getHoverName())).message(null));
+				} else if (itemTag.contains("Text")) {
+					elements.add(helper.item(stack, 1, itemTag.getString("Text")));
 				} else {
 					elements.add(helper.item(stack));
 				}
@@ -121,15 +107,11 @@ public enum BlockInventoryProvider implements IBlockComponentProvider, IServerDa
 			return;
 		}
 
-		int size = 54;
-//		if (size == 0) {
-//			return;
-//		}
-
 		if (te instanceof RandomizableContainerBlockEntity && ((RandomizableContainerBlockEntity) te).lootTable != null) {
 			tag.putBoolean("Loot", true);
 			return;
 		}
+
 		if (!JadeCommonConfig.bypassLockedContainer && !player.isCreative() && !player.isSpectator() && te instanceof BaseContainerBlockEntity lockableBlockEntity) {
 			if (lockableBlockEntity.lockKey != LockCode.NO_LOCK) {
 				tag.putBoolean("Locked", true);
@@ -137,46 +119,29 @@ public enum BlockInventoryProvider implements IBlockComponentProvider, IServerDa
 			}
 		}
 
-		IItemHandler itemHandler = null;
-		LazyOptional<IItemHandler> optional = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
-		if (optional.isPresent()) {
-			itemHandler = optional.orElse(null);
-		} else if (te instanceof Container) {
-			itemHandler = new InvWrapper((Container) te);
-		} else if (te instanceof EnderChestBlockEntity) {
-			itemHandler = new InvWrapper(player.getEnderChestInventory());
-		}
-		putInvData(tag, itemHandler, size, 0);
+		putInvData(tag, PlatformProxy.wrapBlockInv(te, player));
 	}
 
-	public static void putInvData(CompoundTag tag, IItemHandler itemHandler, int size, int start) {
-		if (itemHandler == null || size == 0) {
+	public static void putInvData(CompoundTag tag, List<ItemView> views) {
+		if (views == null || views.isEmpty())
 			return;
+		ListTag nbtTagList = new ListTag();
+		for (int i = 0; i < views.size(); i++) {
+			ItemView view = views.get(i);
+			int count = view.item.getCount();
+			CompoundTag itemTag = new CompoundTag();
+			if (count > 64)
+				view.item.setCount(1);
+			view.item.save(itemTag);
+			if (count > 64)
+				itemTag.putInt("NewCount", count);
+			if (view.text != null)
+				itemTag.putString("Text", view.text);
+			nbtTagList.add(itemTag);
 		}
-		ItemStackHandler mergedHandler = new ItemStackHandler(size);
-		boolean empty = true;
-		int max = Math.min(itemHandler.getSlots(), start + size * 3);
-		items:
-		for (int i = start; i < max; i++) {
-			ItemStack stack = itemHandler.getStackInSlot(i);
-			if (stack.hasTag() && stack.getTag().contains("CustomModelData")) {
-				for (String key : stack.getTag().getAllKeys()) {
-					if (key.toLowerCase(Locale.ENGLISH).endsWith("clear") && stack.getTag().getBoolean(key)) {
-						continue items;
-					}
-				}
-			}
-			if (!stack.isEmpty()) {
-				empty = false;
-				ItemHandlerHelper.insertItemStacked(mergedHandler, stack.copy(), false);
-				if (!mergedHandler.getStackInSlot(size - 1).isEmpty()) {
-					break;
-				}
-			}
-		}
-		if (!empty) {
-			tag.put("JadeHandler", mergedHandler.serializeNBT());
-		}
+		CompoundTag nbt = new CompoundTag();
+		nbt.put("Items", nbtTagList);
+		tag.put("JadeHandler", nbt);
 	}
 
 	@Override

@@ -7,7 +7,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.animal.horse.AbstractChestedHorse;
 import net.minecraft.world.entity.vehicle.ContainerEntity;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.items.wrapper.InvWrapper;
 import snownee.jade.addon.forge.BlockInventoryProvider;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
@@ -15,6 +14,7 @@ import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.view.ItemView;
 import snownee.jade.util.PlatformProxy;
 
 public enum ContainerEntityProvider implements IEntityComponentProvider, IServerDataProvider<Entity> {
@@ -37,7 +37,7 @@ public enum ContainerEntityProvider implements IEntityComponentProvider, IServer
 				return;
 			}
 			if (!entity.isEmpty()) {
-				BlockInventoryProvider.putInvData(data, new InvWrapper(entity), size, 0);
+				BlockInventoryProvider.putInvData(data, ItemView.fromContainer(entity, size, 0));
 			}
 		}
 	}
