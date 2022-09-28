@@ -81,7 +81,7 @@ import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IPluginConfig;
 
-public enum ExampleComponentProvider2 implements IBlockComponentProvider {
+public enum ExampleComponentProvider implements IBlockComponentProvider {
 
 	INSTANCE;
 
@@ -238,7 +238,7 @@ Result:
 
 Much better now!
 
-## Improve Accessibility
+## Improving Accessibility
 
 Jade has a feature that allows user to narrate the tooltip (press numpad 5 by default). Now the problem is we don't want our clock icon to be narrated. So we can clear the narratable message in this way:
 
