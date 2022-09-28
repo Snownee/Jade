@@ -133,6 +133,7 @@ public class Jade {
 			}
 		}
 
+		WailaCommonRegistration.INSTANCE.priorities.updateConfig(PluginConfig.INSTANCE.getKeys());
 		WailaCommonRegistration.INSTANCE.loadComplete();
 		if (PlatformProxy.isPhysicallyClient()) {
 			WailaClientRegistration.INSTANCE.loadComplete();
