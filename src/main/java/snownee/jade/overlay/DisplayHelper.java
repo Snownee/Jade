@@ -7,8 +7,6 @@ import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.BufferUploader;
@@ -17,7 +15,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat.Mode;
 import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -25,13 +22,7 @@ import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
-import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -50,38 +41,40 @@ import snownee.jade.impl.ui.BorderStyle;
 public class DisplayHelper implements IDisplayHelper {
 
 	public static final DisplayHelper INSTANCE = new DisplayHelper();
-
-	//WTF is it???
-	private static final Vector3f DIFFUSE_LIGHT_0 = new Vector3f(-0.5f, -0.1f, -0.1f);
-	private static final Vector3f DIFFUSE_LIGHT_1 = new Vector3f(0, -1, 0);
-
 	private static final Minecraft CLIENT = Minecraft.getInstance();
-	private static float blitOffset;
 
 	@Override
 	public void drawItem(PoseStack matrixStack, float x, float y, ItemStack stack, float scale, @Nullable String text) {
-		matrixStack.pushPose();
 		RenderSystem.enableDepthTest();
-		//CLIENT.getItemRenderer().renderGuiItem(stack, (int) x, (int) y + 20);
-		tryRenderGuiItem(matrixStack, stack, x, y, scale);
-		renderGuiItemDecorations(matrixStack, CLIENT.font, stack, x, y, text);
-		//renderStackSize(matrixStack, CLIENT.font, stack, x, y);
+
+		PoseStack modelViewStack = RenderSystem.getModelViewStack();
+		modelViewStack.pushPose();
+		modelViewStack.mulPoseMatrix(matrixStack.last().pose());
+		modelViewStack.translate(x, y, 0);
+		modelViewStack.scale(scale, scale, scale);
+
+		CLIENT.getItemRenderer().renderGuiItem(stack, 0, 0);
+		renderGuiItemDecorations(CLIENT.font, stack, text);
+
+		modelViewStack.popPose();
+		RenderSystem.applyModelViewMatrix();
 		RenderSystem.disableDepthTest();
-		matrixStack.popPose();
 	}
 
-	private static void renderGuiItemDecorations(PoseStack posestack, Font font, ItemStack stack, float p_115177_, float p_115178_, @Nullable String p_115179_) {
+	private static void renderGuiItemDecorations(Font font, ItemStack stack, @Nullable String p_115179_) {
 		if (stack.isEmpty()) {
 			return;
 		}
-		ItemRenderer renderer = CLIENT.getItemRenderer();
-		//PoseStack posestack = new PoseStack();
+		PoseStack posestack = new PoseStack();
 		if (stack.getCount() != 1 || p_115179_ != null) {
-			String s = p_115179_ == null ? String.valueOf(stack.getCount()) : p_115179_;
-			posestack.translate(0.0D, 0.0D, renderer.blitOffset + 200.0F);
+			String s = p_115179_ == null ? INSTANCE.humanReadableNumber(stack.getCount(), "", false) : p_115179_;
+			posestack.pushPose();
+			posestack.translate(0.0D, 0.0D, CLIENT.getItemRenderer().blitOffset + 200.0F);
+			posestack.scale(.75f, .75f, .75f);
 			MultiBufferSource.BufferSource multibuffersource$buffersource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-			font.drawInBatch(s, p_115177_ + 19 - 2 - font.width(s), p_115178_ + 6 + 3, 16777215, true, posestack.last().pose(), multibuffersource$buffersource, false, 0, 15728880);
+			font.drawInBatch(s, 22 - font.width(s), 14, 16777215, true, posestack.last().pose(), multibuffersource$buffersource, false, 0, 15728880);
 			multibuffersource$buffersource.endBatch();
+			posestack.popPose();
 		}
 
 		if (stack.isBarVisible()) {
@@ -93,8 +86,8 @@ public class DisplayHelper implements IDisplayHelper {
 			double health = stack.getBarWidth();
 			int i = Math.round(13.0F - (float) health * 13.0F);
 			int j = stack.getBarColor();
-			draw(posestack, bufferbuilder, p_115177_ + 2, p_115178_ + 13, 13, 2, 0, 0, 0, 255);
-			draw(posestack, bufferbuilder, p_115177_ + 2, p_115178_ + 13, i, 1, j >> 16 & 255, j >> 8 & 255, j & 255, 255);
+			draw(posestack, bufferbuilder, 2, 13, 13, 2, 0, 0, 0, 255);
+			draw(posestack, bufferbuilder, 2, 13, i, 1, j >> 16 & 255, j >> 8 & 255, j & 255, 255);
 			RenderSystem.enableBlend();
 			RenderSystem.enableTexture();
 			RenderSystem.enableDepthTest();
@@ -109,7 +102,7 @@ public class DisplayHelper implements IDisplayHelper {
 			RenderSystem.defaultBlendFunc();
 			Tesselator tesselator1 = Tesselator.getInstance();
 			BufferBuilder bufferbuilder1 = tesselator1.getBuilder();
-			draw(posestack, bufferbuilder1, p_115177_, p_115178_ + Mth.floor(16.0F * (1.0F - f)), 16, Mth.ceil(16.0F * f), 255, 255, 255, 127);
+			draw(posestack, bufferbuilder1, 0, 0 + Mth.floor(16.0F * (1.0F - f)), 16, Mth.ceil(16.0F * f), 255, 255, 255, 127);
 			RenderSystem.enableTexture();
 			RenderSystem.enableDepthTest();
 		}
@@ -124,43 +117,6 @@ public class DisplayHelper implements IDisplayHelper {
 		renderer.vertex(matrix, x + width, y + height, 0).color(red, green, blue, alpha).endVertex();
 		renderer.vertex(matrix, x + width, y, 0).color(red, green, blue, alpha).endVertex();
 		BufferUploader.drawWithShader(renderer.end());
-	}
-
-	public static void tryRenderGuiItem(PoseStack matrixStack, ItemStack stack, float x, float y, float scale) {
-		ItemRenderer renderer = CLIENT.getItemRenderer();
-		renderGuiItem(matrixStack, stack, x, y, renderer.getModel(stack, null, null, 0), scale);
-	}
-
-	private static void renderGuiItem(PoseStack posestack, ItemStack p_115128_, float p_115129_, float p_115130_, BakedModel p_115131_, float scale) {
-		ItemRenderer renderer = CLIENT.getItemRenderer();
-		TextureManager textureManager = CLIENT.getTextureManager();
-		textureManager.getTexture(TextureAtlas.LOCATION_BLOCKS).setFilter(false, false);
-		RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
-		RenderSystem.enableBlend();
-		RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-
-		posestack.pushPose();
-
-		RenderSystem.setShaderLights(DIFFUSE_LIGHT_0, DIFFUSE_LIGHT_1);
-
-		posestack.translate(p_115129_, p_115130_, 150.0F + blitOffset);
-		posestack.translate(8.0D * scale, 8.0D * scale, 0.0D);
-		posestack.scale(scale, -scale, scale);
-		posestack.scale(16.0F, 16.0F, 16.0F);
-
-		MultiBufferSource.BufferSource multibuffersource$buffersource = Minecraft.getInstance().renderBuffers().bufferSource();
-		boolean flag = !p_115131_.usesBlockLight();
-		if (flag) {
-			Lighting.setupForFlatItems();
-		}
-
-		renderer.render(p_115128_, ItemTransforms.TransformType.GUI, false, posestack, multibuffersource$buffersource, 15728880, OverlayTexture.NO_OVERLAY, p_115131_);
-		multibuffersource$buffersource.endBatch();
-		RenderSystem.enableDepthTest();
-		Lighting.setupFor3DItems();
-
-		posestack.popPose();
 	}
 
 	//	private static void renderStackSize(PoseStack matrixStack, Font fr, ItemStack stack, float xPosition, float yPosition) {
