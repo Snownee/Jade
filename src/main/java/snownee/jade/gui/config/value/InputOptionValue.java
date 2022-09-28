@@ -12,7 +12,6 @@ import net.minecraft.network.chat.Component;
 
 public class InputOptionValue<T> extends OptionValue<T> {
 
-	public static final Predicate<String> ANY = s -> true;
 	public static final Predicate<String> INTEGER = s -> s.matches("^[0-9]*$");
 	public static final Predicate<String> FLOAT = s -> s.matches("[-+]?([0-9]*\\.[0-9]+|[0-9]+)") || s.endsWith(".") || s.isEmpty();
 
@@ -61,6 +60,12 @@ public class InputOptionValue<T> extends OptionValue<T> {
 		}
 
 		save();
+	}
+
+	@Override
+	public void setDisabled(boolean b) {
+		super.setDisabled(b);
+		textField.setEditable(!b);
 	}
 
 	private static class WatchedTextfield extends EditBox {

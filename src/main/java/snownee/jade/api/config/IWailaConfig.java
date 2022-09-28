@@ -2,11 +2,14 @@ package snownee.jade.api.config;
 
 import java.util.Collection;
 
+import org.jetbrains.annotations.ApiStatus.NonExtendable;
+
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.ClipContext;
 
+@NonExtendable
 public interface IWailaConfig {
 
 	IConfigGeneral getGeneral();
@@ -15,7 +18,10 @@ public interface IWailaConfig {
 
 	IConfigFormatting getFormatting();
 
-	public interface IConfigGeneral {
+	IPluginConfig getPlugin();
+
+	@NonExtendable
+	interface IConfigGeneral {
 
 		void setDisplayTooltip(boolean displayTooltip);
 
@@ -35,10 +41,6 @@ public interface IWailaConfig {
 
 		void setTTSMode(TTSMode ttsMode);
 
-		void setMaxHealthForRender(int maxHealthForRender);
-
-		void setMaxHeartsPerLine(int maxHeartsPerLine);
-
 		void setDisplayFluids(boolean displayFluids);
 
 		void setDisplayFluids(FluidMode displayFluids);
@@ -55,10 +57,6 @@ public interface IWailaConfig {
 
 		TTSMode getTTSMode();
 
-		int getMaxHealthForRender();
-
-		int getMaxHeartsPerLine();
-
 		boolean shouldDisplayFluids();
 
 		FluidMode getDisplayFluids();
@@ -69,12 +67,17 @@ public interface IWailaConfig {
 
 		void setReachDistance(float reachDistance);
 
+		BossBarOverlapMode getBossBarOverlapMode();
+
+		void setBossBarOverlapMode(BossBarOverlapMode mode);
+
 		void setDebug(boolean debug);
 
 		boolean isDebug();
 	}
 
-	public interface IConfigOverlay {
+	@NonExtendable
+	interface IConfigOverlay {
 
 		void setOverlayPosX(float overlayPosX);
 
@@ -133,7 +136,8 @@ public interface IWailaConfig {
 		IconMode getIconMode();
 	}
 
-	public interface IConfigFormatting {
+	@NonExtendable
+	interface IConfigFormatting {
 
 		void setModName(String modName);
 
@@ -144,19 +148,19 @@ public interface IWailaConfig {
 		Component title(Object title);
 	}
 
-	public enum IconMode {
-		TOP, CENTERED, HIDE;
+	enum IconMode {
+		TOP, CENTERED, HIDE
 	}
 
-	public enum TTSMode {
+	enum TTSMode {
 		TOGGLE, PRESS
 	}
 
-	public enum DisplayMode {
+	enum DisplayMode {
 		HOLD_KEY, TOGGLE, LITE
 	}
 
-	public enum FluidMode {
+	enum FluidMode {
 		NONE(ClipContext.Fluid.NONE), ANY(ClipContext.Fluid.ANY), SOURCE_ONLY(ClipContext.Fluid.SOURCE_ONLY);
 
 		public final ClipContext.Fluid ctx;
@@ -164,5 +168,9 @@ public interface IWailaConfig {
 		FluidMode(ClipContext.Fluid ctx) {
 			this.ctx = ctx;
 		}
+	}
+
+	enum BossBarOverlapMode {
+		NO_OPERATION, HIDE_BOSS_BAR, PUSH_DOWN
 	}
 }

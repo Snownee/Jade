@@ -11,7 +11,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import snownee.jade.Jade;
-import snownee.jade.JadeClient;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.callback.JadeRayTraceCallback;
@@ -23,6 +22,7 @@ import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.Tooltip;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
+import snownee.jade.util.ClientPlatformProxy;
 
 public class WailaTickHandler {
 
@@ -61,14 +61,13 @@ public class WailaTickHandler {
 
 		Tooltip tooltip = new Tooltip();
 
-		if (target == null || target.getType() == HitResult.Type.MISS) {
+		if (target == null) {
 			tooltipRenderer = null;
 			return;
 		}
 
 		Accessor<?> accessor = null;
-		if (target instanceof BlockHitResult) {
-			BlockHitResult blockTarget = (BlockHitResult) target;
+		if (target instanceof BlockHitResult blockTarget && blockTarget.getType() != HitResult.Type.MISS) {
 			BlockState state = world.getBlockState(blockTarget.getBlockPos());
 			BlockEntity tileEntity = world.getBlockEntity(blockTarget.getBlockPos());
 			/* off */
@@ -83,8 +82,7 @@ public class WailaTickHandler {
 					.fakeBlock(DatapackBlockManager.getFakeBlock(world, blockTarget.getBlockPos()))
 					.build();
 			/* on */
-		} else if (target instanceof EntityHitResult) {
-			EntityHitResult entityTarget = (EntityHitResult) target;
+		} else if (target instanceof EntityHitResult entityTarget) {
 			/* off */
 			accessor = WailaClientRegistration.INSTANCE.entityAccessor()
 					.level(world)
@@ -111,7 +109,7 @@ public class WailaTickHandler {
 			tooltipRenderer = null;
 			return;
 		}
-		boolean showDetails = JadeClient.showDetails.isDown();
+		boolean showDetails = ClientPlatformProxy.isShowDetailsPressed();
 		if (accessor.isServerConnected()) {
 			boolean request = accessor.shouldRequestData();
 			if (ObjectDataCenter.isTimeElapsed(ObjectDataCenter.rateLimiter)) {

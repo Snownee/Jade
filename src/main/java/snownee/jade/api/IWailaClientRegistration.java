@@ -1,7 +1,11 @@
 package snownee.jade.api;
 
-import org.jetbrains.annotations.ApiStatus.NonExtendable;
+import java.util.function.Predicate;
 
+import org.jetbrains.annotations.ApiStatus.NonExtendable;
+import org.jetbrains.annotations.Nullable;
+
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -11,6 +15,7 @@ import snownee.jade.api.callback.JadeAfterRenderCallback;
 import snownee.jade.api.callback.JadeBeforeRenderCallback;
 import snownee.jade.api.callback.JadeItemModNameCallback;
 import snownee.jade.api.callback.JadeRayTraceCallback;
+import snownee.jade.api.callback.JadeRenderBackgroundCallback;
 import snownee.jade.api.callback.JadeTooltipCollectedCallback;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
@@ -22,47 +27,55 @@ import snownee.jade.api.ui.IElementHelper;
 public interface IWailaClientRegistration {
 
 	/**
-     * Register a namespaced config key to be accessed within data providers.
-     *
-     * @param key the namespaced key
-     * @param defaultValue the default value
-     */
+	 * Register a namespaced config key to be accessed within data providers.
+	 *
+	 * @param key          the namespaced key
+	 * @param defaultValue the default value
+	 */
 	void addConfig(ResourceLocation key, boolean defaultValue);
 
+	void addConfig(ResourceLocation key, Enum<?> defaultValue);
+
+	void addConfig(ResourceLocation key, String defaultValue, Predicate<String> validator);
+
+	void addConfig(ResourceLocation key, int defaultValue, int min, int max, boolean slider);
+
+	void addConfig(ResourceLocation key, float defaultValue, float min, float max, boolean slider);
+
 	/**
-     * Register an {@link IJadeProvider} instance to allow overriding the icon for a block via the
-     * {@link IJadeProvider#getIcon(BlockAccessor, IPluginConfig, IElement)} method.
-     *
-     * @param provider The data provider instance
-     * @param block The highest level class to apply to
-     */
+	 * Register an {@link IJadeProvider} instance to allow overriding the icon for a block via the
+	 * {@link IBlockComponentProvider#getIcon(BlockAccessor, IPluginConfig, IElement)} method.
+	 *
+	 * @param provider The data provider instance
+	 * @param block    The highest level class to apply to
+	 */
 	void registerBlockIcon(IBlockComponentProvider provider, Class<? extends Block> block);
 
 	/**
-     * Register an {@link IJadeProvider} instance for appending informations to
-     * the tooltip.
-     *
-     * @param provider The data provider instance
-     * @param block The highest level class to apply to
-     */
+	 * Register an {@link IJadeProvider} instance for appending informations to
+	 * the tooltip.
+	 *
+	 * @param provider The data provider instance
+	 * @param block    The highest level class to apply to
+	 */
 	void registerBlockComponent(IBlockComponentProvider provider, Class<? extends Block> block);
 
 	/**
-     * Register an {@link IEntityComponentProvider} instance to allow overriding the icon for a entity via the
-     * {@link IEntityComponentProvider#getIcon(EntityAccessor, IPluginConfig, IElement)} method.
-     *
-     * @param provider The data provider instance
-     * @param entity The highest level class to apply to
-     */
+	 * Register an {@link IEntityComponentProvider} instance to allow overriding the icon for a entity via the
+	 * {@link IEntityComponentProvider#getIcon(EntityAccessor, IPluginConfig, IElement)} method.
+	 *
+	 * @param provider The data provider instance
+	 * @param entity   The highest level class to apply to
+	 */
 	void registerEntityIcon(IEntityComponentProvider provider, Class<? extends Entity> entity);
 
 	/**
-     * Register an {@link IEntityComponentProvider} instance for appending {@link net.minecraft.util.text.Component}
-     * to the tooltip.
-     *
-     * @param provider The data provider instance
-     * @param entity The highest level class to apply to
-     */
+	 * Register an {@link IEntityComponentProvider} instance for appending {@link net.minecraft.network.chat.Component}
+	 * to the tooltip.
+	 *
+	 * @param provider The data provider instance
+	 * @param entity   The highest level class to apply to
+	 */
 	void registerEntityComponent(IEntityComponentProvider provider, Class<? extends Entity> entity);
 
 	/**
@@ -106,5 +119,9 @@ public interface IWailaClientRegistration {
 	void addTooltipCollectedCallback(JadeTooltipCollectedCallback callback);
 
 	void addItemModNameCallback(JadeItemModNameCallback callback);
+
+	void addRenderBackgroundCallback(JadeRenderBackgroundCallback callback);
+
+	Screen createPluginConfigScreen(@Nullable Screen parent, String namespace);
 
 }

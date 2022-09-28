@@ -36,7 +36,7 @@ public interface BlockAccessor extends Accessor<BlockHitResult> {
 	ItemStack getFakeBlock();
 
 	@NonExtendable
-	public interface Builder {
+	interface Builder {
 		Builder level(Level level);
 
 		Builder player(Player player);

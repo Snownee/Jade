@@ -13,14 +13,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec2;
+import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.fml.IExtensionPoint;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -57,18 +57,20 @@ public class Jade {
 	public static final Vec2 SMALL_ITEM_SIZE = new Vec2(10, 10);
 	public static final Vec2 SMALL_ITEM_OFFSET = Vec2.NEG_UNIT_Y;
 
-	/** addons: Use {@link mcp.IWailaCommonRegistration.waila.api.IWailaClientRegistration#getConfig} */
+	/**
+	 * addons: Use {@link snownee.jade.api.IWailaClientRegistration#getConfig}
+	 */
 	/* off */
 	public static final JsonConfig<WailaConfig> CONFIG =
 			new JsonConfig<>(Jade.MODID + "/" + Jade.MODID, WailaConfig.class, () -> {
 				OverlayRenderer.updateTheme();
 			}).withGson(
 					new GsonBuilder()
-					.setPrettyPrinting()
-					.enableComplexMapKeySerialization()
-					.registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
-					.registerTypeAdapter(Theme.class, new ThemeSerializer())
-					.create()
+							.setPrettyPrinting()
+							.enableComplexMapKeySerialization()
+							.registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
+							.registerTypeAdapter(Theme.class, new ThemeSerializer())
+							.create()
 			);
 	/* on */
 
@@ -78,26 +80,24 @@ public class Jade {
 
 	public Jade() {
 		ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (a, b) -> true));
-		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, JadeCommonConfig.spec, "jade-addons.toml");
 		FMLJavaModLoadingContext.get().getModEventBus().register(JadeCommonConfig.class);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::loadComplete);
 		if (PlatformProxy.isPhysicallyClient()) {
-			FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setupClient);
+			FMLJavaModLoadingContext.get().getModEventBus().addListener(EventPriority.HIGH, this::setupClient);
 		}
 		MinecraftForge.EVENT_BUS.addListener(this::playerJoin);
 		PlatformProxy.init();
 	}
 
 	private void setup(FMLCommonSetupEvent event) {
-		JadeCommonConfig.refresh();
 		NETWORK.registerMessage(0, ReceiveDataPacket.class, ReceiveDataPacket::write, ReceiveDataPacket::read, ReceiveDataPacket.Handler::onMessage, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
 		NETWORK.registerMessage(1, ServerPingPacket.class, ServerPingPacket::write, ServerPingPacket::read, ServerPingPacket.Handler::onMessage, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
 		NETWORK.registerMessage(2, RequestEntityPacket.class, RequestEntityPacket::write, RequestEntityPacket::read, RequestEntityPacket.Handler::onMessage, Optional.of(NetworkDirection.PLAY_TO_SERVER));
 		NETWORK.registerMessage(3, RequestTilePacket.class, RequestTilePacket::write, RequestTilePacket::read, RequestTilePacket.Handler::onMessage, Optional.of(NetworkDirection.PLAY_TO_SERVER));
 	}
 
-	private void setupClient(FMLClientSetupEvent event) {
+	private void setupClient(RegisterClientReloadListenersEvent event) {
 		JadeClient.initClient();
 	}
 
@@ -109,9 +109,7 @@ public class Jade {
 				.filter($ -> {
 					if ($.annotationType().getClassName().equals(WailaPlugin.class.getName())) {
 						String required = (String) $.annotationData().getOrDefault("value", "");
-						if (required.isEmpty() || ModList.get().isLoaded(required)) {
-							return true;
-						}
+						return required.isEmpty() || ModList.get().isLoaded(required);
 					}
 					return false;
 				})

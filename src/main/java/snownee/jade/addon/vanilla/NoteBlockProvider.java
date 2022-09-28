@@ -16,8 +16,8 @@ public enum NoteBlockProvider implements IBlockComponentProvider {
 
 	INSTANCE;
 
-	private static final String[] PITCH = { "F♯/G♭", "G", "G♯/A♭", "A", "A♯/B♭", "B", "C", "C♯/D♭", "D", "D♯/E♭", "E", "F" };
-	private static final ChatFormatting[] OCTAVE = { ChatFormatting.WHITE, ChatFormatting.YELLOW, ChatFormatting.GOLD };
+	private static final String[] PITCH = {"F♯/G♭", "G", "G♯/A♭", "A", "A♯/B♭", "B", "C", "C♯/D♭", "D", "D♯/E♭", "E", "F"};
+	private static final ChatFormatting[] OCTAVE = {ChatFormatting.WHITE, ChatFormatting.YELLOW, ChatFormatting.GOLD};
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {

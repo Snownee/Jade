@@ -14,12 +14,13 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.HumanoidArm;
+import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.Theme;
 import snownee.jade.overlay.OverlayRenderer;
 
 /**
- * Get this instance from {@link mcp.IWailaCommonRegistration.waila.api.IWailaCommonRegistration#getConfig}
+ * Get this instance from {@link snownee.jade.api.IWailaClientRegistration#getConfig}
  */
 public class WailaConfig implements IWailaConfig {
 
@@ -42,6 +43,11 @@ public class WailaConfig implements IWailaConfig {
 		return formatting;
 	}
 
+	@Override
+	public IPluginConfig getPlugin() {
+		return PluginConfig.INSTANCE;
+	}
+
 	public static class ConfigGeneral implements IConfigGeneral {
 		private boolean displayTooltip = true;
 		private boolean displayBlocks = true;
@@ -50,13 +56,12 @@ public class WailaConfig implements IWailaConfig {
 		private boolean hideFromDebug = true;
 		private boolean enableTextToSpeech = false;
 		private TTSMode ttsMode = TTSMode.PRESS;
-		private int maxHealthForRender = 40;
-		private int maxHeartsPerLine = 10;
 		private FluidMode fluidMode = FluidMode.ANY;
 		private float reachDistance = 0;
 		@Expose
 		private boolean debug = false;
 		private boolean itemModNameTooltip = true;
+		private BossBarOverlapMode bossBarOverlapMode = BossBarOverlapMode.PUSH_DOWN;
 
 		@Override
 		public void setDisplayTooltip(boolean displayTooltip) {
@@ -104,16 +109,6 @@ public class WailaConfig implements IWailaConfig {
 		}
 
 		@Override
-		public void setMaxHealthForRender(int maxHealthForRender) {
-			this.maxHealthForRender = maxHealthForRender;
-		}
-
-		@Override
-		public void setMaxHeartsPerLine(int maxHeartsPerLine) {
-			this.maxHeartsPerLine = maxHeartsPerLine;
-		}
-
-		@Override
 		public void setDisplayFluids(boolean displayFluids) {
 			fluidMode = displayFluids ? FluidMode.ANY : FluidMode.NONE;
 		}
@@ -146,16 +141,6 @@ public class WailaConfig implements IWailaConfig {
 		@Override
 		public TTSMode getTTSMode() {
 			return ttsMode;
-		}
-
-		@Override
-		public int getMaxHealthForRender() {
-			return maxHealthForRender;
-		}
-
-		@Override
-		public int getMaxHeartsPerLine() {
-			return Math.max(1, maxHeartsPerLine);
 		}
 
 		@Override
@@ -198,6 +183,16 @@ public class WailaConfig implements IWailaConfig {
 			return itemModNameTooltip;
 		}
 
+		@Override
+		public BossBarOverlapMode getBossBarOverlapMode() {
+			return bossBarOverlapMode;
+		}
+
+		@Override
+		public void setBossBarOverlapMode(BossBarOverlapMode mode) {
+			bossBarOverlapMode = mode;
+		}
+
 	}
 
 	public static class ConfigOverlay implements IConfigOverlay {
@@ -211,7 +206,7 @@ public class WailaConfig implements IWailaConfig {
 		@Expose
 		private float autoScaleThreshold = 0.5f;
 		private float alpha = 0.7f;
-		private Map<ResourceLocation, Theme> themes = Maps.newLinkedHashMap();
+		private final Map<ResourceLocation, Theme> themes = Maps.newLinkedHashMap();
 		private ResourceLocation activeTheme = Theme.DARK.id;
 		private IconMode iconMode = IconMode.TOP;
 

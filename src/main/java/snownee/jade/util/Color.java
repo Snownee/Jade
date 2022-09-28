@@ -57,7 +57,7 @@ public class Color {
 	}
 
 	public int[] toIntArray() {
-		return new int[] { r & 0xff, g & 0xff, b & 0xff, a & 0xff };
+		return new int[]{r & 0xff, g & 0xff, b & 0xff, a & 0xff};
 	}
 
 	public static Color fromString(String color) {
@@ -101,28 +101,28 @@ public class Color {
 	public static Color fromHex(String hex) {
 		byte r, g, b, a = 0;
 		switch (hex.length()) {
-		case 4:
-		case 5:
-			// #RGB(A)
-			r = (byte) (Integer.parseInt(String.valueOf(hex.charAt(1)), 16) * 0x11);
-			g = (byte) (Integer.parseInt(String.valueOf(hex.charAt(2)), 16) * 0x11);
-			b = (byte) (Integer.parseInt(String.valueOf(hex.charAt(3)), 16) * 0x11);
-			if (hex.length() == 5) {
-				a = (byte) (Integer.parseInt(String.valueOf(hex.charAt(4)), 16) * 0x11);
-			}
-			break;
-		case 7:
-		case 9:
-			// #RRGGBB(AA)
-			r = (byte) Integer.parseInt(hex.substring(1, 3), 16);
-			g = (byte) Integer.parseInt(hex.substring(3, 5), 16);
-			b = (byte) Integer.parseInt(hex.substring(5, 7), 16);
-			if (hex.length() == 9) {
-				a = (byte) Integer.parseInt(hex.substring(7, 9), 16);
-			}
-			break;
-		default:
-			return null;
+			case 4:
+			case 5:
+				// #RGB(A)
+				r = (byte) (Integer.parseInt(String.valueOf(hex.charAt(1)), 16) * 0x11);
+				g = (byte) (Integer.parseInt(String.valueOf(hex.charAt(2)), 16) * 0x11);
+				b = (byte) (Integer.parseInt(String.valueOf(hex.charAt(3)), 16) * 0x11);
+				if (hex.length() == 5) {
+					a = (byte) (Integer.parseInt(String.valueOf(hex.charAt(4)), 16) * 0x11);
+				}
+				break;
+			case 7:
+			case 9:
+				// #RRGGBB(AA)
+				r = (byte) Integer.parseInt(hex.substring(1, 3), 16);
+				g = (byte) Integer.parseInt(hex.substring(3, 5), 16);
+				b = (byte) Integer.parseInt(hex.substring(5, 7), 16);
+				if (hex.length() == 9) {
+					a = (byte) Integer.parseInt(hex.substring(7, 9), 16);
+				}
+				break;
+			default:
+				return null;
 		}
 		return fromRGB(r, g, b, a);
 	}

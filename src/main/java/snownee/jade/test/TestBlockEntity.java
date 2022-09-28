@@ -1,5 +1,7 @@
 package snownee.jade.test;
 
+import org.jetbrains.annotations.NotNull;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
@@ -9,6 +11,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 
@@ -17,7 +20,20 @@ public class TestBlockEntity extends BlockEntity {
 	TestEnergyStorage energyStorage = new TestEnergyStorage();
 	LazyOptional<TestEnergyStorage> energyCap = LazyOptional.of(() -> energyStorage);
 
-	FluidTank fluidStorage = new FluidTank(10000);
+	FluidTank fluidStorage = new FluidTank(10000) {
+		@Override
+		public int getTanks() {
+			return 5;
+		}
+
+		@Override
+		public @NotNull FluidStack getFluidInTank(int tank) {
+			if (tank > 0)
+				return FluidStack.EMPTY;
+			return super.getFluidInTank(tank);
+		}
+	};
+
 	LazyOptional<FluidTank> fluidCap = LazyOptional.of(() -> fluidStorage);
 
 	public TestBlockEntity(BlockPos pos, BlockState state) {

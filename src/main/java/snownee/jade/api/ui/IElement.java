@@ -22,7 +22,7 @@ public interface IElement {
 
 	/**
 	 * Calculate the default reserved area of this element.
-	 *
+	 * <p>
 	 * Modders call getCachedSize instead
 	 */
 	Vec2 getSize();
@@ -35,8 +35,8 @@ public interface IElement {
 	 * @param matrixStack
 	 * @param x
 	 * @param y
-	 * @param maxX Max width this element can expand to
-	 * @param maxY Max height this element can expand to
+	 * @param maxX        Max width this element can expand to
+	 * @param maxY        Max height this element can expand to
 	 */
 	void render(PoseStack matrixStack, float x, float y, float maxX, float maxY);
 
@@ -71,7 +71,7 @@ public interface IElement {
 
 	IElement message(@Nullable Component message);
 
-	public enum Align {
+	enum Align {
 		LEFT, RIGHT
 	}
 }

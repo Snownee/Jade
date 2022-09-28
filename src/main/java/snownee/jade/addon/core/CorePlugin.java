@@ -33,5 +33,6 @@ public class CorePlugin implements IWailaPlugin {
 		registration.addConfig(Identifiers.CORE_DISTANCE, false);
 		registration.addConfig(Identifiers.CORE_COORDINATES, false);
 		registration.addConfig(Identifiers.CORE_REL_COORDINATES, false);
+		registration.addConfig(Identifiers.CORE_REGISTRY_NAME, RegistryNameProvider.Mode.OFF);
 	}
 }

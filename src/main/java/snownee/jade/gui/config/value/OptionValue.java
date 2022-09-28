@@ -3,9 +3,12 @@ package snownee.jade.gui.config.value;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.vertex.PoseStack;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -16,20 +19,25 @@ import snownee.jade.gui.config.WailaOptionsList;
 public abstract class OptionValue<T> extends WailaOptionsList.Entry {
 
 	private final Component title;
-	private final String description;
+	@Nullable
+	private String description;
 	protected final Consumer<T> setter;
 	protected T value;
 	private int x;
+	public int indent;
 
 	public OptionValue(String optionName, Consumer<T> setter) {
 		this.title = makeTitle(optionName);
-		this.description = makeKey(optionName + "_desc");
 		this.setter = setter;
+		String key = makeKey(optionName + "_desc");
+		if (I18n.exists(key))
+			appendDescription(I18n.get(key));
 	}
 
 	@Override
 	public final void render(PoseStack matrixStack, int index, int rowTop, int rowLeft, int width, int height, int mouseX, int mouseY, boolean hovered, float deltaTime) {
-		client.font.drawShadow(matrixStack, title, rowLeft + 10, rowTop + (height / 4) + (client.font.lineHeight / 2), 16777215);
+		Component title0 = getListener().active ? title : title.copy().withStyle(ChatFormatting.STRIKETHROUGH, ChatFormatting.GRAY);
+		client.font.drawShadow(matrixStack, title0, rowLeft + indent + 10, rowTop + (height / 4) + (client.font.lineHeight / 2), 16777215);
 		drawValue(matrixStack, width, height, rowLeft + width - 110, rowTop, mouseX, mouseY, hovered, deltaTime);
 		this.x = rowLeft;
 	}
@@ -44,6 +52,12 @@ public abstract class OptionValue<T> extends WailaOptionsList.Entry {
 
 	public String getDescription() {
 		return description;
+	}
+
+	public void appendDescription(String description) {
+		if (this.description == null)
+			this.description = getTitle().getString();
+		this.description += '\n' + description;
 	}
 
 	public int getX() {

@@ -43,8 +43,7 @@ public enum BrewingStandProvider implements IBlockComponentProvider, IServerData
 
 	@Override
 	public void appendServerData(CompoundTag tag, ServerPlayer player, Level arg2, BlockEntity te, boolean showDetails) {
-		if (te instanceof BrewingStandBlockEntity) {
-			BrewingStandBlockEntity brewingStand = (BrewingStandBlockEntity) te;
+		if (te instanceof BrewingStandBlockEntity brewingStand) {
 			CompoundTag compound = new CompoundTag();
 			compound.putInt("Time", brewingStand.brewTime);
 			compound.putInt("Fuel", brewingStand.fuel);

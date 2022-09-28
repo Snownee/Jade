@@ -9,7 +9,7 @@ import snownee.jade.api.ITooltip;
 @FunctionalInterface
 public interface JadeBeforeRenderCallback {
 
-	public static class ColorSetting {
+	class ColorSetting {
 		public float alpha;
 		public int backgroundColor;
 		public int gradientStart;

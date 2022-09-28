@@ -9,9 +9,9 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec2;
-import snownee.jade.Jade;
-import snownee.jade.api.config.IWailaConfig.IConfigGeneral;
+import snownee.jade.api.Identifiers;
 import snownee.jade.api.ui.Element;
+import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.overlay.IconUI;
 import snownee.jade.overlay.OverlayRenderer;
@@ -20,7 +20,7 @@ public class HealthElement extends Element {
 
 	private final float maxHealth;
 	private final float health;
-	private String text;
+	private final String text;
 
 	public HealthElement(float maxHealth, float health) {
 		this.maxHealth = maxHealth;
@@ -30,12 +30,11 @@ public class HealthElement extends Element {
 
 	@Override
 	public Vec2 getSize() {
-		IConfigGeneral config = Jade.CONFIG.get().getGeneral();
-		if (maxHealth > config.getMaxHealthForRender()) {
+		if (maxHealth > PluginConfig.INSTANCE.getInt(Identifiers.MC_ENTITY_HEALTH_MAX_FOR_RENDER)) {
 			Font font = Minecraft.getInstance().font;
 			return new Vec2(8 + font.width(text), 10);
 		} else {
-			float maxHearts = config.getMaxHeartsPerLine();
+			float maxHearts = PluginConfig.INSTANCE.getInt(Identifiers.MC_ENTITY_HEALTH_ICONS_PER_LINE);
 
 			float maxHealth = this.maxHealth * 0.5F;
 			int heartsPerLine = (int) (Math.min(maxHearts, Math.ceil(maxHealth)));
@@ -47,11 +46,11 @@ public class HealthElement extends Element {
 
 	@Override
 	public void render(PoseStack matrixStack, float x, float y, float maxX, float maxY) {
-		IConfigGeneral config = Jade.CONFIG.get().getGeneral();
-		float maxHearts = config.getMaxHeartsPerLine();
+		float maxHearts = PluginConfig.INSTANCE.getInt(Identifiers.MC_ENTITY_HEALTH_ICONS_PER_LINE);
+		int maxHeartsForRender = PluginConfig.INSTANCE.getInt(Identifiers.MC_ENTITY_HEALTH_MAX_FOR_RENDER);
 
-		int heartCount = maxHealth > config.getMaxHealthForRender() ? 1 : Mth.ceil(maxHealth * 0.5F);
-		float health = maxHealth > config.getMaxHealthForRender() ? 1 : (this.health * 0.5F);
+		int heartCount = maxHealth > maxHeartsForRender ? 1 : Mth.ceil(maxHealth * 0.5F);
+		float health = maxHealth > maxHeartsForRender ? 1 : (this.health * 0.5F);
 		int heartsPerLine = (int) (Math.min(maxHearts, Math.ceil(maxHealth)));
 
 		int xOffset = 0;
@@ -78,7 +77,7 @@ public class HealthElement extends Element {
 
 		}
 
-		if (maxHealth > config.getMaxHealthForRender()) {
+		if (maxHealth > maxHeartsForRender) {
 			DisplayHelper.INSTANCE.drawText(matrixStack, text, x + 8, y, OverlayRenderer.normalTextColorRaw);
 		}
 	}
