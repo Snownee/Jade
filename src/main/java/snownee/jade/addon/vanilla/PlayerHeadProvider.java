@@ -41,8 +41,11 @@ public enum PlayerHeadProvider implements IBlockComponentProvider {
 			String name = profile.getName();
 			if (name == null || StringUtils.isBlank(name))
 				return;
+			if (!name.contains(" ") && !name.contains("§")) {
+				name = I18n.get(Items.PLAYER_HEAD.getDescriptionId() + ".named", name);
+			}
 			tooltip.remove(Identifiers.CORE_OBJECT_NAME);
-			tooltip.add(0, config.getWailaConfig().getFormatting().title(I18n.get(Items.PLAYER_HEAD.getDescriptionId() + ".named", name)), Identifiers.CORE_OBJECT_NAME);
+			tooltip.add(0, config.getWailaConfig().getFormatting().title(name), Identifiers.CORE_OBJECT_NAME);
 		}
 	}
 
