@@ -1,5 +1,7 @@
 package snownee.jade.addon.vanilla;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.mojang.authlib.GameProfile;
 
 import net.minecraft.client.resources.language.I18n;
@@ -28,11 +30,14 @@ public enum PlayerHeadProvider implements IBlockComponentProvider {
 			if (name == null) {
 				name = PlatformProxy.getLastKnownUsername(profile.getId());
 			}
-			if (name == null) {
+			if (name == null || StringUtils.isBlank(name)) {
 				return;
 			}
+			if (!name.contains(" ") && !name.contains("§")) {
+				name = I18n.get(Items.PLAYER_HEAD.getDescriptionId() + ".named", name);
+			}
 			tooltip.remove(Identifiers.CORE_OBJECT_NAME);
-			tooltip.add(0, config.getWailaConfig().getFormatting().title(I18n.get(Items.PLAYER_HEAD.getDescriptionId() + ".named", name)), Identifiers.CORE_OBJECT_NAME);
+			tooltip.add(0, config.getWailaConfig().getFormatting().title(name), Identifiers.CORE_OBJECT_NAME);
 		}
 	}
 
