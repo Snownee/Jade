@@ -23,7 +23,7 @@ public class TextElement extends Element {
 	@Override
 	public Vec2 getSize() {
 		Font font = Minecraft.getInstance().font;
-		return new Vec2(font.width(component.getString()), font.lineHeight + 1);
+		return new Vec2(font.width(component), font.lineHeight + 1);
 	}
 
 	@Override
