@@ -49,6 +49,7 @@ public class WailaConfig {
 		private float reachDistance = 0;
 		@Expose
 		private boolean debug = false;
+		public boolean hintOverlayToggle = true;
 
 		public void setDisplayTooltip(boolean displayTooltip) {
 			this.displayTooltip = displayTooltip;

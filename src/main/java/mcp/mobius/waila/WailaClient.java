@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 
 import mcp.mobius.waila.addons.core.CorePlugin;
 import mcp.mobius.waila.api.config.WailaConfig;
+import mcp.mobius.waila.api.config.WailaConfig.ConfigGeneral;
 import mcp.mobius.waila.api.config.WailaConfig.ConfigGeneral.TTSMode;
 import mcp.mobius.waila.api.config.WailaConfig.DisplayMode;
 import mcp.mobius.waila.gui.HomeConfigScreen;
@@ -14,8 +15,11 @@ import mcp.mobius.waila.overlay.WailaTickHandler;
 import mcp.mobius.waila.utils.ModIdentification;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.toasts.SystemToast;
+import net.minecraft.client.gui.components.toasts.SystemToast.SystemToastIds;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.ClientRegistry;
@@ -69,20 +73,27 @@ public class WailaClient {
 			Minecraft.getInstance().setScreen(new HomeConfigScreen(null));
 		}
 
+		ConfigGeneral general = Waila.CONFIG.get().getGeneral();
 		if (showOverlay.isDown()) {
-			DisplayMode mode = Waila.CONFIG.get().getGeneral().getDisplayMode();
+			DisplayMode mode = general.getDisplayMode();
 			if (mode == WailaConfig.DisplayMode.TOGGLE) {
-				Waila.CONFIG.get().getGeneral().setDisplayTooltip(!Waila.CONFIG.get().getGeneral().shouldDisplayTooltip());
+				general.setDisplayTooltip(!general.shouldDisplayTooltip());
+				if (!general.shouldDisplayTooltip() && general.hintOverlayToggle) {
+					SystemToast.add(Minecraft.getInstance().getToasts(), SystemToastIds.TUTORIAL_HINT, new TranslatableComponent("toast.jade.toggle_hint.1"), new TranslatableComponent("toast.jade.toggle_hint.2", showOverlay.getTranslatedKeyMessage()));
+					general.hintOverlayToggle = false;
+				}
+				Waila.CONFIG.save();
 			}
 		}
 
 		if (toggleLiquid.isDown()) {
-			Waila.CONFIG.get().getGeneral().setDisplayFluids(!Waila.CONFIG.get().getGeneral().shouldDisplayFluids());
+			general.setDisplayFluids(!general.shouldDisplayFluids());
+			Waila.CONFIG.save();
 		}
 
 		if (narrate.isDown()) {
-			if (Waila.CONFIG.get().getGeneral().getTTSMode() == TTSMode.TOGGLE) {
-				Waila.CONFIG.get().getGeneral().toggleTTS();
+			if (general.getTTSMode() == TTSMode.TOGGLE) {
+				general.toggleTTS();
 			} else if (WailaTickHandler.instance().tooltipRenderer != null) {
 				WailaTickHandler.narrate(WailaTickHandler.instance().tooltipRenderer.getTooltip(), false);
 			}
