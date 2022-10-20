@@ -56,19 +56,17 @@ public class ForgeCapabilityProvider implements IComponentProvider, IServerDataP
 
 			if (config.get(VanillaPlugin.FORGE_FLUID)) {
 				IFluidHandler fluidHandler = tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).orElse(null);
-				if (fluidHandler != null && (!accessor.isServerConnected() || accessor.getServerData().contains("jadeTanks"))) {
-					if (accessor.isServerConnected()) {
-						ListTag list = accessor.getServerData().getList("jadeTanks", Tag.TAG_COMPOUND);
-						for (Tag nbt : list) {
-							CompoundTag tankData = (CompoundTag) nbt;
-							int capacity = tankData.getInt("capacity");
-							FluidStack fluidStack = FluidStack.loadFluidStackFromNBT(tankData);
-							appendTank(tooltip, fluidStack, capacity);
-						}
-					} else {
-						for (int i = 0; i < fluidHandler.getTanks(); i++) {
-							appendTank(tooltip, fluidHandler.getFluidInTank(i), fluidHandler.getTankCapacity(i));
-						}
+				if (fluidHandler != null) {
+					CompoundTag data = accessor.getServerData();
+					if (!accessor.isServerConnected()) {
+						appendData(data, fluidHandler);
+					}
+					ListTag list = data.getList("jadeTanks", Tag.TAG_COMPOUND);
+					for (Tag nbt : list) {
+						CompoundTag tankData = (CompoundTag) nbt;
+						int capacity = tankData.getInt("capacity");
+						FluidStack fluidStack = FluidStack.loadFluidStackFromNBT(tankData);
+						appendTank(tooltip, fluidStack, capacity);
 					}
 				}
 			}
@@ -100,29 +98,33 @@ public class ForgeCapabilityProvider implements IComponentProvider, IServerDataP
 
 		IFluidHandler fluidHandler = tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).orElse(null);
 		if (fluidHandler != null) {
-			ListTag list = new ListTag();
-			int emptyCapacity = 0;
-			for (int i = 0; i < fluidHandler.getTanks(); i++) {
-				int capacity = fluidHandler.getTankCapacity(i);
-				if (capacity <= 0)
-					continue;
-				FluidStack fluidStack = fluidHandler.getFluidInTank(i);
-				if (fluidStack.isEmpty()) {
-					emptyCapacity = IntMath.saturatedAdd(emptyCapacity, capacity);
-					continue;
-				}
-				CompoundTag tankData = fluidStack.writeToNBT(new CompoundTag());
-				tankData.putInt("capacity", capacity);
-				list.add(tankData);
+			appendData(data, fluidHandler);
+		}
+	}
+
+	public static void appendData(CompoundTag data, IFluidHandler fluidHandler) {
+		ListTag list = new ListTag();
+		int emptyCapacity = 0;
+		for (int i = 0; i < fluidHandler.getTanks(); i++) {
+			int capacity = fluidHandler.getTankCapacity(i);
+			if (capacity <= 0)
+				continue;
+			FluidStack fluidStack = fluidHandler.getFluidInTank(i);
+			if (fluidStack.isEmpty()) {
+				emptyCapacity = IntMath.saturatedAdd(emptyCapacity, capacity);
+				continue;
 			}
-			if (list.isEmpty() && emptyCapacity > 0) {
-				CompoundTag tankData = FluidStack.EMPTY.writeToNBT(new CompoundTag());
-				tankData.putInt("capacity", emptyCapacity);
-				list.add(tankData);
-			}
-			if (!list.isEmpty()) {
-				data.put("jadeTanks", list);
-			}
+			CompoundTag tankData = fluidStack.writeToNBT(new CompoundTag());
+			tankData.putInt("capacity", capacity);
+			list.add(tankData);
+		}
+		if (list.isEmpty() && emptyCapacity > 0) {
+			CompoundTag tankData = FluidStack.EMPTY.writeToNBT(new CompoundTag());
+			tankData.putInt("capacity", emptyCapacity);
+			list.add(tankData);
+		}
+		if (!list.isEmpty()) {
+			data.put("jadeTanks", list);
 		}
 	}
 
