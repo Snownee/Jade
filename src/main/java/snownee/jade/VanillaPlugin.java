@@ -189,6 +189,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerComponentProvider(CommandBlockProvider.INSTANCE, TooltipPosition.BODY, CommandBlock.class);
 		registration.registerComponentProvider(EnchantmentPowerProvider.INSTANCE, TooltipPosition.BODY, Block.class);
 		registration.registerComponentProvider(PlayerHeadProvider.INSTANCE, TooltipPosition.HEAD, AbstractSkullBlock.class);
+		registration.registerIconProvider(PlayerHeadProvider.INSTANCE, AbstractSkullBlock.class);
 		registration.registerComponentProvider(VillagerProfessionProvider.INSTANCE, TooltipPosition.BODY, Villager.class);
 		registration.registerComponentProvider(VillagerProfessionProvider.INSTANCE, TooltipPosition.BODY, ZombieVillager.class);
 		registration.registerComponentProvider(ItemTooltipProvider.INSTANCE, TooltipPosition.BODY, ItemEntity.class);
