@@ -51,8 +51,11 @@ public class PlayerHeadProvider implements IComponentProvider {
 			String name = profile.getName();
 			if (name == null || StringUtils.isBlank(name))
 				return;
+			if (!name.contains(" ") && !name.contains("§")) {
+				name = I18n.get(Items.PLAYER_HEAD.getDescriptionId() + ".named", name);
+			}
 			tooltip.remove(OBJECT_NAME_TAG);
-			tooltip.add(0, new TextComponent(String.format(config.getWailaConfig().getFormatting().getBlockName(), I18n.get(Items.PLAYER_HEAD.getDescriptionId() + ".named", name))).withStyle(Waila.CONFIG.get().getOverlay().getColor().getTitle()), OBJECT_NAME_TAG);
+			tooltip.add(0, new TextComponent(String.format(config.getWailaConfig().getFormatting().getBlockName(), name)).withStyle(Waila.CONFIG.get().getOverlay().getColor().getTitle()), OBJECT_NAME_TAG);
 		}
 	}
 
