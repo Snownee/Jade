@@ -7,7 +7,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
@@ -54,9 +53,6 @@ public class OverlayRenderer {
 		if (mc.level == null)
 			return;
 
-		if (RayTracing.INSTANCE.getTarget() == null)
-			return;
-
 		if (mc.screen != null) {
 			if (!(mc.screen instanceof BaseOptionsScreen)) {
 				return;
@@ -81,8 +77,7 @@ public class OverlayRenderer {
 			return;
 
 		ticks += mc.getDeltaFrameTime();
-		if (RayTracing.INSTANCE.getTarget().getType() != HitResult.Type.MISS)
-			renderOverlay(WailaTickHandler.instance().tooltipRenderer, poseStack);
+		renderOverlay(WailaTickHandler.instance().tooltipRenderer, poseStack);
 	}
 
 	public static void renderOverlay(TooltipRenderer tooltip, PoseStack matrixStack) {
