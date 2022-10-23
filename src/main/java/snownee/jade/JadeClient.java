@@ -12,6 +12,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.toasts.SystemToast;
+import net.minecraft.client.gui.components.toasts.SystemToast.SystemToastIds;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
@@ -42,6 +44,7 @@ import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
 import snownee.jade.api.config.IWailaConfig.TTSMode;
 import snownee.jade.gui.HomeConfigScreen;
 import snownee.jade.impl.config.PluginConfig;
+import snownee.jade.impl.config.WailaConfig.ConfigGeneral;
 import snownee.jade.mixin.KeyAccess;
 import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.overlay.WailaTickHandler;
@@ -87,20 +90,28 @@ public final class JadeClient implements ClientModInitializer {
 			Minecraft.getInstance().setScreen(new HomeConfigScreen(null));
 		}
 
+		ConfigGeneral general = Jade.CONFIG.get().getGeneral();
 		while (showOverlay.consumeClick()) {
-			DisplayMode mode = Jade.CONFIG.get().getGeneral().getDisplayMode();
+			DisplayMode mode = general.getDisplayMode();
 			if (mode == IWailaConfig.DisplayMode.TOGGLE) {
-				Jade.CONFIG.get().getGeneral().setDisplayTooltip(!Jade.CONFIG.get().getGeneral().shouldDisplayTooltip());
+				general.setDisplayTooltip(!general.shouldDisplayTooltip());
+				if (!general.shouldDisplayTooltip() && general.hintOverlayToggle) {
+					SystemToast.add(Minecraft.getInstance().getToasts(), SystemToastIds.TUTORIAL_HINT, Component.translatable("toast.jade.toggle_hint.1"), Component.translatable("toast.jade.toggle_hint.2", showOverlay.getTranslatedKeyMessage()));
+					general.hintOverlayToggle = false;
+				}
+				Jade.CONFIG.save();
 			}
 		}
 
 		while (toggleLiquid.consumeClick()) {
-			Jade.CONFIG.get().getGeneral().setDisplayFluids(!Jade.CONFIG.get().getGeneral().shouldDisplayFluids());
+			general.setDisplayFluids(!general.shouldDisplayFluids());
+			Jade.CONFIG.save();
 		}
 
 		while (narrate.consumeClick()) {
-			if (Jade.CONFIG.get().getGeneral().getTTSMode() == TTSMode.TOGGLE) {
-				Jade.CONFIG.get().getGeneral().toggleTTS();
+			if (general.getTTSMode() == TTSMode.TOGGLE) {
+				general.toggleTTS();
+				Jade.CONFIG.save();
 			} else if (WailaTickHandler.instance().tooltipRenderer != null) {
 				WailaTickHandler.narrate(WailaTickHandler.instance().tooltipRenderer.getTooltip(), false);
 			}
