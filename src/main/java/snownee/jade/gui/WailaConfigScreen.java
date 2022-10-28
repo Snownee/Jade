@@ -40,6 +40,7 @@ public class WailaConfigScreen extends BaseOptionsScreen {
 		});
 		options.choices("item_mod_name", general.showItemModNameTooltip(), general::setItemModNameTooltip);
 		options.choices("hide_from_debug", general.shouldHideFromDebug(), general::setHideFromDebug);
+		options.choices("hide_from_tab_list", general.shouldHideFromTabList(), general::setHideFromTabList);
 		options.choices("boss_bar_overlap", general.getBossBarOverlapMode(), general::setBossBarOverlapMode);
 		options.slider("reach_distance", general.getReachDistance(), general::setReachDistance, 0, 20, FloatUnaryOperator.identity());
 

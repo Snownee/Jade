@@ -24,6 +24,7 @@ import snownee.jade.gui.BaseOptionsScreen;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.Tooltip;
 import snownee.jade.impl.WailaClientRegistration;
+import snownee.jade.impl.config.WailaConfig.ConfigGeneral;
 import snownee.jade.util.ClientPlatformProxy;
 import snownee.jade.util.Color;
 
@@ -42,10 +43,11 @@ public class OverlayRenderer {
 		if (WailaTickHandler.instance().tooltipRenderer == null)
 			return;
 
-		if (!Jade.CONFIG.get().getGeneral().shouldDisplayTooltip())
+		ConfigGeneral general = Jade.CONFIG.get().getGeneral();
+		if (!general.shouldDisplayTooltip())
 			return;
 
-		if (Jade.CONFIG.get().getGeneral().getDisplayMode() == IWailaConfig.DisplayMode.HOLD_KEY && !JadeClient.showOverlay.isDown())
+		if (general.getDisplayMode() == IWailaConfig.DisplayMode.HOLD_KEY && !JadeClient.showOverlay.isDown())
 			return;
 
 		Minecraft mc = Minecraft.getInstance();
@@ -70,10 +72,14 @@ public class OverlayRenderer {
 			}
 		}
 
-		if (mc.gui.getTabList().visible || mc.getOverlay() != null || mc.options.hideGui)
+		if (mc.getOverlay() != null || mc.options.hideGui)
 			return;
 
-		if (mc.options.renderDebug && Jade.CONFIG.get().getGeneral().shouldHideFromDebug())
+		if (mc.gui.getTabList().visible && general.shouldHideFromTabList()) {
+			return;
+		}
+
+		if (mc.options.renderDebug && general.shouldHideFromDebug())
 			return;
 
 		ticks += mc.getDeltaFrameTime();
