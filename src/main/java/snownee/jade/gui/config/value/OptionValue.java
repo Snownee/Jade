@@ -5,6 +5,7 @@ import java.util.function.Consumer;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.vertex.PoseStack;
 
@@ -50,6 +51,7 @@ public abstract class OptionValue<T> extends WailaOptionsList.Entry {
 		return title;
 	}
 
+	@Nullable
 	public String getDescription() {
 		return description;
 	}
@@ -67,7 +69,7 @@ public abstract class OptionValue<T> extends WailaOptionsList.Entry {
 	@Override
 	public void updateNarration(NarrationElementOutput output) {
 		getListener().updateNarration(output);
-		if (I18n.exists(getDescription())) {
+		if (!Strings.isNullOrEmpty(getDescription())) {
 			output.add(NarratedElementType.HINT, Component.translatable(getDescription()));
 		}
 	}
