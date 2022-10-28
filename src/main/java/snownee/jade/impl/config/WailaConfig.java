@@ -54,6 +54,7 @@ public class WailaConfig implements IWailaConfig {
 		private boolean displayEntities = true;
 		private DisplayMode displayMode = DisplayMode.TOGGLE;
 		private boolean hideFromDebug = true;
+		private boolean hideFromTabList = true;
 		private boolean enableTextToSpeech = false;
 		private TTSMode ttsMode = TTSMode.PRESS;
 		private FluidMode fluidMode = FluidMode.ANY;
@@ -192,6 +193,16 @@ public class WailaConfig implements IWailaConfig {
 		@Override
 		public void setBossBarOverlapMode(BossBarOverlapMode mode) {
 			bossBarOverlapMode = mode;
+		}
+
+		@Override
+		public void setHideFromTabList(boolean hideFromTabList) {
+			this.hideFromTabList = hideFromTabList;
+		}
+
+		@Override
+		public boolean shouldHideFromTabList() {
+			return hideFromTabList;
 		}
 
 	}

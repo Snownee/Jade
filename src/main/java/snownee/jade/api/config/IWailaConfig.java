@@ -37,6 +37,8 @@ public interface IWailaConfig {
 
 		void setHideFromDebug(boolean hideFromDebug);
 
+		void setHideFromTabList(boolean hideFromTabList);
+
 		void toggleTTS();
 
 		void setTTSMode(TTSMode ttsMode);
@@ -52,6 +54,8 @@ public interface IWailaConfig {
 		DisplayMode getDisplayMode();
 
 		boolean shouldHideFromDebug();
+
+		boolean shouldHideFromTabList();
 
 		boolean shouldEnableTextToSpeech();
 
