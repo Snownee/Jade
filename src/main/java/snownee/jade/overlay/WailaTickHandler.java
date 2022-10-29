@@ -17,7 +17,6 @@ import snownee.jade.api.callback.JadeRayTraceCallback;
 import snownee.jade.api.callback.JadeTooltipCollectedCallback;
 import snownee.jade.api.config.IWailaConfig.DisplayMode;
 import snownee.jade.api.config.IWailaConfig.IConfigGeneral;
-import snownee.jade.gui.BaseOptionsScreen;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.Tooltip;
 import snownee.jade.impl.WailaClientRegistration;
@@ -43,10 +42,11 @@ public class WailaTickHandler {
 		}
 
 		Minecraft client = Minecraft.getInstance();
-		if (!(client.screen instanceof BaseOptionsScreen)) {
-			if (client.isPaused() || client.screen != null || client.keyboardHandler == null) {
-				return;
-			}
+		if (!ClientPlatformProxy.shouldShowWithOverlay(client, client.screen)) {
+			return;
+		}
+		if (client.keyboardHandler == null) {
+			return;
 		}
 
 		Level world = client.level;

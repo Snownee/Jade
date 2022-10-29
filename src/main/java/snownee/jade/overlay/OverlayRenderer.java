@@ -55,20 +55,20 @@ public class OverlayRenderer {
 		if (mc.level == null)
 			return;
 
-		if (mc.screen != null) {
-			if (!(mc.screen instanceof BaseOptionsScreen)) {
+		if (!ClientPlatformProxy.shouldShowWithOverlay(mc, mc.screen)) {
+			return;
+		}
+
+		if (mc.screen instanceof BaseOptionsScreen) {
+			Rect2i position = WailaTickHandler.instance().tooltipRenderer.getPosition();
+			IConfigOverlay overlay = Jade.CONFIG.get().getOverlay();
+			Window window = mc.getWindow();
+			double x = mc.mouseHandler.xpos() * window.getGuiScaledWidth() / window.getScreenWidth();
+			double y = mc.mouseHandler.ypos() * window.getGuiScaledHeight() / window.getScreenHeight();
+			x += position.getWidth() * overlay.tryFlip(overlay.getAnchorX());
+			y += position.getHeight() * overlay.getAnchorY();
+			if (position.contains((int) x, (int) y)) {
 				return;
-			} else {
-				Rect2i position = WailaTickHandler.instance().tooltipRenderer.getPosition();
-				IConfigOverlay overlay = Jade.CONFIG.get().getOverlay();
-				Window window = mc.getWindow();
-				double x = mc.mouseHandler.xpos() * window.getGuiScaledWidth() / window.getScreenWidth();
-				double y = mc.mouseHandler.ypos() * window.getGuiScaledHeight() / window.getScreenHeight();
-				x += position.getWidth() * overlay.tryFlip(overlay.getAnchorX());
-				y += position.getHeight() * overlay.getAnchorY();
-				if (position.contains((int) x, (int) y)) {
-					return;
-				}
 			}
 		}
 

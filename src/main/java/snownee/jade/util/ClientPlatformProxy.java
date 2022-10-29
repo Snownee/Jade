@@ -3,9 +3,8 @@ package snownee.jade.util;
 import java.util.List;
 import java.util.Map;
 
-import net.minecraft.client.renderer.Rect2i;
-
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
@@ -32,9 +31,11 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -53,15 +54,13 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
-
-import org.jetbrains.annotations.Nullable;
-
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.command.DumpHandlersCommand;
 import snownee.jade.compat.JEICompat;
+import snownee.jade.gui.BaseOptionsScreen;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.impl.ui.FluidStackElement;
@@ -142,9 +141,7 @@ public final class ClientPlatformProxy {
 	}
 
 	private static void onRenderTick(PoseStack matrixStack, float tickDelta) {
-		if (Minecraft.getInstance().screen == null) {
-			OverlayRenderer.renderOverlay(matrixStack);
-		}
+		OverlayRenderer.renderOverlay(matrixStack);
 	}
 
 	private static void onClientTick(Minecraft mc) {
@@ -236,5 +233,9 @@ public final class ClientPlatformProxy {
 
 	public static boolean isShowDetailsPressed() {
 		return Screen.hasShiftDown();
+	}
+
+	public static boolean shouldShowWithOverlay(Minecraft mc, @Nullable Screen screen) {
+		return screen == null || screen instanceof BaseOptionsScreen || screen instanceof ChatScreen;
 	}
 }
