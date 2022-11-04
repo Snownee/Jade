@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.world.item.ItemStack;
 
 public interface IDisplayHelper {
@@ -20,4 +21,6 @@ public interface IDisplayHelper {
 	void drawText(PoseStack poseStack, String text, float x, float y, int color);
 
 	void drawText(PoseStack poseStack, Component text, float x, float y, int color);
+
+	Component stripColor(Component component, int color);
 }

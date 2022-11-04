@@ -4,6 +4,8 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.regex.Pattern;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -36,6 +38,9 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.util.Mth;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
@@ -458,5 +463,25 @@ public class DisplayHelper implements IDisplayHelper {
 		} else {
 			CLIENT.font.draw(poseStack, text, x, y, color);
 		}
+	}
+
+	private static final Pattern STRIP_COLOR = Pattern.compile("(?i)\u00a7[0-9A-F]");
+
+	@Override
+	public Component stripColor(Component component, int color) {
+		TextColor textColor = TextColor.fromRgb(color);
+		MutableComponent mutableComponent = Component.empty();
+		component.visit((style, string) -> {
+			if (!string.isEmpty()) {
+				MutableComponent literal = Component.literal(STRIP_COLOR.matcher(string).replaceAll(""));
+				literal.withStyle(style);
+				if (style.getColor() != textColor) {
+					literal.withStyle($ -> $.withColor(color));
+				}
+				mutableComponent.append(literal);
+			}
+			return Optional.empty();
+		}, Style.EMPTY.withColor(color));
+		return mutableComponent;
 	}
 }
