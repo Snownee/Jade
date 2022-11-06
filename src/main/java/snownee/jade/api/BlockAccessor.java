@@ -45,6 +45,8 @@ public interface BlockAccessor extends Accessor<BlockHitResult> {
 
 		Builder serverConnected(boolean connected);
 
+		Builder showDetails(boolean showDetails);
+
 		Builder hit(BlockHitResult hit);
 
 		Builder blockState(BlockState state);

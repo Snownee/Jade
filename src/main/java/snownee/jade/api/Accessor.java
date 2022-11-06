@@ -37,8 +37,10 @@ public interface Accessor<T extends HitResult> {
 
 	boolean shouldRequestData();
 
+	boolean showDetails();
+
 	@ApiStatus.Internal
-	void _requestData(boolean showDetails);
+	void _requestData();
 
 	@ApiStatus.Internal
 	boolean _verifyData(CompoundTag serverData);

@@ -16,13 +16,15 @@ public abstract class AccessorImpl<T extends HitResult> implements Accessor<T> {
 	private final CompoundTag serverData;
 	private final T hit;
 	private final boolean serverConnected;
+	private final boolean showDetails;
 
-	public AccessorImpl(Level level, Player player, CompoundTag serverData, T hit, boolean serverConnected) {
+	public AccessorImpl(Level level, Player player, CompoundTag serverData, T hit, boolean serverConnected, boolean showDetails) {
 		this.level = level;
 		this.player = player;
 		this.serverData = serverData;
 		this.hit = hit;
 		this.serverConnected = serverConnected;
+		this.showDetails = showDetails;
 	}
 
 	@Override
@@ -51,6 +53,11 @@ public abstract class AccessorImpl<T extends HitResult> implements Accessor<T> {
 	@Override
 	public boolean isServerConnected() {
 		return serverConnected;
+	}
+
+	@Override
+	public boolean showDetails() {
+		return showDetails;
 	}
 
 	@Override

@@ -25,6 +25,8 @@ public interface EntityAccessor extends Accessor<EntityHitResult> {
 
 		Builder serverConnected(boolean connected);
 
+		Builder showDetails(boolean showDetails);
+
 		Builder hit(EntityHitResult hit);
 
 		Builder entity(Entity entity);
