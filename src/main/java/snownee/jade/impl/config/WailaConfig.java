@@ -17,6 +17,7 @@ import net.minecraft.world.entity.HumanoidArm;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.Theme;
+import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.overlay.OverlayRenderer;
 
 /**
@@ -370,13 +371,13 @@ public class WailaConfig implements IWailaConfig {
 
 		@Override
 		public Component title(Object title) {
-			MutableComponent component;
-			if (title instanceof MutableComponent) {
+			Component component;
+			if (title instanceof Component) {
 				component = (MutableComponent) title;
 			} else {
 				component = Component.literal(Objects.toString(title));
 			}
-			return component.withStyle($ -> $.withColor(OverlayRenderer.stressedTextColorRaw));
+			return DisplayHelper.INSTANCE.stripColor(component, OverlayRenderer.stressedTextColorRaw);
 		}
 
 		@Override

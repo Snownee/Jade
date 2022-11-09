@@ -66,7 +66,7 @@ public enum ObjectNameProvider
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
-		String name = getEntityName(accessor.getEntity());
+		Component name = getEntityName(accessor.getEntity());
 		IWailaConfig wailaConfig = config.getWailaConfig();
 		tooltip.add(wailaConfig.getFormatting().title(name));
 	}
@@ -85,16 +85,16 @@ public enum ObjectNameProvider
 		return Identifiers.CORE_OBJECT_NAME;
 	}
 
-	public static String getEntityName(Entity entity) {
+	public static Component getEntityName(Entity entity) {
 		if (!entity.hasCustomName()) {
 			if (entity instanceof Villager) {
-				return entity.getType().getDescription().getString();
+				return entity.getType().getDescription();
 			}
 			if (entity instanceof ItemEntity) {
-				return ((ItemEntity) entity).getItem().getHoverName().getString();
+				return ((ItemEntity) entity).getItem().getHoverName();
 			}
 		}
-		return entity.getName().getString();
+		return entity.getName();
 	}
 
 	@Override

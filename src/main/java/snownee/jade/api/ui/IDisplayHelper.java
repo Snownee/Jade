@@ -29,4 +29,6 @@ public interface IDisplayHelper {
 	void drawText(PoseStack poseStack, String text, float x, float y, int color);
 
 	void drawText(PoseStack poseStack, Component text, float x, float y, int color);
+
+	Component stripColor(Component component, int color);
 }
