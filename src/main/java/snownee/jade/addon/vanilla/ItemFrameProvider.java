@@ -8,6 +8,7 @@ import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.ui.IDisplayHelper;
 
 public enum ItemFrameProvider implements IEntityComponentProvider {
 
@@ -18,7 +19,7 @@ public enum ItemFrameProvider implements IEntityComponentProvider {
 		ItemFrame itemFrame = (ItemFrame) accessor.getEntity();
 		ItemStack stack = itemFrame.getItem();
 		if (!stack.isEmpty()) {
-			tooltip.add(stack.getHoverName());
+			tooltip.add(IDisplayHelper.get().stripColor(stack.getHoverName()));
 		}
 	}
 
