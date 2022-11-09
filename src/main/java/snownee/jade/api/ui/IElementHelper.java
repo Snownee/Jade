@@ -25,6 +25,8 @@ public interface IElementHelper {
 
 	IElement item(ItemStack itemStack, float scale, @Nullable String text);
 
+	IElement smallItem(ItemStack itemStack);
+
 	IElement fluid(FluidStack fluidStack);
 
 	@ScheduledForRemoval(inVersion = "1.20")

@@ -20,6 +20,8 @@ import snownee.jade.impl.Tooltip;
 
 public class ElementHelper implements IElementHelper {
 	public static final ElementHelper INSTANCE = new ElementHelper();
+	public static final Vec2 SMALL_ITEM_SIZE = new Vec2(10, 10);
+	public static final Vec2 SMALL_ITEM_OFFSET = Vec2.NEG_UNIT_Y;
 	private ResourceLocation uid;
 
 	@Override
@@ -40,6 +42,11 @@ public class ElementHelper implements IElementHelper {
 	@Override
 	public IElement item(ItemStack stack, float scale, String text) {
 		return ItemStackElement.of(stack, scale, text);
+	}
+
+	@Override
+	public IElement smallItem(ItemStack stack) {
+		return item(stack, 0.5F).size(SMALL_ITEM_SIZE).translate(SMALL_ITEM_OFFSET).message(null);
 	}
 
 	@Override

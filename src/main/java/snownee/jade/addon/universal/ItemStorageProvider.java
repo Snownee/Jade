@@ -19,7 +19,6 @@ import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
-import snownee.jade.Jade;
 import snownee.jade.JadeCommonConfig;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.BlockAccessor;
@@ -124,7 +123,7 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 						if (showName.isTrue()) {
 							ItemStack copy = stack.copy();
 							copy.setCount(1);
-							elements.add(Jade.smallItem(helper, copy).clearCachedMessage());
+							elements.add(helper.smallItem(copy).clearCachedMessage());
 							elements.add(helper.text(Component.literal(Integer.toString(stack.getCount())).append("× ").append(IDisplayHelper.get().stripColor(stack.getHoverName()))).message(null));
 						} else if (itemView.text != null) {
 							elements.add(helper.item(stack, 1, itemView.text));

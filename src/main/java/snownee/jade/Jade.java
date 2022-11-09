@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.ApiStatus.ScheduledForRemoval;
 
 import com.google.gson.GsonBuilder;
 
@@ -54,7 +55,9 @@ public class Jade {
 	public static final Logger LOGGER = LogManager.getLogger(NAME);
 	public static final SimpleChannel NETWORK = NetworkRegistry.ChannelBuilder.named(new ResourceLocation(MODID, "networking")).clientAcceptedVersions(s -> true).serverAcceptedVersions(s -> true).networkProtocolVersion(() -> "1").simpleChannel();
 
+	@ScheduledForRemoval(inVersion = "1.20")
 	public static final Vec2 SMALL_ITEM_SIZE = new Vec2(10, 10);
+	@ScheduledForRemoval(inVersion = "1.20")
 	public static final Vec2 SMALL_ITEM_OFFSET = Vec2.NEG_UNIT_Y;
 
 	/**
@@ -74,8 +77,9 @@ public class Jade {
 			);
 	/* on */
 
+	@ScheduledForRemoval(inVersion = "1.20")
 	public static IElement smallItem(IElementHelper elements, ItemStack stack) {
-		return elements.item(stack, 0.5F).size(SMALL_ITEM_SIZE).translate(SMALL_ITEM_OFFSET).message(null);
+		return elements.smallItem(stack);
 	}
 
 	public Jade() {
