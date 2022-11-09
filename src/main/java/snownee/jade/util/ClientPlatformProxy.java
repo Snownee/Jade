@@ -14,6 +14,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.ChatScreen;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
@@ -53,6 +55,7 @@ import snownee.jade.api.config.IWailaConfig.BossBarOverlapMode;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.command.DumpHandlersCommand;
 import snownee.jade.compat.JEICompat;
+import snownee.jade.gui.BaseOptionsScreen;
 import snownee.jade.gui.HomeConfigScreen;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.ui.FluidStackElement;
@@ -229,5 +232,9 @@ public final class ClientPlatformProxy {
 
 	public static boolean isShowDetailsPressed() {
 		return JadeClient.showDetails.isDown();
+	}
+
+	public static boolean shouldShowWithOverlay(Minecraft mc, @Nullable Screen screen) {
+		return screen == null || screen instanceof BaseOptionsScreen || screen instanceof ChatScreen;
 	}
 }
