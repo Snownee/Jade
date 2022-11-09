@@ -455,20 +455,16 @@ public class DisplayHelper implements IDisplayHelper {
 	private static final Pattern STRIP_COLOR = Pattern.compile("(?i)\u00a7[0-9A-F]");
 
 	@Override
-	public Component stripColor(Component component, int color) {
-		TextColor textColor = TextColor.fromRgb(color);
+	public MutableComponent stripColor(Component component) {
 		MutableComponent mutableComponent = Component.empty();
 		component.visit((style, string) -> {
 			if (!string.isEmpty()) {
 				MutableComponent literal = Component.literal(STRIP_COLOR.matcher(string).replaceAll(""));
-				literal.withStyle(style);
-				if (style.getColor() != textColor) {
-					literal.withStyle($ -> $.withColor(color));
-				}
+				literal.withStyle(style.withColor((TextColor) null));
 				mutableComponent.append(literal);
 			}
 			return Optional.empty();
-		}, Style.EMPTY.withColor(color));
+		}, Style.EMPTY);
 		return mutableComponent;
 	}
 }

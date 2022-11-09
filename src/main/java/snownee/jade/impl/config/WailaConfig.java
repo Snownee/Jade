@@ -377,7 +377,7 @@ public class WailaConfig implements IWailaConfig {
 			} else {
 				component = Component.literal(Objects.toString(title));
 			}
-			return DisplayHelper.INSTANCE.stripColor(component, OverlayRenderer.stressedTextColorRaw);
+			return DisplayHelper.INSTANCE.stripColor(component).withStyle($ -> $.withColor(OverlayRenderer.stressedTextColorRaw));
 		}
 
 		@Override
