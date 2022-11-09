@@ -124,7 +124,6 @@
   "config.jade.plugin_minecraft.block_inventory": "Інвентар",
   "jade.locked": "Інвентар заблокований",
   "jade.not_generated": "Інвентар не згенеровано",
-  "config.jade.plugin_minecraft.fe": "Forge-енергія",
   "jade.fe": "%s / %s",
   "config.jade.plugin_minecraft.fluid": "Рідинний резервуар",
   "jade.fluid": "%s %s",

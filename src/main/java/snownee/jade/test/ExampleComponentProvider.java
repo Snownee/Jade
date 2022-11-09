@@ -40,7 +40,7 @@ public enum ExampleComponentProvider implements IBlockComponentProvider, IServer
 
 	@Override
 	public ResourceLocation getUid() {
-		return ExamplePlugin.UID_TEST;
+		return ExamplePlugin.UID_TEST_FUEL;
 	}
 
 }

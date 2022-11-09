@@ -36,7 +36,12 @@ public class WailaExceptionHandler {
 				// no
 			}
 		}
-		if (tooltip != null)
-			tooltip.add(Component.translatable("jade.error", ModIdentification.getModName(provider.getUid())).withStyle(ChatFormatting.DARK_RED));
+		if (tooltip != null) {
+			String modid = provider.getUid().getNamespace();
+			if (modid.equals("minecraft")) {
+				modid = Jade.MODID;
+			}
+			tooltip.add(Component.translatable("jade.error", ModIdentification.getModName(modid)).withStyle(ChatFormatting.DARK_RED));
+		}
 	}
 }

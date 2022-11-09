@@ -117,7 +117,7 @@ public final class ClientPlatformProxy {
 
 	private static void onRenderTick(TickEvent.RenderTickEvent event) {
 		if (event.phase == TickEvent.Phase.END) {
-			OverlayRenderer.renderOverlay(new PoseStack());
+			OverlayRenderer.renderOverlay478757(new PoseStack());
 			bossbarShown = false;
 		}
 	}

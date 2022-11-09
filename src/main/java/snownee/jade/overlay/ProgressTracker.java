@@ -13,6 +13,7 @@ public class ProgressTracker {
 	public static class TrackInfo {
 		private float width;
 		private int ticksSinceWidthChanged;
+		private int ticksSinceValueChanged;
 		private boolean updatedThisTick;
 		private final SmoothChasingValue progress = new SmoothChasingValue();
 
@@ -28,7 +29,7 @@ public class ProgressTracker {
 
 	private final ListMultimap<ResourceLocation, TrackInfo> map = ArrayListMultimap.create();
 
-	public TrackInfo createInfo(ResourceLocation tag, float progress, float expectedWidth) {
+	public TrackInfo createInfo(ResourceLocation tag, float progress, boolean canDecrease, float expectedWidth) {
 		List<TrackInfo> infos = map.get(tag);
 		TrackInfo info = null;
 		for (TrackInfo o : infos) {
@@ -40,11 +41,34 @@ public class ProgressTracker {
 		if (info == null) {
 			info = new TrackInfo();
 			info.width = expectedWidth;
-			info.progress.set(progress);
+			info.progress.start(progress);
 			map.put(tag, info);
 		}
 		info.updatedThisTick = true;
-		info.progress.target(progress);
+		if (progress == info.progress.getTarget()) {
+			++info.ticksSinceValueChanged;
+		} else {
+			if (info.ticksSinceValueChanged > 10) {
+				info.progress.withSpeed(0.4F);
+			} else if (canDecrease || progress >= info.progress.getTarget()) {
+				float spd = Math.abs(progress - info.progress.getTarget()) / info.ticksSinceValueChanged;
+				spd = Math.max(0.1F, 4F * spd);
+				info.progress.withSpeed(spd);
+			}
+			info.ticksSinceValueChanged = 1;
+		}
+		if (!canDecrease && progress < info.progress.getTarget()) {
+			if (info.progress.isMoving()) {
+				info.progress.withSpeed(Math.max(0.5F, info.progress.getSpeed()));
+				if (info.progress.getTarget() > 0.9F) {
+					info.progress.target(1);
+				}
+			} else {
+				info.progress.start(progress);
+			}
+		} else {
+			info.progress.target(progress);
+		}
 		if (info.width != expectedWidth) {
 			if (expectedWidth > info.width || ++info.ticksSinceWidthChanged > 10) {
 				info.width = expectedWidth;
@@ -55,8 +79,14 @@ public class ProgressTracker {
 	}
 
 	public void tick() {
-		map.values().removeIf(info -> !info.updatedThisTick);
-		map.values().forEach(info -> info.updatedThisTick = false);
+		map.values().removeIf(info -> {
+			if (info.updatedThisTick) {
+				info.updatedThisTick = false;
+				return false;
+			} else {
+				return true;
+			}
+		});
 	}
 
 	public void clear() {

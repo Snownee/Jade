@@ -40,7 +40,7 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 	private final ItemStack fakeBlock;
 
 	private BlockAccessorImpl(Builder builder) {
-		super(builder.level, builder.player, builder.serverData, builder.hit, builder.connected);
+		super(builder.level, builder.player, builder.serverData, builder.hit, builder.connected, builder.showDetails);
 		blockState = builder.blockState;
 		blockEntity = builder.blockEntity;
 		fakeBlock = builder.fakeBlock;
@@ -132,8 +132,8 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 	}
 
 	@Override
-	public void _requestData(boolean showDetails) {
-		ClientPlatformProxy.requestBlockData(blockEntity, showDetails);
+	public void _requestData() {
+		ClientPlatformProxy.requestBlockData(blockEntity, showDetails());
 	}
 
 	@Override
@@ -173,6 +173,7 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 		private Player player;
 		private CompoundTag serverData;
 		private boolean connected;
+		private boolean showDetails = ClientPlatformProxy.isShowDetailsPressed();
 		private BlockHitResult hit;
 		private BlockState blockState = Blocks.AIR.defaultBlockState();
 		private BlockEntity blockEntity;
@@ -199,6 +200,12 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 		@Override
 		public Builder serverConnected(boolean connected) {
 			this.connected = connected;
+			return this;
+		}
+
+		@Override
+		public Builder showDetails(boolean showDetails) {
+			this.showDetails = showDetails;
 			return this;
 		}
 
@@ -232,6 +239,7 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 			player = accessor.getPlayer();
 			serverData = accessor.getServerData();
 			connected = accessor.isServerConnected();
+			showDetails = accessor.showDetails();
 			hit = accessor.getHitResult();
 			blockEntity = accessor.getBlockEntity();
 			blockState = accessor.getBlockState();

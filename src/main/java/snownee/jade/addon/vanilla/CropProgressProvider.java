@@ -18,6 +18,7 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.IElement;
+import snownee.jade.api.ui.IElementHelper;
 
 public enum CropProgressProvider implements IBlockComponentProvider {
 
@@ -26,10 +27,10 @@ public enum CropProgressProvider implements IBlockComponentProvider {
 	@Override
 	public IElement getIcon(BlockAccessor accessor, IPluginConfig config, IElement currentIcon) {
 		if (accessor.getBlock() == Blocks.WHEAT)
-			return VanillaPlugin.getElementHelper().item(new ItemStack(Items.WHEAT));
+			return IElementHelper.get().item(new ItemStack(Items.WHEAT));
 
 		if (accessor.getBlock() == Blocks.BEETROOTS)
-			return VanillaPlugin.getElementHelper().item(new ItemStack(Items.BEETROOT));
+			return IElementHelper.get().item(new ItemStack(Items.BEETROOT));
 
 		return null;
 	}

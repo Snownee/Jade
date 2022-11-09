@@ -123,7 +123,6 @@
   "config.jade.plugin_minecraft.block_inventory": "Inventar",
   "jade.locked": "Inventar ist gesperrt",
   "jade.not_generated": "Inventar wird nicht generiert",
-  "config.jade.plugin_minecraft.fe": "Forge Energie",
   "jade.fe": "%s / %s",
   "config.jade.plugin_minecraft.fluid": "Flüssigkeitstank",
   "jade.fluid": "%s %s",

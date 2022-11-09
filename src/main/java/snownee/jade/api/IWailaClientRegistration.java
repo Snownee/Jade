@@ -2,13 +2,16 @@ package snownee.jade.api;
 
 import java.util.function.Predicate;
 
+import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.ApiStatus.NonExtendable;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import snownee.jade.api.callback.JadeAfterRenderCallback;
@@ -22,6 +25,11 @@ import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.view.EnergyView;
+import snownee.jade.api.view.FluidView;
+import snownee.jade.api.view.IClientExtensionProvider;
+import snownee.jade.api.view.ItemView;
+import snownee.jade.api.view.ProgressView;
 
 @NonExtendable
 public interface IWailaClientRegistration {
@@ -123,5 +131,17 @@ public interface IWailaClientRegistration {
 	void addRenderBackgroundCallback(JadeRenderBackgroundCallback callback);
 
 	Screen createPluginConfigScreen(@Nullable Screen parent, String namespace);
+
+	@Experimental
+	void registerItemStorageClient(IClientExtensionProvider<ItemStack, ItemView> provider);
+
+	@Experimental
+	void registerFluidStorageClient(IClientExtensionProvider<CompoundTag, FluidView> provider);
+
+	@Experimental
+	void registerEnergyStorageClient(IClientExtensionProvider<CompoundTag, EnergyView> provider);
+
+	@Experimental
+	void registerProgressClient(IClientExtensionProvider<CompoundTag, ProgressView> provider);
 
 }

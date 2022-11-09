@@ -118,7 +118,6 @@
   "config.jade.plugin_minecraft.block_inventory": "Inventario",
   "jade.locked": "Inventario chiuso",
   "jade.not_generated": "Inventario non generato",
-  "config.jade.plugin_minecraft.fe": "Forge Energy",
   "jade.fe": "%s / %s",
   "config.jade.plugin_minecraft.fluid": "Serbatoio",
   "jade.fluid": "%s %s",

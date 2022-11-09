@@ -22,9 +22,15 @@ public class HierarchyLookup<T extends IJadeProvider> {
 	private final Class<?> baseClass;
 	private ListMultimap<Class<?>, T> objects = ArrayListMultimap.create();
 	private final Cache<Class<?>, List<T>> resultCache = CacheBuilder.newBuilder().build();
+	private final boolean singleton;
 
 	public HierarchyLookup(Class<?> baseClass) {
+		this(baseClass, false);
+	}
+
+	public HierarchyLookup(Class<?> baseClass, boolean singleton) {
 		this.baseClass = baseClass;
+		this.singleton = singleton;
 	}
 
 	public void register(Class<?> clazz, T provider) {
@@ -46,7 +52,10 @@ public class HierarchyLookup<T extends IJadeProvider> {
 			return resultCache.get(clazz, () -> {
 				List<T> list = Lists.newArrayList();
 				getInternal(clazz, list);
-				return ImmutableList.sortedCopyOf(Comparator.comparingInt(WailaCommonRegistration.INSTANCE.priorities::get), list);
+				list = ImmutableList.sortedCopyOf(Comparator.comparingInt(WailaCommonRegistration.INSTANCE.priorities::get), list);
+				if (singleton && !list.isEmpty())
+					return ImmutableList.of(list.get(0));
+				return list;
 			});
 		} catch (ExecutionException e) {
 			e.printStackTrace();

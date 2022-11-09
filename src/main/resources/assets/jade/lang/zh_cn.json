@@ -142,7 +142,6 @@
   "config.jade.plugin_minecraft.block_inventory": "物品容器",
   "jade.locked": "容器已上锁",
   "jade.not_generated": "物品未生成",
-  "config.jade.plugin_minecraft.fe": "Forge能量",
   "jade.fe": "%s / %s",
   "config.jade.plugin_minecraft.fluid": "流体储罐",
   "jade.fluid": "%s %s",

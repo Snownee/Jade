@@ -123,7 +123,6 @@
   "config.jade.plugin_minecraft.block_inventory": "物品欄",
   "jade.locked": "物品欄已鎖住",
   "jade.not_generated": "物品欄未生成",
-  "config.jade.plugin_minecraft.fe": "鍛造能量",
   "jade.fe": "%s / %s",
   "config.jade.plugin_minecraft.fluid": "液體槽",
   "jade.fluid": "%s %s",

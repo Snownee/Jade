@@ -21,12 +21,18 @@ public class Identifiers {
 	public static final ResourceLocation CORE_REL_COORDINATES = JADE("coordinates.rel");
 	public static final ResourceLocation CORE_BLOCK_FACE = JADE("block_face");
 
-	public static final ResourceLocation FORGE_BLOCK_INVENTORY = MC("block_inventory");
-	public static final ResourceLocation FORGE_FLUID = MC("fluid");
-	public static final ResourceLocation FORGE_ENERGY = MC("fe");
+	//TODO(1.20): Change names
+	public static final ResourceLocation UNIVERSAL_ITEM_STORAGE = MC("block_inventory");
+	public static final ResourceLocation UNIVERSAL_FLUID_STORAGE = MC("fluid");
+	public static final ResourceLocation UNIVERSAL_ENERGY_STORAGE = MC("energy_storage");
+	public static final ResourceLocation UNIVERSAL_PROGRESS = MC("progress");
 
-	public static final ResourceLocation FABRIC_BLOCK_INVENTORY = MC("block_inventory");
-	public static final ResourceLocation FABRIC_FLUID = MC("fluid");
+	public static final ResourceLocation FORGE_BLOCK_INVENTORY = UNIVERSAL_ITEM_STORAGE;
+	public static final ResourceLocation FORGE_FLUID = UNIVERSAL_FLUID_STORAGE;
+	public static final ResourceLocation FORGE_ENERGY = UNIVERSAL_ENERGY_STORAGE;
+
+	public static final ResourceLocation FABRIC_BLOCK_INVENTORY = UNIVERSAL_ITEM_STORAGE;
+	public static final ResourceLocation FABRIC_FLUID = UNIVERSAL_FLUID_STORAGE;
 
 	public static final ResourceLocation MC_BLOCK_INVENTORY_DETAILED_AMOUNT = MC("block_inventory.detailed_amount");
 	public static final ResourceLocation MC_BLOCK_INVENTORY_NORMAL_AMOUNT = MC("block_inventory.normal_amount");
@@ -38,7 +44,6 @@ public class Identifiers {
 	public static final ResourceLocation MC_BEEHIVE = MC("beehive");
 	public static final ResourceLocation MC_BLOCK_STATES = MC("block_states");
 	public static final ResourceLocation MC_BREWING_STAND = MC("brewing_stand");
-	public static final ResourceLocation MC_CONTAINER_ENTITY = MC("container_entity");
 	public static final ResourceLocation MC_CHICKEN_EGG = MC("chicken_egg");
 	public static final ResourceLocation MC_COMMAND_BLOCK = MC("command_block");
 	public static final ResourceLocation MC_CROP_PROGRESS = MC("crop_progress");

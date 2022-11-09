@@ -36,6 +36,7 @@ import snownee.jade.Jade;
 import snownee.jade.api.ui.IBorderStyle;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.impl.ui.BorderStyle;
+import snownee.jade.util.Color;
 
 @SuppressWarnings("deprecation")
 public class DisplayHelper implements IDisplayHelper {
@@ -72,7 +73,7 @@ public class DisplayHelper implements IDisplayHelper {
 			posestack.translate(0.0D, 0.0D, CLIENT.getItemRenderer().blitOffset + 200.0F);
 			posestack.scale(.75f, .75f, .75f);
 			MultiBufferSource.BufferSource multibuffersource$buffersource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-			font.drawInBatch(s, 22 - font.width(s), 14, 16777215, true, posestack.last().pose(), multibuffersource$buffersource, false, 0, 15728880);
+			font.drawInBatch(s, 22 - font.width(s), 13, 16777215, true, posestack.last().pose(), multibuffersource$buffersource, false, 0, 15728880);
 			multibuffersource$buffersource.endBatch();
 			posestack.popPose();
 		}
@@ -140,11 +141,11 @@ public class DisplayHelper implements IDisplayHelper {
 	//	}
 
 	@Override
-	public void drawGradientRect(PoseStack matrixStack, float left, float top, float right, float bottom, int startColor, int endColor) {
-		drawGradientRect(matrixStack, left, top, right, bottom, startColor, endColor, false);
+	public void drawGradientRect(PoseStack matrixStack, float left, float top, float width, float height, int startColor, int endColor) {
+		drawGradientRect(matrixStack, left, top, width, height, startColor, endColor, false);
 	}
 
-	public void drawGradientRect(PoseStack matrixStack, float left, float top, float right, float bottom, int startColor, int endColor, boolean vertical) {
+	public void drawGradientRect(PoseStack matrixStack, float left, float top, float width, float height, int startColor, int endColor, boolean horizontal) {
 		float zLevel = 0.0F;
 		Matrix4f matrix = matrixStack.last().pose();
 
@@ -163,16 +164,16 @@ public class DisplayHelper implements IDisplayHelper {
 		Tesselator tessellator = Tesselator.getInstance();
 		BufferBuilder buffer = tessellator.getBuilder();
 		buffer.begin(Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-		if (vertical) {
-			buffer.vertex(matrix, left + right, top, zLevel).color(f5, f6, f7, f4).endVertex();
+		if (horizontal) {
+			buffer.vertex(matrix, left + width, top, zLevel).color(f5, f6, f7, f4).endVertex();
 			buffer.vertex(matrix, left, top, zLevel).color(f1, f2, f3, f).endVertex();
-			buffer.vertex(matrix, left, top + bottom, zLevel).color(f1, f2, f3, f).endVertex();
-			buffer.vertex(matrix, left + right, top + bottom, zLevel).color(f5, f6, f7, f4).endVertex();
+			buffer.vertex(matrix, left, top + height, zLevel).color(f1, f2, f3, f).endVertex();
+			buffer.vertex(matrix, left + width, top + height, zLevel).color(f5, f6, f7, f4).endVertex();
 		} else {
-			buffer.vertex(matrix, left + right, top, zLevel).color(f1, f2, f3, f).endVertex();
+			buffer.vertex(matrix, left + width, top, zLevel).color(f1, f2, f3, f).endVertex();
 			buffer.vertex(matrix, left, top, zLevel).color(f1, f2, f3, f).endVertex();
-			buffer.vertex(matrix, left, top + bottom, zLevel).color(f5, f6, f7, f4).endVertex();
-			buffer.vertex(matrix, left + right, top + bottom, zLevel).color(f5, f6, f7, f4).endVertex();
+			buffer.vertex(matrix, left, top + height, zLevel).color(f5, f6, f7, f4).endVertex();
+			buffer.vertex(matrix, left + width, top + height, zLevel).color(f5, f6, f7, f4).endVertex();
 		}
 		BufferUploader.drawWithShader(buffer.end());
 		RenderSystem.disableBlend();
@@ -182,10 +183,20 @@ public class DisplayHelper implements IDisplayHelper {
 	@Override
 	public void drawBorder(PoseStack matrixStack, float minX, float minY, float maxX, float maxY, IBorderStyle border0) {
 		BorderStyle border = (BorderStyle) border0;
-		fill(matrixStack, minX + border.width, minY, maxX - border.width, minY + border.width, border.color);
-		fill(matrixStack, minX + border.width, maxY - border.width, maxX - border.width, maxY, border.color);
-		fill(matrixStack, minX, minY, minX + border.width, maxY, border.color);
-		fill(matrixStack, maxX - border.width, minY, maxX, maxY, border.color);
+		drawBorder(matrixStack, minX, minY, maxX, maxY, border.width, border.color, true);
+	}
+
+	@Override
+	public void drawBorder(PoseStack matrixStack, float minX, float minY, float maxX, float maxY, float width, int color, boolean corner) {
+		fill(matrixStack, minX + width, minY, maxX - width, minY + width, color);
+		fill(matrixStack, minX + width, maxY - width, maxX - width, maxY, color);
+		if (corner) {
+			fill(matrixStack, minX, minY, minX + width, maxY, color);
+			fill(matrixStack, maxX - width, minY, maxX, maxY, color);
+		} else {
+			fill(matrixStack, minX, minY + width, minX + width, maxY - width, color);
+			fill(matrixStack, maxX - width, minY + width, maxX, maxY - width, color);
+		}
 	}
 
 	public static void drawTexturedModalRect(PoseStack matrixStack, float x, float y, int textureX, int textureY, int width, int height, int tw, int th) {
@@ -420,6 +431,19 @@ public class DisplayHelper implements IDisplayHelper {
 			CLIENT.font.drawShadow(poseStack, text, x, y, color);
 		} else {
 			CLIENT.font.draw(poseStack, text, x, y, color);
+		}
+	}
+
+	public void drawGradientProgress(PoseStack matrixStack, float left, float top, float width, float height, float progress, int progressColor) {
+		Color color = Color.rgb(progressColor);
+		Color highlight = Color.hsl(color.getHue(), color.getSaturation(), Math.min(color.getLightness() + 0.2, 1), color.getOpacity());
+		if (progress < 0.1F) {
+			drawGradientRect(matrixStack, left, top, width * progress, height, progressColor, highlight.toInt(), true);
+		} else {
+			float hlWidth = width * 0.1F;
+			float normalWidth = width * progress - hlWidth;
+			fill(matrixStack, left, top, left + normalWidth, top + height, progressColor);
+			drawGradientRect(matrixStack, left + normalWidth, top, hlWidth, height, progressColor, highlight.toInt(), true);
 		}
 	}
 }

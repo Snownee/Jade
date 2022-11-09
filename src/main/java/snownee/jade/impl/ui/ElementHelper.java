@@ -11,6 +11,8 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.fluids.FluidStack;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.ui.IBorderStyle;
+import snownee.jade.api.ui.IBoxElement;
+import snownee.jade.api.ui.IBoxStyle;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.api.ui.IProgressStyle;
@@ -52,13 +54,25 @@ public class ElementHelper implements IElementHelper {
 
 	@Override
 	public IElement progress(float progress, @Nullable Component text, IProgressStyle style, @Nullable IBorderStyle borderStyle) {
+		return progress(progress, text, (ProgressStyle) style, BorderStyle.toBoxStyle(borderStyle), true);
+	}
+
+	@Override
+	public IElement progress(float progress, @Nullable Component text, IProgressStyle style, IBoxStyle boxStyle, boolean canDecrease) {
 		Objects.requireNonNull(style);
-		return new ProgressElement(progress, text, (ProgressStyle) style, (BorderStyle) borderStyle);
+		Objects.requireNonNull(boxStyle);
+		return new ProgressElement(progress, text, style, boxStyle, canDecrease);
 	}
 
 	@Override
 	public IElement box(ITooltip tooltip, @Nullable IBorderStyle border) {
-		return new BoxElement((Tooltip) tooltip, (BorderStyle) border);
+		return box(tooltip, BorderStyle.toBoxStyle(border));
+	}
+
+	@Override
+	public IBoxElement box(ITooltip tooltip, IBoxStyle boxStyle) {
+		Objects.requireNonNull(boxStyle);
+		return new BoxElement((Tooltip) tooltip, boxStyle);
 	}
 
 	@Override

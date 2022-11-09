@@ -10,6 +10,7 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.IElement;
+import snownee.jade.api.ui.IElementHelper;
 
 public enum FallingBlockProvider implements IEntityComponentProvider {
 
@@ -29,7 +30,7 @@ public enum FallingBlockProvider implements IEntityComponentProvider {
 		if (stack.isEmpty()) {
 			return currentIcon;
 		}
-		return VanillaPlugin.getElementHelper().item(stack);
+		return IElementHelper.get().item(stack);
 	}
 
 	@Override

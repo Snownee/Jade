@@ -123,7 +123,6 @@
   "config.jade.plugin_minecraft.item_tooltip": "아이템 설명",
   "config.jade.plugin_minecraft.block_inventory": "저장소",
   "jade.locked": "저장소가 잠겨있습니다",
-  "config.jade.plugin_minecraft.fe": "포지 에너지 (FE)",
   "jade.fe": "%s / %s",
   "config.jade.plugin_minecraft.fluid": "액체 탱크",
   "jade.fluid": "%s %s",

@@ -7,7 +7,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.world.phys.Vec2;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
 import snownee.jade.api.callback.JadeAfterRenderCallback;
@@ -17,12 +16,9 @@ import snownee.jade.api.callback.JadeRenderBackgroundCallback;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.IWailaConfig.BossBarOverlapMode;
 import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
-import snownee.jade.api.config.IWailaConfig.IconMode;
 import snownee.jade.api.config.Theme;
-import snownee.jade.api.ui.IElement;
 import snownee.jade.gui.BaseOptionsScreen;
 import snownee.jade.impl.ObjectDataCenter;
-import snownee.jade.impl.Tooltip;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.config.WailaConfig.ConfigGeneral;
 import snownee.jade.util.ClientPlatformProxy;
@@ -38,7 +34,17 @@ public class OverlayRenderer {
 	public static int normalTextColorRaw;
 	public static boolean shown;
 
-	public static void renderOverlay(PoseStack poseStack) {
+	/**
+	 *  NOTE!!!
+	 *  
+	 *  Please do NOT replace the whole codes with Mixin.
+	 *  It will make me unable to locate bugs.
+	 *  A regular plugin can also realize this feature.
+	 *  
+	 *  Secondly, please notice the license that Jade is using.
+	 *  I don't think it is compatible with some open-source licenses.
+	 */
+	public static void renderOverlay478757(PoseStack poseStack) {
 		shown = false;
 		if (WailaTickHandler.instance().tooltipRenderer == null)
 			return;
@@ -168,22 +174,6 @@ public class OverlayRenderer {
 		tooltip.draw(matrixStack);
 		RenderSystem.disableBlend();
 
-		//RenderSystem.enableRescaleNormal();
-		IElement icon = tooltip.getIcon();
-		if (icon != null) {
-			Vec2 size = tooltip.getIcon().getCachedSize();
-			Vec2 offset = tooltip.getIcon().getTranslation();
-			float offsetY;
-			if (overlay.getIconMode() == IconMode.TOP) {
-				offsetY = offset.y + tooltip.getPadding();
-			} else {
-				offsetY = (position.getHeight() - size.y) / 2 - 1;
-			}
-			float offsetX = offset.x + tooltip.getPadding() + 2;
-			Tooltip.drawBorder(matrixStack, offsetX, offsetY, icon);
-			icon.render(matrixStack, offsetX, offsetY, offsetX + size.x, offsetY + size.y);
-		}
-
 		for (JadeAfterRenderCallback callback : WailaClientRegistration.INSTANCE.afterRenderCallbacks) {
 			callback.afterRender(tooltip.getTooltip(), position, matrixStack, ObjectDataCenter.get());
 		}
@@ -219,10 +209,10 @@ public class OverlayRenderer {
 
 	public static void updateTheme() {
 		Theme theme = Jade.CONFIG.get().getOverlay().getTheme();
-		backgroundColorRaw = Color.fromString(theme.backgroundColor).toInt();
-		gradientEndRaw = Color.fromString(theme.gradientEnd).toInt();
-		gradientStartRaw = Color.fromString(theme.gradientStart).toInt();
-		normalTextColorRaw = IConfigOverlay.applyAlpha(Color.fromString(theme.normalTextColor).toInt(), 1);
-		stressedTextColorRaw = IConfigOverlay.applyAlpha(Color.fromString(theme.stressedTextColor).toInt(), 1);
+		backgroundColorRaw = Color.valueOf(theme.backgroundColor).toInt();
+		gradientEndRaw = Color.valueOf(theme.gradientEnd).toInt();
+		gradientStartRaw = Color.valueOf(theme.gradientStart).toInt();
+		normalTextColorRaw = IConfigOverlay.applyAlpha(Color.valueOf(theme.normalTextColor).toInt(), 1);
+		stressedTextColorRaw = IConfigOverlay.applyAlpha(Color.valueOf(theme.stressedTextColor).toInt(), 1);
 	}
 }
