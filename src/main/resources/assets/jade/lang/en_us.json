@@ -29,6 +29,7 @@
   "narration.jade.negative": "negative %s",
   "narration.jade.distance": "D%s",
   "config.jade.general": "General",
+  "config.jade.debug_mode": "Debug Mode",
   "config.jade.display_tooltip": "Display Tooltip",
   "config.jade.display_tooltip_desc": "Collect data and render the tooltip",
   "config.jade.display_entities": "Display Entities",

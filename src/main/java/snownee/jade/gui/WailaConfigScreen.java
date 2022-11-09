@@ -25,6 +25,8 @@ public class WailaConfigScreen extends BaseOptionsScreen {
 		WailaOptionsList options = new WailaOptionsList(this, minecraft, width, height, 32, height - 32, 30, Jade.CONFIG::save);
 
 		IConfigGeneral general = Jade.CONFIG.get().getGeneral();
+		if (PlatformProxy.isDevEnv())
+			options.choices("debug_mode", general.isDebug(), general::setDebug);
 		options.title("general");
 		options.choices("display_tooltip", general.shouldDisplayTooltip(), general::setDisplayTooltip);
 		options.choices("display_entities", general.getDisplayEntities(), general::setDisplayEntities);
