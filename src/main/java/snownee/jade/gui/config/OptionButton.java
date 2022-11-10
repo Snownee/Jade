@@ -21,7 +21,8 @@ public class OptionButton extends WailaOptionsList.Entry {
 	public OptionButton(Component title, Button button) {
 		this.title = title;
 		this.button = button;
-		button.setMessage(this.title);
+		if (button.getMessage().getString().isEmpty())
+			button.setMessage(this.title);
 	}
 
 	@Override
