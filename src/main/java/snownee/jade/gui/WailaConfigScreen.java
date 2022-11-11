@@ -62,6 +62,7 @@ public class WailaConfigScreen extends BaseOptionsScreen {
 		options.slider("overlay_anchor_x", overlay.getAnchorX(), overlay::setAnchorX);
 		options.slider("overlay_anchor_y", overlay.getAnchorY(), overlay::setAnchorY);
 		options.choices("display_item", overlay.getIconMode(), overlay::setIconMode);
+		options.choices("animation", overlay.getAnimation(), overlay::setAnimation);
 
 		//		IConfigFormatting formatting = JadeClient.CONFIG.get().getFormatting();
 		//		options.title("formatting");

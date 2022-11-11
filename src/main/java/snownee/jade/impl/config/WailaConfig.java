@@ -222,7 +222,7 @@ public class WailaConfig implements IWailaConfig {
 		private final Map<ResourceLocation, Theme> themes = Maps.newLinkedHashMap();
 		private ResourceLocation activeTheme = Theme.DARK.id;
 		private IconMode iconMode = IconMode.TOP;
-		public boolean fadeInOut = true;
+		private boolean animation = true;
 
 		public ConfigOverlay() {
 			themes.put(Theme.WAILA.id, Theme.WAILA);
@@ -352,6 +352,16 @@ public class WailaConfig implements IWailaConfig {
 		@Override
 		public boolean shouldShowIcon() {
 			return iconMode != IconMode.HIDE;
+		}
+
+		@Override
+		public void setAnimation(boolean animation) {
+			this.animation = animation;
+		}
+
+		@Override
+		public boolean getAnimation() {
+			return animation;
 		}
 
 	}
