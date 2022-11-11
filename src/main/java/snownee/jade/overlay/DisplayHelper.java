@@ -38,6 +38,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.minecraftforge.fluids.FluidStack;
 import snownee.jade.Jade;
+import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
 import snownee.jade.api.ui.IBorderStyle;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.impl.ui.BorderStyle;
@@ -51,14 +52,19 @@ public class DisplayHelper implements IDisplayHelper {
 
 	@Override
 	public void drawItem(PoseStack matrixStack, float x, float y, ItemStack stack, float scale, @Nullable String text) {
+		if (OverlayRenderer.alpha < 0.5F) {
+			return;
+		}
 		RenderSystem.enableDepthTest();
 
 		PoseStack modelViewStack = RenderSystem.getModelViewStack();
 		modelViewStack.pushPose();
 		modelViewStack.mulPoseMatrix(matrixStack.last().pose());
-		modelViewStack.translate(x, y, 0);
+		float o = 8 * scale;
+		modelViewStack.translate(x + o, y + o, 0);
+		scale *= Math.min(1, OverlayRenderer.alpha + 0.2F);
 		modelViewStack.scale(scale, scale, scale);
-
+		modelViewStack.translate(-8, -8, 0);
 		CLIENT.getItemRenderer().renderGuiItem(stack, 0, 0);
 		renderGuiItemDecorations(CLIENT.font, stack, text);
 
@@ -154,11 +160,11 @@ public class DisplayHelper implements IDisplayHelper {
 		float zLevel = 0.0F;
 		Matrix4f matrix = matrixStack.last().pose();
 
-		float f = (startColor >> 24 & 255) / 255.0F;
+		float f = (startColor >> 24 & 255) / 255.0F * OverlayRenderer.alpha;
 		float f1 = (startColor >> 16 & 255) / 255.0F;
 		float f2 = (startColor >> 8 & 255) / 255.0F;
 		float f3 = (startColor & 255) / 255.0F;
-		float f4 = (endColor >> 24 & 255) / 255.0F;
+		float f4 = (endColor >> 24 & 255) / 255.0F * OverlayRenderer.alpha;
 		float f5 = (endColor >> 16 & 255) / 255.0F;
 		float f6 = (endColor >> 8 & 255) / 255.0F;
 		float f7 = (endColor & 255) / 255.0F;
@@ -244,7 +250,7 @@ public class DisplayHelper implements IDisplayHelper {
 		if (icon == null)
 			return;
 
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, OverlayRenderer.alpha);
 		RenderSystem.setShaderTexture(0, GuiComponent.GUI_ICONS_LOCATION);
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
@@ -260,6 +266,9 @@ public class DisplayHelper implements IDisplayHelper {
 	private static final int MIN_FLUID_HEIGHT = 1; // ensure tiny amounts of fluid are still visible
 
 	public void drawFluid(PoseStack matrixStack, final float xPosition, final float yPosition, @Nullable FluidStack fluidStack, float width, float height, int capacityMb) {
+		if (OverlayRenderer.alpha < 0.5F) {
+			return;
+		}
 		if (fluidStack == null || fluidStack.isEmpty()) {
 			return;
 		}
@@ -364,7 +373,7 @@ public class DisplayHelper implements IDisplayHelper {
 			maxY = j;
 		}
 
-		float f3 = (color >> 24 & 255) / 255.0F;
+		float f3 = (color >> 24 & 255) / 255.0F * OverlayRenderer.alpha;
 		float f = (color >> 16 & 255) / 255.0F;
 		float f1 = (color >> 8 & 255) / 255.0F;
 		float f2 = (color & 255) / 255.0F;
@@ -421,17 +430,15 @@ public class DisplayHelper implements IDisplayHelper {
 
 	@Override
 	public void drawText(PoseStack poseStack, String text, float x, float y, int color) {
-		boolean shadow = Jade.CONFIG.get().getOverlay().getTheme().textShadow;
-		if (shadow) {
-			CLIENT.font.drawShadow(poseStack, text, x, y, color);
-		} else {
-			CLIENT.font.draw(poseStack, text, x, y, color);
-		}
+		drawText(poseStack, Component.literal(text), x, y, color);
 	}
 
 	@Override
 	public void drawText(PoseStack poseStack, Component text, float x, float y, int color) {
 		boolean shadow = Jade.CONFIG.get().getOverlay().getTheme().textShadow;
+		if (OverlayRenderer.alpha != 1) {
+			color = IConfigOverlay.applyAlpha(color, OverlayRenderer.alpha);
+		}
 		if (shadow) {
 			CLIENT.font.drawShadow(poseStack, text, x, y, color);
 		} else {

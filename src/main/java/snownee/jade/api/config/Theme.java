@@ -11,7 +11,6 @@ public class Theme {
 	public static final Theme DARK = new Theme(new ResourceLocation(Jade.MODID, "dark"), "#131313", "#383838", "#242424", "#fff", "#a0a0a0", true);
 	public static final Theme CREATE = new Theme(new ResourceLocation(Jade.MODID, "create"), "#000", "#2a2626", "#1a1717", "#fff", "#a0a0a0", true);
 	public static final Theme TOP = new Theme(new ResourceLocation(Jade.MODID, "top"), "#0695", "#999f", "#999f", "#fff", "#a0a0a0", true);
-	//public static final HUDTheme GRAY = new HUDTheme(new ResourceLocation("jade:gray"), 0x606060, 0x101010, 0x101010, 0xFFFFFF, 0xA0A0A0, true);
 
 	public final ResourceLocation id;
 	public final String backgroundColor;

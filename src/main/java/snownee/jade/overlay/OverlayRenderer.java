@@ -7,6 +7,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.util.Mth;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
 import snownee.jade.api.callback.JadeAfterRenderCallback;
@@ -21,6 +22,7 @@ import snownee.jade.gui.BaseOptionsScreen;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.config.WailaConfig.ConfigGeneral;
+import snownee.jade.impl.config.WailaConfig.ConfigOverlay;
 import snownee.jade.util.ClientPlatformProxy;
 import snownee.jade.util.Color;
 
@@ -33,28 +35,58 @@ public class OverlayRenderer {
 	public static int stressedTextColorRaw;
 	public static int normalTextColorRaw;
 	public static boolean shown;
+	public static float alpha;
+	private static TooltipRenderer fadeTooltip;
+
+	public static boolean shouldShow() {
+		if (WailaTickHandler.instance().tooltipRenderer == null) {
+			return false;
+		}
+
+		ConfigGeneral general = Jade.CONFIG.get().getGeneral();
+		if (!general.shouldDisplayTooltip())
+			return false;
+
+		if (general.getDisplayMode() == IWailaConfig.DisplayMode.HOLD_KEY && !JadeClient.showOverlay.isDown())
+			return false;
+
+		return true;
+	}
 
 	/**
 	 *  NOTE!!!
 	 *  
 	 *  Please do NOT replace the whole codes with Mixin.
 	 *  It will make me unable to locate bugs.
-	 *  A regular plugin can also realize this feature.
+	 *  A regular plugin can also realize the same features.
 	 *  
 	 *  Secondly, please notice the license that Jade is using.
 	 *  I don't think it is compatible with some open-source licenses.
 	 */
 	public static void renderOverlay478757(PoseStack poseStack) {
 		shown = false;
-		if (WailaTickHandler.instance().tooltipRenderer == null)
-			return;
-
+		boolean show = shouldShow();
+		TooltipRenderer tooltipRenderer = WailaTickHandler.instance().tooltipRenderer;
+		float delta = Minecraft.getInstance().getDeltaFrameTime();
+		ConfigOverlay overlay = Jade.CONFIG.get().getOverlay();
 		ConfigGeneral general = Jade.CONFIG.get().getGeneral();
-		if (!general.shouldDisplayTooltip())
-			return;
+		if (overlay.fadeInOut) {
+			if (tooltipRenderer == null) {
+				tooltipRenderer = fadeTooltip;
+			} else {
+				fadeTooltip = tooltipRenderer;
+			}
+			float speed = general.isDebug() ? 0.1F : 0.6F;
+			alpha += (show ? speed : -speed) * delta;
+			alpha = Mth.clamp(alpha, 0, 1);
+		} else {
+			alpha = show ? 1 : 0;
+		}
 
-		if (general.getDisplayMode() == IWailaConfig.DisplayMode.HOLD_KEY && !JadeClient.showOverlay.isDown())
+		if (alpha < 0.1F || tooltipRenderer == null) {
+			fadeTooltip = null;
 			return;
+		}
 
 		Minecraft mc = Minecraft.getInstance();
 
@@ -67,7 +99,6 @@ public class OverlayRenderer {
 
 		if (mc.screen instanceof BaseOptionsScreen) {
 			Rect2i position = WailaTickHandler.instance().tooltipRenderer.getPosition();
-			IConfigOverlay overlay = Jade.CONFIG.get().getOverlay();
 			Window window = mc.getWindow();
 			double x = mc.mouseHandler.xpos() * window.getGuiScaledWidth() / window.getScreenWidth();
 			double y = mc.mouseHandler.ypos() * window.getGuiScaledHeight() / window.getScreenHeight();
@@ -78,6 +109,9 @@ public class OverlayRenderer {
 			}
 		}
 
+		if (mc.options.renderDebug && general.shouldHideFromDebug())
+			return;
+
 		if (mc.getOverlay() != null || mc.options.hideGui)
 			return;
 
@@ -85,11 +119,8 @@ public class OverlayRenderer {
 			return;
 		}
 
-		if (mc.options.renderDebug && general.shouldHideFromDebug())
-			return;
-
-		ticks += mc.getDeltaFrameTime();
-		renderOverlay(WailaTickHandler.instance().tooltipRenderer, poseStack);
+		ticks += delta;
+		renderOverlay(tooltipRenderer, poseStack);
 	}
 
 	public static void renderOverlay(TooltipRenderer tooltip, PoseStack matrixStack) {
@@ -166,6 +197,7 @@ public class OverlayRenderer {
 			}
 		}
 		if (doDefault && colorSetting.alpha > 0) {
+			colorSetting.alpha *= alpha;
 			drawTooltipBox(matrixStack, 0, 0, position.getWidth(), position.getHeight(), IConfigOverlay.applyAlpha(colorSetting.backgroundColor, colorSetting.alpha), IConfigOverlay.applyAlpha(colorSetting.gradientStart, colorSetting.alpha), IConfigOverlay.applyAlpha(colorSetting.gradientEnd, colorSetting.alpha), overlay.getSquare());
 		}
 
