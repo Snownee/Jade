@@ -1,5 +1,7 @@
 package snownee.jade.api;
 
+import org.jetbrains.annotations.ApiStatus.ScheduledForRemoval;
+
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.Jade;
 
@@ -27,11 +29,16 @@ public class Identifiers {
 	public static final ResourceLocation UNIVERSAL_ENERGY_STORAGE = MC("energy_storage");
 	public static final ResourceLocation UNIVERSAL_PROGRESS = MC("progress");
 
+	@ScheduledForRemoval(inVersion = "1.20")
 	public static final ResourceLocation FORGE_BLOCK_INVENTORY = UNIVERSAL_ITEM_STORAGE;
+	@ScheduledForRemoval(inVersion = "1.20")
 	public static final ResourceLocation FORGE_FLUID = UNIVERSAL_FLUID_STORAGE;
+	@ScheduledForRemoval(inVersion = "1.20")
 	public static final ResourceLocation FORGE_ENERGY = UNIVERSAL_ENERGY_STORAGE;
 
+	@ScheduledForRemoval(inVersion = "1.20")
 	public static final ResourceLocation FABRIC_BLOCK_INVENTORY = UNIVERSAL_ITEM_STORAGE;
+	@ScheduledForRemoval(inVersion = "1.20")
 	public static final ResourceLocation FABRIC_FLUID = UNIVERSAL_FLUID_STORAGE;
 
 	public static final ResourceLocation MC_BLOCK_INVENTORY_DETAILED_AMOUNT = MC("block_inventory.detailed_amount");
