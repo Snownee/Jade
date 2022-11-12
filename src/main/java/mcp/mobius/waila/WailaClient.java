@@ -7,6 +7,7 @@ import mcp.mobius.waila.api.config.WailaConfig;
 import mcp.mobius.waila.api.config.WailaConfig.ConfigGeneral;
 import mcp.mobius.waila.api.config.WailaConfig.ConfigGeneral.TTSMode;
 import mcp.mobius.waila.api.config.WailaConfig.DisplayMode;
+import mcp.mobius.waila.compat.JEICompat;
 import mcp.mobius.waila.gui.HomeConfigScreen;
 import mcp.mobius.waila.impl.ObjectDataCenter;
 import mcp.mobius.waila.impl.config.PluginConfig;
@@ -32,6 +33,7 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import snownee.jade.Jade;
@@ -39,11 +41,15 @@ import snownee.jade.Jade;
 @Mod.EventBusSubscriber(modid = Waila.MODID, value = Dist.CLIENT)
 public class WailaClient {
 
+	private static boolean hasJEI = ModList.get().isLoaded("jei");
+
 	public static KeyMapping openConfig;
 	public static KeyMapping showOverlay;
 	public static KeyMapping toggleLiquid;
 	public static KeyMapping showDetails;
 	public static KeyMapping narrate;
+	public static KeyMapping showRecipes;
+	public static KeyMapping showUses;
 
 	public static void initClient() {
 		ModLoadingContext.get().registerExtensionPoint(ConfigGuiFactory.class, () -> new ConfigGuiFactory((minecraft, screen) -> new HomeConfigScreen(screen)));
@@ -59,6 +65,13 @@ public class WailaClient {
 		ClientRegistry.registerKeyBinding(WailaClient.toggleLiquid);
 		ClientRegistry.registerKeyBinding(WailaClient.narrate);
 		ClientRegistry.registerKeyBinding(WailaClient.showDetails);
+
+		if (hasJEI) {
+			showRecipes = new KeyMapping("key.waila.show_recipes", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputConstants.Type.KEYSYM.getOrCreate(323), Jade.NAME);
+			showUses = new KeyMapping("key.waila.show_uses", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputConstants.Type.KEYSYM.getOrCreate(324), Jade.NAME);
+			ClientRegistry.registerKeyBinding(showRecipes);
+			ClientRegistry.registerKeyBinding(showUses);
+		}
 
 		((ReloadableResourceManager) Minecraft.getInstance().getResourceManager()).registerReloadListener(ModIdentification.INSTANCE);
 	}
@@ -98,9 +111,12 @@ public class WailaClient {
 				WailaTickHandler.narrate(WailaTickHandler.instance().tooltipRenderer.getTooltip(), false);
 			}
 		}
+
+		if (hasJEI) {
+			JEICompat.onKeyPressed(event);
+		}
 	}
 
-	//public static boolean hasJEI = ModList.get().isLoaded("jei");
 	public static boolean hideModName;
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
