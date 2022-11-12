@@ -7,6 +7,8 @@ import mcp.mobius.waila.api.EntityAccessor;
 import mcp.mobius.waila.api.IEntityComponentProvider;
 import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.config.IPluginConfig;
+import mcp.mobius.waila.utils.ModIdentification;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
@@ -34,6 +36,8 @@ public class ItemTooltipProvider implements IEntityComponentProvider {
 		if (!itemTooltip.isEmpty()) {
 			itemTooltip.remove(0);
 		}
+		String modName = ModIdentification.getModName(stack);
+		itemTooltip.removeIf($ -> ChatFormatting.stripFormatting($.getString()).equals(modName));
 		Font font = Minecraft.getInstance().font;
 		int maxWidth = 250;
 		for (Component component : itemTooltip) {
