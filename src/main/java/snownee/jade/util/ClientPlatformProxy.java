@@ -69,6 +69,7 @@ public final class ClientPlatformProxy {
 
 	public static boolean hasJEI = isModLoaded("jei");
 	public static boolean hasREI = isModLoaded("roughlyenoughitems");
+	public static boolean hasFastScroll = isModLoaded("fastscroll");
 
 	private static boolean isModLoaded(String modid) {
 		try {

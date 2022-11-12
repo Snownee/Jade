@@ -18,7 +18,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 import snownee.jade.gui.config.WailaOptionsList;
-import snownee.jade.gui.config.value.OptionValue;
 
 public abstract class BaseOptionsScreen extends Screen {
 
@@ -74,24 +73,20 @@ public abstract class BaseOptionsScreen extends Screen {
 		renderBackground(matrixStack);
 		super.render(matrixStack, mouseX, mouseY, partialTicks);
 
-		if (mouseY >= 32 && mouseY <= height - 32) {
+		if (options.getSelected() != null && mouseY >= 32 && mouseY <= height - 32) {
 			WailaOptionsList.Entry entry = options.getSelected();
-			if (entry instanceof OptionValue<?> value) {
-
-				AbstractWidget widget = value.getListener();
-				if (widget instanceof TooltipAccessor && widget.visible && mouseX >= widget.x && mouseY >= widget.y && mouseX < (widget.x + widget.getWidth()) && mouseY < (widget.y + widget.getHeight())) {
-					renderTooltip(matrixStack, ((TooltipAccessor) widget).getTooltip(), mouseX, mouseY);
-				} else if (!Strings.isNullOrEmpty(value.getDescription())) {
-					int valueX = value.getX() + value.indent + 10;
-					String title = value.getTitle().getString();
-					if (mouseX >= valueX && mouseX <= valueX + font.width(title)) {
-						List<FormattedCharSequence> tooltip = font.split(Component.literal(value.getDescription()), 200);
-						matrixStack.pushPose();
-						matrixStack.translate(0, 0, 100);
-						renderTooltip(matrixStack, tooltip, mouseX, mouseY);
-						RenderSystem.enableDepthTest();
-						matrixStack.popPose();
-					}
+			AbstractWidget widget = entry.getListener();
+			if (widget instanceof TooltipAccessor && widget.visible && mouseX >= widget.x && mouseY >= widget.y && mouseX < (widget.x + widget.getWidth()) && mouseY < (widget.y + widget.getHeight())) {
+				renderTooltip(matrixStack, ((TooltipAccessor) widget).getTooltip(), mouseX, mouseY);
+			} else if (!Strings.isNullOrEmpty(entry.getDescription())) {
+				int valueX = entry.getTextX(options.getRowWidth());
+				if (mouseX >= valueX && mouseX < valueX + entry.getTextWidth()) {
+					List<FormattedCharSequence> tooltip = font.split(Component.literal(entry.getDescription()), 200);
+					matrixStack.pushPose();
+					matrixStack.translate(0, 0, 100);
+					renderTooltip(matrixStack, tooltip, mouseX, mouseY);
+					RenderSystem.enableDepthTest();
+					matrixStack.popPose();
 				}
 			}
 		}

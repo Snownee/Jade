@@ -3,8 +3,6 @@ package snownee.jade.gui.config.value;
 import java.util.List;
 import java.util.function.Consumer;
 
-import org.jetbrains.annotations.Nullable;
-
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -20,8 +18,6 @@ import snownee.jade.gui.config.WailaOptionsList;
 public abstract class OptionValue<T> extends WailaOptionsList.Entry {
 
 	private final Component title;
-	@Nullable
-	private String description;
 	protected final Consumer<T> setter;
 	protected T value;
 	private int x;
@@ -51,11 +47,6 @@ public abstract class OptionValue<T> extends WailaOptionsList.Entry {
 		return title;
 	}
 
-	@Nullable
-	public String getDescription() {
-		return description;
-	}
-
 	public void appendDescription(String description) {
 		if (this.description == null)
 			this.description = getTitle().getString();
@@ -64,6 +55,16 @@ public abstract class OptionValue<T> extends WailaOptionsList.Entry {
 
 	public int getX() {
 		return x;
+	}
+
+	@Override
+	public int getTextX(int width) {
+		return getX() + indent + 10;
+	}
+
+	@Override
+	public int getTextWidth() {
+		return client.font.width(getTitle());
 	}
 
 	@Override

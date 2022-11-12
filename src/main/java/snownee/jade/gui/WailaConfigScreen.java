@@ -92,7 +92,7 @@ public class WailaConfigScreen extends BaseOptionsScreen {
 				}
 				minecraft.setScreen(this);
 				this.options.setScrollAmount(this.options.getMaxScroll());
-			}, title, Component.translatable(WailaOptionsList.Entry.makeKey("reset_settings.desc")), reset, Component.translatable("gui.cancel")));
+			}, title, Component.translatable(WailaOptionsList.Entry.makeKey("reset_settings.confirm")), reset, Component.translatable("gui.cancel")));
 		})));
 
 		return options;
