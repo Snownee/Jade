@@ -21,6 +21,7 @@ import com.mojang.blaze3d.vertex.VertexFormat.Mode;
 
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import mcp.mobius.waila.Waila;
+import mcp.mobius.waila.WailaClient;
 import mcp.mobius.waila.gui.OptionsScreen;
 import mcp.mobius.waila.gui.config.value.CycleOptionValue;
 import mcp.mobius.waila.gui.config.value.InputOptionValue;
@@ -33,6 +34,7 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
@@ -63,6 +65,13 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 	@Override
 	protected int getScrollbarPosition() {
 		return width - 6;
+	}
+
+	@Override
+	public boolean mouseScrolled(double d, double e, double f) {
+		double speed = !WailaClient.hasFastScroll && Screen.hasControlDown() ? 4.5 : 1.5;
+		setScrollAmount(getScrollAmount() - f * (double) this.itemHeight * speed);
+		return true;
 	}
 
 	@Override

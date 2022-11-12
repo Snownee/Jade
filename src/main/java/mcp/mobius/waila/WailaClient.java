@@ -42,6 +42,7 @@ import snownee.jade.Jade;
 public class WailaClient {
 
 	private static boolean hasJEI = ModList.get().isLoaded("jei");
+	public static boolean hasFastScroll = ModList.get().isLoaded("fastscroll");
 
 	public static KeyMapping openConfig;
 	public static KeyMapping showOverlay;
