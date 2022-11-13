@@ -1,13 +1,10 @@
 package snownee.jade.util;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import org.jetbrains.annotations.Nullable;
-
-import com.google.common.math.IntMath;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
@@ -33,7 +30,6 @@ import net.minecraftforge.common.capabilities.CapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fml.loading.FMLEnvironment;
@@ -114,25 +110,7 @@ public final class PlatformProxy {
 		if (target instanceof CapabilityProvider<?> capProvider) {
 			IFluidHandler fluidHandler = capProvider.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).orElse(null);
 			if (fluidHandler != null) {
-				List<CompoundTag> list = new ArrayList<>(fluidHandler.getTanks());
-				int emptyCapacity = 0;
-				for (int i = 0; i < fluidHandler.getTanks(); i++) {
-					int capacity = fluidHandler.getTankCapacity(i);
-					if (capacity <= 0)
-						continue;
-					FluidStack fluidStack = fluidHandler.getFluidInTank(i);
-					if (fluidStack.isEmpty()) {
-						emptyCapacity = IntMath.saturatedAdd(emptyCapacity, capacity);
-						continue;
-					}
-					list.add(FluidView.fromFluidStack(fluidStack, capacity));
-				}
-				if (list.isEmpty() && emptyCapacity > 0) {
-					list.add(FluidView.fromFluidStack(FluidStack.EMPTY, emptyCapacity));
-				}
-				if (!list.isEmpty()) {
-					return List.of(new ViewGroup<>(list));
-				}
+				return FluidView.fromFluidHandler(fluidHandler);
 			}
 		}
 		return null;
