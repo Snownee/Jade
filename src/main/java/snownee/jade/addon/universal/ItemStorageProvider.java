@@ -13,6 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.LockCode;
+import net.minecraft.world.entity.vehicle.ContainerEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
@@ -56,14 +57,6 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 	}
 
 	public static void append(ITooltip tooltip, Accessor<?> accessor, IPluginConfig config) {
-		if (accessor.getServerData().getBoolean("Loot")) {
-			tooltip.add(Component.translatable("jade.not_generated"));
-			return;
-		}
-		if (accessor.getServerData().getBoolean("Locked")) {
-			tooltip.add(Component.translatable("jade.locked"));
-			return;
-		}
 		if (accessor.getServerData().contains("JadeItemStorage")) {
 			var provider = Optional.ofNullable(ResourceLocation.tryParse(accessor.getServerData().getString("JadeItemStorageUid"))).map(WailaClientRegistration.INSTANCE.itemStorageProviders::get);
 			if (provider.isPresent()) {
@@ -138,6 +131,10 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 					}
 				});
 			}
+		} else if (accessor.getServerData().getBoolean("Loot")) {
+			tooltip.add(Component.translatable("jade.not_generated"));
+		} else if (accessor.getServerData().getBoolean("Locked")) {
+			tooltip.add(Component.translatable("jade.locked"));
 		}
 	}
 
@@ -145,18 +142,6 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 	public void appendServerData(CompoundTag tag, ServerPlayer player, Level world, BlockEntity te, boolean showDetails) {
 		if (JadeCommonConfig.shouldIgnoreTE(tag.getString("id")) || te instanceof AbstractFurnaceBlockEntity) {
 			return;
-		}
-
-		if (te instanceof RandomizableContainerBlockEntity && ((RandomizableContainerBlockEntity) te).lootTable != null) {
-			tag.putBoolean("Loot", true);
-			return;
-		}
-
-		if (!JadeCommonConfig.bypassLockedContainer && !player.isCreative() && !player.isSpectator() && te instanceof BaseContainerBlockEntity lockableBlockEntity) {
-			if (lockableBlockEntity.lockKey != LockCode.NO_LOCK) {
-				tag.putBoolean("Locked", true);
-				return;
-			}
 		}
 		putData(tag, player, te, showDetails);
 	}
@@ -179,6 +164,21 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 			return itemTag;
 		})) {
 			tag.putString("JadeItemStorageUid", provider.getUid().toString());
+		} else {
+			if (target instanceof RandomizableContainerBlockEntity te && te.lootTable != null) {
+				tag.putBoolean("Loot", true);
+				return;
+			}
+			if (target instanceof ContainerEntity containerEntity && containerEntity.getLootTable() != null) {
+				tag.putBoolean("Loot", true);
+				return;
+			}
+			if (!JadeCommonConfig.bypassLockedContainer && !player.isCreative() && !player.isSpectator() && target instanceof BaseContainerBlockEntity te) {
+				if (te.lockKey != LockCode.NO_LOCK) {
+					tag.putBoolean("Locked", true);
+					return;
+				}
+			}
 		}
 	}
 
@@ -194,6 +194,18 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 
 	@Override
 	public List<ViewGroup<ItemStack>> getGroups(ServerPlayer player, ServerLevel world, Object target, boolean showDetails) {
+		if (target instanceof RandomizableContainerBlockEntity te && te.lootTable != null) {
+			return List.of();
+		}
+		if (target instanceof ContainerEntity containerEntity && containerEntity.getLootTable() != null) {
+			return List.of();
+		}
+		if (!JadeCommonConfig.bypassLockedContainer && !player.isCreative() && !player.isSpectator() && target instanceof BaseContainerBlockEntity te) {
+			if (te.lockKey != LockCode.NO_LOCK) {
+				return List.of();
+			}
+		}
+
 		return PlatformProxy.wrapItemStorage(target, player);
 	}
 
