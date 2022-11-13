@@ -131,11 +131,12 @@ public class OverlayRenderer {
 		}
 
 		ticks += delta;
+		Minecraft.getInstance().getProfiler().push("Jade Overlay");
 		renderOverlay(tooltipRenderer, poseStack);
+		Minecraft.getInstance().getProfiler().pop();
 	}
 
 	public static void renderOverlay(TooltipRenderer tooltip, PoseStack matrixStack) {
-		Minecraft.getInstance().getProfiler().push("Jade Overlay");
 		matrixStack.pushPose();
 
 		Rect2i position = tooltip.getPosition();
@@ -205,6 +206,7 @@ public class OverlayRenderer {
 		matrixStack.translate(-morphRect.getWidth() * overlay.tryFlip(overlay.getAnchorX()), -morphRect.getHeight() * overlay.getAnchorY(), 0);
 
 		boolean doDefault = true;
+		colorSetting.alpha *= alpha;
 		for (JadeRenderBackgroundCallback callback : WailaClientRegistration.INSTANCE.renderBackgroundCallbacks) {
 			if (callback.onRender(tooltip, morphRect, matrixStack, ObjectDataCenter.get(), colorSetting)) {
 				doDefault = false;
@@ -212,7 +214,6 @@ public class OverlayRenderer {
 			}
 		}
 		if (doDefault && colorSetting.alpha > 0) {
-			colorSetting.alpha *= alpha;
 			drawTooltipBox(matrixStack, 0, 0, morphRect.getWidth(), morphRect.getHeight(), IConfigOverlay.applyAlpha(colorSetting.backgroundColor, colorSetting.alpha), IConfigOverlay.applyAlpha(colorSetting.gradientStart, colorSetting.alpha), IConfigOverlay.applyAlpha(colorSetting.gradientEnd, colorSetting.alpha), overlay.getSquare());
 		}
 
@@ -227,7 +228,6 @@ public class OverlayRenderer {
 
 		RenderSystem.enableDepthTest();
 		matrixStack.popPose();
-		Minecraft.getInstance().getProfiler().pop();
 
 		if (Jade.CONFIG.get().getGeneral().shouldEnableTextToSpeech() && Minecraft.getInstance().level != null && Minecraft.getInstance().level.getGameTime() % 5 == 0) {
 			WailaTickHandler.narrate(tooltip.getTooltip(), true);
@@ -238,14 +238,15 @@ public class OverlayRenderer {
 
 	private static void chase(Rect2i pos, ToIntFunction<Rect2i> getter, IntConsumer setter) {
 		if (Jade.CONFIG.get().getOverlay().getAnimation()) {
-			float delta = Minecraft.getInstance().getDeltaFrameTime();
 			int value = getter.applyAsInt(morphRect);
 			int target = getter.applyAsInt(pos);
 			float diff = target - value;
 			if (diff == 0) {
 				return;
 			}
-			diff *= delta * 2;
+			float delta = Minecraft.getInstance().getDeltaFrameTime() * 2;
+			if (delta < 1)
+				diff *= delta;
 			if (Mth.abs(diff) < 1) {
 				diff = diff > 0 ? 1 : -1;
 			}
