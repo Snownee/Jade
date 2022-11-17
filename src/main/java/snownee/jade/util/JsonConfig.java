@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -31,7 +32,7 @@ public class JsonConfig<T> {
 	private final CachedSupplier<T> configGetter;
 	private Gson gson = DEFAULT_GSON;
 
-	public JsonConfig(String fileName, Class<T> configClass, @Nullable Runnable onUpdate, Supplier<T> defaultFactory) {
+	public JsonConfig(String fileName, Type configClass, @Nullable Runnable onUpdate, Supplier<T> defaultFactory) {
 		this.configFile = new File(PlatformProxy.getConfigDirectory(), fileName + (fileName.endsWith(".json") ? "" : ".json"));
 		this.configGetter = new CachedSupplier<>(() -> {
 			if (!configFile.exists()) {
