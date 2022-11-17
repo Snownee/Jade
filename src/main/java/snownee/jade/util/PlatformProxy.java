@@ -23,7 +23,9 @@ import net.minecraft.world.item.ShearsItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.entity.EnderChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import snownee.jade.api.view.ItemView;
@@ -80,6 +82,14 @@ public final class PlatformProxy {
 			return List.of(ItemView.fromContainer(horse.getInventory(), size, 2));
 		}
 		if (target instanceof Container container) {
+			if (target instanceof ChestBlockEntity be) {
+				if (be.getBlockState().getBlock() instanceof ChestBlock chestBlock) {
+					Container compound = ChestBlock.getContainer(chestBlock, be.getBlockState(), be.getLevel(), be.getBlockPos(), false);
+					if (compound != null) {
+						container = compound;
+					}
+				}
+			}
 			return List.of(ItemView.fromContainer(container, size, 0));
 		}
 		if (player != null && target instanceof EnderChestBlockEntity) {

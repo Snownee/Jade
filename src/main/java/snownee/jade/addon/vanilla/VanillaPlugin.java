@@ -139,6 +139,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.hideTarget(EntityType.AREA_EFFECT_CLOUD);
 		registration.hideTarget(EntityType.FIREWORK_ROCKET);
 		registration.usePickedResult(EntityType.BOAT);
+		registration.usePickedResult(EntityType.CHEST_BOAT);
 	}
 
 	private static final Cache<BlockState, BlockState> CHEST_CACHE = CacheBuilder.newBuilder().build();

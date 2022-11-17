@@ -40,6 +40,7 @@ import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.impl.config.WailaConfig;
 import snownee.jade.overlay.OverlayRenderer;
+import snownee.jade.test.ExamplePlugin;
 import snownee.jade.util.JsonConfig;
 import snownee.jade.util.PlatformProxy;
 import snownee.jade.util.ThemeSerializer;
@@ -173,6 +174,13 @@ public class Jade implements ModInitializer {
 				LOGGER.error("Error loading plugin at {}", className, e);
 			}
 		});
+		if (PlatformProxy.isDevEnv()) {
+			IWailaPlugin plugin = new ExamplePlugin();
+			plugin.register(WailaCommonRegistration.INSTANCE);
+			if (PlatformProxy.isPhysicallyClient()) {
+				plugin.registerClient(WailaClientRegistration.INSTANCE);
+			}
+		}
 
 		WailaCommonRegistration.INSTANCE.priorities.updateConfig(PluginConfig.INSTANCE.getKeys());
 		WailaCommonRegistration.INSTANCE.loadComplete();
