@@ -34,6 +34,7 @@ import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import snownee.jade.Jade;
@@ -188,8 +189,8 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 		return entry;
 	}
 
-	public void title(String string) {
-		add(new Title(string));
+	public MutableComponent title(String string) {
+		return add(new Title(string)).getTitle();
 	}
 
 	public OptionValue<?> slider(String optionName, float value, Consumer<Float> setter) {
@@ -241,7 +242,7 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 
 		protected final Minecraft client;
 
-		public static Component makeTitle(String key) {
+		public static MutableComponent makeTitle(String key) {
 			return Component.translatable(makeKey(key));
 		}
 
@@ -278,10 +279,14 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 
 	public static class Title extends Entry {
 
-		private final Component title;
+		private final MutableComponent title;
 
 		public Title(String key) {
 			title = makeTitle(key);
+		}
+
+		public MutableComponent getTitle() {
+			return title;
 		}
 
 		@Override

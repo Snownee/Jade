@@ -26,7 +26,7 @@ public abstract class BaseOptionsScreen extends Screen {
 	private final Screen parent;
 	private final Runnable saver;
 	private final Runnable canceller;
-	private WailaOptionsList options;
+	protected WailaOptionsList options;
 	private final Set<GuiEventListener> entryWidgets = Sets.newIdentityHashSet();
 
 	public BaseOptionsScreen(Screen parent, Component title, Runnable saver, Runnable canceller) {
@@ -47,8 +47,9 @@ public abstract class BaseOptionsScreen extends Screen {
 
 	@Override
 	protected void init() {
+		super.init();
 		entryWidgets.clear();
-		options = getOptions();
+		options = createOptions();
 		addRenderableWidget(options);
 
 		if (saver != null && canceller != null) {
@@ -100,7 +101,7 @@ public abstract class BaseOptionsScreen extends Screen {
 		OverlayRenderer.renderOverlay478757(matrixStack);
 	}
 
-	public abstract WailaOptionsList getOptions();
+	public abstract WailaOptionsList createOptions();
 
 	@Override
 	public boolean mouseScrolled(double mouseX, double mouseY, double delta) {

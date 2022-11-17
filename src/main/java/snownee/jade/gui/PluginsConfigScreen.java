@@ -27,7 +27,7 @@ public class PluginsConfigScreen extends BaseOptionsScreen {
 	}
 
 	@Override
-	public WailaOptionsList getOptions() {
+	public WailaOptionsList createOptions() {
 		WailaOptionsList options = new WailaOptionsList(this, minecraft, width, height, 32, height - 32, 30, PluginConfig.INSTANCE::save);
 		PluginConfig.INSTANCE.getNamespaces().forEach(namespace -> {
 			Component title;
@@ -54,7 +54,7 @@ public class PluginsConfigScreen extends BaseOptionsScreen {
 		}
 		return new BaseOptionsScreen(parent, title, dontSave ? null : PluginConfig.INSTANCE::save, dontSave ? null : PluginConfig.INSTANCE::reload) {
 			@Override
-			public WailaOptionsList getOptions() {
+			public WailaOptionsList createOptions() {
 				Set<ResourceLocation> keys = PluginConfig.INSTANCE.getKeys(namespace);
 				WailaOptionsList options = new WailaOptionsList(this, minecraft, width, height, 32, height - 32, 30);
 				keys.stream().sorted(Comparator.comparingInt(WailaCommonRegistration.INSTANCE.priorities.getSortedList()::indexOf)).forEach(i -> {

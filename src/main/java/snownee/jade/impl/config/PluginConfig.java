@@ -75,11 +75,7 @@ public class PluginConfig implements IPluginConfig {
 			ConfigEntry<?> entry = getEntry(key);
 			return entry == null ? defaultValue : (Boolean) entry.getValue();
 		} else {
-			return Optional.ofNullable(serverConfigs)
-					.map($ -> $.getAsJsonObject(key.getNamespace()))
-					.map($ -> $.get(key.getPath()))
-					.map(JsonElement::getAsBoolean)
-					.orElse(false);
+			return Optional.ofNullable(serverConfigs).map($ -> $.getAsJsonObject(key.getNamespace())).map($ -> $.get(key.getPath())).map(JsonElement::getAsBoolean).orElse(false);
 		}
 	}
 
@@ -126,62 +122,66 @@ public class PluginConfig implements IPluginConfig {
 		return true;
 	}
 
+	public File getFile() {
+		boolean client = PlatformProxy.isPhysicallyClient();
+		return new File(PlatformProxy.getConfigDirectory(), client ? CLIENT_FILE : SERVER_FILE);
+	}
+
 	public void reload() {
 		boolean client = PlatformProxy.isPhysicallyClient();
-		File configFile = new File(PlatformProxy.getConfigDirectory(), client ? CLIENT_FILE : SERVER_FILE);
+		File configFile = getFile();
 
 		if (client)
 			configs.values().forEach($ -> $.setSynced(false));
 
-		if (!configFile.exists()) { // Write defaults, but don't read
+		if (!configFile.exists()) {
 			writeConfig(configFile, true);
-		} else { // Read back from config
-			if (client) {
-				Map<String, Map<String, Object>> config;
-				try (FileReader reader = new FileReader(configFile, StandardCharsets.UTF_8)) {
-					config = JsonConfig.DEFAULT_GSON.fromJson(reader, new TypeToken<Map<String, Map<String, Object>>>() {
-					}.getType());
-				} catch (Exception e) {
-					e.printStackTrace();
-					config = Maps.newHashMap();
-				}
+		}
 
-				MutableBoolean saveFlag = new MutableBoolean();
-				Set<ResourceLocation> found = Sets.newHashSet();
-				config.forEach((namespace, subMap) -> subMap.forEach((path, value) -> {
-					ResourceLocation id = new ResourceLocation(namespace, path);
-					if (!configs.containsKey(id)) {
-						return;
-					}
-					if (!set(id, value))
-						saveFlag.setTrue();
-					found.add(id);
-				}));
+		if (client) {
+			Map<String, Map<String, Object>> config;
+			try (FileReader reader = new FileReader(configFile, StandardCharsets.UTF_8)) {
+				config = JsonConfig.DEFAULT_GSON.fromJson(reader, new TypeToken<Map<String, Map<String, Object>>>() {
+				}.getType());
+			} catch (Exception e) {
+				e.printStackTrace();
+				config = Maps.newHashMap();
+			}
 
-				Set<ResourceLocation> allKeys = getKeys();
-				for (ResourceLocation id : allKeys) {
-					if (!found.contains(id)) {
-						set(id, getEntry(id).getDefaultValue());
-						saveFlag.setTrue();
-					}
+			MutableBoolean saveFlag = new MutableBoolean();
+			Set<ResourceLocation> found = Sets.newHashSet();
+			config.forEach((namespace, subMap) -> subMap.forEach((path, value) -> {
+				ResourceLocation id = new ResourceLocation(namespace, path);
+				if (!configs.containsKey(id)) {
+					return;
 				}
+				if (!set(id, value))
+					saveFlag.setTrue();
+				found.add(id);
+			}));
 
-				if (saveFlag.isTrue())
-					save();
-			} else {
-				try (FileReader reader = new FileReader(configFile, StandardCharsets.UTF_8)) {
-					serverConfigs = JsonConfig.DEFAULT_GSON.fromJson(reader, JsonObject.class);
-				} catch (Exception e) {
-					e.printStackTrace();
-					serverConfigs = null;
+			Set<ResourceLocation> allKeys = getKeys();
+			for (ResourceLocation id : allKeys) {
+				if (!found.contains(id)) {
+					set(id, getEntry(id).getDefaultValue());
+					saveFlag.setTrue();
 				}
+			}
+
+			if (saveFlag.isTrue())
+				save();
+		} else {
+			try (FileReader reader = new FileReader(configFile, StandardCharsets.UTF_8)) {
+				serverConfigs = JsonConfig.DEFAULT_GSON.fromJson(reader, JsonObject.class);
+			} catch (Exception e) {
+				e.printStackTrace();
+				serverConfigs = null;
 			}
 		}
 	}
 
 	public void save() {
-		File configFile = new File(PlatformProxy.getConfigDirectory(), CLIENT_FILE);
-		writeConfig(configFile, false);
+		writeConfig(getFile(), false);
 	}
 
 	private void writeConfig(File file, boolean reset) {
@@ -227,7 +227,8 @@ public class PluginConfig implements IPluginConfig {
 						v = primitive.getAsNumber();
 					else if (primitive.isString())
 						v = primitive.getAsString();
-					else return;
+					else
+						return;
 					if (configEntry.isValidValue(v)) {
 						configEntry.setValue(v);
 						configEntry.setSynced(true);

@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
@@ -99,6 +100,10 @@ public class JsonConfig<T> {
 		configGetter.invalidate();
 	}
 
+	public File getFile() {
+		return configFile;
+	}
+
 	static class CachedSupplier<T> {
 
 		private final Supplier<T> supplier;
@@ -111,9 +116,12 @@ public class JsonConfig<T> {
 
 		public T get() {
 			if (value == null) {
-				value = supplier.get();
-				if (onUpdate != null) {
-					onUpdate.run();
+				synchronized (this) {
+					value = supplier.get();
+					Objects.requireNonNull(value);
+					if (onUpdate != null) {
+						onUpdate.run();
+					}
 				}
 			}
 			return value;

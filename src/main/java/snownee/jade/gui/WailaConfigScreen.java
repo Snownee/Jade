@@ -4,14 +4,19 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 import it.unimi.dsi.fastutil.floats.FloatUnaryOperator;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import snownee.jade.Jade;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.IWailaConfig.IConfigGeneral;
 import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
+import snownee.jade.gui.config.OptionButton;
 import snownee.jade.gui.config.WailaOptionsList;
 import snownee.jade.gui.config.WailaOptionsList.Entry;
+import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.util.PlatformProxy;
 
 public class WailaConfigScreen extends BaseOptionsScreen {
@@ -21,7 +26,7 @@ public class WailaConfigScreen extends BaseOptionsScreen {
 	}
 
 	@Override
-	public WailaOptionsList getOptions() {
+	public WailaOptionsList createOptions() {
 		WailaOptionsList options = new WailaOptionsList(this, minecraft, width, height, 32, height - 32, 30, Jade.CONFIG::save);
 
 		IConfigGeneral general = Jade.CONFIG.get().getGeneral();
@@ -67,6 +72,27 @@ public class WailaConfigScreen extends BaseOptionsScreen {
 		options.title("accessibility");
 		options.choices("flip_main_hand", overlay.getFlipMainHand(), overlay::setFlipMainHand);
 		options.choices("tts_mode", general.getTTSMode(), general::setTTSMode);
+
+		options.title("danger_zone").withStyle(ChatFormatting.RED);
+		Component reset = Component.translatable("controls.reset").withStyle(ChatFormatting.RED);
+		Component title = Component.translatable(WailaOptionsList.Entry.makeKey("reset_settings")).withStyle(ChatFormatting.RED);
+		options.add(new OptionButton(title, new Button(0, 0, 100, 20, reset, w -> {
+			minecraft.setScreen(new ConfirmScreen(bl -> {
+				if (bl) {
+					try {
+						Jade.CONFIG.getFile().delete();
+						PluginConfig.INSTANCE.getFile().delete();
+						Jade.CONFIG.invalidate();
+						PluginConfig.INSTANCE.reload();
+						rebuildWidgets();
+					} catch (Throwable e) {
+						Jade.LOGGER.catching(e);
+					}
+				}
+				minecraft.setScreen(this);
+				this.options.setScrollAmount(this.options.getMaxScroll());
+			}, title, Component.translatable(WailaOptionsList.Entry.makeKey("reset_settings.desc")), reset, Component.translatable("gui.cancel")));
+		})));
 
 		return options;
 	}
