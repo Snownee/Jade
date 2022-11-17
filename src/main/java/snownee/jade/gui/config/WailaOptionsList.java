@@ -32,7 +32,9 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -43,6 +45,7 @@ import snownee.jade.gui.config.value.CycleOptionValue;
 import snownee.jade.gui.config.value.InputOptionValue;
 import snownee.jade.gui.config.value.OptionValue;
 import snownee.jade.gui.config.value.SliderOptionValue;
+import snownee.jade.util.ClientPlatformProxy;
 
 public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsList.Entry> {
 
@@ -78,7 +81,8 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 
 	@Override
 	public boolean mouseScrolled(double d, double e, double f) {
-		targetScroll = this.getScrollAmount() - f * (double) this.itemHeight * 1.5;
+		double speed = !ClientPlatformProxy.hasFastScroll && Screen.hasControlDown() ? 4.5 : 1.5;
+		targetScroll = this.getScrollAmount() - f * (double) this.itemHeight * speed;
 		return true;
 	}
 
@@ -241,6 +245,8 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 	public abstract static class Entry extends ContainerObjectSelectionList.Entry<Entry> {
 
 		protected final Minecraft client;
+		@Nullable
+		protected String description;
 
 		public static MutableComponent makeTitle(String key) {
 			return Component.translatable(makeKey(key));
@@ -275,14 +281,31 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 			}
 		}
 
+		@Nullable
+		public String getDescription() {
+			return description;
+		}
+
+		public int getTextX(int width) {
+			return 0;
+		}
+
+		public int getTextWidth() {
+			return 0;
+		}
+
 	}
 
 	public static class Title extends Entry {
 
 		private final MutableComponent title;
+		private int x;
 
 		public Title(String key) {
 			title = makeTitle(key);
+			key = makeKey(key + "_desc");
+			if (I18n.exists(key))
+				description = I18n.get(key);
 		}
 
 		public MutableComponent getTitle() {
@@ -291,12 +314,23 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 
 		@Override
 		public void render(PoseStack matrixStack, int index, int rowTop, int rowLeft, int width, int height, int mouseX, int mouseY, boolean hovered, float deltaTime) {
-			client.font.drawShadow(matrixStack, title, rowLeft + (width - client.font.width(title)) / 2, rowTop + (height / 4) + (client.font.lineHeight / 2), 16777215);
+			x = rowLeft;
+			client.font.drawShadow(matrixStack, title, getTextX(width), rowTop + (height / 4) + (client.font.lineHeight / 2), 16777215);
 		}
 
 		@Override
 		public List<? extends AbstractWidget> children() {
 			return Collections.EMPTY_LIST;
+		}
+
+		@Override
+		public int getTextX(int width) {
+			return x + (width - client.font.width(title)) / 2;
+		}
+
+		@Override
+		public int getTextWidth() {
+			return client.font.width(title);
 		}
 
 	}

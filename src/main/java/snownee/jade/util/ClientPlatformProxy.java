@@ -70,8 +70,13 @@ import snownee.jade.overlay.WailaTickHandler;
 
 public final class ClientPlatformProxy {
 
-	public static boolean hasJEI = FabricLoader.getInstance().isModLoaded("jei");
-	public static boolean hasREI = FabricLoader.getInstance().isModLoaded("roughlyenoughitems");
+	public static boolean hasJEI = isModLoaded("jei");
+	public static boolean hasREI = isModLoaded("roughlyenoughitems");
+	public static boolean hasFastScroll = isModLoaded("fastscroll");
+
+	private static boolean isModLoaded(String modid) {
+		return FabricLoader.getInstance().isModLoaded(modid);
+	}
 
 	public static void initModNames(Map<String, String> map) {
 		List<ModContainer> mods = ImmutableList.copyOf(FabricLoader.getInstance().getAllMods());
