@@ -18,6 +18,7 @@ import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.IElementHelper;
 
 public enum LecternProvider implements IBlockComponentProvider, IServerDataProvider<BlockEntity> {
@@ -32,7 +33,7 @@ public enum LecternProvider implements IBlockComponentProvider, IServerDataProvi
 			if (!stack.isEmpty()) {
 				IElementHelper helper = tooltip.getElementHelper();
 				tooltip.add(Jade.smallItem(helper, stack));
-				tooltip.append(helper.text(stack.getHoverName()).message(Component.translatable("narration.jade.bookName", stack.getHoverName().getString())));
+				tooltip.append(helper.text(IDisplayHelper.get().stripColor(stack.getHoverName())).message(Component.translatable("narration.jade.bookName", stack.getHoverName().getString())));
 			}
 		}
 	}

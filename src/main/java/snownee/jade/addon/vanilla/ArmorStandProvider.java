@@ -9,6 +9,7 @@ import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.IElementHelper;
 
 public enum ArmorStandProvider implements IEntityComponentProvider {
@@ -23,7 +24,7 @@ public enum ArmorStandProvider implements IEntityComponentProvider {
 			if (stack.isEmpty())
 				continue;
 			tooltip.add(Jade.smallItem(helper, stack));
-			tooltip.append(stack.getHoverName());
+			tooltip.append(IDisplayHelper.get().stripColor(stack.getHoverName()));
 		}
 	}
 
