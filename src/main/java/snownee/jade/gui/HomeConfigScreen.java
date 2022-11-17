@@ -35,7 +35,8 @@ public class HomeConfigScreen extends Screen {
 	@Override
 	public void render(PoseStack matrixStack, int x, int y, float partialTicks) {
 		renderBackground(matrixStack);
-		drawCenteredString(matrixStack, font, title.getString(), width / 2, height / 3, 16777215);
+		drawCenteredString(matrixStack, font, title, (int) (width * .5F), height / 3, 16777215);
 		super.render(matrixStack, x, y, partialTicks);
+		drawCenteredString(matrixStack, font, "§b❄§r Made with §c❤§r by Snownee §b❄", (int) (width * .5F), (int) (height * .75F), 0x55FFFFFF);
 	}
 }

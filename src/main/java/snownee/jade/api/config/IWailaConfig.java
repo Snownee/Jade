@@ -143,6 +143,10 @@ public interface IWailaConfig {
 		void setIconMode(IconMode iconMode);
 
 		IconMode getIconMode();
+
+		void setAnimation(boolean animation);
+
+		boolean getAnimation();
 	}
 
 	@NonExtendable
