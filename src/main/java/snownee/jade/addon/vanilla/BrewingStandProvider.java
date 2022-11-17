@@ -10,7 +10,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
-import snownee.jade.Jade;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.IServerDataProvider;
@@ -31,12 +30,12 @@ public enum BrewingStandProvider implements IBlockComponentProvider, IServerData
 		CompoundTag tag = accessor.getServerData().getCompound("BrewingStand");
 		int fuel = tag.getInt("Fuel");
 		int time = tag.getInt("Time");
-		IElementHelper helper = tooltip.getElementHelper();
-		tooltip.add(Jade.smallItem(helper, new ItemStack(Items.BLAZE_POWDER)));
+		IElementHelper helper = IElementHelper.get();
+		tooltip.add(helper.smallItem(new ItemStack(Items.BLAZE_POWDER)));
 		tooltip.append(Component.literal(Integer.toString(fuel)));
 		if (time > 0) {
 			tooltip.append(helper.spacer(5, 0));
-			tooltip.append(Jade.smallItem(helper, new ItemStack(Items.CLOCK)));
+			tooltip.append(helper.smallItem(new ItemStack(Items.CLOCK)));
 			tooltip.append(Component.translatable("jade.seconds", time / 20));
 		}
 	}

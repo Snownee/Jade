@@ -3,7 +3,6 @@ package snownee.jade.addon.vanilla;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.item.ItemStack;
-import snownee.jade.Jade;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
@@ -19,11 +18,10 @@ public enum ArmorStandProvider implements IEntityComponentProvider {
 	@Override
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		ArmorStand entity = (ArmorStand) accessor.getEntity();
-		IElementHelper helper = tooltip.getElementHelper();
 		for (ItemStack stack : entity.getArmorSlots()) {
 			if (stack.isEmpty())
 				continue;
-			tooltip.add(Jade.smallItem(helper, stack));
+			tooltip.add(IElementHelper.get().smallItem(stack));
 			tooltip.append(IDisplayHelper.get().stripColor(stack.getHoverName()));
 		}
 	}

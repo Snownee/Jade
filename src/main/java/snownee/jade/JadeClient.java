@@ -196,7 +196,7 @@ public final class JadeClient implements ClientModInitializer {
 		int color = canHarvest ? 0xFFFFFF : 0xFF4444;
 		int height = rect.getHeight();
 		int width = rect.getWidth();
-		if (!VanillaPlugin.CLIENT_REGISTRATION.getConfig().getOverlay().getSquare()) {
+		if (!IWailaConfig.get().getOverlay().getSquare()) {
 			height -= 1;
 			width -= 2;
 		}
