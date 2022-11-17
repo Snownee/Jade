@@ -1,12 +1,9 @@
 package snownee.jade.api.ui;
 
-import org.jetbrains.annotations.ApiStatus.NonExtendable;
-
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.network.chat.Component;
 
-@NonExtendable
 public interface IProgressStyle {
 
 	default IProgressStyle color(int color) {

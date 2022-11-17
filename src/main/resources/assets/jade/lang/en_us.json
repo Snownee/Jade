@@ -11,12 +11,10 @@
   "tooltip.jade.state_off": "Off",
   "tooltip.jade.power": "Power: %d",
   "tooltip.jade.villager_profession": "Profession: %s",
-
   "gui.jade.configuration": "%s Configuration",
   "gui.jade.jade_settings": "%s Settings",
   "gui.jade.plugin_settings": "Plugin Settings",
   "gui.jade.forced_plugin_config": "This option is controlled by the server",
-
   "key.jade.config": "Open Config",
   "key.jade.show_overlay": "Show Overlay",
   "key.jade.toggle_liquid": "Toggle Liquid",
@@ -24,14 +22,12 @@
   "key.jade.show_recipes": "Show Recipes",
   "key.jade.show_uses": "Show Uses",
   "key.jade.narrate": "Narrate",
-
   "narration.jade.health": "Health: %s",
   "narration.jade.armor": "Armor: %s",
   "narration.jade.bookName": "Book Name: %s",
   "narration.jade.blockpos": "X%s Y%s Z%s ",
   "narration.jade.negative": "negative %s",
   "narration.jade.distance": "D%s",
-
   "config.jade.general": "General",
   "config.jade.display_tooltip": "Display Tooltip",
   "config.jade.display_tooltip_desc": "Collect data and render the tooltip",
@@ -61,12 +57,11 @@
   "config.jade.display_item_hide": "Hide",
   "config.jade.display_item_top": "Top",
   "config.jade.display_item_centered": "Centered",
-  "config.jade.tts_mode": "Text to Speech (Narrator)",
+  "config.jade.tts_mode": "Text to Speech Mode",
   "config.jade.tts_mode_press": "Press",
   "config.jade.tts_mode_toggle": "Toggle",
   "config.jade.reach_distance": "Extended Reach",
   "config.jade.item_mod_name": "Item Mod Name",
-
   "config.jade.overlay": "Appearance",
   "config.jade.overlay_pos_x": "Horizontal Ratio",
   "config.jade.overlay_pos_y": "Vertical Ratio",
@@ -76,18 +71,14 @@
   "config.jade.overlay_square": "Square Border",
   "config.jade.flip_main_hand": "Flip Position with Main Hand",
   "config.jade.flip_main_hand_desc": "Flip tooltip's position if main hand is left",
-
   "config.jade.overlay_color": "Color",
   "config.jade.overlay_alpha": "Alpha",
   "config.jade.overlay_theme": "Theme",
-
   "config.jade.formatting": "Formatting",
   "config.jade.format_mod_name": "Mod Name",
   "config.jade.format_title_name": "Title Name",
   "config.jade.format_registry_name": "Registry ID",
-
   "config.jade.accessibility": "Accessibility",
-
   "config.jade.plugin_jade.registry_name": "Registry Name",
   "config.jade.plugin_jade.registry_name_on": "ON",
   "config.jade.plugin_jade.registry_name_off": "OFF",
@@ -101,18 +92,14 @@
   "config.jade.plugin_minecraft.block_states": "Block States",
   "config.jade.plugin_jade.item_mod_name": "Mod Name in Item Tooltip",
   "config.jade.plugin_jade.mod_name": "Mod Name",
-  "config.jade.plugin_jade.furnace_fuel": "Test",
   "config.jade.plugin_jade.distance": "Distance",
   "config.jade.plugin_jade.coordinates": "Coordinates",
   "config.jade.plugin_jade.coordinates.rel": "Relative Coordinates",
   "config.jade.plugin_jade.coordinates.rel_desc": "Requires holding Ctrl",
   "config.jade.plugin_jade.block_face": "Block Face",
-
   "entity.minecraft.villager.none": "Unemployed",
   "entity.minecraft.villager.nitwit": "Nitwit",
-
   "command.jade.dump.success": "Dump successful",
-
   "config.jade.plugin_minecraft.horse_stats": "Horse Stats",
   "jade.horseStat.jump": "Jump height: %d",
   "jade.horseStat.speed": "Speed: %d",
@@ -173,7 +160,7 @@
   "config.jade.plugin_minecraft.block_inventory.items_per_line": "Items per Line",
   "jade.locked": "Inventory is locked",
   "jade.not_generated": "Inventory isn't generated",
-  "config.jade.plugin_minecraft.fe": "Forge Energy",
+  "config.jade.plugin_minecraft.energy_storage": "Energy Storage",
   "jade.fe": "%s / %s",
   "config.jade.plugin_minecraft.fluid": "Fluid Tank",
   "jade.fluid": "%s %s",
@@ -195,7 +182,6 @@
   "jade.south": "South",
   "jade.east": "East",
   "jade.west": "West",
-
   "config.jade.plugin_minecraft.furnace": "Furnace Contents",
   "config.jade.plugin_minecraft.mob_spawner": "Mob Spawner Type",
   "config.jade.plugin_minecraft.crop_progress": "Crop Progress",
@@ -203,10 +189,12 @@
   "config.jade.plugin_minecraft.jukebox": "Jukebox Record",
   "config.jade.plugin_minecraft.villager_profession": "Villager Profession",
   "jade.spawner": "%s (%s)",
-
-  "jade.modName.cpp": "Crafting++",
-  "mymod.fuel": "Fuel: %d ticks",
   
   "toast.jade.toggle_hint.1": "Jade is now closed",
-  "toast.jade.toggle_hint.2": "Press %s again to reopen"
+  "toast.jade.toggle_hint.2": "Press %s again to reopen",
+  
+  "__comment": "Only for testing:",
+  "jade.modName.cpp": "Crafting++",
+  "mymod.fuel": "Fuel: %d ticks",
+  "config.jade.plugin_debug.furnace_fuel": "Test Fuel"
 }

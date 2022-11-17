@@ -141,7 +141,7 @@ public final class ClientPlatformProxy {
 	}
 
 	private static void onRenderTick(PoseStack matrixStack, float tickDelta) {
-		OverlayRenderer.renderOverlay(matrixStack);
+		OverlayRenderer.renderOverlay478757(matrixStack);
 	}
 
 	private static void onClientTick(Minecraft mc) {

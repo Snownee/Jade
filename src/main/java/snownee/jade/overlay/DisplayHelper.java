@@ -4,8 +4,6 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.regex.Pattern;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -38,9 +36,6 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextColor;
 import net.minecraft.util.Mth;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
@@ -51,6 +46,7 @@ import snownee.jade.Jade;
 import snownee.jade.api.ui.IBorderStyle;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.impl.ui.BorderStyle;
+import snownee.jade.util.Color;
 
 @SuppressWarnings("deprecation")
 public class DisplayHelper implements IDisplayHelper {
@@ -86,7 +82,7 @@ public class DisplayHelper implements IDisplayHelper {
 			String s = p_115179_ == null ? String.valueOf(stack.getCount()) : p_115179_;
 			posestack.translate(0.0D, 0.0D, renderer.blitOffset + 200.0F);
 			MultiBufferSource.BufferSource multibuffersource$buffersource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-			font.drawInBatch(s, p_115177_ + 19 - 2 - font.width(s), p_115178_ + 6 + 3, 16777215, true, posestack.last().pose(), multibuffersource$buffersource, false, 0, 15728880);
+			font.drawInBatch(s, 22 - font.width(s), 13, 16777215, true, posestack.last().pose(), multibuffersource$buffersource, false, 0, 15728880);
 			multibuffersource$buffersource.endBatch();
 		}
 
@@ -190,11 +186,11 @@ public class DisplayHelper implements IDisplayHelper {
 	//	}
 
 	@Override
-	public void drawGradientRect(PoseStack matrixStack, float left, float top, float right, float bottom, int startColor, int endColor) {
-		drawGradientRect(matrixStack, left, top, right, bottom, startColor, endColor, false);
+	public void drawGradientRect(PoseStack matrixStack, float left, float top, float width, float height, int startColor, int endColor) {
+		drawGradientRect(matrixStack, left, top, width, height, startColor, endColor, false);
 	}
 
-	public void drawGradientRect(PoseStack matrixStack, float left, float top, float right, float bottom, int startColor, int endColor, boolean vertical) {
+	public void drawGradientRect(PoseStack matrixStack, float left, float top, float width, float height, int startColor, int endColor, boolean horizontal) {
 		float zLevel = 0.0F;
 		Matrix4f matrix = matrixStack.last().pose();
 
@@ -213,16 +209,16 @@ public class DisplayHelper implements IDisplayHelper {
 		Tesselator tessellator = Tesselator.getInstance();
 		BufferBuilder buffer = tessellator.getBuilder();
 		buffer.begin(Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-		if (vertical) {
-			buffer.vertex(matrix, left + right, top, zLevel).color(f5, f6, f7, f4).endVertex();
+		if (horizontal) {
+			buffer.vertex(matrix, left + width, top, zLevel).color(f5, f6, f7, f4).endVertex();
 			buffer.vertex(matrix, left, top, zLevel).color(f1, f2, f3, f).endVertex();
-			buffer.vertex(matrix, left, top + bottom, zLevel).color(f1, f2, f3, f).endVertex();
-			buffer.vertex(matrix, left + right, top + bottom, zLevel).color(f5, f6, f7, f4).endVertex();
+			buffer.vertex(matrix, left, top + height, zLevel).color(f1, f2, f3, f).endVertex();
+			buffer.vertex(matrix, left + width, top + height, zLevel).color(f5, f6, f7, f4).endVertex();
 		} else {
-			buffer.vertex(matrix, left + right, top, zLevel).color(f1, f2, f3, f).endVertex();
+			buffer.vertex(matrix, left + width, top, zLevel).color(f1, f2, f3, f).endVertex();
 			buffer.vertex(matrix, left, top, zLevel).color(f1, f2, f3, f).endVertex();
-			buffer.vertex(matrix, left, top + bottom, zLevel).color(f5, f6, f7, f4).endVertex();
-			buffer.vertex(matrix, left + right, top + bottom, zLevel).color(f5, f6, f7, f4).endVertex();
+			buffer.vertex(matrix, left, top + height, zLevel).color(f5, f6, f7, f4).endVertex();
+			buffer.vertex(matrix, left + width, top + height, zLevel).color(f5, f6, f7, f4).endVertex();
 		}
 		BufferUploader.drawWithShader(buffer.end());
 		RenderSystem.disableBlend();
@@ -232,10 +228,20 @@ public class DisplayHelper implements IDisplayHelper {
 	@Override
 	public void drawBorder(PoseStack matrixStack, float minX, float minY, float maxX, float maxY, IBorderStyle border0) {
 		BorderStyle border = (BorderStyle) border0;
-		fill(matrixStack, minX + border.width, minY, maxX - border.width, minY + border.width, border.color);
-		fill(matrixStack, minX + border.width, maxY - border.width, maxX - border.width, maxY, border.color);
-		fill(matrixStack, minX, minY, minX + border.width, maxY, border.color);
-		fill(matrixStack, maxX - border.width, minY, maxX, maxY, border.color);
+		drawBorder(matrixStack, minX, minY, maxX, maxY, border.width, border.color, true);
+	}
+
+	@Override
+	public void drawBorder(PoseStack matrixStack, float minX, float minY, float maxX, float maxY, float width, int color, boolean corner) {
+		fill(matrixStack, minX + width, minY, maxX - width, minY + width, color);
+		fill(matrixStack, minX + width, maxY - width, maxX - width, maxY, color);
+		if (corner) {
+			fill(matrixStack, minX, minY, minX + width, maxY, color);
+			fill(matrixStack, maxX - width, minY, maxX, maxY, color);
+		} else {
+			fill(matrixStack, minX, minY + width, minX + width, maxY - width, color);
+			fill(matrixStack, maxX - width, minY + width, maxX, maxY - width, color);
+		}
 	}
 
 	public static void drawTexturedModalRect(PoseStack matrixStack, float x, float y, int textureX, int textureY, int width, int height, int tw, int th) {
@@ -465,23 +471,16 @@ public class DisplayHelper implements IDisplayHelper {
 		}
 	}
 
-	private static final Pattern STRIP_COLOR = Pattern.compile("(?i)\u00a7[0-9A-F]");
-
-	@Override
-	public Component stripColor(Component component, int color) {
-		TextColor textColor = TextColor.fromRgb(color);
-		MutableComponent mutableComponent = Component.empty();
-		component.visit((style, string) -> {
-			if (!string.isEmpty()) {
-				MutableComponent literal = Component.literal(STRIP_COLOR.matcher(string).replaceAll(""));
-				literal.withStyle(style);
-				if (style.getColor() != textColor) {
-					literal.withStyle($ -> $.withColor(color));
-				}
-				mutableComponent.append(literal);
-			}
-			return Optional.empty();
-		}, Style.EMPTY.withColor(color));
-		return mutableComponent;
+	public void drawGradientProgress(PoseStack matrixStack, float left, float top, float width, float height, float progress, int progressColor) {
+		Color color = Color.rgb(progressColor);
+		Color highlight = Color.hsl(color.getHue(), color.getSaturation(), Math.min(color.getLightness() + 0.2, 1), color.getOpacity());
+		if (progress < 0.1F) {
+			drawGradientRect(matrixStack, left, top, width * progress, height, progressColor, highlight.toInt(), true);
+		} else {
+			float hlWidth = width * 0.1F;
+			float normalWidth = width * progress - hlWidth;
+			fill(matrixStack, left, top, left + normalWidth, top + height, progressColor);
+			drawGradientRect(matrixStack, left + normalWidth, top, hlWidth, height, progressColor, highlight.toInt(), true);
+		}
 	}
 }

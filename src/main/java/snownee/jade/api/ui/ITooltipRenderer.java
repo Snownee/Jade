@@ -9,7 +9,14 @@ import snownee.jade.impl.Tooltip;
 @ApiStatus.NonExtendable
 public interface ITooltipRenderer {
 
-	float getPadding();
+	static final int TOP = 0;
+	static final int RIGHT = 1;
+	static final int BOTTOM = 2;
+	static final int LEFT = 3;
+
+	float getPadding(int i);
+
+	void setPadding(int i, float value);
 
 	Tooltip getTooltip();
 
@@ -23,7 +30,7 @@ public interface ITooltipRenderer {
 
 	Vec2 getSize();
 
-	Vec2 getContentStart();
+	void setSize(Vec2 size);
 
-	void setContentStart(Vec2 contentStart);
+	void recalculateSize();
 }

@@ -11,18 +11,15 @@
   "tooltip.jade.state_off": "Викл",
   "tooltip.jade.power": "Енергія: %d",
   "tooltip.jade.villager_profession": "Професія: %s",
-
   "gui.jade.configuration": "Конфігурація %s",
   "gui.jade.jade_settings": "Параметри %s",
   "gui.jade.plugin_settings": "Параметри плагіна",
-
   "key.jade.config": "Відкрити конфіг",
   "key.jade.show_overlay": "Показати оверлей",
   "key.jade.toggle_liquid": "Перемкнути відображення рідин",
   "key.jade.show_details": "Показати деталі",
   "key.jade.show_recipes": "Показати рецепти",
   "key.jade.show_uses": "Показати застосування",
-
   "config.jade.general": "Загальні",
   "config.jade.display_tooltip": "Відображати підказку",
   "config.jade.display_tooltip_desc": "Збирати дані та відображати підказку",
@@ -47,7 +44,6 @@
   "config.jade.display_item_top": "Вгорі",
   "config.jade.display_item_centered": "По центру",
   "config.jade.reach_distance": "Збільшене охоплення",
-
   "config.jade.overlay": "Оверлей",
   "config.jade.overlay_pos_x": "Горизонтальне співвідношення",
   "config.jade.overlay_pos_y": "Вертикальне співвідношення",
@@ -57,27 +53,21 @@
   "config.jade.overlay_square": "Квадратна границя",
   "config.jade.flip_main_hand": "Змінення головної руки",
   "config.jade.flip_main_hand_desc": "Змінює положення підказки, якщо головна рука з лівого боку",
-
   "config.jade.overlay_color": "Колір",
   "config.jade.overlay_alpha": "Альфа",
   "config.jade.overlay_theme": "Тема",
-
   "config.jade.formatting": "Форматування",
   "config.jade.format_mod_name": "Назва мода",
   "config.jade.format_registry_name": "Назва реєстру",
-
   "config.jade.plugin_jade.registry_name": "Назва реєстру",
   "config.jade.plugin_minecraft.entity_health": "Здоров'я сутності",
   "config.jade.plugin_minecraft.entity_armor": "Броня сутності",
   "config.jade.plugin_minecraft.block_states": "Стан блока",
   "config.jade.plugin_jade.item_mod_name": "Назва мода у підказці предмета",
   "config.jade.plugin_jade.mod_name": "Назва мода",
-
   "entity.minecraft.villager.none": "Безробітний",
   "entity.minecraft.villager.nitwit": "Дурний",
-
   "command.jade.dump.success": "Успішно скинуто",
-
   "config.jade.plugin_minecraft.horse_stats": "Характеристики коня",
   "jade.horseStat.jump": "Висота стрибка: %d",
   "jade.horseStat.speed": "Швидкість: %d",
@@ -134,7 +124,6 @@
   "config.jade.plugin_minecraft.block_inventory": "Інвентар",
   "jade.locked": "Інвентар заблокований",
   "jade.not_generated": "Інвентар не згенеровано",
-  "config.jade.plugin_minecraft.fe": "Forge-енергія",
   "jade.fe": "%s / %s",
   "config.jade.plugin_minecraft.fluid": "Рідинний резервуар",
   "jade.fluid": "%s %s",
@@ -142,7 +131,6 @@
   "config.jade.plugin_minecraft.lectern": "Аналой",
   "config.jade.plugin_minecraft.animal_owner": "Власник тварини",
   "jade.owner": "Власник: %s",
-
   "config.jade.plugin_minecraft.furnace": "Вміст печі",
   "config.jade.plugin_minecraft.mob_spawner": "Тип спавнера",
   "config.jade.plugin_minecraft.crop_progress": "Прогрес посіву",

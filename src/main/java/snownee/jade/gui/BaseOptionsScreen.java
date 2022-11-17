@@ -97,7 +97,7 @@ public abstract class BaseOptionsScreen extends Screen {
 			}
 		}
 
-		OverlayRenderer.renderOverlay(matrixStack);
+		OverlayRenderer.renderOverlay478757(matrixStack);
 	}
 
 	public abstract WailaOptionsList getOptions();

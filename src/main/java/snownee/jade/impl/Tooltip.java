@@ -28,7 +28,7 @@ public class Tooltip implements ITooltip {
 
 	public static class Line {
 		private final List<IElement> left = new ArrayList<>();
-		private final List<IElement> right = new ArrayList<>();
+		private final List<IElement> right = new ArrayList<>(0);
 		private Vec2 size;
 
 		public List<IElement> getAlignedElements(Align align) {
@@ -61,15 +61,16 @@ public class Tooltip implements ITooltip {
 				Vec2 size = element.getCachedSize();
 				ox -= size.x;
 				drawBorder(matrixStack, ox, oy, element);
-				element.render(matrixStack, ox + translate.x, oy + translate.y, x + maxWidth, y + y2);
+				element.render(matrixStack, ox + translate.x, oy + translate.y, x + size.x + translate.x, y + y2 + translate.y);
 			}
 			maxWidth = ox;
 			ox = x;
-			for (IElement element : left) {
+			for (int i = 0; i < left.size(); i++) {
+				IElement element = left.get(i);
 				Vec2 translate = element.getTranslation();
 				Vec2 size = element.getCachedSize();
 				drawBorder(matrixStack, ox, oy, element);
-				element.render(matrixStack, ox + translate.x, oy + translate.y, maxWidth, y + y2);
+				element.render(matrixStack, ox + translate.x, oy + translate.y, ((i == left.size() - 1) ? maxWidth : (ox + size.x)) + translate.x, y + y2 + translate.y);
 				ox += size.x;
 			}
 		}

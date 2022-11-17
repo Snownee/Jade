@@ -8,9 +8,14 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.ClipContext;
+import snownee.jade.Jade;
 
 @NonExtendable
 public interface IWailaConfig {
+
+	static IWailaConfig get() {
+		return Jade.CONFIG.get();
+	}
 
 	IConfigGeneral getGeneral();
 

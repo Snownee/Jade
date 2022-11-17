@@ -15,6 +15,10 @@ public class SmoothChasingValue {
 		return target;
 	}
 
+	public float getSpeed() {
+		return speed;
+	}
+
 	public boolean isMoving() {
 		float diff = getCurrentDiff();
 		return Math.abs(diff) > 1 / 128f;

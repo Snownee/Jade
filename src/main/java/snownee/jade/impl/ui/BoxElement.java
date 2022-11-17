@@ -5,22 +5,24 @@ import org.jetbrains.annotations.Nullable;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 
-import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.ui.Element;
+import snownee.jade.api.ui.IBoxElement;
+import snownee.jade.api.ui.IBoxStyle;
+import snownee.jade.api.ui.IElement;
+import snownee.jade.api.ui.ITooltipRenderer;
 import snownee.jade.impl.Tooltip;
-import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.overlay.TooltipRenderer;
 
-public class BoxElement extends Element {
+public class BoxElement extends Element implements IBoxElement {
 	private final TooltipRenderer tooltip;
-	@Nullable
-	private final BorderStyle border;
+	private final IBoxStyle box;
 
-	public BoxElement(Tooltip tooltip, BorderStyle border) {
+	public BoxElement(Tooltip tooltip, IBoxStyle box) {
 		this.tooltip = new TooltipRenderer(tooltip, false);
-		this.border = border;
+		this.box = box;
 	}
 
 	@Override
@@ -29,7 +31,7 @@ public class BoxElement extends Element {
 			return Vec2.ZERO;
 		}
 		Vec2 size = tooltip.getSize();
-		return new Vec2(size.x + 2, size.y + 4);
+		return new Vec2(size.x, size.y + 1);
 	}
 
 	@Override
@@ -37,14 +39,20 @@ public class BoxElement extends Element {
 		if (tooltip.getTooltip().isEmpty()) {
 			return;
 		}
-		Rect2i rect = tooltip.getPosition();
+		// Rect2i rect = tooltip.getPosition();
 		RenderSystem.enableBlend();
 		matrixStack.pushPose();
 		matrixStack.translate(x, y, 0);
-		if (border != null)
-			DisplayHelper.INSTANCE.drawBorder(matrixStack, 0, 0, rect.getWidth(), rect.getHeight(), border);
+		box.render(matrixStack, 0, 0, maxX - x, maxY - y - 2);
+		tooltip.setSize(new Vec2(maxX - x, tooltip.getSize().y));
 		tooltip.draw(matrixStack);
 		matrixStack.popPose();
+	}
+	
+	@Override
+	public IElement tag(ResourceLocation tag) {
+		box.tag(tag);
+		return super.tag(tag);
 	}
 
 	@Override
@@ -53,6 +61,11 @@ public class BoxElement extends Element {
 			return null;
 		}
 		return Component.literal(tooltip.getTooltip().getMessage());
+	}
+
+	@Override
+	public ITooltipRenderer getTooltipRenderer() {
+		return tooltip;
 	}
 
 }

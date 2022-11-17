@@ -45,15 +45,14 @@ public class ThemeSerializer implements JsonDeserializer<Theme>, JsonSerializer<
 	private String readColor(JsonObject o, String s) {
 		JsonPrimitive e = o.get(s).getAsJsonPrimitive();
 		if (e.isString()) {
-			Color color = Color.fromString(e.getAsString());
-			return color == null ? "#000" : e.getAsString();
+			try {
+				Color.valueOf(e.getAsString());
+			} catch (Throwable e2) {
+				return "#000";
+			}
+			return e.getAsString();
 		} else {
-			int c = e.getAsInt();
-			byte a = (byte) ((c >> 24) & 0xFF);
-			byte r = (byte) ((c >> 16) & 0xFF);
-			byte g = (byte) ((c >> 8) & 0xFF);
-			byte b = (byte) (c & 0xFF);
-			return Color.fromRGB(r, g, b, a).toHex(true);
+			return Color.rgb(e.getAsInt()).getHex();
 		}
 	}
 

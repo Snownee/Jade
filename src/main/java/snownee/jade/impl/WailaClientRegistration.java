@@ -13,9 +13,11 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import snownee.jade.Jade;
@@ -35,6 +37,11 @@ import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.fabric.CustomEnchantPower;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.view.EnergyView;
+import snownee.jade.api.view.FluidView;
+import snownee.jade.api.view.IClientExtensionProvider;
+import snownee.jade.api.view.ItemView;
+import snownee.jade.api.view.ProgressView;
 import snownee.jade.gui.PluginsConfigScreen;
 import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.impl.config.entry.BooleanConfigEntry;
@@ -67,6 +74,10 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	public final List<JadeRenderBackgroundCallback> renderBackgroundCallbacks = Lists.newArrayList();
 
 	public final Map<Block, CustomEnchantPower> customEnchantPowers = Maps.newHashMap();
+	public final Map<ResourceLocation, IClientExtensionProvider<ItemStack, ItemView>> itemStorageProviders = Maps.newHashMap();
+	public final Map<ResourceLocation, IClientExtensionProvider<CompoundTag, FluidView>> fluidStorageProviders = Maps.newHashMap();
+	public final Map<ResourceLocation, IClientExtensionProvider<CompoundTag, EnergyView>> energyStorageProviders = Maps.newHashMap();
+	public final Map<ResourceLocation, IClientExtensionProvider<CompoundTag, ProgressView>> progressProviders = Maps.newHashMap();
 
 	WailaClientRegistration() {
 		blockIconProviders = new HierarchyLookup<>(Block.class);
@@ -260,4 +271,27 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 		return PluginsConfigScreen.createPluginConfigScreen(parent, namespace, false);
 	}
 
+	@Override
+	public void registerItemStorageClient(IClientExtensionProvider<ItemStack, ItemView> provider) {
+		Objects.requireNonNull(provider.getUid());
+		itemStorageProviders.put(provider.getUid(), provider);
+	}
+
+	@Override
+	public void registerFluidStorageClient(IClientExtensionProvider<CompoundTag, FluidView> provider) {
+		Objects.requireNonNull(provider.getUid());
+		fluidStorageProviders.put(provider.getUid(), provider);
+	}
+
+	@Override
+	public void registerEnergyStorageClient(IClientExtensionProvider<CompoundTag, EnergyView> provider) {
+		Objects.requireNonNull(provider.getUid());
+		energyStorageProviders.put(provider.getUid(), provider);
+	}
+
+	@Override
+	public void registerProgressClient(IClientExtensionProvider<CompoundTag, ProgressView> provider) {
+		Objects.requireNonNull(provider.getUid());
+		progressProviders.put(provider.getUid(), provider);
+	}
 }

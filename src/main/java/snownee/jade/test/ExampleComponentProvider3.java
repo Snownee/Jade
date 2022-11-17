@@ -32,7 +32,7 @@ public enum ExampleComponentProvider3 implements IBlockComponentProvider, IServe
 
 	@Override
 	public ResourceLocation getUid() {
-		return ExamplePlugin1.FURNACE_FUEL;
+		return ExamplePlugin.UID_TEST_FUEL;
 	}
 
 }

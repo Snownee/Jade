@@ -15,7 +15,6 @@ import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.Chicken;
 import net.minecraft.world.entity.animal.allay.Allay;
 import net.minecraft.world.entity.animal.frog.Tadpole;
-import net.minecraft.world.entity.animal.horse.AbstractChestedHorse;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.decoration.ItemFrame;
@@ -24,8 +23,6 @@ import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.ZombieVillager;
 import net.minecraft.world.entity.npc.Villager;
-import net.minecraft.world.entity.vehicle.ChestBoat;
-import net.minecraft.world.entity.vehicle.MinecartChest;
 import net.minecraft.world.level.block.AbstractFurnaceBlock;
 import net.minecraft.world.level.block.AbstractSkullBlock;
 import net.minecraft.world.level.block.BeehiveBlock;
@@ -55,8 +52,6 @@ import snownee.jade.api.IWailaCommonRegistration;
 import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.WailaPlugin;
-import snownee.jade.api.ui.IDisplayHelper;
-import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.util.ClientPlatformProxy;
 import snownee.jade.util.PlatformProxy;
 
@@ -77,9 +72,6 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerBlockDataProvider(FurnaceProvider.INSTANCE, AbstractFurnaceBlockEntity.class);
 
 		registration.registerEntityDataProvider(AnimalOwnerProvider.INSTANCE, Entity.class);
-		registration.registerEntityDataProvider(ContainerEntityProvider.INSTANCE, AbstractChestedHorse.class);
-		registration.registerEntityDataProvider(ContainerEntityProvider.INSTANCE, MinecartChest.class);
-		registration.registerEntityDataProvider(ContainerEntityProvider.INSTANCE, ChestBoat.class);
 		registration.registerEntityDataProvider(PotionEffectsProvider.INSTANCE, LivingEntity.class);
 		registration.registerEntityDataProvider(MobGrowthProvider.INSTANCE, AgeableMob.class);
 		registration.registerEntityDataProvider(MobGrowthProvider.INSTANCE, Tadpole.class);
@@ -95,9 +87,6 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerBlockComponent(BlockStatesProvider.INSTANCE, Block.class);
 		registration.registerBlockComponent(BrewingStandProvider.INSTANCE, BrewingStandBlock.class);
 		registration.registerEntityComponent(HorseStatsProvider.INSTANCE, AbstractHorse.class);
-		registration.registerEntityComponent(ContainerEntityProvider.INSTANCE, AbstractChestedHorse.class);
-		registration.registerEntityComponent(ContainerEntityProvider.INSTANCE, MinecartChest.class);
-		registration.registerEntityComponent(ContainerEntityProvider.INSTANCE, ChestBoat.class);
 		registration.registerEntityComponent(ItemFrameProvider.INSTANCE, ItemFrame.class);
 		registration.registerEntityComponent(PotionEffectsProvider.INSTANCE, LivingEntity.class);
 		registration.registerEntityComponent(MobGrowthProvider.INSTANCE, AgeableMob.class);
@@ -149,14 +138,6 @@ public class VanillaPlugin implements IWailaPlugin {
 
 		registration.hideTarget(EntityType.AREA_EFFECT_CLOUD);
 		registration.hideTarget(EntityType.FIREWORK_ROCKET);
-	}
-
-	public static IDisplayHelper getDisplayHelper() {
-		return CLIENT_REGISTRATION.getDisplayHelper();
-	}
-
-	public static IElementHelper getElementHelper() {
-		return CLIENT_REGISTRATION.getElementHelper();
 	}
 
 	private static final Cache<BlockState, BlockState> CHEST_CACHE = CacheBuilder.newBuilder().build();

@@ -18,7 +18,7 @@ public enum ExampleComponentProvider2 implements IBlockComponentProvider {
 
 	@Override
 	public ResourceLocation getUid() {
-		return ExamplePlugin1.FURNACE_FUEL;
+		return ExamplePlugin.UID_TEST_FUEL;
 	}
 
 }

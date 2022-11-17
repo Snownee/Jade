@@ -34,7 +34,7 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 	private final Entity entity;
 
 	public EntityAccessorImpl(Builder builder) {
-		super(builder.level, builder.player, builder.serverData, builder.hit, builder.connected);
+		super(builder.level, builder.player, builder.serverData, builder.hit, builder.connected, builder.showDetails);
 		entity = builder.entity;
 	}
 
@@ -93,8 +93,8 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 	}
 
 	@Override
-	public void _requestData(boolean showDetails) {
-		ClientPlatformProxy.requestEntityData(entity, showDetails);
+	public void _requestData() {
+		ClientPlatformProxy.requestEntityData(entity, showDetails());
 	}
 
 	@Override
@@ -120,6 +120,7 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 		private Player player;
 		private CompoundTag serverData;
 		private boolean connected;
+		public boolean showDetails = ClientPlatformProxy.isShowDetailsPressed();
 		private EntityHitResult hit;
 		private Entity entity;
 
@@ -148,6 +149,12 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 		}
 
 		@Override
+		public Builder showDetails(boolean showDetails) {
+			this.showDetails = showDetails;
+			return this;
+		}
+
+		@Override
 		public Builder hit(EntityHitResult hit) {
 			this.hit = hit;
 			return this;
@@ -165,6 +172,7 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 			player = accessor.getPlayer();
 			serverData = accessor.getServerData();
 			connected = accessor.isServerConnected();
+			showDetails = accessor.showDetails();
 			hit = accessor.getHitResult();
 			entity = accessor.getEntity();
 			return this;
