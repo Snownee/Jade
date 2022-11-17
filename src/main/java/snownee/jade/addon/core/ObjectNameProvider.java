@@ -87,6 +87,12 @@ public enum ObjectNameProvider
 
 	public static Component getEntityName(Entity entity) {
 		if (!entity.hasCustomName()) {
+			if (WailaClientRegistration.INSTANCE.shouldPick(entity)) {
+				ItemStack stack = entity.getPickResult();
+				if (stack != null && !stack.isEmpty()) {
+					return stack.getHoverName();
+				}
+			}
 			if (entity instanceof Villager) {
 				return entity.getType().getDescription();
 			}

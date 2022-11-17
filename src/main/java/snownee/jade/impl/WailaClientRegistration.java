@@ -64,6 +64,7 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	public final Set<Block> hideBlocks = Sets.newHashSet();
 	public final Set<EntityType<?>> hideEntities = Sets.newHashSet();
 	public final Set<Block> pickBlocks = Sets.newHashSet();
+	public final Set<EntityType<?>> pickEntities = Sets.newHashSet();
 
 	public final List<JadeAfterRenderCallback> afterRenderCallbacks = Lists.newArrayList();
 	public final List<JadeBeforeRenderCallback> beforeRenderCallbacks = Lists.newArrayList();
@@ -141,6 +142,11 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	}
 
 	@Override
+	public void usePickedResult(EntityType<?> entityType) {
+		pickEntities.add(entityType);
+	}
+
+	@Override
 	public boolean shouldHide(BlockState state) {
 		return hideBlocks.contains(state.getBlock());
 	}
@@ -153,6 +159,11 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	@Override
 	public boolean shouldHide(Entity entity) {
 		return hideEntities.contains(entity.getType());
+	}
+
+	@Override
+	public boolean shouldPick(Entity entity) {
+		return pickEntities.contains(entity.getType());
 	}
 
 	@Override
