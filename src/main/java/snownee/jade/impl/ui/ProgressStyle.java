@@ -9,9 +9,11 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec2;
+import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IProgressStyle;
 import snownee.jade.overlay.DisplayHelper;
+import snownee.jade.overlay.OverlayRenderer;
 
 public class ProgressStyle implements IProgressStyle {
 
@@ -97,14 +99,16 @@ public class ProgressStyle implements IProgressStyle {
 				y -= progress;
 				y += font.lineHeight + 2;
 			}
+			int color = IConfigOverlay.applyAlpha(textColor, OverlayRenderer.alpha);
 			if (glowText) {
 				MultiBufferSource.BufferSource multibuffersource$buffersource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+				//TODO alpha
 				font.drawInBatch8xOutline(text.getVisualOrderText(), x + 1, y, 0xFFFFFFFF, 0xFF333333, matrixStack.last().pose(), multibuffersource$buffersource, 15728880);
 				multibuffersource$buffersource.endBatch();
 			} else if (shadow) {
-				font.drawShadow(matrixStack, text, x + 1, y, textColor);
+				font.drawShadow(matrixStack, text, x + 1, y, color);
 			} else {
-				font.draw(matrixStack, text, x + 1, y, textColor);
+				font.draw(matrixStack, text, x + 1, y, color);
 			}
 		}
 	}

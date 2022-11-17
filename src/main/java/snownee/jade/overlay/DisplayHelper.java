@@ -2,15 +2,11 @@ package snownee.jade.overlay;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.BufferUploader;
@@ -19,7 +15,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat.Mode;
 import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
 
 import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandler;
 import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandlerRegistry;
@@ -30,13 +25,7 @@ import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
-import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
@@ -44,51 +33,57 @@ import net.minecraft.network.chat.TextColor;
 import net.minecraft.util.Mth;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import snownee.jade.Jade;
+import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
 import snownee.jade.api.ui.IBorderStyle;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.impl.ui.BorderStyle;
 import snownee.jade.util.Color;
 
-@SuppressWarnings("deprecation")
 public class DisplayHelper implements IDisplayHelper {
 
 	public static final DisplayHelper INSTANCE = new DisplayHelper();
-
-	//WTF is it???
-	private static final Vector3f DIFFUSE_LIGHT_0 = new Vector3f(-0.5f, -0.1f, -0.1f);
-	private static final Vector3f DIFFUSE_LIGHT_1 = new Vector3f(0, -1, 0);
-
 	private static final Minecraft CLIENT = Minecraft.getInstance();
-	private static float blitOffset;
 
 	@Override
 	public void drawItem(PoseStack matrixStack, float x, float y, ItemStack stack, float scale, @Nullable String text) {
-		matrixStack.pushPose();
+		if (OverlayRenderer.alpha < 0.5F) {
+			return;
+		}
 		RenderSystem.enableDepthTest();
-		//CLIENT.getItemRenderer().renderGuiItem(stack, (int) x, (int) y + 20);
-		tryRenderGuiItem(matrixStack, stack, x, y, scale);
-		renderGuiItemDecorations(matrixStack, CLIENT.font, stack, x, y, text);
-		//renderStackSize(matrixStack, CLIENT.font, stack, x, y);
+
+		PoseStack modelViewStack = RenderSystem.getModelViewStack();
+		modelViewStack.pushPose();
+		modelViewStack.mulPoseMatrix(matrixStack.last().pose());
+		float o = 8 * scale;
+		modelViewStack.translate(x + o, y + o, 0);
+		scale *= Math.min(1, OverlayRenderer.alpha + 0.2F);
+		modelViewStack.scale(scale, scale, scale);
+		modelViewStack.translate(-8, -8, 0);
+		CLIENT.getItemRenderer().renderGuiItem(stack, 0, 0);
+		renderGuiItemDecorations(CLIENT.font, stack, text);
+
+		modelViewStack.popPose();
+		RenderSystem.applyModelViewMatrix();
 		RenderSystem.disableDepthTest();
-		matrixStack.popPose();
 	}
 
-	private static void renderGuiItemDecorations(PoseStack posestack, Font font, ItemStack stack, float p_115177_, float p_115178_, @Nullable String p_115179_) {
+	private static void renderGuiItemDecorations(Font font, ItemStack stack, @Nullable String p_115179_) {
 		if (stack.isEmpty()) {
 			return;
 		}
-		ItemRenderer renderer = CLIENT.getItemRenderer();
-		//PoseStack posestack = new PoseStack();
+		PoseStack posestack = new PoseStack();
 		if (stack.getCount() != 1 || p_115179_ != null) {
-			String s = p_115179_ == null ? String.valueOf(stack.getCount()) : p_115179_;
-			posestack.translate(0.0D, 0.0D, renderer.blitOffset + 200.0F);
+			String s = p_115179_ == null ? INSTANCE.humanReadableNumber(stack.getCount(), "", false) : p_115179_;
+			posestack.pushPose();
+			posestack.translate(0.0D, 0.0D, CLIENT.getItemRenderer().blitOffset + 200.0F);
+			posestack.scale(.75f, .75f, .75f);
 			MultiBufferSource.BufferSource multibuffersource$buffersource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
 			font.drawInBatch(s, 22 - font.width(s), 13, 16777215, true, posestack.last().pose(), multibuffersource$buffersource, false, 0, 15728880);
 			multibuffersource$buffersource.endBatch();
+			posestack.popPose();
 		}
 
 		if (stack.isBarVisible()) {
@@ -100,8 +95,8 @@ public class DisplayHelper implements IDisplayHelper {
 			double health = stack.getBarWidth();
 			int i = Math.round(13.0F - (float) health * 13.0F);
 			int j = stack.getBarColor();
-			draw(posestack, bufferbuilder, p_115177_ + 2, p_115178_ + 13, 13, 2, 0, 0, 0, 255);
-			draw(posestack, bufferbuilder, p_115177_ + 2, p_115178_ + 13, i, 1, j >> 16 & 255, j >> 8 & 255, j & 255, 255);
+			draw(posestack, bufferbuilder, 2, 13, 13, 2, 0, 0, 0, 255);
+			draw(posestack, bufferbuilder, 2, 13, i, 1, j >> 16 & 255, j >> 8 & 255, j & 255, 255);
 			RenderSystem.enableBlend();
 			RenderSystem.enableTexture();
 			RenderSystem.enableDepthTest();
@@ -116,7 +111,7 @@ public class DisplayHelper implements IDisplayHelper {
 			RenderSystem.defaultBlendFunc();
 			Tesselator tesselator1 = Tesselator.getInstance();
 			BufferBuilder bufferbuilder1 = tesselator1.getBuilder();
-			draw(posestack, bufferbuilder1, p_115177_, p_115178_ + Mth.floor(16.0F * (1.0F - f)), 16, Mth.ceil(16.0F * f), 255, 255, 255, 127);
+			draw(posestack, bufferbuilder1, 0, 0 + Mth.floor(16.0F * (1.0F - f)), 16, Mth.ceil(16.0F * f), 255, 255, 255, 127);
 			RenderSystem.enableTexture();
 			RenderSystem.enableDepthTest();
 		}
@@ -133,63 +128,6 @@ public class DisplayHelper implements IDisplayHelper {
 		BufferUploader.drawWithShader(renderer.end());
 	}
 
-	public static void tryRenderGuiItem(PoseStack matrixStack, ItemStack stack, float x, float y, float scale) {
-		ItemRenderer renderer = CLIENT.getItemRenderer();
-		renderGuiItem(matrixStack, stack, x, y, renderer.getModel(stack, null, null, 0), scale);
-	}
-
-	private static void renderGuiItem(PoseStack posestack, ItemStack p_115128_, float p_115129_, float p_115130_, BakedModel p_115131_, float scale) {
-		ItemRenderer renderer = CLIENT.getItemRenderer();
-		TextureManager textureManager = CLIENT.getTextureManager();
-		textureManager.getTexture(TextureAtlas.LOCATION_BLOCKS).setFilter(false, false);
-		RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
-		RenderSystem.enableBlend();
-		RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-
-		posestack.pushPose();
-
-		RenderSystem.setShaderLights(DIFFUSE_LIGHT_0, DIFFUSE_LIGHT_1);
-
-		posestack.translate(p_115129_, p_115130_, 150.0F + blitOffset);
-		posestack.translate(8.0D * scale, 8.0D * scale, 0.0D);
-		posestack.scale(scale, -scale, scale);
-		posestack.scale(16.0F, 16.0F, 16.0F);
-
-		MultiBufferSource.BufferSource multibuffersource$buffersource = Minecraft.getInstance().renderBuffers().bufferSource();
-		boolean flag = !p_115131_.usesBlockLight();
-		if (flag) {
-			Lighting.setupForFlatItems();
-		}
-
-		renderer.render(p_115128_, ItemTransforms.TransformType.GUI, false, posestack, multibuffersource$buffersource, 15728880, OverlayTexture.NO_OVERLAY, p_115131_);
-		multibuffersource$buffersource.endBatch();
-		RenderSystem.enableDepthTest();
-		Lighting.setupFor3DItems();
-
-		posestack.popPose();
-	}
-
-	//	private static void renderStackSize(PoseStack matrixStack, Font fr, ItemStack stack, float xPosition, float yPosition) {
-	//		if (!stack.isEmpty() && stack.getCount() != 1) {
-	//			String s = shortHandNumber(stack.getCount());
-	//
-	//			if (stack.getCount() < 1)
-	//				s = ChatFormatting.RED + String.valueOf(stack.getCount());
-	//
-	//			RenderSystem.disableLighting();
-	//			RenderSystem.disableDepthTest();
-	//			RenderSystem.disableBlend();
-	//			matrixStack.pushPose();
-	//			matrixStack.translate(0, 0, Minecraft.getInstance().getItemRenderer().blitOffset + 200F);
-	//			fr.drawStringWithShadow(matrixStack, s, xPosition + 19 - 2 - fr.width(s), yPosition + 6 + 3, 16777215);
-	//			matrixStack.popPose();
-	//			RenderSystem.enableLighting();
-	//			RenderSystem.enableDepthTest();
-	//			RenderSystem.enableBlend();
-	//		}
-	//	}
-
 	@Override
 	public void drawGradientRect(PoseStack matrixStack, float left, float top, float width, float height, int startColor, int endColor) {
 		drawGradientRect(matrixStack, left, top, width, height, startColor, endColor, false);
@@ -199,11 +137,11 @@ public class DisplayHelper implements IDisplayHelper {
 		float zLevel = 0.0F;
 		Matrix4f matrix = matrixStack.last().pose();
 
-		float f = (startColor >> 24 & 255) / 255.0F;
+		float f = (startColor >> 24 & 255) / 255.0F * OverlayRenderer.alpha;
 		float f1 = (startColor >> 16 & 255) / 255.0F;
 		float f2 = (startColor >> 8 & 255) / 255.0F;
 		float f3 = (startColor & 255) / 255.0F;
-		float f4 = (endColor >> 24 & 255) / 255.0F;
+		float f4 = (endColor >> 24 & 255) / 255.0F * OverlayRenderer.alpha;
 		float f5 = (endColor >> 16 & 255) / 255.0F;
 		float f6 = (endColor >> 8 & 255) / 255.0F;
 		float f7 = (endColor & 255) / 255.0F;
@@ -265,31 +203,11 @@ public class DisplayHelper implements IDisplayHelper {
 		BufferUploader.drawWithShader(buffer.end());
 	}
 
-	public static List<Component> itemDisplayNameMultiline(ItemStack itemstack) {
-		List<Component> namelist = null;
-		try {
-			namelist = itemstack.getTooltipLines(CLIENT.player, TooltipFlag.Default.NORMAL);
-		} catch (Throwable ignored) {
-		}
-
-		if (namelist == null)
-			namelist = new ArrayList<>();
-
-		if (namelist.isEmpty())
-			namelist.add(Component.literal("Unnamed"));
-
-		namelist.set(0, Component.literal(itemstack.getRarity().color.toString() + namelist.get(0)));
-		for (int i = 1; i < namelist.size(); i++)
-			namelist.set(i, namelist.get(i));
-
-		return namelist;
-	}
-
 	public static void renderIcon(PoseStack matrixStack, float x, float y, int sx, int sy, IconUI icon) {
 		if (icon == null)
 			return;
 
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, OverlayRenderer.alpha);
 		RenderSystem.setShaderTexture(0, GuiComponent.GUI_ICONS_LOCATION);
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
@@ -305,6 +223,9 @@ public class DisplayHelper implements IDisplayHelper {
 	private static final int MIN_FLUID_HEIGHT = 1; // ensure tiny amounts of fluid are still visible
 
 	public void drawFluid(PoseStack matrixStack, final float xPosition, final float yPosition, @Nullable FluidState fluidState, float width, float height, long capacityMb) {
+		if (OverlayRenderer.alpha < 0.5F) {
+			return;
+		}
 		if (fluidState == null || fluidState.isEmpty()) {
 			return;
 		}
@@ -401,7 +322,7 @@ public class DisplayHelper implements IDisplayHelper {
 			maxY = j;
 		}
 
-		float f3 = (color >> 24 & 255) / 255.0F;
+		float f3 = (color >> 24 & 255) / 255.0F * OverlayRenderer.alpha;
 		float f = (color >> 16 & 255) / 255.0F;
 		float f1 = (color >> 8 & 255) / 255.0F;
 		float f2 = (color & 255) / 255.0F;
@@ -458,17 +379,15 @@ public class DisplayHelper implements IDisplayHelper {
 
 	@Override
 	public void drawText(PoseStack poseStack, String text, float x, float y, int color) {
-		boolean shadow = Jade.CONFIG.get().getOverlay().getTheme().textShadow;
-		if (shadow) {
-			CLIENT.font.drawShadow(poseStack, text, x, y, color);
-		} else {
-			CLIENT.font.draw(poseStack, text, x, y, color);
-		}
+		drawText(poseStack, Component.literal(text), x, y, color);
 	}
 
 	@Override
 	public void drawText(PoseStack poseStack, Component text, float x, float y, int color) {
 		boolean shadow = Jade.CONFIG.get().getOverlay().getTheme().textShadow;
+		if (OverlayRenderer.alpha != 1) {
+			color = IConfigOverlay.applyAlpha(color, OverlayRenderer.alpha);
+		}
 		if (shadow) {
 			CLIENT.font.drawShadow(poseStack, text, x, y, color);
 		} else {

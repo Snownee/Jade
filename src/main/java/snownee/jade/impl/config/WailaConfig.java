@@ -222,13 +222,13 @@ public class WailaConfig implements IWailaConfig {
 		private Map<ResourceLocation, Theme> themes = Maps.newLinkedHashMap();
 		private ResourceLocation activeTheme = Theme.DARK.id;
 		private IconMode iconMode = IconMode.TOP;
+		public boolean fadeInOut = true;
 
 		public ConfigOverlay() {
 			themes.put(Theme.WAILA.id, Theme.WAILA);
 			themes.put(Theme.DARK.id, Theme.DARK);
 			themes.put(Theme.CREATE.id, Theme.CREATE);
 			themes.put(Theme.TOP.id, Theme.TOP);
-			//themes.put(HUDTheme.GRAY.id, HUDTheme.GRAY);
 		}
 
 		@Override
