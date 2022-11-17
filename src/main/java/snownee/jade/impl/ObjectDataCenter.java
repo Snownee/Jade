@@ -19,7 +19,6 @@ public final class ObjectDataCenter {
 	public static long timeLastUpdate = System.currentTimeMillis();
 	public static boolean serverConnected;
 
-	@SuppressWarnings("deprecation")
 	public static void set(@Nullable Accessor<?> accessor) {
 		ObjectDataCenter.accessor = accessor;
 		if (accessor == null) {
@@ -46,7 +45,6 @@ public final class ObjectDataCenter {
 		serverData = tag;
 	}
 
-	@SuppressWarnings("deprecation")
 	public static CompoundTag getServerData() {
 		if (accessor == null || serverData == null)
 			return null;

@@ -31,7 +31,6 @@ public class WailaTickHandler {
 	public TooltipRenderer tooltipRenderer = null;
 	public ProgressTracker progressTracker = new ProgressTracker();
 
-	@SuppressWarnings("deprecation")
 	public void tickClient() {
 		progressTracker.tick();
 
@@ -109,20 +108,19 @@ public class WailaTickHandler {
 			tooltipRenderer = null;
 			return;
 		}
-		boolean showDetails = ClientPlatformProxy.isShowDetailsPressed();
 		if (accessor.isServerConnected()) {
 			boolean request = accessor.shouldRequestData();
 			if (ObjectDataCenter.isTimeElapsed(ObjectDataCenter.rateLimiter)) {
 				ObjectDataCenter.resetTimer();
 				if (request)
-					accessor._requestData(showDetails);
+					accessor._requestData();
 			}
 			if (request && ObjectDataCenter.getServerData() == null) {
 				return;
 			}
 		}
 
-		if (config.getDisplayMode() == DisplayMode.LITE && !showDetails) {
+		if (config.getDisplayMode() == DisplayMode.LITE && !ClientPlatformProxy.isShowDetailsPressed()) {
 			Tooltip dummyTooltip = new Tooltip();
 			accessor._gatherComponents($ -> {
 				if (Math.abs(WailaCommonRegistration.INSTANCE.priorities.get($)) > 5000) {
