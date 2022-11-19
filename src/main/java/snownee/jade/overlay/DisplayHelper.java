@@ -362,7 +362,7 @@ public class DisplayHelper implements IDisplayHelper {
 		}
 		if (number < 1000) {
 			sb.append(dfCommas.format(number));
-			if (milli) {
+			if (milli && number != 0) {
 				sb.append('m');
 			}
 		} else {

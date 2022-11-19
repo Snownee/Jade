@@ -49,10 +49,9 @@ public class FluidView {
 		long amount = tag.getLong("Amount");
 		if (amount <= 0) {
 			fluidView.overrideText = EMPTY_FLUID;
-		} else {
-			fluidView.current = FluidTextHelper.getUnicodeMillibuckets(amount, true);
-			fluidView.max = FluidTextHelper.getUnicodeMillibuckets(capacity, true);
 		}
+		fluidView.current = FluidTextHelper.getUnicodeMillibuckets(amount, true);
+		fluidView.max = FluidTextHelper.getUnicodeMillibuckets(capacity, true);
 		fluidView.ratio = (float) ((double) amount / capacity);
 		return fluidView;
 	}
