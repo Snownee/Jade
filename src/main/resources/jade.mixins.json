@@ -9,7 +9,8 @@
   "client": [
     "KeyAccess",
     "BossHealthOverlayMixin",
-    "ClientLevelMixin"
+    "ClientLevelMixin",
+    "MinecraftMixin"
   ],
   "injectors": {
     "defaultRequire": 1

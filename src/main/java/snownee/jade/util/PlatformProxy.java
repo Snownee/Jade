@@ -7,9 +7,14 @@ import java.util.UUID;
 import org.jetbrains.annotations.Nullable;
 
 import net.fabricmc.api.EnvType;
+import net.fabricmc.fabric.api.lookup.v1.block.BlockApiLookup;
 import net.fabricmc.fabric.api.mininglevel.v1.FabricMineableTags;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
+import net.fabricmc.fabric.api.transfer.v1.storage.base.SidedStorageBlockEntity;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -24,10 +29,12 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ChestBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.entity.EnderChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import snownee.jade.api.view.FluidView;
 import snownee.jade.api.view.ItemView;
 import snownee.jade.api.view.ViewGroup;
 import snownee.jade.impl.WailaClientRegistration;
@@ -95,11 +102,49 @@ public final class PlatformProxy {
 		if (player != null && target instanceof EnderChestBlockEntity) {
 			return List.of(ItemView.fromContainer(player.getEnderChestInventory(), size, 0));
 		}
+		if (target instanceof SidedStorageBlockEntity be) {
+			var storage = be.getItemStorage(null);
+			if (storage != null) {
+				return List.of(ItemView.fromStorage(storage, size, 0));
+			}
+		}
+		var storage = lookupBlock(ItemStorage.SIDED, target);
+		if (storage != null) {
+			return List.of(ItemView.fromStorage(storage, size, 0));
+		}
 		return null;
 	}
 
 	public static List<ViewGroup<CompoundTag>> wrapFluidStorage(Object target, ServerPlayer player) {
+		if (target instanceof SidedStorageBlockEntity be) {
+			var storage = be.getFluidStorage(null);
+			if (storage != null) {
+				return FluidView.fromStorage(storage);
+			}
+		}
+		var storage = lookupBlock(FluidStorage.SIDED, target);
+		if (storage != null) {
+			return FluidView.fromStorage(storage);
+		}
 		return null;
+	}
+
+	private static final Direction[] DIRECTIONS = Direction.values();
+
+	public static <T> T lookupBlock(BlockApiLookup<T, Direction> sided, Object target) {
+		T found = null;
+		if (target instanceof BlockEntity be) {
+			for (Direction direction : DIRECTIONS) {
+				T t = sided.find(be.getLevel(), be.getBlockPos(), be.getBlockState(), be, direction);
+				if (found != t && found != null && t != null) {
+					return null;
+				}
+				if (t != null) {
+					found = t;
+				}
+			}
+		}
+		return found;
 	}
 
 	public static List<ViewGroup<CompoundTag>> wrapEnergyStorage(Object target, ServerPlayer player) {

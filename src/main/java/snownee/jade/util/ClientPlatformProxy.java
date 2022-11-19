@@ -22,7 +22,6 @@ import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.entity.EntityPickInteractionAware;
 import net.fabricmc.fabric.api.event.Event;
@@ -97,7 +96,6 @@ public final class ClientPlatformProxy {
 		ItemTooltipCallback.EVENT.addPhaseOrdering(Event.DEFAULT_PHASE, lowest);
 		ItemTooltipCallback.EVENT.register(lowest, ClientPlatformProxy::onTooltip);
 		ClientTickEvents.END_CLIENT_TICK.register(ClientPlatformProxy::onClientTick);
-		HudRenderCallback.EVENT.register(ClientPlatformProxy::onRenderTick);
 		ClientPlayConnectionEvents.DISCONNECT.register(ClientPlatformProxy::onPlayerLeave);
 		ClientTickEvents.END_CLIENT_TICK.register(ClientPlatformProxy::onKeyPressed);
 		ScreenEvents.AFTER_INIT.register((Minecraft client, Screen screen, int scaledWidth, int scaledHeight) -> ScreenEvents.afterRender(screen).register(ClientPlatformProxy::onGui));
@@ -145,8 +143,8 @@ public final class ClientPlatformProxy {
 		JadeClient.onTooltip(lines, stack);
 	}
 
-	private static void onRenderTick(PoseStack matrixStack, float tickDelta) {
-		OverlayRenderer.renderOverlay478757(matrixStack);
+	public static void onRenderTick() {
+		OverlayRenderer.renderOverlay478757(new PoseStack());
 	}
 
 	private static void onClientTick(Minecraft mc) {

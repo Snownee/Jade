@@ -175,10 +175,13 @@ public class Jade implements ModInitializer {
 			}
 		});
 		if (PlatformProxy.isDevEnv()) {
-			IWailaPlugin plugin = new ExamplePlugin();
-			plugin.register(WailaCommonRegistration.INSTANCE);
-			if (PlatformProxy.isPhysicallyClient()) {
-				plugin.registerClient(WailaClientRegistration.INSTANCE);
+			try {
+				IWailaPlugin plugin = new ExamplePlugin();
+				plugin.register(WailaCommonRegistration.INSTANCE);
+				if (PlatformProxy.isPhysicallyClient()) {
+					plugin.registerClient(WailaClientRegistration.INSTANCE);
+				}
+			} catch (Throwable e) {
 			}
 		}
 
