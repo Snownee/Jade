@@ -47,10 +47,9 @@ public class FluidView {
 		fluidView.fluidName = fluid.getDisplayName();
 		if (fluid.isEmpty()) {
 			fluidView.overrideText = EMPTY_FLUID;
-		} else {
-			fluidView.current = IDisplayHelper.get().humanReadableNumber(fluid.getAmount(), "B", true);
-			fluidView.max = IDisplayHelper.get().humanReadableNumber(capacity, "B", true);
 		}
+		fluidView.current = IDisplayHelper.get().humanReadableNumber(fluid.getAmount(), "B", true);
+		fluidView.max = IDisplayHelper.get().humanReadableNumber(capacity, "B", true);
 		fluidView.ratio = (float) fluid.getAmount() / capacity;
 		return fluidView;
 	}

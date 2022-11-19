@@ -57,7 +57,7 @@ public class OverlayRenderer {
 		return true;
 	}
 
-	public static boolean shouldShowImmediately() {
+	public static boolean shouldShowImmediately(TooltipRenderer tooltipRenderer) {
 		Minecraft mc = Minecraft.getInstance();
 
 		if (mc.level == null)
@@ -68,7 +68,7 @@ public class OverlayRenderer {
 		}
 
 		if (mc.screen instanceof BaseOptionsScreen) {
-			Rect2i position = WailaTickHandler.instance().tooltipRenderer.getPosition();
+			Rect2i position = tooltipRenderer.getPosition();
 			Window window = mc.getWindow();
 			double x = mc.mouseHandler.xpos() * window.getGuiScaledWidth() / window.getScreenWidth();
 			double y = mc.mouseHandler.ypos() * window.getGuiScaledHeight() / window.getScreenHeight();
@@ -124,7 +124,7 @@ public class OverlayRenderer {
 			alpha = show ? 1 : 0;
 		}
 
-		if (alpha < 0.1F || tooltipRenderer == null || !shouldShowImmediately()) {
+		if (alpha < 0.1F || tooltipRenderer == null || !shouldShowImmediately(tooltipRenderer)) {
 			fadeTooltip = null;
 			morphRect = null;
 			return;

@@ -90,13 +90,14 @@ public enum ProgressProvider implements IBlockComponentProvider, IServerDataProv
 
 	public static void putData(CompoundTag tag, ServerPlayer player, Object target, boolean showDetails) {
 		var list = WailaCommonRegistration.INSTANCE.progressProviders.get(target);
-		if (list.isEmpty()) {
-			return;
+		for (var provider : list) {
+			var groups = provider.getGroups(player, player.getLevel(), target, showDetails);
+			if (groups != null) {
+				if (ViewGroup.saveList(tag, "JadeProgress", groups, Function.identity()))
+					tag.putString("JadeProgressUid", provider.getUid().toString());
+				return;
+			}
 		}
-		var provider = list.get(0);
-		var groups = provider.getGroups(player, player.getLevel(), target, showDetails);
-		if (ViewGroup.saveList(tag, "JadeProgress", groups, Function.identity()))
-			tag.putString("JadeProgressUid", provider.getUid().toString());
 	}
 
 }
