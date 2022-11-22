@@ -150,11 +150,9 @@ public class Jade implements ModInitializer {
 
 		ServerPlayConnectionEvents.JOIN.register(this::playerJoin);
 		UsernameCache.load();
-
-		loadComplete();
 	}
 
-	private void loadComplete() {
+	public static void loadComplete() {
 		FabricLoader.getInstance().getEntrypointContainers(MODID, IWailaPlugin.class).forEach(entrypoint -> {
 			ModMetadata metadata = entrypoint.getProvider().getMetadata();
 			String modId = metadata.getId();
