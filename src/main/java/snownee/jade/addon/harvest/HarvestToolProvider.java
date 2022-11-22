@@ -87,7 +87,9 @@ public enum HarvestToolProvider implements IBlockComponentProvider, ResourceMana
 		BlockState state = accessor.getBlockState();
 		float hardness = state.getDestroySpeed(accessor.getLevel(), accessor.getPosition());
 		if (hardness < 0) {
-			tooltip.add(helper.text(UNBREAKABLE_TEXT).message(null));
+			if (config.get(Identifiers.MC_SHOW_UNBREAKABLE)) {
+				tooltip.add(helper.text(UNBREAKABLE_TEXT).message(null));
+			}
 			return;
 		}
 

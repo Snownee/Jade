@@ -87,6 +87,7 @@ public class VanillaPlugin implements IWailaPlugin {
 
 		registration.addConfig(Identifiers.MC_EFFECTIVE_TOOL, true);
 		registration.addConfig(Identifiers.MC_HARVEST_TOOL_NEW_LINE, false);
+		registration.addConfig(Identifiers.MC_SHOW_UNBREAKABLE, true);
 		registration.addConfig(Identifiers.MC_BREAKING_PROGRESS, true);
 
 		registration.addConfig(Identifiers.MC_ENTITY_ARMOR_MAX_FOR_RENDER, 40, 10, 100, false);
