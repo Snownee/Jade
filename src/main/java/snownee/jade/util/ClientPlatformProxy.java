@@ -144,11 +144,19 @@ public final class ClientPlatformProxy {
 	}
 
 	public static void onRenderTick() {
-		OverlayRenderer.renderOverlay478757(new PoseStack());
+		try {
+			OverlayRenderer.renderOverlay478757(new PoseStack());
+		} catch (Throwable e) {
+			WailaExceptionHandler.handleErr(e, null, null);
+		}
 	}
 
 	private static void onClientTick(Minecraft mc) {
-		WailaTickHandler.instance().tickClient();
+		try {
+			WailaTickHandler.instance().tickClient();
+		} catch (Throwable e) {
+			WailaExceptionHandler.handleErr(e, null, null);
+		}
 	}
 
 	private static void onPlayerLeave(ClientPacketListener handler, Minecraft client) {

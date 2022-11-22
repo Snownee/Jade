@@ -10,6 +10,7 @@ import com.google.common.base.Strings;
 import com.google.gson.GsonBuilder;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -150,13 +151,17 @@ public class Jade implements ModInitializer {
 
 		ServerPlayConnectionEvents.JOIN.register(this::playerJoin);
 		UsernameCache.load();
+		ServerLifecycleEvents.SERVER_STARTED.register(server -> {
+			if (server.isDedicatedServer()) {
+				loadComplete();
+			}
+		});
 	}
 
 	public static void loadComplete() {
 		FabricLoader.getInstance().getEntrypointContainers(MODID, IWailaPlugin.class).forEach(entrypoint -> {
 			ModMetadata metadata = entrypoint.getProvider().getMetadata();
-			String modId = metadata.getId();
-			LOGGER.info("Start loading plugin from {}", modId);
+			LOGGER.info("Start loading plugin from {}", metadata.getName());
 			String className = null;
 			try {
 				IWailaPlugin plugin = entrypoint.getEntrypoint();

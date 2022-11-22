@@ -4,8 +4,7 @@
   "compatibilityLevel": "JAVA_16",
   "refmap": "jade.refmap.json",
   "mixins": [
-    "AbstractHorseAccess",
-    "UtilMixin"
+    "AbstractHorseAccess"
   ],
   "client": [
     "KeyAccess",

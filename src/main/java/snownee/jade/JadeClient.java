@@ -10,6 +10,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.toasts.SystemToast;
@@ -82,6 +83,8 @@ public final class JadeClient implements ClientModInitializer {
 		//showDetails = ClientPlatformProxy.registerKeyBinding("show_details", 340);
 
 		ClientPlatformProxy.registerReloadListener(ModIdentification.INSTANCE);
+
+		ClientLifecycleEvents.CLIENT_STARTED.register(mc -> Jade.loadComplete());
 	}
 
 	public static void onKeyPressed(int action) {
