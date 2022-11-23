@@ -15,7 +15,7 @@ import net.fabricmc.fabric.api.transfer.v1.storage.base.SidedStorageBlockEntity;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -73,7 +73,7 @@ public final class PlatformProxy {
 				}
 			}
 		}
-		return Registry.ITEM.getKey(stack.getItem()).getNamespace();
+		return BuiltInRegistries.ITEM.getKey(stack.getItem()).getNamespace();
 	}
 
 	public static boolean isPhysicallyClient() {
@@ -163,19 +163,19 @@ public final class PlatformProxy {
 	}
 
 	public static ResourceLocation getId(Block block) {
-		return Registry.BLOCK.getKey(block);
+		return BuiltInRegistries.BLOCK.getKey(block);
 	}
 
 	public static ResourceLocation getId(EntityType<?> entityType) {
-		return Registry.ENTITY_TYPE.getKey(entityType);
+		return BuiltInRegistries.ENTITY_TYPE.getKey(entityType);
 	}
 
 	public static ResourceLocation getId(BlockEntityType<?> blockEntityType) {
-		return Registry.BLOCK_ENTITY_TYPE.getKey(blockEntityType);
+		return BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(blockEntityType);
 	}
 
 	public static ResourceLocation getId(PaintingVariant motive) {
-		return Registry.PAINTING_VARIANT.getKey(motive);
+		return BuiltInRegistries.PAINTING_VARIANT.getKey(motive);
 	}
 
 	public static String getPlatformIdentifier() {

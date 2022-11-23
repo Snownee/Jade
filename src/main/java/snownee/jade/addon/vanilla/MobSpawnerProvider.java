@@ -2,6 +2,7 @@ package snownee.jade.addon.vanilla;
 
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
 import snownee.jade.Jade;
@@ -19,7 +20,7 @@ public enum MobSpawnerProvider implements IBlockComponentProvider {
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		SpawnerBlockEntity spawner = (SpawnerBlockEntity) accessor.getBlockEntity();
 		String name = I18n.get(accessor.getBlock().getDescriptionId());
-		Entity entity = spawner.getSpawner().getOrCreateDisplayEntity(accessor.getLevel());
+		Entity entity = spawner.getSpawner().getOrCreateDisplayEntity(accessor.getLevel(), RandomSource.create(), null);
 		//TODO multiple choices?
 		if (entity != null) {
 			name = I18n.get("jade.spawner", name, entity.getDisplayName().getString());

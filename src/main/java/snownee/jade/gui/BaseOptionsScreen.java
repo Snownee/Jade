@@ -9,9 +9,7 @@ import com.google.common.collect.Sets;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 
-import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.TooltipAccessor;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
@@ -51,20 +49,20 @@ public abstract class BaseOptionsScreen extends Screen {
 		addRenderableWidget(options);
 
 		if (saver != null && canceller != null) {
-			addRenderableWidget(new Button(width / 2 - 100, height - 25, 100, 20, Component.translatable("gui.done"), w -> {
+			addRenderableWidget(Button.builder(Component.translatable("gui.done"), w -> {
 				options.save();
 				saver.run();
 				minecraft.setScreen(parent);
-			}));
-			addRenderableWidget(new Button(width / 2 + 5, height - 25, 100, 20, Component.translatable("gui.cancel"), w -> {
+			}).bounds(width / 2 - 100, height - 25, 100, 20).build());
+			addRenderableWidget(Button.builder(Component.translatable("gui.cancel"), w -> {
 				canceller.run();
 				minecraft.setScreen(parent);
-			}));
+			}).bounds(width / 2 + 5, height - 25, 100, 20).build());
 		} else {
-			addRenderableWidget(new Button(width / 2 - 50, height - 25, 100, 20, Component.translatable("gui.done"), w -> {
+			addRenderableWidget(Button.builder(Component.translatable("gui.done"), w -> {
 				options.save();
 				minecraft.setScreen(parent);
-			}));
+			}).bounds(width / 2 - 50, height - 25, 100, 20).build());
 		}
 	}
 
@@ -75,10 +73,7 @@ public abstract class BaseOptionsScreen extends Screen {
 
 		if (options.getSelected() != null && mouseY >= 32 && mouseY <= height - 32) {
 			WailaOptionsList.Entry entry = options.getSelected();
-			AbstractWidget widget = entry.getListener();
-			if (widget instanceof TooltipAccessor && widget.visible && mouseX >= widget.x && mouseY >= widget.y && mouseX < (widget.x + widget.getWidth()) && mouseY < (widget.y + widget.getHeight())) {
-				renderTooltip(matrixStack, ((TooltipAccessor) widget).getTooltip(), mouseX, mouseY);
-			} else if (!Strings.isNullOrEmpty(entry.getDescription())) {
+			if (!Strings.isNullOrEmpty(entry.getDescription())) {
 				int valueX = entry.getTextX(options.getRowWidth());
 				if (mouseX >= valueX && mouseX < valueX + entry.getTextWidth()) {
 					List<FormattedCharSequence> tooltip = font.split(Component.literal(entry.getDescription()), 200);

@@ -25,7 +25,7 @@ package snownee.jade.util;
 
 import com.google.common.math.LongMath;
 
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.material.Fluid;
 import snownee.jade.overlay.DisplayHelper;
 
@@ -34,7 +34,7 @@ import snownee.jade.overlay.DisplayHelper;
  */
 public class FluidTextHelper {
 	public static String toString(Fluid fluid) {
-		return Registry.FLUID.getKey(fluid).toString();
+		return BuiltInRegistries.FLUID.getKey(fluid).toString();
 	}
 
 	/**

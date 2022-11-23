@@ -3,10 +3,9 @@ package snownee.jade.gui;
 import java.util.Comparator;
 import java.util.Set;
 
-import net.minecraft.ChatFormatting;
-
 import org.jetbrains.annotations.Nullable;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
@@ -37,9 +36,9 @@ public class PluginsConfigScreen extends BaseOptionsScreen {
 			} else {
 				title = Component.translatable(translationKey);
 			}
-			options.add(new OptionButton(title, new Button(0, 0, 100, 20, Component.empty(), w -> {
+			options.add(new OptionButton(title, Button.builder(Component.empty(), w -> {
 				minecraft.setScreen(createPluginConfigScreen(this, namespace, true));
-			})));
+			}).size(100, 20).build()));
 		});
 		return options;
 	}

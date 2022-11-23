@@ -5,7 +5,7 @@ import java.util.Map;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.Entity;
@@ -143,14 +143,13 @@ public class VanillaPlugin implements IWailaPlugin {
 
 	private static final Cache<BlockState, BlockState> CHEST_CACHE = CacheBuilder.newBuilder().build();
 
-	@SuppressWarnings("deprecation")
 	public static BlockState getCorrespondingNormalChest(BlockState state) {
 		try {
 			return CHEST_CACHE.get(state, () -> {
 				ResourceLocation trappedName = PlatformProxy.getId(state.getBlock());
 				if (trappedName.getPath().startsWith("trapped_")) {
 					ResourceLocation chestName = new ResourceLocation(trappedName.getNamespace(), trappedName.getPath().substring(8));
-					Block block = Registry.BLOCK.get(chestName);
+					Block block = BuiltInRegistries.BLOCK.get(chestName);
 					if (block != null) {
 						return copyProperties(state, block.defaultBlockState());
 					}

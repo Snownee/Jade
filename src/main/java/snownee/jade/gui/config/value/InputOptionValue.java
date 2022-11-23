@@ -3,7 +3,6 @@ package snownee.jade.gui.config.value;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import com.google.common.base.Predicates;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.gui.Font;
@@ -29,8 +28,8 @@ public class InputOptionValue<T> extends OptionValue<T> {
 
 	@Override
 	protected void drawValue(PoseStack matrixStack, int entryWidth, int entryHeight, int x, int y, int mouseX, int mouseY, boolean selected, float partialTicks) {
-		textField.x = x;
-		textField.y = y + entryHeight / 6;
+		textField.setX(x);
+		textField.setY(y + entryHeight / 6);
 		textField.render(matrixStack, mouseX, mouseY, partialTicks);
 	}
 

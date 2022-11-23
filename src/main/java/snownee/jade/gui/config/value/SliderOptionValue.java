@@ -34,8 +34,8 @@ public class SliderOptionValue extends OptionValue<Float> {
 
 	@Override
 	protected void drawValue(PoseStack matrixStack, int entryWidth, int entryHeight, int x, int y, int mouseX, int mouseY, boolean selected, float partialTicks) {
-		slider.x = x;
-		slider.y = y + entryHeight / 6;
+		slider.setX(x);
+		slider.setY(y + entryHeight / 6);
 		slider.render(matrixStack, mouseX, mouseY, partialTicks);
 	}
 
