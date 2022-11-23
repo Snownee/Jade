@@ -22,7 +22,6 @@ import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.entity.EntityPickInteractionAware;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
@@ -98,7 +97,6 @@ public final class ClientPlatformProxy {
 		ClientTickEvents.END_CLIENT_TICK.register(ClientPlatformProxy::onClientTick);
 		ClientPlayConnectionEvents.DISCONNECT.register(ClientPlatformProxy::onPlayerLeave);
 		ClientTickEvents.END_CLIENT_TICK.register(ClientPlatformProxy::onKeyPressed);
-		ScreenEvents.AFTER_INIT.register((Minecraft client, Screen screen, int scaledWidth, int scaledHeight) -> ScreenEvents.afterRender(screen).register(ClientPlatformProxy::onGui));
 
 		ClientPlayNetworking.registerGlobalReceiver(Identifiers.PACKET_RECEIVE_DATA, (client, handler, buf, responseSender) -> {
 			CompoundTag nbt = buf.readNbt();
@@ -171,10 +169,6 @@ public final class ClientPlatformProxy {
 				JEICompat.onKeyPressed(1);
 			}
 		}
-	}
-
-	private static void onGui(Screen screen, PoseStack matrices, int mouseX, int mouseY, float tickDelta) {
-		JadeClient.onGui(screen);
 	}
 
 	public static KeyMapping registerKeyBinding(String desc, int defaultKey) {
