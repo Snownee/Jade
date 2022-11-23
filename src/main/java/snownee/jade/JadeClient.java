@@ -15,6 +15,8 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.toasts.SystemToast;
 import net.minecraft.client.gui.components.toasts.SystemToast.SystemToastIds;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.resources.language.I18n;
@@ -121,8 +123,8 @@ public final class JadeClient implements ClientModInitializer {
 
 	private static boolean translationChecked;
 
-	public static void checkTranslations() {
-		if (!translationChecked && PlatformProxy.isDevEnv()) {
+	public static void onGui(Screen screen) {
+		if (!translationChecked && screen instanceof TitleScreen && PlatformProxy.isDevEnv()) {
 			translationChecked = true;
 			List<String> keys = Lists.newArrayList();
 			for (ResourceLocation id : PluginConfig.INSTANCE.getKeys()) {
