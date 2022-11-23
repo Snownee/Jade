@@ -29,6 +29,7 @@ import net.minecraft.world.level.block.BeehiveBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BrewingStandBlock;
+import net.minecraft.world.level.block.ChiseledBookShelfBlock;
 import net.minecraft.world.level.block.CommandBlock;
 import net.minecraft.world.level.block.EnchantmentTableBlock;
 import net.minecraft.world.level.block.JukeboxBlock;
@@ -39,6 +40,7 @@ import net.minecraft.world.level.block.TntBlock;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BeehiveBlockEntity;
 import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
+import net.minecraft.world.level.block.entity.ChiseledBookShelfBlockEntity;
 import net.minecraft.world.level.block.entity.CommandBlockEntity;
 import net.minecraft.world.level.block.entity.ComparatorBlockEntity;
 import net.minecraft.world.level.block.entity.HopperBlockEntity;
@@ -71,6 +73,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerBlockDataProvider(RedstoneProvider.INSTANCE, ComparatorBlockEntity.class);
 		registration.registerBlockDataProvider(RedstoneProvider.INSTANCE, HopperBlockEntity.class);
 		registration.registerBlockDataProvider(FurnaceProvider.INSTANCE, AbstractFurnaceBlockEntity.class);
+		registration.registerBlockDataProvider(ChiseledBookshelfProvider.INSTANCE, ChiseledBookShelfBlockEntity.class);
 
 		registration.registerEntityDataProvider(AnimalOwnerProvider.INSTANCE, Entity.class);
 		registration.registerEntityDataProvider(PotionEffectsProvider.INSTANCE, LivingEntity.class);
@@ -128,6 +131,8 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerBlockComponent(JukeboxProvider.INSTANCE, JukeboxBlock.class);
 		registration.registerBlockComponent(LecternProvider.INSTANCE, LecternBlock.class);
 		registration.registerBlockComponent(MobSpawnerProvider.INSTANCE, SpawnerBlock.class);
+		registration.registerBlockComponent(ChiseledBookshelfProvider.INSTANCE, ChiseledBookShelfBlock.class);
+		registration.registerBlockIcon(ChiseledBookshelfProvider.INSTANCE, ChiseledBookShelfBlock.class);
 
 		ClientPlatformProxy.registerReloadListener(HarvestToolProvider.INSTANCE);
 
