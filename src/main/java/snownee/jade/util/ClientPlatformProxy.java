@@ -57,7 +57,7 @@ import snownee.jade.Jade;
 import snownee.jade.JadeClient;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.ui.IElement;
-import snownee.jade.command.DumpHandlersCommand;
+import snownee.jade.command.JadeClientCommand;
 import snownee.jade.compat.JEICompat;
 import snownee.jade.gui.BaseOptionsScreen;
 import snownee.jade.impl.ObjectDataCenter;
@@ -98,7 +98,7 @@ public final class ClientPlatformProxy {
 		ClientTickEvents.END_CLIENT_TICK.register(ClientPlatformProxy::onClientTick);
 		ClientPlayConnectionEvents.DISCONNECT.register(ClientPlatformProxy::onPlayerLeave);
 		ClientTickEvents.END_CLIENT_TICK.register(ClientPlatformProxy::onKeyPressed);
-		ScreenEvents.AFTER_INIT.register((Minecraft client, Screen screen, int scaledWidth, int scaledHeight) -> ScreenEvents.afterRender(screen).register(ClientPlatformProxy::onGui));
+		ScreenEvents.AFTER_INIT.register((Minecraft client, Screen screen, int scaledWidth, int scaledHeight) -> ClientPlatformProxy.onGui(screen));
 
 		ClientPlayNetworking.registerGlobalReceiver(Identifiers.PACKET_RECEIVE_DATA, (client, handler, buf, responseSender) -> {
 			CompoundTag nbt = buf.readNbt();
@@ -123,12 +123,20 @@ public final class ClientPlatformProxy {
 				Jade.LOGGER.info("Received config from the server: {}", s);
 			});
 		});
+		ClientPlayNetworking.registerGlobalReceiver(Identifiers.PACKET_SHOW_OVERLAY, (client, handler, buf, responseSender) -> {
+			boolean show = buf.readBoolean();
+			Jade.LOGGER.info("Received request from the server to {} overlay", show ? "show" : "hide");
+			client.execute(() -> {
+				Jade.CONFIG.get().getGeneral().setDisplayTooltip(show);
+				Jade.CONFIG.save();
+			});
+		});
 
 		ClientCommandRegistrationCallback.EVENT.register(ClientPlatformProxy::registerClientCommand);
 	}
 
 	public static void registerClientCommand(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandBuildContext registryAccess) {
-		DumpHandlersCommand.register(dispatcher);
+		JadeClientCommand.register(dispatcher);
 	}
 
 	private static void onEntityJoin(Entity entity, ClientLevel level) {
@@ -173,7 +181,7 @@ public final class ClientPlatformProxy {
 		}
 	}
 
-	private static void onGui(Screen screen, PoseStack matrices, int mouseX, int mouseY, float tickDelta) {
+	private static void onGui(Screen screen) {
 		JadeClient.onGui(screen);
 	}
 

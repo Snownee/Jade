@@ -6,13 +6,19 @@ import java.util.UUID;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.mojang.brigadier.CommandDispatcher;
+
 import net.fabricmc.api.EnvType;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.lookup.v1.block.BlockApiLookup;
 import net.fabricmc.fabric.api.mininglevel.v1.FabricMineableTags;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.fabricmc.fabric.api.transfer.v1.storage.base.SidedStorageBlockEntity;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.commands.CommandBuildContext;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -37,6 +43,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import snownee.jade.api.view.FluidView;
 import snownee.jade.api.view.ItemView;
 import snownee.jade.api.view.ViewGroup;
+import snownee.jade.command.JadeServerCommand;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.mixin.AbstractHorseAccess;
 
@@ -81,6 +88,7 @@ public final class PlatformProxy {
 	}
 
 	public static void init() {
+		CommandRegistrationCallback.EVENT.register(PlatformProxy::registerServerCommand);
 	}
 
 	public static List<ViewGroup<ItemStack>> wrapItemStorage(Object target, ServerPlayer player) {
@@ -180,5 +188,9 @@ public final class PlatformProxy {
 
 	public static String getPlatformIdentifier() {
 		return "fabric";
+	}
+
+	private static void registerServerCommand(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext registryAccess, Commands.CommandSelection environment) {
+		JadeServerCommand.register(dispatcher);
 	}
 }
