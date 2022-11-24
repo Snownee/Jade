@@ -13,7 +13,7 @@ public class HomeConfigScreen extends Screen {
 	private final Screen parent;
 
 	public HomeConfigScreen(Screen parent) {
-		super(Component.translatable("gui.jade.configuration"));
+		super(Component.translatable("gui.jade.configuration", Jade.NAME));
 		this.parent = parent;
 	}
 
