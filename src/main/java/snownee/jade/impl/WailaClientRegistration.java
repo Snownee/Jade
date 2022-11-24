@@ -12,6 +12,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -51,6 +52,7 @@ import snownee.jade.impl.config.entry.IntConfigEntry;
 import snownee.jade.impl.config.entry.StringConfigEntry;
 import snownee.jade.impl.ui.ElementHelper;
 import snownee.jade.overlay.DisplayHelper;
+import snownee.jade.util.ClientPlatformProxy;
 
 public class WailaClientRegistration implements IWailaClientRegistration {
 
@@ -130,21 +132,25 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 
 	@Override
 	public void hideTarget(Block block) {
+		Objects.requireNonNull(block);
 		hideBlocks.add(block);
 	}
 
 	@Override
 	public void hideTarget(EntityType<?> entityType) {
+		Objects.requireNonNull(entityType);
 		hideEntities.add(entityType);
 	}
 
 	@Override
 	public void usePickedResult(Block block) {
+		Objects.requireNonNull(block);
 		pickBlocks.add(block);
 	}
 
 	@Override
 	public void usePickedResult(EntityType<?> entityType) {
+		Objects.requireNonNull(entityType);
 		pickEntities.add(entityType);
 	}
 
@@ -264,12 +270,28 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 
 	@Override
 	public BlockAccessor.Builder blockAccessor() {
-		return new BlockAccessorImpl.Builder();
+		Minecraft mc = Minecraft.getInstance();
+		/* off */
+		return new BlockAccessorImpl.Builder()
+				.level(mc.level)
+				.player(mc.player)
+				.serverConnected(ObjectDataCenter.serverConnected)
+				.serverData(ObjectDataCenter.getServerData())
+				.showDetails(ClientPlatformProxy.isShowDetailsPressed());
+		/* on */
 	}
 
 	@Override
 	public EntityAccessor.Builder entityAccessor() {
-		return new EntityAccessorImpl.Builder();
+		Minecraft mc = Minecraft.getInstance();
+		/* off */
+		return new EntityAccessorImpl.Builder()
+				.level(mc.level)
+				.player(mc.player)
+				.serverConnected(ObjectDataCenter.serverConnected)
+				.serverData(ObjectDataCenter.getServerData())
+				.showDetails(ClientPlatformProxy.isShowDetailsPressed());
+		/* on */
 	}
 
 	@Override

@@ -27,7 +27,7 @@ public final class ObjectDataCenter {
 			return;
 		}
 
-		Object object = accessor._getTrackObject();
+		Object object = accessor.getTarget();
 
 		if (object != lastObject) {
 			WailaTickHandler.instance().progressTracker.clear();

@@ -388,6 +388,7 @@ public class DisplayHelper implements IDisplayHelper {
 		drawText(poseStack, text.getVisualOrderText(), x, y, color);
 	}
 
+	@Override
 	public void drawText(PoseStack poseStack, FormattedCharSequence text, float x, float y, int color) {
 		boolean shadow = Jade.CONFIG.get().getOverlay().getTheme().textShadow;
 		if (OverlayRenderer.alpha != 1) {
