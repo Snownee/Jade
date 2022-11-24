@@ -23,6 +23,7 @@ import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.ZombieVillager;
 import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.vehicle.MinecartSpawner;
 import net.minecraft.world.level.block.AbstractFurnaceBlock;
 import net.minecraft.world.level.block.AbstractSkullBlock;
 import net.minecraft.world.level.block.BeehiveBlock;
@@ -131,6 +132,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerBlockComponent(JukeboxProvider.INSTANCE, JukeboxBlock.class);
 		registration.registerBlockComponent(LecternProvider.INSTANCE, LecternBlock.class);
 		registration.registerBlockComponent(MobSpawnerProvider.INSTANCE, SpawnerBlock.class);
+		registration.registerEntityComponent(MobSpawnerProvider.INSTANCE, MinecartSpawner.class);
 		registration.registerBlockComponent(ChiseledBookshelfProvider.INSTANCE, ChiseledBookShelfBlock.class);
 		registration.registerBlockIcon(ChiseledBookshelfProvider.INSTANCE, ChiseledBookShelfBlock.class);
 

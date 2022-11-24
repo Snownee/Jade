@@ -30,6 +30,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
@@ -384,6 +385,10 @@ public class DisplayHelper implements IDisplayHelper {
 
 	@Override
 	public void drawText(PoseStack poseStack, Component text, float x, float y, int color) {
+		drawText(poseStack, text.getVisualOrderText(), x, y, color);
+	}
+
+	public void drawText(PoseStack poseStack, FormattedCharSequence text, float x, float y, int color) {
 		boolean shadow = Jade.CONFIG.get().getOverlay().getTheme().textShadow;
 		if (OverlayRenderer.alpha != 1) {
 			color = IConfigOverlay.applyAlpha(color, OverlayRenderer.alpha);
