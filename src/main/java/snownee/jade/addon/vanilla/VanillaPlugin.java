@@ -27,6 +27,7 @@ import net.minecraft.world.level.block.AbstractFurnaceBlock;
 import net.minecraft.world.level.block.AbstractSkullBlock;
 import net.minecraft.world.level.block.BeehiveBlock;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BrewingStandBlock;
 import net.minecraft.world.level.block.CommandBlock;
 import net.minecraft.world.level.block.EnchantmentTableBlock;
@@ -71,7 +72,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerBlockDataProvider(RedstoneProvider.INSTANCE, HopperBlockEntity.class);
 		registration.registerBlockDataProvider(FurnaceProvider.INSTANCE, AbstractFurnaceBlockEntity.class);
 
-		//registration.registerEntityDataProvider(AnimalOwnerProvider.INSTANCE, Entity.class);
+		registration.registerEntityDataProvider(AnimalOwnerProvider.INSTANCE, Entity.class);
 		registration.registerEntityDataProvider(PotionEffectsProvider.INSTANCE, LivingEntity.class);
 		registration.registerEntityDataProvider(MobGrowthProvider.INSTANCE, AgeableMob.class);
 		registration.registerEntityDataProvider(MobGrowthProvider.INSTANCE, Tadpole.class);
@@ -139,6 +140,9 @@ public class VanillaPlugin implements IWailaPlugin {
 
 		registration.hideTarget(EntityType.AREA_EFFECT_CLOUD);
 		registration.hideTarget(EntityType.FIREWORK_ROCKET);
+		registration.hideTarget(Blocks.BARRIER);
+		registration.usePickedResult(EntityType.BOAT);
+		registration.usePickedResult(EntityType.CHEST_BOAT);
 	}
 
 	private static final Cache<BlockState, BlockState> CHEST_CACHE = CacheBuilder.newBuilder().build();

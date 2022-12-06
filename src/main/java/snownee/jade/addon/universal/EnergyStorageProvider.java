@@ -88,7 +88,7 @@ public enum EnergyStorageProvider implements IBlockComponentProvider, IServerDat
 						} else {
 							text = Component.translatable("jade.fe", ChatFormatting.WHITE + view.current, view.max).withStyle(ChatFormatting.GRAY);
 						}
-						IProgressStyle progressStyle = helper.progressStyle().color(0xFFFF0000, 0xFF660000);
+						IProgressStyle progressStyle = helper.progressStyle().color(0xFFAA0000, 0xFF660000);
 						theTooltip.add(helper.progress(view.ratio, text, progressStyle, BoxStyle.DEFAULT, true));
 					}
 				});
@@ -98,13 +98,14 @@ public enum EnergyStorageProvider implements IBlockComponentProvider, IServerDat
 
 	public static void putData(CompoundTag tag, ServerPlayer player, Object target, boolean showDetails) {
 		var list = WailaCommonRegistration.INSTANCE.energyStorageProviders.get(target);
-		if (list.isEmpty()) {
-			return;
+		for (var provider : list) {
+			var groups = provider.getGroups(player, player.getLevel(), target, showDetails);
+			if (groups != null) {
+				if (ViewGroup.saveList(tag, "JadeEnergyStorage", groups, Function.identity()))
+					tag.putString("JadeEnergyStorageUid", provider.getUid().toString());
+				return;
+			}
 		}
-		var provider = list.get(0);
-		var groups = provider.getGroups(player, player.getLevel(), target, showDetails);
-		if (ViewGroup.saveList(tag, "JadeEnergyStorage", groups, Function.identity()))
-			tag.putString("JadeEnergyStorageUid", provider.getUid().toString());
 	}
 
 	@Override

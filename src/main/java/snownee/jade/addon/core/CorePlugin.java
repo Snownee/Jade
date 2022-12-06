@@ -1,13 +1,21 @@
 package snownee.jade.addon.core;
 
+import java.lang.reflect.Type;
+import java.util.List;
+
+import com.google.common.reflect.TypeToken;
+
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import snownee.jade.Jade;
 import snownee.jade.api.IWailaClientRegistration;
 import snownee.jade.api.IWailaCommonRegistration;
 import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.WailaPlugin;
+import snownee.jade.util.JsonConfig;
 
 @WailaPlugin
 public class CorePlugin implements IWailaPlugin {
@@ -34,5 +42,13 @@ public class CorePlugin implements IWailaPlugin {
 		registration.addConfig(Identifiers.CORE_COORDINATES, false);
 		registration.addConfig(Identifiers.CORE_REL_COORDINATES, false);
 		registration.addConfig(Identifiers.CORE_REGISTRY_NAME, RegistryNameProvider.Mode.OFF);
+
+		@SuppressWarnings("serial")
+		Type type = new TypeToken<List<String>>() {
+		}.getType();
+		JsonConfig<List<String>> config = new JsonConfig<>(Jade.MODID + "/hide-entities", type, null, List::of);
+		for (String id : config.get()) {
+			EntityType.byString(id).ifPresent(registration::hideTarget);
+		}
 	}
 }

@@ -4,7 +4,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.vehicle.ContainerEntity;
 import net.minecraft.world.level.Level;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
@@ -22,10 +21,6 @@ public enum EntityItemStorageProvider implements IEntityComponentProvider, IServ
 
 	@Override
 	public void appendServerData(CompoundTag tag, ServerPlayer player, Level world, Entity entity, boolean showDetails) {
-		if (entity instanceof ContainerEntity containerEntity && containerEntity.getLootTable() != null) {
-			tag.putBoolean("Loot", true);
-			return;
-		}
 		ItemStorageProvider.putData(tag, player, entity, showDetails);
 	}
 

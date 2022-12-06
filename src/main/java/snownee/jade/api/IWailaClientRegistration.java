@@ -4,6 +4,7 @@ import java.util.function.Predicate;
 
 import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.ApiStatus.NonExtendable;
+import org.jetbrains.annotations.ApiStatus.ScheduledForRemoval;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.client.gui.screens.Screen;
@@ -102,10 +103,18 @@ public interface IWailaClientRegistration {
 	 */
 	void usePickedResult(Block block);
 
+	/**
+	 * Mark an entity type to show name of the picked result, rather than entity name.
+	 */
+	void usePickedResult(EntityType<?> entityType);
+
+	@ScheduledForRemoval(inVersion = "1.20")
 	IElementHelper getElementHelper();
 
+	@ScheduledForRemoval(inVersion = "1.20")
 	IDisplayHelper getDisplayHelper();
 
+	@ScheduledForRemoval(inVersion = "1.20")
 	IWailaConfig getConfig();
 
 	BlockAccessor.Builder blockAccessor();
@@ -115,6 +124,8 @@ public interface IWailaClientRegistration {
 	boolean shouldHide(Entity target);
 
 	boolean shouldHide(BlockState state);
+
+	boolean shouldPick(Entity entity);
 
 	boolean shouldPick(BlockState blockState);
 

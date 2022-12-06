@@ -13,6 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.LockCode;
+import net.minecraft.world.entity.vehicle.ContainerEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
@@ -56,14 +57,6 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 	}
 
 	public static void append(ITooltip tooltip, Accessor<?> accessor, IPluginConfig config) {
-		if (accessor.getServerData().getBoolean("Loot")) {
-			tooltip.add(Component.translatable("jade.not_generated"));
-			return;
-		}
-		if (accessor.getServerData().getBoolean("Locked")) {
-			tooltip.add(Component.translatable("jade.locked"));
-			return;
-		}
 		if (accessor.getServerData().contains("JadeItemStorage")) {
 			var provider = Optional.ofNullable(ResourceLocation.tryParse(accessor.getServerData().getString("JadeItemStorageUid"))).map(WailaClientRegistration.INSTANCE.itemStorageProviders::get);
 			if (provider.isPresent()) {
@@ -124,7 +117,7 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 							ItemStack copy = stack.copy();
 							copy.setCount(1);
 							elements.add(helper.smallItem(copy).clearCachedMessage());
-							elements.add(helper.text(Component.literal(Integer.toString(stack.getCount())).append("× ").append(IDisplayHelper.get().stripColor(stack.getHoverName()))).message(null));
+							elements.add(helper.text(Component.literal(IDisplayHelper.get().humanReadableNumber(stack.getCount(), "", false)).append("× ").append(IDisplayHelper.get().stripColor(stack.getHoverName()))).message(null));
 						} else if (itemView.text != null) {
 							elements.add(helper.item(stack, 1, itemView.text));
 						} else {
@@ -138,6 +131,10 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 					}
 				});
 			}
+		} else if (accessor.getServerData().getBoolean("Loot")) {
+			tooltip.add(Component.translatable("jade.not_generated"));
+		} else if (accessor.getServerData().getBoolean("Locked")) {
+			tooltip.add(Component.translatable("jade.locked"));
 		}
 	}
 
@@ -146,39 +143,43 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 		if (JadeCommonConfig.shouldIgnoreTE(tag.getString("id")) || te instanceof AbstractFurnaceBlockEntity) {
 			return;
 		}
-
-		if (te instanceof RandomizableContainerBlockEntity && ((RandomizableContainerBlockEntity) te).lootTable != null) {
-			tag.putBoolean("Loot", true);
-			return;
-		}
-
-		if (!JadeCommonConfig.bypassLockedContainer && !player.isCreative() && !player.isSpectator() && te instanceof BaseContainerBlockEntity lockableBlockEntity) {
-			if (lockableBlockEntity.lockKey != LockCode.NO_LOCK) {
-				tag.putBoolean("Locked", true);
-				return;
-			}
-		}
 		putData(tag, player, te, showDetails);
 	}
 
 	public static void putData(CompoundTag tag, ServerPlayer player, Object target, boolean showDetails) {
 		var list = WailaCommonRegistration.INSTANCE.itemStorageProviders.get(target);
-		if (list.isEmpty()) {
-			return;
-		}
-		var provider = list.get(0);
-		var groups = provider.getGroups(player, player.getLevel(), target, showDetails);
-		if (ViewGroup.saveList(tag, "JadeItemStorage", groups, item -> {
-			CompoundTag itemTag = new CompoundTag();
-			int count = item.getCount();
-			if (count > 64)
-				item.setCount(1);
-			item.save(itemTag);
-			if (count > 64)
-				itemTag.putInt("NewCount", count);
-			return itemTag;
-		})) {
-			tag.putString("JadeItemStorageUid", provider.getUid().toString());
+		for (var provider : list) {
+			var groups = provider.getGroups(player, player.getLevel(), target, showDetails);
+			if (groups != null) {
+				if (ViewGroup.saveList(tag, "JadeItemStorage", groups, item -> {
+					CompoundTag itemTag = new CompoundTag();
+					int count = item.getCount();
+					if (count > 64)
+						item.setCount(1);
+					item.save(itemTag);
+					if (count > 64)
+						itemTag.putInt("NewCount", count);
+					return itemTag;
+				})) {
+					tag.putString("JadeItemStorageUid", provider.getUid().toString());
+				} else {
+					if (target instanceof RandomizableContainerBlockEntity te && te.lootTable != null) {
+						tag.putBoolean("Loot", true);
+						return;
+					}
+					if (target instanceof ContainerEntity containerEntity && containerEntity.getLootTable() != null) {
+						tag.putBoolean("Loot", true);
+						return;
+					}
+					if (!JadeCommonConfig.bypassLockedContainer && !player.isCreative() && !player.isSpectator() && target instanceof BaseContainerBlockEntity te) {
+						if (te.lockKey != LockCode.NO_LOCK) {
+							tag.putBoolean("Locked", true);
+							return;
+						}
+					}
+				}
+				return;
+			}
 		}
 	}
 
@@ -194,6 +195,18 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 
 	@Override
 	public List<ViewGroup<ItemStack>> getGroups(ServerPlayer player, ServerLevel world, Object target, boolean showDetails) {
+		if (target instanceof RandomizableContainerBlockEntity te && te.lootTable != null) {
+			return List.of();
+		}
+		if (target instanceof ContainerEntity containerEntity && containerEntity.getLootTable() != null) {
+			return List.of();
+		}
+		if (!JadeCommonConfig.bypassLockedContainer && !player.isCreative() && !player.isSpectator() && target instanceof BaseContainerBlockEntity te) {
+			if (te.lockKey != LockCode.NO_LOCK) {
+				return List.of();
+			}
+		}
+
 		return PlatformProxy.wrapItemStorage(target, player);
 	}
 
