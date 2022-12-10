@@ -1,12 +1,10 @@
 package snownee.jade.addon.vanilla;
 
-import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.monster.ZombieVillager;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerData;
@@ -16,15 +14,15 @@ import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.util.PlatformProxy;
 
-// @MerchantScreen
+// @MerchantScreen / Villager.getTypeName
 public enum VillagerProfessionProvider implements IEntityComponentProvider {
 
 	INSTANCE;
 
 	private static final Component LEVEL_SEPARATOR = new TextComponent(" - ");
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		VillagerData data = null;
@@ -37,10 +35,9 @@ public enum VillagerProfessionProvider implements IEntityComponentProvider {
 			return;
 		}
 		int level = data.getLevel();
-		ResourceLocation profName = Registry.VILLAGER_PROFESSION.getKey(data.getProfession());
-		MutableComponent component = new TranslatableComponent(EntityType.VILLAGER.getDescriptionId() + '.' + (!"minecraft".equals(profName.getNamespace()) ? profName.getNamespace() + '.' : "") + profName.getPath());
 		VillagerProfession profession = data.getProfession();
-		if (profession != VillagerProfession.NONE && profession != VillagerProfession.NITWIT) {
+		MutableComponent component = PlatformProxy.getProfressionName(profession);
+		if (profession != VillagerProfession.NONE && profession != VillagerProfession.NITWIT && level > 0 && level <= 5) {
 			component.append(LEVEL_SEPARATOR).append(new TranslatableComponent("merchant.level." + level));
 		}
 		tooltip.add(component);

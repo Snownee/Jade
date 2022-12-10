@@ -11,11 +11,14 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.horse.AbstractChestedHorse;
 import net.minecraft.world.entity.decoration.Motive;
+import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ShearsItem;
@@ -104,6 +107,10 @@ public final class PlatformProxy {
 
 	public static ResourceLocation getId(Motive motive) {
 		return Registry.MOTIVE.getKey(motive);
+	}
+
+	public static MutableComponent getProfressionName(VillagerProfession profession) {
+		return new TranslatableComponent(EntityType.VILLAGER.getDescriptionId() + "." + Registry.VILLAGER_PROFESSION.getKey(profession).getPath());
 	}
 
 }
