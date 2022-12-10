@@ -36,6 +36,8 @@ public class UniversalPlugin implements IWailaPlugin {
 		registration.addConfig(Identifiers.MC_BLOCK_INVENTORY_NORMAL_AMOUNT, 9, 1, 54, false);
 		registration.addConfig(Identifiers.MC_BLOCK_INVENTORY_SHOW_NAME_AMOUNT, 5, 0, 9, true);
 		registration.addConfig(Identifiers.MC_BLOCK_INVENTORY_ITEMS_PER_LINE, 9, 3, 27, true);
+		registration.addConfig(Identifiers.UNIVERSAL_ENERGY_STORAGE_DETAILED, false);
+		registration.addConfig(Identifiers.UNIVERSAL_FLUID_STORAGE_DETAILED, false);
 
 		registration.registerBlockComponent(ItemStorageProvider.INSTANCE, Block.class);
 		registration.registerEntityComponent(EntityItemStorageProvider.INSTANCE, Entity.class);

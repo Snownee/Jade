@@ -26,7 +26,9 @@ public class Identifiers {
 	//TODO(1.20): Change names
 	public static final ResourceLocation UNIVERSAL_ITEM_STORAGE = MC("block_inventory");
 	public static final ResourceLocation UNIVERSAL_FLUID_STORAGE = MC("fluid");
+	public static final ResourceLocation UNIVERSAL_FLUID_STORAGE_DETAILED = MC("fluid.detailed");
 	public static final ResourceLocation UNIVERSAL_ENERGY_STORAGE = MC("energy_storage");
+	public static final ResourceLocation UNIVERSAL_ENERGY_STORAGE_DETAILED = MC("energy_storage.detailed");
 	public static final ResourceLocation UNIVERSAL_PROGRESS = MC("progress");
 
 	@ScheduledForRemoval(inVersion = "1.20")
@@ -65,6 +67,7 @@ public class Identifiers {
 	public static final ResourceLocation MC_HARVEST_TOOL = MC("harvest_tool");
 	public static final ResourceLocation MC_HARVEST_TOOL_NEW_LINE = MC("harvest_tool.new_line");
 	public static final ResourceLocation MC_EFFECTIVE_TOOL = MC("harvest_tool.effective_tool");
+	public static final ResourceLocation MC_SHOW_UNBREAKABLE = MC("harvest_tool.show_unbreakable");
 	public static final ResourceLocation MC_HORSE_STATS = MC("horse_stats");
 	public static final ResourceLocation MC_ITEM_FRAME = MC("item_frame");
 	public static final ResourceLocation MC_ITEM_TOOLTIP = MC("item_tooltip");

@@ -60,6 +60,9 @@ public enum FluidStorageProvider implements IBlockComponentProvider, IServerData
 	}
 
 	public static void append(ITooltip tooltip, Accessor<?> accessor, IPluginConfig config) {
+		if (!(accessor.showDetails() || !config.get(Identifiers.UNIVERSAL_FLUID_STORAGE_DETAILED))) {
+			return;
+		}
 		if (accessor.getServerData().contains("JadeFluidStorage")) {
 			var provider = Optional.ofNullable(ResourceLocation.tryParse(accessor.getServerData().getString("JadeFluidStorageUid"))).map(WailaClientRegistration.INSTANCE.fluidStorageProviders::get);
 			if (provider.isPresent()) {

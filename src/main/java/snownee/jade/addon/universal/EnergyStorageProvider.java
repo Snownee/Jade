@@ -61,6 +61,9 @@ public enum EnergyStorageProvider implements IBlockComponentProvider, IServerDat
 	}
 
 	public static void append(ITooltip tooltip, Accessor<?> accessor, IPluginConfig config) {
+		if (!(accessor.showDetails() || !config.get(Identifiers.UNIVERSAL_ENERGY_STORAGE_DETAILED))) {
+			return;
+		}
 		if (accessor.getServerData().contains("JadeEnergyStorage")) {
 			var provider = Optional.ofNullable(ResourceLocation.tryParse(accessor.getServerData().getString("JadeEnergyStorageUid"))).map(WailaClientRegistration.INSTANCE.energyStorageProviders::get);
 			if (provider.isPresent()) {
