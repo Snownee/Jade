@@ -121,14 +121,25 @@ public final class ClientPlatformProxy {
 
 	private static void onRenderTick(TickEvent.RenderTickEvent event) {
 		if (event.phase == TickEvent.Phase.END) {
-			OverlayRenderer.renderOverlay478757(new PoseStack());
-			bossbarShown = false;
+			try {
+				OverlayRenderer.renderOverlay478757(new PoseStack());
+			} catch (Throwable e) {
+				WailaExceptionHandler.handleErr(e, null, null);
+			} finally {
+				bossbarShown = false;
+			}
 		}
+
 	}
 
 	private static void onClientTick(TickEvent.ClientTickEvent event) {
-		if (event.phase == TickEvent.Phase.END)
-			WailaTickHandler.instance().tickClient();
+		if (event.phase == TickEvent.Phase.END) {
+			try {
+				WailaTickHandler.instance().tickClient();
+			} catch (Throwable e) {
+				WailaExceptionHandler.handleErr(e, null, null);
+			}
+		}
 	}
 
 	private static void onPlayerLeave(ClientPlayerNetworkEvent.LoggingOut event) {

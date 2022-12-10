@@ -27,6 +27,11 @@ public class CorePlugin implements IWailaPlugin {
 
 	@Override
 	public void registerClient(IWailaClientRegistration registration) {
+		registration.addConfig(Identifiers.CORE_DISTANCE, false);
+		registration.addConfig(Identifiers.CORE_COORDINATES, false);
+		registration.addConfig(Identifiers.CORE_REL_COORDINATES, false);
+		registration.addConfig(Identifiers.CORE_REGISTRY_NAME, RegistryNameProvider.Mode.OFF);
+
 		registration.registerBlockComponent(ObjectNameProvider.INSTANCE, Block.class);
 		registration.registerBlockComponent(RegistryNameProvider.INSTANCE, Block.class);
 		registration.registerBlockComponent(ModNameProvider.INSTANCE, Block.class);
@@ -37,11 +42,6 @@ public class CorePlugin implements IWailaPlugin {
 		registration.registerEntityComponent(RegistryNameProvider.INSTANCE, Entity.class);
 		registration.registerEntityComponent(ModNameProvider.INSTANCE, Entity.class);
 		registration.registerEntityComponent(DistanceProvider.INSTANCE, Entity.class);
-
-		registration.addConfig(Identifiers.CORE_DISTANCE, false);
-		registration.addConfig(Identifiers.CORE_COORDINATES, false);
-		registration.addConfig(Identifiers.CORE_REL_COORDINATES, false);
-		registration.addConfig(Identifiers.CORE_REGISTRY_NAME, RegistryNameProvider.Mode.OFF);
 
 		@SuppressWarnings("serial")
 		Type type = new TypeToken<List<String>>() {

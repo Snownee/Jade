@@ -6,6 +6,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import snownee.jade.api.IWailaClientRegistration;
 import snownee.jade.api.IWailaCommonRegistration;
 import snownee.jade.api.IWailaPlugin;
+import snownee.jade.api.Identifiers;
 import snownee.jade.api.WailaPlugin;
 
 @WailaPlugin
@@ -31,6 +32,11 @@ public class UniversalPlugin implements IWailaPlugin {
 
 	@Override
 	public void registerClient(IWailaClientRegistration registration) {
+		registration.addConfig(Identifiers.MC_BLOCK_INVENTORY_DETAILED_AMOUNT, 54, 1, 54, false);
+		registration.addConfig(Identifiers.MC_BLOCK_INVENTORY_NORMAL_AMOUNT, 9, 1, 54, false);
+		registration.addConfig(Identifiers.MC_BLOCK_INVENTORY_SHOW_NAME_AMOUNT, 5, 0, 9, true);
+		registration.addConfig(Identifiers.MC_BLOCK_INVENTORY_ITEMS_PER_LINE, 9, 3, 27, true);
+
 		registration.registerBlockComponent(ItemStorageProvider.INSTANCE, Block.class);
 		registration.registerEntityComponent(EntityItemStorageProvider.INSTANCE, Entity.class);
 		registration.registerItemStorageClient(ItemStorageProvider.INSTANCE);
