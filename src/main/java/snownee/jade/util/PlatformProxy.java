@@ -17,11 +17,14 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.decoration.PaintingVariant;
+import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ShearsItem;
@@ -180,5 +183,9 @@ public final class PlatformProxy {
 
 	public static String getPlatformIdentifier() {
 		return "fabric";
+	}
+
+	public static MutableComponent getProfressionName(VillagerProfession profession) {
+		return Component.translatable(EntityType.VILLAGER.getDescriptionId() + "." + Registry.VILLAGER_PROFESSION.getKey(profession).getPath());
 	}
 }
