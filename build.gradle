@@ -9,6 +9,13 @@ buildscript {
         classpath 'org.parchmentmc:librarian:1.+'
     }
 }
+
+plugins {
+    id "com.modrinth.minotaur" version "2.+"
+    // It's safest to have this on 2.+ to get the latest features and
+    // bug fixes without having to worry about breaking changes.
+}
+
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
@@ -138,5 +145,21 @@ publishing {
         maven {
             url "file://${project.projectDir}/mcmodsrepo"
         }
+    }
+}
+
+modrinth {
+    token = System.getenv("MODRINTH_TOKEN") // This is the default. Remember to have the MODRINTH_TOKEN environment variable set or else this will fail, or set it to whatever you want - just make sure it stays private!
+    projectId = "nvQzSEkH" // This can be the project ID or the slug. Either will work!
+    versionNumber = project.mod_version // You don't need to set this manually. Will fail if Modrinth has this version already
+    versionType = "release" // This is the default -- can also be `beta` or `alpha`
+    uploadFile = jar // With Loom, this MUST be set to `remapJar` instead of `jar`!
+    gameVersions = ["1.19.1", "1.19.2"] // Must be an array, even with only one version
+    loaders = ["forge"] // Must also be an array - no need to specify this if you're using Loom or ForgeGradle
+    dependencies { // A special DSL for creating dependencies
+        // scope.type
+        // The scope can be `required`, `optional`, `incompatible`, or `embedded`
+        // The type can either be `project` or `version`
+        // required.project "fabric-api"
     }
 }
