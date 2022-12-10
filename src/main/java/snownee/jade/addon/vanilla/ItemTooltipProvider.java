@@ -2,6 +2,7 @@ package snownee.jade.addon.vanilla;
 
 import java.util.List;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
@@ -16,6 +17,7 @@ import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.util.ModIdentification;
 
 public enum ItemTooltipProvider implements IEntityComponentProvider {
 
@@ -30,6 +32,8 @@ public enum ItemTooltipProvider implements IEntityComponentProvider {
 		if (!itemTooltip.isEmpty()) {
 			itemTooltip.remove(0);
 		}
+		String modName = ModIdentification.getModName(stack);
+		itemTooltip.removeIf($ -> ChatFormatting.stripFormatting($.getString()).equals(modName));
 		Font font = Minecraft.getInstance().font;
 		int maxWidth = 250;
 		for (Component component : itemTooltip) {
