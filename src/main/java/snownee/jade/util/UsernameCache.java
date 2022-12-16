@@ -55,13 +55,10 @@ public final class UsernameCache {
 		@Override
 		public void run() {
 			try {
-				// Make sure we don't save when another thread is still saving
-				synchronized (saveFile) {
-					GameProfile profile = new GameProfile(uuid,"???");
-					profile = Minecraft.getInstance().getMinecraftSessionService().fillProfileProperties(profile,true);
-					UsernameCache.setUsername(profile.getId(),profile.getName());
-					downloadingList.remove(uuid);
-				}
+				GameProfile profile = new GameProfile(uuid,"???");
+				profile = Minecraft.getInstance().getMinecraftSessionService().fillProfileProperties(profile,true);
+				UsernameCache.setUsername(profile.getId(),profile.getName());
+				downloadingList.remove(uuid);
 			} catch (Exception e) {
 				Jade.LOGGER.error("Failed to save username cache to file!");
 			}
