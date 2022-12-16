@@ -28,6 +28,45 @@ public final class UsernameCache {
 
 	private static final Path saveFile = PlatformProxy.getConfigDirectory().toPath().resolve(Jade.MODID + "/usernamecache.json");
 	private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+	
+	private static List<UUID> downloadingList = new ArrayList<>();
+
+	/**
+	 * Download Username
+	 */
+	private static void download(UUID uuid) {
+		if(downloadingList.contains(uuid)){
+			return;
+		}
+		new DownloadThread(uuid).start();
+	}
+
+	/**
+	 * Downloads GameProfile by UUID then saves them to disk
+	 * representation of the cache to disk
+	 */
+	private static class DownloadThread extends Thread {
+		private final UUID uuid;
+
+		public DownloadThread(UUID uuid) {
+			this.uuid = uuid;
+		}
+
+		@Override
+		public void run() {
+			try {
+				// Make sure we don't save when another thread is still saving
+				synchronized (saveFile) {
+					GameProfile profile = new GameProfile(uuid,"???");
+					profile = Minecraft.getInstance().getMinecraftSessionService().fillProfileProperties(profile,true);
+					UsernameCache.setUsername(profile.getId(),profile.getName());
+					downloadingList.remove(uuid);
+				}
+			} catch (Exception e) {
+				Jade.LOGGER.error("Failed to save username cache to file!");
+			}
+		}
+	}
 
 	private UsernameCache() {
 	}
@@ -82,6 +121,9 @@ public final class UsernameCache {
 	@Nullable
 	public static String getLastKnownUsername(UUID uuid) {
 		Objects.requireNonNull(uuid);
+		if(map.get(uuid)==null){
+			download(uuid);
+		}
 		return map.get(uuid);
 	}
 
