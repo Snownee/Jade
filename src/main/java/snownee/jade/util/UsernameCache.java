@@ -6,13 +6,17 @@ import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
+import com.mojang.authlib.GameProfile;
+import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.Nullable;
-
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.reflect.TypeToken;
@@ -25,45 +29,10 @@ import snownee.jade.Jade;
 public final class UsernameCache {
 
 	private static Map<UUID, String> map = new HashMap<>();
+	private static Set<UUID> downloadingList = Collections.synchronizedSet(new HashSet<>());
 
 	private static final Path saveFile = PlatformProxy.getConfigDirectory().toPath().resolve(Jade.MODID + "/usernamecache.json");
 	private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-	
-	private static List<UUID> downloadingList = new ArrayList<>();
-
-	/**
-	 * Download Username
-	 */
-	private static void download(UUID uuid) {
-		if(downloadingList.contains(uuid)){
-			return;
-		}
-		new DownloadThread(uuid).start();
-	}
-
-	/**
-	 * Downloads GameProfile by UUID then saves them to disk
-	 * representation of the cache to disk
-	 */
-	private static class DownloadThread extends Thread {
-		private final UUID uuid;
-
-		public DownloadThread(UUID uuid) {
-			this.uuid = uuid;
-		}
-
-		@Override
-		public void run() {
-			try {
-				GameProfile profile = new GameProfile(uuid,"???");
-				profile = Minecraft.getInstance().getMinecraftSessionService().fillProfileProperties(profile,true);
-				UsernameCache.setUsername(profile.getId(),profile.getName());
-				downloadingList.remove(uuid);
-			} catch (Exception e) {
-				Jade.LOGGER.error("Failed to save username cache to file!");
-			}
-		}
-	}
 
 	private UsernameCache() {
 	}
@@ -118,10 +87,11 @@ public final class UsernameCache {
 	@Nullable
 	public static String getLastKnownUsername(UUID uuid) {
 		Objects.requireNonNull(uuid);
-		if(map.get(uuid)==null){
+		String name = map.get(uuid);
+		if(name==null){
 			download(uuid);
 		}
-		return map.get(uuid);
+		return name;
 	}
 
 	/**
@@ -176,6 +146,49 @@ public final class UsernameCache {
 			// Can sometimes occur when the json file is malformed
 			if (map == null) {
 				map = new HashMap<>();
+			}
+		}
+	}
+
+	/**
+	 * Downloads a Username
+	 * This function can be called repeatedly
+	 * It should only attempt one Download
+	 */
+	private static void download(UUID uuid) {
+		if(downloadingList.contains(uuid)){
+			return;
+		}
+		downloadingList.add(uuid);
+		Jade.LOGGER.warn("Starting Donwload "+uuid);
+		new DownloadThread(uuid).start();
+	}
+
+	/**
+	 * Downloads GameProfile by UUID then saves them to disk
+	 * representation of the cache to disk
+	 */
+	private static class DownloadThread extends Thread {
+		private final UUID uuid;
+
+		public DownloadThread(UUID uuid) {
+			this.uuid = uuid;
+		}
+
+		@Override
+		public void run() {
+			try {
+				//if the downloading fails for some reason and throws an error,
+				GameProfile profile = new GameProfile(uuid,"???");
+				profile = Minecraft.getInstance().getMinecraftSessionService().fillProfileProperties(profile,true);
+				UsernameCache.setUsername(profile.getId(),profile.getName());
+				if(!(profile.getName()==null||profile.getName().equals("???"))) {
+					//only remove from list if it was successfull
+					//if it failed for some reason leave it in the channel so no repeated tries are made
+					downloadingList.remove(uuid);
+				}
+			} catch (Exception e) {
+				Jade.LOGGER.error("Download for uuid "+uuid+ " failed");
 			}
 		}
 	}
