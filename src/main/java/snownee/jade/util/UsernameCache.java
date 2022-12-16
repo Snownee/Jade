@@ -6,7 +6,6 @@ import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -29,7 +28,7 @@ import snownee.jade.Jade;
 public final class UsernameCache {
 
 	private static Map<UUID, String> map = new HashMap<>();
-	private static Set<UUID> downloadingList = Collections.synchronizedSet(new HashSet<>());
+	private static Set<UUID> downloadingList = new HashSet<>();
 
 	private static final Path saveFile = PlatformProxy.getConfigDirectory().toPath().resolve(Jade.MODID + "/usernamecache.json");
 	private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
