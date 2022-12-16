@@ -180,10 +180,10 @@ public final class UsernameCache {
 				//if the downloading fails for some reason and throws an error,
 				GameProfile profile = new GameProfile(uuid,"???");
 				profile = Minecraft.getInstance().getMinecraftSessionService().fillProfileProperties(profile,true);
-				UsernameCache.setUsername(profile.getId(),profile.getName());
 				if(!(profile.getName()==null||profile.getName().equals("???"))) {
 					//only remove from list if it was successfull
 					//if it failed for some reason leave it in the channel so no repeated tries are made
+					UsernameCache.setUsername(profile.getId(),profile.getName());
 					downloadingList.remove(uuid);
 				}
 			} catch (Exception e) {
