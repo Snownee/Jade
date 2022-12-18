@@ -27,23 +27,24 @@ import net.minecraft.world.level.block.entity.EnderChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.IForgeShearable;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.UsernameCache;
 import net.minecraftforge.common.capabilities.CapabilityProvider;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.fml.loading.FMLPaths;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.registries.ForgeRegistries;
 import snownee.jade.api.view.EnergyView;
 import snownee.jade.api.view.FluidView;
 import snownee.jade.api.view.ItemView;
 import snownee.jade.api.view.ViewGroup;
+import snownee.jade.command.JadeServerCommand;
 
 public final class PlatformProxy {
 
@@ -86,16 +87,21 @@ public final class PlatformProxy {
 	}
 
 	public static void init() {
+		MinecraftForge.EVENT_BUS.addListener(PlatformProxy::registerServerCommand);
 		if (isPhysicallyClient()) {
 			ClientPlatformProxy.init();
 		}
+	}
+
+	private static void registerServerCommand(RegisterCommandsEvent event) {
+		JadeServerCommand.register(event.getDispatcher());
 	}
 
 	public static List<ViewGroup<ItemStack>> wrapItemStorage(Object target, @Nullable Player player) {
 		int size = 54;
 		if (target instanceof CapabilityProvider<?> capProvider) {
 			if (!(target instanceof Entity) || target instanceof AbstractChestedHorse) {
-				LazyOptional<IItemHandler> optional = capProvider.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
+				LazyOptional<IItemHandler> optional = capProvider.getCapability(ForgeCapabilities.ITEM_HANDLER);
 				if (optional.isPresent()) {
 					return List.of(optional.map($ -> ItemView.fromItemHandler($, size, target instanceof AbstractChestedHorse ? 2 : 0)).get());
 				}
@@ -112,7 +118,7 @@ public final class PlatformProxy {
 
 	public static List<ViewGroup<CompoundTag>> wrapFluidStorage(Object target, @Nullable Player player) {
 		if (target instanceof CapabilityProvider<?> capProvider) {
-			IFluidHandler fluidHandler = capProvider.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).orElse(null);
+			IFluidHandler fluidHandler = capProvider.getCapability(ForgeCapabilities.FLUID_HANDLER).orElse(null);
 			if (fluidHandler != null) {
 				return FluidView.fromFluidHandler(fluidHandler);
 			}
@@ -122,7 +128,7 @@ public final class PlatformProxy {
 
 	public static List<ViewGroup<CompoundTag>> wrapEnergyStorage(Object target, @Nullable Player player) {
 		if (target instanceof CapabilityProvider<?> capProvider) {
-			IEnergyStorage storage = capProvider.getCapability(CapabilityEnergy.ENERGY).orElse(null);
+			IEnergyStorage storage = capProvider.getCapability(ForgeCapabilities.ENERGY).orElse(null);
 			if (storage != null) {
 				var group = new ViewGroup<>(List.of(EnergyView.fromForgeEnergy(storage)));
 				group.getExtraData().putString("Unit", "FE");

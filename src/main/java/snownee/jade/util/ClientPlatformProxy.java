@@ -53,7 +53,7 @@ import snownee.jade.Jade;
 import snownee.jade.JadeClient;
 import snownee.jade.api.config.IWailaConfig.BossBarOverlapMode;
 import snownee.jade.api.ui.IElement;
-import snownee.jade.command.DumpHandlersCommand;
+import snownee.jade.command.JadeClientCommand;
 import snownee.jade.compat.JEICompat;
 import snownee.jade.gui.BaseOptionsScreen;
 import snownee.jade.gui.HomeConfigScreen;
@@ -147,7 +147,7 @@ public final class ClientPlatformProxy {
 	}
 
 	public static void registerCommands(RegisterClientCommandsEvent event) {
-		DumpHandlersCommand.register(event.getDispatcher());
+		JadeClientCommand.register(event.getDispatcher());
 	}
 
 	private static void onKeyPressed(InputEvent.Key event) {

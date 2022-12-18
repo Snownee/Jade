@@ -43,6 +43,7 @@ import snownee.jade.network.ReceiveDataPacket;
 import snownee.jade.network.RequestEntityPacket;
 import snownee.jade.network.RequestTilePacket;
 import snownee.jade.network.ServerPingPacket;
+import snownee.jade.network.ShowOverlayPacket;
 import snownee.jade.overlay.OverlayRenderer;
 import snownee.jade.util.JsonConfig;
 import snownee.jade.util.PlatformProxy;
@@ -99,6 +100,7 @@ public class Jade {
 		NETWORK.registerMessage(1, ServerPingPacket.class, ServerPingPacket::write, ServerPingPacket::read, ServerPingPacket.Handler::onMessage, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
 		NETWORK.registerMessage(2, RequestEntityPacket.class, RequestEntityPacket::write, RequestEntityPacket::read, RequestEntityPacket.Handler::onMessage, Optional.of(NetworkDirection.PLAY_TO_SERVER));
 		NETWORK.registerMessage(3, RequestTilePacket.class, RequestTilePacket::write, RequestTilePacket::read, RequestTilePacket.Handler::onMessage, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+		NETWORK.registerMessage(4, ShowOverlayPacket.class, ShowOverlayPacket::write, ShowOverlayPacket::read, ShowOverlayPacket.Handler::onMessage, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
 	}
 
 	private void setupClient(RegisterClientReloadListenersEvent event) {
