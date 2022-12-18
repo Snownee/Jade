@@ -69,6 +69,7 @@ public class Identifiers {
 	public static final ResourceLocation MC_ENTITY_HEALTH = MC("entity_health");
 	public static final ResourceLocation MC_ENTITY_HEALTH_MAX_FOR_RENDER = MC("entity_health.max_for_render");
 	public static final ResourceLocation MC_ENTITY_HEALTH_ICONS_PER_LINE = MC("entity_health.icons_per_line");
+	public static final ResourceLocation MC_ENTITY_HEALTH_SHOW_FRACTIONS = MC("entity_health.show_fractions");
 	public static final ResourceLocation MC_FALLING_BLOCK = MC("falling_block");
 	public static final ResourceLocation MC_FURNACE = MC("furnace");
 	public static final ResourceLocation MC_HARVEST_TOOL = MC("harvest_tool");
