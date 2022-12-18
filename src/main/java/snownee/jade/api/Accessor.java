@@ -39,6 +39,8 @@ public interface Accessor<T extends HitResult> {
 
 	boolean showDetails();
 
+	Object getTarget();
+
 	@ApiStatus.Internal
 	void _requestData();
 
@@ -50,8 +52,5 @@ public interface Accessor<T extends HitResult> {
 
 	@ApiStatus.Internal
 	void _gatherComponents(Function<IJadeProvider, ITooltip> tooltipProvider);
-
-	@ApiStatus.Internal
-	Object _getTrackObject();
 
 }

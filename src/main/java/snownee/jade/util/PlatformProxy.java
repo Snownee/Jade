@@ -7,7 +7,7 @@ import java.util.UUID;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -142,22 +142,22 @@ public final class PlatformProxy {
 
 	@SuppressWarnings("deprecation")
 	public static ResourceLocation getId(Block block) {
-		return Registry.BLOCK.getKey(block);
+		return BuiltInRegistries.BLOCK.getKey(block);
 	}
 
 	@SuppressWarnings("deprecation")
 	public static ResourceLocation getId(EntityType<?> entityType) {
-		return Registry.ENTITY_TYPE.getKey(entityType);
+		return BuiltInRegistries.ENTITY_TYPE.getKey(entityType);
 	}
 
 	@SuppressWarnings("deprecation")
 	public static ResourceLocation getId(BlockEntityType<?> blockEntityType) {
-		return Registry.BLOCK_ENTITY_TYPE.getKey(blockEntityType);
+		return BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(blockEntityType);
 	}
 
 	@SuppressWarnings("deprecation")
 	public static ResourceLocation getId(PaintingVariant motive) {
-		return Registry.PAINTING_VARIANT.getKey(motive);
+		return BuiltInRegistries.PAINTING_VARIANT.getKey(motive);
 	}
 
 	public static String getPlatformIdentifier() {

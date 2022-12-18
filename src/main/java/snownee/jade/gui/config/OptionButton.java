@@ -33,8 +33,8 @@ public class OptionButton extends WailaOptionsList.Entry {
 	@Override
 	public void render(PoseStack matrixStack, int index, int rowTop, int rowLeft, int width, int height, int mouseX, int mouseY, boolean hovered, float deltaTime) {
 		client.font.drawShadow(matrixStack, title, rowLeft + 10, rowTop + (height / 4) + (client.font.lineHeight / 2), 16777215);
-		button.x = rowLeft + width - 110;
-		button.y = rowTop + height / 6;
+		button.setX(rowLeft + width - 110);
+		button.setY(rowTop + height / 6);
 		button.render(matrixStack, mouseX, mouseY, deltaTime);
 	}
 

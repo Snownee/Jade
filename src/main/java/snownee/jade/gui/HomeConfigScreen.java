@@ -13,23 +13,23 @@ public class HomeConfigScreen extends Screen {
 	private final Screen parent;
 
 	public HomeConfigScreen(Screen parent) {
-		super(Component.translatable("gui.jade.configuration"));
+		super(Component.translatable("gui.jade.configuration", Jade.NAME));
 		this.parent = parent;
 	}
 
 	@Override
 	protected void init() {
-		addRenderableWidget(new Button(width / 2 - 105, height / 2 - 10, 100, 20, Component.translatable("gui.jade.jade_settings", Jade.NAME), w -> {
+		addRenderableWidget(Button.builder(Component.translatable("gui.jade.jade_settings", Jade.NAME), w -> {
 			minecraft.setScreen(new WailaConfigScreen(HomeConfigScreen.this));
-		}));
-		addRenderableWidget(new Button(width / 2 + 5, height / 2 - 10, 100, 20, Component.translatable("gui.jade.plugin_settings"), w -> {
+		}).bounds(width / 2 - 105, height / 2 - 10, 100, 20).build());
+		addRenderableWidget(Button.builder(Component.translatable("gui.jade.plugin_settings"), w -> {
 			minecraft.setScreen(new PluginsConfigScreen(HomeConfigScreen.this));
-		}));
-		addRenderableWidget(new Button(width / 2 - 50, height / 2 + 20, 100, 20, Component.translatable("gui.done"), w -> {
+		}).bounds(width / 2 + 5, height / 2 - 10, 100, 20).build());
+		addRenderableWidget(Button.builder(Component.translatable("gui.done"), w -> {
 			Jade.CONFIG.save();
 			PluginConfig.INSTANCE.save();
 			minecraft.setScreen(parent);
-		}));
+		}).bounds(width / 2 - 50, height / 2 + 20, 100, 20).build());
 	}
 
 	@Override

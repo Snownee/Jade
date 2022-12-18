@@ -111,8 +111,8 @@ dependencies {
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
-    compileOnly fg.deobf("mezz.jei:jei-1.19-common-api:${jei_version}")
-    compileOnly fg.deobf("mezz.jei:jei-1.19-forge-api:${jei_version}")
+    compileOnly fg.deobf("mezz.jei:jei-1.19.2-common-api:${jei_version}")
+    compileOnly fg.deobf("mezz.jei:jei-1.19.2-forge-api:${jei_version}")
     //runtimeOnly fg.deobf("mezz.jei:jei-1.17.1:8.0.0.14")
     //implementation fg.deobf("curse.maven:jei-238222:3834070")
 }
@@ -154,7 +154,7 @@ modrinth {
     versionNumber = project.mod_version // You don't need to set this manually. Will fail if Modrinth has this version already
     versionType = "release" // This is the default -- can also be `beta` or `alpha`
     uploadFile = jar // With Loom, this MUST be set to `remapJar` instead of `jar`!
-    gameVersions = ["1.19.1", "1.19.2"] // Must be an array, even with only one version
+    gameVersions = ["1.19.3"] // Must be an array, even with only one version
     loaders = ["forge"] // Must also be an array - no need to specify this if you're using Loom or ForgeGradle
     dependencies { // A special DSL for creating dependencies
         // scope.type

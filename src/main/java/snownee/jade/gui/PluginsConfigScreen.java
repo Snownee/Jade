@@ -36,9 +36,9 @@ public class PluginsConfigScreen extends BaseOptionsScreen {
 			} else {
 				title = Component.translatable(translationKey);
 			}
-			options.add(new OptionButton(title, new Button(0, 0, 100, 20, Component.empty(), w -> {
+			options.add(new OptionButton(title, Button.builder(Component.empty(), w -> {
 				minecraft.setScreen(createPluginConfigScreen(this, namespace, true));
-			})));
+			}).size(100, 20).build()));
 		});
 		return options;
 	}

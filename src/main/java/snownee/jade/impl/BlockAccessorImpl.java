@@ -153,7 +153,7 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 	}
 
 	@Override
-	public Object _getTrackObject() {
+	public Object getTarget() {
 		return getBlockEntity();
 	}
 
@@ -173,7 +173,7 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 		private Player player;
 		private CompoundTag serverData;
 		private boolean connected;
-		private boolean showDetails = ClientPlatformProxy.isShowDetailsPressed();
+		private boolean showDetails;
 		private BlockHitResult hit;
 		private BlockState blockState = Blocks.AIR.defaultBlockState();
 		private BlockEntity blockEntity;

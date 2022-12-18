@@ -1,6 +1,13 @@
 package snownee.jade.addon.vanilla;
 
+import java.util.stream.Stream;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.google.common.base.Joiner;
+
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.NoteBlock;
@@ -26,7 +33,14 @@ public enum NoteBlockProvider implements IBlockComponentProvider {
 		String pitch = PITCH[note % PITCH.length];
 		ChatFormatting octave = OCTAVE[note / PITCH.length];
 		NoteBlockInstrument instrument = state.getValue(NoteBlock.INSTRUMENT);
-		tooltip.add(Component.translatable("%s %s", Component.translatable("jade.instrument." + instrument.getSerializedName()), octave + pitch));
+		String key = "jade.instrument." + instrument.getSerializedName();
+		String name;
+		if (I18n.exists(key)) {
+			name = I18n.get(key);
+		} else {
+			name = Joiner.on(' ').join(Stream.of(instrument.getSerializedName().replace('_', ' ').split(" ")).map(StringUtils::capitalize).toList());
+		}
+		tooltip.add(Component.translatable("%s %s", name, octave + pitch));
 	}
 
 	@Override

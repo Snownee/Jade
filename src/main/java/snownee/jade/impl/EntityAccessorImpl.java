@@ -110,7 +110,7 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 	}
 
 	@Override
-	public Object _getTrackObject() {
+	public Object getTarget() {
 		return getEntity();
 	}
 
@@ -120,7 +120,7 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 		private Player player;
 		private CompoundTag serverData;
 		private boolean connected;
-		public boolean showDetails = ClientPlatformProxy.isShowDetailsPressed();
+		public boolean showDetails;
 		private EntityHitResult hit;
 		private Entity entity;
 

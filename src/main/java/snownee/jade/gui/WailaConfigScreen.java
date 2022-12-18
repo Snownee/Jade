@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import it.unimi.dsi.fastutil.floats.FloatUnaryOperator;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -42,7 +43,7 @@ public class WailaConfigScreen extends BaseOptionsScreen {
 				String key = "display_mode_" + mode.name().toLowerCase(Locale.ENGLISH) + "_desc";
 				if (mode == IWailaConfig.DisplayMode.LITE && "fabric".equals(PlatformProxy.getPlatformIdentifier()))
 					key += ".fabric";
-				return minecraft.font.split(Entry.makeTitle(key), 200);
+				return Tooltip.create(Entry.makeTitle(key));
 			});
 		});
 		options.choices("item_mod_name", general.showItemModNameTooltip(), general::setItemModNameTooltip);
@@ -77,7 +78,7 @@ public class WailaConfigScreen extends BaseOptionsScreen {
 		options.title("danger_zone").withStyle(ChatFormatting.RED);
 		Component reset = Component.translatable("controls.reset").withStyle(ChatFormatting.RED);
 		Component title = Component.translatable(WailaOptionsList.Entry.makeKey("reset_settings")).withStyle(ChatFormatting.RED);
-		options.add(new OptionButton(title, new Button(0, 0, 100, 20, reset, w -> {
+		options.add(new OptionButton(title, Button.builder(reset, w -> {
 			minecraft.setScreen(new ConfirmScreen(bl -> {
 				if (bl) {
 					try {
@@ -93,7 +94,7 @@ public class WailaConfigScreen extends BaseOptionsScreen {
 				minecraft.setScreen(this);
 				this.options.setScrollAmount(this.options.getMaxScroll());
 			}, title, Component.translatable(WailaOptionsList.Entry.makeKey("reset_settings.confirm")), reset, Component.translatable("gui.cancel")));
-		})));
+		}).size(100, 20).build()));
 
 		return options;
 	}

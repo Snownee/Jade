@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
@@ -16,7 +17,6 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat.Mode;
-import com.mojang.math.Matrix4f;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -30,6 +30,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
@@ -435,6 +436,11 @@ public class DisplayHelper implements IDisplayHelper {
 
 	@Override
 	public void drawText(PoseStack poseStack, Component text, float x, float y, int color) {
+		drawText(poseStack, text.getVisualOrderText(), x, y, color);
+	}
+
+	@Override
+	public void drawText(PoseStack poseStack, FormattedCharSequence text, float x, float y, int color) {
 		boolean shadow = Jade.CONFIG.get().getOverlay().getTheme().textShadow;
 		if (OverlayRenderer.alpha != 1) {
 			color = IConfigOverlay.applyAlpha(color, OverlayRenderer.alpha);

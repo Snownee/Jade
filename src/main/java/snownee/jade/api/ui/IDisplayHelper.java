@@ -7,6 +7,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
 import snownee.jade.overlay.DisplayHelper;
 
@@ -31,5 +32,8 @@ public interface IDisplayHelper {
 
 	void drawText(PoseStack poseStack, Component text, float x, float y, int color);
 
+	void drawText(PoseStack poseStack, FormattedCharSequence text, float x, float y, int color);
+
 	MutableComponent stripColor(Component component);
+
 }
