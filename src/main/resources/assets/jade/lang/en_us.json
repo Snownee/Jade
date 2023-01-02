@@ -176,6 +176,7 @@
   "jade.fluid.empty": "Empty",
   "config.jade.plugin_minecraft.lectern": "Lectern",
   "config.jade.plugin_minecraft.animal_owner": "Animal Owner",
+  "config.jade.plugin_minecraft.animal_owner.fetch_names": "Fetch Names",
   "jade.owner": "Owner: %s",
   "jade.infinity": "+∞",
   "jade.seconds": "%ds",
