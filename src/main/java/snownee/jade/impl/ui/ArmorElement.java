@@ -21,6 +21,9 @@ public class ArmorElement extends Element {
 	private final float armor;
 
 	public ArmorElement(float armor) {
+		if (!PluginConfig.INSTANCE.get(Identifiers.MC_ENTITY_HEALTH_SHOW_FRACTIONS)) {
+			armor = Mth.ceil(armor);
+		}
 		this.armor = armor;
 	}
 

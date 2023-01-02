@@ -23,6 +23,10 @@ public class HealthElement extends Element {
 	private String text;
 
 	public HealthElement(float maxHealth, float health) {
+		if (!PluginConfig.INSTANCE.get(Identifiers.MC_ENTITY_HEALTH_SHOW_FRACTIONS)) {
+			maxHealth = Mth.ceil(maxHealth);
+			health = Mth.ceil(health);
+		}
 		this.maxHealth = maxHealth;
 		this.health = health;
 		text = String.format("  %s/%s", DisplayHelper.dfCommas.format(health), DisplayHelper.dfCommas.format(maxHealth));

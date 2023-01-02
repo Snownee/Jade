@@ -97,6 +97,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.addConfig(Identifiers.MC_ENTITY_ARMOR_MAX_FOR_RENDER, 40, 10, 100, false);
 		registration.addConfig(Identifiers.MC_ENTITY_HEALTH_MAX_FOR_RENDER, 40, 10, 100, false);
 		registration.addConfig(Identifiers.MC_ENTITY_HEALTH_ICONS_PER_LINE, 10, 1, 30, false);
+		registration.addConfig(Identifiers.MC_ENTITY_HEALTH_SHOW_FRACTIONS, false);
 
 		registration.registerBlockComponent(BlockStatesProvider.INSTANCE, Block.class);
 		registration.registerBlockComponent(BrewingStandProvider.INSTANCE, BrewingStandBlock.class);
