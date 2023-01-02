@@ -6,6 +6,7 @@ import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -13,22 +14,23 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
-import com.mojang.authlib.GameProfile;
-import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.Nullable;
+
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
+import com.mojang.authlib.GameProfile;
 
+import net.minecraft.client.Minecraft;
 import snownee.jade.Jade;
 
 public final class UsernameCache {
 
 	private static Map<UUID, String> map = new HashMap<>();
-	private static Set<UUID> downloadingList = new HashSet<>();
+	private static Set<UUID> downloadingList = Collections.synchronizedSet(new HashSet<>());
 
 	private static final Path saveFile = PlatformProxy.getConfigDirectory().toPath().resolve(Jade.MODID + "/usernamecache.json");
 	private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -87,7 +89,7 @@ public final class UsernameCache {
 	public static String getLastKnownUsername(UUID uuid) {
 		Objects.requireNonNull(uuid);
 		String name = map.get(uuid);
-		if(name==null){
+		if (name == null) {
 			download(uuid);
 		}
 		return name;
@@ -155,11 +157,10 @@ public final class UsernameCache {
 	 * It should only attempt one Download
 	 */
 	private static void download(UUID uuid) {
-		if(downloadingList.contains(uuid)){
+		if (downloadingList.contains(uuid)) {
 			return;
 		}
 		downloadingList.add(uuid);
-		Jade.LOGGER.warn("Starting Donwload "+uuid);
 		new DownloadThread(uuid).start();
 	}
 
@@ -178,16 +179,15 @@ public final class UsernameCache {
 		public void run() {
 			try {
 				//if the downloading fails for some reason and throws an error,
-				GameProfile profile = new GameProfile(uuid,"???");
-				profile = Minecraft.getInstance().getMinecraftSessionService().fillProfileProperties(profile,true);
-				if(!(profile.getName()==null||profile.getName().equals("???"))) {
+				GameProfile profile = new GameProfile(uuid, "???");
+				profile = Minecraft.getInstance().getMinecraftSessionService().fillProfileProperties(profile, true);
+				if (!(profile.getName() == null || profile.getName().equals("???"))) {
 					//only remove from list if it was successfull
 					//if it failed for some reason leave it in the channel so no repeated tries are made
-					UsernameCache.setUsername(profile.getId(),profile.getName());
+					UsernameCache.setUsername(profile.getId(), profile.getName());
 					downloadingList.remove(uuid);
 				}
 			} catch (Exception e) {
-				Jade.LOGGER.error("Download for uuid "+uuid+ " failed");
 			}
 		}
 	}
