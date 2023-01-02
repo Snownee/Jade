@@ -26,6 +26,8 @@ import com.mojang.authlib.GameProfile;
 
 import net.minecraft.client.Minecraft;
 import snownee.jade.Jade;
+import snownee.jade.api.Identifiers;
+import snownee.jade.impl.config.PluginConfig;
 
 public final class UsernameCache {
 
@@ -89,7 +91,7 @@ public final class UsernameCache {
 	public static String getLastKnownUsername(UUID uuid) {
 		Objects.requireNonNull(uuid);
 		String name = map.get(uuid);
-		if (name == null) {
+		if (name == null && PluginConfig.INSTANCE.get(Identifiers.MC_ANIMAL_OWNER_FETCH_NAMES)) {
 			download(uuid);
 		}
 		return name;
