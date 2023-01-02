@@ -139,7 +139,6 @@ public final class JadeClient implements ClientModInitializer {
 		}
 	}
 
-	//public static boolean hasJEI = ModList.get().isLoaded("jei");
 	public static boolean hideModName;
 
 	public static void onTooltip(List<Component> tooltip, ItemStack stack) {
