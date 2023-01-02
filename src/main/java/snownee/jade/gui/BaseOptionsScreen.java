@@ -76,11 +76,12 @@ public abstract class BaseOptionsScreen extends Screen {
 		if (options.getSelected() != null && mouseY >= 32 && mouseY <= height - 32) {
 			WailaOptionsList.Entry entry = options.getSelected();
 			AbstractWidget widget = entry.getListener();
-			if (widget instanceof TooltipAccessor && widget.visible && mouseX >= widget.x && mouseY >= widget.y && mouseX < (widget.x + widget.getWidth()) && mouseY < (widget.y + widget.getHeight())) {
-				renderTooltip(matrixStack, ((TooltipAccessor) widget).getTooltip(), mouseX, mouseY);
+			boolean inWidget = widget != null && widget.visible && mouseX >= widget.x && mouseY >= widget.y && mouseX < widget.x + widget.getWidth() && mouseY < widget.y + widget.getHeight();
+			if (inWidget && widget instanceof TooltipAccessor accessor && !accessor.getTooltip().isEmpty()) {
+				renderTooltip(matrixStack, accessor.getTooltip(), mouseX, mouseY);
 			} else if (!Strings.isNullOrEmpty(entry.getDescription())) {
 				int valueX = entry.getTextX(options.getRowWidth());
-				if (mouseX >= valueX && mouseX < valueX + entry.getTextWidth()) {
+				if ((inWidget && !widget.isActive()) || mouseX >= valueX && mouseX < valueX + entry.getTextWidth()) {
 					List<FormattedCharSequence> tooltip = font.split(Component.literal(entry.getDescription()), 200);
 					matrixStack.pushPose();
 					matrixStack.translate(0, 0, 100);

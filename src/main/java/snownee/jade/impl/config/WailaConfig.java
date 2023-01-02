@@ -1,9 +1,11 @@
 package snownee.jade.impl.config;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.annotations.Expose;
 
@@ -19,6 +21,8 @@ import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.Theme;
 import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.overlay.OverlayRenderer;
+import snownee.jade.util.ClientPlatformProxy;
+import snownee.jade.util.ModIdentification;
 
 /**
  * Get this instance from {@link snownee.jade.api.IWailaClientRegistration#getConfig}
@@ -63,8 +67,20 @@ public class WailaConfig implements IWailaConfig {
 		@Expose
 		private boolean debug = false;
 		private boolean itemModNameTooltip = true;
+		public transient final List<String> itemModNameTooltipDisabledByMods = Lists.newArrayList("emi");
 		private BossBarOverlapMode bossBarOverlapMode = BossBarOverlapMode.PUSH_DOWN;
 		public boolean hintOverlayToggle = true;
+
+		public void init() {
+			/* off */
+			List<String> names = itemModNameTooltipDisabledByMods.stream()
+					.filter(ClientPlatformProxy::isModLoaded)
+					.map(ModIdentification::getModName)
+					.toList();
+			/* on */
+			itemModNameTooltipDisabledByMods.clear();
+			itemModNameTooltipDisabledByMods.addAll(names);
+		}
 
 		@Override
 		public void setDisplayTooltip(boolean displayTooltip) {
@@ -183,7 +199,7 @@ public class WailaConfig implements IWailaConfig {
 
 		@Override
 		public boolean showItemModNameTooltip() {
-			return itemModNameTooltip;
+			return itemModNameTooltip && itemModNameTooltipDisabledByMods.isEmpty();
 		}
 
 		@Override
