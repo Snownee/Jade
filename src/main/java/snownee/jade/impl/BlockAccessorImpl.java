@@ -37,7 +37,7 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 
 	private final BlockState blockState;
 	private final BlockEntity blockEntity;
-	private final ItemStack fakeBlock;
+	private ItemStack fakeBlock;
 
 	private BlockAccessorImpl(Builder builder) {
 		super(builder.level, builder.player, builder.serverData, builder.hit, builder.connected, builder.showDetails);
@@ -165,6 +165,10 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 	@Override
 	public ItemStack getFakeBlock() {
 		return fakeBlock;
+	}
+
+	public void setFakeBlock(ItemStack fakeBlock) {
+		this.fakeBlock = fakeBlock;
 	}
 
 	public static class Builder implements BlockAccessor.Builder {
