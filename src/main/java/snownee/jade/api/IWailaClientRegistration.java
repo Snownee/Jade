@@ -8,11 +8,13 @@ import org.jetbrains.annotations.ApiStatus.ScheduledForRemoval;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import snownee.jade.api.callback.JadeAfterRenderCallback;
@@ -130,17 +132,41 @@ public interface IWailaClientRegistration extends FabricWailaClientRegistration 
 
 	boolean shouldPick(BlockState blockState);
 
-	void addAfterRenderCallback(JadeAfterRenderCallback callback);
+	default void addAfterRenderCallback(JadeAfterRenderCallback callback) {
+		addAfterRenderCallback(0, callback);
+	}
 
-	void addBeforeRenderCallback(JadeBeforeRenderCallback callback);
+	void addAfterRenderCallback(int priority, JadeAfterRenderCallback callback);
 
-	void addRayTraceCallback(JadeRayTraceCallback callback);
+	default void addBeforeRenderCallback(JadeBeforeRenderCallback callback) {
+		addBeforeRenderCallback(0, callback);
+	}
 
-	void addTooltipCollectedCallback(JadeTooltipCollectedCallback callback);
+	void addBeforeRenderCallback(int priority, JadeBeforeRenderCallback callback);
 
-	void addItemModNameCallback(JadeItemModNameCallback callback);
+	default void addRayTraceCallback(JadeRayTraceCallback callback) {
+		addRayTraceCallback(0, callback);
+	}
 
-	void addRenderBackgroundCallback(JadeRenderBackgroundCallback callback);
+	void addRayTraceCallback(int priority, JadeRayTraceCallback callback);
+
+	default void addTooltipCollectedCallback(JadeTooltipCollectedCallback callback) {
+		addTooltipCollectedCallback(0, callback);
+	}
+
+	void addTooltipCollectedCallback(int priority, JadeTooltipCollectedCallback callback);
+
+	default void addItemModNameCallback(JadeItemModNameCallback callback) {
+		addItemModNameCallback(0, callback);
+	}
+
+	void addItemModNameCallback(int priority, JadeItemModNameCallback callback);
+
+	default void addRenderBackgroundCallback(JadeRenderBackgroundCallback callback) {
+		addRenderBackgroundCallback(0, callback);
+	}
+
+	void addRenderBackgroundCallback(int priority, JadeRenderBackgroundCallback callback);
 
 	Screen createPluginConfigScreen(@Nullable Screen parent, String namespace);
 
@@ -155,5 +181,15 @@ public interface IWailaClientRegistration extends FabricWailaClientRegistration 
 
 	@Experimental
 	void registerProgressClient(IClientExtensionProvider<CompoundTag, ProgressView> provider);
+
+	boolean isServerConnected();
+
+	boolean isShowDetailsPressed();
+
+	void setServerData(CompoundTag tag);
+
+	CompoundTag getServerData();
+
+	ItemStack getBlockCamouflage(LevelAccessor level, BlockPos pos);
 
 }

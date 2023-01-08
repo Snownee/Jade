@@ -15,6 +15,7 @@ import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
+import net.minecraft.resources.ResourceLocation;
 import snownee.jade.api.IJadeProvider;
 
 public class HierarchyLookup<T extends IJadeProvider> {
@@ -52,7 +53,7 @@ public class HierarchyLookup<T extends IJadeProvider> {
 			return resultCache.get(clazz, () -> {
 				List<T> list = Lists.newArrayList();
 				getInternal(clazz, list);
-				list = ImmutableList.sortedCopyOf(Comparator.comparingInt(WailaCommonRegistration.INSTANCE.priorities::get), list);
+				list = ImmutableList.sortedCopyOf(Comparator.comparingInt(WailaCommonRegistration.INSTANCE.priorities::byValue), list);
 				if (singleton && !list.isEmpty())
 					return ImmutableList.of(list.get(0));
 				return list;
@@ -78,8 +79,8 @@ public class HierarchyLookup<T extends IJadeProvider> {
 		resultCache.invalidateAll();
 	}
 
-	public void loadComplete(PriorityStore<IJadeProvider> priorityStore) {
-		objects = ImmutableListMultimap.<Class<?>, T>builder().orderValuesBy(Comparator.comparingInt(priorityStore::get)).putAll(objects).build();
+	public void loadComplete(PriorityStore<ResourceLocation, IJadeProvider> priorityStore) {
+		objects = ImmutableListMultimap.<Class<?>, T>builder().orderValuesBy(Comparator.comparingInt(priorityStore::byValue)).putAll(objects).build();
 	}
 
 }

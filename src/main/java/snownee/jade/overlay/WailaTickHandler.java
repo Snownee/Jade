@@ -73,21 +73,12 @@ public class WailaTickHandler {
 			accessor = WailaClientRegistration.INSTANCE.blockAccessor()
 					.blockState(state)
 					.blockEntity(tileEntity)
-					.level(world)
-					.player(player)
-					.serverData(ObjectDataCenter.getServerData())
-					.serverConnected(ObjectDataCenter.serverConnected)
 					.hit(blockTarget)
-					.fakeBlock(DatapackBlockManager.getFakeBlock(world, blockTarget.getBlockPos()))
 					.build();
 			/* on */
 		} else if (target instanceof EntityHitResult entityTarget) {
 			/* off */
 			accessor = WailaClientRegistration.INSTANCE.entityAccessor()
-					.level(world)
-					.player(player)
-					.serverData(ObjectDataCenter.getServerData())
-					.serverConnected(ObjectDataCenter.serverConnected)
 					.hit(entityTarget)
 					.entity(entityTarget.getEntity())
 					.build();
@@ -95,7 +86,7 @@ public class WailaTickHandler {
 		}
 
 		Accessor<?> originalAccessor = accessor;
-		for (JadeRayTraceCallback callback : WailaClientRegistration.INSTANCE.rayTraceCallbacks) {
+		for (JadeRayTraceCallback callback : WailaClientRegistration.INSTANCE.rayTraceCallback.callbacks()) {
 			accessor = callback.onRayTrace(target, accessor, originalAccessor);
 		}
 		ObjectDataCenter.set(accessor);
@@ -123,7 +114,7 @@ public class WailaTickHandler {
 		if (config.getDisplayMode() == DisplayMode.LITE && !ClientPlatformProxy.isShowDetailsPressed()) {
 			Tooltip dummyTooltip = new Tooltip();
 			accessor._gatherComponents($ -> {
-				if (Math.abs(WailaCommonRegistration.INSTANCE.priorities.get($)) > 5000) {
+				if (Math.abs(WailaCommonRegistration.INSTANCE.priorities.byValue($)) > 5000) {
 					return tooltip;
 				} else {
 					return dummyTooltip;
@@ -136,7 +127,7 @@ public class WailaTickHandler {
 			accessor._gatherComponents($ -> tooltip);
 		}
 
-		for (JadeTooltipCollectedCallback callback : WailaClientRegistration.INSTANCE.tooltipCollectedCallbacks) {
+		for (JadeTooltipCollectedCallback callback : WailaClientRegistration.INSTANCE.tooltipCollectedCallback.callbacks()) {
 			callback.onTooltipCollected(tooltip, accessor);
 		}
 		tooltipRenderer = new TooltipRenderer(tooltip, true);

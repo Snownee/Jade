@@ -56,6 +56,7 @@ import snownee.jade.api.IWailaCommonRegistration;
 import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.WailaPlugin;
+import snownee.jade.overlay.DatapackBlockManager;
 import snownee.jade.util.ClientPlatformProxy;
 import snownee.jade.util.PlatformProxy;
 
@@ -142,6 +143,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		ClientPlatformProxy.registerReloadListener(HarvestToolProvider.INSTANCE);
 
 		registration.addRayTraceCallback(JadeClient::builtInOverrides);
+		registration.addRayTraceCallback(5000, DatapackBlockManager::override);
 		registration.addAfterRenderCallback(JadeClient::drawBreakingProgress);
 
 		registration.hideTarget(EntityType.AREA_EFFECT_CLOUD);

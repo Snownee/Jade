@@ -1,5 +1,7 @@
 package snownee.jade.util;
 
+import java.util.Comparator;
+
 import com.google.common.collect.Multimap;
 
 import snownee.jade.api.IJadeProvider;
@@ -34,8 +36,8 @@ public class DumpGenerator {
 		builder.append("\n### ").append(subsection);
 		multimap.asMap().forEach((k, v) -> {
 			builder.append("\n\n#### ").append(k.getName());
-			v.stream().distinct().sorted((o1, o2) -> WailaCommonRegistration.INSTANCE.priorities.get(o1) - WailaCommonRegistration.INSTANCE.priorities.get(o2)).forEach($ -> {
-				builder.append("\n* ").append($.getUid()).append(", ").append(WailaCommonRegistration.INSTANCE.priorities.get($)).append(", ").append($.getClass().getName());
+			v.stream().distinct().sorted(Comparator.comparingInt(WailaCommonRegistration.INSTANCE.priorities::byValue)).forEach($ -> {
+				builder.append("\n* ").append($.getUid()).append(", ").append(WailaCommonRegistration.INSTANCE.priorities.byValue($)).append(", ").append($.getClass().getName());
 			});
 		});
 		builder.append("\n\n");

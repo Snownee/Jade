@@ -1,8 +1,12 @@
 package snownee.jade.impl;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -18,7 +22,7 @@ public class WailaCommonRegistration implements IWailaCommonRegistration {
 
 	public final HierarchyLookup<IServerDataProvider<BlockEntity>> blockDataProviders;
 	public final HierarchyLookup<IServerDataProvider<Entity>> entityDataProviders;
-	public final PriorityStore<IJadeProvider> priorities;
+	public final PriorityStore<ResourceLocation, IJadeProvider> priorities;
 
 	public final HierarchyLookup<IServerExtensionProvider<Object, ItemStack>> itemStorageProviders;
 	public final HierarchyLookup<IServerExtensionProvider<Object, CompoundTag>> fluidStorageProviders;
@@ -28,7 +32,17 @@ public class WailaCommonRegistration implements IWailaCommonRegistration {
 	WailaCommonRegistration() {
 		blockDataProviders = new HierarchyLookup<>(BlockEntity.class);
 		entityDataProviders = new HierarchyLookup<>(Entity.class);
-		priorities = new PriorityStore<>(Jade.MODID + "/sort-order", IJadeProvider::getDefaultPriority, IJadeProvider::getUid);
+		priorities = new PriorityStore<>(IJadeProvider::getDefaultPriority, IJadeProvider::getUid);
+		priorities.setSortingFunction((store, allKeys) -> {
+			List<ResourceLocation> keys = allKeys.stream().filter($ -> !$.getPath().contains(".")).sorted(Comparator.comparingInt(store::byKey)).collect(Collectors.toCollection(ArrayList::new));
+			allKeys.stream().filter($ -> $.getPath().contains(".")).forEach($ -> {
+				ResourceLocation parent = new ResourceLocation($.getNamespace(), $.getPath().substring(0, $.getPath().indexOf('.')));
+				int index = keys.indexOf(parent);
+				keys.add(index + 1, $);
+			});
+			return keys;
+		});
+		priorities.setConfigFile(Jade.MODID + "/sort-order");
 
 		itemStorageProviders = new HierarchyLookup<>(Object.class, true);
 		fluidStorageProviders = new HierarchyLookup<>(Object.class, true);
