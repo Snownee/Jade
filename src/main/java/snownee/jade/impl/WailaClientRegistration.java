@@ -5,19 +5,22 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import snownee.jade.Jade;
@@ -50,7 +53,9 @@ import snownee.jade.impl.config.entry.FloatConfigEntry;
 import snownee.jade.impl.config.entry.IntConfigEntry;
 import snownee.jade.impl.config.entry.StringConfigEntry;
 import snownee.jade.impl.ui.ElementHelper;
+import snownee.jade.overlay.DatapackBlockManager;
 import snownee.jade.overlay.DisplayHelper;
+import snownee.jade.util.ClientPlatformProxy;
 
 public class WailaClientRegistration implements IWailaClientRegistration {
 
@@ -67,12 +72,12 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	public final Set<Block> pickBlocks = Sets.newHashSet();
 	public final Set<EntityType<?>> pickEntities = Sets.newHashSet();
 
-	public final List<JadeAfterRenderCallback> afterRenderCallbacks = Lists.newArrayList();
-	public final List<JadeBeforeRenderCallback> beforeRenderCallbacks = Lists.newArrayList();
-	public final List<JadeRayTraceCallback> rayTraceCallbacks = Lists.newArrayList();
-	public final List<JadeTooltipCollectedCallback> tooltipCollectedCallbacks = Lists.newArrayList();
-	public final List<JadeItemModNameCallback> itemModNameCallbacks = Lists.newArrayList();
-	public final List<JadeRenderBackgroundCallback> renderBackgroundCallbacks = Lists.newArrayList();
+	public final CallbackContainer<JadeAfterRenderCallback> afterRenderCallback = new CallbackContainer<>();
+	public final CallbackContainer<JadeBeforeRenderCallback> beforeRenderCallback = new CallbackContainer<>();
+	public final CallbackContainer<JadeRayTraceCallback> rayTraceCallback = new CallbackContainer<>();
+	public final CallbackContainer<JadeTooltipCollectedCallback> tooltipCollectedCallback = new CallbackContainer<>();
+	public final CallbackContainer<JadeItemModNameCallback> itemModNameCallback = new CallbackContainer<>();
+	public final CallbackContainer<JadeRenderBackgroundCallback> renderBackgroundCallback = new CallbackContainer<>();
 
 	public final Map<Block, CustomEnchantPower> customEnchantPowers = Maps.newHashMap();
 	public final Map<ResourceLocation, IClientExtensionProvider<ItemStack, ItemView>> itemStorageProviders = Maps.newHashMap();
@@ -224,52 +229,63 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 		blockIconProviders.loadComplete(priorities);
 		entityComponentProviders.loadComplete(priorities);
 		entityIconProviders.loadComplete(priorities);
+		Stream.of(afterRenderCallback, beforeRenderCallback, rayTraceCallback, tooltipCollectedCallback, itemModNameCallback, renderBackgroundCallback).forEach(CallbackContainer::sort);
 	}
 
 	@Override
-	public void addAfterRenderCallback(JadeAfterRenderCallback callback) {
-		Objects.requireNonNull(callback);
-		afterRenderCallbacks.add(callback);
+	public void addAfterRenderCallback(int priority, JadeAfterRenderCallback callback) {
+		afterRenderCallback.add(priority, callback);
 	}
 
 	@Override
-	public void addBeforeRenderCallback(JadeBeforeRenderCallback callback) {
-		Objects.requireNonNull(callback);
-		beforeRenderCallbacks.add(callback);
+	public void addBeforeRenderCallback(int priority, JadeBeforeRenderCallback callback) {
+		beforeRenderCallback.add(priority, callback);
 	}
 
 	@Override
-	public void addRayTraceCallback(JadeRayTraceCallback callback) {
-		Objects.requireNonNull(callback);
-		rayTraceCallbacks.add(callback);
+	public void addRayTraceCallback(int priority, JadeRayTraceCallback callback) {
+		rayTraceCallback.add(priority, callback);
 	}
 
 	@Override
-	public void addTooltipCollectedCallback(JadeTooltipCollectedCallback callback) {
-		Objects.requireNonNull(callback);
-		tooltipCollectedCallbacks.add(callback);
+	public void addTooltipCollectedCallback(int priority, JadeTooltipCollectedCallback callback) {
+		tooltipCollectedCallback.add(priority, callback);
 	}
 
 	@Override
-	public void addItemModNameCallback(JadeItemModNameCallback callback) {
-		Objects.requireNonNull(callback);
-		itemModNameCallbacks.add(callback);
+	public void addItemModNameCallback(int priority, JadeItemModNameCallback callback) {
+		itemModNameCallback.add(priority, callback);
 	}
 
 	@Override
-	public void addRenderBackgroundCallback(JadeRenderBackgroundCallback callback) {
-		Objects.requireNonNull(callback);
-		renderBackgroundCallbacks.add(callback);
+	public void addRenderBackgroundCallback(int priority, JadeRenderBackgroundCallback callback) {
+		renderBackgroundCallback.add(priority, callback);
 	}
 
 	@Override
 	public BlockAccessor.Builder blockAccessor() {
-		return new BlockAccessorImpl.Builder();
+		Minecraft mc = Minecraft.getInstance();
+		/* off */
+		return new BlockAccessorImpl.Builder()
+				.level(mc.level)
+				.player(mc.player)
+				.serverConnected(isServerConnected())
+				.serverData(getServerData())
+				.showDetails(isShowDetailsPressed());
+		/* on */
 	}
 
 	@Override
 	public EntityAccessor.Builder entityAccessor() {
-		return new EntityAccessorImpl.Builder();
+		Minecraft mc = Minecraft.getInstance();
+		/* off */
+		return new EntityAccessorImpl.Builder()
+				.level(mc.level)
+				.player(mc.player)
+				.serverConnected(isServerConnected())
+				.serverData(getServerData())
+				.showDetails(isShowDetailsPressed());
+		/* on */
 	}
 
 	@Override
@@ -305,4 +321,30 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 		Objects.requireNonNull(provider.getUid());
 		progressProviders.put(provider.getUid(), provider);
 	}
+
+	@Override
+	public boolean isServerConnected() {
+		return ObjectDataCenter.serverConnected;
+	}
+
+	@Override
+	public boolean isShowDetailsPressed() {
+		return ClientPlatformProxy.isShowDetailsPressed();
+	}
+
+	@Override
+	public void setServerData(CompoundTag tag) {
+		ObjectDataCenter.setServerData(tag);
+	}
+
+	@Override
+	public CompoundTag getServerData() {
+		return ObjectDataCenter.getServerData();
+	}
+
+	@Override
+	public ItemStack getBlockCamouflage(LevelAccessor level, BlockPos pos) {
+		return DatapackBlockManager.getFakeBlock(level, pos);
+	}
+
 }
