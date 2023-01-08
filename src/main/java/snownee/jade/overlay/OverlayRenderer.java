@@ -13,7 +13,6 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.util.Mth;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
-import snownee.jade.api.callback.JadeAfterRenderCallback;
 import snownee.jade.api.callback.JadeBeforeRenderCallback;
 import snownee.jade.api.callback.JadeBeforeRenderCallback.ColorSetting;
 import snownee.jade.api.callback.JadeRenderBackgroundCallback;
@@ -184,7 +183,7 @@ public class OverlayRenderer {
 		colorSetting.backgroundColor = backgroundColorRaw;
 		colorSetting.gradientStart = gradientStartRaw;
 		colorSetting.gradientEnd = gradientEndRaw;
-		for (JadeBeforeRenderCallback callback : WailaClientRegistration.INSTANCE.beforeRenderCallbacks) {
+		for (JadeBeforeRenderCallback callback : WailaClientRegistration.INSTANCE.beforeRenderCallback.callbacks()) {
 			if (callback.beforeRender(tooltip.getTooltip(), morphRect, matrixStack, ObjectDataCenter.get(), colorSetting)) {
 				matrixStack.popPose();
 				return;
@@ -207,7 +206,7 @@ public class OverlayRenderer {
 
 		boolean doDefault = true;
 		colorSetting.alpha *= alpha;
-		for (JadeRenderBackgroundCallback callback : WailaClientRegistration.INSTANCE.renderBackgroundCallbacks) {
+		for (JadeRenderBackgroundCallback callback : WailaClientRegistration.INSTANCE.renderBackgroundCallback.callbacks()) {
 			if (callback.onRender(tooltip, morphRect, matrixStack, ObjectDataCenter.get(), colorSetting)) {
 				doDefault = false;
 				break;
@@ -222,9 +221,9 @@ public class OverlayRenderer {
 		tooltip.draw(matrixStack);
 		RenderSystem.disableBlend();
 
-		for (JadeAfterRenderCallback callback : WailaClientRegistration.INSTANCE.afterRenderCallbacks) {
+		WailaClientRegistration.INSTANCE.afterRenderCallback.call(callback -> {
 			callback.afterRender(tooltip.getTooltip(), morphRect, matrixStack, ObjectDataCenter.get());
-		}
+		});
 
 		RenderSystem.enableDepthTest();
 		matrixStack.popPose();
