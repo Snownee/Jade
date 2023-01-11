@@ -135,7 +135,6 @@ public final class JadeClient {
 		}
 	}
 
-	//public static boolean hasJEI = ModList.get().isLoaded("jei");
 	public static boolean hideModName;
 
 	public static void onTooltip(List<Component> tooltip, ItemStack stack) {

@@ -15,6 +15,7 @@
   "gui.jade.jade_settings": "%s Settings",
   "gui.jade.plugin_settings": "Plugin Settings",
   "gui.jade.forced_plugin_config": "This option is controlled by the server",
+  "gui.jade.disabled_by_mods": "This option is disabled by the following mods:",
   "key.jade.config": "Open Config",
   "key.jade.show_overlay": "Show Overlay",
   "key.jade.toggle_liquid": "Toggle Liquid",

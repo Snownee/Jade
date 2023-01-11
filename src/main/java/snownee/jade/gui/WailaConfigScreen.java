@@ -9,15 +9,17 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import snownee.jade.Jade;
 import snownee.jade.api.config.IWailaConfig;
-import snownee.jade.api.config.IWailaConfig.IConfigGeneral;
-import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
 import snownee.jade.gui.config.OptionButton;
 import snownee.jade.gui.config.WailaOptionsList;
 import snownee.jade.gui.config.WailaOptionsList.Entry;
+import snownee.jade.gui.config.value.OptionValue;
 import snownee.jade.impl.config.PluginConfig;
+import snownee.jade.impl.config.WailaConfig.ConfigGeneral;
+import snownee.jade.impl.config.WailaConfig.ConfigOverlay;
 import snownee.jade.util.PlatformProxy;
 
 public class WailaConfigScreen extends BaseOptionsScreen {
@@ -30,7 +32,7 @@ public class WailaConfigScreen extends BaseOptionsScreen {
 	public WailaOptionsList createOptions() {
 		WailaOptionsList options = new WailaOptionsList(this, minecraft, width, height, 32, height - 32, 30, Jade.CONFIG::save);
 
-		IConfigGeneral general = Jade.CONFIG.get().getGeneral();
+		ConfigGeneral general = Jade.CONFIG.get().getGeneral();
 		if (PlatformProxy.isDevEnv())
 			options.choices("debug_mode", general.isDebug(), general::setDebug);
 		options.title("general");
@@ -46,13 +48,21 @@ public class WailaConfigScreen extends BaseOptionsScreen {
 				return Tooltip.create(Entry.makeTitle(key));
 			});
 		});
-		options.choices("item_mod_name", general.showItemModNameTooltip(), general::setItemModNameTooltip);
+		OptionValue<?> value = options.choices("item_mod_name", general.showItemModNameTooltip(), general::setItemModNameTooltip);
+		if (!general.itemModNameTooltipDisabledByMods.isEmpty()) {
+			value.setDisabled(true);
+			value.appendDescription(I18n.get("gui.jade.disabled_by_mods"));
+			general.itemModNameTooltipDisabledByMods.forEach(value::appendDescription);
+			if (value.getListener() != null) {
+				value.getListener().setTooltip(Tooltip.create(Component.literal(value.getDescription())));
+			}
+		}
 		options.choices("hide_from_debug", general.shouldHideFromDebug(), general::setHideFromDebug);
 		options.choices("hide_from_tab_list", general.shouldHideFromTabList(), general::setHideFromTabList);
 		options.choices("boss_bar_overlap", general.getBossBarOverlapMode(), general::setBossBarOverlapMode);
 		options.slider("reach_distance", general.getReachDistance(), general::setReachDistance, 0, 20, FloatUnaryOperator.identity());
 
-		IConfigOverlay overlay = Jade.CONFIG.get().getOverlay();
+		ConfigOverlay overlay = Jade.CONFIG.get().getOverlay();
 		options.title("overlay");
 		options.slider("overlay_alpha", overlay.getAlpha(), overlay::setAlpha);
 		options.choices("overlay_theme", overlay.getTheme().id, overlay.getThemes().stream().map($ -> $.id).collect(Collectors.toList()), overlay::applyTheme);
