@@ -39,6 +39,7 @@ import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.impl.config.WailaConfig;
+import snownee.jade.impl.config.WailaConfig.ConfigGeneral;
 import snownee.jade.network.ReceiveDataPacket;
 import snownee.jade.network.RequestEntityPacket;
 import snownee.jade.network.RequestTilePacket;
@@ -143,7 +144,7 @@ public class Jade {
 		WailaCommonRegistration.INSTANCE.loadComplete();
 		if (PlatformProxy.isPhysicallyClient()) {
 			WailaClientRegistration.INSTANCE.loadComplete();
-			CONFIG.get().getGeneral().init();
+			ConfigGeneral.init();
 		}
 		PluginConfig.INSTANCE.reload();
 	}

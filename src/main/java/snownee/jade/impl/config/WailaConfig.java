@@ -54,6 +54,7 @@ public class WailaConfig implements IWailaConfig {
 	}
 
 	public static class ConfigGeneral implements IConfigGeneral {
+		public static final List<String> itemModNameTooltipDisabledByMods = Lists.newArrayList("emi");
 		private boolean displayTooltip = true;
 		private boolean displayBlocks = true;
 		private boolean displayEntities = true;
@@ -67,11 +68,10 @@ public class WailaConfig implements IWailaConfig {
 		@Expose
 		private boolean debug = false;
 		private boolean itemModNameTooltip = true;
-		public transient final List<String> itemModNameTooltipDisabledByMods = Lists.newArrayList("emi");
 		private BossBarOverlapMode bossBarOverlapMode = BossBarOverlapMode.PUSH_DOWN;
 		public boolean hintOverlayToggle = true;
 
-		public void init() {
+		public static void init() {
 			/* off */
 			List<String> names = itemModNameTooltipDisabledByMods.stream()
 					.filter(ClientPlatformProxy::isModLoaded)

@@ -68,7 +68,7 @@ import snownee.jade.overlay.WailaTickHandler;
 public final class ClientPlatformProxy {
 
 	public static boolean hasJEI = isModLoaded("jei");
-	public static boolean hasREI = isModLoaded("roughlyenoughitems");
+	public static boolean hasREI = false; //isModLoaded("roughlyenoughitems");
 	public static boolean hasFastScroll = isModLoaded("fastscroll");
 
 	public static boolean isModLoaded(String modid) {
