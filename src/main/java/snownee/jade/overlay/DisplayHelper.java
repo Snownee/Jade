@@ -92,8 +92,7 @@ public class DisplayHelper implements IDisplayHelper {
 			RenderSystem.disableBlend();
 			Tesselator tesselator = Tesselator.getInstance();
 			BufferBuilder bufferbuilder = tesselator.getBuilder();
-			double health = stack.getBarWidth();
-			int i = Math.round(13.0F - (float) health * 13.0F);
+			int i = stack.getBarWidth();
 			int j = stack.getBarColor();
 			draw(posestack, bufferbuilder, 2, 13, 13, 2, 0, 0, 0, 255);
 			draw(posestack, bufferbuilder, 2, 13, i, 1, j >> 16 & 255, j >> 8 & 255, j & 255, 255);
