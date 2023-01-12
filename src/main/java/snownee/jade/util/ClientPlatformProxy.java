@@ -243,7 +243,7 @@ public final class ClientPlatformProxy {
 	}
 
 	public static boolean isShowDetailsPressed() {
-		return Screen.hasShiftDown();
+		return Screen.hasShiftDown() || JadeClient.showDetails.isDown();
 	}
 
 	public static boolean shouldShowWithOverlay(Minecraft mc, @Nullable Screen screen) {
