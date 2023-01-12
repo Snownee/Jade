@@ -40,6 +40,7 @@ import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.impl.config.WailaConfig;
+import snownee.jade.impl.config.WailaConfig.ConfigGeneral;
 import snownee.jade.overlay.OverlayRenderer;
 import snownee.jade.test.ExamplePlugin;
 import snownee.jade.util.JsonConfig;
@@ -192,7 +193,7 @@ public class Jade implements ModInitializer {
 		WailaCommonRegistration.INSTANCE.loadComplete();
 		if (PlatformProxy.isPhysicallyClient()) {
 			WailaClientRegistration.INSTANCE.loadComplete();
-			CONFIG.get().getGeneral().init();
+			ConfigGeneral.init();
 		}
 		PluginConfig.INSTANCE.reload();
 	}
