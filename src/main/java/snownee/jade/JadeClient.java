@@ -59,7 +59,7 @@ public final class JadeClient implements ClientModInitializer {
 	public static KeyMapping openConfig;
 	public static KeyMapping showOverlay;
 	public static KeyMapping toggleLiquid;
-	//public static KeyMapping showDetails;
+	public static KeyMapping showDetails;
 	public static KeyMapping narrate;
 	public static KeyMapping showRecipes;
 	public static KeyMapping showUses;
@@ -80,7 +80,7 @@ public final class JadeClient implements ClientModInitializer {
 			showUses = ClientPlatformProxy.registerKeyBinding("show_uses", 324);
 		}
 		narrate = ClientPlatformProxy.registerKeyBinding("narrate", 325);
-		//showDetails = ClientPlatformProxy.registerKeyBinding("show_details", 340);
+		showDetails = ClientPlatformProxy.registerKeyBinding("show_details_alternative", InputConstants.UNKNOWN.getValue());
 
 		ClientPlatformProxy.registerReloadListener(ModIdentification.INSTANCE);
 
