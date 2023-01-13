@@ -1,5 +1,11 @@
 package snownee.jade.impl.config.entry;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
+
+import com.google.common.collect.Lists;
+
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -11,11 +17,12 @@ public abstract class ConfigEntry<T> {
 	public final ResourceLocation id;
 	private final T defaultValue;
 	private boolean synced;
-	private T value;
+	protected T value;
+	private List<Consumer<ResourceLocation>> listeners = List.of();
 
 	public ConfigEntry(ResourceLocation id, T defaultValue) {
 		this.id = id;
-		this.value = this.defaultValue = defaultValue;
+		value = this.defaultValue = defaultValue;
 	}
 
 	public ResourceLocation getId() {
@@ -39,11 +46,27 @@ public abstract class ConfigEntry<T> {
 	}
 
 	public void setValue(Object value) {
-		this.value = (T) value;
+		if (!Objects.equals(this.value, value)) {
+			this.value = (T) value;
+			notifyChange();
+		}
 	}
 
 	abstract public boolean isValidValue(Object value);
 
 	@OnlyIn(Dist.CLIENT)
 	abstract public OptionValue<?> createUI(WailaOptionsList options, String optionName);
+
+	public void addListener(Consumer<ResourceLocation> listener) {
+		if (listeners.isEmpty()) {
+			listeners = Lists.newArrayList();
+		}
+		listeners.add(listener);
+	}
+
+	public void notifyChange() {
+		for (Consumer<ResourceLocation> listener : listeners) {
+			listener.accept(id);
+		}
+	}
 }

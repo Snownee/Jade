@@ -1,5 +1,6 @@
 package snownee.jade.api;
 
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import org.jetbrains.annotations.ApiStatus.Experimental;
@@ -52,6 +53,8 @@ public interface IWailaClientRegistration {
 	void addConfig(ResourceLocation key, int defaultValue, int min, int max, boolean slider);
 
 	void addConfig(ResourceLocation key, float defaultValue, float min, float max, boolean slider);
+
+	void addConfigListener(ResourceLocation key, Consumer<ResourceLocation> listener);
 
 	/**
 	 * Register an {@link IJadeProvider} instance to allow overriding the icon for a block via the
