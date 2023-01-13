@@ -2,18 +2,23 @@ package snownee.jade.gui;
 
 import java.util.Comparator;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.gui.config.OptionButton;
 import snownee.jade.gui.config.WailaOptionsList;
 import snownee.jade.gui.config.value.OptionValue;
+import snownee.jade.impl.ObjectDataCenter;
+import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.impl.config.entry.ConfigEntry;
@@ -56,12 +61,17 @@ public class PluginsConfigScreen extends BaseOptionsScreen {
 			public WailaOptionsList createOptions() {
 				Set<ResourceLocation> keys = PluginConfig.INSTANCE.getKeys(namespace);
 				WailaOptionsList options = new WailaOptionsList(this, minecraft, width, height, 32, height - 32, 30);
+				if (Minecraft.getInstance().level == null || IWailaConfig.get().getGeneral().isDebug() || !ObjectDataCenter.serverConnected) {
+					options.serverFeatures = (int) keys.stream().filter(Predicate.not(WailaClientRegistration.INSTANCE::isClientFeature)).count();
+				}
 				keys.stream().sorted(Comparator.comparingInt(WailaCommonRegistration.INSTANCE.priorities.getSortedList()::indexOf)).forEach(i -> {
 					ConfigEntry<?> configEntry = PluginConfig.INSTANCE.getEntry(i);
 					OptionValue<?> entry = configEntry.createUI(options, translationKey + "." + i.getPath());
 					if (configEntry.isSynced()) {
 						entry.setDisabled(true);
 						entry.appendDescription(ChatFormatting.DARK_RED + I18n.get("gui.jade.forced_plugin_config"));
+					} else if (options.serverFeatures > 0 && !WailaClientRegistration.INSTANCE.isClientFeature(i)) {
+						entry.getTitle().append(Component.literal("*").withStyle(ChatFormatting.GRAY));
 					}
 					if (i.getPath().contains(".")) {
 						entry.indent = 12;

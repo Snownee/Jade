@@ -194,4 +194,10 @@ public interface IWailaClientRegistration {
 
 	ItemStack getBlockCamouflage(LevelAccessor level, BlockPos pos);
 
+	void markAsClientFeature(ResourceLocation uid);
+
+	void markAsServerFeature(ResourceLocation uid);
+
+	boolean isClientFeature(ResourceLocation uid);
+
 }

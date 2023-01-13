@@ -16,6 +16,8 @@
   "gui.jade.plugin_settings": "Plugin Settings",
   "gui.jade.forced_plugin_config": "This option is controlled by the server",
   "gui.jade.disabled_by_mods": "This option is disabled by the following mods:",
+  "gui.jade.server_features": "*{0} {0,choice,1#Server Feature|1<Server Features}",
+  "gui.jade.server_features.tip": "This page contains {0} {0,choice,1#server feature|1<server features}.\nInstall Jade on the server to fully enable them.",
   "key.jade.config": "Open Config",
   "key.jade.show_overlay": "Show Overlay",
   "key.jade.toggle_liquid": "Toggle Liquid",

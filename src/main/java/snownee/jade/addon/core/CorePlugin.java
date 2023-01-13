@@ -43,6 +43,13 @@ public class CorePlugin implements IWailaPlugin {
 		registration.registerEntityComponent(ModNameProvider.INSTANCE, Entity.class);
 		registration.registerEntityComponent(DistanceProvider.INSTANCE, Entity.class);
 
+		registration.markAsClientFeature(Identifiers.CORE_DISTANCE);
+		registration.markAsClientFeature(Identifiers.CORE_COORDINATES);
+		registration.markAsClientFeature(Identifiers.CORE_REL_COORDINATES);
+		registration.markAsClientFeature(Identifiers.CORE_REGISTRY_NAME);
+		registration.markAsClientFeature(Identifiers.CORE_MOD_NAME);
+		registration.markAsClientFeature(Identifiers.CORE_BLOCK_FACE);
+
 		@SuppressWarnings("serial")
 		Type type = new TypeToken<List<String>>() {
 		}.getType();
