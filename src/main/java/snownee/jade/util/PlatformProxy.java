@@ -172,6 +172,6 @@ public final class PlatformProxy {
 
 	public static MutableComponent getProfressionName(VillagerProfession profession) {
 		ResourceLocation profName = ForgeRegistries.VILLAGER_PROFESSIONS.getKey(profession);
-		return Component.translatable(EntityType.VILLAGER.getDescriptionId() + '.' + (!"minecraft".equals(profName.getNamespace()) ? profName.getNamespace() + '.' : "") + profName.getPath());
+		return Component.translatable(EntityType.VILLAGER.getDescriptionId() + '.' + (!ResourceLocation.DEFAULT_NAMESPACE.equals(profName.getNamespace()) ? profName.getNamespace() + '.' : "") + profName.getPath());
 	}
 }

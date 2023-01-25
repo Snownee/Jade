@@ -15,6 +15,7 @@ import com.google.common.collect.Sets;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import snownee.jade.Jade;
 import snownee.jade.api.IJadeProvider;
 import snownee.jade.api.ITooltip;
@@ -46,7 +47,7 @@ public class WailaExceptionHandler {
 			if (provider != null) {
 				modid = provider.getUid().getNamespace();
 			}
-			if (modid == null || modid.equals("minecraft")) {
+			if (modid == null || ResourceLocation.DEFAULT_NAMESPACE.equals(modid)) {
 				modid = Jade.MODID;
 			}
 			tooltip.add(Component.translatable("jade.error", ModIdentification.getModName(modid)).withStyle(ChatFormatting.DARK_RED));
