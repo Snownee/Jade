@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -219,6 +220,11 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	@Override
 	public void addConfig(ResourceLocation key, float defaultValue, float min, float max, boolean slider) {
 		PluginConfig.INSTANCE.addConfig(new FloatConfigEntry(key, defaultValue, min, max, slider));
+	}
+
+	@Override
+	public void addConfigListener(ResourceLocation key, Consumer<ResourceLocation> listener) {
+		PluginConfig.INSTANCE.addConfigListener(key, listener);
 	}
 
 	private void tryAddConfig(IToggleableProvider provider) {
