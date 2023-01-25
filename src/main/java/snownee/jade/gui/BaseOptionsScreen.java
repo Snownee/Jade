@@ -24,6 +24,7 @@ public abstract class BaseOptionsScreen extends Screen {
 	private final Runnable canceller;
 	protected WailaOptionsList options;
 	private final Set<GuiEventListener> entryWidgets = Sets.newIdentityHashSet();
+	public Button saveButton;
 
 	public BaseOptionsScreen(Screen parent, Component title, Runnable saver, Runnable canceller) {
 		super(title);
@@ -49,7 +50,7 @@ public abstract class BaseOptionsScreen extends Screen {
 		addRenderableWidget(options);
 
 		if (saver != null && canceller != null) {
-			addRenderableWidget(Button.builder(Component.translatable("gui.done"), w -> {
+			saveButton = addRenderableWidget(Button.builder(Component.translatable("gui.done"), w -> {
 				options.save();
 				saver.run();
 				minecraft.setScreen(parent);
@@ -59,11 +60,13 @@ public abstract class BaseOptionsScreen extends Screen {
 				minecraft.setScreen(parent);
 			}).bounds(width / 2 + 5, height - 25, 100, 20).build());
 		} else {
-			addRenderableWidget(Button.builder(Component.translatable("gui.done"), w -> {
+			saveButton = addRenderableWidget(Button.builder(Component.translatable("gui.done"), w -> {
 				options.save();
 				minecraft.setScreen(parent);
 			}).bounds(width / 2 - 50, height - 25, 100, 20).build());
 		}
+
+		options.updateSaveState();
 	}
 
 	@Override

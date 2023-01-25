@@ -81,4 +81,8 @@ public abstract class OptionValue<T> extends WailaOptionsList.Entry {
 	public List<? extends AbstractWidget> children() {
 		return Lists.newArrayList(getListener());
 	}
+
+	public boolean isValidValue() {
+		return true;
+	}
 }

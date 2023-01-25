@@ -206,7 +206,7 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 	}
 
 	public <T> OptionValue<?> input(String optionName, T value, Consumer<T> setter, Predicate<String> validator) {
-		return add(new InputOptionValue<>(optionName, value, setter, validator));
+		return add(new InputOptionValue<>(this::updateSaveState, optionName, value, setter, validator));
 	}
 
 	public <T> OptionValue<?> input(String optionName, T value, Consumer<T> setter) {
@@ -240,6 +240,21 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 
 	public <T> OptionValue<?> choices(String optionName, T value, List<T> values, Consumer<T> setter) {
 		return add(new CycleOptionValue<>(optionName, CycleButton.<T>builder(v -> Component.literal(v.toString())).withValues(values), value, setter));
+	}
+
+	public void onClose() {
+		clearEntries();
+		owner = null;
+	}
+
+	public void updateSaveState() {
+		for (Entry entry : children()) {
+			if (entry instanceof OptionValue<?> value && !value.isValidValue()) {
+				owner.saveButton.active = false;
+				return;
+			}
+		}
+		owner.saveButton.active = true;
 	}
 
 	public abstract static class Entry extends ContainerObjectSelectionList.Entry<Entry> {
@@ -333,10 +348,6 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 			return client.font.width(title);
 		}
 
-	}
-
-	public void onClose() {
-		owner = null;
 	}
 
 }
