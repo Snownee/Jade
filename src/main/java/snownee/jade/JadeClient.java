@@ -1,5 +1,6 @@
 package snownee.jade;
 
+import java.text.MessageFormat;
 import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
@@ -22,6 +23,7 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.LazyLoadedValue;
 import net.minecraft.util.Mth;
@@ -217,6 +219,14 @@ public final class JadeClient implements ClientModInitializer {
 		}
 		color = IConfigOverlay.applyAlpha(color, progressAlpha);
 		DisplayHelper.fill(matrixStack, 0, height - 1, width * savedProgress, height, color);
+	}
+
+	public static MutableComponent format(String s, Object... objects) {
+		try {
+			return Component.literal(MessageFormat.format(I18n.get(s), objects));
+		} catch (Exception e) {
+			return Component.translatable(s, objects);
+		}
 	}
 
 }

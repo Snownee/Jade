@@ -142,9 +142,36 @@ public class VanillaPlugin implements IWailaPlugin {
 
 		ClientPlatformProxy.registerReloadListener(HarvestToolProvider.INSTANCE);
 
-		registration.addRayTraceCallback(JadeClient::builtInOverrides);
+		registration.addRayTraceCallback(-10, JadeClient::builtInOverrides);
 		registration.addRayTraceCallback(5000, DatapackBlockManager::override);
 		registration.addAfterRenderCallback(JadeClient::drawBreakingProgress);
+
+		registration.markAsClientFeature(Identifiers.MC_EFFECTIVE_TOOL);
+		registration.markAsClientFeature(Identifiers.MC_HARVEST_TOOL_NEW_LINE);
+		registration.markAsClientFeature(Identifiers.MC_SHOW_UNBREAKABLE);
+		registration.markAsClientFeature(Identifiers.MC_BREAKING_PROGRESS);
+		registration.markAsClientFeature(Identifiers.MC_ENTITY_ARMOR_MAX_FOR_RENDER);
+		registration.markAsClientFeature(Identifiers.MC_ENTITY_HEALTH_MAX_FOR_RENDER);
+		registration.markAsClientFeature(Identifiers.MC_ENTITY_HEALTH_ICONS_PER_LINE);
+		registration.markAsClientFeature(Identifiers.MC_ENTITY_HEALTH_SHOW_FRACTIONS);
+		registration.markAsClientFeature(Identifiers.MC_BLOCK_STATES);
+		registration.markAsClientFeature(Identifiers.MC_HORSE_STATS);
+		registration.markAsClientFeature(Identifiers.MC_ITEM_FRAME);
+		registration.markAsClientFeature(Identifiers.MC_TNT_STABILITY);
+		registration.markAsClientFeature(Identifiers.MC_NOTE_BLOCK);
+		registration.markAsClientFeature(Identifiers.MC_ARMOR_STAND);
+		registration.markAsClientFeature(Identifiers.MC_PAINTING);
+		registration.markAsClientFeature(Identifiers.MC_HARVEST_TOOL);
+		registration.markAsClientFeature(Identifiers.MC_ENCHANTMENT_POWER);
+		registration.markAsClientFeature(Identifiers.MC_TOTAL_ENCHANTMENT_POWER);
+		registration.markAsClientFeature(Identifiers.MC_PLAYER_HEAD);
+		registration.markAsClientFeature(Identifiers.MC_VILLAGER_PROFESSION);
+		registration.markAsClientFeature(Identifiers.MC_ITEM_TOOLTIP);
+		registration.markAsClientFeature(Identifiers.MC_ANIMAL_OWNER);
+		registration.markAsClientFeature(Identifiers.MC_ENTITY_HEALTH);
+		registration.markAsClientFeature(Identifiers.MC_ENTITY_ARMOR);
+		registration.markAsClientFeature(Identifiers.MC_CROP_PROGRESS);
+		registration.markAsClientFeature(Identifiers.MC_MOB_SPAWNER);
 
 		registration.hideTarget(EntityType.AREA_EFFECT_CLOUD);
 		registration.hideTarget(EntityType.FIREWORK_ROCKET);

@@ -52,6 +52,7 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 	private BaseOptionsScreen owner;
 	private final Runnable diskWriter;
 	private double targetScroll;
+	public int serverFeatures;
 
 	public WailaOptionsList(BaseOptionsScreen owner, Minecraft client, int width, int height, int y0, int y1, int entryHeight, Runnable diskWriter) {
 		super(client, width, height, y0, y1, entryHeight);

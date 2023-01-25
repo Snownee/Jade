@@ -13,11 +13,12 @@ import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import snownee.jade.gui.config.WailaOptionsList;
 
 public abstract class OptionValue<T> extends WailaOptionsList.Entry {
 
-	private final Component title;
+	private final MutableComponent title;
 	protected final Consumer<T> setter;
 	protected T value;
 	private int x;
@@ -43,7 +44,7 @@ public abstract class OptionValue<T> extends WailaOptionsList.Entry {
 		setter.accept(value);
 	}
 
-	public Component getTitle() {
+	public MutableComponent getTitle() {
 		return title;
 	}
 
