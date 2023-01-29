@@ -15,7 +15,7 @@ repositories {
 }
 
 dependencies {
-    // Visit https://www.curseforge.com/minecraft/mc-mods/jade/files/all
+    // Visit https://www.curseforge.com/minecraft/mc-mods/jade/files/all?filter-status=1&filter-game-version=2020709689%3A7498
     // to get the latest version's jade_id
     implementation fg.deobf("curse.maven:jade-324717:${jade_id}")
 }

@@ -2,24 +2,47 @@
 
 ## Setup
 
-In your `build.gradle`:
+=== "Forge"
 
-``` groovy
-repositories {
-	maven {
-		url "https://www.cursemaven.com"
-		content {
-			includeGroup "curse.maven"
+	In your `build.gradle`:
+
+	``` groovy
+	repositories {
+		maven {
+			url "https://www.cursemaven.com"
+			content {
+				includeGroup "curse.maven"
+			}
 		}
 	}
-}
 
-dependencies {
-	// Visit https://www.curseforge.com/minecraft/mc-mods/jade/files/all
-	// to get the latest version's jade_id
-	implementation fg.deobf("curse.maven:jade-324717:${jade_id}")
-}
-```
+	dependencies {
+		// Visit https://www.curseforge.com/minecraft/mc-mods/jade/files/all?filter-status=1&filter-game-version=2020709689%3A7498
+		// to get the latest version's jade_id
+		implementation fg.deobf("curse.maven:jade-324717:${jade_id}")
+	}
+	```
+
+=== "Fabric"
+
+	In your `build.gradle`:
+
+	``` groovy
+	repositories {
+		maven {
+			url "https://www.cursemaven.com"
+			content {
+				includeGroup "curse.maven"
+			}
+		}
+	}
+
+	dependencies {
+		// Visit https://www.curseforge.com/minecraft/mc-mods/jade/files/all?filter-status=1&filter-game-version=2020709689%3A7499
+		// to get the latest version's jade_id
+		modImplementation "curse.maven:jade-324717:${jade_id}"
+	}
+	```
 
 Visit [CurseMaven](https://www.cursemaven.com/) to find more information about how to set up your workspace.
 
@@ -57,9 +80,9 @@ public class ExamplePlugin implements IWailaPlugin {
     {
       "entrypoints": {
         "jade": [
-          "snownee.jade.addon.core.CorePlugin",
+          "{your full class path here}",
           "snownee.jade.addon.vanilla.VanillaPlugin",
-          "snownee.jade.addon.fabric.FabricPlugin"
+          "snownee.jade.addon.universal.UniversalPlugin"
         ]
       }
     }

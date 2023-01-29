@@ -6,17 +6,17 @@ edit_uri: ""
 
 nav:
     - Preface: README.md
-    - "Plugins (1.19+ and Fabric 1.18)":
+    - "1.19 and Fabric 1.18":
         - "Getting Started": plugins19/getting-started.md
-        - Overrides: plugins19/overrides.md
+        - "Overrides": plugins19/overrides.md
         - "Hiding Target": plugins19/hiding-target.md
-    - "Plugins (1.17-1.18)":
+    - "Forge 1.17-1.18":
         - "Getting Started": plugins17/getting-started.md
-        - Overrides: plugins17/overrides.md
+        - "Overrides": plugins17/overrides.md
         - "Hiding Target": plugins17/hiding-target.md
-    - Datapacks Support:
+    - "Datapack Support":
         - "Displaying a Block": datapacks/block.md
-    - Upgrading Guides:
+    - "Upgrading Guides":
         - "1.18 -> 1.19": changes/119.md
         - "1.16 -> 1.17": changes/117.md
 
@@ -28,7 +28,6 @@ theme:
     features:
         - content.code.annotate
         - content.tabs.link
-        - navigation.expand
     palette:
         - media: "(prefers-color-scheme: light)"
           scheme: default
