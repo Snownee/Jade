@@ -263,7 +263,7 @@ Much better now!
 
 ## Improving Accessibility
 
-Jade has a feature that allows user to narrate the tooltip (press numpad 5 by default). Now the problem is we don't want our clock icon to be narrated. So we can clear the narratable message in this way:
+Jade has a feature that allows user to narrate the tooltip (press keypad 5 by default). Now the problem is we don't want our clock icon to be narrated. So we can clear the narratable message in this way:
 
 ``` java
 @Override

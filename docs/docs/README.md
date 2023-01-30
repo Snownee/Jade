@@ -2,6 +2,8 @@
 
 Welcome to Jade's developer wiki!
 
+This documentation uses official mappings.
+
 ## Links
 
  - [CurseForge](https://www.curseforge.com/minecraft/mc-mods/jade)

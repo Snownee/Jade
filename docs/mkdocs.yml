@@ -5,7 +5,7 @@ site_author: Snownee
 edit_uri: ""
 
 nav:
-    - Preface: README.md
+    - "Preface": README.md
     - "1.19 and Fabric 1.18":
         - "Getting Started": plugins19/getting-started.md
         - "Overrides": plugins19/overrides.md
