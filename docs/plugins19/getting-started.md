@@ -136,6 +136,8 @@ public void registerClient(IWailaClientRegistration registration) {
 
 `AbstractFurnaceBlock.class` means we will append our text only when the block is extended from `AbstractFurnaceBlock`.
 
+Once your component provider is registered, Jade will create a config option for the user to toggle the provider. So don't forget to add translation for your option.
+
 !!! note
 
     If you want to control the position your elements are inserted, you can override `getDefaultPriority` method in your component provider. Greater is lower. -5000 ~ 5000 is for normal providers and they will be folded in the Lite mode.

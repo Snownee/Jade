@@ -25,3 +25,7 @@ public void registerClient(IWailaClientRegistration registration) {
 Result:
 
 ![](../images/overrides.png)
+
+!!! note
+
+	You can get server data from `IWailaClientRegistration` if accessor is null.

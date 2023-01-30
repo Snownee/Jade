@@ -10,6 +10,7 @@ nav:
         - "Getting Started": plugins19/getting-started.md
         - "Overrides": plugins19/overrides.md
         - "Hiding Target": plugins19/hiding-target.md
+        - "Plugin Configuration": plugins19/plugin-config.md
     - "Forge 1.17-1.18":
         - "Getting Started": plugins17/getting-started.md
         - "Overrides": plugins17/overrides.md
