@@ -42,7 +42,7 @@ public class ExamplePlugin implements IWailaPlugin {
 		registration.registerBlockComponent(ExampleComponentProvider.INSTANCE, AbstractFurnaceBlock.class);
 		registration.addConfig(UID_TEST_STR_CFG, "", ResourceLocation::isValidResourceLocation);
 		registration.addConfigListener(UID_TEST_STR_CFG, $ -> Jade.LOGGER.info("Changed: $: " + PluginConfig.INSTANCE.getString($)));
-		registration.addConfig(UID_TEST_FLOAT_CFG, 0, 0, 100, false);
+		registration.addConfig(UID_TEST_FLOAT_CFG, 0F, 0F, 100F, false);
 
 		registration.addRayTraceCallback((hitResult, accessor, originalAccessor) -> {
 			if (accessor instanceof BlockAccessor blockAccessor) {
