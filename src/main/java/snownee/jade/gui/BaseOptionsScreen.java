@@ -9,6 +9,7 @@ import com.google.common.collect.Sets;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.TooltipAccessor;
@@ -17,6 +18,7 @@ import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
+import snownee.jade.JadeClient;
 import snownee.jade.gui.config.WailaOptionsList;
 
 public abstract class BaseOptionsScreen extends Screen {
@@ -75,6 +77,14 @@ public abstract class BaseOptionsScreen extends Screen {
 	public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
 		renderBackground(matrixStack);
 		super.render(matrixStack, mouseX, mouseY, partialTicks);
+
+		if (options.serverFeatures > 0) {
+			Component component = JadeClient.format("gui.jade.server_features", options.serverFeatures);
+			font.drawShadow(matrixStack, component, 4, height - 18, ChatFormatting.GRAY.getColor());
+			if (mouseY >= height - 18 && mouseY <= height - 18 + font.lineHeight && mouseX >= 4 && mouseX <= 4 + font.width(component)) {
+				renderTooltip(matrixStack, font.split(JadeClient.format("gui.jade.server_features.tip", options.serverFeatures), 300), mouseX, mouseY);
+			}
+		}
 
 		if (options.getSelected() != null && mouseY >= 32 && mouseY <= height - 32) {
 			WailaOptionsList.Entry entry = options.getSelected();

@@ -84,6 +84,8 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	public final Map<ResourceLocation, IClientExtensionProvider<CompoundTag, EnergyView>> energyStorageProviders = Maps.newHashMap();
 	public final Map<ResourceLocation, IClientExtensionProvider<CompoundTag, ProgressView>> progressProviders = Maps.newHashMap();
 
+	public final Set<ResourceLocation> clientFeatures = Sets.newHashSet();
+
 	WailaClientRegistration() {
 		blockIconProviders = new HierarchyLookup<>(Block.class);
 		blockComponentProviders = new HierarchyLookup<>(Block.class);
@@ -348,6 +350,21 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	@Override
 	public ItemStack getBlockCamouflage(LevelAccessor level, BlockPos pos) {
 		return DatapackBlockManager.getFakeBlock(level, pos);
+	}
+
+	@Override
+	public void markAsClientFeature(ResourceLocation uid) {
+		clientFeatures.add(uid);
+	}
+
+	@Override
+	public void markAsServerFeature(ResourceLocation uid) {
+		clientFeatures.remove(uid);
+	}
+
+	@Override
+	public boolean isClientFeature(ResourceLocation uid) {
+		return clientFeatures.contains(uid);
 	}
 
 }
