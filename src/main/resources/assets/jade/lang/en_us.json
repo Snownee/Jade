@@ -205,5 +205,7 @@
   "__comment": "Only for testing:",
   "jade.modName.cpp": "Crafting++",
   "mymod.fuel": "Fuel: %d ticks",
-  "config.jade.plugin_debug.furnace_fuel": "Test Fuel"
+  "config.jade.plugin_debug.furnace_fuel": "Test Fuel",
+  "config.jade.plugin_debug.furnace_fuel.str_cfg": "Test Str",
+  "config.jade.plugin_debug.furnace_fuel.float_cfg": "Test Float"
 }

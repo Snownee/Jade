@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -47,7 +48,8 @@ public class PluginConfig implements IPluginConfig {
 
 	public void addConfig(ConfigEntry<?> entry) {
 		Preconditions.checkArgument(StringUtils.countMatches(entry.getId().getPath(), '.') <= 1);
-		Preconditions.checkArgument(!containsKey(entry.getId()), "Duplicate config key: {}", entry.getId());
+		Preconditions.checkArgument(!containsKey(entry.getId()), "Duplicate config key: %s", entry.getId());
+		Preconditions.checkArgument(entry.isValidValue(entry.getDefaultValue()), "Default value of config %s does not pass value check", entry.getId());
 		configs.put(entry.getId(), (ConfigEntry<Object>) entry);
 	}
 
@@ -244,6 +246,11 @@ public class PluginConfig implements IPluginConfig {
 
 	public boolean containsKey(ResourceLocation uid) {
 		return configs.containsKey(uid);
+	}
+
+	public void addConfigListener(ResourceLocation key, Consumer<ResourceLocation> listener) {
+		Preconditions.checkArgument(containsKey(key));
+		configs.get(key).addListener(listener);
 	}
 
 }
