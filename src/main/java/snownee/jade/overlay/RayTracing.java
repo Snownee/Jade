@@ -10,6 +10,7 @@ import com.google.common.base.Predicates;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
@@ -114,8 +115,10 @@ public class RayTracing {
 			return false;
 		if (target == viewEntity.getVehicle())
 			return false;
-		if (viewEntity instanceof Player) {
-			if (target.isInvisibleTo((Player) viewEntity))
+		if (viewEntity instanceof Player player) {
+			if (target.isInvisibleTo(player))
+				return false;
+			if (mc.gameMode.isDestroying() && target.getType() == EntityType.ITEM)
 				return false;
 		} else {
 			if (target.isInvisible())
