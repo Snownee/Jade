@@ -202,7 +202,7 @@ public class OverlayRenderer {
 		if (scale != 1) {
 			matrixStack.scale(scale, scale, 1.0F);
 		}
-		matrixStack.translate(-morphRect.getWidth() * overlay.tryFlip(overlay.getAnchorX()), -morphRect.getHeight() * overlay.getAnchorY(), 0);
+		matrixStack.translate((int) (-morphRect.getWidth() * overlay.tryFlip(overlay.getAnchorX())), (int) (-morphRect.getHeight() * overlay.getAnchorY()), 0);
 
 		boolean doDefault = true;
 		colorSetting.alpha *= alpha;
