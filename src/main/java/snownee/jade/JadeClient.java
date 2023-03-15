@@ -175,6 +175,9 @@ public final class JadeClient implements ClientModInitializer {
 			} else if (target.getBlock() == Blocks.POWDER_SNOW) {
 				Block block = Blocks.SNOW_BLOCK;
 				return client.blockAccessor().from(target).blockState(block.defaultBlockState()).build();
+			} else if (target.getBlock() == Blocks.SUSPICIOUS_SAND) {
+				Block block = Blocks.SAND;
+				return client.blockAccessor().from(target).blockState(block.defaultBlockState()).build();
 			}
 		}
 		return accessor;

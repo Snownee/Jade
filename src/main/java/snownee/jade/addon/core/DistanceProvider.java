@@ -39,7 +39,7 @@ public enum DistanceProvider implements IBlockComponentProvider, IEntityComponen
 		Component distanceMsg = distance ? Component.translatable("narration.jade.distance", distanceVal) : null;
 		if (config.get(Identifiers.CORE_COORDINATES)) {
 			if (config.get(Identifiers.CORE_REL_COORDINATES) && Screen.hasControlDown()) {
-				xyz(tooltip, pos.subtract(new BlockPos(accessor.getPlayer().getEyePosition())));
+				xyz(tooltip, pos.subtract(BlockPos.containing(accessor.getPlayer().getEyePosition())));
 			} else {
 				xyz(tooltip, pos);
 			}

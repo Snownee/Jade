@@ -10,7 +10,7 @@
     "KeyAccess",
     "BossHealthOverlayMixin",
     "ClientLevelMixin",
-    "MinecraftMixin"
+    "GameRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

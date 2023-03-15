@@ -82,7 +82,7 @@ public class RayTracing {
 			traceEnd = eyePosition.add(lookVector.x * playerReach, lookVector.y * playerReach, lookVector.z * playerReach);
 		}
 
-		Block eyeBlock = world.getBlockState(new BlockPos(eyePosition.x, eyePosition.y, eyePosition.z)).getBlock();
+		Block eyeBlock = world.getBlockState(BlockPos.containing(eyePosition)).getBlock();
 		ClipContext.Fluid fluidView = ClipContext.Fluid.NONE;
 		if (!(eyeBlock instanceof LiquidBlock)) {
 			fluidView = Jade.CONFIG.get().getGeneral().getDisplayFluids().ctx;
