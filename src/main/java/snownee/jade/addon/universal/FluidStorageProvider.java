@@ -114,7 +114,7 @@ public enum FluidStorageProvider implements IBlockComponentProvider, IServerData
 
 	@Override
 	public List<ClientViewGroup<FluidView>> getClientGroups(Accessor<?> accessor, List<ViewGroup<CompoundTag>> groups) {
-		return ClientViewGroup.map(groups, FluidView::read, null);
+		return ClientViewGroup.map(groups, FluidView::readDefault, null);
 	}
 
 	@Override

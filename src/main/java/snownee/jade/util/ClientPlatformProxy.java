@@ -44,7 +44,6 @@ import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.EntityLeaveLevelEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -52,6 +51,7 @@ import net.minecraftforge.forgespi.language.IModInfo;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
 import snownee.jade.api.config.IWailaConfig.BossBarOverlapMode;
+import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.command.JadeClientCommand;
 import snownee.jade.compat.JEICompat;
@@ -195,8 +195,7 @@ public final class ClientPlatformProxy {
 
 	public static IElement elementFromLiquid(LiquidBlock block) {
 		Fluid fluid = block.getFluid();
-		FluidStack fluidStack = new FluidStack(fluid, 1);
-		return new FluidStackElement(fluidStack);//.size(new Size(18, 18));
+		return new FluidStackElement(JadeFluidObject.of(fluid));//.size(new Size(18, 18));
 	}
 
 	private static final List<PreparableReloadListener> listeners = Lists.newArrayList();

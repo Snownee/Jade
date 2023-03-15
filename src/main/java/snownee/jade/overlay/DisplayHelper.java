@@ -38,6 +38,7 @@ import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.minecraftforge.fluids.FluidStack;
 import snownee.jade.Jade;
 import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
+import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.ui.IBorderStyle;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.impl.ui.BorderStyle;
@@ -223,23 +224,19 @@ public class DisplayHelper implements IDisplayHelper {
 	private static final int TEX_HEIGHT = 16;
 	private static final int MIN_FLUID_HEIGHT = 1; // ensure tiny amounts of fluid are still visible
 
-	public void drawFluid(PoseStack matrixStack, final float xPosition, final float yPosition, @Nullable FluidStack fluidStack, float width, float height, int capacityMb) {
+	public void drawFluid(PoseStack matrixStack, final float xPosition, final float yPosition, JadeFluidObject fluid, float width, float height, long capacityMb) {
 		if (OverlayRenderer.alpha < 0.5F) {
 			return;
 		}
-		if (fluidStack == null || fluidStack.isEmpty()) {
+		if (fluid.isEmpty()) {
 			return;
 		}
-		Fluid fluid = fluidStack.getFluid();
-		if (fluid == null) {
-			return;
-		}
-
+		Fluid type = fluid.getType();
+		FluidStack fluidStack = new FluidStack(type, 1, fluid.getTag());
 		TextureAtlasSprite fluidStillSprite = getStillFluidSprite(fluidStack);
+		int fluidColor = IClientFluidTypeExtensions.of(type).getTintColor(fluidStack);
 
-		int fluidColor = IClientFluidTypeExtensions.of(fluid).getTintColor(fluidStack);
-
-		int amount = fluidStack.getAmount();
+		long amount = JadeFluidObject.bucketVolume();
 		float scaledAmount = (amount * height) / capacityMb;
 		if (amount > 0 && scaledAmount < MIN_FLUID_HEIGHT) {
 			scaledAmount = MIN_FLUID_HEIGHT;

@@ -41,7 +41,6 @@ import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.registries.ForgeRegistries;
 import snownee.jade.api.view.EnergyView;
-import snownee.jade.api.view.FluidView;
 import snownee.jade.api.view.ItemView;
 import snownee.jade.api.view.ViewGroup;
 import snownee.jade.command.JadeServerCommand;
@@ -103,7 +102,7 @@ public final class PlatformProxy {
 			if (!(target instanceof Entity) || target instanceof AbstractChestedHorse) {
 				LazyOptional<IItemHandler> optional = capProvider.getCapability(ForgeCapabilities.ITEM_HANDLER);
 				if (optional.isPresent()) {
-					return List.of(optional.map($ -> ItemView.fromItemHandler($, size, target instanceof AbstractChestedHorse ? 2 : 0)).get());
+					return List.of(optional.map($ -> JadeForgeUtils.fromItemHandler($, size, target instanceof AbstractChestedHorse ? 2 : 0)).get());
 				}
 			}
 		}
@@ -120,7 +119,7 @@ public final class PlatformProxy {
 		if (target instanceof CapabilityProvider<?> capProvider) {
 			IFluidHandler fluidHandler = capProvider.getCapability(ForgeCapabilities.FLUID_HANDLER).orElse(null);
 			if (fluidHandler != null) {
-				return FluidView.fromFluidHandler(fluidHandler);
+				return JadeForgeUtils.fromFluidHandler(fluidHandler);
 			}
 		}
 		return null;

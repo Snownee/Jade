@@ -13,7 +13,6 @@ import com.google.common.collect.Lists;
 
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
 
 @Experimental
 public class ItemView {
@@ -35,9 +34,6 @@ public class ItemView {
 		return compacted(IntStream.range(startIndex, container.getContainerSize()).limit(maxSize * 3).mapToObj(container::getItem), maxSize);
 	}
 
-	public static ViewGroup<ItemStack> fromItemHandler(IItemHandler itemHandler, int maxSize, int startIndex) {
-		return compacted(IntStream.range(startIndex, itemHandler.getSlots()).limit(maxSize * 3).mapToObj(itemHandler::getStackInSlot), maxSize);
-	}
 
 	public static ViewGroup<ItemStack> compacted(Stream<ItemStack> stream, int maxSize) {
 		List<ItemStack> stacks = Lists.newArrayList();
