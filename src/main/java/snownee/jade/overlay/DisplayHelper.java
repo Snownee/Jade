@@ -16,9 +16,9 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat.Mode;
 
-import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandler;
-import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandlerRegistry;
-import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
+import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRenderHandler;
+import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiComponent;
@@ -33,10 +33,10 @@ import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.FluidState;
 import snownee.jade.Jade;
 import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
 import snownee.jade.api.ui.IBorderStyle;
+import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.impl.ui.BorderStyle;
 import snownee.jade.util.Color;
@@ -180,22 +180,20 @@ public class DisplayHelper implements IDisplayHelper {
 	private static final int TEX_HEIGHT = 16;
 	private static final int MIN_FLUID_HEIGHT = 1; // ensure tiny amounts of fluid are still visible
 
-	public void drawFluid(PoseStack matrixStack, final float xPosition, final float yPosition, @Nullable FluidState fluidState, float width, float height, long capacityMb) {
+	public void drawFluid(PoseStack matrixStack, final float xPosition, final float yPosition, JadeFluidObject fluid, float width, float height, long capacityMb) {
 		if (OverlayRenderer.alpha < 0.5F) {
 			return;
 		}
-		if (fluidState == null || fluidState.isEmpty()) {
+		if (fluid.isEmpty()) {
 			return;
 		}
-		Fluid fluid = fluidState.getType();
-		if (fluid == null) {
-			return;
-		}
-		FluidRenderHandler handler = FluidRenderHandlerRegistry.INSTANCE.get(fluid);
-		TextureAtlasSprite fluidStillSprite = handler.getFluidSprites(null, null, fluidState)[0];
-		int fluidColor = handler.getFluidColor(null, null, fluidState);
+		Fluid type = fluid.getType();
+		FluidVariant variant = FluidVariant.of(type, fluid.getTag());
+		FluidVariantRenderHandler handler = FluidVariantRendering.getHandlerOrDefault(type);
+		TextureAtlasSprite fluidStillSprite = handler.getSprites(variant)[0];
+		int fluidColor = handler.getColor(variant, Minecraft.getInstance().level, null);
 
-		long amount = FluidConstants.BUCKET;
+		long amount = JadeFluidObject.bucketVolume();
 		float scaledAmount = (amount * height) / capacityMb;
 		if (amount > 0 && scaledAmount < MIN_FLUID_HEIGHT) {
 			scaledAmount = MIN_FLUID_HEIGHT;

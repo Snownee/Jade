@@ -5,8 +5,8 @@ import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.material.FluidState;
 import snownee.jade.api.ITooltip;
+import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.impl.ui.ElementHelper;
 
 public interface IElementHelper {
@@ -27,7 +27,7 @@ public interface IElementHelper {
 
 	IElement smallItem(ItemStack itemStack);
 
-	IElement fluid(FluidState fluidState);
+	IElement fluid(JadeFluidObject fluid);
 
 	@ScheduledForRemoval(inVersion = "1.20")
 	IElement progress(float progress, @Nullable Component text, IProgressStyle style, @Nullable IBorderStyle borderStyle);

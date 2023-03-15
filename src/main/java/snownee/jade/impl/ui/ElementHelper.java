@@ -7,9 +7,9 @@ import org.jetbrains.annotations.Nullable;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.ITooltip;
+import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.ui.IBorderStyle;
 import snownee.jade.api.ui.IBoxElement;
 import snownee.jade.api.ui.IBoxStyle;
@@ -50,8 +50,8 @@ public class ElementHelper implements IElementHelper {
 	}
 
 	@Override
-	public IElement fluid(FluidState fluidState) {
-		return new FluidStackElement(fluidState);
+	public IElement fluid(JadeFluidObject fluid) {
+		return new FluidStackElement(fluid);
 	}
 
 	@Override

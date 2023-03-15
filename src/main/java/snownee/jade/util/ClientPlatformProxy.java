@@ -56,6 +56,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
 import snownee.jade.api.Identifiers;
+import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.command.JadeClientCommand;
 import snownee.jade.compat.JEICompat;
@@ -227,7 +228,7 @@ public final class ClientPlatformProxy {
 
 	public static IElement elementFromLiquid(LiquidBlock block) {
 		FluidState fluidState = block.getFluidState(block.defaultBlockState());
-		return new FluidStackElement(fluidState);//.size(new Size(18, 18));
+		return new FluidStackElement(JadeFluidObject.of(fluidState.getType()));//.size(new Size(18, 18));
 	}
 
 	public static void registerReloadListener(ResourceManagerReloadListener listener) {

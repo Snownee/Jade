@@ -43,7 +43,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.entity.EnderChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import snownee.jade.api.view.FluidView;
 import snownee.jade.api.view.ItemView;
 import snownee.jade.api.view.ViewGroup;
 import snownee.jade.command.JadeServerCommand;
@@ -116,12 +115,12 @@ public final class PlatformProxy {
 		if (target instanceof SidedStorageBlockEntity be) {
 			var storage = be.getItemStorage(null);
 			if (storage != null) {
-				return List.of(ItemView.fromStorage(storage, size, 0));
+				return List.of(JadeFabricUtils.fromItemStorage(storage, size, 0));
 			}
 		}
 		var storage = lookupBlock(ItemStorage.SIDED, target);
 		if (storage != null) {
-			return List.of(ItemView.fromStorage(storage, size, 0));
+			return List.of(JadeFabricUtils.fromItemStorage(storage, size, 0));
 		}
 		return null;
 	}
@@ -130,12 +129,12 @@ public final class PlatformProxy {
 		if (target instanceof SidedStorageBlockEntity be) {
 			var storage = be.getFluidStorage(null);
 			if (storage != null) {
-				return FluidView.fromStorage(storage);
+				return JadeFabricUtils.fromFluidStorage(storage);
 			}
 		}
 		var storage = lookupBlock(FluidStorage.SIDED, target);
 		if (storage != null) {
-			return FluidView.fromStorage(storage);
+			return JadeFabricUtils.fromFluidStorage(storage);
 		}
 		return null;
 	}

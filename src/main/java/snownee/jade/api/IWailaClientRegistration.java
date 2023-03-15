@@ -26,7 +26,7 @@ import snownee.jade.api.callback.JadeRenderBackgroundCallback;
 import snownee.jade.api.callback.JadeTooltipCollectedCallback;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
-import snownee.jade.api.fabric.FabricWailaClientRegistration;
+import snownee.jade.api.platform.PlatformWailaClientRegistration;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElementHelper;
@@ -37,7 +37,7 @@ import snownee.jade.api.view.ItemView;
 import snownee.jade.api.view.ProgressView;
 
 @NonExtendable
-public interface IWailaClientRegistration extends FabricWailaClientRegistration {
+public interface IWailaClientRegistration extends PlatformWailaClientRegistration {
 
 	/**
 	 * Register a namespaced config key to be accessed within data providers.

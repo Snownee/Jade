@@ -10,11 +10,7 @@ import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Streams;
 
-import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
-import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
-import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 
@@ -36,12 +32,6 @@ public class ItemView {
 
 	public static ViewGroup<ItemStack> fromContainer(Container container, int maxSize, int startIndex) {
 		return compacted(IntStream.range(startIndex, container.getContainerSize()).limit(maxSize * 3).mapToObj(container::getItem), maxSize);
-	}
-
-	public static ViewGroup<ItemStack> fromStorage(Storage<ItemVariant> storage, int maxSize, int startIndex) {
-		return compacted(Streams.stream(storage.iterator()).skip(startIndex).limit(maxSize * 3).map($ -> {
-			return $.getResource().toStack((int) Mth.clamp($.getAmount(), 0, Integer.MAX_VALUE));
-		}), maxSize);
 	}
 
 	public static ViewGroup<ItemStack> compacted(Stream<ItemStack> stream, int maxSize) {

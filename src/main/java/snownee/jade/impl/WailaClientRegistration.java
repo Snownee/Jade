@@ -38,7 +38,7 @@ import snownee.jade.api.callback.JadeRayTraceCallback;
 import snownee.jade.api.callback.JadeRenderBackgroundCallback;
 import snownee.jade.api.callback.JadeTooltipCollectedCallback;
 import snownee.jade.api.config.IWailaConfig;
-import snownee.jade.api.fabric.CustomEnchantPower;
+import snownee.jade.api.platform.CustomEnchantPower;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.api.view.EnergyView;
