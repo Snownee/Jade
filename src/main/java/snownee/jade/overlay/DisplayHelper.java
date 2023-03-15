@@ -21,7 +21,6 @@ import com.mojang.blaze3d.vertex.VertexFormat.Mode;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiComponent;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -31,7 +30,6 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.util.Mth;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -56,79 +54,41 @@ public class DisplayHelper implements IDisplayHelper {
 		if (OverlayRenderer.alpha < 0.5F) {
 			return;
 		}
-		RenderSystem.enableDepthTest();
-
-		PoseStack modelViewStack = RenderSystem.getModelViewStack();
-		modelViewStack.pushPose();
-		modelViewStack.mulPoseMatrix(matrixStack.last().pose());
-		float o = 8 * scale;
-		modelViewStack.translate(x + o, y + o, 0);
-		scale *= Math.min(1, OverlayRenderer.alpha + 0.2F);
-		modelViewStack.scale(scale, scale, scale);
-		modelViewStack.translate(-8, -8, 0);
-		CLIENT.getItemRenderer().renderGuiItem(stack, 0, 0);
-		renderGuiItemDecorations(CLIENT.font, stack, text);
-
-		modelViewStack.popPose();
-		RenderSystem.applyModelViewMatrix();
-		RenderSystem.disableDepthTest();
+		matrixStack.pushPose();
+		matrixStack.translate(x, y, 0);
+		matrixStack.scale(scale, scale, scale);
+		CLIENT.getItemRenderer().renderAndDecorateFakeItem(matrixStack, stack, 0, 0);
+		renderGuiItemDecorations(matrixStack, CLIENT.font, stack, 0, 0, text);
+		matrixStack.popPose();
 	}
 
-	private static void renderGuiItemDecorations(Font font, ItemStack stack, @Nullable String p_115179_) {
+	private static void renderGuiItemDecorations(PoseStack posestack, Font font, ItemStack stack, int i, int j, @Nullable String p_115179_) {
 		if (stack.isEmpty()) {
 			return;
 		}
-		PoseStack posestack = new PoseStack();
+		posestack.pushPose();
 		if (stack.getCount() != 1 || p_115179_ != null) {
 			String s = p_115179_ == null ? INSTANCE.humanReadableNumber(stack.getCount(), "", false) : p_115179_;
 			posestack.pushPose();
-			posestack.translate(0.0D, 0.0D, CLIENT.getItemRenderer().blitOffset + 200.0F);
+			posestack.translate(0.0f, 0.0f, 200.0f);
 			posestack.scale(.75f, .75f, .75f);
 			MultiBufferSource.BufferSource multibuffersource$buffersource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-			font.drawInBatch(s, 22 - font.width(s), 13, 16777215, true, posestack.last().pose(), multibuffersource$buffersource, false, 0, 15728880);
+			font.drawInBatch(s, i + 22 - font.width(s), j + 13, 16777215, true, posestack.last().pose(), multibuffersource$buffersource, Font.DisplayMode.NORMAL, 0, 0xF000F0);
 			multibuffersource$buffersource.endBatch();
 			posestack.popPose();
 		}
 
 		if (stack.isBarVisible()) {
 			RenderSystem.disableDepthTest();
-			RenderSystem.disableTexture();
-			RenderSystem.disableBlend();
-			Tesselator tesselator = Tesselator.getInstance();
-			BufferBuilder bufferbuilder = tesselator.getBuilder();
-			int i = stack.getBarWidth();
-			int j = stack.getBarColor();
-			draw(posestack, bufferbuilder, 2, 13, 13, 2, 0, 0, 0, 255);
-			draw(posestack, bufferbuilder, 2, 13, i, 1, j >> 16 & 255, j >> 8 & 255, j & 255, 255);
-			RenderSystem.enableBlend();
-			RenderSystem.enableTexture();
+			int k = stack.getBarWidth();
+			int l = stack.getBarColor();
+			int m = i + 2;
+			int n = j + 13;
+			GuiComponent.fill(posestack, m, n, m + 13, n + 2, -16777216);
+			GuiComponent.fill(posestack, m, n, m + k, n + 1, l | 0xFF000000);
 			RenderSystem.enableDepthTest();
 		}
-
-		LocalPlayer localplayer = Minecraft.getInstance().player;
-		float f = localplayer == null ? 0.0F : localplayer.getCooldowns().getCooldownPercent(stack.getItem(), Minecraft.getInstance().getFrameTime());
-		if (f > 0.0F) {
-			RenderSystem.disableDepthTest();
-			RenderSystem.disableTexture();
-			RenderSystem.enableBlend();
-			RenderSystem.defaultBlendFunc();
-			Tesselator tesselator1 = Tesselator.getInstance();
-			BufferBuilder bufferbuilder1 = tesselator1.getBuilder();
-			draw(posestack, bufferbuilder1, 0, 0 + Mth.floor(16.0F * (1.0F - f)), 16, Mth.ceil(16.0F * f), 255, 255, 255, 127);
-			RenderSystem.enableTexture();
-			RenderSystem.enableDepthTest();
-		}
-	}
-
-	private static void draw(PoseStack ms, BufferBuilder renderer, float x, float y, int width, int height, int red, int green, int blue, int alpha) {
-		RenderSystem.setShader(GameRenderer::getPositionColorShader);
-		Matrix4f matrix = ms.last().pose();
-		renderer.begin(Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-		renderer.vertex(matrix, x, y, 0).color(red, green, blue, alpha).endVertex();
-		renderer.vertex(matrix, x, y + height, 0).color(red, green, blue, alpha).endVertex();
-		renderer.vertex(matrix, x + width, y + height, 0).color(red, green, blue, alpha).endVertex();
-		renderer.vertex(matrix, x + width, y, 0).color(red, green, blue, alpha).endVertex();
-		BufferUploader.drawWithShader(renderer.end());
+		posestack.popPose();
 	}
 
 	//	private static void renderStackSize(PoseStack matrixStack, Font fr, ItemStack stack, float xPosition, float yPosition) {
@@ -168,7 +128,6 @@ public class DisplayHelper implements IDisplayHelper {
 		float f5 = (endColor >> 16 & 255) / 255.0F;
 		float f6 = (endColor >> 8 & 255) / 255.0F;
 		float f7 = (endColor & 255) / 255.0F;
-		RenderSystem.disableTexture();
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.setShader(GameRenderer::getPositionColorShader);
@@ -188,7 +147,6 @@ public class DisplayHelper implements IDisplayHelper {
 		}
 		BufferUploader.drawWithShader(buffer.end());
 		RenderSystem.disableBlend();
-		RenderSystem.enableTexture();
 	}
 
 	@Override
@@ -319,6 +277,7 @@ public class DisplayHelper implements IDisplayHelper {
 				}
 			}
 		}
+		RenderSystem.setShaderColor(1, 1, 1, 1);
 	}
 
 	private static TextureAtlasSprite getStillFluidSprite(FluidStack fluidStack) {
@@ -379,7 +338,6 @@ public class DisplayHelper implements IDisplayHelper {
 		float f2 = (color & 255) / 255.0F;
 		BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
 		RenderSystem.enableBlend();
-		RenderSystem.disableTexture();
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.setShader(GameRenderer::getPositionColorShader);
 		bufferbuilder.begin(Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
@@ -388,7 +346,6 @@ public class DisplayHelper implements IDisplayHelper {
 		bufferbuilder.vertex(matrix, maxX, minY, 0.0F).color(f, f1, f2, f3).endVertex();
 		bufferbuilder.vertex(matrix, minX, minY, 0.0F).color(f, f1, f2, f3).endVertex();
 		BufferUploader.drawWithShader(bufferbuilder.end());
-		RenderSystem.enableTexture();
 		RenderSystem.disableBlend();
 	}
 

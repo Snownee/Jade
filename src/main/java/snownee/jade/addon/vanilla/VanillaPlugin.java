@@ -8,6 +8,8 @@ import com.google.common.cache.CacheBuilder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.AgeableMob;
+import net.minecraft.world.entity.Display.BlockDisplay;
+import net.minecraft.world.entity.Display.ItemDisplay;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -138,6 +140,8 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerEntityComponent(MobSpawnerProvider.INSTANCE, MinecartSpawner.class);
 		registration.registerBlockComponent(ChiseledBookshelfProvider.INSTANCE, ChiseledBookShelfBlock.class);
 		registration.registerBlockIcon(ChiseledBookshelfProvider.INSTANCE, ChiseledBookShelfBlock.class);
+		registration.registerEntityIcon(ItemDisplayProvider.INSTANCE, ItemDisplay.class);
+		registration.registerEntityIcon(BlockDisplayProvider.INSTANCE, BlockDisplay.class);
 
 		ClientPlatformProxy.registerReloadListener(HarvestToolProvider.INSTANCE);
 
@@ -174,6 +178,8 @@ public class VanillaPlugin implements IWailaPlugin {
 
 		registration.hideTarget(EntityType.AREA_EFFECT_CLOUD);
 		registration.hideTarget(EntityType.FIREWORK_ROCKET);
+		registration.hideTarget(EntityType.INTERACTION);
+		registration.hideTarget(EntityType.TEXT_DISPLAY);
 		registration.hideTarget(Blocks.BARRIER);
 		registration.usePickedResult(EntityType.BOAT);
 		registration.usePickedResult(EntityType.CHEST_BOAT);

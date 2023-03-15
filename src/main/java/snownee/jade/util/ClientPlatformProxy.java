@@ -96,7 +96,6 @@ public final class ClientPlatformProxy {
 		MinecraftForge.EVENT_BUS.addListener(ClientPlatformProxy::onEntityLeave);
 		MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, ClientPlatformProxy::onTooltip);
 		MinecraftForge.EVENT_BUS.addListener(ClientPlatformProxy::onClientTick);
-		MinecraftForge.EVENT_BUS.addListener(ClientPlatformProxy::onRenderTick);
 		MinecraftForge.EVENT_BUS.addListener(ClientPlatformProxy::onPlayerLeave);
 		MinecraftForge.EVENT_BUS.addListener(ClientPlatformProxy::registerCommands);
 		MinecraftForge.EVENT_BUS.addListener(ClientPlatformProxy::onKeyPressed);
@@ -119,17 +118,14 @@ public final class ClientPlatformProxy {
 		JadeClient.onTooltip(event.getToolTip(), event.getItemStack());
 	}
 
-	private static void onRenderTick(TickEvent.RenderTickEvent event) {
-		if (event.phase == TickEvent.Phase.END) {
-			try {
-				OverlayRenderer.renderOverlay478757(new PoseStack());
-			} catch (Throwable e) {
-				WailaExceptionHandler.handleErr(e, null, null);
-			} finally {
-				bossbarShown = false;
-			}
+	public static void onRenderTick() {
+		try {
+			OverlayRenderer.renderOverlay478757(new PoseStack());
+		} catch (Throwable e) {
+			WailaExceptionHandler.handleErr(e, null, null);
+		} finally {
+			bossbarShown = false;
 		}
-
 	}
 
 	private static void onClientTick(TickEvent.ClientTickEvent event) {

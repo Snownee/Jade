@@ -87,7 +87,7 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 	}
 
 	@Override
-	protected boolean isFocused() {
+	public boolean isFocused() {
 		return owner.getFocused() == this;
 	}
 
@@ -137,7 +137,6 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 		RenderSystem.disableDepthTest();
 		RenderSystem.enableBlend();
 		RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
-		RenderSystem.disableTexture();
 		RenderSystem.setShader(GameRenderer::getPositionColorShader);
 		bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
 		bufferBuilder.vertex(x0, y0 + 4, 0.0D).color(0, 0, 0, 0).endVertex();
@@ -152,7 +151,6 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 
 		int int_8 = Math.max(0, getMaxPosition() - (y1 - y0 - 4));
 		if (int_8 > 0) {
-			RenderSystem.disableTexture();
 			RenderSystem.setShader(GameRenderer::getPositionColorShader);
 			int int_9 = (int) ((float) ((y1 - y0) * (y1 - y0)) / (float) getMaxPosition());
 			int_9 = Mth.clamp(int_9, 32, y1 - y0 - 8);
@@ -178,7 +176,6 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 		}
 
 		renderDecorations(matrixStack, mouseX, mouseY);
-		RenderSystem.enableTexture();
 		RenderSystem.disableBlend();
 	}
 

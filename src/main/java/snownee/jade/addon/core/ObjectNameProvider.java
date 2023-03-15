@@ -7,6 +7,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Nameable;
+import net.minecraft.world.entity.Display.BlockDisplay;
+import net.minecraft.world.entity.Display.ItemDisplay;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.npc.Villager;
@@ -98,6 +100,12 @@ public enum ObjectNameProvider
 			}
 			if (entity instanceof ItemEntity) {
 				return ((ItemEntity) entity).getItem().getHoverName();
+			}
+			if (entity instanceof ItemDisplay itemDisplay && !itemDisplay.getItemStack().isEmpty()) {
+				return itemDisplay.getItemStack().getHoverName();
+			}
+			if (entity instanceof BlockDisplay blockDisplay && !blockDisplay.getBlockState().isAir()) {
+				return blockDisplay.getBlockState().getBlock().getName();
 			}
 		}
 		return entity.getName();
