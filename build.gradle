@@ -87,8 +87,15 @@ task apiJar(type: Jar) {
     from sourceSets.main.output
 }
 
+task sourcesJar(type: Jar, dependsOn: classes) {
+    archiveClassifier.set('sources')
+    from sourceSets.main.allSource
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
 artifacts {
     archives apiJar
+    archives sourcesJar
 }
 
 repositories {
@@ -138,7 +145,12 @@ jar.finalizedBy('reobfJar')
 publishing {
     publications {
         mavenJava(MavenPublication) {
+            groupId = project.group
+            artifactId = project.archivesBaseName
+            version = project.version
             artifact jar
+            artifact apiJar
+            artifact sourcesJar
         }
     }
     repositories {
