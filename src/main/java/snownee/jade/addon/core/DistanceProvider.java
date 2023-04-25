@@ -36,7 +36,7 @@ public enum DistanceProvider implements IBlockComponentProvider, IEntityComponen
 	public void append(ITooltip tooltip, Accessor<?> accessor, BlockPos pos, IPluginConfig config) {
 		boolean distance = config.get(Identifiers.CORE_DISTANCE);
 		String distanceVal = distance ? distance(accessor) : null;
-		Component distanceMsg = distance ? Component.translatable("narration.jade.distance", distanceVal) : null;
+		String distanceMsg = distance ? I18n.get("narration.jade.distance", distanceVal) : null;
 		if (config.get(Identifiers.CORE_COORDINATES)) {
 			if (config.get(Identifiers.CORE_REL_COORDINATES) && Screen.hasControlDown()) {
 				xyz(tooltip, pos.subtract(BlockPos.containing(accessor.getPlayer().getEyePosition())));
@@ -57,7 +57,7 @@ public enum DistanceProvider implements IBlockComponentProvider, IEntityComponen
 
 	public static void xyz(ITooltip tooltip, Vec3i pos) {
 		Component display = Component.translatable("jade.blockpos", display(pos.getX(), 0xef9a9a), display(pos.getY(), 0xa5d6a7), display(pos.getZ(), 0x90caf9));
-		Component narrate = Component.translatable("narration.jade.blockpos", narrate(pos.getX()), narrate(pos.getY()), narrate(pos.getZ()));
+		String narrate = I18n.get("narration.jade.blockpos", narrate(pos.getX()), narrate(pos.getY()), narrate(pos.getZ()));
 		tooltip.add(tooltip.getElementHelper().text(display).message(narrate));
 	}
 

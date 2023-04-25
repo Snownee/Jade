@@ -11,7 +11,6 @@ import com.google.common.collect.Lists;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.StringDecomposer;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.Jade;
 import snownee.jade.api.ITooltip;
@@ -165,12 +164,11 @@ public class Tooltip implements ITooltip {
 		for (Line line : lines) {
 			/* off */
 			msgs.add(Joiner.on(' ').join(
-					Stream.concat(line.left.stream(), line.right.stream())
-							.filter(e -> !Identifiers.CORE_MOD_NAME.equals(e.getTag()))
-							.map(IElement::getCachedMessage)
-							.filter(java.util.Objects::nonNull)
-							.map(StringDecomposer::getPlainText)
-							.toList()
+							Stream.concat(line.left.stream(), line.right.stream())
+									.filter(e -> !Identifiers.CORE_MOD_NAME.equals(e.getTag()))
+									.map(IElement::getCachedMessage)
+									.filter(java.util.Objects::nonNull)
+									.toList()
 					)
 			);
 			/* on */

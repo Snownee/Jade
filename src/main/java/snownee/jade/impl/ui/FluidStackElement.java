@@ -6,7 +6,6 @@ import org.jetbrains.annotations.Nullable;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.ui.Element;
@@ -34,7 +33,7 @@ public class FluidStackElement extends Element {
 	}
 
 	@Override
-	public @Nullable Component getMessage() {
+	public @Nullable String getMessage() {
 		return null; //TODO
 	}
 

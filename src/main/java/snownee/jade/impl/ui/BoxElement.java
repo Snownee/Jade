@@ -5,7 +5,6 @@ import org.jetbrains.annotations.Nullable;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.ui.Element;
@@ -48,7 +47,7 @@ public class BoxElement extends Element implements IBoxElement {
 		tooltip.draw(matrixStack);
 		matrixStack.popPose();
 	}
-	
+
 	@Override
 	public IElement tag(ResourceLocation tag) {
 		box.tag(tag);
@@ -56,11 +55,11 @@ public class BoxElement extends Element implements IBoxElement {
 	}
 
 	@Override
-	public @Nullable Component getMessage() {
+	public @Nullable String getMessage() {
 		if (tooltip.getTooltip().isEmpty()) {
 			return null;
 		}
-		return Component.literal(tooltip.getTooltip().getMessage());
+		return tooltip.getTooltip().getMessage();
 	}
 
 	@Override
