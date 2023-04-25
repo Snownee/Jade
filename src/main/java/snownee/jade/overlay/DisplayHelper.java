@@ -173,6 +173,7 @@ public class DisplayHelper implements IDisplayHelper {
 		if (icon.bu != -1)
 			DisplayHelper.drawTexturedModalRect(matrixStack, x, y, icon.bu, icon.bv, sx, sy, icon.bsu, icon.bsv);
 		DisplayHelper.drawTexturedModalRect(matrixStack, x, y, icon.u, icon.v, sx, sy, icon.su, icon.sv);
+		RenderSystem.setShaderColor(1, 1, 1, 1);
 	}
 
 	//https://github.com/mezz/JustEnoughItems/blob/1.16/src/main/java/mezz/jei/plugins/vanilla/ingredients/fluid/FluidStackRenderer.java
