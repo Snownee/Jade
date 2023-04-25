@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
@@ -30,7 +31,7 @@ public interface IDisplayHelper {
 
 	void drawText(PoseStack poseStack, String text, float x, float y, int color);
 
-	void drawText(PoseStack poseStack, Component text, float x, float y, int color);
+	void drawText(PoseStack poseStack, FormattedText text, float x, float y, int color);
 
 	void drawText(PoseStack poseStack, FormattedCharSequence text, float x, float y, int color);
 

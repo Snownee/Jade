@@ -2,7 +2,6 @@ package snownee.jade.api.ui;
 
 import org.jetbrains.annotations.Nullable;
 
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec2;
 
@@ -17,8 +16,8 @@ public abstract class Element implements IElement {
 	protected Vec2 translation = Vec2.ZERO;
 	protected ResourceLocation tag;
 	protected Vec2 size;
-	private static final Component DEFAULT_MESSAGE = Component.empty();
-	protected Component message = DEFAULT_MESSAGE;
+	private static final String DEFAULT_MESSAGE = "";
+	protected String message = DEFAULT_MESSAGE;
 
 	@Override
 	public IElement size(Vec2 size) {
@@ -67,7 +66,7 @@ public abstract class Element implements IElement {
 	}
 
 	@Override
-	public @Nullable Component getCachedMessage() {
+	public @Nullable String getCachedMessage() {
 		if (message == DEFAULT_MESSAGE) {
 			message = getMessage();
 		}
@@ -81,7 +80,7 @@ public abstract class Element implements IElement {
 	}
 
 	@Override
-	public IElement message(@Nullable Component message) {
+	public IElement message(@Nullable String message) {
 		this.message = message;
 		return this;
 	}

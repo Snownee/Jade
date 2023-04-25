@@ -49,10 +49,10 @@ public class WailaConfigScreen extends BaseOptionsScreen {
 			});
 		});
 		OptionValue<?> value = options.choices("item_mod_name", general.showItemModNameTooltip(), general::setItemModNameTooltip);
-		if (!general.itemModNameTooltipDisabledByMods.isEmpty()) {
+		if (!ConfigGeneral.itemModNameTooltipDisabledByMods.isEmpty()) {
 			value.setDisabled(true);
 			value.appendDescription(I18n.get("gui.jade.disabled_by_mods"));
-			general.itemModNameTooltipDisabledByMods.forEach(value::appendDescription);
+			ConfigGeneral.itemModNameTooltipDisabledByMods.forEach(value::appendDescription);
 			if (value.getListener() != null) {
 				value.getListener().setTooltip(Tooltip.create(Component.literal(value.getDescription())));
 			}

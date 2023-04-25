@@ -4,7 +4,6 @@ import org.jetbrains.annotations.Nullable;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec2;
 
@@ -60,16 +59,16 @@ public interface IElement {
 	ResourceLocation getTag();
 
 	@Nullable
-	default Component getMessage() {
+	default String getMessage() {
 		return null;
 	}
 
 	@Nullable
-	Component getCachedMessage();
+	String getCachedMessage();
 
 	IElement clearCachedMessage();
 
-	IElement message(@Nullable Component message);
+	IElement message(@Nullable String message);
 
 	enum Align {
 		LEFT, RIGHT

@@ -4,7 +4,6 @@ import org.jetbrains.annotations.Nullable;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 
-import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec2;
@@ -53,10 +52,10 @@ public class ItemStackElement extends Element {
 	}
 
 	@Override
-	public @Nullable Component getMessage() {
+	public @Nullable String getMessage() {
 		if (stack.isEmpty())
 			return null;
-		return Component.literal("%s %s".formatted(stack.getCount(), stack.getHoverName().getString()));
+		return "%s %s".formatted(stack.getCount(), stack.getHoverName().getString());
 	}
 
 }
