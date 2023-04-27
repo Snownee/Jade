@@ -16,8 +16,6 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraftforge.client.event.RenderTooltipEvent;
-import net.minecraftforge.common.MinecraftForge;
 import snownee.jade.JadeClient;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
@@ -37,11 +35,8 @@ public enum ItemTooltipProvider implements IEntityComponentProvider {
 		JadeClient.hideModName = true;
 		List<Either<FormattedText, TooltipComponent>> lines = Lists.newArrayList();
 		stack.getTooltipLines(null, TooltipFlag.Default.NORMAL).stream().map(Either::<FormattedText, TooltipComponent>left).forEach(lines::add);
-		Minecraft mc = Minecraft.getInstance();
-		var event = new RenderTooltipEvent.GatherComponents(stack, mc.getWindow().getGuiScaledWidth(), mc.getWindow().getGuiScaledHeight(), null, -1);
-		MinecraftForge.EVENT_BUS.post(event);
 		JadeClient.hideModName = false;
-		if (event.isCanceled() || lines.isEmpty()) {
+		if (lines.isEmpty()) {
 			return;
 		}
 		List<FormattedText> realLines = lines.stream().map($ -> $.left()).filter(Optional::isPresent).map(Optional::get).skip(1).toList();

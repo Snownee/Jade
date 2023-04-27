@@ -71,20 +71,24 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 					return;
 				}
 
-				MutableBoolean showName = new MutableBoolean();
+				MutableBoolean showName = new MutableBoolean(true);
 				{
 					int totalSize = 0;
 					for (var group : groups) {
+						if (group.views.size() == 1 && "10k+".equals(group.views.get(0).text)) {
+							++totalSize;
+							continue;
+						}
 						for (var view : group.views) {
 							if (view.text != null) {
-								showName.setTrue();
+								showName.setFalse();
 							}
 							if (!view.item.isEmpty()) {
 								++totalSize;
 							}
 						}
 					}
-					if (showName.isFalse())
+					if (showName.isTrue())
 						showName.setValue(totalSize < PluginConfig.INSTANCE.getInt(Identifiers.MC_BLOCK_INVENTORY_SHOW_NAME_AMOUNT));
 				}
 
@@ -117,7 +121,7 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 							ItemStack copy = stack.copy();
 							copy.setCount(1);
 							elements.add(helper.smallItem(copy).clearCachedMessage());
-							elements.add(helper.text(Component.literal(IDisplayHelper.get().humanReadableNumber(stack.getCount(), "", false)).append("× ").append(IDisplayHelper.get().stripColor(stack.getHoverName()))).message(null));
+							elements.add(helper.text(Component.literal(itemView.text != null ? itemView.text : IDisplayHelper.get().humanReadableNumber(stack.getCount(), "", false)).append("× ").append(IDisplayHelper.get().stripColor(stack.getHoverName()))).message(null));
 						} else if (itemView.text != null) {
 							elements.add(helper.item(stack, 1, itemView.text));
 						} else {
@@ -212,7 +216,14 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 
 	@Override
 	public List<ClientViewGroup<ItemView>> getClientGroups(Accessor<?> accessor, List<ViewGroup<ItemStack>> groups) {
-		return ClientViewGroup.map(groups, ItemView::new, null);
+		var clientGroups = ClientViewGroup.map(groups, ItemView::new, null);
+		for (var clientGroup : clientGroups) {
+			var views = clientGroup.views;
+			if (views.size() == 1 && views.get(0).item.getCount() > 1000) {
+				views.get(0).text = "10k+";
+			}
+		}
+		return clientGroups;
 	}
 
 }
