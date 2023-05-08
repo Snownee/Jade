@@ -38,7 +38,7 @@ public enum ItemTooltipProvider implements IEntityComponentProvider {
 		List<Either<FormattedText, TooltipComponent>> lines = Lists.newArrayList();
 		stack.getTooltipLines(null, TooltipFlag.Default.NORMAL).stream().map(Either::<FormattedText, TooltipComponent>left).forEach(lines::add);
 		Minecraft mc = Minecraft.getInstance();
-		var event = new RenderTooltipEvent.GatherComponents(stack, mc.getWindow().getGuiScaledWidth(), mc.getWindow().getGuiScaledHeight(), null, -1);
+		var event = new RenderTooltipEvent.GatherComponents(stack, mc.getWindow().getGuiScaledWidth(), mc.getWindow().getGuiScaledHeight(), lines, -1);
 		MinecraftForge.EVENT_BUS.post(event);
 		JadeClient.hideModName = false;
 		if (event.isCanceled() || lines.isEmpty()) {
