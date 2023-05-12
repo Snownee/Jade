@@ -36,6 +36,7 @@
   "config.jade.display_tooltip": "Display Tooltip",
   "config.jade.display_tooltip_desc": "Collect data and render the tooltip",
   "config.jade.display_entities": "Display Entities",
+  "config.jade.display_bosses": "Display Bosses",
   "config.jade.display_blocks": "Display Blocks",
   "config.jade.display_fluids": "Display Fluids",
   "config.jade.display_fluids_desc": "Try to show fluids",

@@ -12,18 +12,19 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
-import snownee.jade.Jade;
 import snownee.jade.api.AccessorImpl;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.IJadeProvider;
 import snownee.jade.api.ITooltip;
+import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.impl.ui.ElementHelper;
 import snownee.jade.impl.ui.ItemStackElement;
 import snownee.jade.overlay.RayTracing;
 import snownee.jade.util.ClientPlatformProxy;
+import snownee.jade.util.PlatformProxy;
 import snownee.jade.util.WailaExceptionHandler;
 
 /**
@@ -89,7 +90,14 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 
 	@Override
 	public boolean shouldDisplay() {
-		return Jade.CONFIG.get().getGeneral().getDisplayEntities();
+		IWailaConfig.IConfigGeneral general = IWailaConfig.get().getGeneral();
+		if (!general.getDisplayEntities()) {
+			return false;
+		}
+		if (!general.getDisplayBosses() && PlatformProxy.isBoss(entity)) {
+			return false;
+		}
+		return true;
 	}
 
 	@Override

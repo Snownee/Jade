@@ -22,7 +22,7 @@ public abstract class OptionValue<T> extends WailaOptionsList.Entry {
 	protected final Consumer<T> setter;
 	protected T value;
 	private int x;
-	public int indent;
+	protected int indent;
 
 	public OptionValue(String optionName, Consumer<T> setter) {
 		this.title = makeTitle(optionName);
@@ -85,5 +85,10 @@ public abstract class OptionValue<T> extends WailaOptionsList.Entry {
 
 	public boolean isValidValue() {
 		return true;
+	}
+
+	public OptionValue<?> indent(int i) {
+		indent = i * 12;
+		return this;
 	}
 }

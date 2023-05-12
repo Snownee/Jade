@@ -74,7 +74,7 @@ public class PluginsConfigScreen extends BaseOptionsScreen {
 						entry.getTitle().append(Component.literal("*").withStyle(ChatFormatting.GRAY));
 					}
 					if (i.getPath().contains(".")) {
-						entry.indent = 12;
+						entry.indent(1);
 					}
 				});
 				return options;

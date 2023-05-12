@@ -38,8 +38,9 @@ public class WailaConfigScreen extends BaseOptionsScreen {
 		options.title("general");
 		options.choices("display_tooltip", general.shouldDisplayTooltip(), general::setDisplayTooltip);
 		options.choices("display_entities", general.getDisplayEntities(), general::setDisplayEntities);
+		options.choices("display_bosses", general.getDisplayBosses(), general::setDisplayBosses).indent(1);
 		options.choices("display_blocks", general.getDisplayBlocks(), general::setDisplayBlocks);
-		options.choices("display_fluids", general.getDisplayFluids(), general::setDisplayFluids);
+		options.choices("display_fluids", general.getDisplayFluids(), general::setDisplayFluids).indent(1);
 		options.choices("display_mode", general.getDisplayMode(), general::setDisplayMode, builder -> {
 			builder.withTooltip(mode -> {
 				String key = "display_mode_" + mode.name().toLowerCase(Locale.ENGLISH) + "_desc";

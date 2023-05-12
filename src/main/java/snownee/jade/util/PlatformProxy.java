@@ -173,4 +173,9 @@ public final class PlatformProxy {
 		ResourceLocation profName = ForgeRegistries.VILLAGER_PROFESSIONS.getKey(profession);
 		return Component.translatable(EntityType.VILLAGER.getDescriptionId() + '.' + (!ResourceLocation.DEFAULT_NAMESPACE.equals(profName.getNamespace()) ? profName.getNamespace() + '.' : "") + profName.getPath());
 	}
+
+	public static boolean isBoss(Entity entity) {
+		EntityType<?> entityType = entity.getType();
+		return entityType.is(Tags.EntityTypes.BOSSES) || entityType == EntityType.ENDER_DRAGON || entityType == EntityType.WITHER;
+	}
 }
