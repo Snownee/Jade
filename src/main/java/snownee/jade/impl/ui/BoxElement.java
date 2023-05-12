@@ -3,8 +3,8 @@ package snownee.jade.impl.ui;
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.ui.Element;
@@ -34,18 +34,18 @@ public class BoxElement extends Element implements IBoxElement {
 	}
 
 	@Override
-	public void render(PoseStack matrixStack, float x, float y, float maxX, float maxY) {
+	public void render(GuiGraphics guiGraphics, float x, float y, float maxX, float maxY) {
 		if (tooltip.getTooltip().isEmpty()) {
 			return;
 		}
 		// Rect2i rect = tooltip.getPosition();
 		RenderSystem.enableBlend();
-		matrixStack.pushPose();
-		matrixStack.translate(x, y, 0);
-		box.render(matrixStack, 0, 0, maxX - x, maxY - y - 2);
+		guiGraphics.pose().pushPose();
+		guiGraphics.pose().translate(x, y, 0);
+		box.render(guiGraphics, 0, 0, maxX - x, maxY - y - 2);
 		tooltip.setSize(new Vec2(maxX - x, tooltip.getSize().y));
-		tooltip.draw(matrixStack);
-		matrixStack.popPose();
+		tooltip.draw(guiGraphics);
+		guiGraphics.pose().popPose();
 	}
 
 	@Override

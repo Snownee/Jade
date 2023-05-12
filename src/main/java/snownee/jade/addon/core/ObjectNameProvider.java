@@ -100,8 +100,8 @@ public enum ObjectNameProvider
 			if (entity instanceof ItemEntity) {
 				return ((ItemEntity) entity).getItem().getHoverName();
 			}
-			if (entity instanceof ItemDisplay itemDisplay && !itemDisplay.getItemStack().isEmpty()) {
-				return itemDisplay.getItemStack().getHoverName();
+			if (entity instanceof ItemDisplay itemDisplay && !itemDisplay.getSlot(0).get().isEmpty()) {
+				return itemDisplay.getSlot(0).get().getHoverName();
 			}
 			if (entity instanceof BlockDisplay blockDisplay && !blockDisplay.getBlockState().isAir()) {
 				return blockDisplay.getBlockState().getBlock().getName();

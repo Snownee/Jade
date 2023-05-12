@@ -1,14 +1,13 @@
 package snownee.jade.api.fluid;
 
-import net.minecraft.world.level.material.Fluids;
+import java.util.Objects;
 
 import org.jetbrains.annotations.Nullable;
 
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.material.Fluid;
-
-import java.util.Objects;
+import net.minecraft.world.level.material.Fluids;
 
 public class JadeFluidObject {
 

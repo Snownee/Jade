@@ -7,9 +7,9 @@ import java.util.Set;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
@@ -72,15 +72,15 @@ public abstract class BaseOptionsScreen extends Screen {
 	}
 
 	@Override
-	public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-		renderBackground(matrixStack);
-		super.render(matrixStack, mouseX, mouseY, partialTicks);
+	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+		renderBackground(guiGraphics);
+		super.render(guiGraphics, mouseX, mouseY, partialTicks);
 
 		if (options.serverFeatures > 0) {
 			Component component = JadeClient.format("gui.jade.server_features", options.serverFeatures);
-			font.drawShadow(matrixStack, component, 4, height - 18, ChatFormatting.GRAY.getColor());
+			guiGraphics.drawString(font, component, 4, height - 18, ChatFormatting.GRAY.getColor());
 			if (mouseY >= height - 18 && mouseY <= height - 18 + font.lineHeight && mouseX >= 4 && mouseX <= 4 + font.width(component)) {
-				renderTooltip(matrixStack, font.split(JadeClient.format("gui.jade.server_features.tip", options.serverFeatures), 300), mouseX, mouseY);
+				guiGraphics.renderTooltip(font, font.split(JadeClient.format("gui.jade.server_features.tip", options.serverFeatures), 300), mouseX, mouseY);
 			}
 		}
 
@@ -90,11 +90,11 @@ public abstract class BaseOptionsScreen extends Screen {
 				int valueX = entry.getTextX(options.getRowWidth());
 				if (mouseX >= valueX && mouseX < valueX + entry.getTextWidth()) {
 					List<FormattedCharSequence> tooltip = font.split(Component.literal(entry.getDescription()), 200);
-					matrixStack.pushPose();
-					matrixStack.translate(0, 0, 100);
-					renderTooltip(matrixStack, tooltip, mouseX, mouseY);
+					guiGraphics.pose().pushPose();
+					guiGraphics.pose().translate(0, 0, 100);
+					guiGraphics.renderTooltip(font, tooltip, mouseX, mouseY);
 					RenderSystem.enableDepthTest();
-					matrixStack.popPose();
+					guiGraphics.pose().popPose();
 				}
 			}
 		}

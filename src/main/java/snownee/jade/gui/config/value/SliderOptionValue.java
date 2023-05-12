@@ -3,9 +3,8 @@ package snownee.jade.gui.config.value;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-
 import it.unimi.dsi.fastutil.floats.FloatUnaryOperator;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.network.chat.Component;
@@ -33,10 +32,10 @@ public class SliderOptionValue extends OptionValue<Float> {
 	}
 
 	@Override
-	protected void drawValue(PoseStack matrixStack, int entryWidth, int entryHeight, int x, int y, int mouseX, int mouseY, boolean selected, float partialTicks) {
+	protected void drawValue(GuiGraphics guiGraphics, int entryWidth, int entryHeight, int x, int y, int mouseX, int mouseY, boolean selected, float partialTicks) {
 		slider.setX(x);
 		slider.setY(y + entryHeight / 6);
-		slider.render(matrixStack, mouseX, mouseY, partialTicks);
+		slider.render(guiGraphics, mouseX, mouseY, partialTicks);
 	}
 
 	@Override

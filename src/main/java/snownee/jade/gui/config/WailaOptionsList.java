@@ -8,8 +8,6 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import net.minecraft.client.gui.components.AbstractSelectionList;
-
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Predicates;
@@ -18,7 +16,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat.Mode;
@@ -27,7 +24,7 @@ import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import it.unimi.dsi.fastutil.floats.FloatUnaryOperator;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.CycleButton;
@@ -98,30 +95,30 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 	}
 
 	@Override
-	protected void renderSelection(PoseStack poseStack, int i, int j, int k, int l, int m) {
-		AbstractSelectionList.fill(poseStack, 0, i - 2, owner.width, i + k + 2, 0x33FFFFFF);
+	protected void renderSelection(GuiGraphics guiGraphics, int i, int j, int k, int l, int m) {
+		guiGraphics.fill(0, i - 2, owner.width, i + k + 2, 0x33FFFFFF);
 	}
 
 	@Override
-	public void render(PoseStack matrixStack, int mouseX, int mouseY, float delta) {
+	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
 		super.setScrollAmount((targetScroll + super.getScrollAmount()) / 2);
 		Entry entry = getEntryAtPosition(mouseX, mouseY);
 		setSelected(entry);
 
-		renderBackground(matrixStack);
+		renderBackground(guiGraphics);
 		int scrollPosX = getScrollbarPosition();
 		int j = scrollPosX + 6;
 		RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
 		Tesselator tessellator = Tesselator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuilder();
-		RenderSystem.setShaderTexture(0, BACKGROUND_LOCATION);
+		RenderSystem.setShaderTexture(0, Screen.BACKGROUND_LOCATION);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		//		int rowLeft = getRowLeft();
 		//		int scrollJump = y0 + 4 - (int) getScrollAmount();
 
-		renderList(matrixStack, mouseX, mouseY, delta);
+		renderList(guiGraphics, mouseX, mouseY, delta);
 		RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-		RenderSystem.setShaderTexture(0, GuiComponent.BACKGROUND_LOCATION);
+		RenderSystem.setShaderTexture(0, Screen.BACKGROUND_LOCATION);
 		RenderSystem.enableDepthTest();
 		RenderSystem.depthFunc(519);
 		bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
@@ -176,7 +173,7 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 			tessellator.end();
 		}
 
-		renderDecorations(matrixStack, mouseX, mouseY);
+		renderDecorations(guiGraphics, mouseX, mouseY);
 		RenderSystem.disableBlend();
 	}
 
@@ -286,7 +283,7 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 		}
 
 		@Override
-		public abstract void render(PoseStack matrixStack, int index, int rowTop, int rowLeft, int width, int height, int mouseX, int mouseY, boolean hovered, float deltaTime);
+		public abstract void render(GuiGraphics guiGraphics, int index, int rowTop, int rowLeft, int width, int height, int mouseX, int mouseY, boolean hovered, float deltaTime);
 
 		public void setDisabled(boolean b) {
 			if (getListener() != null) {
@@ -326,9 +323,9 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 		}
 
 		@Override
-		public void render(PoseStack matrixStack, int index, int rowTop, int rowLeft, int width, int height, int mouseX, int mouseY, boolean hovered, float deltaTime) {
+		public void render(GuiGraphics guiGraphics, int index, int rowTop, int rowLeft, int width, int height, int mouseX, int mouseY, boolean hovered, float deltaTime) {
 			x = rowLeft;
-			client.font.drawShadow(matrixStack, title, getTextX(width), rowTop + (height / 4) + (client.font.lineHeight / 2), 16777215);
+			guiGraphics.drawString(client.font, title, getTextX(width), rowTop + (height / 4) + (client.font.lineHeight / 2), 16777215);
 		}
 
 		@Override

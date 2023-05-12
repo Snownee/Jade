@@ -2,6 +2,7 @@ package snownee.jade.impl.ui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.ui.Element;
@@ -22,11 +23,12 @@ public class SubTextElement extends Element {
 	}
 
 	@Override
-	public void render(PoseStack matrixStack, float x, float y, float maxX, float maxY) {
+	public void render(GuiGraphics guiGraphics, float x, float y, float maxX, float maxY) {
+		PoseStack matrixStack = guiGraphics.pose();
 		matrixStack.pushPose();
 		matrixStack.translate(x, y, 800);
 		matrixStack.scale(0.75f, 0.75f, 0);
-		DisplayHelper.INSTANCE.drawText(matrixStack, text, 0, 0, OverlayRenderer.normalTextColorRaw);
+		DisplayHelper.INSTANCE.drawText(guiGraphics, text, 0, 0, OverlayRenderer.normalTextColorRaw);
 		matrixStack.popPose();
 	}
 

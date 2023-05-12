@@ -74,7 +74,7 @@ public class Jade implements ModInitializer {
 		PlatformProxy.init();
 
 		ServerPlayNetworking.registerGlobalReceiver(Identifiers.PACKET_REQUEST_ENTITY, (server, player, handler, buf, responseSender) -> {
-			Level world = player.level;
+			Level world = player.level();
 			Entity entity = world.getEntity(buf.readVarInt());
 			boolean showDetails = buf.readBoolean();
 			if (entity == null || player.distanceToSqr(entity) > MAX_DISTANCE_SQR)
@@ -103,7 +103,7 @@ public class Jade implements ModInitializer {
 		ServerPlayNetworking.registerGlobalReceiver(Identifiers.PACKET_REQUEST_TILE, (server, player, handler, buf, responseSender) -> {
 			BlockPos pos = buf.readBlockPos();
 			boolean showDetails = buf.readBoolean();
-			Level world = player.level;
+			Level world = player.level();
 			if (pos.distSqr(player.blockPosition()) > MAX_DISTANCE_SQR || !world.isLoaded(pos))
 				return;
 			server.execute(() -> {

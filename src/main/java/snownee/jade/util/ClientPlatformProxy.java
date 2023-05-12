@@ -10,7 +10,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonObject;
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.brigadier.CommandDispatcher;
 
 import net.fabricmc.fabric.api.block.BlockPickInteractionAware;
@@ -30,6 +29,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -152,9 +152,9 @@ public final class ClientPlatformProxy {
 		JadeClient.onTooltip(lines, stack);
 	}
 
-	public static void onRenderTick() {
+	public static void onRenderTick(GuiGraphics guiGraphics) {
 		try {
-			OverlayRenderer.renderOverlay478757(new PoseStack());
+			OverlayRenderer.renderOverlay478757(guiGraphics);
 		} catch (Throwable e) {
 			WailaExceptionHandler.handleErr(e, null, null);
 		}
@@ -221,9 +221,9 @@ public final class ClientPlatformProxy {
 	public static ItemStack getBlockPickedResult(BlockState state, Player player, BlockHitResult hitResult) {
 		Block block = state.getBlock();
 		if (block instanceof BlockPickInteractionAware) {
-			return ((BlockPickInteractionAware) block).getPickedStack(state, player.level, hitResult.getBlockPos(), player, hitResult);
+			return ((BlockPickInteractionAware) block).getPickedStack(state, player.level(), hitResult.getBlockPos(), player, hitResult);
 		}
-		return block.getCloneItemStack(player.level, hitResult.getBlockPos(), state);
+		return block.getCloneItemStack(player.level(), hitResult.getBlockPos(), state);
 	}
 
 	public static IElement elementFromLiquid(LiquidBlock block) {

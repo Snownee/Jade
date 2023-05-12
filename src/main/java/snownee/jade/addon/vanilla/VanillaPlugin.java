@@ -94,7 +94,7 @@ public class VanillaPlugin implements IWailaPlugin {
 
 		registration.addConfig(Identifiers.MC_EFFECTIVE_TOOL, true);
 		registration.addConfig(Identifiers.MC_HARVEST_TOOL_NEW_LINE, false);
-		registration.addConfig(Identifiers.MC_SHOW_UNBREAKABLE, true);
+		registration.addConfig(Identifiers.MC_SHOW_UNBREAKABLE, false);
 		registration.addConfig(Identifiers.MC_BREAKING_PROGRESS, true);
 		registration.addConfig(Identifiers.MC_ANIMAL_OWNER_FETCH_NAMES, true);
 

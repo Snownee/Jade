@@ -8,8 +8,8 @@ import java.util.stream.Stream;
 import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.vertex.PoseStack;
 
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.Jade;
@@ -50,15 +50,15 @@ public class Tooltip implements ITooltip {
 			return size;
 		}
 
-		public void render(PoseStack matrixStack, float x, float y, float maxWidth, float y2) {
+		public void render(GuiGraphics guiGraphics, float x, float y, float maxWidth, float y2) {
 			float ox = maxWidth, oy = y;
 			for (int i = right.size() - 1; i >= 0; i--) {
 				IElement element = right.get(i);
 				Vec2 translate = element.getTranslation();
 				Vec2 size = element.getCachedSize();
 				ox -= size.x;
-				drawBorder(matrixStack, ox, oy, element);
-				element.render(matrixStack, ox + translate.x, oy + translate.y, x + size.x + translate.x, y + y2 + translate.y);
+				drawBorder(guiGraphics, ox, oy, element);
+				element.render(guiGraphics, ox + translate.x, oy + translate.y, x + size.x + translate.x, y + y2 + translate.y);
 			}
 			maxWidth = ox;
 			ox = x;
@@ -66,8 +66,8 @@ public class Tooltip implements ITooltip {
 				IElement element = left.get(i);
 				Vec2 translate = element.getTranslation();
 				Vec2 size = element.getCachedSize();
-				drawBorder(matrixStack, ox, oy, element);
-				element.render(matrixStack, ox + translate.x, oy + translate.y, ((i == left.size() - 1) ? maxWidth : (ox + size.x)) + translate.x, y + y2 + translate.y);
+				drawBorder(guiGraphics, ox, oy, element);
+				element.render(guiGraphics, ox + translate.x, oy + translate.y, ((i == left.size() - 1) ? maxWidth : (ox + size.x)) + translate.x, y + y2 + translate.y);
 				ox += size.x;
 			}
 		}
@@ -142,13 +142,13 @@ public class Tooltip implements ITooltip {
 		}
 	}
 
-	public static void drawBorder(PoseStack matrixStack, float x, float y, IElement element) {
+	public static void drawBorder(GuiGraphics guiGraphics, float x, float y, IElement element) {
 		if (Jade.CONFIG.get().getGeneral().isDebug()) {
 			Vec2 translate = element.getTranslation();
 			Vec2 size = element.getCachedSize();
-			DisplayHelper.INSTANCE.drawBorder(matrixStack, x, y, x + size.x, y + size.y, 1, 0x88FF0000, true);
+			DisplayHelper.INSTANCE.drawBorder(guiGraphics, x, y, x + size.x, y + size.y, 1, 0x88FF0000, true);
 			if (!Vec2.ZERO.equals(translate)) {
-				DisplayHelper.INSTANCE.drawBorder(matrixStack, x + translate.x, y + translate.y, x + translate.x + size.x, y + translate.y + size.y, 1, 0x880000FF, true);
+				DisplayHelper.INSTANCE.drawBorder(guiGraphics, x + translate.x, y + translate.y, x + translate.x + size.x, y + translate.y + size.y, 1, 0x880000FF, true);
 			}
 		}
 	}

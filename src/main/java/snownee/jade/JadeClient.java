@@ -8,12 +8,12 @@ import org.jetbrains.annotations.Nullable;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.toasts.SystemToast;
 import net.minecraft.client.gui.components.toasts.SystemToast.SystemToastIds;
 import net.minecraft.client.gui.screens.Screen;
@@ -31,6 +31,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.BrushableBlock;
 import net.minecraft.world.level.block.InfestedBlock;
 import net.minecraft.world.level.block.TrappedChestBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -175,8 +176,8 @@ public final class JadeClient implements ClientModInitializer {
 			} else if (target.getBlock() == Blocks.POWDER_SNOW) {
 				Block block = Blocks.SNOW_BLOCK;
 				return client.blockAccessor().from(target).blockState(block.defaultBlockState()).build();
-			} else if (target.getBlock() == Blocks.SUSPICIOUS_SAND) {
-				Block block = Blocks.SAND;
+			} else if (target.getBlock() instanceof BrushableBlock brushable) {
+				Block block = brushable.getTurnsInto();
 				return client.blockAccessor().from(target).blockState(block.defaultBlockState()).build();
 			}
 		}
@@ -187,7 +188,7 @@ public final class JadeClient implements ClientModInitializer {
 	private static float progressAlpha;
 	private static boolean canHarvest;
 
-	public static void drawBreakingProgress(ITooltip tooltip, Rect2i rect, PoseStack matrixStack, Accessor<?> accessor) {
+	public static void drawBreakingProgress(ITooltip tooltip, Rect2i rect, GuiGraphics guiGraphics, Accessor<?> accessor) {
 		if (!PluginConfig.INSTANCE.get(Identifiers.MC_BREAKING_PROGRESS)) {
 			progressAlpha = 0;
 			return;
@@ -210,7 +211,7 @@ public final class JadeClient implements ClientModInitializer {
 		progressAlpha += mc.getDeltaFrameTime() * (playerController.isDestroying() ? 0.1F : -0.1F);
 		if (playerController.isDestroying()) {
 			progressAlpha = Math.min(progressAlpha, 0.53F); //0x88 = 0.53 * 255
-			float progress = state.getDestroyProgress(mc.player, mc.player.level, playerController.destroyBlockPos);
+			float progress = state.getDestroyProgress(mc.player, mc.player.level(), playerController.destroyBlockPos);
 			if (playerController.destroyProgress + progress >= 1) {
 				progressAlpha = 1;
 			}
@@ -221,7 +222,7 @@ public final class JadeClient implements ClientModInitializer {
 			progressAlpha = Math.max(progressAlpha, 0);
 		}
 		color = IConfigOverlay.applyAlpha(color, progressAlpha);
-		DisplayHelper.fill(matrixStack, 0, height - 1, width * savedProgress, height, color);
+		DisplayHelper.fill(guiGraphics, 0, height - 1, width * savedProgress, height, color);
 	}
 
 	public static MutableComponent format(String s, Object... objects) {

@@ -153,7 +153,7 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 	public static void putData(CompoundTag tag, ServerPlayer player, Object target, boolean showDetails) {
 		var list = WailaCommonRegistration.INSTANCE.itemStorageProviders.get(target);
 		for (var provider : list) {
-			var groups = provider.getGroups(player, player.getLevel(), target, showDetails);
+			var groups = provider.getGroups(player, player.serverLevel(), target, showDetails);
 			if (groups != null) {
 				if (ViewGroup.saveList(tag, "JadeItemStorage", groups, item -> {
 					CompoundTag itemTag = new CompoundTag();

@@ -1,5 +1,7 @@
 package snownee.jade.util;
 
+import java.util.List;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Streams;
 import com.google.common.math.LongMath;
@@ -14,8 +16,6 @@ import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.view.FluidView;
 import snownee.jade.api.view.ItemView;
 import snownee.jade.api.view.ViewGroup;
-
-import java.util.List;
 
 public final class JadeFabricUtils {
 

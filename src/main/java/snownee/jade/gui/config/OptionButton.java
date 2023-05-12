@@ -3,10 +3,10 @@ package snownee.jade.gui.config;
 import java.util.List;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
@@ -38,11 +38,11 @@ public class OptionButton extends WailaOptionsList.Entry {
 	}
 
 	@Override
-	public void render(PoseStack matrixStack, int index, int rowTop, int rowLeft, int width, int height, int mouseX, int mouseY, boolean hovered, float deltaTime) {
-		client.font.drawShadow(matrixStack, title, rowLeft + 10, rowTop + (height / 4) + (client.font.lineHeight / 2), 16777215);
+	public void render(GuiGraphics guiGraphics, int index, int rowTop, int rowLeft, int width, int height, int mouseX, int mouseY, boolean hovered, float deltaTime) {
+		guiGraphics.drawString(client.font, title, rowLeft + 10, rowTop + (height / 4) + (client.font.lineHeight / 2), 16777215);
 		button.setX(rowLeft + width - 110);
 		button.setY(rowTop + height / 6);
-		button.render(matrixStack, mouseX, mouseY, deltaTime);
+		button.render(guiGraphics, mouseX, mouseY, deltaTime);
 	}
 
 	@Override

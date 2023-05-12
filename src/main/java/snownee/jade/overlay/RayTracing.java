@@ -72,7 +72,7 @@ public class RayTracing {
 			traceEnd = eyePosition.add(lookVector.x * playerReach, lookVector.y * playerReach, lookVector.z * playerReach);
 		}
 
-		Level world = entity.level;
+		Level world = entity.level();
 		AABB bound = new AABB(eyePosition, traceEnd);
 		Predicate<Entity> predicate = e -> canBeTarget(e, entity);
 		EntityHitResult entityResult = getEntityHitResult(world, entity, eyePosition, traceEnd, bound, predicate);

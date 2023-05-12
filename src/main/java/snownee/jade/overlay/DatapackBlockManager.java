@@ -31,7 +31,7 @@ public class DatapackBlockManager {
 	public static void onEntityLeave(Entity entity) {
 		if (entity.getType() == EntityType.ITEM_FRAME || entity.getType() == EntityType.GLOW_ITEM_FRAME) {
 			BlockPos pos = entity.blockPosition();
-			getFakeBlock(entity.level, pos);
+			getFakeBlock(entity.level(), pos);
 		}
 	}
 

@@ -1,7 +1,6 @@
 package snownee.jade.impl.ui;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.ui.Element;
 
@@ -19,6 +18,6 @@ public class SpacerElement extends Element {
 	}
 
 	@Override
-	public void render(PoseStack matrixStack, float x, float y, float maxX, float maxY) {
+	public void render(GuiGraphics guiGraphics, float x, float y, float maxX, float maxY) {
 	}
 }

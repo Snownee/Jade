@@ -24,3 +24,5 @@ accessible method net/minecraft/client/Minecraft addCustomNbtData (Lnet/minecraf
 
 accessible method net/minecraft/world/level/block/ChiseledBookShelfBlock getRelativeHitCoordinatesForBlockFace (Lnet/minecraft/world/phys/BlockHitResult;Lnet/minecraft/core/Direction;)Ljava/util/Optional;
 accessible method net/minecraft/world/level/block/ChiseledBookShelfBlock getHitSlot (Lnet/minecraft/world/phys/Vec2;)I
+
+accessible method net/minecraft/world/entity/Display$BlockDisplay getBlockState ()Lnet/minecraft/world/level/block/state/BlockState;

@@ -19,9 +19,9 @@ public enum ItemDisplayProvider implements IEntityComponentProvider {
 	@Override
 	public @Nullable IElement getIcon(EntityAccessor accessor, IPluginConfig config, IElement currentIcon) {
 		ItemDisplay itemDisplay = (ItemDisplay) accessor.getEntity();
-		if (itemDisplay.getItemStack().isEmpty())
+		if (itemDisplay.getSlot(0).get().isEmpty())
 			return null;
-		return IElementHelper.get().item(itemDisplay.getItemStack());
+		return IElementHelper.get().item(itemDisplay.getSlot(0).get());
 	}
 
 	@Override

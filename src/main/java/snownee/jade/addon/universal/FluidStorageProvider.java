@@ -103,7 +103,7 @@ public enum FluidStorageProvider implements IBlockComponentProvider, IServerData
 	public static void putData(CompoundTag tag, ServerPlayer player, Object target, boolean showDetails) {
 		var list = WailaCommonRegistration.INSTANCE.fluidStorageProviders.get(target);
 		for (var provider : list) {
-			var groups = provider.getGroups(player, player.getLevel(), target, showDetails);
+			var groups = provider.getGroups(player, player.serverLevel(), target, showDetails);
 			if (groups != null) {
 				if (ViewGroup.saveList(tag, "JadeFluidStorage", groups, Function.identity()))
 					tag.putString("JadeFluidStorageUid", provider.getUid().toString());

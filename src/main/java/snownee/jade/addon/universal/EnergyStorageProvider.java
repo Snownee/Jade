@@ -102,7 +102,7 @@ public enum EnergyStorageProvider implements IBlockComponentProvider, IServerDat
 	public static void putData(CompoundTag tag, ServerPlayer player, Object target, boolean showDetails) {
 		var list = WailaCommonRegistration.INSTANCE.energyStorageProviders.get(target);
 		for (var provider : list) {
-			var groups = provider.getGroups(player, player.getLevel(), target, showDetails);
+			var groups = provider.getGroups(player, player.serverLevel(), target, showDetails);
 			if (groups != null) {
 				if (ViewGroup.saveList(tag, "JadeEnergyStorage", groups, Function.identity()))
 					tag.putString("JadeEnergyStorageUid", provider.getUid().toString());
