@@ -32,11 +32,15 @@ public interface IWailaConfig {
 
 		boolean getDisplayEntities();
 
+		boolean getDisplayBosses();
+
 		boolean getDisplayBlocks();
 
 		void setDisplayBlocks(boolean displayBlocks);
 
 		void setDisplayEntities(boolean displayEntities);
+
+		void setDisplayBosses(boolean displayBosses);
 
 		void setDisplayMode(DisplayMode displayMode);
 

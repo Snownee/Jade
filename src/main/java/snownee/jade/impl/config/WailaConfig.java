@@ -58,6 +58,7 @@ public class WailaConfig implements IWailaConfig {
 		private boolean displayTooltip = true;
 		private boolean displayBlocks = true;
 		private boolean displayEntities = true;
+		private boolean displayBosses = true;
 		private DisplayMode displayMode = DisplayMode.TOGGLE;
 		private boolean hideFromDebug = true;
 		private boolean hideFromTabList = true;
@@ -220,6 +221,16 @@ public class WailaConfig implements IWailaConfig {
 		@Override
 		public boolean shouldHideFromTabList() {
 			return hideFromTabList;
+		}
+
+		@Override
+		public boolean getDisplayBosses() {
+			return displayBosses;
+		}
+
+		@Override
+		public void setDisplayBosses(boolean displayBosses) {
+			this.displayBosses = displayBosses;
 		}
 
 	}
