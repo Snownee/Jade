@@ -13,6 +13,7 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.util.ModIdentification;
 
@@ -36,14 +37,14 @@ public enum ModNameProvider implements IBlockComponentProvider, IEntityComponent
 		}
 
 		if (!Strings.isNullOrEmpty(modName)) {
-			modName = String.format(config.getWailaConfig().getFormatting().getModName(), modName);
+			modName = String.format(IWailaConfig.get().getFormatting().getModName(), modName);
 			tooltip.add(Component.literal(modName));
 		}
 	}
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
-		tooltip.add(Component.literal(String.format(config.getWailaConfig().getFormatting().getModName(), ModIdentification.getModName(accessor.getEntity()))));
+		tooltip.add(Component.literal(String.format(IWailaConfig.get().getFormatting().getModName(), ModIdentification.getModName(accessor.getEntity()))));
 	}
 
 	@Override

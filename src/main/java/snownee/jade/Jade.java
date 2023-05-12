@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.ApiStatus.ScheduledForRemoval;
 
 import com.google.common.base.Strings;
 import com.google.gson.GsonBuilder;
@@ -25,17 +24,13 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.WailaPlugin;
 import snownee.jade.api.config.Theme;
-import snownee.jade.api.ui.IElement;
-import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.impl.config.PluginConfig;
@@ -54,11 +49,6 @@ public class Jade implements ModInitializer {
 	public static final String NAME = "Jade";
 	public static final Logger LOGGER = LogManager.getLogger(NAME);
 
-	@ScheduledForRemoval(inVersion = "1.20")
-	public static final Vec2 SMALL_ITEM_SIZE = new Vec2(10, 10);
-	@ScheduledForRemoval(inVersion = "1.20")
-	public static final Vec2 SMALL_ITEM_OFFSET = Vec2.NEG_UNIT_Y;
-
 	/**
 	 * addons: Use {@link snownee.jade.api.IWailaClientRegistration#getConfig}
 	 */
@@ -76,11 +66,6 @@ public class Jade implements ModInitializer {
 							.create()
 			);
 	/* on */
-
-	@ScheduledForRemoval(inVersion = "1.20")
-	public static IElement smallItem(IElementHelper elements, ItemStack stack) {
-		return elements.smallItem(stack);
-	}
 
 	public static int MAX_DISTANCE_SQR = 900;
 

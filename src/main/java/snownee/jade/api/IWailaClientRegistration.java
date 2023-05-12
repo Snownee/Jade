@@ -5,7 +5,6 @@ import java.util.function.Predicate;
 
 import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.ApiStatus.NonExtendable;
-import org.jetbrains.annotations.ApiStatus.ScheduledForRemoval;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.client.gui.screens.Screen;
@@ -25,11 +24,8 @@ import snownee.jade.api.callback.JadeRayTraceCallback;
 import snownee.jade.api.callback.JadeRenderBackgroundCallback;
 import snownee.jade.api.callback.JadeTooltipCollectedCallback;
 import snownee.jade.api.config.IPluginConfig;
-import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.platform.PlatformWailaClientRegistration;
-import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.IElement;
-import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.api.view.EnergyView;
 import snownee.jade.api.view.FluidView;
 import snownee.jade.api.view.IClientExtensionProvider;
@@ -113,15 +109,6 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 	 * Mark an entity type to show name of the picked result, rather than entity name.
 	 */
 	void usePickedResult(EntityType<?> entityType);
-
-	@ScheduledForRemoval(inVersion = "1.20")
-	IElementHelper getElementHelper();
-
-	@ScheduledForRemoval(inVersion = "1.20")
-	IDisplayHelper getDisplayHelper();
-
-	@ScheduledForRemoval(inVersion = "1.20")
-	IWailaConfig getConfig();
 
 	BlockAccessor.Builder blockAccessor();
 

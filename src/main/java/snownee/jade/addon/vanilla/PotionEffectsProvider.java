@@ -23,6 +23,7 @@ import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.IElementHelper;
 
 public enum PotionEffectsProvider implements IEntityComponentProvider, IServerDataProvider<Entity> {
@@ -52,7 +53,7 @@ public enum PotionEffectsProvider implements IEntityComponentProvider, IServerDa
 			MutableComponent s = Component.translatable("jade.potion", name, amplifier, getPotionDurationString(duration));
 			box.add(s.withStyle(compound.getBoolean("Bad") ? ChatFormatting.RED : ChatFormatting.GREEN));
 		}
-		tooltip.add(helper.box(box));
+		tooltip.add(helper.box(box, BoxStyle.DEFAULT));
 	}
 
 	public static String getPotionDurationString(int duration) {

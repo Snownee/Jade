@@ -61,16 +61,14 @@ public enum ObjectNameProvider
 			}
 		}
 		if (name != null) {
-			IWailaConfig wailaConfig = config.getWailaConfig();
-			tooltip.add(wailaConfig.getFormatting().title(name));
+			tooltip.add(IWailaConfig.get().getFormatting().title(name));
 		}
 	}
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		Component name = getEntityName(accessor.getEntity());
-		IWailaConfig wailaConfig = config.getWailaConfig();
-		tooltip.add(wailaConfig.getFormatting().title(name));
+		tooltip.add(IWailaConfig.get().getFormatting().title(name));
 	}
 
 	@Override

@@ -28,7 +28,6 @@ import net.minecraft.resources.ResourceLocation;
 import snownee.jade.Jade;
 import snownee.jade.api.IToggleableProvider;
 import snownee.jade.api.config.IPluginConfig;
-import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.impl.config.entry.ConfigEntry;
 import snownee.jade.util.JsonConfig;
 import snownee.jade.util.PlatformProxy;
@@ -68,14 +67,13 @@ public class PluginConfig implements IPluginConfig {
 		if (provider.isRequired()) {
 			return true;
 		}
-		return get(provider.getUid(), provider.enabledByDefault());
+		return get(provider.getUid());
 	}
 
 	@Override
-	public boolean get(ResourceLocation key, boolean defaultValue) {
+	public boolean get(ResourceLocation key) {
 		if (PlatformProxy.isPhysicallyClient()) {
-			ConfigEntry<?> entry = getEntry(key);
-			return entry == null ? defaultValue : (Boolean) entry.getValue();
+			return (Boolean) getEntry(key).getValue();
 		} else {
 			return Optional.ofNullable(serverConfigs).map($ -> $.getAsJsonObject(key.getNamespace())).map($ -> $.get(key.getPath())).map(JsonElement::getAsBoolean).orElse(false);
 		}
@@ -208,11 +206,6 @@ public class PluginConfig implements IPluginConfig {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-
-	@Override
-	public IWailaConfig getWailaConfig() {
-		return Jade.CONFIG.get();
 	}
 
 	public void applyServerConfigs(JsonObject json) {

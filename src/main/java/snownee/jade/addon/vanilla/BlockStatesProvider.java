@@ -14,6 +14,7 @@ import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.IElementHelper;
 
 public enum BlockStatesProvider implements IBlockComponentProvider {
@@ -35,7 +36,7 @@ public enum BlockStatesProvider implements IBlockComponentProvider {
 				valueText = valueText.withStyle(value == Boolean.TRUE ? ChatFormatting.GREEN : ChatFormatting.RED);
 			box.add(Component.literal(p.getName() + ":").append(valueText));
 		});
-		tooltip.add(helper.box(box));
+		tooltip.add(helper.box(box, BoxStyle.DEFAULT));
 	}
 
 	@Override

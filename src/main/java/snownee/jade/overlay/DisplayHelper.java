@@ -37,10 +37,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import snownee.jade.Jade;
 import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
-import snownee.jade.api.ui.IBorderStyle;
 import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.ui.IDisplayHelper;
-import snownee.jade.impl.ui.BorderStyle;
 import snownee.jade.util.Color;
 
 public class DisplayHelper implements IDisplayHelper {
@@ -126,12 +124,6 @@ public class DisplayHelper implements IDisplayHelper {
 		}
 		BufferUploader.drawWithShader(buffer.end());
 		RenderSystem.disableBlend();
-	}
-
-	@Override
-	public void drawBorder(PoseStack matrixStack, float minX, float minY, float maxX, float maxY, IBorderStyle border0) {
-		BorderStyle border = (BorderStyle) border0;
-		drawBorder(matrixStack, minX, minY, maxX, maxY, border.width, border.color, true);
 	}
 
 	@Override

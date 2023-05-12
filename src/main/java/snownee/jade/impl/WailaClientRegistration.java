@@ -24,7 +24,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import snownee.jade.Jade;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IBlockComponentProvider;
@@ -37,10 +36,7 @@ import snownee.jade.api.callback.JadeItemModNameCallback;
 import snownee.jade.api.callback.JadeRayTraceCallback;
 import snownee.jade.api.callback.JadeRenderBackgroundCallback;
 import snownee.jade.api.callback.JadeTooltipCollectedCallback;
-import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.platform.CustomEnchantPower;
-import snownee.jade.api.ui.IDisplayHelper;
-import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.api.view.EnergyView;
 import snownee.jade.api.view.FluidView;
 import snownee.jade.api.view.IClientExtensionProvider;
@@ -53,9 +49,7 @@ import snownee.jade.impl.config.entry.EnumConfigEntry;
 import snownee.jade.impl.config.entry.FloatConfigEntry;
 import snownee.jade.impl.config.entry.IntConfigEntry;
 import snownee.jade.impl.config.entry.StringConfigEntry;
-import snownee.jade.impl.ui.ElementHelper;
 import snownee.jade.overlay.DatapackBlockManager;
-import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.util.ClientPlatformProxy;
 
 public class WailaClientRegistration implements IWailaClientRegistration {
@@ -178,21 +172,6 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	@Override
 	public boolean shouldPick(Entity entity) {
 		return pickEntities.contains(entity.getType());
-	}
-
-	@Override
-	public IElementHelper getElementHelper() {
-		return ElementHelper.INSTANCE;
-	}
-
-	@Override
-	public IDisplayHelper getDisplayHelper() {
-		return DisplayHelper.INSTANCE;
-	}
-
-	@Override
-	public IWailaConfig getConfig() {
-		return Jade.CONFIG.get();
 	}
 
 	@Override

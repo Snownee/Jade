@@ -1,6 +1,5 @@
 package snownee.jade.api.ui;
 
-import org.jetbrains.annotations.ApiStatus.ScheduledForRemoval;
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -21,9 +20,6 @@ public interface IDisplayHelper {
 	void drawItem(PoseStack poseStack, float x, float y, ItemStack stack, float scale, @Nullable String text);
 
 	void drawGradientRect(PoseStack poseStack, float left, float top, float right, float bottom, int startColor, int endColor);
-
-	@ScheduledForRemoval(inVersion = "1.20")
-	void drawBorder(PoseStack poseStack, float minX, float minY, float maxX, float maxY, IBorderStyle border);
 
 	void drawBorder(PoseStack poseStack, float minX, float minY, float maxX, float maxY, float width, int color, boolean corner);
 

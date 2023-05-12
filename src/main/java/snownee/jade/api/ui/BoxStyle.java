@@ -1,7 +1,5 @@
 package snownee.jade.api.ui;
 
-import org.jetbrains.annotations.ApiStatus.Experimental;
-
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.Minecraft;
@@ -10,7 +8,6 @@ import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.overlay.ProgressTracker.TrackInfo;
 import snownee.jade.overlay.WailaTickHandler;
 
-@Experimental
 public class BoxStyle implements IBoxStyle {
 
 	public static final BoxStyle DEFAULT;

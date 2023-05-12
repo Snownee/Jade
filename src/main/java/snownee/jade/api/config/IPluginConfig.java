@@ -3,7 +3,6 @@ package snownee.jade.api.config;
 import java.util.Set;
 
 import org.jetbrains.annotations.ApiStatus.NonExtendable;
-import org.jetbrains.annotations.ApiStatus.ScheduledForRemoval;
 
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.api.IToggleableProvider;
@@ -34,19 +33,7 @@ public interface IPluginConfig {
 
 	boolean get(IToggleableProvider provider);
 
-	default boolean get(ResourceLocation key) {
-		return get(key, false);
-	}
-
-	/**
-	 * Gets a value from the config with the provided default returned if the key is not registered.
-	 *
-	 * @param key          The config key
-	 * @param defaultValue The default value
-	 * @return The value returned from the config or the default value if none exist.
-	 */
-	@ScheduledForRemoval(inVersion = "1.20")
-	boolean get(ResourceLocation key, boolean defaultValue);
+	boolean get(ResourceLocation key);
 
 	<T extends Enum<T>> T getEnum(ResourceLocation key);
 
@@ -56,6 +43,4 @@ public interface IPluginConfig {
 
 	String getString(ResourceLocation key);
 
-	@ScheduledForRemoval(inVersion = "1.20")
-	IWailaConfig getWailaConfig();
 }

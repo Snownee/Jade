@@ -16,6 +16,7 @@ import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.util.PlatformProxy;
@@ -52,7 +53,7 @@ public enum PlayerHeadProvider implements IBlockComponentProvider {
 				name = I18n.get(Items.PLAYER_HEAD.getDescriptionId() + ".named", name);
 			}
 			tooltip.remove(Identifiers.CORE_OBJECT_NAME);
-			tooltip.add(0, config.getWailaConfig().getFormatting().title(name), Identifiers.CORE_OBJECT_NAME);
+			tooltip.add(0, IWailaConfig.get().getFormatting().title(name), Identifiers.CORE_OBJECT_NAME);
 		}
 	}
 
