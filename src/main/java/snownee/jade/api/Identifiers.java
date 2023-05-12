@@ -64,6 +64,7 @@ public class Identifiers {
 	public static final ResourceLocation MC_EFFECTIVE_TOOL = MC("harvest_tool.effective_tool");
 	public static final ResourceLocation MC_SHOW_UNBREAKABLE = MC("harvest_tool.show_unbreakable");
 	public static final ResourceLocation MC_HORSE_STATS = MC("horse_stats");
+	public static final ResourceLocation MC_ITEM_BER = MC("item_ber");
 	public static final ResourceLocation MC_ITEM_FRAME = MC("item_frame");
 	public static final ResourceLocation MC_ITEM_TOOLTIP = MC("item_tooltip");
 	public static final ResourceLocation MC_JUKEBOX = MC("jukebox");

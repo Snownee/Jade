@@ -34,6 +34,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BrewingStandBlock;
 import net.minecraft.world.level.block.ChiseledBookShelfBlock;
 import net.minecraft.world.level.block.CommandBlock;
+import net.minecraft.world.level.block.DecoratedPotBlock;
 import net.minecraft.world.level.block.EnchantmentTableBlock;
 import net.minecraft.world.level.block.JukeboxBlock;
 import net.minecraft.world.level.block.LecternBlock;
@@ -123,7 +124,8 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerBlockComponent(EnchantmentPowerProvider.INSTANCE, Block.class);
 		registration.registerBlockComponent(TotalEnchantmentPowerProvider.INSTANCE, EnchantmentTableBlock.class);
 		registration.registerBlockComponent(PlayerHeadProvider.INSTANCE, AbstractSkullBlock.class);
-		registration.registerBlockIcon(PlayerHeadProvider.INSTANCE, AbstractSkullBlock.class);
+		registration.registerBlockIcon(ItemBERProvider.INSTANCE, AbstractSkullBlock.class);
+		registration.registerBlockIcon(ItemBERProvider.INSTANCE, DecoratedPotBlock.class);
 		registration.registerEntityComponent(VillagerProfessionProvider.INSTANCE, Villager.class);
 		registration.registerEntityComponent(VillagerProfessionProvider.INSTANCE, ZombieVillager.class);
 		registration.registerEntityComponent(ItemTooltipProvider.INSTANCE, ItemEntity.class);
