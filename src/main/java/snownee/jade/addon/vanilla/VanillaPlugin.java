@@ -65,7 +65,36 @@ import snownee.jade.util.PlatformProxy;
 @WailaPlugin
 public class VanillaPlugin implements IWailaPlugin {
 
+	private static final Cache<BlockState, BlockState> CHEST_CACHE = CacheBuilder.newBuilder().build();
 	public static IWailaClientRegistration CLIENT_REGISTRATION;
+
+	public static BlockState getCorrespondingNormalChest(BlockState state) {
+		try {
+			return CHEST_CACHE.get(state, () -> {
+				ResourceLocation trappedName = PlatformProxy.getId(state.getBlock());
+				if (trappedName.getPath().startsWith("trapped_")) {
+					ResourceLocation chestName = new ResourceLocation(trappedName.getNamespace(), trappedName.getPath().substring(8));
+					Block block = BuiltInRegistries.BLOCK.get(chestName);
+					if (block != null) {
+						return copyProperties(state, block.defaultBlockState());
+					}
+				}
+				return state;
+			});
+		} catch (Exception e) {
+			return state;
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <T extends Comparable<T>> BlockState copyProperties(BlockState oldState, BlockState newState) {
+		for (Map.Entry<Property<?>, Comparable<?>> entry : oldState.getValues().entrySet()) {
+			Property<T> property = (Property<T>) entry.getKey();
+			if (newState.hasProperty(property))
+				newState = newState.setValue(property, property.getValueClass().cast(entry.getValue()));
+		}
+		return newState;
+	}
 
 	@Override
 	public void register(IWailaCommonRegistration registration) {
@@ -176,42 +205,8 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.markAsClientFeature(Identifiers.MC_CROP_PROGRESS);
 		registration.markAsClientFeature(Identifiers.MC_MOB_SPAWNER);
 
-		registration.hideTarget(EntityType.AREA_EFFECT_CLOUD);
-		registration.hideTarget(EntityType.FIREWORK_ROCKET);
-		registration.hideTarget(EntityType.INTERACTION);
-		registration.hideTarget(EntityType.TEXT_DISPLAY);
 		registration.hideTarget(Blocks.BARRIER);
 		registration.usePickedResult(EntityType.BOAT);
 		registration.usePickedResult(EntityType.CHEST_BOAT);
-	}
-
-	private static final Cache<BlockState, BlockState> CHEST_CACHE = CacheBuilder.newBuilder().build();
-
-	public static BlockState getCorrespondingNormalChest(BlockState state) {
-		try {
-			return CHEST_CACHE.get(state, () -> {
-				ResourceLocation trappedName = PlatformProxy.getId(state.getBlock());
-				if (trappedName.getPath().startsWith("trapped_")) {
-					ResourceLocation chestName = new ResourceLocation(trappedName.getNamespace(), trappedName.getPath().substring(8));
-					Block block = BuiltInRegistries.BLOCK.get(chestName);
-					if (block != null) {
-						return copyProperties(state, block.defaultBlockState());
-					}
-				}
-				return state;
-			});
-		} catch (Exception e) {
-			return state;
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private static <T extends Comparable<T>> BlockState copyProperties(BlockState oldState, BlockState newState) {
-		for (Map.Entry<Property<?>, Comparable<?>> entry : oldState.getValues().entrySet()) {
-			Property<T> property = (Property<T>) entry.getKey();
-			if (newState.hasProperty(property))
-				newState = newState.setValue(property, property.getValueClass().cast(entry.getValue()));
-		}
-		return newState;
 	}
 }
