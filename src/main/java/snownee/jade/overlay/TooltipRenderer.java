@@ -87,14 +87,17 @@ public class TooltipRenderer implements ITooltipRenderer {
 			Minecraft mc = Minecraft.getInstance();
 			x = (totalSize.x - mc.font.width("▾") + 1) / 2f;
 			float yOffset = (OverlayRenderer.ticks / 5) % 8 - 2;
-			if (yOffset > 4)
-				return;
-			y = totalSize.y - 6 + yOffset;
-			float alpha = 1 - Math.abs(yOffset) / 2;
-			int alphaChannel = (int) (0xFF * Mth.clamp(alpha, 0, 1));
-			//TODO move to DisplayHelper
-			if (alphaChannel > 4)
-				guiGraphics.drawString(mc.font, "▾", (int) x, (int) y, 0xFFFFFF | alphaChannel << 24);
+			if (yOffset <= 4) {
+				y = totalSize.y - 6 + yOffset;
+				float alpha = 1 - Math.abs(yOffset) / 2;
+				int alphaChannel = (int) (0xFF * Mth.clamp(alpha, 0, 1));
+				if (alphaChannel > 4) {
+					guiGraphics.pose().pushPose();
+					guiGraphics.pose().translate(x, y, 0);
+					DisplayHelper.INSTANCE.drawText(guiGraphics, "▾", 0, 0, 0xFFFFFF | alphaChannel << 24);
+					guiGraphics.pose().popPose();
+				}
+			}
 		}
 
 		IElement icon = getIcon();

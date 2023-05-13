@@ -140,9 +140,9 @@ public enum HarvestToolProvider implements IBlockComponentProvider, ResourceMana
 			}
 			if (state.requiresCorrectToolForDrops()) {
 				Component sub = canHarvest ? CHECK : X;
-				elements.add(new SubTextElement(sub).translate(new Vec2(-2, 7 + offsetY)));
+				elements.add(new SubTextElement(sub).translate(new Vec2(-3, 7 + offsetY)));
 			} else if (canHarvest) {
-				elements.add(new SubTextElement(CHECK).translate(new Vec2(-2, 7 + offsetY)));
+				elements.add(new SubTextElement(CHECK).translate(new Vec2(-3, 7 + offsetY)));
 			}
 		}
 

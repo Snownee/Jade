@@ -89,7 +89,7 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 						}
 					}
 					if (showName.isTrue())
-						showName.setValue(totalSize < PluginConfig.INSTANCE.getInt(Identifiers.MC_BLOCK_INVENTORY_SHOW_NAME_AMOUNT));
+						showName.setValue(totalSize < PluginConfig.INSTANCE.getInt(Identifiers.MC_ITEM_STORAGE_SHOW_NAME_AMOUNT));
 				}
 
 				IElementHelper helper = IElementHelper.get();
@@ -103,7 +103,7 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 						}
 					}
 					int drawnCount = 0;
-					int realSize = PluginConfig.INSTANCE.getInt(accessor.showDetails() ? Identifiers.MC_BLOCK_INVENTORY_DETAILED_AMOUNT : Identifiers.MC_BLOCK_INVENTORY_NORMAL_AMOUNT);
+					int realSize = PluginConfig.INSTANCE.getInt(accessor.showDetails() ? Identifiers.MC_ITEM_STORAGE_DETAILED_AMOUNT : Identifiers.MC_ITEM_STORAGE_NORMAL_AMOUNT);
 					realSize = Math.min(group.views.size(), realSize);
 					List<IElement> elements = Lists.newArrayList();
 					for (int i = 0; i < realSize; i++) {
@@ -111,7 +111,7 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 						ItemStack stack = itemView.item;
 						if (stack.isEmpty())
 							continue;
-						if (i > 0 && (showName.isTrue() || drawnCount >= PluginConfig.INSTANCE.getInt(Identifiers.MC_BLOCK_INVENTORY_ITEMS_PER_LINE))) {
+						if (i > 0 && (showName.isTrue() || drawnCount >= PluginConfig.INSTANCE.getInt(Identifiers.MC_ITEM_STORAGE_ITEMS_PER_LINE))) {
 							theTooltip.add(elements);
 							elements.clear();
 							drawnCount = 0;

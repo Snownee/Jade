@@ -22,7 +22,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.locale.Language;
@@ -71,10 +70,7 @@ public class DisplayHelper implements IDisplayHelper {
 			guiGraphics.pose().pushPose();
 			guiGraphics.pose().translate(0.0f, 0.0f, 200.0f);
 			guiGraphics.pose().scale(.75f, .75f, .75f);
-			//TODO simplify this
-			MultiBufferSource.BufferSource multibuffersource$buffersource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-			font.drawInBatch(s, i + 22 - font.width(s), j + 13, 16777215, true, guiGraphics.pose().last().pose(), multibuffersource$buffersource, Font.DisplayMode.NORMAL, 0, 0xF000F0);
-			multibuffersource$buffersource.endBatch();
+			INSTANCE.drawText(guiGraphics, s, i + 22 - font.width(s), j + 13, 16777215);
 			guiGraphics.pose().popPose();
 		}
 
@@ -178,9 +174,6 @@ public class DisplayHelper implements IDisplayHelper {
 	private static final int MIN_FLUID_HEIGHT = 1; // ensure tiny amounts of fluid are still visible
 
 	public void drawFluid(GuiGraphics guiGraphics, final float xPosition, final float yPosition, JadeFluidObject fluid, float width, float height, long capacityMb) {
-		if (OverlayRenderer.alpha < 0.5F) {
-			return;
-		}
 		if (fluid.isEmpty()) {
 			return;
 		}
@@ -189,6 +182,9 @@ public class DisplayHelper implements IDisplayHelper {
 		FluidVariantRenderHandler handler = FluidVariantRendering.getHandlerOrDefault(type);
 		TextureAtlasSprite fluidStillSprite = handler.getSprites(variant)[0];
 		int fluidColor = handler.getColor(variant, Minecraft.getInstance().level, null);
+		if (OverlayRenderer.alpha != 1) {
+			fluidColor = IConfigOverlay.applyAlpha(fluidColor, OverlayRenderer.alpha);
+		}
 
 		long amount = JadeFluidObject.bucketVolume();
 		float scaledAmount = (amount * height) / capacityMb;
@@ -206,6 +202,7 @@ public class DisplayHelper implements IDisplayHelper {
 		RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
 		Matrix4f matrix = guiGraphics.pose().last().pose();
 		setGLColorFromInt(color);
+		RenderSystem.enableBlend();
 
 		final int xTileCount = (int) (tiledWidth / TEX_WIDTH);
 		final float xRemainder = tiledWidth - (xTileCount * TEX_WIDTH);
@@ -224,11 +221,12 @@ public class DisplayHelper implements IDisplayHelper {
 					float maskTop = TEX_HEIGHT - height;
 					float maskRight = TEX_WIDTH - width;
 
-					drawTextureWithMasking(matrix, x, y, sprite, maskTop, maskRight, 100);
+					drawTextureWithMasking(matrix, x, y, sprite, maskTop, maskRight, 0);
 				}
 			}
 		}
 		RenderSystem.setShaderColor(1, 1, 1, 1);
+		RenderSystem.disableBlend();
 	}
 
 	private static void setGLColorFromInt(int color) {

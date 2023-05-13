@@ -44,7 +44,7 @@ public class BoxStyle implements IBoxStyle {
 		if (progressColor != 0) {
 			float left = roundCorner ? x + borderWidth : x;
 			float width = roundCorner ? w - borderWidth * 2 : w;
-			float top = y + h - (borderWidth < 0.5F ? 0.5F : borderWidth);
+			float top = y + h - Math.max(borderWidth, 0.5F);
 			float progress = this.progress;
 			if (track == null && tag != null) {
 				track = WailaTickHandler.instance().progressTracker.createInfo(tag, progress, false, 0);
