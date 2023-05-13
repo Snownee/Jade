@@ -1,10 +1,10 @@
 package snownee.jade.addon.core;
 
-import java.lang.reflect.Type;
 import java.util.List;
+import java.util.stream.Stream;
 
-import com.google.common.reflect.TypeToken;
-
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.Block;
@@ -15,6 +15,7 @@ import snownee.jade.api.IWailaCommonRegistration;
 import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.WailaPlugin;
+import snownee.jade.api.config.TargetBlocklist;
 import snownee.jade.util.JsonConfig;
 
 @WailaPlugin
@@ -50,12 +51,24 @@ public class CorePlugin implements IWailaPlugin {
 		registration.markAsClientFeature(Identifiers.CORE_MOD_NAME);
 		registration.markAsClientFeature(Identifiers.CORE_BLOCK_FACE);
 
-		@SuppressWarnings("serial")
-		Type type = new TypeToken<List<String>>() {
-		}.getType();
-		JsonConfig<List<String>> config = new JsonConfig<>(Jade.MODID + "/hide-entities", type, null, List::of);
-		for (String id : config.get()) {
-			EntityType.byString(id).ifPresent(registration::hideTarget);
+		JsonConfig<TargetBlocklist> entityBlocklist = new JsonConfig<>(Jade.MODID + "/hide-entities", TargetBlocklist.class, null, () -> {
+			var blocklist = new TargetBlocklist();
+			blocklist.values = Stream.of(EntityType.AREA_EFFECT_CLOUD, EntityType.FIREWORK_ROCKET, EntityType.INTERACTION, EntityType.TEXT_DISPLAY)
+					.map(EntityType::getKey)
+					.map(Object::toString)
+					.toList();
+			return blocklist;
+		});
+		for (String id : entityBlocklist.get().values) {
+			BuiltInRegistries.ENTITY_TYPE.getOptional(ResourceLocation.tryParse(id)).ifPresent(registration::hideTarget);
+		}
+		JsonConfig<TargetBlocklist> blockBlocklist = new JsonConfig<>(Jade.MODID + "/hide-blocks", TargetBlocklist.class, null, () -> {
+			var blocklist = new TargetBlocklist();
+			blocklist.values = List.of("minecraft:barrier");
+			return blocklist;
+		});
+		for (String id : blockBlocklist.get().values) {
+			BuiltInRegistries.BLOCK.getOptional(ResourceLocation.tryParse(id)).ifPresent(registration::hideTarget);
 		}
 	}
 }
