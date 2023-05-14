@@ -43,7 +43,9 @@ public class JEICompat implements IModPlugin {
 			return;
 		if (action != 1)
 			return;
-		if (!JadeClient.showRecipes.consumeClick() && !JadeClient.showUses.consumeClick())
+		boolean showRecipes = JadeClient.showRecipes.consumeClick();
+		boolean showUses = JadeClient.showUses.consumeClick();
+		if (!showRecipes && !showUses)
 			return;
 		Accessor<?> accessor = ObjectDataCenter.get();
 		if (accessor == null)
@@ -55,6 +57,6 @@ public class JEICompat implements IModPlugin {
 		IRecipesGui gui = runtime.getRecipesGui();
 		IFocusFactory factory = helpers.getFocusFactory();
 
-		gui.show(factory.createFocus(JadeClient.showUses.consumeClick() ? RecipeIngredientRole.INPUT : RecipeIngredientRole.OUTPUT, VanillaTypes.ITEM_STACK, stack));
+		gui.show(factory.createFocus(showUses ? RecipeIngredientRole.INPUT : RecipeIngredientRole.OUTPUT, VanillaTypes.ITEM_STACK, stack));
 	}
 }
