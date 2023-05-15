@@ -30,7 +30,6 @@ import net.minecraft.world.level.block.AbstractFurnaceBlock;
 import net.minecraft.world.level.block.AbstractSkullBlock;
 import net.minecraft.world.level.block.BeehiveBlock;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BrewingStandBlock;
 import net.minecraft.world.level.block.ChiseledBookShelfBlock;
 import net.minecraft.world.level.block.CommandBlock;
@@ -205,7 +204,6 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.markAsClientFeature(Identifiers.MC_CROP_PROGRESS);
 		registration.markAsClientFeature(Identifiers.MC_MOB_SPAWNER);
 
-		registration.hideTarget(Blocks.BARRIER);
 		registration.usePickedResult(EntityType.BOAT);
 		registration.usePickedResult(EntityType.CHEST_BOAT);
 	}
