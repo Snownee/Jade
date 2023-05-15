@@ -219,7 +219,7 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 		var clientGroups = ClientViewGroup.map(groups, ItemView::new, null);
 		for (var clientGroup : clientGroups) {
 			var views = clientGroup.views;
-			if (views.size() == 1 && views.get(0).item.getCount() > 1000) {
+			if (views.size() == 1 && views.get(0).item.getCount() > 10000) {
 				views.get(0).text = "10k+";
 			}
 		}
