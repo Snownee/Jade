@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.0-SNAPSHOT'
+    id 'fabric-loom' version '1.2-SNAPSHOT'
     id 'maven-publish'
     id "com.modrinth.minotaur" version "2.+"
 }
@@ -12,10 +12,10 @@ version = project.archive_minecraft_version + "-fabric-" + project.mod_version
 group = project.maven_group
 
 repositories {
-    maven { url = "https://maven.parchmentmc.org" }
+    maven { url "https://maven.parchmentmc.org" }
     maven { url "https://maven.shedaniel.me/" }
     maven { url "https://maven.terraformersmc.com/releases/" }
-    maven { url = "https://dvs1.progwml6.com/files/maven/" }
+    maven { url "https://maven.blamejared.com/" }
     maven {
         url "https://cursemaven.com"
         content {
@@ -88,7 +88,7 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 task apiJar(type: Jar) {
-classifier = 'api'
+    archiveClassifier = 'api'
     include 'snownee/jade/api/**/*'
     from sourceSets.main.allSource
     from sourceSets.main.output
