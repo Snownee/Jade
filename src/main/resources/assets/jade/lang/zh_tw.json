@@ -212,10 +212,10 @@
   "config.jade.plugin_minecraft.villager_profession": "村民職業",
   "jade.spawner": "%s（%s）",
   "config.jade.plugin_minecraft.chiseled_bookshelf": "浮雕書櫃",
-  
+
   "toast.jade.toggle_hint.1": "Jade 現在已關閉",
   "toast.jade.toggle_hint.2": "再次按下 %s 以重新開啟",
-  
+
   "__comment": "Only for testing:",
   "jade.modName.cpp": "合成++",
   "mymod.fuel": "燃料：%d 刻",
