@@ -217,7 +217,7 @@
   "toast.jade.toggle_hint.2": "再次按下 %s 以重新開啟",
 
   "__comment": "Only for testing:",
-  "jade.modName.cpp": "合成++",
+  "jade.modName.cpp": "合成 ++",
   "mymod.fuel": "燃料：%d 刻",
   "config.jade.plugin_debug.furnace_fuel": "測試燃料",
   "config.jade.plugin_debug.furnace_fuel.str_cfg": "測試字串",
