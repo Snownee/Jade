@@ -5,8 +5,6 @@ import java.util.function.Predicate;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.google.common.base.Predicates;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
@@ -34,8 +32,8 @@ public class RayTracing {
 
 	public static final RayTracing INSTANCE = new RayTracing();
 	private HitResult target = null;
-	private Minecraft mc = Minecraft.getInstance();
-	public static Predicate<Entity> ENTITY_FILTER = Predicates.alwaysTrue();
+	private final Minecraft mc = Minecraft.getInstance();
+	public static Predicate<Entity> ENTITY_FILTER = entity -> true;
 
 	private RayTracing() {
 	}
@@ -45,7 +43,7 @@ public class RayTracing {
 		if (viewpoint == null)
 			return;
 
-		if (mc.hitResult != null && mc.hitResult.getType() == HitResult.Type.ENTITY) {
+		if (mc.hitResult != null && mc.hitResult.getType() == Type.ENTITY) {
 			Entity targetEntity = ((EntityHitResult) mc.hitResult).getEntity();
 			if (canBeTarget(targetEntity, viewpoint)) {
 				target = mc.hitResult;
@@ -161,7 +159,7 @@ public class RayTracing {
 		if (accessor == null)
 			return null;
 
-		IElement icon = accessor._getIcon();
+		IElement icon = ObjectDataCenter.getIcon();
 		if (isEmptyElement(icon))
 			return null;
 		else

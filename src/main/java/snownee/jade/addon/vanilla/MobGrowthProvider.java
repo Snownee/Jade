@@ -4,11 +4,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.AgeableMob;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.animal.frog.Tadpole;
-import net.minecraft.world.level.Level;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.IServerDataProvider;
@@ -16,7 +13,7 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
 
-public enum MobGrowthProvider implements IEntityComponentProvider, IServerDataProvider<Entity> {
+public enum MobGrowthProvider implements IEntityComponentProvider, IServerDataProvider<EntityAccessor> {
 
 	INSTANCE;
 
@@ -32,8 +29,9 @@ public enum MobGrowthProvider implements IEntityComponentProvider, IServerDataPr
 	}
 
 	@Override
-	public void appendServerData(CompoundTag tag, ServerPlayer player, Level world, Entity entity, boolean showDetails) {
+	public void appendServerData(CompoundTag tag, EntityAccessor accessor) {
 		int time = -1;
+		Object entity = accessor.getEntity();
 		if (entity instanceof AgeableMob ageable) {
 			time = -ageable.getAge();
 		} else if (entity instanceof Tadpole tadpole) {

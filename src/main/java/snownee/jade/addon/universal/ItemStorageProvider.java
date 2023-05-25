@@ -15,10 +15,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.LockCode;
 import net.minecraft.world.entity.vehicle.ContainerEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import snownee.jade.JadeCommonConfig;
 import snownee.jade.api.Accessor;
@@ -42,19 +40,12 @@ import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.impl.ui.HorizontalLineElement;
 import snownee.jade.impl.ui.ScaledTextElement;
-import snownee.jade.util.PlatformProxy;
+import snownee.jade.util.CommonProxy;
 
-public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataProvider<BlockEntity>,
+public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor>,
 		IServerExtensionProvider<Object, ItemStack>, IClientExtensionProvider<ItemStack, ItemView> {
 
 	INSTANCE;
-
-	@Override
-	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		if (accessor.getBlockEntity() instanceof AbstractFurnaceBlockEntity)
-			return;
-		append(tooltip, accessor, config);
-	}
 
 	public static void append(ITooltip tooltip, Accessor<?> accessor, IPluginConfig config) {
 		if (accessor.getServerData().contains("JadeItemStorage")) {
@@ -142,17 +133,12 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 		}
 	}
 
-	@Override
-	public void appendServerData(CompoundTag tag, ServerPlayer player, Level world, BlockEntity te, boolean showDetails) {
-		if (JadeCommonConfig.shouldIgnoreTE(tag.getString("id")) || te instanceof AbstractFurnaceBlockEntity) {
-			return;
-		}
-		putData(tag, player, te, showDetails);
-	}
-
-	public static void putData(CompoundTag tag, ServerPlayer player, Object target, boolean showDetails) {
-		var list = WailaCommonRegistration.INSTANCE.itemStorageProviders.get(target);
-		for (var provider : list) {
+	public static void putData(Accessor<?> accessor) {
+		CompoundTag tag = accessor.getServerData();
+		Object target = accessor.getTarget();
+		ServerPlayer player = (ServerPlayer) accessor.getPlayer();
+		boolean showDetails = accessor.showDetails();
+		for (var provider : WailaCommonRegistration.INSTANCE.itemStorageProviders.get(target)) {
 			var groups = provider.getGroups(player, player.serverLevel(), target, showDetails);
 			if (groups != null) {
 				if (ViewGroup.saveList(tag, "JadeItemStorage", groups, item -> {
@@ -188,6 +174,21 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 	}
 
 	@Override
+	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
+		if (accessor.getBlockEntity() instanceof AbstractFurnaceBlockEntity)
+			return;
+		append(tooltip, accessor, config);
+	}
+
+	@Override
+	public void appendServerData(CompoundTag tag, BlockAccessor accessor) {
+		if (JadeCommonConfig.shouldIgnoreTE(tag.getString("id")) || accessor.getBlockEntity() instanceof AbstractFurnaceBlockEntity) {
+			return;
+		}
+		putData(accessor);
+	}
+
+	@Override
 	public ResourceLocation getUid() {
 		return Identifiers.UNIVERSAL_ITEM_STORAGE;
 	}
@@ -211,7 +212,7 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 			}
 		}
 
-		return PlatformProxy.wrapItemStorage(target, player);
+		return CommonProxy.wrapItemStorage(target, player);
 	}
 
 	@Override

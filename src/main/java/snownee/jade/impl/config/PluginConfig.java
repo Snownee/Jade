@@ -29,8 +29,8 @@ import snownee.jade.Jade;
 import snownee.jade.api.IToggleableProvider;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.impl.config.entry.ConfigEntry;
+import snownee.jade.util.CommonProxy;
 import snownee.jade.util.JsonConfig;
-import snownee.jade.util.PlatformProxy;
 
 public class PluginConfig implements IPluginConfig {
 
@@ -72,7 +72,7 @@ public class PluginConfig implements IPluginConfig {
 
 	@Override
 	public boolean get(ResourceLocation key) {
-		if (PlatformProxy.isPhysicallyClient()) {
+		if (CommonProxy.isPhysicallyClient()) {
 			return (Boolean) getEntry(key).getValue();
 		} else {
 			return Optional.ofNullable(serverConfigs).map($ -> $.getAsJsonObject(key.getNamespace())).map($ -> $.get(key.getPath())).map(JsonElement::getAsBoolean).orElse(false);
@@ -123,12 +123,12 @@ public class PluginConfig implements IPluginConfig {
 	}
 
 	public File getFile() {
-		boolean client = PlatformProxy.isPhysicallyClient();
-		return new File(PlatformProxy.getConfigDirectory(), client ? CLIENT_FILE : SERVER_FILE);
+		boolean client = CommonProxy.isPhysicallyClient();
+		return new File(CommonProxy.getConfigDirectory(), client ? CLIENT_FILE : SERVER_FILE);
 	}
 
 	public void reload() {
-		boolean client = PlatformProxy.isPhysicallyClient();
+		boolean client = CommonProxy.isPhysicallyClient();
 		File configFile = getFile();
 
 		if (client)
@@ -185,7 +185,7 @@ public class PluginConfig implements IPluginConfig {
 	}
 
 	private void writeConfig(File file, boolean reset) {
-		boolean client = PlatformProxy.isPhysicallyClient();
+		boolean client = CommonProxy.isPhysicallyClient();
 		String json;
 		if (client) {
 			Map<String, Map<String, Object>> config = Maps.newHashMap();

@@ -1,120 +1,69 @@
 package snownee.jade.impl;
 
-import java.util.List;
-import java.util.function.Function;
+import java.util.Objects;
+import java.util.function.Supplier;
+
+import com.google.common.base.Suppliers;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec3;
 import snownee.jade.api.AccessorImpl;
 import snownee.jade.api.EntityAccessor;
-import snownee.jade.api.IEntityComponentProvider;
-import snownee.jade.api.IJadeProvider;
-import snownee.jade.api.ITooltip;
-import snownee.jade.api.config.IWailaConfig;
-import snownee.jade.api.ui.IElement;
-import snownee.jade.impl.config.PluginConfig;
-import snownee.jade.impl.ui.ElementHelper;
-import snownee.jade.impl.ui.ItemStackElement;
-import snownee.jade.overlay.RayTracing;
-import snownee.jade.util.ClientPlatformProxy;
-import snownee.jade.util.PlatformProxy;
-import snownee.jade.util.WailaExceptionHandler;
+import snownee.jade.util.ClientProxy;
 
 /**
  * Class to get information of entity target and context.
  */
 public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements EntityAccessor {
 
-	private final Entity entity;
+	private final Supplier<Entity> entity;
 
 	public EntityAccessorImpl(Builder builder) {
 		super(builder.level, builder.player, builder.serverData, builder.hit, builder.connected, builder.showDetails);
 		entity = builder.entity;
 	}
 
+	public static EntityAccessor fromNetwork(FriendlyByteBuf buf, ServerPlayer player) {
+		Builder builder = new Builder();
+		builder.level(player.level());
+		builder.player(player);
+		builder.showDetails(buf.readBoolean());
+		int id = buf.readVarInt();
+		float hitX = buf.readFloat();
+		float hitY = buf.readFloat();
+		float hitZ = buf.readFloat();
+		// you can only get block entity from the main thread
+		Supplier<Entity> entity = Suppliers.memoize(() -> Objects.requireNonNull(builder.level.getEntity(id)));
+		builder.entity(entity);
+		builder.hit(Suppliers.memoize(() -> new EntityHitResult(entity.get(), new Vec3(hitX, hitY, hitZ))));
+		return builder.build();
+	}
+
+	@Override
+	public void toNetwork(FriendlyByteBuf buf) {
+		buf.writeBoolean(showDetails());
+		buf.writeVarInt(entity.get().getId());
+		Vec3 hitVec = getHitResult().getLocation();
+		buf.writeFloat((float) hitVec.x);
+		buf.writeFloat((float) hitVec.y);
+		buf.writeFloat((float) hitVec.z);
+	}
+
 	@Override
 	public Entity getEntity() {
-		return entity;
+		return entity.get();
 	}
 
 	@Override
 	public ItemStack getPickedResult() {
-		return ClientPlatformProxy.getEntityPickedResult(entity, getPlayer(), getHitResult());
-	}
-
-	@Override
-	public IElement _getIcon() {
-		IElement icon = null;
-		if (entity instanceof ItemEntity) {
-			icon = ItemStackElement.of(((ItemEntity) entity).getItem());
-		} else {
-			ItemStack stack = getPickedResult();
-			if ((!(stack.getItem() instanceof SpawnEggItem) || !(entity instanceof LivingEntity)))
-				icon = ItemStackElement.of(stack);
-		}
-
-		for (IEntityComponentProvider provider : WailaClientRegistration.INSTANCE.getEntityIconProviders(entity, PluginConfig.INSTANCE::get)) {
-			try {
-				IElement element = provider.getIcon(this, PluginConfig.INSTANCE, icon);
-				if (!RayTracing.isEmptyElement(element))
-					icon = element;
-			} catch (Throwable e) {
-				WailaExceptionHandler.handleErr(e, provider, null);
-			}
-		}
-		return icon;
-	}
-
-	@Override
-	public void _gatherComponents(Function<IJadeProvider, ITooltip> tooltipProvider) {
-		List<IEntityComponentProvider> providers = WailaClientRegistration.INSTANCE.getEntityProviders(getEntity(), PluginConfig.INSTANCE::get);
-		for (IEntityComponentProvider provider : providers) {
-			ITooltip tooltip = tooltipProvider.apply(provider);
-			try {
-				ElementHelper.INSTANCE.setCurrentUid(provider.getUid());
-				provider.appendTooltip(tooltip, this, PluginConfig.INSTANCE);
-			} catch (Throwable e) {
-				WailaExceptionHandler.handleErr(e, provider, tooltip);
-			} finally {
-				ElementHelper.INSTANCE.setCurrentUid(null);
-			}
-		}
-	}
-
-	@Override
-	public boolean shouldDisplay() {
-		IWailaConfig.IConfigGeneral general = IWailaConfig.get().getGeneral();
-		if (!general.getDisplayEntities()) {
-			return false;
-		}
-		if (!general.getDisplayBosses() && PlatformProxy.isBoss(entity)) {
-			return false;
-		}
-		return true;
-	}
-
-	@Override
-	public void _requestData() {
-		ClientPlatformProxy.requestEntityData(entity, showDetails());
-	}
-
-	@Override
-	public boolean shouldRequestData() {
-		return !WailaCommonRegistration.INSTANCE.getEntityNBTProviders(entity).isEmpty();
-	}
-
-	@Override
-	public boolean _verifyData(CompoundTag serverData) {
-		if (!serverData.contains("WailaEntityID"))
-			return false;
-		return serverData.getInt("WailaEntityID") == entity.getId();
+		return ClientProxy.getEntityPickedResult(entity.get(), getPlayer(), getHitResult());
 	}
 
 	@Override
@@ -124,13 +73,13 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 
 	public static class Builder implements EntityAccessor.Builder {
 
+		public boolean showDetails;
 		private Level level;
 		private Player player;
 		private CompoundTag serverData;
 		private boolean connected;
-		public boolean showDetails;
-		private EntityHitResult hit;
-		private Entity entity;
+		private Supplier<EntityHitResult> hit;
+		private Supplier<Entity> entity;
 
 		@Override
 		public Builder level(Level level) {
@@ -163,13 +112,13 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 		}
 
 		@Override
-		public Builder hit(EntityHitResult hit) {
+		public Builder hit(Supplier<EntityHitResult> hit) {
 			this.hit = hit;
 			return this;
 		}
 
 		@Override
-		public Builder entity(Entity entity) {
+		public Builder entity(Supplier<Entity> entity) {
 			this.entity = entity;
 			return this;
 		}
@@ -181,8 +130,8 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 			serverData = accessor.getServerData();
 			connected = accessor.isServerConnected();
 			showDetails = accessor.showDetails();
-			hit = accessor.getHitResult();
-			entity = accessor.getEntity();
+			hit = accessor::getHitResult;
+			entity = accessor::getEntity;
 			return this;
 		}
 

@@ -6,8 +6,6 @@ import java.util.function.Function;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.BlockAccessor;
@@ -26,34 +24,9 @@ import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.impl.ui.HorizontalLineElement;
 import snownee.jade.impl.ui.ScaledTextElement;
 
-public enum ProgressProvider implements IBlockComponentProvider, IServerDataProvider<BlockEntity> {
+public enum ProgressProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
 
 	INSTANCE;
-
-	@Override
-	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		append(tooltip, accessor, config);
-	}
-
-	@Override
-	public void appendServerData(CompoundTag data, ServerPlayer player, Level world, BlockEntity tile, boolean showDetails) {
-		putData(data, player, tile, showDetails);
-	}
-
-	@Override
-	public ResourceLocation getUid() {
-		return Identifiers.UNIVERSAL_PROGRESS;
-	}
-
-	@Override
-	public int getDefaultPriority() {
-		return TooltipPosition.BODY + 1000;
-	}
-
-	@Override
-	public boolean isRequired() {
-		return true;
-	}
 
 	public static void append(ITooltip tooltip, Accessor<?> accessor, IPluginConfig config) {
 		if (accessor.getServerData().contains("JadeProgress")) {
@@ -88,9 +61,12 @@ public enum ProgressProvider implements IBlockComponentProvider, IServerDataProv
 		}
 	}
 
-	public static void putData(CompoundTag tag, ServerPlayer player, Object target, boolean showDetails) {
-		var list = WailaCommonRegistration.INSTANCE.progressProviders.get(target);
-		for (var provider : list) {
+	public static void putData(Accessor<?> accessor) {
+		CompoundTag tag = accessor.getServerData();
+		Object target = accessor.getTarget();
+		ServerPlayer player = (ServerPlayer) accessor.getPlayer();
+		boolean showDetails = accessor.showDetails();
+		for (var provider : WailaCommonRegistration.INSTANCE.progressProviders.get(target)) {
 			var groups = provider.getGroups(player, player.serverLevel(), target, showDetails);
 			if (groups != null) {
 				if (ViewGroup.saveList(tag, "JadeProgress", groups, Function.identity()))
@@ -98,6 +74,31 @@ public enum ProgressProvider implements IBlockComponentProvider, IServerDataProv
 				return;
 			}
 		}
+	}
+
+	@Override
+	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
+		append(tooltip, accessor, config);
+	}
+
+	@Override
+	public void appendServerData(CompoundTag data, BlockAccessor accessor) {
+		putData(accessor);
+	}
+
+	@Override
+	public ResourceLocation getUid() {
+		return Identifiers.UNIVERSAL_PROGRESS;
+	}
+
+	@Override
+	public int getDefaultPriority() {
+		return TooltipPosition.BODY + 1000;
+	}
+
+	@Override
+	public boolean isRequired() {
+		return true;
 	}
 
 }

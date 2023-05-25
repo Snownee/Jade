@@ -52,9 +52,9 @@ import snownee.jade.impl.config.WailaConfig.ConfigGeneral;
 import snownee.jade.mixin.KeyAccess;
 import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.overlay.WailaTickHandler;
-import snownee.jade.util.ClientPlatformProxy;
+import snownee.jade.util.ClientProxy;
+import snownee.jade.util.CommonProxy;
 import snownee.jade.util.ModIdentification;
-import snownee.jade.util.PlatformProxy;
 
 @SuppressWarnings("deprecation")
 public final class JadeClient implements ClientModInitializer {
@@ -69,23 +69,23 @@ public final class JadeClient implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
-		ClientPlatformProxy.init();
+		ClientProxy.init();
 		for (int i = 320; i < 330; i++) {
 			InputConstants.Key key = InputConstants.Type.KEYSYM.getOrCreate(i);
 			((KeyAccess) (Object) key).setDisplayName(new LazyLoadedValue<>(() -> Component.translatable(key.getName())));
 		}
 
-		openConfig = ClientPlatformProxy.registerKeyBinding("config", 320);
-		showOverlay = ClientPlatformProxy.registerKeyBinding("show_overlay", 321);
-		toggleLiquid = ClientPlatformProxy.registerKeyBinding("toggle_liquid", 322);
-		if (ClientPlatformProxy.shouldRegisterRecipeViewerKeys()) {
-			showRecipes = ClientPlatformProxy.registerKeyBinding("show_recipes", 323);
-			showUses = ClientPlatformProxy.registerKeyBinding("show_uses", 324);
+		openConfig = ClientProxy.registerKeyBinding("config", 320);
+		showOverlay = ClientProxy.registerKeyBinding("show_overlay", 321);
+		toggleLiquid = ClientProxy.registerKeyBinding("toggle_liquid", 322);
+		if (ClientProxy.shouldRegisterRecipeViewerKeys()) {
+			showRecipes = ClientProxy.registerKeyBinding("show_recipes", 323);
+			showUses = ClientProxy.registerKeyBinding("show_uses", 324);
 		}
-		narrate = ClientPlatformProxy.registerKeyBinding("narrate", 325);
-		showDetails = ClientPlatformProxy.registerKeyBinding("show_details_alternative", InputConstants.UNKNOWN.getValue());
+		narrate = ClientProxy.registerKeyBinding("narrate", 325);
+		showDetails = ClientProxy.registerKeyBinding("show_details_alternative", InputConstants.UNKNOWN.getValue());
 
-		ClientPlatformProxy.registerReloadListener(ModIdentification.INSTANCE);
+		ClientProxy.registerReloadListener(ModIdentification.INSTANCE);
 
 		ClientLifecycleEvents.CLIENT_STARTED.register(mc -> Jade.loadComplete());
 	}
@@ -127,7 +127,7 @@ public final class JadeClient implements ClientModInitializer {
 	private static boolean translationChecked;
 
 	public static void onGui(Screen screen) {
-		if (!translationChecked && screen instanceof TitleScreen && PlatformProxy.isDevEnv()) {
+		if (!translationChecked && screen instanceof TitleScreen && CommonProxy.isDevEnv()) {
 			translationChecked = true;
 			List<String> keys = Lists.newArrayList();
 			for (ResourceLocation id : PluginConfig.INSTANCE.getKeys()) {
@@ -200,7 +200,7 @@ public final class JadeClient implements ClientModInitializer {
 		}
 		BlockState state = mc.level.getBlockState(playerController.destroyBlockPos);
 		if (playerController.isDestroying())
-			canHarvest = PlatformProxy.isCorrectToolForDrops(state, mc.player);
+			canHarvest = CommonProxy.isCorrectToolForDrops(state, mc.player);
 		int color = canHarvest ? 0xFFFFFF : 0xFF4444;
 		int height = rect.getHeight();
 		int width = rect.getWidth();

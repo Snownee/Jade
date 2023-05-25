@@ -38,7 +38,7 @@ import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElement.Align;
 import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.impl.ui.SubTextElement;
-import snownee.jade.util.PlatformProxy;
+import snownee.jade.util.CommonProxy;
 
 public enum HarvestToolProvider implements IBlockComponentProvider, ResourceManagerReloadListener {
 
@@ -135,7 +135,7 @@ public enum HarvestToolProvider implements IBlockComponentProvider, ResourceMana
 			elements.add(0, helper.spacer(5, 0));
 			ItemStack held = accessor.getPlayer().getMainHandItem();
 			boolean canHarvest = held.isCorrectToolForDrops(state);
-			if (PlatformProxy.isShearable(state) && PlatformProxy.isShears(held)) {
+			if (CommonProxy.isShearable(state) && CommonProxy.isShears(held)) {
 				canHarvest = true;
 			}
 			if (state.requiresCorrectToolForDrops()) {

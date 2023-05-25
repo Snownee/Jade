@@ -24,6 +24,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import snownee.jade.api.Accessor;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IBlockComponentProvider;
@@ -50,7 +51,7 @@ import snownee.jade.impl.config.entry.FloatConfigEntry;
 import snownee.jade.impl.config.entry.IntConfigEntry;
 import snownee.jade.impl.config.entry.StringConfigEntry;
 import snownee.jade.overlay.DatapackBlockManager;
-import snownee.jade.util.ClientPlatformProxy;
+import snownee.jade.util.ClientProxy;
 
 public class WailaClientRegistration implements IWailaClientRegistration {
 
@@ -81,6 +82,8 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	public final Map<ResourceLocation, IClientExtensionProvider<CompoundTag, ProgressView>> progressProviders = Maps.newHashMap();
 
 	public final Set<ResourceLocation> clientFeatures = Sets.newHashSet();
+
+	public final Map<Class<Accessor<?>>, Accessor.ClientHandler<Accessor<?>>> accessorHandlers = Maps.newIdentityHashMap();
 
 	WailaClientRegistration() {
 		blockIconProviders = new HierarchyLookup<>(Block.class);
@@ -320,17 +323,17 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 
 	@Override
 	public boolean isShowDetailsPressed() {
-		return ClientPlatformProxy.isShowDetailsPressed();
-	}
-
-	@Override
-	public void setServerData(CompoundTag tag) {
-		ObjectDataCenter.setServerData(tag);
+		return ClientProxy.isShowDetailsPressed();
 	}
 
 	@Override
 	public CompoundTag getServerData() {
 		return ObjectDataCenter.getServerData();
+	}
+
+	@Override
+	public void setServerData(CompoundTag tag) {
+		ObjectDataCenter.setServerData(tag);
 	}
 
 	@Override
@@ -351,6 +354,17 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	@Override
 	public boolean isClientFeature(ResourceLocation uid) {
 		return clientFeatures.contains(uid);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T extends Accessor<?>> void registerAccessorHandler(Class<T> clazz, Accessor.ClientHandler<T> handler) {
+		accessorHandlers.put((Class<Accessor<?>>) clazz, (Accessor.ClientHandler<Accessor<?>>) handler);
+	}
+
+	@Override
+	public Accessor.ClientHandler<Accessor<?>> getAccessorHandler(Class<? extends Accessor<?>> clazz) {
+		return Objects.requireNonNull(accessorHandlers.get(clazz), () -> "No accessor handler for " + clazz);
 	}
 
 }

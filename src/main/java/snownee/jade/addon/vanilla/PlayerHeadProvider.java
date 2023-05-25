@@ -14,7 +14,7 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
-import snownee.jade.util.PlatformProxy;
+import snownee.jade.util.CommonProxy;
 
 public enum PlayerHeadProvider implements IBlockComponentProvider {
 
@@ -29,7 +29,7 @@ public enum PlayerHeadProvider implements IBlockComponentProvider {
 				return;
 			String name = profile.getName();
 			if (name == null) {
-				name = PlatformProxy.getLastKnownUsername(profile.getId());
+				name = CommonProxy.getLastKnownUsername(profile.getId());
 			}
 			if (name == null || StringUtils.isBlank(name)) {
 				return;

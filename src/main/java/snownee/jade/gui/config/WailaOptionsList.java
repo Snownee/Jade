@@ -42,7 +42,7 @@ import snownee.jade.gui.config.value.CycleOptionValue;
 import snownee.jade.gui.config.value.InputOptionValue;
 import snownee.jade.gui.config.value.OptionValue;
 import snownee.jade.gui.config.value.SliderOptionValue;
-import snownee.jade.util.ClientPlatformProxy;
+import snownee.jade.util.ClientProxy;
 
 public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsList.Entry> {
 
@@ -79,7 +79,7 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 
 	@Override
 	public boolean mouseScrolled(double d, double e, double f) {
-		double speed = !ClientPlatformProxy.hasFastScroll && Screen.hasControlDown() ? 4.5 : 1.5;
+		double speed = !ClientProxy.hasFastScroll && Screen.hasControlDown() ? 4.5 : 1.5;
 		targetScroll = this.getScrollAmount() - f * (double) this.itemHeight * speed;
 		return true;
 	}

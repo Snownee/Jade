@@ -59,8 +59,8 @@ import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.WailaPlugin;
 import snownee.jade.overlay.DatapackBlockManager;
-import snownee.jade.util.ClientPlatformProxy;
-import snownee.jade.util.PlatformProxy;
+import snownee.jade.util.ClientProxy;
+import snownee.jade.util.CommonProxy;
 
 @WailaPlugin
 public class VanillaPlugin implements IWailaPlugin {
@@ -71,7 +71,7 @@ public class VanillaPlugin implements IWailaPlugin {
 	public static BlockState getCorrespondingNormalChest(BlockState state) {
 		try {
 			return CHEST_CACHE.get(state, () -> {
-				ResourceLocation trappedName = PlatformProxy.getId(state.getBlock());
+				ResourceLocation trappedName = CommonProxy.getId(state.getBlock());
 				if (trappedName.getPath().startsWith("trapped_")) {
 					ResourceLocation chestName = new ResourceLocation(trappedName.getNamespace(), trappedName.getPath().substring(8));
 					Block block = BuiltInRegistries.BLOCK.get(chestName);
@@ -174,7 +174,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerEntityIcon(ItemDisplayProvider.INSTANCE, ItemDisplay.class);
 		registration.registerEntityIcon(BlockDisplayProvider.INSTANCE, BlockDisplay.class);
 
-		ClientPlatformProxy.registerReloadListener(HarvestToolProvider.INSTANCE);
+		ClientProxy.registerReloadListener(HarvestToolProvider.INSTANCE);
 
 		registration.addRayTraceCallback(-10, JadeClient::builtInOverrides);
 		registration.addRayTraceCallback(5000, DatapackBlockManager::override);

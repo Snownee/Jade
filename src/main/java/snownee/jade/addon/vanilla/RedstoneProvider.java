@@ -4,8 +4,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.HopperBlock;
@@ -23,7 +21,7 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
 
-public enum RedstoneProvider implements IBlockComponentProvider, IServerDataProvider<BlockEntity> {
+public enum RedstoneProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
 
 	INSTANCE;
 
@@ -62,10 +60,11 @@ public enum RedstoneProvider implements IBlockComponentProvider, IServerDataProv
 	}
 
 	@Override
-	public void appendServerData(CompoundTag data, ServerPlayer player, Level world, BlockEntity blockEntity, boolean showDetails) {
+	public void appendServerData(CompoundTag data, BlockAccessor accessor) {
+		BlockEntity blockEntity = accessor.getBlockEntity();
 		if (blockEntity instanceof ComparatorBlockEntity comparator) {
 			data.putInt("Signal", comparator.getOutputSignal());
-		} else if (blockEntity instanceof HopperBlockEntity hopper) {
+		} else if (blockEntity instanceof HopperBlockEntity) {
 			BlockState state = blockEntity.getBlockState();
 			if (state.hasProperty(BlockStateProperties.ENABLED) && !state.getValue(BlockStateProperties.ENABLED)) {
 				data.putBoolean("HopperLocked", true);

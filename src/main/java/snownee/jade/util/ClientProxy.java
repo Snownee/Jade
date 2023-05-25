@@ -12,7 +12,6 @@ import com.google.gson.JsonObject;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.brigadier.CommandDispatcher;
 
-import net.fabricmc.fabric.api.block.BlockPickInteractionAware;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
@@ -46,15 +45,13 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LiquidBlock;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
+import snownee.jade.api.BlockAccessor;
+import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.ui.IElement;
@@ -68,7 +65,7 @@ import snownee.jade.overlay.DatapackBlockManager;
 import snownee.jade.overlay.OverlayRenderer;
 import snownee.jade.overlay.WailaTickHandler;
 
-public final class ClientPlatformProxy {
+public final class ClientProxy {
 
 	public static boolean hasJEI = isModLoaded("jei");
 	public static boolean hasREI = false; //isModLoaded("roughlyenoughitems");
@@ -91,15 +88,15 @@ public final class ClientPlatformProxy {
 	}
 
 	public static void init() {
-		ClientEntityEvents.ENTITY_LOAD.register(ClientPlatformProxy::onEntityJoin);
-		ClientEntityEvents.ENTITY_UNLOAD.register(ClientPlatformProxy::onEntityLeave);
+		ClientEntityEvents.ENTITY_LOAD.register(ClientProxy::onEntityJoin);
+		ClientEntityEvents.ENTITY_UNLOAD.register(ClientProxy::onEntityLeave);
 		ResourceLocation lowest = new ResourceLocation(Jade.MODID, "mod_name");
 		ItemTooltipCallback.EVENT.addPhaseOrdering(Event.DEFAULT_PHASE, lowest);
-		ItemTooltipCallback.EVENT.register(lowest, ClientPlatformProxy::onTooltip);
-		ClientTickEvents.END_CLIENT_TICK.register(ClientPlatformProxy::onClientTick);
-		ClientPlayConnectionEvents.DISCONNECT.register(ClientPlatformProxy::onPlayerLeave);
-		ClientTickEvents.END_CLIENT_TICK.register(ClientPlatformProxy::onKeyPressed);
-		ScreenEvents.AFTER_INIT.register((Minecraft client, Screen screen, int scaledWidth, int scaledHeight) -> ClientPlatformProxy.onGui(screen));
+		ItemTooltipCallback.EVENT.register(lowest, ClientProxy::onTooltip);
+		ClientTickEvents.END_CLIENT_TICK.register(ClientProxy::onClientTick);
+		ClientPlayConnectionEvents.DISCONNECT.register(ClientProxy::onPlayerLeave);
+		ClientTickEvents.END_CLIENT_TICK.register(ClientProxy::onKeyPressed);
+		ScreenEvents.AFTER_INIT.register((Minecraft client, Screen screen, int scaledWidth, int scaledHeight) -> ClientProxy.onGui(screen));
 
 		ClientPlayNetworking.registerGlobalReceiver(Identifiers.PACKET_RECEIVE_DATA, (client, handler, buf, responseSender) -> {
 			CompoundTag nbt = buf.readNbt();
@@ -133,7 +130,7 @@ public final class ClientPlatformProxy {
 			});
 		});
 
-		ClientCommandRegistrationCallback.EVENT.register(ClientPlatformProxy::registerClientCommand);
+		ClientCommandRegistrationCallback.EVENT.register(ClientProxy::registerClientCommand);
 	}
 
 	public static void registerClientCommand(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandBuildContext registryAccess) {
@@ -196,17 +193,15 @@ public final class ClientPlatformProxy {
 		return hasJEI || hasREI;
 	}
 
-	public static void requestBlockData(BlockEntity blockEntity, boolean showDetails) {
+	public static void requestBlockData(BlockAccessor accessor) {
 		FriendlyByteBuf buf = PacketByteBufs.create();
-		buf.writeBlockPos(blockEntity.getBlockPos());
-		buf.writeBoolean(showDetails);
+		accessor.toNetwork(buf);
 		ClientPlayNetworking.send(Identifiers.PACKET_REQUEST_TILE, buf);
 	}
 
-	public static void requestEntityData(Entity entity, boolean showDetails) {
+	public static void requestEntityData(EntityAccessor accessor) {
 		FriendlyByteBuf buf = PacketByteBufs.create();
-		buf.writeVarInt(entity.getId());
-		buf.writeBoolean(showDetails);
+		accessor.toNetwork(buf);
 		ClientPlayNetworking.send(Identifiers.PACKET_REQUEST_ENTITY, buf);
 	}
 
@@ -216,14 +211,6 @@ public final class ClientPlatformProxy {
 		}
 		ItemStack stack = entity.getPickResult();
 		return stack == null ? ItemStack.EMPTY : stack;
-	}
-
-	public static ItemStack getBlockPickedResult(BlockState state, Player player, BlockHitResult hitResult) {
-		Block block = state.getBlock();
-		if (block instanceof BlockPickInteractionAware) {
-			return ((BlockPickInteractionAware) block).getPickedStack(state, player.level(), hitResult.getBlockPos(), player, hitResult);
-		}
-		return block.getCloneItemStack(player.level(), hitResult.getBlockPos(), state);
 	}
 
 	public static IElement elementFromLiquid(LiquidBlock block) {

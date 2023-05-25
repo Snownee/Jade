@@ -4,11 +4,8 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BeehiveBlock;
 import net.minecraft.world.level.block.entity.BeehiveBlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
@@ -17,7 +14,7 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
 
-public enum BeehiveProvider implements IBlockComponentProvider, IServerDataProvider<BlockEntity> {
+public enum BeehiveProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
 
 	INSTANCE;
 
@@ -34,9 +31,9 @@ public enum BeehiveProvider implements IBlockComponentProvider, IServerDataProvi
 	}
 
 	@Override
-	public void appendServerData(CompoundTag tag, ServerPlayer player, Level world, BlockEntity te, boolean showDetails) {
+	public void appendServerData(CompoundTag tag, BlockAccessor blockAccessor) {
 		tag.getAllKeys().clear();
-		BeehiveBlockEntity beehive = (BeehiveBlockEntity) te;
+		BeehiveBlockEntity beehive = (BeehiveBlockEntity) blockAccessor.getBlockEntity();
 		tag.putByte("Bees", (byte) beehive.getOccupantCount());
 		tag.putBoolean("Full", beehive.isFull());
 	}

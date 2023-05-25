@@ -14,7 +14,7 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
 
-public enum ChickenEggProvider implements IEntityComponentProvider, IServerDataProvider<Entity> {
+public enum ChickenEggProvider implements IEntityComponentProvider, IServerDataProvider<EntityAccessor> {
 
 	INSTANCE;
 
@@ -27,8 +27,8 @@ public enum ChickenEggProvider implements IEntityComponentProvider, IServerDataP
 	}
 
 	@Override
-	public void appendServerData(CompoundTag tag, ServerPlayer player, Level world, Entity entity, boolean showDetails) {
-		Chicken chicken = (Chicken) entity;
+	public void appendServerData(CompoundTag tag, EntityAccessor accessor) {
+		Chicken chicken = (Chicken) accessor.getEntity();
 		tag.putInt("NextEgg", chicken.eggTime / 20);
 	}
 

@@ -176,9 +176,9 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 
 	boolean isShowDetailsPressed();
 
-	void setServerData(CompoundTag tag);
-
 	CompoundTag getServerData();
+
+	void setServerData(CompoundTag tag);
 
 	ItemStack getBlockCamouflage(LevelAccessor level, BlockPos pos);
 
@@ -187,5 +187,9 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 	void markAsServerFeature(ResourceLocation uid);
 
 	boolean isClientFeature(ResourceLocation uid);
+
+	<T extends Accessor<?>> void registerAccessorHandler(Class<T> clazz, Accessor.ClientHandler<T> handler);
+
+	Accessor.ClientHandler<Accessor<?>> getAccessorHandler(Class<? extends Accessor<?>> clazz);
 
 }

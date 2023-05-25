@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import com.mojang.brigadier.CommandDispatcher;
 
 import net.fabricmc.api.EnvType;
+import net.fabricmc.fabric.api.block.BlockPickInteractionAware;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.lookup.v1.block.BlockApiLookup;
 import net.fabricmc.fabric.api.mininglevel.v1.FabricMineableTags;
@@ -46,13 +47,14 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.entity.EnderChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 import snownee.jade.api.view.ItemView;
 import snownee.jade.api.view.ViewGroup;
 import snownee.jade.command.JadeServerCommand;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.mixin.AbstractHorseAccess;
 
-public final class PlatformProxy {
+public final class CommonProxy {
 
 	@Nullable
 	public static String getLastKnownUsername(UUID uuid) {
@@ -93,7 +95,7 @@ public final class PlatformProxy {
 	}
 
 	public static void init() {
-		CommandRegistrationCallback.EVENT.register(PlatformProxy::registerServerCommand);
+		CommandRegistrationCallback.EVENT.register(CommonProxy::registerServerCommand);
 	}
 
 	public static List<ViewGroup<ItemStack>> wrapItemStorage(Object target, ServerPlayer player) {
@@ -208,5 +210,13 @@ public final class PlatformProxy {
 	public static boolean isBoss(Entity entity) {
 		EntityType<?> entityType = entity.getType();
 		return entityType.is(BOSSES) || entityType == EntityType.ENDER_DRAGON || entityType == EntityType.WITHER;
+	}
+
+	public static ItemStack getBlockPickedResult(BlockState state, Player player, BlockHitResult hitResult) {
+		Block block = state.getBlock();
+		if (block instanceof BlockPickInteractionAware) {
+			return ((BlockPickInteractionAware) block).getPickedStack(state, player.level(), hitResult.getBlockPos(), player, hitResult);
+		}
+		return block.getCloneItemStack(player.level(), hitResult.getBlockPos(), state);
 	}
 }

@@ -21,7 +21,7 @@ import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.Tooltip;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
-import snownee.jade.util.ClientPlatformProxy;
+import snownee.jade.util.ClientProxy;
 
 public class WailaTickHandler {
 
@@ -30,6 +30,27 @@ public class WailaTickHandler {
 	private static String lastNarration = "";
 	public TooltipRenderer tooltipRenderer = null;
 	public ProgressTracker progressTracker = new ProgressTracker();
+
+	private static Narrator getNarrator() {
+		return narrator == null ? narrator = Narrator.getNarrator() : narrator;
+	}
+
+	public static WailaTickHandler instance() {
+		if (INSTANCE == null)
+			INSTANCE = new WailaTickHandler();
+		return INSTANCE;
+	}
+
+	public static void narrate(ITooltip tooltip, boolean dedupe) {
+		if (!getNarrator().active() || tooltip.isEmpty())
+			return;
+		String narration = tooltip.getMessage();
+		if (dedupe && narration.equals(lastNarration))
+			return;
+		Narrator narrator = getNarrator();
+		narrator.say(narration, true);
+		lastNarration = narration;
+	}
 
 	public void tickClient() {
 		progressTracker.tick();
@@ -41,10 +62,7 @@ public class WailaTickHandler {
 		}
 
 		Minecraft client = Minecraft.getInstance();
-		if (!ClientPlatformProxy.shouldShowWithOverlay(client, client.screen)) {
-			return;
-		}
-		if (client.keyboardHandler == null) {
+		if (!ClientProxy.shouldShowWithOverlay(client, client.screen)) {
 			return;
 		}
 
@@ -95,25 +113,26 @@ public class WailaTickHandler {
 			return;
 		}
 
-		if (!accessor.shouldDisplay()) {
+		var handler = WailaClientRegistration.INSTANCE.getAccessorHandler(accessor.getAccessorType());
+		if (!handler.shouldDisplay(accessor)) {
 			tooltipRenderer = null;
 			return;
 		}
 		if (accessor.isServerConnected()) {
-			boolean request = accessor.shouldRequestData();
+			boolean request = handler.shouldRequestData(accessor);
 			if (ObjectDataCenter.isTimeElapsed(ObjectDataCenter.rateLimiter)) {
 				ObjectDataCenter.resetTimer();
 				if (request)
-					accessor._requestData();
+					handler.requestData(accessor);
 			}
 			if (request && ObjectDataCenter.getServerData() == null) {
 				return;
 			}
 		}
 
-		if (config.getDisplayMode() == DisplayMode.LITE && !ClientPlatformProxy.isShowDetailsPressed()) {
+		if (config.getDisplayMode() == DisplayMode.LITE && !ClientProxy.isShowDetailsPressed()) {
 			Tooltip dummyTooltip = new Tooltip();
-			accessor._gatherComponents($ -> {
+			handler.gatherComponents(accessor, $ -> {
 				if (Math.abs(WailaCommonRegistration.INSTANCE.priorities.byValue($)) > 5000) {
 					return tooltip;
 				} else {
@@ -124,33 +143,12 @@ public class WailaTickHandler {
 				tooltip.sneakyDetails = true;
 			}
 		} else {
-			accessor._gatherComponents($ -> tooltip);
+			handler.gatherComponents(accessor, $ -> tooltip);
 		}
 
 		for (JadeTooltipCollectedCallback callback : WailaClientRegistration.INSTANCE.tooltipCollectedCallback.callbacks()) {
 			callback.onTooltipCollected(tooltip, accessor);
 		}
 		tooltipRenderer = new TooltipRenderer(tooltip, true);
-	}
-
-	private static Narrator getNarrator() {
-		return narrator == null ? narrator = Narrator.getNarrator() : narrator;
-	}
-
-	public static WailaTickHandler instance() {
-		if (INSTANCE == null)
-			INSTANCE = new WailaTickHandler();
-		return INSTANCE;
-	}
-
-	public static void narrate(ITooltip tooltip, boolean dedupe) {
-		if (!getNarrator().active() || tooltip.isEmpty())
-			return;
-		String narration = tooltip.getMessage();
-		if (dedupe && narration.equals(lastNarration))
-			return;
-		Narrator narrator = getNarrator();
-		narrator.say(narration, true);
-		lastNarration = narration;
 	}
 }

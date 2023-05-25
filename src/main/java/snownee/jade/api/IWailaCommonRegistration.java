@@ -18,7 +18,7 @@ public interface IWailaCommonRegistration {
 	 * @param dataProvider The data provider instance
 	 * @param block The highest level class to apply to
 	 */
-	void registerBlockDataProvider(IServerDataProvider<BlockEntity> dataProvider, Class<? extends BlockEntity> block);
+	void registerBlockDataProvider(IServerDataProvider<BlockAccessor> dataProvider, Class<? extends BlockEntity> block);
 
 	/**
 	 * Register an {@link IServerDataProvider<Entity>} instance for data syncing purposes.
@@ -26,7 +26,7 @@ public interface IWailaCommonRegistration {
 	 * @param dataProvider The data provider instance
 	 * @param entity The highest level class to apply to
 	 */
-	void registerEntityDataProvider(IServerDataProvider<Entity> dataProvider, Class<? extends Entity> entity);
+	void registerEntityDataProvider(IServerDataProvider<EntityAccessor> dataProvider, Class<? extends Entity> entity);
 
 	@Experimental
 	<T> void registerItemStorage(IServerExtensionProvider<T, ItemStack> provider, Class<? extends T> clazz);

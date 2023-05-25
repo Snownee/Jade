@@ -26,7 +26,7 @@ import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.config.WailaConfig.ConfigGeneral;
 import snownee.jade.impl.config.WailaConfig.ConfigOverlay;
-import snownee.jade.util.ClientPlatformProxy;
+import snownee.jade.util.ClientProxy;
 import snownee.jade.util.Color;
 
 public class OverlayRenderer {
@@ -63,7 +63,7 @@ public class OverlayRenderer {
 		if (mc.level == null)
 			return false;
 
-		if (!ClientPlatformProxy.shouldShowWithOverlay(mc, mc.screen)) {
+		if (!ClientProxy.shouldShowWithOverlay(mc, mc.screen)) {
 			return false;
 		}
 
@@ -96,11 +96,11 @@ public class OverlayRenderer {
 
 	/**
 	 *  NOTE!!!
-	 *  
+	 *
 	 *  Please do NOT replace the whole codes with Mixin.
 	 *  It will make me unable to locate bugs.
 	 *  A regular plugin can also realize the same features.
-	 *  
+	 *
 	 *  Secondly, please notice the license that Jade is using.
 	 *  I don't think it is compatible with some open-source licenses.
 	 */
@@ -150,7 +150,7 @@ public class OverlayRenderer {
 
 		BossBarOverlapMode mode = Jade.CONFIG.get().getGeneral().getBossBarOverlapMode();
 		if (mode == BossBarOverlapMode.PUSH_DOWN) {
-			Rect2i rect = ClientPlatformProxy.getBossBarRect();
+			Rect2i rect = ClientProxy.getBossBarRect();
 			if (rect != null) {
 				int tw = position.getWidth();
 				int th = position.getHeight();

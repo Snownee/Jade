@@ -6,7 +6,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import snownee.jade.util.PlatformProxy;
+import snownee.jade.util.CommonProxy;
 
 public class ShearsToolHandler extends SpecialToolHandler {
 
@@ -34,7 +34,7 @@ public class ShearsToolHandler extends SpecialToolHandler {
 
 	@Override
 	public ItemStack test(BlockState state, Level world, BlockPos pos) {
-		if (PlatformProxy.isShearable(state)) {
+		if (CommonProxy.isShearable(state)) {
 			return tool;
 		}
 		return super.test(state, world, pos);

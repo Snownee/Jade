@@ -20,7 +20,7 @@ import snownee.jade.gui.config.value.OptionValue;
 import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.impl.config.WailaConfig.ConfigGeneral;
 import snownee.jade.impl.config.WailaConfig.ConfigOverlay;
-import snownee.jade.util.PlatformProxy;
+import snownee.jade.util.CommonProxy;
 
 public class WailaConfigScreen extends BaseOptionsScreen {
 
@@ -33,7 +33,7 @@ public class WailaConfigScreen extends BaseOptionsScreen {
 		WailaOptionsList options = new WailaOptionsList(this, minecraft, width, height, 32, height - 32, 30, Jade.CONFIG::save);
 
 		ConfigGeneral general = Jade.CONFIG.get().getGeneral();
-		if (PlatformProxy.isDevEnv())
+		if (CommonProxy.isDevEnv())
 			options.choices("debug_mode", general.isDebug(), general::setDebug);
 		options.title("general");
 		options.choices("display_tooltip", general.shouldDisplayTooltip(), general::setDisplayTooltip);
@@ -44,7 +44,7 @@ public class WailaConfigScreen extends BaseOptionsScreen {
 		options.choices("display_mode", general.getDisplayMode(), general::setDisplayMode, builder -> {
 			builder.withTooltip(mode -> {
 				String key = "display_mode_" + mode.name().toLowerCase(Locale.ENGLISH) + "_desc";
-				if (mode == IWailaConfig.DisplayMode.LITE && "fabric".equals(PlatformProxy.getPlatformIdentifier()))
+				if (mode == IWailaConfig.DisplayMode.LITE && "fabric".equals(CommonProxy.getPlatformIdentifier()))
 					key += ".fabric";
 				return Tooltip.create(Entry.makeTitle(key));
 			});
