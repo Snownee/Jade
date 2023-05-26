@@ -21,7 +21,7 @@ import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.Theme;
 import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.overlay.OverlayRenderer;
-import snownee.jade.util.ClientProxy;
+import snownee.jade.util.CommonProxy;
 import snownee.jade.util.ModIdentification;
 
 /**
@@ -75,7 +75,7 @@ public class WailaConfig implements IWailaConfig {
 		public static void init() {
 			/* off */
 			List<String> names = itemModNameTooltipDisabledByMods.stream()
-					.filter(ClientProxy::isModLoaded)
+					.filter(CommonProxy::isModLoaded)
 					.map(ModIdentification::getModName)
 					.toList();
 			/* on */

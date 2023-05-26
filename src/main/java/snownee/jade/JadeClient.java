@@ -9,8 +9,6 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.InputConstants;
 
-import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -25,7 +23,6 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.LazyLoadedValue;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -49,15 +46,13 @@ import snownee.jade.api.config.IWailaConfig.TTSMode;
 import snownee.jade.gui.HomeConfigScreen;
 import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.impl.config.WailaConfig.ConfigGeneral;
-import snownee.jade.mixin.KeyAccess;
 import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.overlay.WailaTickHandler;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
 import snownee.jade.util.ModIdentification;
 
-@SuppressWarnings("deprecation")
-public final class JadeClient implements ClientModInitializer {
+public final class JadeClient {
 
 	public static KeyMapping openConfig;
 	public static KeyMapping showOverlay;
@@ -66,15 +61,13 @@ public final class JadeClient implements ClientModInitializer {
 	public static KeyMapping narrate;
 	public static KeyMapping showRecipes;
 	public static KeyMapping showUses;
+	public static boolean hideModName;
+	private static boolean translationChecked;
+	private static float savedProgress;
+	private static float progressAlpha;
+	private static boolean canHarvest;
 
-	@Override
-	public void onInitializeClient() {
-		ClientProxy.init();
-		for (int i = 320; i < 330; i++) {
-			InputConstants.Key key = InputConstants.Type.KEYSYM.getOrCreate(i);
-			((KeyAccess) (Object) key).setDisplayName(new LazyLoadedValue<>(() -> Component.translatable(key.getName())));
-		}
-
+	public static void init() {
 		openConfig = ClientProxy.registerKeyBinding("config", 320);
 		showOverlay = ClientProxy.registerKeyBinding("show_overlay", 321);
 		toggleLiquid = ClientProxy.registerKeyBinding("toggle_liquid", 322);
@@ -86,8 +79,6 @@ public final class JadeClient implements ClientModInitializer {
 		showDetails = ClientProxy.registerKeyBinding("show_details_alternative", InputConstants.UNKNOWN.getValue());
 
 		ClientProxy.registerReloadListener(ModIdentification.INSTANCE);
-
-		ClientLifecycleEvents.CLIENT_STARTED.register(mc -> Jade.loadComplete());
 	}
 
 	public static void onKeyPressed(int action) {
@@ -124,8 +115,6 @@ public final class JadeClient implements ClientModInitializer {
 		}
 	}
 
-	private static boolean translationChecked;
-
 	public static void onGui(Screen screen) {
 		if (!translationChecked && screen instanceof TitleScreen && CommonProxy.isDevEnv()) {
 			translationChecked = true;
@@ -141,8 +130,6 @@ public final class JadeClient implements ClientModInitializer {
 			}
 		}
 	}
-
-	public static boolean hideModName;
 
 	public static void onTooltip(List<Component> tooltip, ItemStack stack) {
 		appendModName(tooltip, stack);
@@ -184,10 +171,6 @@ public final class JadeClient implements ClientModInitializer {
 		return accessor;
 	}
 
-	private static float savedProgress;
-	private static float progressAlpha;
-	private static boolean canHarvest;
-
 	public static void drawBreakingProgress(ITooltip tooltip, Rect2i rect, GuiGraphics guiGraphics, Accessor<?> accessor) {
 		if (!PluginConfig.INSTANCE.get(Identifiers.MC_BREAKING_PROGRESS)) {
 			progressAlpha = 0;
@@ -195,7 +178,7 @@ public final class JadeClient implements ClientModInitializer {
 		}
 		Minecraft mc = Minecraft.getInstance();
 		MultiPlayerGameMode playerController = mc.gameMode;
-		if (playerController == null || playerController.destroyBlockPos == null) {
+		if (playerController == null || mc.level == null || mc.player == null) {
 			return;
 		}
 		BlockState state = mc.level.getBlockState(playerController.destroyBlockPos);

@@ -6,8 +6,6 @@ import java.util.function.Consumer;
 
 import com.google.common.collect.Lists;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.gui.config.WailaOptionsList;
 import snownee.jade.gui.config.value.OptionValue;
@@ -54,7 +52,6 @@ public abstract class ConfigEntry<T> {
 
 	abstract public boolean isValidValue(Object value);
 
-	@Environment(EnvType.CLIENT)
 	abstract public OptionValue<?> createUI(WailaOptionsList options, String optionName);
 
 	public void addListener(Consumer<ResourceLocation> listener) {

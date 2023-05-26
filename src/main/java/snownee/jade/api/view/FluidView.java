@@ -2,11 +2,8 @@ package snownee.jade.api.view;
 
 import java.util.Objects;
 
-import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.Nullable;
 
-import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
-import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -15,9 +12,9 @@ import net.minecraft.world.level.material.Fluid;
 import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.util.CommonProxy;
 import snownee.jade.util.FluidTextHelper;
 
-@Experimental
 public class FluidView {
 
 	public static final Component EMPTY_FLUID = Component.translatable("jade.fluid.empty");
@@ -47,7 +44,7 @@ public class FluidView {
 		long amount = tag.getLong("amount");
 		JadeFluidObject fluidObject = JadeFluidObject.of(fluid, amount, nbt);
 		FluidView fluidView = new FluidView(IElementHelper.get().fluid(fluidObject));
-		fluidView.fluidName = FluidVariantAttributes.getName(FluidVariant.of(fluid, nbt));
+		fluidView.fluidName = CommonProxy.getFluidName(fluidObject);
 		if (amount <= 0) {
 			fluidView.overrideText = EMPTY_FLUID;
 		}

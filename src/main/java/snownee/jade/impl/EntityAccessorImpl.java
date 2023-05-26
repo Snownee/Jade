@@ -1,6 +1,8 @@
 package snownee.jade.impl;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import com.google.common.base.Suppliers;
@@ -14,9 +16,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
+import snownee.jade.Jade;
 import snownee.jade.api.AccessorImpl;
 import snownee.jade.api.EntityAccessor;
+import snownee.jade.api.IServerDataProvider;
 import snownee.jade.util.ClientProxy;
+import snownee.jade.util.WailaExceptionHandler;
 
 /**
  * Class to get information of entity target and context.
@@ -28,6 +33,36 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 	public EntityAccessorImpl(Builder builder) {
 		super(builder.level, builder.player, builder.serverData, builder.hit, builder.connected, builder.showDetails);
 		entity = builder.entity;
+	}
+
+	public static void handleRequest(FriendlyByteBuf buf, ServerPlayer player, Consumer<Runnable> executor, Consumer<CompoundTag> responseSender) {
+		EntityAccessor accessor;
+		try {
+			accessor = fromNetwork(buf, player);
+		} catch (Exception e) {
+			WailaExceptionHandler.handleErr(e, null, null);
+			return;
+		}
+		executor.accept(() -> {
+			Entity entity = accessor.getEntity();
+			if (player.distanceToSqr(entity) > Jade.MAX_DISTANCE_SQR)
+				return;
+			List<IServerDataProvider<EntityAccessor>> providers = WailaCommonRegistration.INSTANCE.getEntityNBTProviders(entity);
+			if (providers.isEmpty())
+				return;
+
+			CompoundTag tag = accessor.getServerData();
+			for (IServerDataProvider<EntityAccessor> provider : providers) {
+				try {
+					provider.appendServerData(tag, accessor);
+				} catch (Exception e) {
+					WailaExceptionHandler.handleErr(e, provider, null);
+				}
+			}
+
+			tag.putInt("WailaEntityID", entity.getId());
+			responseSender.accept(tag);
+		});
 	}
 
 	public static EntityAccessor fromNetwork(FriendlyByteBuf buf, ServerPlayer player) {

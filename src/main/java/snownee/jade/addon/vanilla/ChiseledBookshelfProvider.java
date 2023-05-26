@@ -71,7 +71,7 @@ public enum ChiseledBookshelfProvider implements IBlockComponentProvider, IServe
 		}
 		tooltip.remove(Identifiers.UNIVERSAL_ITEM_STORAGE);
 		tooltip.add(IDisplayHelper.get().stripColor(item.getHoverName()));
-		if (item.hasTag() && item.getOrCreateTag().contains(EnchantedBookItem.TAG_STORED_ENCHANTMENTS)) {
+		if (item.getTag() != null && item.getTag().contains(EnchantedBookItem.TAG_STORED_ENCHANTMENTS)) {
 			List<Component> list = Lists.newArrayList();
 			ItemStack.appendEnchantmentNames(list, EnchantedBookItem.getEnchantments(item));
 			tooltip.addAll(list);

@@ -5,6 +5,7 @@ import java.text.DecimalFormat;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 
@@ -15,9 +16,6 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat.Mode;
 
-import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRenderHandler;
-import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
-import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -34,11 +32,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.material.Fluid;
 import snownee.jade.Jade;
 import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
 import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.ui.IDisplayHelper;
+import snownee.jade.util.ClientProxy;
 import snownee.jade.util.Color;
 
 public class DisplayHelper implements IDisplayHelper {
@@ -46,18 +44,15 @@ public class DisplayHelper implements IDisplayHelper {
 	public static final DisplayHelper INSTANCE = new DisplayHelper();
 	private static final Minecraft CLIENT = Minecraft.getInstance();
 	private static final ResourceLocation GUI_ICONS_LOCATION = new ResourceLocation("textures/gui/icons.png");
+	//https://github.com/mezz/JustEnoughItems/blob/1.16/src/main/java/mezz/jei/plugins/vanilla/ingredients/fluid/FluidStackRenderer.java
+	private static final int TEX_WIDTH = 16;
+	private static final int TEX_HEIGHT = 16;
+	private static final int MIN_FLUID_HEIGHT = 1; // ensure tiny amounts of fluid are still visible
+	private static final Pattern STRIP_COLOR = Pattern.compile("(?i)\u00a7[0-9A-F]");
+	public static DecimalFormat dfCommas = new DecimalFormat("##.##");
 
-	@Override
-	public void drawItem(GuiGraphics guiGraphics, float x, float y, ItemStack stack, float scale, @Nullable String text) {
-		if (OverlayRenderer.alpha < 0.5F) {
-			return;
-		}
-		guiGraphics.pose().pushPose();
-		guiGraphics.pose().translate(x, y, 0);
-		guiGraphics.pose().scale(scale, scale, scale);
-		guiGraphics.renderFakeItem(stack, 0, 0);
-		renderGuiItemDecorations(guiGraphics, CLIENT.font, stack, 0, 0, text);
-		guiGraphics.pose().popPose();
+	static {
+		dfCommas.setRoundingMode(RoundingMode.DOWN);
 	}
 
 	private static void renderGuiItemDecorations(GuiGraphics guiGraphics, Font font, ItemStack stack, int i, int j, @Nullable String p_115179_) {
@@ -84,57 +79,6 @@ public class DisplayHelper implements IDisplayHelper {
 			guiGraphics.fill(RenderType.guiOverlay(), m, n, m + k, n + 1, l | 0xFF000000);
 		}
 		guiGraphics.pose().popPose();
-	}
-
-	@Override
-	public void drawGradientRect(GuiGraphics guiGraphics, float left, float top, float width, float height, int startColor, int endColor) {
-		drawGradientRect(guiGraphics, left, top, width, height, startColor, endColor, false);
-	}
-
-	public void drawGradientRect(GuiGraphics guiGraphics, float left, float top, float width, float height, int startColor, int endColor, boolean horizontal) {
-		float zLevel = 0.0F;
-		Matrix4f matrix = guiGraphics.pose().last().pose();
-
-		float f = (startColor >> 24 & 255) / 255.0F * OverlayRenderer.alpha;
-		float f1 = (startColor >> 16 & 255) / 255.0F;
-		float f2 = (startColor >> 8 & 255) / 255.0F;
-		float f3 = (startColor & 255) / 255.0F;
-		float f4 = (endColor >> 24 & 255) / 255.0F * OverlayRenderer.alpha;
-		float f5 = (endColor >> 16 & 255) / 255.0F;
-		float f6 = (endColor >> 8 & 255) / 255.0F;
-		float f7 = (endColor & 255) / 255.0F;
-		RenderSystem.enableBlend();
-		RenderSystem.defaultBlendFunc();
-		RenderSystem.setShader(GameRenderer::getPositionColorShader);
-		Tesselator tessellator = Tesselator.getInstance();
-		BufferBuilder buffer = tessellator.getBuilder();
-		buffer.begin(Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-		if (horizontal) {
-			buffer.vertex(matrix, left + width, top, zLevel).color(f5, f6, f7, f4).endVertex();
-			buffer.vertex(matrix, left, top, zLevel).color(f1, f2, f3, f).endVertex();
-			buffer.vertex(matrix, left, top + height, zLevel).color(f1, f2, f3, f).endVertex();
-			buffer.vertex(matrix, left + width, top + height, zLevel).color(f5, f6, f7, f4).endVertex();
-		} else {
-			buffer.vertex(matrix, left + width, top, zLevel).color(f1, f2, f3, f).endVertex();
-			buffer.vertex(matrix, left, top, zLevel).color(f1, f2, f3, f).endVertex();
-			buffer.vertex(matrix, left, top + height, zLevel).color(f5, f6, f7, f4).endVertex();
-			buffer.vertex(matrix, left + width, top + height, zLevel).color(f5, f6, f7, f4).endVertex();
-		}
-		BufferUploader.drawWithShader(buffer.end());
-		RenderSystem.disableBlend();
-	}
-
-	@Override
-	public void drawBorder(GuiGraphics guiGraphics, float minX, float minY, float maxX, float maxY, float width, int color, boolean corner) {
-		fill(guiGraphics, minX + width, minY, maxX - width, minY + width, color);
-		fill(guiGraphics, minX + width, maxY - width, maxX - width, maxY, color);
-		if (corner) {
-			fill(guiGraphics, minX, minY, minX + width, maxY, color);
-			fill(guiGraphics, maxX - width, minY, maxX, maxY, color);
-		} else {
-			fill(guiGraphics, minX, minY + width, minX + width, maxY - width, color);
-			fill(guiGraphics, maxX - width, minY + width, maxX, maxY - width, color);
-		}
 	}
 
 	public static void drawTexturedModalRect(GuiGraphics guiGraphics, float x, float y, int textureX, int textureY, int width, int height, int tw, int th) {
@@ -166,67 +110,6 @@ public class DisplayHelper implements IDisplayHelper {
 			DisplayHelper.drawTexturedModalRect(guiGraphics, x, y, icon.bu, icon.bv, sx, sy, icon.bsu, icon.bsv);
 		DisplayHelper.drawTexturedModalRect(guiGraphics, x, y, icon.u, icon.v, sx, sy, icon.su, icon.sv);
 		RenderSystem.setShaderColor(1, 1, 1, 1);
-	}
-
-	//https://github.com/mezz/JustEnoughItems/blob/1.16/src/main/java/mezz/jei/plugins/vanilla/ingredients/fluid/FluidStackRenderer.java
-	private static final int TEX_WIDTH = 16;
-	private static final int TEX_HEIGHT = 16;
-	private static final int MIN_FLUID_HEIGHT = 1; // ensure tiny amounts of fluid are still visible
-
-	public void drawFluid(GuiGraphics guiGraphics, final float xPosition, final float yPosition, JadeFluidObject fluid, float width, float height, long capacityMb) {
-		if (fluid.isEmpty()) {
-			return;
-		}
-		Fluid type = fluid.getType();
-		FluidVariant variant = FluidVariant.of(type, fluid.getTag());
-		FluidVariantRenderHandler handler = FluidVariantRendering.getHandlerOrDefault(type);
-		TextureAtlasSprite fluidStillSprite = handler.getSprites(variant)[0];
-		int fluidColor = handler.getColor(variant, Minecraft.getInstance().level, null);
-		if (OverlayRenderer.alpha != 1) {
-			fluidColor = IConfigOverlay.applyAlpha(fluidColor, OverlayRenderer.alpha);
-		}
-
-		long amount = JadeFluidObject.bucketVolume();
-		float scaledAmount = (amount * height) / capacityMb;
-		if (amount > 0 && scaledAmount < MIN_FLUID_HEIGHT) {
-			scaledAmount = MIN_FLUID_HEIGHT;
-		}
-		if (scaledAmount > height) {
-			scaledAmount = height;
-		}
-
-		drawTiledSprite(guiGraphics, xPosition, yPosition, width, height, fluidColor, scaledAmount, fluidStillSprite);
-	}
-
-	private void drawTiledSprite(GuiGraphics guiGraphics, final float xPosition, final float yPosition, final float tiledWidth, final float tiledHeight, int color, float scaledAmount, TextureAtlasSprite sprite) {
-		RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
-		Matrix4f matrix = guiGraphics.pose().last().pose();
-		setGLColorFromInt(color);
-		RenderSystem.enableBlend();
-
-		final int xTileCount = (int) (tiledWidth / TEX_WIDTH);
-		final float xRemainder = tiledWidth - (xTileCount * TEX_WIDTH);
-		final int yTileCount = (int) (scaledAmount / TEX_HEIGHT);
-		final float yRemainder = scaledAmount - (yTileCount * TEX_HEIGHT);
-
-		final float yStart = yPosition + tiledHeight;
-
-		for (int xTile = 0; xTile <= xTileCount; xTile++) {
-			for (int yTile = 0; yTile <= yTileCount; yTile++) {
-				float width = (xTile == xTileCount) ? xRemainder : TEX_WIDTH;
-				float height = (yTile == yTileCount) ? yRemainder : TEX_HEIGHT;
-				float x = xPosition + (xTile * TEX_WIDTH);
-				float y = yStart - ((yTile + 1) * TEX_HEIGHT);
-				if (width > 0 && height > 0) {
-					float maskTop = TEX_HEIGHT - height;
-					float maskRight = TEX_WIDTH - width;
-
-					drawTextureWithMasking(matrix, x, y, sprite, maskTop, maskRight, 0);
-				}
-			}
-		}
-		RenderSystem.setShaderColor(1, 1, 1, 1);
-		RenderSystem.disableBlend();
 	}
 
 	private static void setGLColorFromInt(int color) {
@@ -291,10 +174,118 @@ public class DisplayHelper implements IDisplayHelper {
 		RenderSystem.disableBlend();
 	}
 
-	public static DecimalFormat dfCommas = new DecimalFormat("##.##");
+	@Override
+	public void drawItem(GuiGraphics guiGraphics, float x, float y, ItemStack stack, float scale, @Nullable String text) {
+		if (OverlayRenderer.alpha < 0.5F) {
+			return;
+		}
+		guiGraphics.pose().pushPose();
+		guiGraphics.pose().translate(x, y, 0);
+		guiGraphics.pose().scale(scale, scale, scale);
+		guiGraphics.renderFakeItem(stack, 0, 0);
+		renderGuiItemDecorations(guiGraphics, CLIENT.font, stack, 0, 0, text);
+		guiGraphics.pose().popPose();
+	}
 
-	static {
-		dfCommas.setRoundingMode(RoundingMode.DOWN);
+	@Override
+	public void drawGradientRect(GuiGraphics guiGraphics, float left, float top, float width, float height, int startColor, int endColor) {
+		drawGradientRect(guiGraphics, left, top, width, height, startColor, endColor, false);
+	}
+
+	public void drawGradientRect(GuiGraphics guiGraphics, float left, float top, float width, float height, int startColor, int endColor, boolean horizontal) {
+		float zLevel = 0.0F;
+		Matrix4f matrix = guiGraphics.pose().last().pose();
+
+		float f = (startColor >> 24 & 255) / 255.0F * OverlayRenderer.alpha;
+		float f1 = (startColor >> 16 & 255) / 255.0F;
+		float f2 = (startColor >> 8 & 255) / 255.0F;
+		float f3 = (startColor & 255) / 255.0F;
+		float f4 = (endColor >> 24 & 255) / 255.0F * OverlayRenderer.alpha;
+		float f5 = (endColor >> 16 & 255) / 255.0F;
+		float f6 = (endColor >> 8 & 255) / 255.0F;
+		float f7 = (endColor & 255) / 255.0F;
+		RenderSystem.enableBlend();
+		RenderSystem.defaultBlendFunc();
+		RenderSystem.setShader(GameRenderer::getPositionColorShader);
+		Tesselator tessellator = Tesselator.getInstance();
+		BufferBuilder buffer = tessellator.getBuilder();
+		buffer.begin(Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+		if (horizontal) {
+			buffer.vertex(matrix, left + width, top, zLevel).color(f5, f6, f7, f4).endVertex();
+			buffer.vertex(matrix, left, top, zLevel).color(f1, f2, f3, f).endVertex();
+			buffer.vertex(matrix, left, top + height, zLevel).color(f1, f2, f3, f).endVertex();
+			buffer.vertex(matrix, left + width, top + height, zLevel).color(f5, f6, f7, f4).endVertex();
+		} else {
+			buffer.vertex(matrix, left + width, top, zLevel).color(f1, f2, f3, f).endVertex();
+			buffer.vertex(matrix, left, top, zLevel).color(f1, f2, f3, f).endVertex();
+			buffer.vertex(matrix, left, top + height, zLevel).color(f5, f6, f7, f4).endVertex();
+			buffer.vertex(matrix, left + width, top + height, zLevel).color(f5, f6, f7, f4).endVertex();
+		}
+		BufferUploader.drawWithShader(buffer.end());
+		RenderSystem.disableBlend();
+	}
+
+	@Override
+	public void drawBorder(GuiGraphics guiGraphics, float minX, float minY, float maxX, float maxY, float width, int color, boolean corner) {
+		fill(guiGraphics, minX + width, minY, maxX - width, minY + width, color);
+		fill(guiGraphics, minX + width, maxY - width, maxX - width, maxY, color);
+		if (corner) {
+			fill(guiGraphics, minX, minY, minX + width, maxY, color);
+			fill(guiGraphics, maxX - width, minY, maxX, maxY, color);
+		} else {
+			fill(guiGraphics, minX, minY + width, minX + width, maxY - width, color);
+			fill(guiGraphics, maxX - width, minY + width, maxX, maxY - width, color);
+		}
+	}
+
+	public void drawFluid(GuiGraphics guiGraphics, final float xPosition, final float yPosition, JadeFluidObject fluid, float width, float height, long capacityMb) {
+		if (fluid.isEmpty()) {
+			return;
+		}
+
+		long amount = JadeFluidObject.bucketVolume();
+		MutableFloat scaledAmount = new MutableFloat((amount * height) / capacityMb);
+		if (amount > 0 && scaledAmount.floatValue() < MIN_FLUID_HEIGHT) {
+			scaledAmount.setValue(MIN_FLUID_HEIGHT);
+		}
+		if (scaledAmount.floatValue() > height) {
+			scaledAmount.setValue(height);
+		}
+
+		ClientProxy.getFluidSpriteAndColor(fluid, (sprite, color) -> {
+			drawTiledSprite(guiGraphics, xPosition, yPosition, width, height, color, scaledAmount.floatValue(), sprite);
+		});
+	}
+
+	private void drawTiledSprite(GuiGraphics guiGraphics, final float xPosition, final float yPosition, final float tiledWidth, final float tiledHeight, int color, float scaledAmount, TextureAtlasSprite sprite) {
+		RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
+		Matrix4f matrix = guiGraphics.pose().last().pose();
+		setGLColorFromInt(color);
+		RenderSystem.enableBlend();
+
+		final int xTileCount = (int) (tiledWidth / TEX_WIDTH);
+		final float xRemainder = tiledWidth - (xTileCount * TEX_WIDTH);
+		final int yTileCount = (int) (scaledAmount / TEX_HEIGHT);
+		final float yRemainder = scaledAmount - (yTileCount * TEX_HEIGHT);
+
+		final float yStart = yPosition + tiledHeight;
+
+		for (int xTile = 0; xTile <= xTileCount; xTile++) {
+			for (int yTile = 0; yTile <= yTileCount; yTile++) {
+				float width = (xTile == xTileCount) ? xRemainder : TEX_WIDTH;
+				float height = (yTile == yTileCount) ? yRemainder : TEX_HEIGHT;
+				float x = xPosition + (xTile * TEX_WIDTH);
+				float y = yStart - ((yTile + 1) * TEX_HEIGHT);
+				if (width > 0 && height > 0) {
+					float maskTop = TEX_HEIGHT - height;
+					float maskRight = TEX_WIDTH - width;
+
+					drawTextureWithMasking(matrix, x, y, sprite, maskTop, maskRight, 0);
+				}
+			}
+		}
+		RenderSystem.setShaderColor(1, 1, 1, 1);
+		RenderSystem.disableBlend();
 	}
 
 	// https://programming.guide/worlds-most-copied-so-snippet.html
@@ -364,8 +355,6 @@ public class DisplayHelper implements IDisplayHelper {
 			drawGradientRect(guiGraphics, left + normalWidth, top, hlWidth, height, progressColor, highlight.toInt(), true);
 		}
 	}
-
-	private static final Pattern STRIP_COLOR = Pattern.compile("(?i)\u00a7[0-9A-F]");
 
 	@Override
 	public MutableComponent stripColor(Component component) {

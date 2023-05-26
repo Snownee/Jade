@@ -1,5 +1,7 @@
 package snownee.jade.impl;
 
+import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
@@ -10,6 +12,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -19,9 +22,12 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
+import snownee.jade.Jade;
 import snownee.jade.api.AccessorImpl;
 import snownee.jade.api.BlockAccessor;
+import snownee.jade.api.IServerDataProvider;
 import snownee.jade.util.CommonProxy;
+import snownee.jade.util.WailaExceptionHandler;
 
 /**
  * Class to get information of block target and context.
@@ -38,6 +44,45 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 		blockState = builder.blockState;
 		blockEntity = builder.blockEntity;
 		fakeBlock = builder.fakeBlock;
+	}
+
+	public static void handleRequest(FriendlyByteBuf buf, ServerPlayer player, Consumer<Runnable> executor, Consumer<CompoundTag> responseSender) {
+		BlockAccessor accessor;
+		try {
+			accessor = fromNetwork(buf, player);
+		} catch (Exception e) {
+			WailaExceptionHandler.handleErr(e, null, null);
+			return;
+		}
+		executor.accept(() -> {
+			BlockPos pos = accessor.getPosition();
+			ServerLevel world = player.serverLevel();
+			if (pos.distSqr(player.blockPosition()) > Jade.MAX_DISTANCE_SQR || !world.isLoaded(pos))
+				return;
+
+			BlockEntity tile = accessor.getBlockEntity();
+			if (tile == null)
+				return;
+
+			List<IServerDataProvider<BlockAccessor>> providers = WailaCommonRegistration.INSTANCE.getBlockNBTProviders(tile);
+			if (providers.isEmpty())
+				return;
+
+			CompoundTag tag = accessor.getServerData();
+			for (IServerDataProvider<BlockAccessor> provider : providers) {
+				try {
+					provider.appendServerData(tag, accessor);
+				} catch (Exception e) {
+					WailaExceptionHandler.handleErr(e, provider, null);
+				}
+			}
+
+			tag.putInt("x", pos.getX());
+			tag.putInt("y", pos.getY());
+			tag.putInt("z", pos.getZ());
+			tag.putString("id", CommonProxy.getId(tile.getType()).toString());
+			responseSender.accept(tag);
+		});
 	}
 
 	public static BlockAccessor fromNetwork(FriendlyByteBuf buf, ServerPlayer player) {

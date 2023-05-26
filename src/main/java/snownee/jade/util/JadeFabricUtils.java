@@ -17,6 +17,7 @@ import snownee.jade.api.view.FluidView;
 import snownee.jade.api.view.ItemView;
 import snownee.jade.api.view.ViewGroup;
 
+@SuppressWarnings("UnstableApiUsage")
 public final class JadeFabricUtils {
 
 	private JadeFabricUtils() {
@@ -45,7 +46,7 @@ public final class JadeFabricUtils {
 	}
 
 	public static ViewGroup<ItemStack> fromItemStorage(Storage<ItemVariant> storage, int maxSize, int startIndex) {
-		return ItemView.compacted(Streams.stream(storage.iterator()).skip(startIndex).limit(maxSize * 3).map($ -> {
+		return ItemView.compacted(Streams.stream(storage.iterator()).skip(startIndex).limit(maxSize * 3L).map($ -> {
 			return $.getResource().toStack((int) Mth.clamp($.getAmount(), 0, Integer.MAX_VALUE));
 		}), maxSize);
 	}

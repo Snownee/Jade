@@ -2,26 +2,29 @@
   "schemaVersion": 1,
   "id": "jade",
   "version": "${version}",
-
   "name": "Jade",
   "description": "Minecraft mod shows what you are looking at. (Hwyla fork)",
-  "authors": ["Snownee"],
-  "contributors": ["TehNut", "ProfMobius", "kalkafox"],
+  "authors": [
+    "Snownee"
+  ],
+  "contributors": [
+    "TehNut",
+    "ProfMobius",
+    "kalkafox"
+  ],
   "icon": "icon.png",
   "contact": {
     "homepage": "https://www.curseforge.com/minecraft/mc-mods/jade",
     "sources": "https://github.com/Snownee/Jade",
     "issues": "https://github.com/Snownee/Jade/issues"
   },
-
   "license": "CC BY-NC-SA 4.0",
-
   "entrypoints": {
     "main": [
-      "snownee.jade.Jade"
+      "snownee.jade.util.CommonProxy"
     ],
     "client": [
-      "snownee.jade.JadeClient"
+      "snownee.jade.util.ClientProxy"
     ],
     "jade": [
       "snownee.jade.addon.core.CorePlugin",
@@ -35,15 +38,15 @@
       "snownee.jade.compat.JEICompat"
     ]
   },
-  "mixins": [ "jade.mixins.json" ],
-  "accessWidener" : "jade.accesswidener",
-
+  "mixins": [
+    "jade.mixins.json"
+  ],
+  "accessWidener": "jade.accesswidener",
   "depends": {
     "fabricloader": ">=0.14",
     "minecraft": ">=1.20-",
     "java": ">=17"
   },
-
   "custom": {
     "modmenu": {
       "links": {

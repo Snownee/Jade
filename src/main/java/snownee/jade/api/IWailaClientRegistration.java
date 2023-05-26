@@ -3,7 +3,6 @@ package snownee.jade.api;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.ApiStatus.NonExtendable;
 import org.jetbrains.annotations.Nullable;
 
@@ -160,16 +159,12 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 
 	Screen createPluginConfigScreen(@Nullable Screen parent, String namespace);
 
-	@Experimental
 	void registerItemStorageClient(IClientExtensionProvider<ItemStack, ItemView> provider);
 
-	@Experimental
 	void registerFluidStorageClient(IClientExtensionProvider<CompoundTag, FluidView> provider);
 
-	@Experimental
 	void registerEnergyStorageClient(IClientExtensionProvider<CompoundTag, EnergyView> provider);
 
-	@Experimental
 	void registerProgressClient(IClientExtensionProvider<CompoundTag, ProgressView> provider);
 
 	boolean isServerConnected();

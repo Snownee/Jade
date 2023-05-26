@@ -3,7 +3,6 @@ package snownee.jade.api.view;
 import java.util.List;
 import java.util.function.Function;
 
-import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.Lists;
@@ -12,7 +11,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 
-@Experimental
 public class ViewGroup<T> {
 
 	public final List<T> views;

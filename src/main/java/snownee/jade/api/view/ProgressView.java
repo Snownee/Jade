@@ -2,7 +2,6 @@ package snownee.jade.api.view;
 
 import java.util.Objects;
 
-import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.nbt.CompoundTag;
@@ -10,7 +9,6 @@ import net.minecraft.network.chat.Component;
 import snownee.jade.api.ui.IProgressStyle;
 import snownee.jade.impl.ui.SlimProgressStyle;
 
-@Experimental
 public class ProgressView {
 
 	public IProgressStyle style;

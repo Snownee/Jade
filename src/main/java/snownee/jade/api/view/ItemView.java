@@ -6,7 +6,6 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.mutable.MutableInt;
-import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.Lists;
@@ -14,7 +13,6 @@ import com.google.common.collect.Lists;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 
-@Experimental
 public class ItemView {
 
 	public ItemStack item;

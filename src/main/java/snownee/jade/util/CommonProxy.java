@@ -6,17 +6,27 @@ import java.util.UUID;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.google.common.base.Strings;
 import com.mojang.brigadier.CommandDispatcher;
 
 import net.fabricmc.api.EnvType;
+import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.block.BlockPickInteractionAware;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.lookup.v1.block.BlockApiLookup;
 import net.fabricmc.fabric.api.mininglevel.v1.FabricMineableTags;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.fabricmc.fabric.api.transfer.v1.storage.base.SidedStorageBlockEntity;
 import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -25,10 +35,13 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.Entity;
@@ -47,14 +60,27 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.entity.EnderChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.BlockHitResult;
+import snownee.jade.Jade;
+import snownee.jade.api.IWailaPlugin;
+import snownee.jade.api.Identifiers;
+import snownee.jade.api.WailaPlugin;
+import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.view.ItemView;
 import snownee.jade.api.view.ViewGroup;
 import snownee.jade.command.JadeServerCommand;
+import snownee.jade.impl.BlockAccessorImpl;
+import snownee.jade.impl.EntityAccessorImpl;
 import snownee.jade.impl.WailaClientRegistration;
+import snownee.jade.impl.WailaCommonRegistration;
+import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.mixin.AbstractHorseAccess;
 
-public final class CommonProxy {
+public final class CommonProxy implements ModInitializer {
+
+	public static final TagKey<EntityType<?>> BOSSES = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("c:bosses"));
+	private static final Direction[] DIRECTIONS = Direction.values();
 
 	@Nullable
 	public static String getLastKnownUsername(UUID uuid) {
@@ -78,7 +104,7 @@ public final class CommonProxy {
 	}
 
 	public static String getModIdFromItem(ItemStack stack) {
-		if (stack.hasTag() && stack.getTag().contains("id")) {
+		if (stack.getTag() != null && stack.getTag().contains("id")) {
 			String s = stack.getTag().getString("id");
 			if (s.contains(":")) {
 				ResourceLocation id = ResourceLocation.tryParse(s);
@@ -94,10 +120,7 @@ public final class CommonProxy {
 		return FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT;
 	}
 
-	public static void init() {
-		CommandRegistrationCallback.EVENT.register(CommonProxy::registerServerCommand);
-	}
-
+	@SuppressWarnings("UnstableApiUsage")
 	public static List<ViewGroup<ItemStack>> wrapItemStorage(Object target, ServerPlayer player) {
 		int size = 54;
 		if (target instanceof AbstractHorseAccess horse) {
@@ -130,6 +153,7 @@ public final class CommonProxy {
 		return null;
 	}
 
+	@SuppressWarnings("UnstableApiUsage")
 	public static List<ViewGroup<CompoundTag>> wrapFluidStorage(Object target, ServerPlayer player) {
 		if (target instanceof SidedStorageBlockEntity be) {
 			var storage = be.getFluidStorage(null);
@@ -143,8 +167,6 @@ public final class CommonProxy {
 		}
 		return null;
 	}
-
-	private static final Direction[] DIRECTIONS = Direction.values();
 
 	public static <T> T lookupBlock(BlockApiLookup<T, Direction> sided, Object target) {
 		T found = null;
@@ -205,8 +227,6 @@ public final class CommonProxy {
 		JadeServerCommand.register(dispatcher);
 	}
 
-	public static final TagKey<EntityType<?>> BOSSES = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("c:bosses"));
-
 	public static boolean isBoss(Entity entity) {
 		EntityType<?> entityType = entity.getType();
 		return entityType.is(BOSSES) || entityType == EntityType.ENDER_DRAGON || entityType == EntityType.WITHER;
@@ -218,5 +238,76 @@ public final class CommonProxy {
 			return ((BlockPickInteractionAware) block).getPickedStack(state, player.level(), hitResult.getBlockPos(), player, hitResult);
 		}
 		return block.getCloneItemStack(player.level(), hitResult.getBlockPos(), state);
+	}
+
+	private static void playerJoin(ServerGamePacketListenerImpl handler, PacketSender sender, MinecraftServer server) {
+		ServerPlayer player = handler.player;
+		Jade.LOGGER.info("Syncing config to {} ({})", player.getGameProfile().getName(), player.getGameProfile().getId());
+		FriendlyByteBuf buf = PacketByteBufs.create();
+		buf.writeUtf(Strings.nullToEmpty(PluginConfig.INSTANCE.getServerConfigs()));
+		ServerPlayNetworking.send(player, Identifiers.PACKET_SERVER_PING, buf);
+
+		if (server.isDedicatedServer())
+			UsernameCache.setUsername(player.getUUID(), player.getGameProfile().getName());
+	}
+
+	public static boolean isModLoaded(String modid) {
+		return FabricLoader.getInstance().isModLoaded(modid);
+	}
+
+	public static void loadComplete() {
+		FabricLoader.getInstance().getEntrypointContainers(Jade.MODID, IWailaPlugin.class).forEach(entrypoint -> {
+			ModMetadata metadata = entrypoint.getProvider().getMetadata();
+			Jade.LOGGER.info("Start loading plugin from {}", metadata.getName());
+			String className = null;
+			try {
+				IWailaPlugin plugin = entrypoint.getEntrypoint();
+				WailaPlugin a = plugin.getClass().getDeclaredAnnotation(WailaPlugin.class);
+				if (a != null && !Strings.isNullOrEmpty(a.value()) && !isModLoaded(a.value()))
+					return;
+				className = plugin.getClass().getName();
+				plugin.register(WailaCommonRegistration.INSTANCE);
+				if (isPhysicallyClient()) {
+					plugin.registerClient(WailaClientRegistration.INSTANCE);
+				}
+			} catch (Throwable e) {
+				Jade.LOGGER.error("Error loading plugin at {}", className, e);
+			}
+		});
+		Jade.loadComplete();
+	}
+
+	@SuppressWarnings("UnstableApiUsage")
+	public static Component getFluidName(JadeFluidObject fluidObject) {
+		Fluid fluid = fluidObject.getType();
+		CompoundTag nbt = fluidObject.getTag();
+		return FluidVariantAttributes.getName(FluidVariant.of(fluid, nbt));
+	}
+
+	@Override
+	public void onInitialize() {
+		ServerPlayNetworking.registerGlobalReceiver(Identifiers.PACKET_REQUEST_ENTITY, (server, player, handler, buf, responseSender) -> {
+			EntityAccessorImpl.handleRequest(buf, player, server::execute, tag -> {
+				FriendlyByteBuf data = PacketByteBufs.create();
+				data.writeNbt(tag);
+				responseSender.sendPacket(Identifiers.PACKET_RECEIVE_DATA, data);
+			});
+		});
+		ServerPlayNetworking.registerGlobalReceiver(Identifiers.PACKET_REQUEST_TILE, (server, player, handler, buf, responseSender) -> {
+			BlockAccessorImpl.handleRequest(buf, player, server::execute, tag -> {
+				FriendlyByteBuf data = PacketByteBufs.create();
+				data.writeNbt(tag);
+				responseSender.sendPacket(Identifiers.PACKET_RECEIVE_DATA, data);
+			});
+		});
+
+		CommandRegistrationCallback.EVENT.register(CommonProxy::registerServerCommand);
+		ServerPlayConnectionEvents.JOIN.register(CommonProxy::playerJoin);
+		UsernameCache.load();
+		ServerLifecycleEvents.SERVER_STARTED.register(server -> {
+			if (server.isDedicatedServer()) {
+				loadComplete();
+			}
+		});
 	}
 }
