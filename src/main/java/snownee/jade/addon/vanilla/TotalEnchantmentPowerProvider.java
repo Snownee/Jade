@@ -4,6 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.EnchantmentTableBlock;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.ITooltip;
@@ -22,21 +23,12 @@ public enum TotalEnchantmentPowerProvider implements IBlockComponentProvider {
 		BlockPos pos = accessor.getPosition();
 		float power = 0;
 		// EnchantmentMenu.java
-		for (int k = -1; k <= 1; ++k) {
-			for (int l = -1; l <= 1; ++l) {
-				if ((k != 0 || l != 0) && world.isEmptyBlock(pos.offset(l, 0, k)) && world.isEmptyBlock(pos.offset(l, 1, k))) {
-					power += getPower(world, pos.offset(l * 2, 0, k * 2));
-					power += getPower(world, pos.offset(l * 2, 1, k * 2));
-
-					if (l != 0 && k != 0) {
-						power += getPower(world, pos.offset(l * 2, 0, k));
-						power += getPower(world, pos.offset(l * 2, 1, k));
-						power += getPower(world, pos.offset(l, 0, k * 2));
-						power += getPower(world, pos.offset(l, 1, k * 2));
-					}
-				}
+		for (BlockPos blockpos : EnchantmentTableBlock.BOOKSHELF_OFFSETS) {
+			if (EnchantmentTableBlock.isValidBookShelf(world, pos, blockpos)) {
+				power += getPower(world, pos.offset(blockpos));
 			}
 		}
+
 		if (power > 0) {
 			tooltip.add(Component.translatable("jade.ench_power", DisplayHelper.dfCommas.format(power)));
 		}
