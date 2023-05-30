@@ -271,5 +271,6 @@ public final class ClientProxy implements ClientModInitializer {
 			//noinspection deprecation
 			((KeyAccess) (Object) key).setDisplayName(new LazyLoadedValue<>(() -> Component.translatable(key.getName())));
 		}
+		JadeClient.init();
 	}
 }
