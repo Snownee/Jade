@@ -49,7 +49,7 @@
   "config.jade.display_mode_hold_key": "按住",
   "config.jade.display_mode_hold_key_desc": "顯示按鍵綁定必須被按住",
   "config.jade.display_mode_lite": "精簡",
-  "config.jade.display_mode_lite_desc": "按住「顯示詳細資料」鍵以顯示更多資訊",
+  "config.jade.display_mode_lite_desc": "按住「顯示詳細資料」以顯示更多資訊",
   "config.jade.display_mode_lite_desc.fabric": "按住 Shift 以顯示更多資訊",
   "config.jade.hide_from_debug": "於除錯選單隱藏",
   "config.jade.hide_from_debug_desc": "開啟除錯選單時隱藏物品提示",
@@ -217,9 +217,9 @@
   "toast.jade.toggle_hint.2": "再次按下 %s 以重新開啟",
 
   "__comment": "Only for testing:",
-  "jade.modName.cpp": "Crafting++",
-  "mymod.fuel": "Fuel: %d ticks",
-  "config.jade.plugin_debug.furnace_fuel": "Test Fuel",
-  "config.jade.plugin_debug.furnace_fuel.str_cfg": "Test Str",
-  "config.jade.plugin_debug.furnace_fuel.float_cfg": "Test Float"
+  "jade.modName.cpp": "合成 ++",
+  "mymod.fuel": "燃料：%d 刻",
+  "config.jade.plugin_debug.furnace_fuel": "測試燃料",
+  "config.jade.plugin_debug.furnace_fuel.str_cfg": "測試字串",
+  "config.jade.plugin_debug.furnace_fuel.float_cfg": "測試浮點數"
 }
