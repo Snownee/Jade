@@ -5,9 +5,11 @@ import java.util.UUID;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.OwnableEntity;
+import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.level.Level;
 import snownee.jade.api.EntityAccessor;
@@ -48,7 +50,8 @@ public enum AnimalOwnerProvider implements IEntityComponentProvider, IServerData
 
 	@Override
 	public void appendServerData(CompoundTag data, ServerPlayer player, Level world, Entity entity, boolean showDetails) {
-		if (world.getServer().isSingleplayerOwner(player.getGameProfile())) {
+		MinecraftServer server = player.getLevel().getServer();
+		if (server != null && server.isSingleplayerOwner(player.getGameProfile()) && entity instanceof TamableAnimal) {
 			return;
 		}
 		UUID ownerUUID = null;
