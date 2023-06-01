@@ -8,6 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.OwnableEntity;
+import net.minecraft.world.entity.TamableAnimal;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.IServerDataProvider;
@@ -45,7 +46,7 @@ public enum AnimalOwnerProvider implements IEntityComponentProvider, IServerData
 	@Override
 	public void appendServerData(CompoundTag data, EntityAccessor accessor) {
 		MinecraftServer server = accessor.getLevel().getServer();
-		if (server != null && server.isSingleplayerOwner(accessor.getPlayer().getGameProfile())) {
+		if (server != null && server.isSingleplayerOwner(accessor.getPlayer().getGameProfile()) && accessor.getEntity() instanceof TamableAnimal) {
 			return;
 		}
 		Entity entity = accessor.getEntity();
