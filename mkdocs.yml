@@ -6,6 +6,11 @@ edit_uri: ""
 
 nav:
     - "Preface": README.md
+    - "1.20":
+        - "Getting Started": plugins20/getting-started.md
+        - "Overrides": plugins20/overrides.md
+        - "Hiding Target": plugins20/hiding-target.md
+        - "Plugin Configuration": plugins20/plugin-config.md
     - "1.19 and Fabric 1.18":
         - "Getting Started": plugins19/getting-started.md
         - "Overrides": plugins19/overrides.md
