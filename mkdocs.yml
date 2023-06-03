@@ -23,6 +23,7 @@ nav:
     - "Datapack Support":
         - "Displaying a Block": datapacks/block.md
     - "Upgrading Guides":
+        - "1.19 -> 1.20": changes/120.md
         - "1.18 -> 1.19": changes/119.md
         - "1.16 -> 1.17": changes/117.md
 
