@@ -1,5 +1,7 @@
 package snownee.jade.api;
 
+import java.util.function.Supplier;
+
 import org.jetbrains.annotations.ApiStatus.NonExtendable;
 
 import net.minecraft.core.BlockPos;
@@ -35,8 +37,13 @@ public interface BlockAccessor extends Accessor<BlockHitResult> {
 
 	ItemStack getFakeBlock();
 
+	@Override
+	default Class<? extends Accessor<?>> getAccessorType() {
+		return BlockAccessor.class;
+	}
+
 	@NonExtendable
-	interface Builder {
+	public interface Builder {
 		Builder level(Level level);
 
 		Builder player(Player player);
@@ -51,7 +58,11 @@ public interface BlockAccessor extends Accessor<BlockHitResult> {
 
 		Builder blockState(BlockState state);
 
-		Builder blockEntity(BlockEntity blockEntity);
+		default Builder blockEntity(BlockEntity blockEntity) {
+			return blockEntity(() -> blockEntity);
+		}
+
+		Builder blockEntity(Supplier<BlockEntity> blockEntity);
 
 		Builder fakeBlock(ItemStack stack);
 

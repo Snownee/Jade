@@ -17,39 +17,39 @@ import snownee.jade.api.ui.IElement;
 public interface IBlockComponentProvider extends IToggleableProvider {
 
 	/**
-	 * Callback used to override the default Waila lookup system.</br>
-	 * Will only be called if the implementing class is registered via {@link IWailaClientRegistration#registerBlockIcon}.</br>
-	 * <p>
-	 * This method is only called on the client side. If you require data from the server, you should also implement
-	 * {@link IServerDataProvider#appendServerData(net.minecraft.nbt.CompoundTag, net.minecraft.entity.player.ServerPlayer, Level, Object)}
-	 * and add the data to the {@link net.minecraft.nbt.CompoundTag} there, which can then be read back using {@link Accessor#getServerData()}.
-	 * If you rely on the client knowing the data you need, you are not guaranteed to have the proper values.
-	 *
-	 * @param accessor       Contains most of the relevant information about the current environment.
-	 * @param config         Current configuration of Waila.
-	 * @param currentElement Current icon to show
-	 * @return {@link null} if override is not required, an {@link IElement} otherwise.
-	 */
+     * Callback used to override the default Waila lookup system.</br>
+     * Will only be called if the implementing class is registered via {@link IWailaClientRegistration#registerBlockIcon}.</br>
+     * <p>
+     * This method is only called on the client side. If you require data from the server, you should also implement
+     * {@link IServerDataProvider#appendServerData(net.minecraft.nbt.CompoundTag, net.minecraft.entity.player.ServerPlayer, Level, Object)}
+     * and add the data to the {@link net.minecraft.nbt.CompoundTag} there, which can then be read back using {@link Accessor#getServerData()}.
+     * If you rely on the client knowing the data you need, you are not guaranteed to have the proper values.
+     *
+     * @param accessor       Contains most of the relevant information about the current environment.
+     * @param config         Current configuration of Waila.
+     * @param currentElement Current icon to show
+     * @return {@link null} if override is not required, an {@link IElement} otherwise.
+     */
 	@Nullable
 	default IElement getIcon(BlockAccessor accessor, IPluginConfig config, IElement currentIcon) {
 		return null;
 	}
 
 	/**
-	 * Callback used to add lines to one of the three sections of the tooltip (Head, Body, Tail).</br>
-	 * Will only be called if the implementing class is registered via {@link IWailaClientRegistration#registerBlockComponent(IBlockComponentProvider, TooltipPosition, Class)}.</br>
-	 * You are supposed to always return the modified input tooltip.</br>
-	 * <p>
-	 * This method is only called on the client side. If you require data from the server, you should also implement
-	 * {@link IServerDataProvider#appendServerData(net.minecraft.nbt.CompoundTag, net.minecraft.entity.player.ServerPlayer, Level, Object)}
-	 * and add the data to the {@link net.minecraft.nbt.CompoundTag} there, which can then be read back using {@link IBlockAccessor#getServerData()}.
-	 * If you rely on the client knowing the data you need, you are not guaranteed to have the proper values.
-	 *
-	 * @param tooltip  Current list of tooltip lines (might have been processed by other providers and might be processed
-	 *                 by other providers).
-	 * @param accessor Contains most of the relevant information about the current environment.
-	 * @param config   Current configuration of Waila.
-	 */
+     * Callback used to add lines to one of the three sections of the tooltip (Head, Body, Tail).</br>
+     * Will only be called if the implementing class is registered via {@link IWailaClientRegistration#registerBlockComponent(IBlockComponentProvider, TooltipPosition, Class)}.</br>
+     * You are supposed to always return the modified input tooltip.</br>
+     * <p>
+     * This method is only called on the client side. If you require data from the server, you should also implement
+     * {@link IServerDataProvider#appendServerData(net.minecraft.nbt.CompoundTag, net.minecraft.entity.player.ServerPlayer, Level, Object)}
+     * and add the data to the {@link net.minecraft.nbt.CompoundTag} there, which can then be read back using {@link IBlockAccessor#getServerData()}.
+     * If you rely on the client knowing the data you need, you are not guaranteed to have the proper values.
+     *
+     * @param tooltip    Current list of tooltip lines (might have been processed by other providers and might be processed
+     *                   by other providers).
+     * @param accessor   Contains most of the relevant information about the current environment.
+     * @param config     Current configuration of Waila.
+     */
 	void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config);
 
 }

@@ -16,7 +16,7 @@ import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.impl.ui.ItemStackElement;
 import snownee.jade.overlay.RayTracing;
-import snownee.jade.util.ClientPlatformProxy;
+import snownee.jade.util.ClientProxy;
 
 public enum BlockDisplayProvider implements IEntityComponentProvider {
 
@@ -30,7 +30,7 @@ public enum BlockDisplayProvider implements IEntityComponentProvider {
 			return null;
 		IElement icon = ItemStackElement.of(new ItemStack(block));
 		if (RayTracing.isEmptyElement(icon) && block instanceof LiquidBlock) {
-			icon = ClientPlatformProxy.elementFromLiquid((LiquidBlock) block);
+			icon = ClientProxy.elementFromLiquid((LiquidBlock) block);
 		}
 		return icon;
 	}

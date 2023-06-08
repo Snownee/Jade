@@ -8,10 +8,10 @@ import org.jetbrains.annotations.Nullable;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.toasts.SystemToast;
 import net.minecraft.client.gui.components.toasts.SystemToast.SystemToastIds;
 import net.minecraft.client.gui.screens.Screen;
@@ -23,12 +23,12 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.LazyLoadedValue;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.BrushableBlock;
 import net.minecraft.world.level.block.InfestedBlock;
 import net.minecraft.world.level.block.TrappedChestBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -48,11 +48,10 @@ import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.impl.config.WailaConfig.ConfigGeneral;
 import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.overlay.WailaTickHandler;
-import snownee.jade.util.ClientPlatformProxy;
+import snownee.jade.util.ClientProxy;
+import snownee.jade.util.CommonProxy;
 import snownee.jade.util.ModIdentification;
-import snownee.jade.util.PlatformProxy;
 
-@SuppressWarnings("deprecation")
 public final class JadeClient {
 
 	public static KeyMapping openConfig;
@@ -62,37 +61,35 @@ public final class JadeClient {
 	public static KeyMapping narrate;
 	public static KeyMapping showRecipes;
 	public static KeyMapping showUses;
+	public static boolean hideModName;
+	private static boolean translationChecked;
+	private static float savedProgress;
+	private static float progressAlpha;
+	private static boolean canHarvest;
 
-	public static void initClient() {
-		for (int i = 320; i < 330; i++) {
-			InputConstants.Key key = InputConstants.Type.KEYSYM.getOrCreate(i);
-			key.displayName = new LazyLoadedValue<>(() -> Component.translatable(key.getName()));
+	public static void init() {
+		openConfig = ClientProxy.registerKeyBinding("config", 320);
+		showOverlay = ClientProxy.registerKeyBinding("show_overlay", 321);
+		toggleLiquid = ClientProxy.registerKeyBinding("toggle_liquid", 322);
+		if (ClientProxy.shouldRegisterRecipeViewerKeys()) {
+			showRecipes = ClientProxy.registerKeyBinding("show_recipes", 323);
+			showUses = ClientProxy.registerKeyBinding("show_uses", 324);
 		}
+		narrate = ClientProxy.registerKeyBinding("narrate", 325);
+		//TODO: proxy
+		showDetails = ClientProxy.registerKeyBinding("show_details", InputConstants.KEY_LSHIFT);
 
-		openConfig = ClientPlatformProxy.registerKeyBinding("config", 320);
-		showOverlay = ClientPlatformProxy.registerKeyBinding("show_overlay", 321);
-		toggleLiquid = ClientPlatformProxy.registerKeyBinding("toggle_liquid", 322);
-		if (ClientPlatformProxy.shouldRegisterRecipeViewerKeys()) {
-			showRecipes = ClientPlatformProxy.registerKeyBinding("show_recipes", 323);
-			showUses = ClientPlatformProxy.registerKeyBinding("show_uses", 324);
-		}
-		narrate = ClientPlatformProxy.registerKeyBinding("narrate", 325);
-		showDetails = ClientPlatformProxy.registerKeyBinding("show_details", 340);
-
-		ClientPlatformProxy.registerReloadListener(ModIdentification.INSTANCE);
+		ClientProxy.registerReloadListener(ModIdentification.INSTANCE);
 	}
 
 	public static void onKeyPressed(int action) {
-		if (action != 1)
-			return;
-
-		if (openConfig.isDown()) {
+		while (openConfig.consumeClick()) {
 			Jade.CONFIG.invalidate();
 			Minecraft.getInstance().setScreen(new HomeConfigScreen(null));
 		}
 
 		ConfigGeneral general = Jade.CONFIG.get().getGeneral();
-		if (showOverlay.isDown()) {
+		while (showOverlay.consumeClick()) {
 			DisplayMode mode = general.getDisplayMode();
 			if (mode == IWailaConfig.DisplayMode.TOGGLE) {
 				general.setDisplayTooltip(!general.shouldDisplayTooltip());
@@ -104,12 +101,12 @@ public final class JadeClient {
 			}
 		}
 
-		if (toggleLiquid.isDown()) {
+		while (toggleLiquid.consumeClick()) {
 			general.setDisplayFluids(!general.shouldDisplayFluids());
 			Jade.CONFIG.save();
 		}
 
-		if (narrate.isDown()) {
+		while (narrate.consumeClick()) {
 			if (general.getTTSMode() == TTSMode.TOGGLE) {
 				general.toggleTTS();
 				Jade.CONFIG.save();
@@ -119,10 +116,8 @@ public final class JadeClient {
 		}
 	}
 
-	private static boolean translationChecked;
-
 	public static void onGui(Screen screen) {
-		if (!translationChecked && screen instanceof TitleScreen && PlatformProxy.isDevEnv()) {
+		if (!translationChecked && screen instanceof TitleScreen && CommonProxy.isDevEnv()) {
 			translationChecked = true;
 			List<String> keys = Lists.newArrayList();
 			for (ResourceLocation id : PluginConfig.INSTANCE.getKeys()) {
@@ -136,8 +131,6 @@ public final class JadeClient {
 			}
 		}
 	}
-
-	public static boolean hideModName;
 
 	public static void onTooltip(List<Component> tooltip, ItemStack stack) {
 		appendModName(tooltip, stack);
@@ -160,8 +153,6 @@ public final class JadeClient {
 			if (player.isCreative() || player.isSpectator())
 				return accessor;
 			IWailaClientRegistration client = VanillaPlugin.CLIENT_REGISTRATION;
-			if (client.getConfig().getPlugin().get(Identifiers.CORE_BLOCK_FACE))
-				return accessor;
 			if (target.getBlock() instanceof TrappedChestBlock) {
 				BlockState state = VanillaPlugin.getCorrespondingNormalChest(target.getBlockState());
 				if (state != target.getBlockState()) {
@@ -173,31 +164,27 @@ public final class JadeClient {
 			} else if (target.getBlock() == Blocks.POWDER_SNOW) {
 				Block block = Blocks.SNOW_BLOCK;
 				return client.blockAccessor().from(target).blockState(block.defaultBlockState()).build();
-			} else if (target.getBlock() == Blocks.SUSPICIOUS_SAND) {
-				Block block = Blocks.SAND;
+			} else if (target.getBlock() instanceof BrushableBlock brushable) {
+				Block block = brushable.getTurnsInto();
 				return client.blockAccessor().from(target).blockState(block.defaultBlockState()).build();
 			}
 		}
 		return accessor;
 	}
 
-	private static float savedProgress;
-	private static float progressAlpha;
-	private static boolean canHarvest;
-
-	public static void drawBreakingProgress(ITooltip tooltip, Rect2i rect, PoseStack matrixStack, Accessor<?> accessor) {
+	public static void drawBreakingProgress(ITooltip tooltip, Rect2i rect, GuiGraphics guiGraphics, Accessor<?> accessor) {
 		if (!PluginConfig.INSTANCE.get(Identifiers.MC_BREAKING_PROGRESS)) {
 			progressAlpha = 0;
 			return;
 		}
 		Minecraft mc = Minecraft.getInstance();
 		MultiPlayerGameMode playerController = mc.gameMode;
-		if (playerController == null || playerController.destroyBlockPos == null) {
+		if (playerController == null || mc.level == null || mc.player == null) {
 			return;
 		}
 		BlockState state = mc.level.getBlockState(playerController.destroyBlockPos);
 		if (playerController.isDestroying())
-			canHarvest = PlatformProxy.isCorrectToolForDrops(state, mc.player);
+			canHarvest = CommonProxy.isCorrectToolForDrops(state, mc.player);
 		int color = canHarvest ? 0xFFFFFF : 0xFF4444;
 		int height = rect.getHeight();
 		int width = rect.getWidth();
@@ -208,7 +195,7 @@ public final class JadeClient {
 		progressAlpha += mc.getDeltaFrameTime() * (playerController.isDestroying() ? 0.1F : -0.1F);
 		if (playerController.isDestroying()) {
 			progressAlpha = Math.min(progressAlpha, 0.53F); //0x88 = 0.53 * 255
-			float progress = state.getDestroyProgress(mc.player, mc.player.level, playerController.destroyBlockPos);
+			float progress = state.getDestroyProgress(mc.player, mc.player.level(), playerController.destroyBlockPos);
 			if (playerController.destroyProgress + progress >= 1) {
 				progressAlpha = 1;
 			}
@@ -219,7 +206,7 @@ public final class JadeClient {
 			progressAlpha = Math.max(progressAlpha, 0);
 		}
 		color = IConfigOverlay.applyAlpha(color, progressAlpha);
-		DisplayHelper.fill(matrixStack, 0, height - 1, width * savedProgress, height, color);
+		DisplayHelper.fill(guiGraphics, 0, height - 1, width * savedProgress, height, color);
 	}
 
 	public static MutableComponent format(String s, Object... objects) {

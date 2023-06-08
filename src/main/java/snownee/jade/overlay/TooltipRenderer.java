@@ -1,9 +1,9 @@
 package snownee.jade.overlay;
 
 import com.mojang.blaze3d.platform.Window;
-import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec2;
@@ -73,13 +73,13 @@ public class TooltipRenderer implements ITooltipRenderer {
 		}
 	}
 
-	public void draw(PoseStack matrixStack) {
+	public void draw(GuiGraphics guiGraphics) {
 		float x = getPadding(LEFT);
 		float y = getPadding(TOP);
 
 		for (Line line : tooltip.lines) {
 			Vec2 size = line.getSize();
-			line.render(matrixStack, x, y, totalSize.x - getPadding(RIGHT), size.y);
+			line.render(guiGraphics, x, y, totalSize.x - getPadding(RIGHT), size.y);
 			y += size.y;
 		}
 
@@ -91,8 +91,12 @@ public class TooltipRenderer implements ITooltipRenderer {
 				y = totalSize.y - 6 + yOffset;
 				float alpha = 1 - Math.abs(yOffset) / 2;
 				int alphaChannel = (int) (0xFF * Mth.clamp(alpha, 0, 1));
-				if (alphaChannel > 4)
-					mc.font.draw(matrixStack, "▾", x, y, 0xFFFFFF | alphaChannel << 24);
+				if (alphaChannel > 4) {
+					guiGraphics.pose().pushPose();
+					guiGraphics.pose().translate(x, y, 0);
+					DisplayHelper.INSTANCE.drawText(guiGraphics, "▾", 0, 0, 0xFFFFFF | alphaChannel << 24);
+					guiGraphics.pose().popPose();
+				}
 			}
 		}
 
@@ -108,8 +112,8 @@ public class TooltipRenderer implements ITooltipRenderer {
 				offsetY += (totalSize.y - size.y) / 2;
 			}
 			float offsetX = getPadding(LEFT) + offset.x - size.x - 3;
-			Tooltip.drawBorder(matrixStack, offsetX, offsetY, icon);
-			icon.render(matrixStack, offsetX, offsetY, offsetX + size.x, offsetY + size.y);
+			Tooltip.drawBorder(guiGraphics, offsetX, offsetY, icon);
+			icon.render(guiGraphics, offsetX, offsetY, offsetX + size.x, offsetY + size.y);
 		}
 	}
 

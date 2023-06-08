@@ -27,7 +27,7 @@ public class WailaExceptionHandler {
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy - HH:mm:ss");
 
 	public static void handleErr(Throwable e, @Nullable IJadeProvider provider, @Nullable ITooltip tooltip) {
-		if (PlatformProxy.isDevEnv()) {
+		if (CommonProxy.isDevEnv()) {
 			ExceptionUtils.rethrow(e);
 			return;
 		}

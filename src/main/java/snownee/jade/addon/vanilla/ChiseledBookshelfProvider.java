@@ -9,14 +9,11 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.ChiseledBookShelfBlock;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.ChiseledBookShelfBlockEntity;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.addon.universal.ItemStorageProvider;
@@ -30,36 +27,9 @@ import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElementHelper;
 
-public enum ChiseledBookshelfProvider implements IBlockComponentProvider, IServerDataProvider<BlockEntity> {
+public enum ChiseledBookshelfProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
 
 	INSTANCE;
-
-	@Override
-	public IElement getIcon(BlockAccessor accessor, IPluginConfig config, IElement currentIcon) {
-		if (accessor.showDetails()) {
-			return null;
-		}
-		ItemStack item = getHitBook(accessor);
-		return item.isEmpty() ? null : IElementHelper.get().item(item);
-	}
-
-	@Override
-	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		if (accessor.showDetails()) {
-			return;
-		}
-		ItemStack item = getHitBook(accessor);
-		if (item.isEmpty()) {
-			return;
-		}
-		tooltip.remove(Identifiers.UNIVERSAL_ITEM_STORAGE);
-		tooltip.add(IDisplayHelper.get().stripColor(item.getHoverName()));
-		if (item.hasTag() && item.getTag().contains(EnchantedBookItem.TAG_STORED_ENCHANTMENTS)) {
-			List<Component> list = Lists.newArrayList();
-			ItemStack.appendEnchantmentNames(list, EnchantedBookItem.getEnchantments(item));
-			tooltip.addAll(list);
-		}
-	}
 
 	private static ItemStack getHitBook(BlockAccessor accessor) {
 		if (!(accessor.getBlockEntity() instanceof ChiseledBookShelfBlockEntity)) {
@@ -82,8 +52,35 @@ public enum ChiseledBookshelfProvider implements IBlockComponentProvider, IServe
 	}
 
 	@Override
-	public void appendServerData(CompoundTag data, ServerPlayer player, Level world, BlockEntity t, boolean showDetails) {
-		ChiseledBookShelfBlockEntity be = (ChiseledBookShelfBlockEntity) t;
+	public IElement getIcon(BlockAccessor accessor, IPluginConfig config, IElement currentIcon) {
+		if (accessor.showDetails()) {
+			return null;
+		}
+		ItemStack item = getHitBook(accessor);
+		return item.isEmpty() ? null : IElementHelper.get().item(item);
+	}
+
+	@Override
+	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
+		if (accessor.showDetails()) {
+			return;
+		}
+		ItemStack item = getHitBook(accessor);
+		if (item.isEmpty()) {
+			return;
+		}
+		tooltip.remove(Identifiers.UNIVERSAL_ITEM_STORAGE);
+		tooltip.add(IDisplayHelper.get().stripColor(item.getHoverName()));
+		if (item.getTag() != null && item.getTag().contains(EnchantedBookItem.TAG_STORED_ENCHANTMENTS)) {
+			List<Component> list = Lists.newArrayList();
+			ItemStack.appendEnchantmentNames(list, EnchantedBookItem.getEnchantments(item));
+			tooltip.addAll(list);
+		}
+	}
+
+	@Override
+	public void appendServerData(CompoundTag data, BlockAccessor accessor) {
+		ChiseledBookShelfBlockEntity be = (ChiseledBookShelfBlockEntity) accessor.getBlockEntity();
 		if (!be.isEmpty()) {
 			data.put("Bookshelf", be.saveWithoutMetadata());
 		}

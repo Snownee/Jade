@@ -1,7 +1,6 @@
 package snownee.jade.api.callback;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.ITooltip;
@@ -9,13 +8,13 @@ import snownee.jade.api.ITooltip;
 @FunctionalInterface
 public interface JadeBeforeRenderCallback {
 
-	class ColorSetting {
+	public static class ColorSetting {
 		public float alpha;
 		public int backgroundColor;
 		public int gradientStart;
 		public int gradientEnd;
 	}
 
-	boolean beforeRender(ITooltip tooltip, Rect2i rect, PoseStack matrixStack, Accessor<?> accessor, ColorSetting color);
+	boolean beforeRender(ITooltip tooltip, Rect2i rect, GuiGraphics guiGraphics, Accessor<?> accessor, ColorSetting color);
 
 }

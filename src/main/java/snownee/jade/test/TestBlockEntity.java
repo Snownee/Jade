@@ -1,6 +1,4 @@
-package snownee.jade.test;
-
-import org.jetbrains.annotations.NotNull;
+/*package snownee.jade.test;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -8,10 +6,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 
 public class TestBlockEntity extends BlockEntity {
@@ -19,24 +17,11 @@ public class TestBlockEntity extends BlockEntity {
 	TestEnergyStorage energyStorage = new TestEnergyStorage();
 	LazyOptional<TestEnergyStorage> energyCap = LazyOptional.of(() -> energyStorage);
 
-	FluidTank fluidStorage = new FluidTank(10000) {
-		@Override
-		public int getTanks() {
-			return 5;
-		}
-
-		@Override
-		public @NotNull FluidStack getFluidInTank(int tank) {
-			if (tank > 0)
-				return FluidStack.EMPTY;
-			return super.getFluidInTank(tank);
-		}
-	};
-
+	FluidTank fluidStorage = new FluidTank(10000);
 	LazyOptional<FluidTank> fluidCap = LazyOptional.of(() -> fluidStorage);
 
 	public TestBlockEntity(BlockPos pos, BlockState state) {
-		super(Test.TILE.get(), pos, state);
+		super(Test.TILE, pos, state);
 	}
 
 	@Override
@@ -55,10 +40,10 @@ public class TestBlockEntity extends BlockEntity {
 
 	@Override
 	public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
-		if (cap == ForgeCapabilities.ENERGY) {
+		if (cap == CapabilityEnergy.ENERGY) {
 			return energyCap.cast();
 		}
-		if (cap == ForgeCapabilities.FLUID_HANDLER) {
+		if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
 			return fluidCap.cast();
 		}
 		return super.getCapability(cap, side);
@@ -107,3 +92,4 @@ public class TestBlockEntity extends BlockEntity {
 	}
 
 }
+*/

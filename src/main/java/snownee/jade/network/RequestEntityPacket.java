@@ -1,70 +1,40 @@
 package snownee.jade.network;
 
-import java.util.List;
 import java.util.function.Supplier;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
-import snownee.jade.Jade;
-import snownee.jade.api.IServerDataProvider;
-import snownee.jade.impl.WailaCommonRegistration;
-import snownee.jade.util.WailaExceptionHandler;
+import snownee.jade.api.EntityAccessor;
+import snownee.jade.impl.EntityAccessorImpl;
+import snownee.jade.util.CommonProxy;
 
 public class RequestEntityPacket {
 
-	public int entityId;
-	public boolean showDetails;
+	public EntityAccessor accessor;
+	public FriendlyByteBuf buffer;
 
-	public RequestEntityPacket(Entity entity, boolean showDetails) {
-		this(entity.getId(), showDetails);
+	public RequestEntityPacket(EntityAccessor accessor) {
+		this.accessor = accessor;
 	}
 
-	private RequestEntityPacket(int entityId, boolean showDetails) {
-		this.entityId = entityId;
-		this.showDetails = showDetails;
+	public RequestEntityPacket(FriendlyByteBuf buffer) {
+		this.buffer = buffer;
 	}
 
 	public static RequestEntityPacket read(FriendlyByteBuf buffer) {
-		return new RequestEntityPacket(buffer.readVarInt(), buffer.readBoolean());
+		return new RequestEntityPacket(buffer);
 	}
 
 	public static void write(RequestEntityPacket message, FriendlyByteBuf buffer) {
-		buffer.writeVarInt(message.entityId);
-		buffer.writeBoolean(message.showDetails);
+		message.accessor.toNetwork(buffer);
 	}
 
 	public static class Handler {
 
 		public static void onMessage(final RequestEntityPacket message, Supplier<NetworkEvent.Context> context) {
-			context.get().enqueueWork(() -> {
-				ServerPlayer player = context.get().getSender();
-				Level world = player.level;
-				Entity entity = world.getEntity(message.entityId);
-
-				if (entity == null || player.distanceToSqr(entity) > RequestTilePacket.MAX_DISTANCE_SQR)
-					return;
-
-				List<IServerDataProvider<Entity>> providers = WailaCommonRegistration.INSTANCE.getEntityNBTProviders(entity);
-				if (providers.isEmpty())
-					return;
-
-				CompoundTag tag = new CompoundTag();
-				for (IServerDataProvider<Entity> provider : providers) {
-					try {
-						provider.appendServerData(tag, player, world, entity, message.showDetails);
-					} catch (Exception e) {
-						WailaExceptionHandler.handleErr(e, provider, null);
-					}
-				}
-
-				tag.putInt("WailaEntityID", entity.getId());
-
-				Jade.NETWORK.sendTo(new ReceiveDataPacket(tag), player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+			EntityAccessorImpl.handleRequest(message.buffer, context.get().getSender(), context.get()::enqueueWork, tag -> {
+				CommonProxy.NETWORK.sendTo(new ReceiveDataPacket(tag), context.get().getNetworkManager(), NetworkDirection.PLAY_TO_CLIENT);
 			});
 			context.get().setPacketHandled(true);
 		}

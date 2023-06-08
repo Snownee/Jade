@@ -2,7 +2,6 @@ package snownee.jade.api.view;
 
 import java.util.Objects;
 
-import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -10,13 +9,12 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.fluids.FluidStack;
 import snownee.jade.api.fluid.JadeFluidObject;
-import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.util.CommonProxy;
+import snownee.jade.util.FluidTextHelper;
 
-@Experimental
 public class FluidView {
 
 	public static final Component EMPTY_FLUID = Component.translatable("jade.fluid.empty");
@@ -46,13 +44,13 @@ public class FluidView {
 		long amount = tag.getLong("amount");
 		JadeFluidObject fluidObject = JadeFluidObject.of(fluid, amount, nbt);
 		FluidView fluidView = new FluidView(IElementHelper.get().fluid(fluidObject));
-		fluidView.fluidName = new FluidStack(fluid, 1, nbt).getDisplayName();
+		fluidView.fluidName = CommonProxy.getFluidName(fluidObject);
 		if (amount <= 0) {
 			fluidView.overrideText = EMPTY_FLUID;
 		}
-		fluidView.current = IDisplayHelper.get().humanReadableNumber(amount, "B", true);
-		fluidView.max = IDisplayHelper.get().humanReadableNumber(capacity, "B", true);
-		fluidView.ratio = (float) amount / capacity;
+		fluidView.current = FluidTextHelper.getUnicodeMillibuckets(amount, true);
+		fluidView.max = FluidTextHelper.getUnicodeMillibuckets(capacity, true);
+		fluidView.ratio = (float) ((double) amount / capacity);
 		return fluidView;
 	}
 

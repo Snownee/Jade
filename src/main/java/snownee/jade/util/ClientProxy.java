@@ -2,6 +2,7 @@ package snownee.jade.util;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
@@ -10,23 +11,25 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
+import net.minecraft.util.LazyLoadedValue;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.LiquidBlock;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraftforge.client.ConfigScreenHandler.ConfigScreenFactory;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
@@ -36,6 +39,7 @@ import net.minecraftforge.client.event.RegisterClientCommandsEvent;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.client.event.ScreenEvent;
+import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.common.MinecraftForge;
@@ -44,12 +48,16 @@ import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.EntityLeaveLevelEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.forgespi.language.IModInfo;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
+import snownee.jade.api.BlockAccessor;
+import snownee.jade.api.EntityAccessor;
+import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.IWailaConfig.BossBarOverlapMode;
 import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.ui.IElement;
@@ -65,19 +73,11 @@ import snownee.jade.overlay.DatapackBlockManager;
 import snownee.jade.overlay.OverlayRenderer;
 import snownee.jade.overlay.WailaTickHandler;
 
-public final class ClientPlatformProxy {
+public final class ClientProxy {
 
-	public static boolean hasJEI = isModLoaded("jei");
+	public static boolean hasJEI = CommonProxy.isModLoaded("jei");
 	public static boolean hasREI = false; //isModLoaded("roughlyenoughitems");
-	public static boolean hasFastScroll = isModLoaded("fastscroll");
-
-	public static boolean isModLoaded(String modid) {
-		try {
-			return ModList.get().isLoaded(modid);
-		} catch (Throwable e) {
-			return false;
-		}
-	}
+	public static boolean hasFastScroll = CommonProxy.isModLoaded("fastscroll");
 
 	public static void initModNames(Map<String, String> map) {
 		List<IModInfo> mods = ImmutableList.copyOf(ModList.get().getMods());
@@ -92,18 +92,25 @@ public final class ClientPlatformProxy {
 	}
 
 	public static void init() {
-		MinecraftForge.EVENT_BUS.addListener(ClientPlatformProxy::onEntityJoin);
-		MinecraftForge.EVENT_BUS.addListener(ClientPlatformProxy::onEntityLeave);
-		MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, ClientPlatformProxy::onTooltip);
-		MinecraftForge.EVENT_BUS.addListener(ClientPlatformProxy::onClientTick);
-		MinecraftForge.EVENT_BUS.addListener(ClientPlatformProxy::onPlayerLeave);
-		MinecraftForge.EVENT_BUS.addListener(ClientPlatformProxy::registerCommands);
-		MinecraftForge.EVENT_BUS.addListener(ClientPlatformProxy::onKeyPressed);
-		MinecraftForge.EVENT_BUS.addListener(ClientPlatformProxy::onGui);
-		MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, true, ClientPlatformProxy::onDrawBossBar);
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientPlatformProxy::onKeyMappingEvent);
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientPlatformProxy::onRegisterReloadListener);
+		MinecraftForge.EVENT_BUS.addListener(ClientProxy::onEntityJoin);
+		MinecraftForge.EVENT_BUS.addListener(ClientProxy::onEntityLeave);
+		MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, ClientProxy::onTooltip);
+		MinecraftForge.EVENT_BUS.addListener(ClientProxy::onClientTick);
+		MinecraftForge.EVENT_BUS.addListener(ClientProxy::onPlayerLeave);
+		MinecraftForge.EVENT_BUS.addListener(ClientProxy::registerCommands);
+		MinecraftForge.EVENT_BUS.addListener(ClientProxy::onKeyPressed);
+		MinecraftForge.EVENT_BUS.addListener(ClientProxy::onGui);
+		MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, true, ClientProxy::onDrawBossBar);
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientProxy::onKeyMappingEvent);
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientProxy::onRegisterReloadListener);
 		ModLoadingContext.get().registerExtensionPoint(ConfigScreenFactory.class, () -> new ConfigScreenFactory((minecraft, screen) -> new HomeConfigScreen(screen)));
+
+		for (int i = 320; i < 330; i++) {
+			InputConstants.Key key = InputConstants.Type.KEYSYM.getOrCreate(i);
+			//noinspection deprecation
+			key.displayName = new LazyLoadedValue<>(() -> Component.translatable(key.getName()));
+		}
+		JadeClient.init();
 	}
 
 	private static void onEntityJoin(EntityJoinLevelEvent event) {
@@ -118,9 +125,9 @@ public final class ClientPlatformProxy {
 		JadeClient.onTooltip(event.getToolTip(), event.getItemStack());
 	}
 
-	public static void onRenderTick() {
+	public static void onRenderTick(GuiGraphics guiGraphics) {
 		try {
-			OverlayRenderer.renderOverlay478757(new PoseStack());
+			OverlayRenderer.renderOverlay478757(guiGraphics);
 		} catch (Throwable e) {
 			WailaExceptionHandler.handleErr(e, null, null);
 		} finally {
@@ -177,20 +184,16 @@ public final class ClientPlatformProxy {
 		return hasJEI || hasREI;
 	}
 
-	public static void requestBlockData(BlockEntity blockEntity, boolean showDetails) {
-		Jade.NETWORK.sendToServer(new RequestTilePacket(blockEntity, showDetails));
+	public static void requestBlockData(BlockAccessor accessor) {
+		CommonProxy.NETWORK.sendToServer(new RequestTilePacket(accessor));
 	}
 
-	public static void requestEntityData(Entity entity, boolean showDetails) {
-		Jade.NETWORK.sendToServer(new RequestEntityPacket(entity, showDetails));
+	public static void requestEntityData(EntityAccessor accessor) {
+		CommonProxy.NETWORK.sendToServer(new RequestEntityPacket(accessor));
 	}
 
 	public static ItemStack getEntityPickedResult(Entity entity, Player player, EntityHitResult hitResult) {
 		return entity.getPickedResult(hitResult);
-	}
-
-	public static ItemStack getBlockPickedResult(BlockState state, Player player, BlockHitResult hitResult) {
-		return state.getCloneItemStack(hitResult, player.level, hitResult.getBlockPos(), player);
 	}
 
 	public static IElement elementFromLiquid(LiquidBlock block) {
@@ -243,5 +246,19 @@ public final class ClientPlatformProxy {
 
 	public static boolean shouldShowWithOverlay(Minecraft mc, @Nullable Screen screen) {
 		return screen == null || screen instanceof BaseOptionsScreen || screen instanceof ChatScreen;
+	}
+
+	public static void getFluidSpriteAndColor(JadeFluidObject fluid, BiConsumer<TextureAtlasSprite, Integer> consumer) {
+		Fluid type = fluid.getType();
+		FluidStack fluidStack = CommonProxy.toFluidStack(fluid);
+		Minecraft minecraft = Minecraft.getInstance();
+		IClientFluidTypeExtensions handler = IClientFluidTypeExtensions.of(type);
+		ResourceLocation fluidStill = handler.getStillTexture(fluidStack);
+		TextureAtlasSprite fluidStillSprite = minecraft.getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(fluidStill);
+		int fluidColor = handler.getTintColor(fluidStack);
+		if (OverlayRenderer.alpha != 1) {
+			fluidColor = IWailaConfig.IConfigOverlay.applyAlpha(fluidColor, OverlayRenderer.alpha);
+		}
+		consumer.accept(fluidStillSprite, fluidColor);
 	}
 }

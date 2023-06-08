@@ -2,10 +2,9 @@ package snownee.jade.impl.ui;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec2;
@@ -20,7 +19,7 @@ public class HealthElement extends Element {
 
 	private final float maxHealth;
 	private final float health;
-	private final String text;
+	private String text;
 
 	public HealthElement(float maxHealth, float health) {
 		if (!PluginConfig.INSTANCE.get(Identifiers.MC_ENTITY_HEALTH_SHOW_FRACTIONS)) {
@@ -49,7 +48,7 @@ public class HealthElement extends Element {
 	}
 
 	@Override
-	public void render(PoseStack matrixStack, float x, float y, float maxX, float maxY) {
+	public void render(GuiGraphics guiGraphics, float x, float y, float maxX, float maxY) {
 		float maxHearts = PluginConfig.INSTANCE.getInt(Identifiers.MC_ENTITY_HEALTH_ICONS_PER_LINE);
 		int maxHeartsForRender = PluginConfig.INSTANCE.getInt(Identifiers.MC_ENTITY_HEALTH_MAX_FOR_RENDER);
 
@@ -60,17 +59,17 @@ public class HealthElement extends Element {
 		int xOffset = 0;
 		for (int i = 1; i <= heartCount; i++) {
 			if (i <= Mth.floor(health)) {
-				DisplayHelper.renderIcon(matrixStack, x + xOffset, y, 8, 8, IconUI.HEART);
+				DisplayHelper.renderIcon(guiGraphics, x + xOffset, y, 8, 8, IconUI.HEART);
 				xOffset += 8;
 			}
 
 			if ((i > health) && (i < health + 1)) {
-				DisplayHelper.renderIcon(matrixStack, x + xOffset, y, 8, 8, IconUI.HALF_HEART);
+				DisplayHelper.renderIcon(guiGraphics, x + xOffset, y, 8, 8, IconUI.HALF_HEART);
 				xOffset += 8;
 			}
 
 			if (i >= health + 1) {
-				DisplayHelper.renderIcon(matrixStack, x + xOffset, y, 8, 8, IconUI.EMPTY_HEART);
+				DisplayHelper.renderIcon(guiGraphics, x + xOffset, y, 8, 8, IconUI.EMPTY_HEART);
 				xOffset += 8;
 			}
 
@@ -82,7 +81,7 @@ public class HealthElement extends Element {
 		}
 
 		if (maxHealth > maxHeartsForRender) {
-			DisplayHelper.INSTANCE.drawText(matrixStack, text, x + 8, y, OverlayRenderer.normalTextColorRaw);
+			DisplayHelper.INSTANCE.drawText(guiGraphics, text, x + 8, y, OverlayRenderer.normalTextColorRaw);
 		}
 	}
 

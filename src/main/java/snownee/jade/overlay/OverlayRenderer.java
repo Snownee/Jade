@@ -9,6 +9,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.util.Mth;
 import snownee.jade.Jade;
@@ -25,7 +26,7 @@ import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.config.WailaConfig.ConfigGeneral;
 import snownee.jade.impl.config.WailaConfig.ConfigOverlay;
-import snownee.jade.util.ClientPlatformProxy;
+import snownee.jade.util.ClientProxy;
 import snownee.jade.util.Color;
 
 public class OverlayRenderer {
@@ -62,7 +63,7 @@ public class OverlayRenderer {
 		if (mc.level == null)
 			return false;
 
-		if (!ClientPlatformProxy.shouldShowWithOverlay(mc, mc.screen)) {
+		if (!ClientProxy.shouldShowWithOverlay(mc, mc.screen)) {
 			return false;
 		}
 
@@ -95,15 +96,15 @@ public class OverlayRenderer {
 
 	/**
 	 *  NOTE!!!
-	 *  
+	 *
 	 *  Please do NOT replace the whole codes with Mixin.
 	 *  It will make me unable to locate bugs.
 	 *  A regular plugin can also realize the same features.
-	 *  
+	 *
 	 *  Secondly, please notice the license that Jade is using.
 	 *  I don't think it is compatible with some open-source licenses.
 	 */
-	public static void renderOverlay478757(PoseStack poseStack) {
+	public static void renderOverlay478757(GuiGraphics guiGraphics) {
 		shown = false;
 		boolean show = shouldShow();
 		TooltipRenderer tooltipRenderer = WailaTickHandler.instance().tooltipRenderer;
@@ -131,11 +132,12 @@ public class OverlayRenderer {
 
 		ticks += delta;
 		Minecraft.getInstance().getProfiler().push("Jade Overlay");
-		renderOverlay(tooltipRenderer, poseStack);
+		renderOverlay(tooltipRenderer, guiGraphics);
 		Minecraft.getInstance().getProfiler().pop();
 	}
 
-	public static void renderOverlay(TooltipRenderer tooltip, PoseStack matrixStack) {
+	public static void renderOverlay(TooltipRenderer tooltip, GuiGraphics guiGraphics) {
+		PoseStack matrixStack = guiGraphics.pose();
 		matrixStack.pushPose();
 
 		Rect2i position = tooltip.getPosition();
@@ -148,7 +150,7 @@ public class OverlayRenderer {
 
 		BossBarOverlapMode mode = Jade.CONFIG.get().getGeneral().getBossBarOverlapMode();
 		if (mode == BossBarOverlapMode.PUSH_DOWN) {
-			Rect2i rect = ClientPlatformProxy.getBossBarRect();
+			Rect2i rect = ClientProxy.getBossBarRect();
 			if (rect != null) {
 				int tw = position.getWidth();
 				int th = position.getHeight();
@@ -184,7 +186,7 @@ public class OverlayRenderer {
 		colorSetting.gradientStart = gradientStartRaw;
 		colorSetting.gradientEnd = gradientEndRaw;
 		for (JadeBeforeRenderCallback callback : WailaClientRegistration.INSTANCE.beforeRenderCallback.callbacks()) {
-			if (callback.beforeRender(tooltip.getTooltip(), morphRect, matrixStack, ObjectDataCenter.get(), colorSetting)) {
+			if (callback.beforeRender(tooltip.getTooltip(), morphRect, guiGraphics, ObjectDataCenter.get(), colorSetting)) {
 				matrixStack.popPose();
 				return;
 			}
@@ -207,22 +209,22 @@ public class OverlayRenderer {
 		boolean doDefault = true;
 		colorSetting.alpha *= alpha;
 		for (JadeRenderBackgroundCallback callback : WailaClientRegistration.INSTANCE.renderBackgroundCallback.callbacks()) {
-			if (callback.onRender(tooltip, morphRect, matrixStack, ObjectDataCenter.get(), colorSetting)) {
+			if (callback.onRender(tooltip, morphRect, guiGraphics, ObjectDataCenter.get(), colorSetting)) {
 				doDefault = false;
 				break;
 			}
 		}
 		if (doDefault && colorSetting.alpha > 0) {
-			drawTooltipBox(matrixStack, 0, 0, morphRect.getWidth(), morphRect.getHeight(), IConfigOverlay.applyAlpha(colorSetting.backgroundColor, colorSetting.alpha), IConfigOverlay.applyAlpha(colorSetting.gradientStart, colorSetting.alpha), IConfigOverlay.applyAlpha(colorSetting.gradientEnd, colorSetting.alpha), overlay.getSquare());
+			drawTooltipBox(guiGraphics, 0, 0, morphRect.getWidth(), morphRect.getHeight(), IConfigOverlay.applyAlpha(colorSetting.backgroundColor, colorSetting.alpha), IConfigOverlay.applyAlpha(colorSetting.gradientStart, colorSetting.alpha), IConfigOverlay.applyAlpha(colorSetting.gradientEnd, colorSetting.alpha), overlay.getSquare());
 		}
 
 		RenderSystem.enableBlend();
 		RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-		tooltip.draw(matrixStack);
+		tooltip.draw(guiGraphics);
 		RenderSystem.disableBlend();
 
 		WailaClientRegistration.INSTANCE.afterRenderCallback.call(callback -> {
-			callback.afterRender(tooltip.getTooltip(), morphRect, matrixStack, ObjectDataCenter.get());
+			callback.afterRender(tooltip.getTooltip(), morphRect, guiGraphics, ObjectDataCenter.get());
 		});
 
 		RenderSystem.enableDepthTest();
@@ -255,22 +257,22 @@ public class OverlayRenderer {
 		}
 	}
 
-	public static void drawTooltipBox(PoseStack matrixStack, int x, int y, int w, int h, int bg, int grad1, int grad2, boolean square) {
+	public static void drawTooltipBox(GuiGraphics guiGraphics, int x, int y, int w, int h, int bg, int grad1, int grad2, boolean square) {
 		if (!square) {
 			w -= 2;
 			h -= 2;
 		}
-		DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x + 1, y + 1, w - 2, h - 2, bg, bg);//center
+		DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x + 1, y + 1, w - 2, h - 2, bg, bg);//center
 		if (!square) {
-			DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x, y - 1, w, 1, bg, bg);
-			DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x, y + h, w, 1, bg, bg);
-			DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x - 1, y, 1, h, bg, bg);
-			DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x + w, y, 1, h, bg, bg);
+			DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x, y - 1, w, 1, bg, bg);
+			DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x, y + h, w, 1, bg, bg);
+			DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x - 1, y, 1, h, bg, bg);
+			DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x + w, y, 1, h, bg, bg);
 		}
-		DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x, y + 1, 1, h - 2, grad1, grad2);
-		DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x + w - 1, y + 1, 1, h - 2, grad1, grad2);
-		DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x, y, w, 1, grad1, grad1);
-		DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x, y + h - 1, w, 1, grad2, grad2);
+		DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x, y + 1, 1, h - 2, grad1, grad2);
+		DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x + w - 1, y + 1, 1, h - 2, grad1, grad2);
+		DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x, y, w, 1, grad1, grad1);
+		DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x, y + h - 1, w, 1, grad2, grad2);
 	}
 
 	public static void updateTheme() {

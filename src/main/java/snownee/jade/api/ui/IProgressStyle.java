@@ -1,7 +1,6 @@
 package snownee.jade.api.ui;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 
 public interface IProgressStyle {
@@ -18,5 +17,5 @@ public interface IProgressStyle {
 
 	IProgressStyle overlay(IElement overlay);
 
-	void render(PoseStack matrixStack, float x, float y, float w, float h, float progress, Component text);
+	void render(GuiGraphics guiGraphics, float x, float y, float w, float h, float progress, Component text);
 }

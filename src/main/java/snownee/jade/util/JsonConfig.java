@@ -33,7 +33,7 @@ public class JsonConfig<T> {
 	private Gson gson = DEFAULT_GSON;
 
 	public JsonConfig(String fileName, Type configClass, @Nullable Runnable onUpdate, Supplier<T> defaultFactory) {
-		this.configFile = new File(PlatformProxy.getConfigDirectory(), fileName + (fileName.endsWith(".json") ? "" : ".json"));
+		this.configFile = new File(CommonProxy.getConfigDirectory(), fileName + (fileName.endsWith(".json") ? "" : ".json"));
 		this.configGetter = new CachedSupplier<>(() -> {
 			if (!configFile.exists()) {
 				T def = defaultFactory.get();

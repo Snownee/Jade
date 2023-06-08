@@ -2,8 +2,7 @@ package snownee.jade.impl.ui;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec2;
@@ -45,10 +44,10 @@ public class ItemStackElement extends Element {
 	}
 
 	@Override
-	public void render(PoseStack matrixStack, float x, float y, float maxX, float maxY) {
+	public void render(GuiGraphics guiGraphics, float x, float y, float maxX, float maxY) {
 		if (stack.isEmpty())
 			return;
-		DisplayHelper.INSTANCE.drawItem(matrixStack, x + 1, y + 1, stack, scale, text);
+		DisplayHelper.INSTANCE.drawItem(guiGraphics, x + 1, y + 1, stack, scale, text);
 	}
 
 	@Override

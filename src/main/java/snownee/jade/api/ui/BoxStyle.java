@@ -1,16 +1,12 @@
 package snownee.jade.api.ui;
 
-import org.jetbrains.annotations.ApiStatus.Experimental;
-
-import com.mojang.blaze3d.vertex.PoseStack;
-
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.overlay.ProgressTracker.TrackInfo;
 import snownee.jade.overlay.WailaTickHandler;
 
-@Experimental
 public class BoxStyle implements IBoxStyle {
 
 	public static final BoxStyle DEFAULT;
@@ -41,14 +37,14 @@ public class BoxStyle implements IBoxStyle {
 	}
 
 	@Override
-	public void render(PoseStack matrixStack, float x, float y, float w, float h) {
+	public void render(GuiGraphics guiGraphics, float x, float y, float w, float h) {
 		if (bgColor != 0)
-			DisplayHelper.fill(matrixStack, x + borderWidth, y + borderWidth, x + w - borderWidth, y + h - borderWidth, bgColor);
-		DisplayHelper.INSTANCE.drawBorder(matrixStack, x, y, x + w, y + h, borderWidth, borderColor, !roundCorner);
+			DisplayHelper.fill(guiGraphics, x + borderWidth, y + borderWidth, x + w - borderWidth, y + h - borderWidth, bgColor);
+		DisplayHelper.INSTANCE.drawBorder(guiGraphics, x, y, x + w, y + h, borderWidth, borderColor, !roundCorner);
 		if (progressColor != 0) {
 			float left = roundCorner ? x + borderWidth : x;
 			float width = roundCorner ? w - borderWidth * 2 : w;
-			float top = y + h - (borderWidth < 0.5F ? 0.5F : borderWidth);
+			float top = y + h - Math.max(borderWidth, 0.5F);
 			float progress = this.progress;
 			if (track == null && tag != null) {
 				track = WailaTickHandler.instance().progressTracker.createInfo(tag, progress, false, 0);
@@ -56,7 +52,7 @@ public class BoxStyle implements IBoxStyle {
 			if (track != null) {
 				progress = ((TrackInfo) track).tick(Minecraft.getInstance().getDeltaFrameTime());
 			}
-			DisplayHelper.INSTANCE.drawGradientProgress(matrixStack, left, top, width, y + h - top, progress, progressColor);
+			DisplayHelper.INSTANCE.drawGradientProgress(guiGraphics, left, top, width, y + h - top, progress, progressColor);
 		}
 	}
 

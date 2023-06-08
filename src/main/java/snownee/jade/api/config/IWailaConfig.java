@@ -26,7 +26,7 @@ public interface IWailaConfig {
 	IPluginConfig getPlugin();
 
 	@NonExtendable
-	interface IConfigGeneral {
+	public interface IConfigGeneral {
 
 		void setDisplayTooltip(boolean displayTooltip);
 
@@ -90,7 +90,7 @@ public interface IWailaConfig {
 	}
 
 	@NonExtendable
-	interface IConfigOverlay {
+	public interface IConfigOverlay {
 
 		void setOverlayPosX(float overlayPosX);
 
@@ -154,7 +154,7 @@ public interface IWailaConfig {
 	}
 
 	@NonExtendable
-	interface IConfigFormatting {
+	public interface IConfigFormatting {
 
 		void setModName(String modName);
 
@@ -165,19 +165,19 @@ public interface IWailaConfig {
 		Component title(Object title);
 	}
 
-	enum IconMode {
+	public enum IconMode {
 		TOP, CENTERED, HIDE
 	}
 
-	enum TTSMode {
+	public enum TTSMode {
 		TOGGLE, PRESS
 	}
 
-	enum DisplayMode {
+	public enum DisplayMode {
 		HOLD_KEY, TOGGLE, LITE
 	}
 
-	enum FluidMode {
+	public enum FluidMode {
 		NONE(ClipContext.Fluid.NONE), ANY(ClipContext.Fluid.ANY), SOURCE_ONLY(ClipContext.Fluid.SOURCE_ONLY);
 
 		public final ClipContext.Fluid ctx;
@@ -187,7 +187,7 @@ public interface IWailaConfig {
 		}
 	}
 
-	enum BossBarOverlapMode {
+	public enum BossBarOverlapMode {
 		NO_OPERATION, HIDE_BOSS_BAR, PUSH_DOWN
 	}
 }

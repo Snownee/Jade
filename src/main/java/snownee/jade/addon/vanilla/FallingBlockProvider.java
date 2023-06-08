@@ -9,6 +9,7 @@ import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElementHelper;
 
@@ -20,7 +21,7 @@ public enum FallingBlockProvider implements IEntityComponentProvider {
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		FallingBlockEntity entity = (FallingBlockEntity) accessor.getEntity();
 		tooltip.remove(Identifiers.CORE_OBJECT_NAME);
-		tooltip.add(0, config.getWailaConfig().getFormatting().title(I18n.get(entity.getBlockState().getBlock().getDescriptionId())), Identifiers.CORE_OBJECT_NAME);
+		tooltip.add(0, IWailaConfig.get().getFormatting().title(I18n.get(entity.getBlockState().getBlock().getDescriptionId())), Identifiers.CORE_OBJECT_NAME);
 	}
 
 	@Override

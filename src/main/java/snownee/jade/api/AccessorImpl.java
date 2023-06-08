@@ -1,5 +1,9 @@
 package snownee.jade.api;
 
+import java.util.function.Supplier;
+
+import org.jetbrains.annotations.NotNull;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -14,14 +18,14 @@ public abstract class AccessorImpl<T extends HitResult> implements Accessor<T> {
 	private final Level level;
 	private final Player player;
 	private final CompoundTag serverData;
-	private final T hit;
+	private final Supplier<T> hit;
 	private final boolean serverConnected;
 	private final boolean showDetails;
 
-	public AccessorImpl(Level level, Player player, CompoundTag serverData, T hit, boolean serverConnected, boolean showDetails) {
+	public AccessorImpl(Level level, Player player, CompoundTag serverData, Supplier<T> hit, boolean serverConnected, boolean showDetails) {
 		this.level = level;
 		this.player = player;
-		this.serverData = serverData;
+		this.serverData = serverData == null ? new CompoundTag() : serverData;
 		this.hit = hit;
 		this.serverConnected = serverConnected;
 		this.showDetails = showDetails;
@@ -38,13 +42,13 @@ public abstract class AccessorImpl<T extends HitResult> implements Accessor<T> {
 	}
 
 	@Override
-	public CompoundTag getServerData() {
-		return serverData == null ? new CompoundTag() : serverData;
+	public @NotNull CompoundTag getServerData() {
+		return serverData;
 	}
 
 	@Override
 	public T getHitResult() {
-		return hit;
+		return hit.get();
 	}
 
 	/**

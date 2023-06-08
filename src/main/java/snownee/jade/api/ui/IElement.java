@@ -2,8 +2,7 @@ package snownee.jade.api.ui;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec2;
 
@@ -21,7 +20,7 @@ public interface IElement {
 
 	/**
 	 * Calculate the default reserved area of this element.
-	 * <p>
+	 *
 	 * Modders call getCachedSize instead
 	 */
 	Vec2 getSize();
@@ -31,13 +30,13 @@ public interface IElement {
 	/**
 	 * Draw method for the renderer.
 	 *
-	 * @param matrixStack
+	 * @param guiGraphics
 	 * @param x
 	 * @param y
-	 * @param maxX        Max width this element can expand to
-	 * @param maxY        Max height this element can expand to
+	 * @param maxX Max width this element can expand to
+	 * @param maxY Max height this element can expand to
 	 */
-	void render(PoseStack matrixStack, float x, float y, float maxX, float maxY);
+	void render(GuiGraphics guiGraphics, float x, float y, float maxX, float maxY);
 
 	IElement align(Align align);
 
@@ -70,7 +69,7 @@ public interface IElement {
 
 	IElement message(@Nullable String message);
 
-	enum Align {
+	public enum Align {
 		LEFT, RIGHT
 	}
 }

@@ -5,9 +5,9 @@ import java.util.function.Consumer;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -33,10 +33,10 @@ public abstract class OptionValue<T> extends WailaOptionsList.Entry {
 	}
 
 	@Override
-	public final void render(PoseStack matrixStack, int index, int rowTop, int rowLeft, int width, int height, int mouseX, int mouseY, boolean hovered, float deltaTime) {
+	public final void render(GuiGraphics guiGraphics, int index, int rowTop, int rowLeft, int width, int height, int mouseX, int mouseY, boolean hovered, float deltaTime) {
 		Component title0 = getListener().active ? title : title.copy().withStyle(ChatFormatting.STRIKETHROUGH, ChatFormatting.GRAY);
-		client.font.drawShadow(matrixStack, title0, rowLeft + indent + 10, rowTop + (height / 4) + (client.font.lineHeight / 2), 16777215);
-		drawValue(matrixStack, width, height, rowLeft + width - 110, rowTop, mouseX, mouseY, hovered, deltaTime);
+		guiGraphics.drawString(client.font, title0, rowLeft + indent + 10, rowTop + (height / 4) + (client.font.lineHeight / 2), 16777215);
+		drawValue(guiGraphics, width, height, rowLeft + width - 110, rowTop, mouseX, mouseY, hovered, deltaTime);
 		this.x = rowLeft;
 	}
 
@@ -76,7 +76,7 @@ public abstract class OptionValue<T> extends WailaOptionsList.Entry {
 		}
 	}
 
-	protected abstract void drawValue(PoseStack matrixStack, int entryWidth, int entryHeight, int x, int y, int mouseX, int mouseY, boolean selected, float partialTicks);
+	protected abstract void drawValue(GuiGraphics guiGraphics, int entryWidth, int entryHeight, int x, int y, int mouseX, int mouseY, boolean selected, float partialTicks);
 
 	@Override
 	public List<? extends AbstractWidget> children() {

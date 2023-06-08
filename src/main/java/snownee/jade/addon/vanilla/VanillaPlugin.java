@@ -33,6 +33,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.BrewingStandBlock;
 import net.minecraft.world.level.block.ChiseledBookShelfBlock;
 import net.minecraft.world.level.block.CommandBlock;
+import net.minecraft.world.level.block.DecoratedPotBlock;
 import net.minecraft.world.level.block.EnchantmentTableBlock;
 import net.minecraft.world.level.block.JukeboxBlock;
 import net.minecraft.world.level.block.LecternBlock;
@@ -58,8 +59,8 @@ import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.WailaPlugin;
 import snownee.jade.overlay.DatapackBlockManager;
-import snownee.jade.util.ClientPlatformProxy;
-import snownee.jade.util.PlatformProxy;
+import snownee.jade.util.ClientProxy;
+import snownee.jade.util.CommonProxy;
 
 @WailaPlugin
 public class VanillaPlugin implements IWailaPlugin {
@@ -70,7 +71,7 @@ public class VanillaPlugin implements IWailaPlugin {
 	public static BlockState getCorrespondingNormalChest(BlockState state) {
 		try {
 			return CHEST_CACHE.get(state, () -> {
-				ResourceLocation trappedName = PlatformProxy.getId(state.getBlock());
+				ResourceLocation trappedName = CommonProxy.getId(state.getBlock());
 				if (trappedName.getPath().startsWith("trapped_")) {
 					ResourceLocation chestName = new ResourceLocation(trappedName.getNamespace(), trappedName.getPath().substring(8));
 					Block block = BuiltInRegistries.BLOCK.get(chestName);
@@ -122,8 +123,9 @@ public class VanillaPlugin implements IWailaPlugin {
 
 		registration.addConfig(Identifiers.MC_EFFECTIVE_TOOL, true);
 		registration.addConfig(Identifiers.MC_HARVEST_TOOL_NEW_LINE, false);
-		registration.addConfig(Identifiers.MC_SHOW_UNBREAKABLE, true);
+		registration.addConfig(Identifiers.MC_SHOW_UNBREAKABLE, false);
 		registration.addConfig(Identifiers.MC_BREAKING_PROGRESS, true);
+		registration.addConfig(Identifiers.MC_ANIMAL_OWNER_FETCH_NAMES, true);
 
 		registration.addConfig(Identifiers.MC_ENTITY_ARMOR_MAX_FOR_RENDER, 40, 10, 100, false);
 		registration.addConfig(Identifiers.MC_ENTITY_HEALTH_MAX_FOR_RENDER, 40, 10, 100, false);
@@ -149,8 +151,9 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerBlockComponent(CommandBlockProvider.INSTANCE, CommandBlock.class);
 		registration.registerBlockComponent(EnchantmentPowerProvider.INSTANCE, Block.class);
 		registration.registerBlockComponent(TotalEnchantmentPowerProvider.INSTANCE, EnchantmentTableBlock.class);
-		registration.registerBlockIcon(PlayerHeadProvider.INSTANCE, AbstractSkullBlock.class);
 		registration.registerBlockComponent(PlayerHeadProvider.INSTANCE, AbstractSkullBlock.class);
+		registration.registerBlockIcon(ItemBERProvider.INSTANCE, AbstractSkullBlock.class);
+		registration.registerBlockIcon(ItemBERProvider.INSTANCE, DecoratedPotBlock.class);
 		registration.registerEntityComponent(VillagerProfessionProvider.INSTANCE, Villager.class);
 		registration.registerEntityComponent(VillagerProfessionProvider.INSTANCE, ZombieVillager.class);
 		registration.registerEntityComponent(ItemTooltipProvider.INSTANCE, ItemEntity.class);
@@ -171,7 +174,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerEntityIcon(ItemDisplayProvider.INSTANCE, ItemDisplay.class);
 		registration.registerEntityIcon(BlockDisplayProvider.INSTANCE, BlockDisplay.class);
 
-		ClientPlatformProxy.registerReloadListener(HarvestToolProvider.INSTANCE);
+		ClientProxy.registerReloadListener(HarvestToolProvider.INSTANCE);
 
 		registration.addRayTraceCallback(-10, JadeClient::builtInOverrides);
 		registration.addRayTraceCallback(5000, DatapackBlockManager::override);

@@ -2,11 +2,11 @@ package snownee.jade.impl.ui;
 
 import org.joml.Vector3f;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec2;
@@ -29,93 +29,6 @@ public class ProgressStyle implements IProgressStyle {
 
 	public ProgressStyle() {
 		color(0xFFFFFFFF);
-	}
-
-	@Override
-	public IProgressStyle color(int color, int color2) {
-		this.color = color;
-		this.color2 = color2;
-		return this;
-	}
-
-	@Override
-	public IProgressStyle vertical(boolean vertical) {
-		this.vertical = vertical;
-		return this;
-	}
-
-	@Override
-	public IProgressStyle overlay(IElement overlay) {
-		this.overlay = overlay;
-		return this;
-	}
-
-	@Override
-	public void render(PoseStack matrixStack, float x, float y, float width, float height, float progress, Component text) {
-		progress *= choose(true, width, height);
-		float progressY = y;
-		if (vertical) {
-			progressY += height - progress;
-		}
-		if (progress > 0) {
-			if (overlay != null) {
-				Vec2 size = new Vec2(choose(true, progress, width), choose(false, progress, height));
-				overlay.size(size);
-				overlay.render(matrixStack, x, progressY, size.x, size.y);
-			} else {
-				int alpha = (int) (((color >> 24) & 0xFF) * 0.7f);
-				int lighter = (color & 0xFFFFFF) | alpha << 24;
-
-				float half = choose(true, height, width) / 2;
-				DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x, progressY, choose(true, progress, half), choose(false, progress, half), lighter, color, vertical);
-				DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x + choose(false, half, 0), progressY + choose(true, half, 0), choose(true, progress, half), choose(false, progress, half), color, lighter, vertical);
-				if (color != color2) {
-					if (vertical) {
-						for (float yy = y + height; yy > progressY; yy -= 2) {
-							float fy = Math.max(progressY, yy + 1);
-							DisplayHelper.fill(matrixStack, x, yy, x + width, fy, color2);
-						}
-					} else {
-						for (float xx = x + 1; xx < x + progress; xx += 2) {
-							float fx = Math.min(x + width, xx + 1);
-							DisplayHelper.fill(matrixStack, xx, y, fx, y + height, color2);
-						}
-					}
-				}
-			}
-		}
-		if (text != null) {
-			Font font = Minecraft.getInstance().font;
-			if (autoTextColor) {
-				autoTextColor = false;
-				if (overlay == null && RGBtoHSV(color2).z() > 0.75f) {
-					textColor = 0xFF000000;
-					shadow = false;
-				} else {
-					textColor = 0xFFFFFFFF;
-				}
-			}
-			y += height - font.lineHeight;
-			if (vertical && font.lineHeight < progress) {
-				y -= progress;
-				y += font.lineHeight + 2;
-			}
-			int color = IConfigOverlay.applyAlpha(textColor, OverlayRenderer.alpha);
-			if (glowText) {
-				MultiBufferSource.BufferSource multibuffersource$buffersource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-				//TODO alpha
-				font.drawInBatch8xOutline(text.getVisualOrderText(), x + 1, y, 0xFFFFFFFF, 0xFF333333, matrixStack.last().pose(), multibuffersource$buffersource, 15728880);
-				multibuffersource$buffersource.endBatch();
-			} else if (shadow) {
-				font.drawShadow(matrixStack, text, x + 1, y, color);
-			} else {
-				font.draw(matrixStack, text, x + 1, y, color);
-			}
-		}
-	}
-
-	private float choose(boolean expand, float x, float y) {
-		return vertical ^ expand ? x : y;
 	}
 
 	private static Vector3f RGBtoHSV(int rgb) {
@@ -145,6 +58,91 @@ public class ProgressStyle implements IProgressStyle {
 		if (h < 0)
 			h += 1;
 		return new Vector3f(h, s, v / 255);
+	}
+
+	@Override
+	public IProgressStyle color(int color, int color2) {
+		this.color = color;
+		this.color2 = color2;
+		return this;
+	}
+
+	@Override
+	public IProgressStyle vertical(boolean vertical) {
+		this.vertical = vertical;
+		return this;
+	}
+
+	@Override
+	public IProgressStyle overlay(IElement overlay) {
+		this.overlay = overlay;
+		return this;
+	}
+
+	@Override
+	public void render(GuiGraphics guiGraphics, float x, float y, float width, float height, float progress, Component text) {
+		progress *= choose(true, width, height);
+		float progressY = y;
+		if (vertical) {
+			progressY += height - progress;
+		}
+		if (progress > 0) {
+			if (overlay != null) {
+				Vec2 size = new Vec2(choose(true, progress, width), choose(false, progress, height));
+				overlay.size(size);
+				overlay.render(guiGraphics, x, progressY, size.x, size.y);
+			} else {
+				int alpha = (int) (((color >> 24) & 0xFF) * 0.7f);
+				int lighter = (color & 0xFFFFFF) | alpha << 24;
+
+				float half = choose(true, height, width) / 2;
+				DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x, progressY, choose(true, progress, half), choose(false, progress, half), lighter, color, vertical);
+				DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x + choose(false, half, 0), progressY + choose(true, half, 0), choose(true, progress, half), choose(false, progress, half), color, lighter, vertical);
+				if (color != color2) {
+					if (vertical) {
+						for (float yy = y + height; yy > progressY; yy -= 2) {
+							float fy = Math.max(progressY, yy + 1);
+							DisplayHelper.fill(guiGraphics, x, yy, x + width, fy, color2);
+						}
+					} else {
+						for (float xx = x + 1; xx < x + progress; xx += 2) {
+							float fx = Math.min(x + width, xx + 1);
+							DisplayHelper.fill(guiGraphics, xx, y, fx, y + height, color2);
+						}
+					}
+				}
+			}
+		}
+		if (text != null) {
+			Font font = Minecraft.getInstance().font;
+			if (autoTextColor) {
+				autoTextColor = false;
+				if (overlay == null && RGBtoHSV(color2).z() > 0.75f) {
+					textColor = 0xFF000000;
+					shadow = false;
+				} else {
+					textColor = 0xFFFFFFFF;
+				}
+			}
+			y += height - font.lineHeight;
+			if (vertical && font.lineHeight < progress) {
+				y -= progress;
+				y += font.lineHeight + 2;
+			}
+			int color = IConfigOverlay.applyAlpha(textColor, OverlayRenderer.alpha);
+			if (glowText) {
+				MultiBufferSource.BufferSource multibuffersource$buffersource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+				//TODO alpha
+				font.drawInBatch8xOutline(text.getVisualOrderText(), x + 1, y, 0xFFFFFFFF, 0xFF333333, guiGraphics.pose().last().pose(), multibuffersource$buffersource, 15728880);
+				multibuffersource$buffersource.endBatch();
+			} else {
+				guiGraphics.drawString(font, text, (int) x + 1, (int) y, color, shadow);
+			}
+		}
+	}
+
+	private float choose(boolean expand, float x, float y) {
+		return vertical ^ expand ? x : y;
 	}
 
 	@Override

@@ -2,7 +2,9 @@ package snownee.jade.util;
 
 import java.io.File;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -12,6 +14,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -25,6 +28,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.EnderChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.IForgeShearable;
 import net.minecraftforge.common.MinecraftForge;
@@ -35,17 +39,105 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fml.IExtensionPoint;
+import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.fml.loading.FMLPaths;
+import net.minecraftforge.forgespi.language.ModFileScanData.AnnotationData;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.network.NetworkConstants;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.simple.SimpleChannel;
 import net.minecraftforge.registries.ForgeRegistries;
+import snownee.jade.Jade;
+import snownee.jade.JadeCommonConfig;
+import snownee.jade.api.IWailaPlugin;
+import snownee.jade.api.WailaPlugin;
+import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.view.EnergyView;
 import snownee.jade.api.view.ItemView;
 import snownee.jade.api.view.ViewGroup;
 import snownee.jade.command.JadeServerCommand;
+import snownee.jade.impl.WailaClientRegistration;
+import snownee.jade.impl.WailaCommonRegistration;
+import snownee.jade.impl.config.PluginConfig;
+import snownee.jade.network.ReceiveDataPacket;
+import snownee.jade.network.RequestEntityPacket;
+import snownee.jade.network.RequestTilePacket;
+import snownee.jade.network.ServerPingPacket;
+import snownee.jade.network.ShowOverlayPacket;
 
-public final class PlatformProxy {
+@Mod(Jade.MODID)
+public final class CommonProxy {
+	public static final SimpleChannel NETWORK = NetworkRegistry.ChannelBuilder.named(new ResourceLocation(Jade.MODID, "networking")).clientAcceptedVersions(s -> true).serverAcceptedVersions(s -> true).networkProtocolVersion(() -> "1").simpleChannel();
+
+	public CommonProxy() {
+		ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (a, b) -> true));
+		FMLJavaModLoadingContext.get().getModEventBus().register(JadeCommonConfig.class);
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::loadComplete);
+		MinecraftForge.EVENT_BUS.addListener(CommonProxy::playerJoin);
+		MinecraftForge.EVENT_BUS.addListener(CommonProxy::registerServerCommand);
+		if (isPhysicallyClient()) {
+			ClientProxy.init();
+		}
+	}
+
+	private void setup(FMLCommonSetupEvent event) {
+		NETWORK.registerMessage(0, ReceiveDataPacket.class, ReceiveDataPacket::write, ReceiveDataPacket::read, ReceiveDataPacket.Handler::onMessage, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+		NETWORK.registerMessage(1, ServerPingPacket.class, ServerPingPacket::write, ServerPingPacket::read, ServerPingPacket.Handler::onMessage, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+		NETWORK.registerMessage(2, RequestEntityPacket.class, RequestEntityPacket::write, RequestEntityPacket::read, RequestEntityPacket.Handler::onMessage, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+		NETWORK.registerMessage(3, RequestTilePacket.class, RequestTilePacket::write, RequestTilePacket::read, RequestTilePacket.Handler::onMessage, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+		NETWORK.registerMessage(4, ShowOverlayPacket.class, ShowOverlayPacket::write, ShowOverlayPacket::read, ShowOverlayPacket.Handler::onMessage, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+	}
+
+	private void loadComplete(FMLLoadCompleteEvent event) {
+		/* off */
+		List<String> classNames = ModList.get().getAllScanData()
+				.stream()
+				.flatMap($ -> $.getAnnotations().stream())
+				.filter($ -> {
+					if ($.annotationType().getClassName().equals(WailaPlugin.class.getName())) {
+						String required = (String) $.annotationData().getOrDefault("value", "");
+						return required.isEmpty() || ModList.get().isLoaded(required);
+					}
+					return false;
+				})
+				.map(AnnotationData::memberName)
+				.collect(Collectors.toList());
+		/* on */
+
+		for (String className : classNames) {
+			Jade.LOGGER.info("Start loading plugin at {}", className);
+			try {
+				Class<?> clazz = Class.forName(className);
+				if (IWailaPlugin.class.isAssignableFrom(clazz)) {
+					IWailaPlugin plugin = (IWailaPlugin) clazz.getDeclaredConstructor().newInstance();
+					plugin.register(WailaCommonRegistration.INSTANCE);
+					if (CommonProxy.isPhysicallyClient()) {
+						plugin.registerClient(WailaClientRegistration.INSTANCE);
+					}
+				}
+			} catch (Throwable e) {
+				Jade.LOGGER.error("Error loading plugin at {}", className, e);
+			}
+		}
+		Jade.loadComplete();
+	}
+
+	private static void playerJoin(PlayerEvent.PlayerLoggedInEvent event) {
+		Jade.LOGGER.info("Syncing config to {} ({})", event.getEntity().getGameProfile().getName(), event.getEntity().getGameProfile().getId());
+		NETWORK.sendTo(new ServerPingPacket(PluginConfig.INSTANCE), ((ServerPlayer) event.getEntity()).connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+	}
 
 	@Nullable
 	public static String getLastKnownUsername(UUID uuid) {
@@ -85,13 +177,6 @@ public final class PlatformProxy {
 		return FMLEnvironment.dist.isClient();
 	}
 
-	public static void init() {
-		MinecraftForge.EVENT_BUS.addListener(PlatformProxy::registerServerCommand);
-		if (isPhysicallyClient()) {
-			ClientPlatformProxy.init();
-		}
-	}
-
 	private static void registerServerCommand(RegisterCommandsEvent event) {
 		JadeServerCommand.register(event.getDispatcher());
 	}
@@ -129,7 +214,7 @@ public final class PlatformProxy {
 		if (target instanceof CapabilityProvider<?> capProvider) {
 			IEnergyStorage storage = capProvider.getCapability(ForgeCapabilities.ENERGY).orElse(null);
 			if (storage != null) {
-				var group = new ViewGroup<>(List.of(EnergyView.fromForgeEnergy(storage)));
+				var group = new ViewGroup<>(List.of(EnergyView.of(storage.getEnergyStored(), storage.getMaxEnergyStored())));
 				group.getExtraData().putString("Unit", "FE");
 				return List.of(group);
 			}
@@ -177,5 +262,25 @@ public final class PlatformProxy {
 	public static boolean isBoss(Entity entity) {
 		EntityType<?> entityType = entity.getType();
 		return entityType.is(Tags.EntityTypes.BOSSES) || entityType == EntityType.ENDER_DRAGON || entityType == EntityType.WITHER;
+	}
+
+	public static boolean isModLoaded(String modid) {
+		try {
+			return ModList.get().isLoaded(modid);
+		} catch (Throwable e) {
+			return false;
+		}
+	}
+
+	public static ItemStack getBlockPickedResult(BlockState state, Player player, BlockHitResult hitResult) {
+		return state.getCloneItemStack(hitResult, player.level(), hitResult.getBlockPos(), player);
+	}
+
+	public static Component getFluidName(JadeFluidObject fluid) {
+		return toFluidStack(fluid).getDisplayName();
+	}
+
+	public static FluidStack toFluidStack(JadeFluidObject fluid) {
+		return new FluidStack(fluid.getType(), (int) fluid.getAmount(), fluid.getTag());
 	}
 }

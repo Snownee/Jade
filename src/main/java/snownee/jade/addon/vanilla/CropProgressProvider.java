@@ -41,7 +41,7 @@ public enum CropProgressProvider implements IBlockComponentProvider {
 		Block block = state.getBlock();
 
 		if (block instanceof CropBlock crop) {
-			addMaturityTooltip(tooltip, state.getValue(crop.getAgeProperty()) / (float) crop.getMaxAge());
+			addMaturityTooltip(tooltip, crop.getAge(state) / (float) crop.getMaxAge());
 		} else if (state.hasProperty(BlockStateProperties.AGE_7)) {
 			addMaturityTooltip(tooltip, state.getValue(BlockStateProperties.AGE_7) / 7F);
 		} else if (state.hasProperty(BlockStateProperties.AGE_2)) {

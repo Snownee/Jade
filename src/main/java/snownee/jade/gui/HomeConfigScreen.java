@@ -1,7 +1,6 @@
 package snownee.jade.gui;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -33,10 +32,10 @@ public class HomeConfigScreen extends Screen {
 	}
 
 	@Override
-	public void render(PoseStack matrixStack, int x, int y, float partialTicks) {
-		renderBackground(matrixStack);
-		drawCenteredString(matrixStack, font, title, (int) (width * .5F), height / 3, 16777215);
-		super.render(matrixStack, x, y, partialTicks);
-		drawCenteredString(matrixStack, font, "§b❄§r Made with §c❤§r by Snownee §b❄", (int) (width * .5F), (int) (height * .75F), 0x55FFFFFF);
+	public void render(GuiGraphics guiGraphics, int x, int y, float partialTicks) {
+		renderBackground(guiGraphics);
+		guiGraphics.drawCenteredString(font, title, (int) (width * .5F), height / 3, 16777215);
+		super.render(guiGraphics, x, y, partialTicks);
+		guiGraphics.drawCenteredString(font, "§b❄§r Made with §c❤§r by Snownee §b❄", (int) (width * .5F), (int) (height * .75F), 0x55FFFFFF);
 	}
 }

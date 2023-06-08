@@ -11,8 +11,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
@@ -33,32 +31,12 @@ import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.impl.ui.HorizontalLineElement;
 import snownee.jade.impl.ui.ScaledTextElement;
-import snownee.jade.util.PlatformProxy;
+import snownee.jade.util.CommonProxy;
 
-public enum EnergyStorageProvider implements IBlockComponentProvider, IServerDataProvider<BlockEntity>,
+public enum EnergyStorageProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor>,
 		IServerExtensionProvider<Object, CompoundTag>, IClientExtensionProvider<CompoundTag, EnergyView> {
 
 	INSTANCE;
-
-	@Override
-	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		append(tooltip, accessor, config);
-	}
-
-	@Override
-	public void appendServerData(CompoundTag data, ServerPlayer player, Level world, BlockEntity tile, boolean showDetails) {
-		putData(data, player, tile, showDetails);
-	}
-
-	@Override
-	public ResourceLocation getUid() {
-		return Identifiers.UNIVERSAL_ENERGY_STORAGE;
-	}
-
-	@Override
-	public int getDefaultPriority() {
-		return TooltipPosition.BODY + 1000;
-	}
 
 	public static void append(ITooltip tooltip, Accessor<?> accessor, IPluginConfig config) {
 		if (!(accessor.showDetails() || !config.get(Identifiers.UNIVERSAL_ENERGY_STORAGE_DETAILED))) {
@@ -99,16 +77,39 @@ public enum EnergyStorageProvider implements IBlockComponentProvider, IServerDat
 		}
 	}
 
-	public static void putData(CompoundTag tag, ServerPlayer player, Object target, boolean showDetails) {
-		var list = WailaCommonRegistration.INSTANCE.energyStorageProviders.get(target);
-		for (var provider : list) {
-			var groups = provider.getGroups(player, player.getLevel(), target, showDetails);
+	public static void putData(Accessor<?> accessor) {
+		CompoundTag tag = accessor.getServerData();
+		Object target = accessor.getTarget();
+		ServerPlayer player = (ServerPlayer) accessor.getPlayer();
+		boolean showDetails = accessor.showDetails();
+		for (var provider : WailaCommonRegistration.INSTANCE.energyStorageProviders.get(target)) {
+			var groups = provider.getGroups(player, player.serverLevel(), target, showDetails);
 			if (groups != null) {
 				if (ViewGroup.saveList(tag, "JadeEnergyStorage", groups, Function.identity()))
 					tag.putString("JadeEnergyStorageUid", provider.getUid().toString());
 				return;
 			}
 		}
+	}
+
+	@Override
+	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
+		append(tooltip, accessor, config);
+	}
+
+	@Override
+	public void appendServerData(CompoundTag data, BlockAccessor accessor) {
+		putData(accessor);
+	}
+
+	@Override
+	public ResourceLocation getUid() {
+		return Identifiers.UNIVERSAL_ENERGY_STORAGE;
+	}
+
+	@Override
+	public int getDefaultPriority() {
+		return TooltipPosition.BODY + 1000;
 	}
 
 	@Override
@@ -121,7 +122,7 @@ public enum EnergyStorageProvider implements IBlockComponentProvider, IServerDat
 
 	@Override
 	public List<ViewGroup<CompoundTag>> getGroups(ServerPlayer player, ServerLevel world, Object target, boolean showDetails) {
-		return PlatformProxy.wrapEnergyStorage(target, player);
+		return CommonProxy.wrapEnergyStorage(target, player);
 	}
 
 }

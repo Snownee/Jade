@@ -9,7 +9,7 @@ import snownee.jade.impl.config.PluginConfig;
 
 public class StringConfigEntry extends ConfigEntry<String> {
 
-	private final Predicate<String> validator;
+	private Predicate<String> validator;
 
 	public StringConfigEntry(ResourceLocation id, String defaultValue, Predicate<String> validator) {
 		super(id, defaultValue);

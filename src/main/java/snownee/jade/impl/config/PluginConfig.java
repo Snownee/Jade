@@ -28,10 +28,9 @@ import net.minecraft.resources.ResourceLocation;
 import snownee.jade.Jade;
 import snownee.jade.api.IToggleableProvider;
 import snownee.jade.api.config.IPluginConfig;
-import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.impl.config.entry.ConfigEntry;
+import snownee.jade.util.CommonProxy;
 import snownee.jade.util.JsonConfig;
-import snownee.jade.util.PlatformProxy;
 
 public class PluginConfig implements IPluginConfig {
 
@@ -68,14 +67,13 @@ public class PluginConfig implements IPluginConfig {
 		if (provider.isRequired()) {
 			return true;
 		}
-		return get(provider.getUid(), provider.enabledByDefault());
+		return get(provider.getUid());
 	}
 
 	@Override
-	public boolean get(ResourceLocation key, boolean defaultValue) {
-		if (PlatformProxy.isPhysicallyClient()) {
-			ConfigEntry<?> entry = getEntry(key);
-			return entry == null ? defaultValue : (Boolean) entry.getValue();
+	public boolean get(ResourceLocation key) {
+		if (CommonProxy.isPhysicallyClient()) {
+			return (Boolean) getEntry(key).getValue();
 		} else {
 			return Optional.ofNullable(serverConfigs).map($ -> $.getAsJsonObject(key.getNamespace())).map($ -> $.get(key.getPath())).map(JsonElement::getAsBoolean).orElse(false);
 		}
@@ -125,12 +123,12 @@ public class PluginConfig implements IPluginConfig {
 	}
 
 	public File getFile() {
-		boolean client = PlatformProxy.isPhysicallyClient();
-		return new File(PlatformProxy.getConfigDirectory(), client ? CLIENT_FILE : SERVER_FILE);
+		boolean client = CommonProxy.isPhysicallyClient();
+		return new File(CommonProxy.getConfigDirectory(), client ? CLIENT_FILE : SERVER_FILE);
 	}
 
 	public void reload() {
-		boolean client = PlatformProxy.isPhysicallyClient();
+		boolean client = CommonProxy.isPhysicallyClient();
 		File configFile = getFile();
 
 		if (client)
@@ -187,7 +185,7 @@ public class PluginConfig implements IPluginConfig {
 	}
 
 	private void writeConfig(File file, boolean reset) {
-		boolean client = PlatformProxy.isPhysicallyClient();
+		boolean client = CommonProxy.isPhysicallyClient();
 		String json;
 		if (client) {
 			Map<String, Map<String, Object>> config = Maps.newHashMap();
@@ -208,11 +206,6 @@ public class PluginConfig implements IPluginConfig {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-
-	@Override
-	public IWailaConfig getWailaConfig() {
-		return Jade.CONFIG.get();
 	}
 
 	public void applyServerConfigs(JsonObject json) {

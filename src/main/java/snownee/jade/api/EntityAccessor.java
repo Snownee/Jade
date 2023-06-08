@@ -1,5 +1,7 @@
 package snownee.jade.api;
 
+import java.util.function.Supplier;
+
 import org.jetbrains.annotations.ApiStatus.NonExtendable;
 
 import net.minecraft.nbt.CompoundTag;
@@ -15,8 +17,13 @@ public interface EntityAccessor extends Accessor<EntityHitResult> {
 
 	Entity getEntity();
 
+	@Override
+	default Class<? extends Accessor<?>> getAccessorType() {
+		return EntityAccessor.class;
+	}
+
 	@NonExtendable
-	interface Builder {
+	public interface Builder {
 		Builder level(Level level);
 
 		Builder player(Player player);
@@ -27,9 +34,17 @@ public interface EntityAccessor extends Accessor<EntityHitResult> {
 
 		Builder showDetails(boolean showDetails);
 
-		Builder hit(EntityHitResult hit);
+		default Builder hit(EntityHitResult hit) {
+			return hit(() -> hit);
+		}
 
-		Builder entity(Entity entity);
+		Builder hit(Supplier<EntityHitResult> hit);
+
+		default Builder entity(Entity entity) {
+			return entity(() -> entity);
+		}
+
+		Builder entity(Supplier<Entity> entity);
 
 		Builder from(EntityAccessor accessor);
 

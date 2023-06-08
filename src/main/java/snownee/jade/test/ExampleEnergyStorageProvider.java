@@ -8,7 +8,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.animal.Sheep;
-import net.minecraftforge.energy.EnergyStorage;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.view.ClientViewGroup;
 import snownee.jade.api.view.EnergyView;
@@ -40,13 +39,11 @@ public enum ExampleEnergyStorageProvider
 
 	@Override
 	public List<ViewGroup<CompoundTag>> getGroups(ServerPlayer player, ServerLevel world, Sheep target, boolean showDetails) {
-		var storage = new EnergyStorage(2000);
-		var cell1 = new ViewGroup<>(List.of(EnergyView.fromForgeEnergy(storage)));
+		var cell1 = new ViewGroup<>(List.of(EnergyView.of(0, 2000)));
 		cell1.id = "1";
 		float period = 40;
 		cell1.setProgress(((world.getGameTime() % period) + 1) / period);
-		storage.receiveEnergy(1500, false);
-		var cell2 = new ViewGroup<>(List.of(EnergyView.fromForgeEnergy(storage), EnergyView.fromForgeEnergy(storage)));
+		var cell2 = new ViewGroup<>(List.of(EnergyView.of(1500, 2000), EnergyView.of(1500, 2000)));
 		period = 100;
 		cell2.setProgress(((world.getGameTime() % period) + 1) / period);
 		return List.of(cell1, cell2);

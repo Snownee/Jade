@@ -2,16 +2,13 @@ package snownee.jade.addon.universal;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.Level;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IPluginConfig;
 
-public enum EntityProgressProvider implements IEntityComponentProvider, IServerDataProvider<Entity> {
+public enum EntityProgressProvider implements IEntityComponentProvider, IServerDataProvider<EntityAccessor> {
 	INSTANCE;
 
 	@Override
@@ -20,8 +17,8 @@ public enum EntityProgressProvider implements IEntityComponentProvider, IServerD
 	}
 
 	@Override
-	public void appendServerData(CompoundTag tag, ServerPlayer player, Level world, Entity entity, boolean showDetails) {
-		ProgressProvider.putData(tag, player, entity, showDetails);
+	public void appendServerData(CompoundTag tag, EntityAccessor accessor) {
+		ProgressProvider.putData(accessor);
 	}
 
 	@Override

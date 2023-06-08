@@ -10,9 +10,9 @@ import snownee.jade.impl.config.PluginConfig;
 
 public class FloatConfigEntry extends ConfigEntry<Float> {
 
-	private final boolean slider;
-	private final float min;
-	private final float max;
+	private boolean slider;
+	private float min;
+	private float max;
 
 	public FloatConfigEntry(ResourceLocation id, float defaultValue, float min, float max, boolean slider) {
 		super(id, defaultValue);

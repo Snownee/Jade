@@ -30,7 +30,7 @@ public class ModIdentification implements ResourceManagerReloadListener {
 
 	public static void init() {
 		NAMES.clear();
-		ClientPlatformProxy.initModNames(NAMES);
+		ClientProxy.initModNames(NAMES);
 	}
 
 	public static String getModName(String namespace) {
@@ -49,7 +49,7 @@ public class ModIdentification implements ResourceManagerReloadListener {
 	}
 
 	public static String getModName(Block block) {
-		return getModName(PlatformProxy.getId(block));
+		return getModName(CommonProxy.getId(block));
 	}
 
 	public static String getModName(ItemStack stack) {
@@ -59,13 +59,13 @@ public class ModIdentification implements ResourceManagerReloadListener {
 				return s;
 			}
 		}
-		return getModName(PlatformProxy.getModIdFromItem(stack));
+		return getModName(CommonProxy.getModIdFromItem(stack));
 	}
 
 	public static String getModName(Entity entity) {
 		if (entity instanceof Painting) {
 			PaintingVariant motive = ((Painting) entity).getVariant().value();
-			return getModName(PlatformProxy.getId(motive).getNamespace());
+			return getModName(CommonProxy.getId(motive).getNamespace());
 		}
 		if (entity instanceof ItemEntity) {
 			return getModName(((ItemEntity) entity).getItem());
@@ -73,7 +73,7 @@ public class ModIdentification implements ResourceManagerReloadListener {
 		if (entity instanceof FallingBlockEntity) {
 			return getModName(((FallingBlockEntity) entity).getBlockState().getBlock());
 		}
-		return getModName(PlatformProxy.getId(entity.getType()));
+		return getModName(CommonProxy.getId(entity.getType()));
 	}
 
 	@Override

@@ -15,7 +15,7 @@ public class ProgressTracker {
 		private int ticksSinceWidthChanged;
 		private int ticksSinceValueChanged;
 		private boolean updatedThisTick;
-		private final SmoothChasingValue progress = new SmoothChasingValue();
+		private SmoothChasingValue progress = new SmoothChasingValue();
 
 		public float getWidth() {
 			return width;

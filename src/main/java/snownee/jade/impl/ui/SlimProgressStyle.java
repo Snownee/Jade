@@ -2,8 +2,7 @@ package snownee.jade.impl.ui;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.ui.IElement;
@@ -42,13 +41,13 @@ public class SlimProgressStyle implements IProgressStyle {
 	}
 
 	@Override
-	public void render(PoseStack matrixStack, float x, float y, float w, float h, float progress, Component text) {
+	public void render(GuiGraphics guiGraphics, float x, float y, float w, float h, float progress, Component text) {
 		if (overlay != null) {
 			Vec2 size = new Vec2(w * progress, h);
 			overlay.size(size);
-			overlay.render(matrixStack, x, y - 1, size.x, size.y);
+			overlay.render(guiGraphics, x, y - 1, size.x, size.y);
 		} else {
-			DisplayHelper.INSTANCE.drawGradientProgress(matrixStack, x, y - 1, w, h, progress, color);
+			DisplayHelper.INSTANCE.drawGradientProgress(guiGraphics, x, y - 1, w, h, progress, color);
 		}
 	}
 

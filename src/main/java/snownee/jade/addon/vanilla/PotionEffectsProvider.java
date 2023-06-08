@@ -10,24 +10,38 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.Level;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.IElementHelper;
 
-public enum PotionEffectsProvider implements IEntityComponentProvider, IServerDataProvider<Entity> {
+public enum PotionEffectsProvider implements IEntityComponentProvider, IServerDataProvider<EntityAccessor> {
 
 	INSTANCE;
+
+	public static String getPotionDurationString(int duration) {
+		if (duration >= 32767) {
+			return "**:**";
+		} else {
+			int i = Mth.floor(duration);
+			return ticksToElapsedTime(i);
+		}
+	}
+
+	public static String ticksToElapsedTime(int ticks) {
+		int i = ticks / 20;
+		int j = i / 60;
+		i = i % 60;
+		return i < 10 ? j + ":0" + i : j + ":" + i;
+	}
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
@@ -52,28 +66,12 @@ public enum PotionEffectsProvider implements IEntityComponentProvider, IServerDa
 			MutableComponent s = Component.translatable("jade.potion", name, amplifier, getPotionDurationString(duration));
 			box.add(s.withStyle(compound.getBoolean("Bad") ? ChatFormatting.RED : ChatFormatting.GREEN));
 		}
-		tooltip.add(helper.box(box));
-	}
-
-	public static String getPotionDurationString(int duration) {
-		if (duration >= 32767) {
-			return "**:**";
-		} else {
-			int i = Mth.floor(duration);
-			return ticksToElapsedTime(i);
-		}
-	}
-
-	public static String ticksToElapsedTime(int ticks) {
-		int i = ticks / 20;
-		int j = i / 60;
-		i = i % 60;
-		return i < 10 ? j + ":0" + i : j + ":" + i;
+		tooltip.add(helper.box(box, BoxStyle.DEFAULT));
 	}
 
 	@Override
-	public void appendServerData(CompoundTag tag, ServerPlayer player, Level arg2, Entity entity, boolean showDetails) {
-		LivingEntity living = (LivingEntity) entity;
+	public void appendServerData(CompoundTag tag, EntityAccessor accessor) {
+		LivingEntity living = (LivingEntity) accessor.getEntity();
 		Collection<MobEffectInstance> effects = living.getActiveEffects();
 		if (effects.isEmpty()) {
 			return;

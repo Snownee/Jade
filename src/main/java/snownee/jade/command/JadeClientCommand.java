@@ -21,7 +21,7 @@ public class JadeClientCommand {
 			File file = new File("jade_handlers.md");
 			try (FileWriter writer = new FileWriter(file)) {
 				writer.write(DumpGenerator.generateInfoDump());
-				context.getSource().sendSuccess(Component.translatable("command.jade.dump.success"), false);
+				context.getSource().sendSuccess(() -> Component.translatable("command.jade.dump.success"), false);
 				return 1;
 			} catch (IOException e) {
 				context.getSource().sendFailure(Component.literal(e.getClass().getSimpleName() + ": " + e.getMessage()));

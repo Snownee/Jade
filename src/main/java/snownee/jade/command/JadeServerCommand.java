@@ -11,6 +11,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkDirection;
 import snownee.jade.Jade;
 import snownee.jade.network.ShowOverlayPacket;
+import snownee.jade.util.CommonProxy;
 
 public class JadeServerCommand {
 
@@ -22,10 +23,11 @@ public class JadeServerCommand {
 		}))));
 	}
 
+	//TODO: proxy
 	private static int showOrHide(Collection<ServerPlayer> players, boolean show) {
 		ShowOverlayPacket msg = new ShowOverlayPacket(show);
 		for (ServerPlayer player : players) {
-			Jade.NETWORK.sendTo(msg, player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+			CommonProxy.NETWORK.sendTo(msg, player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
 		}
 		return players.size();
 	}

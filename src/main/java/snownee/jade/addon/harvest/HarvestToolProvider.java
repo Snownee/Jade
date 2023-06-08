@@ -38,7 +38,7 @@ import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElement.Align;
 import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.impl.ui.SubTextElement;
-import snownee.jade.util.PlatformProxy;
+import snownee.jade.util.CommonProxy;
 
 public enum HarvestToolProvider implements IBlockComponentProvider, ResourceManagerReloadListener {
 
@@ -57,6 +57,7 @@ public enum HarvestToolProvider implements IBlockComponentProvider, ResourceMana
 		registerHandler(new SimpleToolHandler("axe", BlockTags.MINEABLE_WITH_AXE, Items.WOODEN_AXE, Items.STONE_AXE, Items.IRON_AXE, Items.DIAMOND_AXE, Items.NETHERITE_AXE));
 		registerHandler(new SimpleToolHandler("shovel", BlockTags.MINEABLE_WITH_SHOVEL, Items.WOODEN_SHOVEL, Items.STONE_SHOVEL, Items.IRON_SHOVEL, Items.DIAMOND_SHOVEL, Items.NETHERITE_SHOVEL));
 		registerHandler(new SimpleToolHandler("hoe", BlockTags.MINEABLE_WITH_HOE, Items.WOODEN_HOE, Items.STONE_HOE, Items.IRON_HOE, Items.DIAMOND_HOE, Items.NETHERITE_HOE));
+		//TODO: proxy
 		SpecialToolHandler handler = new SpecialToolHandler("sword", Items.WOODEN_SWORD.getDefaultInstance());
 		handler.blocks.add(Blocks.COBWEB);
 		registerHandler(handler);
@@ -137,7 +138,7 @@ public enum HarvestToolProvider implements IBlockComponentProvider, ResourceMana
 			elements.add(0, helper.spacer(5, 0));
 			ItemStack held = accessor.getPlayer().getMainHandItem();
 			boolean canHarvest = held.isCorrectToolForDrops(state);
-			if (PlatformProxy.isShearable(state) && PlatformProxy.isShears(held)) {
+			if (CommonProxy.isShearable(state) && CommonProxy.isShears(held)) {
 				canHarvest = true;
 			}
 			if (state.requiresCorrectToolForDrops()) {

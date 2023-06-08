@@ -4,11 +4,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.allay.Allay;
-import net.minecraft.world.level.Level;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.IServerDataProvider;
@@ -16,7 +14,7 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
 
-public enum MobBreedingProvider implements IEntityComponentProvider, IServerDataProvider<Entity> {
+public enum MobBreedingProvider implements IEntityComponentProvider, IServerDataProvider<EntityAccessor> {
 
 	INSTANCE;
 
@@ -32,8 +30,9 @@ public enum MobBreedingProvider implements IEntityComponentProvider, IServerData
 	}
 
 	@Override
-	public void appendServerData(CompoundTag tag, ServerPlayer player, Level world, Entity entity, boolean showDetails) {
+	public void appendServerData(CompoundTag tag, EntityAccessor accessor) {
 		int time = 0;
+		Entity entity = accessor.getEntity();
 		if (entity instanceof Allay allay) {
 			if (allay.duplicationCooldown > 0 && allay.duplicationCooldown < Integer.MAX_VALUE) {
 				time = (int) allay.duplicationCooldown;
