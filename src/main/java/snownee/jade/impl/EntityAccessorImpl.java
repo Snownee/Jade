@@ -1,7 +1,6 @@
 package snownee.jade.impl;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -45,7 +44,7 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 		}
 		executor.accept(() -> {
 			Entity entity = accessor.getEntity();
-			if (player.distanceToSqr(entity) > Jade.MAX_DISTANCE_SQR)
+			if (entity == null || player.distanceToSqr(entity) > Jade.MAX_DISTANCE_SQR)
 				return;
 			List<IServerDataProvider<EntityAccessor>> providers = WailaCommonRegistration.INSTANCE.getEntityNBTProviders(entity);
 			if (providers.isEmpty())
@@ -75,7 +74,7 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 		float hitY = buf.readFloat();
 		float hitZ = buf.readFloat();
 		// you can only get block entity from the main thread
-		Supplier<Entity> entity = Suppliers.memoize(() -> Objects.requireNonNull(builder.level.getEntity(id)));
+		Supplier<Entity> entity = Suppliers.memoize(() -> builder.level.getEntity(id));
 		builder.entity(entity);
 		builder.hit(Suppliers.memoize(() -> new EntityHitResult(entity.get(), new Vec3(hitX, hitY, hitZ))));
 		return builder.build();
