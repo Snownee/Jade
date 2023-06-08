@@ -3,7 +3,7 @@ package snownee.jade.addon.core;
 import java.util.List;
 import java.util.stream.Stream;
 
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -53,14 +53,14 @@ public class CorePlugin implements IWailaPlugin {
 
 		JsonConfig<TargetBlocklist> entityBlocklist = new JsonConfig<>(Jade.MODID + "/hide-entities", TargetBlocklist.class, null, () -> {
 			var blocklist = new TargetBlocklist();
-			blocklist.values = Stream.of(EntityType.AREA_EFFECT_CLOUD, EntityType.FIREWORK_ROCKET, EntityType.INTERACTION, EntityType.TEXT_DISPLAY)
+			blocklist.values = Stream.of(EntityType.AREA_EFFECT_CLOUD, EntityType.FIREWORK_ROCKET)
 					.map(EntityType::getKey)
 					.map(Object::toString)
 					.toList();
 			return blocklist;
 		});
 		for (String id : entityBlocklist.get().values) {
-			BuiltInRegistries.ENTITY_TYPE.getOptional(ResourceLocation.tryParse(id)).ifPresent(registration::hideTarget);
+			Registry.ENTITY_TYPE.getOptional(ResourceLocation.tryParse(id)).ifPresent(registration::hideTarget);
 		}
 		JsonConfig<TargetBlocklist> blockBlocklist = new JsonConfig<>(Jade.MODID + "/hide-blocks", TargetBlocklist.class, null, () -> {
 			var blocklist = new TargetBlocklist();
@@ -68,7 +68,7 @@ public class CorePlugin implements IWailaPlugin {
 			return blocklist;
 		});
 		for (String id : blockBlocklist.get().values) {
-			BuiltInRegistries.BLOCK.getOptional(ResourceLocation.tryParse(id)).ifPresent(registration::hideTarget);
+			Registry.BLOCK.getOptional(ResourceLocation.tryParse(id)).ifPresent(registration::hideTarget);
 		}
 	}
 }

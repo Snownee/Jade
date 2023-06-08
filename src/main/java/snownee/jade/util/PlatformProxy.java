@@ -9,30 +9,26 @@ import org.jetbrains.annotations.Nullable;
 import com.mojang.brigadier.CommandDispatcher;
 
 import net.fabricmc.api.EnvType;
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.lookup.v1.block.BlockApiLookup;
 import net.fabricmc.fabric.api.mininglevel.v1.FabricMineableTags;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
-import net.fabricmc.fabric.api.transfer.v1.storage.base.SidedStorageBlockEntity;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.decoration.PaintingVariant;
+import net.minecraft.world.entity.decoration.Motive;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -85,7 +81,7 @@ public final class PlatformProxy {
 				}
 			}
 		}
-		return BuiltInRegistries.ITEM.getKey(stack.getItem()).getNamespace();
+		return Registry.ITEM.getKey(stack.getItem()).getNamespace();
 	}
 
 	public static boolean isPhysicallyClient() {
@@ -115,12 +111,12 @@ public final class PlatformProxy {
 		if (player != null && target instanceof EnderChestBlockEntity) {
 			return List.of(ItemView.fromContainer(player.getEnderChestInventory(), size, 0));
 		}
-		if (target instanceof SidedStorageBlockEntity be) {
-			var storage = be.getItemStorage(null);
-			if (storage != null) {
-				return List.of(JadeFabricUtils.fromItemStorage(storage, size, 0));
-			}
-		}
+//		if (target instanceof SidedStorageBlockEntity be) {
+//			var storage = be.getItemStorage(null);
+//			if (storage != null) {
+//				return List.of(JadeFabricUtils.fromItemStorage(storage, size, 0));
+//			}
+//		}
 		var storage = lookupBlock(ItemStorage.SIDED, target);
 		if (storage != null) {
 			return List.of(JadeFabricUtils.fromItemStorage(storage, size, 0));
@@ -129,12 +125,12 @@ public final class PlatformProxy {
 	}
 
 	public static List<ViewGroup<CompoundTag>> wrapFluidStorage(Object target, ServerPlayer player) {
-		if (target instanceof SidedStorageBlockEntity be) {
-			var storage = be.getFluidStorage(null);
-			if (storage != null) {
-				return JadeFabricUtils.fromFluidStorage(storage);
-			}
-		}
+//		if (target instanceof SidedStorageBlockEntity be) {
+//			var storage = be.getFluidStorage(null);
+//			if (storage != null) {
+//				return JadeFabricUtils.fromFluidStorage(storage);
+//			}
+//		}
 		var storage = lookupBlock(FluidStorage.SIDED, target);
 		if (storage != null) {
 			return JadeFabricUtils.fromFluidStorage(storage);
@@ -176,19 +172,19 @@ public final class PlatformProxy {
 	}
 
 	public static ResourceLocation getId(Block block) {
-		return BuiltInRegistries.BLOCK.getKey(block);
+		return Registry.BLOCK.getKey(block);
 	}
 
 	public static ResourceLocation getId(EntityType<?> entityType) {
-		return BuiltInRegistries.ENTITY_TYPE.getKey(entityType);
+		return Registry.ENTITY_TYPE.getKey(entityType);
 	}
 
 	public static ResourceLocation getId(BlockEntityType<?> blockEntityType) {
-		return BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(blockEntityType);
+		return Registry.BLOCK_ENTITY_TYPE.getKey(blockEntityType);
 	}
 
-	public static ResourceLocation getId(PaintingVariant motive) {
-		return BuiltInRegistries.PAINTING_VARIANT.getKey(motive);
+	public static ResourceLocation getId(Motive motive) {
+		return Registry.MOTIVE.getKey(motive);
 	}
 
 	public static String getPlatformIdentifier() {
@@ -196,14 +192,14 @@ public final class PlatformProxy {
 	}
 
 	public static MutableComponent getProfressionName(VillagerProfession profession) {
-		return Component.translatable(EntityType.VILLAGER.getDescriptionId() + "." + BuiltInRegistries.VILLAGER_PROFESSION.getKey(profession).getPath());
+		return new TranslatableComponent(EntityType.VILLAGER.getDescriptionId() + "." + Registry.VILLAGER_PROFESSION.getKey(profession).getPath());
 	}
 
-	private static void registerServerCommand(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext registryAccess, Commands.CommandSelection environment) {
+	private static void registerServerCommand(CommandDispatcher<CommandSourceStack> dispatcher, boolean dedicated) {
 		JadeServerCommand.register(dispatcher);
 	}
 
-	public static final TagKey<EntityType<?>> BOSSES = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("c:bosses"));
+	public static final TagKey<EntityType<?>> BOSSES = TagKey.create(Registry.ENTITY_TYPE_REGISTRY, new ResourceLocation("c:bosses"));
 
 	public static boolean isBoss(Entity entity) {
 		EntityType<?> entityType = entity.getType();

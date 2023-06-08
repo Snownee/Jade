@@ -3,14 +3,17 @@ package snownee.jade.gui;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
+import com.google.common.base.Joiner;
+
 import it.unimi.dsi.fastutil.floats.FloatUnaryOperator;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import snownee.jade.Jade;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.gui.config.OptionButton;
@@ -25,7 +28,7 @@ import snownee.jade.util.PlatformProxy;
 public class WailaConfigScreen extends BaseOptionsScreen {
 
 	public WailaConfigScreen(Screen parent) {
-		super(parent, Component.translatable("gui.jade.configuration", Jade.NAME), Jade.CONFIG::save, Jade.CONFIG::invalidate);
+		super(parent, new TranslatableComponent("gui.jade.configuration", Jade.NAME), Jade.CONFIG::save, Jade.CONFIG::invalidate);
 	}
 
 	@Override
@@ -46,17 +49,23 @@ public class WailaConfigScreen extends BaseOptionsScreen {
 				String key = "display_mode_" + mode.name().toLowerCase(Locale.ENGLISH) + "_desc";
 				if (mode == IWailaConfig.DisplayMode.LITE && "fabric".equals(PlatformProxy.getPlatformIdentifier()))
 					key += ".fabric";
-				return Tooltip.create(Entry.makeTitle(key));
+				return font.split(Entry.makeTitle(key), 200);
 			});
 		});
-		OptionValue<?> value = options.choices("item_mod_name", general.showItemModNameTooltip(), general::setItemModNameTooltip);
+		StringBuilder desc = new StringBuilder();
 		if (!ConfigGeneral.itemModNameTooltipDisabledByMods.isEmpty()) {
-			value.setDisabled(true);
-			value.appendDescription(I18n.get("gui.jade.disabled_by_mods"));
-			ConfigGeneral.itemModNameTooltipDisabledByMods.forEach(value::appendDescription);
-			if (value.getListener() != null) {
-				value.getListener().setTooltip(Tooltip.create(Component.literal(value.getDescription())));
+			desc.append(I18n.get("gui.jade.disabled_by_mods"));
+			desc.append('\n');
+			desc.append(Joiner.on('\n').join(ConfigGeneral.itemModNameTooltipDisabledByMods));
+		}
+		OptionValue<?> value = options.choices("item_mod_name", general.showItemModNameTooltip(), general::setItemModNameTooltip, builder -> {
+			if (!desc.isEmpty()) {
+				builder.withTooltip(e -> font.split(new TextComponent(desc.toString()), 200));
 			}
+		});
+		if (!desc.isEmpty()) {
+			value.setDisabled(true);
+			value.appendDescription(desc.toString());
 		}
 		options.choices("hide_from_debug", general.shouldHideFromDebug(), general::setHideFromDebug);
 		options.choices("hide_from_tab_list", general.shouldHideFromTabList(), general::setHideFromTabList);
@@ -87,9 +96,9 @@ public class WailaConfigScreen extends BaseOptionsScreen {
 		options.choices("tts_mode", general.getTTSMode(), general::setTTSMode);
 
 		options.title("danger_zone").withStyle(ChatFormatting.RED);
-		Component reset = Component.translatable("controls.reset").withStyle(ChatFormatting.RED);
-		Component title = Component.translatable(WailaOptionsList.Entry.makeKey("reset_settings")).withStyle(ChatFormatting.RED);
-		options.add(new OptionButton(title, Button.builder(reset, w -> {
+		Component reset = new TranslatableComponent("controls.reset").withStyle(ChatFormatting.RED);
+		Component title = new TranslatableComponent(WailaOptionsList.Entry.makeKey("reset_settings")).withStyle(ChatFormatting.RED);
+		options.add(new OptionButton(title, new Button(0, 0, 100, 20, reset, w -> {
 			minecraft.setScreen(new ConfirmScreen(bl -> {
 				if (bl) {
 					try {
@@ -97,15 +106,16 @@ public class WailaConfigScreen extends BaseOptionsScreen {
 						PluginConfig.INSTANCE.getFile().delete();
 						Jade.CONFIG.invalidate();
 						PluginConfig.INSTANCE.reload();
-						rebuildWidgets();
+						//rebuildWidgets();
+						init(minecraft, width, height);
 					} catch (Throwable e) {
 						Jade.LOGGER.catching(e);
 					}
 				}
 				minecraft.setScreen(this);
 				this.options.setScrollAmount(this.options.getMaxScroll());
-			}, title, Component.translatable(WailaOptionsList.Entry.makeKey("reset_settings.confirm")), reset, Component.translatable("gui.cancel")));
-		}).size(100, 20).build()));
+			}, title, new TranslatableComponent(WailaOptionsList.Entry.makeKey("reset_settings.confirm")), reset, new TranslatableComponent("gui.cancel")));
+		})));
 
 		return options;
 	}

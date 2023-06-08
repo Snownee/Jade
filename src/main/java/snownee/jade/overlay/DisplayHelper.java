@@ -6,15 +6,14 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix4f;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat.Mode;
+import com.mojang.math.Matrix4f;
 
 import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRenderHandler;
 import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
@@ -31,14 +30,15 @@ import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import snownee.jade.Jade;
 import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
-import snownee.jade.api.ui.IBorderStyle;
 import snownee.jade.api.fluid.JadeFluidObject;
+import snownee.jade.api.ui.IBorderStyle;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.impl.ui.BorderStyle;
 import snownee.jade.util.Color;
@@ -53,31 +53,41 @@ public class DisplayHelper implements IDisplayHelper {
 		if (OverlayRenderer.alpha < 0.5F) {
 			return;
 		}
-		matrixStack.pushPose();
-		matrixStack.translate(x, y, 0);
-		matrixStack.scale(scale, scale, scale);
-		CLIENT.getItemRenderer().renderAndDecorateFakeItem(matrixStack, stack, 0, 0);
+		RenderSystem.enableDepthTest();
+
+		PoseStack modelViewStack = RenderSystem.getModelViewStack();
+		modelViewStack.pushPose();
+		modelViewStack.mulPoseMatrix(matrixStack.last().pose());
+		float o = 8 * scale;
+		modelViewStack.translate(x + o, y + o, 0);
+		scale *= Math.min(1, OverlayRenderer.alpha + 0.2F);
+		modelViewStack.scale(scale, scale, scale);
+		modelViewStack.translate(-8, -8, 0);
+		CLIENT.getItemRenderer().renderGuiItem(stack, 0, 0);
 		renderGuiItemDecorations(matrixStack, CLIENT.font, stack, 0, 0, text);
-		matrixStack.popPose();
+		modelViewStack.popPose();
+		RenderSystem.applyModelViewMatrix();
+		RenderSystem.disableDepthTest();
 	}
 
 	private static void renderGuiItemDecorations(PoseStack posestack, Font font, ItemStack stack, int i, int j, @Nullable String p_115179_) {
 		if (stack.isEmpty()) {
 			return;
 		}
-		posestack.pushPose();
+		posestack = new PoseStack();
 		if (stack.getCount() != 1 || p_115179_ != null) {
 			String s = p_115179_ == null ? INSTANCE.humanReadableNumber(stack.getCount(), "", false) : p_115179_;
 			posestack.pushPose();
 			posestack.translate(0.0f, 0.0f, 200.0f);
 			posestack.scale(.75f, .75f, .75f);
 			MultiBufferSource.BufferSource multibuffersource$buffersource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-			font.drawInBatch(s, i + 22 - font.width(s), j + 13, 16777215, true, posestack.last().pose(), multibuffersource$buffersource, Font.DisplayMode.NORMAL, 0, 0xF000F0);
+			font.drawInBatch(s, i + 22 - font.width(s), j + 13, 16777215, true, posestack.last().pose(), multibuffersource$buffersource, false, 0, 0xF000F0);
 			multibuffersource$buffersource.endBatch();
 			posestack.popPose();
 		}
 
 		if (stack.isBarVisible()) {
+			posestack.pushPose();
 			RenderSystem.disableDepthTest();
 			int k = stack.getBarWidth();
 			int l = stack.getBarColor();
@@ -86,8 +96,8 @@ public class DisplayHelper implements IDisplayHelper {
 			GuiComponent.fill(posestack, m, n, m + 13, n + 2, -16777216);
 			GuiComponent.fill(posestack, m, n, m + k, n + 1, l | 0xFF000000);
 			RenderSystem.enableDepthTest();
+			posestack.popPose();
 		}
-		posestack.popPose();
 	}
 
 	@Override
@@ -124,7 +134,7 @@ public class DisplayHelper implements IDisplayHelper {
 			buffer.vertex(matrix, left, top + height, zLevel).color(f5, f6, f7, f4).endVertex();
 			buffer.vertex(matrix, left + width, top + height, zLevel).color(f5, f6, f7, f4).endVertex();
 		}
-		BufferUploader.drawWithShader(buffer.end());
+		tessellator.end();
 		RenderSystem.disableBlend();
 	}
 
@@ -160,7 +170,7 @@ public class DisplayHelper implements IDisplayHelper {
 		buffer.vertex(matrix, x + width, y + height, zLevel).uv(((textureX + tw) * f), ((textureY + th) * f1)).endVertex();
 		buffer.vertex(matrix, x + width, y, zLevel).uv(((textureX + tw) * f), ((textureY) * f1)).endVertex();
 		buffer.vertex(matrix, x, y, zLevel).uv(((textureX) * f), ((textureY) * f1)).endVertex();
-		BufferUploader.drawWithShader(buffer.end());
+		tessellator.end();
 	}
 
 	public static void renderIcon(PoseStack matrixStack, float x, float y, int sx, int sy, IconUI icon) {
@@ -262,7 +272,7 @@ public class DisplayHelper implements IDisplayHelper {
 		bufferBuilder.vertex(matrix, xCoord + 16 - maskRight, yCoord + 16, zLevel).uv(uMax, vMax).endVertex();
 		bufferBuilder.vertex(matrix, xCoord + 16 - maskRight, yCoord + maskTop, zLevel).uv(uMax, vMin).endVertex();
 		bufferBuilder.vertex(matrix, xCoord, yCoord + maskTop, zLevel).uv(uMin, vMin).endVertex();
-		BufferUploader.drawWithShader(bufferBuilder.end());
+		tessellator.end();
 	}
 
 	public static void fill(PoseStack matrixStack, float minX, float minY, float maxX, float maxY, int color) {
@@ -295,7 +305,7 @@ public class DisplayHelper implements IDisplayHelper {
 		bufferbuilder.vertex(matrix, maxX, maxY, 0.0F).color(f, f1, f2, f3).endVertex();
 		bufferbuilder.vertex(matrix, maxX, minY, 0.0F).color(f, f1, f2, f3).endVertex();
 		bufferbuilder.vertex(matrix, minX, minY, 0.0F).color(f, f1, f2, f3).endVertex();
-		BufferUploader.drawWithShader(bufferbuilder.end());
+		Tesselator.getInstance().end();
 		RenderSystem.disableBlend();
 	}
 
@@ -337,7 +347,7 @@ public class DisplayHelper implements IDisplayHelper {
 
 	@Override
 	public void drawText(PoseStack poseStack, String text, float x, float y, int color) {
-		drawText(poseStack, Component.literal(text), x, y, color);
+		drawText(poseStack, new TextComponent(text), x, y, color);
 	}
 
 	@Override
@@ -381,10 +391,10 @@ public class DisplayHelper implements IDisplayHelper {
 
 	@Override
 	public MutableComponent stripColor(Component component) {
-		MutableComponent mutableComponent = Component.empty();
+		MutableComponent mutableComponent = TextComponent.EMPTY.copy();
 		component.visit((style, string) -> {
 			if (!string.isEmpty()) {
-				MutableComponent literal = Component.literal(STRIP_COLOR.matcher(string).replaceAll(""));
+				MutableComponent literal = new TextComponent(STRIP_COLOR.matcher(string).replaceAll(""));
 				literal.withStyle(style.withColor((TextColor) null));
 				mutableComponent.append(literal);
 			}

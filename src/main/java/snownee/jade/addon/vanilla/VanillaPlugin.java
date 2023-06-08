@@ -5,18 +5,14 @@ import java.util.Map;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.AgeableMob;
-import net.minecraft.world.entity.Display.BlockDisplay;
-import net.minecraft.world.entity.Display.ItemDisplay;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.Chicken;
-import net.minecraft.world.entity.animal.allay.Allay;
-import net.minecraft.world.entity.animal.frog.Tadpole;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.decoration.ItemFrame;
@@ -31,7 +27,6 @@ import net.minecraft.world.level.block.AbstractSkullBlock;
 import net.minecraft.world.level.block.BeehiveBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.BrewingStandBlock;
-import net.minecraft.world.level.block.ChiseledBookShelfBlock;
 import net.minecraft.world.level.block.CommandBlock;
 import net.minecraft.world.level.block.EnchantmentTableBlock;
 import net.minecraft.world.level.block.JukeboxBlock;
@@ -42,7 +37,6 @@ import net.minecraft.world.level.block.TntBlock;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BeehiveBlockEntity;
 import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
-import net.minecraft.world.level.block.entity.ChiseledBookShelfBlockEntity;
 import net.minecraft.world.level.block.entity.CommandBlockEntity;
 import net.minecraft.world.level.block.entity.ComparatorBlockEntity;
 import net.minecraft.world.level.block.entity.HopperBlockEntity;
@@ -73,7 +67,7 @@ public class VanillaPlugin implements IWailaPlugin {
 				ResourceLocation trappedName = PlatformProxy.getId(state.getBlock());
 				if (trappedName.getPath().startsWith("trapped_")) {
 					ResourceLocation chestName = new ResourceLocation(trappedName.getNamespace(), trappedName.getPath().substring(8));
-					Block block = BuiltInRegistries.BLOCK.get(chestName);
+					Block block = Registry.BLOCK.get(chestName);
 					if (block != null) {
 						return copyProperties(state, block.defaultBlockState());
 					}
@@ -105,14 +99,11 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerBlockDataProvider(RedstoneProvider.INSTANCE, ComparatorBlockEntity.class);
 		registration.registerBlockDataProvider(RedstoneProvider.INSTANCE, HopperBlockEntity.class);
 		registration.registerBlockDataProvider(FurnaceProvider.INSTANCE, AbstractFurnaceBlockEntity.class);
-		registration.registerBlockDataProvider(ChiseledBookshelfProvider.INSTANCE, ChiseledBookShelfBlockEntity.class);
 
 		registration.registerEntityDataProvider(AnimalOwnerProvider.INSTANCE, Entity.class);
 		registration.registerEntityDataProvider(PotionEffectsProvider.INSTANCE, LivingEntity.class);
 		registration.registerEntityDataProvider(MobGrowthProvider.INSTANCE, AgeableMob.class);
-		registration.registerEntityDataProvider(MobGrowthProvider.INSTANCE, Tadpole.class);
 		registration.registerEntityDataProvider(MobBreedingProvider.INSTANCE, Animal.class);
-		registration.registerEntityDataProvider(MobBreedingProvider.INSTANCE, Allay.class);
 		registration.registerEntityDataProvider(ChickenEggProvider.INSTANCE, Chicken.class);
 	}
 
@@ -137,9 +128,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerEntityComponent(ItemFrameProvider.INSTANCE, ItemFrame.class);
 		registration.registerEntityComponent(PotionEffectsProvider.INSTANCE, LivingEntity.class);
 		registration.registerEntityComponent(MobGrowthProvider.INSTANCE, AgeableMob.class);
-		registration.registerEntityComponent(MobGrowthProvider.INSTANCE, Tadpole.class);
 		registration.registerEntityComponent(MobBreedingProvider.INSTANCE, Animal.class);
-		registration.registerEntityComponent(MobBreedingProvider.INSTANCE, Allay.class);
 		registration.registerBlockComponent(TNTStabilityProvider.INSTANCE, TntBlock.class);
 		registration.registerBlockComponent(BeehiveProvider.INSTANCE, BeehiveBlock.class);
 		registration.registerBlockComponent(NoteBlockProvider.INSTANCE, NoteBlock.class);
@@ -167,10 +156,6 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerBlockComponent(LecternProvider.INSTANCE, LecternBlock.class);
 		registration.registerBlockComponent(MobSpawnerProvider.INSTANCE, SpawnerBlock.class);
 		registration.registerEntityComponent(MobSpawnerProvider.INSTANCE, MinecartSpawner.class);
-		registration.registerBlockComponent(ChiseledBookshelfProvider.INSTANCE, ChiseledBookShelfBlock.class);
-		registration.registerBlockIcon(ChiseledBookshelfProvider.INSTANCE, ChiseledBookShelfBlock.class);
-		registration.registerEntityIcon(ItemDisplayProvider.INSTANCE, ItemDisplay.class);
-		registration.registerEntityIcon(BlockDisplayProvider.INSTANCE, BlockDisplay.class);
 
 		ClientPlatformProxy.registerReloadListener(HarvestToolProvider.INSTANCE);
 
@@ -206,6 +191,5 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.markAsClientFeature(Identifiers.MC_MOB_SPAWNER);
 
 		registration.usePickedResult(EntityType.BOAT);
-		registration.usePickedResult(EntityType.CHEST_BOAT);
 	}
 }

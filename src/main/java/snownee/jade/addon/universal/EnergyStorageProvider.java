@@ -8,6 +8,7 @@ import java.util.function.Function;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -89,7 +90,7 @@ public enum EnergyStorageProvider implements IBlockComponentProvider, IServerDat
 						if (view.overrideText != null) {
 							text = view.overrideText;
 						} else {
-							text = Component.translatable("jade.fe", ChatFormatting.WHITE + view.current, view.max).withStyle(ChatFormatting.GRAY);
+							text = new TranslatableComponent("jade.fe", ChatFormatting.WHITE + view.current, view.max).withStyle(ChatFormatting.GRAY);
 						}
 						IProgressStyle progressStyle = helper.progressStyle().color(0xFFAA0000, 0xFF660000);
 						theTooltip.add(helper.progress(view.ratio, text, progressStyle, BoxStyle.DEFAULT, true));

@@ -1,6 +1,6 @@
 package snownee.jade.test;
 
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
@@ -13,7 +13,7 @@ public enum ExampleComponentProvider2 implements IBlockComponentProvider {
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		tooltip.append(Component.translatable("mymod.fuel"));
+		tooltip.append(new TranslatableComponent("mymod.fuel"));
 	}
 
 	@Override

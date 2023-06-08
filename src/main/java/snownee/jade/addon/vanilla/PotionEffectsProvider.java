@@ -9,6 +9,8 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
@@ -41,15 +43,15 @@ public enum PotionEffectsProvider implements IEntityComponentProvider, IServerDa
 		for (int i = 0; i < lines.length; i++) {
 			CompoundTag compound = list.getCompound(i);
 			int duration = compound.getInt("Duration");
-			MutableComponent name = Component.translatable(compound.getString("Name"));
+			MutableComponent name = new TranslatableComponent(compound.getString("Name"));
 			String amplifierKey = "potion.potency." + compound.getInt("Amplifier");
 			Component amplifier;
 			if (I18n.exists(amplifierKey)) {
-				amplifier = Component.translatable(amplifierKey);
+				amplifier = new TranslatableComponent(amplifierKey);
 			} else {
-				amplifier = Component.literal(Integer.toString(compound.getInt("Amplifier")));
+				amplifier = new TextComponent(Integer.toString(compound.getInt("Amplifier")));
 			}
-			MutableComponent s = Component.translatable("jade.potion", name, amplifier, getPotionDurationString(duration));
+			MutableComponent s = new TranslatableComponent("jade.potion", name, amplifier, getPotionDurationString(duration));
 			box.add(s.withStyle(compound.getBoolean("Bad") ? ChatFormatting.RED : ChatFormatting.GREEN));
 		}
 		tooltip.add(helper.box(box));

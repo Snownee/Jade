@@ -9,6 +9,7 @@ import it.unimi.dsi.fastutil.floats.FloatUnaryOperator;
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.Mth;
 import snownee.jade.overlay.DisplayHelper;
 
@@ -34,8 +35,8 @@ public class SliderOptionValue extends OptionValue<Float> {
 
 	@Override
 	protected void drawValue(PoseStack matrixStack, int entryWidth, int entryHeight, int x, int y, int mouseX, int mouseY, boolean selected, float partialTicks) {
-		slider.setX(x);
-		slider.setY(y + entryHeight / 6);
+		slider.x = x;
+		slider.y = y + entryHeight / 6;
 		slider.render(matrixStack, mouseX, mouseY, partialTicks);
 	}
 
@@ -71,7 +72,7 @@ public class SliderOptionValue extends OptionValue<Float> {
 		//get title
 		@Override
 		protected void applyValue() {
-			setMessage(Component.literal(DisplayHelper.dfCommas.format(toScaled())));
+			setMessage(new TextComponent(DisplayHelper.dfCommas.format(toScaled())));
 		}
 	}
 }

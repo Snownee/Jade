@@ -2,7 +2,8 @@ package snownee.jade.addon.vanilla;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -32,11 +33,11 @@ public enum BrewingStandProvider implements IBlockComponentProvider, IServerData
 		int time = tag.getInt("Time");
 		IElementHelper helper = IElementHelper.get();
 		tooltip.add(helper.smallItem(new ItemStack(Items.BLAZE_POWDER)));
-		tooltip.append(Component.literal(Integer.toString(fuel)));
+		tooltip.append(new TextComponent(Integer.toString(fuel)));
 		if (time > 0) {
 			tooltip.append(helper.spacer(5, 0));
 			tooltip.append(helper.smallItem(new ItemStack(Items.CLOCK)));
-			tooltip.append(Component.translatable("jade.seconds", time / 20));
+			tooltip.append(new TranslatableComponent("jade.seconds", time / 20));
 		}
 	}
 

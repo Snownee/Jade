@@ -14,13 +14,6 @@ accessible field net/minecraft/world/level/block/entity/AbstractFurnaceBlockEnti
 
 accessible method net/minecraft/client/gui/components/ContainerObjectSelectionList$Entry updateNarration (Lnet/minecraft/client/gui/narration/NarrationElementOutput;)V
 
-accessible method net/minecraft/world/entity/animal/frog/Tadpole getTicksLeftUntilAdult ()I
-
-accessible field net/minecraft/world/entity/animal/allay/Allay duplicationCooldown J
-
 accessible field net/minecraft/client/gui/components/BossHealthOverlay events Ljava/util/Map;
 
-accessible method net/minecraft/client/Minecraft addCustomNbtData (Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/level/block/entity/BlockEntity;)V
-
-accessible method net/minecraft/world/level/block/ChiseledBookShelfBlock getRelativeHitCoordinatesForBlockFace (Lnet/minecraft/world/phys/BlockHitResult;Lnet/minecraft/core/Direction;)Ljava/util/Optional;
-accessible method net/minecraft/world/level/block/ChiseledBookShelfBlock getHitSlot (Lnet/minecraft/world/phys/Vec2;)I
+accessible method net/minecraft/client/Minecraft addCustomNbtData (Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/level/block/entity/BlockEntity;)Lnet/minecraft/world/item/ItemStack;

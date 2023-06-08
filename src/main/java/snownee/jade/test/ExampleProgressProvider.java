@@ -3,7 +3,7 @@ package snownee.jade.test;
 import java.util.List;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -29,11 +29,11 @@ public enum ExampleProgressProvider implements IServerExtensionProvider<Abstract
 		return ClientViewGroup.map(groups, ProgressView::read, (group, clientGroup) -> {
 			var view = clientGroup.views.get(0);
 			view.style.color(0xFFCC0000);
-			view.text = Component.literal("Testtttttttttttttttttttttttttttttttt");
+			view.text = new TextComponent("Testtttttttttttttttttttttttttttttttt");
 
 			view = clientGroup.views.get(1);
 			view.style.color(0xFF00CC00);
-			view.text = Component.literal("Test");
+			view.text = new TextComponent("Test");
 		});
 	}
 

@@ -24,6 +24,8 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.LazyLoadedValue;
 import net.minecraft.util.Mth;
@@ -71,7 +73,7 @@ public final class JadeClient implements ClientModInitializer {
 		ClientPlatformProxy.init();
 		for (int i = 320; i < 330; i++) {
 			InputConstants.Key key = InputConstants.Type.KEYSYM.getOrCreate(i);
-			((KeyAccess) (Object) key).setDisplayName(new LazyLoadedValue<>(() -> Component.translatable(key.getName())));
+			((KeyAccess) (Object) key).setDisplayName(new LazyLoadedValue<>(() -> new TranslatableComponent(key.getName())));
 		}
 
 		openConfig = ClientPlatformProxy.registerKeyBinding("config", 320);
@@ -101,7 +103,7 @@ public final class JadeClient implements ClientModInitializer {
 			if (mode == IWailaConfig.DisplayMode.TOGGLE) {
 				general.setDisplayTooltip(!general.shouldDisplayTooltip());
 				if (!general.shouldDisplayTooltip() && general.hintOverlayToggle) {
-					SystemToast.add(Minecraft.getInstance().getToasts(), SystemToastIds.TUTORIAL_HINT, Component.translatable("toast.jade.toggle_hint.1"), Component.translatable("toast.jade.toggle_hint.2", showOverlay.getTranslatedKeyMessage()));
+					SystemToast.add(Minecraft.getInstance().getToasts(), SystemToastIds.TUTORIAL_HINT, new TranslatableComponent("toast.jade.toggle_hint.1"), new TranslatableComponent("toast.jade.toggle_hint.2", showOverlay.getTranslatedKeyMessage()));
 					general.hintOverlayToggle = false;
 				}
 				Jade.CONFIG.save();
@@ -154,7 +156,7 @@ public final class JadeClient implements ClientModInitializer {
 		if (hideModName || !Jade.CONFIG.get().getGeneral().showItemModNameTooltip())
 			return;
 		String name = String.format(Jade.CONFIG.get().getFormatting().getModName(), ModIdentification.getModName(stack));
-		tooltip.add(Component.literal(name));
+		tooltip.add(new TextComponent(name));
 	}
 
 	@Nullable
@@ -174,9 +176,6 @@ public final class JadeClient implements ClientModInitializer {
 				return client.blockAccessor().from(target).blockState(block.defaultBlockState()).build();
 			} else if (target.getBlock() == Blocks.POWDER_SNOW) {
 				Block block = Blocks.SNOW_BLOCK;
-				return client.blockAccessor().from(target).blockState(block.defaultBlockState()).build();
-			} else if (target.getBlock() == Blocks.SUSPICIOUS_SAND) {
-				Block block = Blocks.SAND;
 				return client.blockAccessor().from(target).blockState(block.defaultBlockState()).build();
 			}
 		}
@@ -226,9 +225,9 @@ public final class JadeClient implements ClientModInitializer {
 
 	public static MutableComponent format(String s, Object... objects) {
 		try {
-			return Component.literal(MessageFormat.format(I18n.get(s), objects));
+			return new TextComponent(MessageFormat.format(I18n.get(s), objects));
 		} catch (Exception e) {
-			return Component.translatable(s, objects);
+			return new TranslatableComponent(s, objects);
 		}
 	}
 

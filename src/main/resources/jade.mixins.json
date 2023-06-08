@@ -7,10 +7,10 @@
     "AbstractHorseAccess"
   ],
   "client": [
-    "KeyAccess",
     "BossHealthOverlayMixin",
     "ClientLevelMixin",
-    "GameRendererMixin"
+    "KeyAccess",
+    "MinecraftMixin"
   ],
   "injectors": {
     "defaultRequire": 1

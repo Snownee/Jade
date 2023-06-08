@@ -1,7 +1,7 @@
 package snownee.jade.addon.vanilla;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.BaseCommandBlock;
@@ -24,7 +24,7 @@ public enum CommandBlockProvider implements IBlockComponentProvider, IServerData
 		if (!accessor.getServerData().contains("Command")) {
 			return;
 		}
-		tooltip.add(Component.literal("> " + accessor.getServerData().getString("Command")));
+		tooltip.add(new TextComponent("> " + accessor.getServerData().getString("Command")));
 	}
 
 	@Override

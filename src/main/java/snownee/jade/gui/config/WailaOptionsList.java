@@ -8,15 +8,12 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import net.minecraft.client.gui.components.AbstractSelectionList;
-
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Predicates;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
@@ -35,8 +32,9 @@ import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import snownee.jade.Jade;
@@ -58,6 +56,7 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 		super(client, width, height, y0, y1, entryHeight);
 		this.owner = owner;
 		this.diskWriter = diskWriter;
+		setRenderSelection(false);
 	}
 
 	public WailaOptionsList(BaseOptionsScreen owner, Minecraft client, int width, int height, int y0, int y1, int entryHeight) {
@@ -97,10 +96,10 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 		return Objects.equals(this.getSelected(), this.children().get(i));
 	}
 
-	@Override
-	protected void renderSelection(PoseStack poseStack, int i, int j, int k, int l, int m) {
-		AbstractSelectionList.fill(poseStack, 0, i - 2, owner.width, i + k + 2, 0x33FFFFFF);
-	}
+	//	@Override
+	//	protected void renderSelection(PoseStack poseStack, int i, int j, int k, int l, int m) {
+	//		AbstractSelectionList.fill(poseStack, 0, i - 2, owner.width, i + k + 2, 0x33FFFFFF);
+	//	}
 
 	@Override
 	public void render(PoseStack matrixStack, int mouseX, int mouseY, float delta) {
@@ -116,10 +115,9 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 		BufferBuilder bufferBuilder = tessellator.getBuilder();
 		RenderSystem.setShaderTexture(0, BACKGROUND_LOCATION);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-		//		int rowLeft = getRowLeft();
-		//		int scrollJump = y0 + 4 - (int) getScrollAmount();
-
-		renderList(matrixStack, mouseX, mouseY, delta);
+		int rowLeft = getRowLeft();
+		int scrollJump = y0 + 4 - (int) getScrollAmount();
+		renderList(matrixStack, rowLeft, scrollJump, mouseX, mouseY, delta);
 		RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
 		RenderSystem.setShaderTexture(0, GuiComponent.BACKGROUND_LOCATION);
 		RenderSystem.enableDepthTest();
@@ -133,7 +131,7 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 		bufferBuilder.vertex(x0 + width, height, -100.0D).uv(width / 32.0F, height / 32.0F).color(64, 64, 64, 255).endVertex();
 		bufferBuilder.vertex(x0 + width, y1, -100.0D).uv(width / 32.0F, y1 / 32.0F).color(64, 64, 64, 255).endVertex();
 		bufferBuilder.vertex(x0, y1, -100.0D).uv(0.0F, y1 / 32.0F).color(64, 64, 64, 255).endVertex();
-		BufferUploader.drawWithShader(bufferBuilder.end());
+		tessellator.end();
 		RenderSystem.depthFunc(515);
 		RenderSystem.disableDepthTest();
 		RenderSystem.enableBlend();
@@ -237,7 +235,7 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 	}
 
 	public <T> OptionValue<?> choices(String optionName, T value, List<T> values, Consumer<T> setter) {
-		return add(new CycleOptionValue<>(optionName, CycleButton.<T>builder(v -> Component.literal(v.toString())).withValues(values), value, setter));
+		return add(new CycleOptionValue<>(optionName, CycleButton.<T>builder(v -> new TextComponent(v.toString())).withValues(values), value, setter));
 	}
 
 	public void onClose() {
@@ -262,7 +260,7 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 		protected String description;
 
 		public static MutableComponent makeTitle(String key) {
-			return Component.translatable(makeKey(key));
+			return new TranslatableComponent(makeKey(key));
 		}
 
 		public static String makeKey(String key) {

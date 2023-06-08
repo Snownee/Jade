@@ -14,8 +14,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.brigadier.CommandDispatcher;
 
 import net.fabricmc.fabric.api.block.BlockPickInteractionAware;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
-import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v1.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
@@ -35,7 +35,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -133,10 +132,10 @@ public final class ClientPlatformProxy {
 			});
 		});
 
-		ClientCommandRegistrationCallback.EVENT.register(ClientPlatformProxy::registerClientCommand);
+		registerClientCommand(ClientCommandManager.DISPATCHER);
 	}
 
-	public static void registerClientCommand(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandBuildContext registryAccess) {
+	public static void registerClientCommand(CommandDispatcher<FabricClientCommandSource> dispatcher) {
 		JadeClientCommand.register(dispatcher);
 	}
 

@@ -2,7 +2,7 @@ package snownee.jade.addon.vanilla;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
@@ -33,31 +33,31 @@ public enum RedstoneProvider implements IBlockComponentProvider, IServerDataProv
 		Block block = state.getBlock();
 		if (block instanceof LeverBlock) {
 			boolean active = state.getValue(BlockStateProperties.POWERED);
-			tooltip.add(Component.translatable("tooltip.jade.state", Component.translatable("tooltip.jade.state_" + (active ? "on" : "off"))));
+			tooltip.add(new TranslatableComponent("tooltip.jade.state", new TranslatableComponent("tooltip.jade.state_" + (active ? "on" : "off"))));
 			return;
 		}
 
 		if (block == Blocks.REPEATER) {
 			int delay = state.getValue(BlockStateProperties.DELAY);
-			tooltip.add(Component.translatable("tooltip.jade.delay", ChatFormatting.WHITE.toString() + delay));
+			tooltip.add(new TranslatableComponent("tooltip.jade.delay", ChatFormatting.WHITE.toString() + delay));
 			return;
 		}
 
 		if (block == Blocks.COMPARATOR) {
 			ComparatorMode mode = state.getValue(BlockStateProperties.MODE_COMPARATOR);
-			tooltip.add(Component.translatable("tooltip.jade.mode", Component.translatable("tooltip.jade.mode_" + (mode == ComparatorMode.COMPARE ? "comparator" : "subtractor")).withStyle(ChatFormatting.WHITE)));
+			tooltip.add(new TranslatableComponent("tooltip.jade.mode", new TranslatableComponent("tooltip.jade.mode_" + (mode == ComparatorMode.COMPARE ? "comparator" : "subtractor")).withStyle(ChatFormatting.WHITE)));
 			if (accessor.getServerData().contains("Signal")) {
-				tooltip.add(Component.translatable("tooltip.jade.power", ChatFormatting.WHITE.toString() + accessor.getServerData().getInt("Signal")));
+				tooltip.add(new TranslatableComponent("tooltip.jade.power", ChatFormatting.WHITE.toString() + accessor.getServerData().getInt("Signal")));
 			}
 			return;
 		}
 
 		if (state.hasProperty(BlockStateProperties.POWER)) {
-			tooltip.add(Component.translatable("tooltip.jade.power", ChatFormatting.WHITE.toString() + state.getValue(BlockStateProperties.POWER)));
+			tooltip.add(new TranslatableComponent("tooltip.jade.power", ChatFormatting.WHITE.toString() + state.getValue(BlockStateProperties.POWER)));
 		}
 
 		if (state.getBlock() instanceof HopperBlock && accessor.getServerData().contains("HopperLocked")) {
-			tooltip.add(Component.translatable("jade.hopper.locked").withStyle(ChatFormatting.RED));
+			tooltip.add(new TranslatableComponent("jade.hopper.locked").withStyle(ChatFormatting.RED));
 		}
 	}
 

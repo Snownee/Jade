@@ -12,6 +12,8 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.gui.config.OptionButton;
@@ -27,7 +29,7 @@ import snownee.jade.util.ModIdentification;
 public class PluginsConfigScreen extends BaseOptionsScreen {
 
 	public PluginsConfigScreen(Screen parent) {
-		super(parent, Component.translatable("gui.jade.plugin_settings"), PluginConfig.INSTANCE::save, PluginConfig.INSTANCE::reload);
+		super(parent, new TranslatableComponent("gui.jade.plugin_settings"), PluginConfig.INSTANCE::save, PluginConfig.INSTANCE::reload);
 	}
 
 	@Override
@@ -37,13 +39,13 @@ public class PluginsConfigScreen extends BaseOptionsScreen {
 			Component title;
 			String translationKey = "plugin_" + namespace;
 			if (ModIdentification.NAMES.containsKey(namespace)) {
-				title = Component.literal(ModIdentification.getModName(namespace));
+				title = new TextComponent(ModIdentification.getModName(namespace));
 			} else {
-				title = Component.translatable(translationKey);
+				title = new TranslatableComponent(translationKey);
 			}
-			options.add(new OptionButton(title, Button.builder(Component.empty(), w -> {
+			options.add(new OptionButton(title, new Button(0, 0, 100, 20, TextComponent.EMPTY, w -> {
 				minecraft.setScreen(createPluginConfigScreen(this, namespace, true));
-			}).size(100, 20).build()));
+			})));
 		});
 		return options;
 	}
@@ -52,9 +54,9 @@ public class PluginsConfigScreen extends BaseOptionsScreen {
 		Component title;
 		String translationKey = "plugin_" + namespace;
 		if (ModIdentification.NAMES.containsKey(namespace)) {
-			title = Component.literal(ModIdentification.getModName(namespace));
+			title = new TextComponent(ModIdentification.getModName(namespace));
 		} else {
-			title = Component.translatable(translationKey);
+			title = new TranslatableComponent(translationKey);
 		}
 		return new BaseOptionsScreen(parent, title, dontSave ? null : PluginConfig.INSTANCE::save, dontSave ? null : PluginConfig.INSTANCE::reload) {
 			@Override
@@ -71,7 +73,7 @@ public class PluginsConfigScreen extends BaseOptionsScreen {
 						entry.setDisabled(true);
 						entry.appendDescription(ChatFormatting.DARK_RED + I18n.get("gui.jade.forced_plugin_config"));
 					} else if (options.serverFeatures > 0 && !WailaClientRegistration.INSTANCE.isClientFeature(i)) {
-						entry.getTitle().append(Component.literal("*").withStyle(ChatFormatting.GRAY));
+						entry.getTitle().append(new TextComponent("*").withStyle(ChatFormatting.GRAY));
 					}
 					if (i.getPath().contains(".")) {
 						entry.indent(1);

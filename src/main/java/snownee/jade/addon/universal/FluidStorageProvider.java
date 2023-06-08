@@ -6,6 +6,8 @@ import java.util.function.Function;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -88,9 +90,9 @@ public enum FluidStorageProvider implements IBlockComponentProvider, IServerData
 						if (view.overrideText != null) {
 							text = view.overrideText;
 						} else if (view.fluidName == null) {
-							text = Component.literal(view.current);
+							text = new TextComponent(view.current);
 						} else {
-							text = Component.translatable("jade.fluid", IDisplayHelper.get().stripColor(view.fluidName), view.current);
+							text = new TranslatableComponent("jade.fluid", IDisplayHelper.get().stripColor(view.fluidName), view.current);
 						}
 						IProgressStyle progressStyle = helper.progressStyle().overlay(view.overlay);
 						theTooltip.add(helper.progress(view.ratio, text, progressStyle, BoxStyle.DEFAULT, true));

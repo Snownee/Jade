@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import snownee.jade.Jade;
 import snownee.jade.impl.config.PluginConfig;
 
@@ -13,23 +13,23 @@ public class HomeConfigScreen extends Screen {
 	private final Screen parent;
 
 	public HomeConfigScreen(Screen parent) {
-		super(Component.translatable("gui.jade.configuration", Jade.NAME));
+		super(new TranslatableComponent("gui.jade.configuration", Jade.NAME));
 		this.parent = parent;
 	}
 
 	@Override
 	protected void init() {
-		addRenderableWidget(Button.builder(Component.translatable("gui.jade.jade_settings", Jade.NAME), w -> {
+		addRenderableWidget(new Button(width / 2 - 105, height / 2 - 10, 100, 20, new TranslatableComponent("gui.jade.jade_settings", Jade.NAME), w -> {
 			minecraft.setScreen(new WailaConfigScreen(HomeConfigScreen.this));
-		}).bounds(width / 2 - 105, height / 2 - 10, 100, 20).build());
-		addRenderableWidget(Button.builder(Component.translatable("gui.jade.plugin_settings"), w -> {
+		}));
+		addRenderableWidget(new Button(width / 2 + 5, height / 2 - 10, 100, 20, new TranslatableComponent("gui.jade.plugin_settings"), w -> {
 			minecraft.setScreen(new PluginsConfigScreen(HomeConfigScreen.this));
-		}).bounds(width / 2 + 5, height / 2 - 10, 100, 20).build());
-		addRenderableWidget(Button.builder(Component.translatable("gui.done"), w -> {
+		}));
+		addRenderableWidget(new Button(width / 2 - 50, height / 2 + 20, 100, 20, new TranslatableComponent("gui.done"), w -> {
 			Jade.CONFIG.save();
 			PluginConfig.INSTANCE.save();
 			minecraft.setScreen(parent);
-		}).bounds(width / 2 - 50, height / 2 + 20, 100, 20).build());
+		}));
 	}
 
 	@Override

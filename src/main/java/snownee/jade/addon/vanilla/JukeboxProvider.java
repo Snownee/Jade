@@ -2,6 +2,7 @@ package snownee.jade.addon.vanilla;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -36,19 +37,19 @@ public enum JukeboxProvider implements IBlockComponentProvider, IServerDataProvi
 				} else {
 					name = stack.getHoverName();
 				}
-				tooltip.add(Component.translatable("record.nowPlaying", IDisplayHelper.get().stripColor(name)));
+				tooltip.add(new TranslatableComponent("record.nowPlaying", IDisplayHelper.get().stripColor(name)));
 			} catch (Exception e) {
 				Jade.LOGGER.catching(e);
 			}
 		} else {
-			tooltip.add(Component.translatable("tooltip.jade.empty"));
+			tooltip.add(new TranslatableComponent("tooltip.jade.empty"));
 		}
 	}
 
 	@Override
 	public void appendServerData(CompoundTag data, ServerPlayer player, Level world, BlockEntity blockEntity, boolean showDetails) {
 		if (blockEntity instanceof JukeboxBlockEntity jukebox) {
-			ItemStack stack = jukebox.getFirstItem();
+			ItemStack stack = jukebox.getRecord();
 			if (!stack.isEmpty()) {
 				data.put("Record", stack.save(new CompoundTag()));
 			}

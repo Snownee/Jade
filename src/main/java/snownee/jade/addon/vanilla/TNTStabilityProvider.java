@@ -1,7 +1,7 @@
 package snownee.jade.addon.vanilla;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.TntBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -19,7 +19,7 @@ public enum TNTStabilityProvider implements IBlockComponentProvider {
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		BlockState state = accessor.getBlockState();
 		if (state.getValue(TntBlock.UNSTABLE)) {
-			tooltip.add(Component.translatable("jade.tnt.unstable").withStyle(ChatFormatting.RED));
+			tooltip.add(new TranslatableComponent("jade.tnt.unstable").withStyle(ChatFormatting.RED));
 		}
 	}
 

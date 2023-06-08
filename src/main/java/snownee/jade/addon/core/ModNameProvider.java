@@ -2,7 +2,7 @@ package snownee.jade.addon.core;
 
 import com.google.common.base.Strings;
 
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import snownee.jade.api.BlockAccessor;
@@ -37,13 +37,13 @@ public enum ModNameProvider implements IBlockComponentProvider, IEntityComponent
 
 		if (!Strings.isNullOrEmpty(modName)) {
 			modName = String.format(config.getWailaConfig().getFormatting().getModName(), modName);
-			tooltip.add(Component.literal(modName));
+			tooltip.add(new TextComponent(modName));
 		}
 	}
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
-		tooltip.add(Component.literal(String.format(config.getWailaConfig().getFormatting().getModName(), ModIdentification.getModName(accessor.getEntity()))));
+		tooltip.add(new TextComponent(String.format(config.getWailaConfig().getFormatting().getModName(), ModIdentification.getModName(accessor.getEntity()))));
 	}
 
 	@Override

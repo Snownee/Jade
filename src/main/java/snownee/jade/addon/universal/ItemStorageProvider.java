@@ -8,12 +8,12 @@ import org.apache.commons.lang3.mutable.MutableBoolean;
 import com.google.common.collect.Lists;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.LockCode;
-import net.minecraft.world.entity.vehicle.ContainerEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
@@ -121,7 +121,7 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 							ItemStack copy = stack.copy();
 							copy.setCount(1);
 							elements.add(helper.smallItem(copy).clearCachedMessage());
-							elements.add(helper.text(Component.literal(itemView.text != null ? itemView.text : IDisplayHelper.get().humanReadableNumber(stack.getCount(), "", false)).append("× ").append(IDisplayHelper.get().stripColor(stack.getHoverName()))).message(null));
+							elements.add(helper.text(new TextComponent(itemView.text != null ? itemView.text : IDisplayHelper.get().humanReadableNumber(stack.getCount(), "", false)).append("× ").append(IDisplayHelper.get().stripColor(stack.getHoverName()))).message(null));
 						} else if (itemView.text != null) {
 							elements.add(helper.item(stack, 1, itemView.text));
 						} else {
@@ -136,9 +136,9 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 				});
 			}
 		} else if (accessor.getServerData().getBoolean("Loot")) {
-			tooltip.add(Component.translatable("jade.not_generated"));
+			tooltip.add(new TranslatableComponent("jade.not_generated"));
 		} else if (accessor.getServerData().getBoolean("Locked")) {
-			tooltip.add(Component.translatable("jade.locked"));
+			tooltip.add(new TranslatableComponent("jade.locked"));
 		}
 	}
 
@@ -171,10 +171,10 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 						tag.putBoolean("Loot", true);
 						return;
 					}
-					if (target instanceof ContainerEntity containerEntity && containerEntity.getLootTable() != null) {
-						tag.putBoolean("Loot", true);
-						return;
-					}
+					//					if (target instanceof ContainerEntity containerEntity && containerEntity.getLootTable() != null) {
+					//						tag.putBoolean("Loot", true);
+					//						return;
+					//					}
 					if (!JadeCommonConfig.bypassLockedContainer && !player.isCreative() && !player.isSpectator() && target instanceof BaseContainerBlockEntity te) {
 						if (te.lockKey != LockCode.NO_LOCK) {
 							tag.putBoolean("Locked", true);
@@ -202,9 +202,9 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 		if (target instanceof RandomizableContainerBlockEntity te && te.lootTable != null) {
 			return List.of();
 		}
-		if (target instanceof ContainerEntity containerEntity && containerEntity.getLootTable() != null) {
-			return List.of();
-		}
+		//		if (target instanceof ContainerEntity containerEntity && containerEntity.getLootTable() != null) {
+		//			return List.of();
+		//		}
 		if (!JadeCommonConfig.bypassLockedContainer && !player.isCreative() && !player.isSpectator() && target instanceof BaseContainerBlockEntity te) {
 			if (te.lockKey != LockCode.NO_LOCK) {
 				return List.of();

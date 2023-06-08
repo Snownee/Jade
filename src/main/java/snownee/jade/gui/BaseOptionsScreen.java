@@ -15,6 +15,8 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.FormattedCharSequence;
 import snownee.jade.JadeClient;
 import snownee.jade.gui.config.WailaOptionsList;
@@ -52,20 +54,20 @@ public abstract class BaseOptionsScreen extends Screen {
 		addRenderableWidget(options);
 
 		if (saver != null && canceller != null) {
-			saveButton = addRenderableWidget(Button.builder(Component.translatable("gui.done"), w -> {
+			saveButton = addRenderableWidget(new Button(width / 2 - 100, height - 25, 100, 20, new TranslatableComponent("gui.done"), w -> {
 				options.save();
 				saver.run();
 				minecraft.setScreen(parent);
-			}).bounds(width / 2 - 100, height - 25, 100, 20).build());
-			addRenderableWidget(Button.builder(Component.translatable("gui.cancel"), w -> {
+			}));
+			addRenderableWidget(new Button(width / 2 + 5, height - 25, 100, 20, new TranslatableComponent("gui.cancel"), w -> {
 				canceller.run();
 				minecraft.setScreen(parent);
-			}).bounds(width / 2 + 5, height - 25, 100, 20).build());
+			}));
 		} else {
-			saveButton = addRenderableWidget(Button.builder(Component.translatable("gui.done"), w -> {
+			saveButton = addRenderableWidget(new Button(width / 2 - 50, height - 25, 100, 20, new TranslatableComponent("gui.done"), w -> {
 				options.save();
 				minecraft.setScreen(parent);
-			}).bounds(width / 2 - 50, height - 25, 100, 20).build());
+			}));
 		}
 
 		options.updateSaveState();
@@ -89,7 +91,7 @@ public abstract class BaseOptionsScreen extends Screen {
 			if (!Strings.isNullOrEmpty(entry.getDescription())) {
 				int valueX = entry.getTextX(options.getRowWidth());
 				if (mouseX >= valueX && mouseX < valueX + entry.getTextWidth()) {
-					List<FormattedCharSequence> tooltip = font.split(Component.literal(entry.getDescription()), 200);
+					List<FormattedCharSequence> tooltip = font.split(new TextComponent(entry.getDescription()), 200);
 					matrixStack.pushPose();
 					matrixStack.translate(0, 0, 100);
 					renderTooltip(matrixStack, tooltip, mouseX, mouseY);

@@ -2,6 +2,8 @@ package snownee.jade.addon.vanilla;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.monster.ZombieVillager;
 import net.minecraft.world.entity.npc.Villager;
@@ -19,7 +21,7 @@ public enum VillagerProfessionProvider implements IEntityComponentProvider {
 
 	INSTANCE;
 
-	private static final Component LEVEL_SEPARATOR = Component.literal(" - ");
+	private static final Component LEVEL_SEPARATOR = new TextComponent(" - ");
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
@@ -36,7 +38,7 @@ public enum VillagerProfessionProvider implements IEntityComponentProvider {
 		VillagerProfession profession = data.getProfession();
 		MutableComponent component = PlatformProxy.getProfressionName(profession);
 		if (profession != VillagerProfession.NONE && profession != VillagerProfession.NITWIT && level > 0 && level <= 5) {
-			component.append(LEVEL_SEPARATOR).append(Component.translatable("merchant.level." + level));
+			component.append(LEVEL_SEPARATOR).append(new TranslatableComponent("merchant.level." + level));
 		}
 		tooltip.add(component);
 	}

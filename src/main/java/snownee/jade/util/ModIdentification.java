@@ -10,8 +10,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.decoration.Motive;
 import net.minecraft.world.entity.decoration.Painting;
-import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
@@ -64,7 +64,7 @@ public class ModIdentification implements ResourceManagerReloadListener {
 
 	public static String getModName(Entity entity) {
 		if (entity instanceof Painting) {
-			PaintingVariant motive = ((Painting) entity).getVariant().value();
+			Motive motive = ((Painting) entity).motive;
 			return getModName(PlatformProxy.getId(motive).getNamespace());
 		}
 		if (entity instanceof ItemEntity) {

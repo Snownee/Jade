@@ -8,7 +8,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
 public class InputOptionValue<T> extends OptionValue<T> {
 
@@ -23,7 +23,7 @@ public class InputOptionValue<T> extends OptionValue<T> {
 
 		this.value = value;
 		this.validator = validator;
-		textField = new EditBox(client.font, 0, 0, 98, 18, Component.literal(""));
+		textField = new EditBox(client.font, 0, 0, 98, 18, new TextComponent(""));
 		textField.setValue(String.valueOf(value));
 		textField.setResponder(s -> {
 			if (this.validator.test(s)) {
@@ -39,7 +39,7 @@ public class InputOptionValue<T> extends OptionValue<T> {
 	@Override
 	protected void drawValue(PoseStack matrixStack, int entryWidth, int entryHeight, int x, int y, int mouseX, int mouseY, boolean selected, float partialTicks) {
 		textField.setX(x);
-		textField.setY(y + entryHeight / 6);
+		textField.y = y + entryHeight / 6;
 		textField.render(matrixStack, mouseX, mouseY, partialTicks);
 	}
 

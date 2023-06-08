@@ -55,9 +55,10 @@ dependencies {
     //modCompileOnly "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
     //modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
     
-    modCompileOnlyApi "mezz.jei:jei-1.19-common-api:${jei_version}"
-    modCompileOnlyApi "mezz.jei:jei-1.19-fabric-api:${jei_version}"
-    //modImplementation "mezz.jei:jei-1.19-fabric:${jei_version}"
+    modImplementation "curse.maven:jei-238222:4434392"
+    //modCompileOnlyApi "mezz.jei:jei-1.18.2-common-api:${jei_version}"
+    //modCompileOnlyApi "mezz.jei:jei-1.18.2-fabric-api:${jei_version}"
+    //modImplementation "mezz.jei:jei-1.18.2-fabric:${jei_version}"
 }
 
 loom {
@@ -143,7 +144,7 @@ modrinth {
     versionNumber = project.mod_version // You don't need to set this manually. Will fail if Modrinth has this version already
     versionType = "release" // This is the default -- can also be `beta` or `alpha`
     uploadFile = remapJar // With Loom, this MUST be set to `remapJar` instead of `jar`!
-    gameVersions = ["1.19.4"] // Must be an array, even with only one version
+    gameVersions = ["1.18.2"] // Must be an array, even with only one version
     loaders = ["fabric"] // Must also be an array - no need to specify this if you're using Loom or ForgeGradle
     dependencies { // A special DSL for creating dependencies
         // scope.type
