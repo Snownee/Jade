@@ -68,14 +68,14 @@ public final class JadeClient {
 	private static boolean canHarvest;
 
 	public static void init() {
-		openConfig = ClientProxy.registerKeyBinding("config", 320);
-		showOverlay = ClientProxy.registerKeyBinding("show_overlay", 321);
-		toggleLiquid = ClientProxy.registerKeyBinding("toggle_liquid", 322);
+		openConfig = ClientProxy.registerKeyBinding("config", InputConstants.KEY_NUMPAD0);
+		showOverlay = ClientProxy.registerKeyBinding("show_overlay", InputConstants.KEY_NUMPAD1);
+		toggleLiquid = ClientProxy.registerKeyBinding("toggle_liquid", InputConstants.KEY_NUMPAD2);
 		if (ClientProxy.shouldRegisterRecipeViewerKeys()) {
-			showRecipes = ClientProxy.registerKeyBinding("show_recipes", 323);
-			showUses = ClientProxy.registerKeyBinding("show_uses", 324);
+			showRecipes = ClientProxy.registerKeyBinding("show_recipes", InputConstants.KEY_NUMPAD3);
+			showUses = ClientProxy.registerKeyBinding("show_uses", InputConstants.KEY_NUMPAD4);
 		}
-		narrate = ClientProxy.registerKeyBinding("narrate", 325);
+		narrate = ClientProxy.registerKeyBinding("narrate", InputConstants.KEY_NUMPAD5);
 		//TODO: proxy
 		showDetails = ClientProxy.registerKeyBinding("show_details", InputConstants.KEY_LSHIFT);
 
