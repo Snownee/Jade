@@ -1,11 +1,17 @@
 package mcp.mobius.waila.addons.core;
 
+import java.util.List;
+import java.util.stream.Stream;
+
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.IWailaClientRegistration;
 import mcp.mobius.waila.api.IWailaCommonRegistration;
 import mcp.mobius.waila.api.IWailaPlugin;
 import mcp.mobius.waila.api.TooltipPosition;
 import mcp.mobius.waila.api.WailaPlugin;
+import mcp.mobius.waila.api.config.TargetBlocklist;
+import mcp.mobius.waila.utils.JsonConfig;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -54,7 +60,24 @@ public class CorePlugin implements IWailaPlugin {
 		registration.registerComponentProvider(BaseEntityProvider.INSTANCE, TooltipPosition.BODY, LivingEntity.class);
 		registration.registerComponentProvider(BaseEntityProvider.INSTANCE, TooltipPosition.TAIL, Entity.class);
 
-		registration.hideTarget(EntityType.AREA_EFFECT_CLOUD);
-		registration.hideTarget(EntityType.FIREWORK_ROCKET);
+		JsonConfig<TargetBlocklist> entityBlocklist = new JsonConfig<>(Jade.MODID + "/hide-entities", TargetBlocklist.class, () -> {
+			var blocklist = new TargetBlocklist();
+			blocklist.values = Stream.of(EntityType.AREA_EFFECT_CLOUD, EntityType.FIREWORK_ROCKET)
+					.map(EntityType::getKey)
+					.map(Object::toString)
+					.toList();
+			return blocklist;
+		});
+		for (String id : entityBlocklist.get().values) {
+			Registry.ENTITY_TYPE.getOptional(ResourceLocation.tryParse(id)).ifPresent(registration::hideTarget);
+		}
+		JsonConfig<TargetBlocklist> blockBlocklist = new JsonConfig<>(Jade.MODID + "/hide-blocks", TargetBlocklist.class, () -> {
+			var blocklist = new TargetBlocklist();
+			blocklist.values = List.of("minecraft:barrier");
+			return blocklist;
+		});
+		for (String id : blockBlocklist.get().values) {
+			Registry.BLOCK.getOptional(ResourceLocation.tryParse(id)).ifPresent(registration::hideTarget);
+		}
 	}
 }
