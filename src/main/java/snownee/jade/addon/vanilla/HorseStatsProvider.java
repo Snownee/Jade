@@ -3,7 +3,7 @@ package snownee.jade.addon.vanilla;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.animal.horse.AbstractChestedHorse;
+import net.minecraft.world.entity.animal.camel.Camel;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.animal.horse.Llama;
 import snownee.jade.api.EntityAccessor;
@@ -20,10 +20,11 @@ public enum HorseStatsProvider implements IEntityComponentProvider {
 	@Override
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		AbstractHorse horse = (AbstractHorse) accessor.getEntity();
-		if (horse instanceof AbstractChestedHorse) {
-			if (horse instanceof Llama llama) {
-				tooltip.add(Component.translatable("jade.llamaStrength", llama.getStrength()));
-			}
+		if (horse instanceof Llama llama) {
+			tooltip.add(Component.translatable("jade.llamaStrength", llama.getStrength()));
+			return;
+		}
+		if (horse instanceof Camel) {
 			return;
 		}
 		double jumpStrength = horse.getCustomJump();
