@@ -1,6 +1,7 @@
 package snownee.jade.util;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -90,6 +91,14 @@ public final class CommonProxy {
 		if (isPhysicallyClient()) {
 			ClientProxy.init();
 		}
+	}
+
+	public static int showOrHideFromServer(Collection<ServerPlayer> players, boolean show) {
+		ShowOverlayPacket msg = new ShowOverlayPacket(show);
+		for (ServerPlayer player : players) {
+			CommonProxy.NETWORK.sendTo(msg, player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+		}
+		return players.size();
 	}
 
 	private void setup(FMLCommonSetupEvent event) {

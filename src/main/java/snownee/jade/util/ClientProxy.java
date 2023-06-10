@@ -28,6 +28,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.EntityHitResult;
@@ -55,6 +57,8 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.forgespi.language.IModInfo;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
+import snownee.jade.addon.harvest.SpecialToolHandler;
+import snownee.jade.addon.harvest.ToolHandler;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.config.IWailaConfig;
@@ -75,9 +79,13 @@ import snownee.jade.overlay.WailaTickHandler;
 
 public final class ClientProxy {
 
+	private static final List<KeyMapping> keys = Lists.newArrayList();
+	private static final List<PreparableReloadListener> listeners = Lists.newArrayList();
 	public static boolean hasJEI = CommonProxy.isModLoaded("jei");
 	public static boolean hasREI = false; //isModLoaded("roughlyenoughitems");
 	public static boolean hasFastScroll = CommonProxy.isModLoaded("fastscroll");
+	private static boolean bossbarShown;
+	private static int bossbarHeight;
 
 	public static void initModNames(Map<String, String> map) {
 		List<IModInfo> mods = ImmutableList.copyOf(ModList.get().getMods());
@@ -167,8 +175,6 @@ public final class ClientProxy {
 		JadeClient.onGui(event.getScreen());
 	}
 
-	private static final List<KeyMapping> keys = Lists.newArrayList();
-
 	public static KeyMapping registerKeyBinding(String desc, int defaultKey) {
 		KeyMapping key = new KeyMapping("key.jade." + desc, KeyConflictContext.IN_GAME, KeyModifier.NONE, InputConstants.Type.KEYSYM.getOrCreate(defaultKey), Jade.NAME);
 		keys.add(key);
@@ -201,8 +207,6 @@ public final class ClientProxy {
 		return new FluidStackElement(JadeFluidObject.of(fluid));//.size(new Size(18, 18));
 	}
 
-	private static final List<PreparableReloadListener> listeners = Lists.newArrayList();
-
 	public static void registerReloadListener(ResourceManagerReloadListener listener) {
 		listeners.add(listener);
 	}
@@ -211,9 +215,6 @@ public final class ClientProxy {
 		listeners.forEach(event::registerReloadListener);
 		listeners.clear();
 	}
-
-	private static boolean bossbarShown;
-	private static int bossbarHeight;
 
 	private static void onDrawBossBar(CustomizeGuiOverlayEvent.BossEventProgress event) {
 		BossBarOverlapMode mode = Jade.CONFIG.get().getGeneral().getBossBarOverlapMode();
@@ -260,5 +261,15 @@ public final class ClientProxy {
 			fluidColor = IWailaConfig.IConfigOverlay.applyAlpha(fluidColor, OverlayRenderer.alpha);
 		}
 		consumer.accept(fluidStillSprite, fluidColor);
+	}
+
+	public static KeyMapping registerDetailsKeyBinding() {
+		return registerKeyBinding("show_details", InputConstants.KEY_LSHIFT);
+	}
+
+	public static ToolHandler createSwordToolHandler() {
+		SpecialToolHandler handler = new SpecialToolHandler("sword", Items.WOODEN_SWORD.getDefaultInstance());
+		handler.blocks.add(Blocks.COBWEB);
+		return handler;
 	}
 }

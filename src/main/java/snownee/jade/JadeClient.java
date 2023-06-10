@@ -76,8 +76,7 @@ public final class JadeClient {
 			showUses = ClientProxy.registerKeyBinding("show_uses", InputConstants.KEY_NUMPAD4);
 		}
 		narrate = ClientProxy.registerKeyBinding("narrate", InputConstants.KEY_NUMPAD5);
-		//TODO: proxy
-		showDetails = ClientProxy.registerKeyBinding("show_details", InputConstants.KEY_LSHIFT);
+		showDetails = ClientProxy.registerDetailsKeyBinding();
 
 		ClientProxy.registerReloadListener(ModIdentification.INSTANCE);
 	}
