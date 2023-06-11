@@ -55,7 +55,7 @@ public class JadeFluidObject {
 		return amount;
 	}
 
-	public CompoundTag getTag() {
+	public @Nullable CompoundTag getTag() {
 		return tag;
 	}
 

@@ -7,7 +7,6 @@ import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.platform.InputConstants;
 
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -76,7 +75,7 @@ public final class JadeClient {
 			showUses = ClientProxy.registerKeyBinding("show_uses", 324);
 		}
 		narrate = ClientProxy.registerKeyBinding("narrate", 325);
-		showDetails = ClientProxy.registerKeyBinding("show_details_alternative", InputConstants.UNKNOWN.getValue());
+		showDetails = ClientProxy.registerDetailsKeyBinding();
 
 		ClientProxy.registerReloadListener(ModIdentification.INSTANCE);
 	}

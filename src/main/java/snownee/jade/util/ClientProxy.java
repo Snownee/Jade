@@ -26,6 +26,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.entity.EntityPickInteractionAware;
 import net.fabricmc.fabric.api.event.Event;
+import net.fabricmc.fabric.api.mininglevel.v1.FabricMineableTags;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRenderHandler;
 import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
@@ -52,6 +53,7 @@ import net.minecraft.util.LazyLoadedValue;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.material.Fluid;
@@ -59,6 +61,8 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.EntityHitResult;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
+import snownee.jade.addon.harvest.SimpleToolHandler;
+import snownee.jade.addon.harvest.ToolHandler;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.Identifiers;
@@ -218,6 +222,14 @@ public final class ClientProxy implements ClientModInitializer {
 			fluidColor = IWailaConfig.IConfigOverlay.applyAlpha(fluidColor, OverlayRenderer.alpha);
 		}
 		consumer.accept(fluidStillSprite, fluidColor);
+	}
+
+	public static ToolHandler createSwordToolHandler() {
+		return new SimpleToolHandler("sword", FabricMineableTags.SWORD_MINEABLE, Items.WOODEN_SWORD);
+	}
+
+	public static KeyMapping registerDetailsKeyBinding() {
+		return registerKeyBinding("show_details_alternative", InputConstants.UNKNOWN.getValue());
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package snownee.jade.util;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -282,6 +283,15 @@ public final class CommonProxy implements ModInitializer {
 		Fluid fluid = fluidObject.getType();
 		CompoundTag nbt = fluidObject.getTag();
 		return FluidVariantAttributes.getName(FluidVariant.of(fluid, nbt));
+	}
+
+	public static int showOrHideFromServer(Collection<ServerPlayer> players, boolean show) {
+		FriendlyByteBuf buf = PacketByteBufs.create();
+		buf.writeBoolean(show);
+		for (ServerPlayer player : players) {
+			ServerPlayNetworking.send(player, Identifiers.PACKET_SHOW_OVERLAY, buf);
+		}
+		return players.size();
 	}
 
 	@Override
