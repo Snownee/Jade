@@ -12,8 +12,6 @@
   "tooltip.jade.power": "Zasilanie: %d",
   "tooltip.jade.villager_profession":  "Profesja: %s",
 
-  "gui.jade.configuration": "%s — konfiguracja",
-  "gui.jade.jade_settings": "%s — ustawienia",
   "gui.jade.plugin_settings": "Ustawienia pluginu",
 
   "key.jade.config": "Otwórz konfigurację",

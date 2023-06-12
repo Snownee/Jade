@@ -39,9 +39,9 @@ public class OptionButton extends WailaOptionsList.Entry {
 
 	@Override
 	public void render(GuiGraphics guiGraphics, int index, int rowTop, int rowLeft, int width, int height, int mouseX, int mouseY, boolean hovered, float deltaTime) {
-		guiGraphics.drawString(client.font, title, rowLeft + 10, rowTop + (height / 4) + (client.font.lineHeight / 2), 16777215);
+		guiGraphics.drawString(client.font, title, rowLeft + 10, rowTop + (height / 2) - (client.font.lineHeight / 2), 16777215);
 		button.setX(rowLeft + width - 110);
-		button.setY(rowTop + height / 6);
+		button.setY(rowTop + height / 2 - button.getHeight() / 2);
 		button.render(guiGraphics, mouseX, mouseY, deltaTime);
 	}
 

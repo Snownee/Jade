@@ -20,9 +20,7 @@ public class CycleOptionValue<T> extends OptionValue<T> {
 	}
 
 	@Override
-	protected void drawValue(GuiGraphics guiGraphics, int entryWidth, int entryHeight, int x, int y, int mouseX, int mouseY, boolean selected, float partialTicks) {
-		this.button.setX(x);
-		this.button.setY(y + entryHeight / 6);
+	protected void drawValue(GuiGraphics guiGraphics, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean selected, float partialTicks) {
 		this.button.render(guiGraphics, mouseX, mouseY, partialTicks);
 	}
 

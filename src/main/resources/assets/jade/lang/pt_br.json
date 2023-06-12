@@ -11,8 +11,6 @@
   "tooltip.jade.state_off": "Off",
   "tooltip.jade.power": "Poder: %d",
   "tooltip.jade.villager_profession": "Profissão: %s",
-  "gui.jade.configuration": "%s Configuração",
-  "gui.jade.jade_settings": "%s Definições",
   "gui.jade.plugin_settings": "Configurações do plug-in",
   "gui.jade.forced_plugin_config": "Esta opção é controlada pelo servidor",
   "gui.jade.disabled_by_mods": "Esta opção é desativada pelos seguintes mods:",

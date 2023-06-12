@@ -192,7 +192,8 @@ public class OverlayRenderer {
 			}
 		}
 
-		matrixStack.translate(morphRect.getX(), morphRect.getY(), 1);
+		float z = Minecraft.getInstance().screen == null ? 1 : 100;
+		matrixStack.translate(morphRect.getX(), morphRect.getY(), z);
 
 		float scale = overlay.getOverlayScale();
 		Window window = Minecraft.getInstance().getWindow();

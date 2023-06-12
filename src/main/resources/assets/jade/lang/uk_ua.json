@@ -11,8 +11,6 @@
   "tooltip.jade.state_off": "Вимк.",
   "tooltip.jade.power": "Енергія: %d",
   "tooltip.jade.villager_profession": "Професія: %s",
-  "gui.jade.configuration": "Конфігурація %s",
-  "gui.jade.jade_settings": "Параметри %s",
   "gui.jade.plugin_settings": "Параметри плаґіна",
   "gui.jade.forced_plugin_config": "Цей параметр керується сервером",
   "key.jade.config": "Відкрити конфіг",

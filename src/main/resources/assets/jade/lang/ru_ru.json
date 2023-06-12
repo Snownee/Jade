@@ -11,8 +11,6 @@
   "tooltip.jade.state_off": "Выключено",
   "tooltip.jade.power": "Энергия: %d",
   "tooltip.jade.villager_profession": "Профессия: %s",
-  "gui.jade.configuration": "Настройка %s",
-  "gui.jade.jade_settings": "Параметры %s",
   "gui.jade.plugin_settings": "Настройки плагина",
   "gui.jade.forced_plugin_config": "Эта опция под управлением сервера.",
   "gui.jade.disabled_by_mods": "Эта опция отключена следующими модами:",

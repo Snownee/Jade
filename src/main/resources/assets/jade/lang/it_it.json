@@ -11,8 +11,6 @@
   "tooltip.jade.state_off": "Off",
   "tooltip.jade.power": "Energia: %d",
   "tooltip.jade.villager_profession": "Professione: %s",
-  "gui.jade.configuration": "%s Configurazione",
-  "gui.jade.jade_settings": "%s Impostazioni",
   "gui.jade.plugin_settings": "Impostazioni plug-in",
   "key.jade.config": "Apri config",
   "key.jade.show_overlay": "Mostra overlay",

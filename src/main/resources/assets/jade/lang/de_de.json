@@ -11,8 +11,6 @@
   "tooltip.jade.state_off": "Aus",
   "tooltip.jade.power": "Stärke: %d",
   "tooltip.jade.villager_profession": "Beruf: %s",
-  "gui.jade.configuration": "%s Konfiguration",
-  "gui.jade.jade_settings": "%s Einstellung",
   "gui.jade.plugin_settings": "Plugin-Einstellungen",
   "key.jade.config": "Öffne Einstellungen",
   "key.jade.show_overlay": "Zeige Oberfläche",

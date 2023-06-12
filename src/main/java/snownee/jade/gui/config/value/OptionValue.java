@@ -18,11 +18,11 @@ import snownee.jade.gui.config.WailaOptionsList;
 
 public abstract class OptionValue<T> extends WailaOptionsList.Entry {
 
-	private final MutableComponent title;
 	protected final Consumer<T> setter;
+	private final MutableComponent title;
 	protected T value;
-	private int x;
 	protected int indent;
+	private int x;
 
 	public OptionValue(String optionName, Consumer<T> setter) {
 		this.title = makeTitle(optionName);
@@ -34,9 +34,12 @@ public abstract class OptionValue<T> extends WailaOptionsList.Entry {
 
 	@Override
 	public final void render(GuiGraphics guiGraphics, int index, int rowTop, int rowLeft, int width, int height, int mouseX, int mouseY, boolean hovered, float deltaTime) {
-		Component title0 = getListener().active ? title : title.copy().withStyle(ChatFormatting.STRIKETHROUGH, ChatFormatting.GRAY);
-		guiGraphics.drawString(client.font, title0, rowLeft + indent + 10, rowTop + (height / 4) + (client.font.lineHeight / 2), 16777215);
-		drawValue(guiGraphics, width, height, rowLeft + width - 110, rowTop, mouseX, mouseY, hovered, deltaTime);
+		AbstractWidget widget = getListener();
+		Component title0 = widget.active ? title : title.copy().withStyle(ChatFormatting.STRIKETHROUGH, ChatFormatting.GRAY);
+		guiGraphics.drawString(client.font, title0, rowLeft + indent + 10, rowTop + (height / 2) - (client.font.lineHeight / 2), 16777215);
+		widget.setX(rowLeft + width - 110);
+		widget.setY(rowTop + height / 2 - widget.getHeight() / 2);
+		drawValue(guiGraphics, width, height, mouseX, mouseY, hovered, deltaTime);
 		this.x = rowLeft;
 	}
 
@@ -76,7 +79,7 @@ public abstract class OptionValue<T> extends WailaOptionsList.Entry {
 		}
 	}
 
-	protected abstract void drawValue(GuiGraphics guiGraphics, int entryWidth, int entryHeight, int x, int y, int mouseX, int mouseY, boolean selected, float partialTicks);
+	protected abstract void drawValue(GuiGraphics guiGraphics, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean selected, float partialTicks);
 
 	@Override
 	public List<? extends AbstractWidget> children() {

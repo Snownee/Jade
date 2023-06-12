@@ -1,6 +1,7 @@
 package snownee.jade.gui;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -24,9 +25,9 @@ public abstract class BaseOptionsScreen extends Screen {
 	private final Screen parent;
 	private final Runnable saver;
 	private final Runnable canceller;
-	protected WailaOptionsList options;
 	private final Set<GuiEventListener> entryWidgets = Sets.newIdentityHashSet();
 	public Button saveButton;
+	protected WailaOptionsList options;
 
 	public BaseOptionsScreen(Screen parent, Component title, Runnable saver, Runnable canceller) {
 		super(title);
@@ -46,26 +47,23 @@ public abstract class BaseOptionsScreen extends Screen {
 
 	@Override
 	protected void init() {
+		Objects.requireNonNull(minecraft);
 		super.init();
 		entryWidgets.clear();
 		options = createOptions();
+		options.setLeftPos(120);
 		addRenderableWidget(options);
 
-		if (saver != null && canceller != null) {
-			saveButton = addRenderableWidget(Button.builder(Component.translatable("gui.done"), w -> {
-				options.save();
-				saver.run();
-				minecraft.setScreen(parent);
-			}).bounds(width / 2 - 100, height - 25, 100, 20).build());
+		saveButton = addRenderableWidget(Button.builder(Component.translatable("gui.jade.save_and_quit"), w -> {
+			options.save();
+			saver.run();
+			minecraft.setScreen(parent);
+		}).bounds(width - 100, height - 25, 90, 20).build());
+		if (canceller != null) {
 			addRenderableWidget(Button.builder(Component.translatable("gui.cancel"), w -> {
 				canceller.run();
 				minecraft.setScreen(parent);
-			}).bounds(width / 2 + 5, height - 25, 100, 20).build());
-		} else {
-			saveButton = addRenderableWidget(Button.builder(Component.translatable("gui.done"), w -> {
-				options.save();
-				minecraft.setScreen(parent);
-			}).bounds(width / 2 - 50, height - 25, 100, 20).build());
+			}).bounds(saveButton.getX() - 95, height - 25, 90, 20).build());
 		}
 
 		options.updateSaveState();

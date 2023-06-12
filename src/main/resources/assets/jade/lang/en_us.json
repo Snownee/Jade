@@ -1,4 +1,7 @@
 {
+  "modmenu.nameTranslation.jade": "Jade",
+  "modmenu.descriptionTranslation.jade": "Shows information about what you are looking at.",
+
   "tooltip.jade.crop_growth": "Growth: %s",
   "tooltip.jade.crop_mature": "Mature",
   "tooltip.jade.empty": "Empty",
@@ -11,9 +14,12 @@
   "tooltip.jade.state_off": "Off",
   "tooltip.jade.power": "Power: %d",
   "tooltip.jade.villager_profession": "Profession: %s",
-  "gui.jade.configuration": "%s Configuration",
-  "gui.jade.jade_settings": "%s Settings",
+  "gui.jade.configuration": "Jade Configuration",
+  "gui.jade.configuration.desc1": "a §fUI enhancement§r mod that",
+  "gui.jade.configuration.desc2": "§fdisplays information§r about what §fyou are looking at§r.",
+  "gui.jade.jade_settings": "Mod Settings",
   "gui.jade.plugin_settings": "Plugin Settings",
+  "gui.jade.save_and_quit": "Save & Quit",
   "gui.jade.forced_plugin_config": "This option is controlled by the server",
   "gui.jade.disabled_by_mods": "This option is disabled by the following mods:",
   "gui.jade.server_features": "*{0} {0,choice,1#Server Feature|1<Server Features}",

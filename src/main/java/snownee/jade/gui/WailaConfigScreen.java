@@ -25,12 +25,12 @@ import snownee.jade.util.CommonProxy;
 public class WailaConfigScreen extends BaseOptionsScreen {
 
 	public WailaConfigScreen(Screen parent) {
-		super(parent, Component.translatable("gui.jade.configuration", Jade.NAME), Jade.CONFIG::save, Jade.CONFIG::invalidate);
+		super(parent, Component.translatable("gui.jade.configuration"), Jade.CONFIG::save, Jade.CONFIG::invalidate);
 	}
 
 	@Override
 	public WailaOptionsList createOptions() {
-		WailaOptionsList options = new WailaOptionsList(this, minecraft, width, height, 32, height - 32, 30, Jade.CONFIG::save);
+		WailaOptionsList options = new WailaOptionsList(this, minecraft, width - 120, height, 0, height - 32, 26, Jade.CONFIG::save);
 
 		ConfigGeneral general = Jade.CONFIG.get().getGeneral();
 		if (CommonProxy.isDevEnv())

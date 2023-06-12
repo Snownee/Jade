@@ -11,8 +11,6 @@
   "tooltip.jade.state_off": "オフ",
   "tooltip.jade.power": "出力: %d",
   "tooltip.jade.villager_profession": "職業: %s",
-  "gui.jade.configuration": "%s 構成",
-  "gui.jade.jade_settings": "%s 設定",
   "gui.jade.plugin_settings": "プラグイン設定",
   "gui.jade.forced_plugin_config": "このオプションはサーバーが制御します",
   "key.jade.config": "設定を開く",

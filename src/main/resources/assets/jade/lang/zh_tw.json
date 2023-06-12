@@ -11,8 +11,6 @@
   "tooltip.jade.state_off": "關閉",
   "tooltip.jade.power": "能量：%d",
   "tooltip.jade.villager_profession": "職業：%s",
-  "gui.jade.configuration": "%s 設置",
-  "gui.jade.jade_settings": "%s 設定",
   "gui.jade.plugin_settings": "插件設定",
   "gui.jade.forced_plugin_config": "這個選項由伺服器控制",
   "gui.jade.disabled_by_mods": "這個選項被下列模組停用：",

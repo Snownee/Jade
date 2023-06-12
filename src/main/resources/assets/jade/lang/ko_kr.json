@@ -11,8 +11,6 @@
   "tooltip.jade.state_off": "꺼짐",
   "tooltip.jade.power": "전력: %d",
   "tooltip.jade.villager_profession": "직업: %s",
-  "gui.jade.configuration": "%s 설정",
-  "gui.jade.jade_settings": "%s 설정",
   "gui.jade.plugin_settings": "플러그인 설정",
   "key.jade.config": "설정 열기",
   "key.jade.show_overlay": "오버레이 표시",

@@ -11,13 +11,10 @@ import java.util.function.Predicate;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Predicates;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat.Mode;
 
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
@@ -46,10 +43,10 @@ import snownee.jade.util.ClientProxy;
 
 public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsList.Entry> {
 
-	private BaseOptionsScreen owner;
 	private final Runnable diskWriter;
-	private double targetScroll;
 	public int serverFeatures;
+	private BaseOptionsScreen owner;
+	private double targetScroll;
 
 	public WailaOptionsList(BaseOptionsScreen owner, Minecraft client, int width, int height, int y0, int y1, int entryHeight, Runnable diskWriter) {
 		super(client, width, height, y0, y1, entryHeight);
@@ -68,7 +65,7 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 
 	@Override
 	protected int getScrollbarPosition() {
-		return width - 6;
+		return owner.width - 6;
 	}
 
 	@Override
@@ -96,14 +93,19 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 
 	@Override
 	protected void renderSelection(GuiGraphics guiGraphics, int i, int j, int k, int l, int m) {
-		guiGraphics.fill(0, i - 2, owner.width, i + k + 2, 0x33FFFFFF);
+		guiGraphics.fill(x0, i - 2, x1, i + k + 2, 0x33FFFFFF);
 	}
 
 	@Override
 	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
+		guiGraphics.enableScissor(x0, y0, x1, y1);
 		super.setScrollAmount((targetScroll + super.getScrollAmount()) / 2);
-		Entry entry = getEntryAtPosition(mouseX, mouseY);
-		setSelected(entry);
+		if (isMouseOver(mouseX, mouseY)) {
+			Entry entry = getEntryAtPosition(mouseX, mouseY);
+			setSelected(entry);
+		} else {
+			setSelected(null);
+		}
 
 		renderBackground(guiGraphics);
 		int scrollPosX = getScrollbarPosition();
@@ -117,35 +119,6 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 		//		int scrollJump = y0 + 4 - (int) getScrollAmount();
 
 		renderList(guiGraphics, mouseX, mouseY, delta);
-		RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-		RenderSystem.setShaderTexture(0, Screen.BACKGROUND_LOCATION);
-		RenderSystem.enableDepthTest();
-		RenderSystem.depthFunc(519);
-		bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-		bufferBuilder.vertex(x0, y0, -100.0D).uv(0.0F, y0 / 32.0F).color(64, 64, 64, 255).endVertex();
-		bufferBuilder.vertex(x0 + width, y0, -100.0D).uv(width / 32.0F, y0 / 32.0F).color(64, 64, 64, 255).endVertex();
-		bufferBuilder.vertex(x0 + width, 0.0D, -100.0D).uv(width / 32.0F, 0.0F).color(64, 64, 64, 255).endVertex();
-		bufferBuilder.vertex(x0, 0.0D, -100.0D).uv(0.0F, 0.0F).color(64, 64, 64, 255).endVertex();
-		bufferBuilder.vertex(x0, height, -100.0D).uv(0.0F, height / 32.0F).color(64, 64, 64, 255).endVertex();
-		bufferBuilder.vertex(x0 + width, height, -100.0D).uv(width / 32.0F, height / 32.0F).color(64, 64, 64, 255).endVertex();
-		bufferBuilder.vertex(x0 + width, y1, -100.0D).uv(width / 32.0F, y1 / 32.0F).color(64, 64, 64, 255).endVertex();
-		bufferBuilder.vertex(x0, y1, -100.0D).uv(0.0F, y1 / 32.0F).color(64, 64, 64, 255).endVertex();
-		BufferUploader.drawWithShader(bufferBuilder.end());
-		RenderSystem.depthFunc(515);
-		RenderSystem.disableDepthTest();
-		RenderSystem.enableBlend();
-		RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
-		RenderSystem.setShader(GameRenderer::getPositionColorShader);
-		bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-		bufferBuilder.vertex(x0, y0 + 4, 0.0D).color(0, 0, 0, 0).endVertex();
-		bufferBuilder.vertex(x1, y0 + 4, 0.0D).color(0, 0, 0, 0).endVertex();
-		bufferBuilder.vertex(x1, y0, 0.0D).color(0, 0, 0, 255).endVertex();
-		bufferBuilder.vertex(x0, y0, 0.0D).color(0, 0, 0, 255).endVertex();
-		bufferBuilder.vertex(x0, y1, 0.0D).color(0, 0, 0, 255).endVertex();
-		bufferBuilder.vertex(x1, y1, 0.0D).color(0, 0, 0, 255).endVertex();
-		bufferBuilder.vertex(x1, y1 - 4, 0.0D).color(0, 0, 0, 0).endVertex();
-		bufferBuilder.vertex(x0, y1 - 4, 0.0D).color(0, 0, 0, 0).endVertex();
-		tessellator.end();
 
 		int int_8 = Math.max(0, getMaxPosition() - (y1 - y0 - 4));
 		if (int_8 > 0) {
@@ -175,6 +148,12 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 
 		renderDecorations(guiGraphics, mouseX, mouseY);
 		RenderSystem.disableBlend();
+		guiGraphics.disableScissor();
+
+		guiGraphics.setColor(0.35f, 0.35f, 0.35f, 1.0f);
+		guiGraphics.blit(Screen.BACKGROUND_LOCATION, 0, owner.height - 32, owner.width, 32, owner.width, owner.height, 32, 32);
+		guiGraphics.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+		guiGraphics.fillGradient(0, owner.height - 32 - 4, owner.width, owner.height - 32, 100, 0x00000000, 0xEE000000);
 	}
 
 	public void save() {
@@ -258,16 +237,16 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 		@Nullable
 		protected String description;
 
+		public Entry() {
+			client = Minecraft.getInstance();
+		}
+
 		public static MutableComponent makeTitle(String key) {
 			return Component.translatable(makeKey(key));
 		}
 
 		public static String makeKey(String key) {
 			return Util.makeDescriptionId("config", new ResourceLocation(Jade.MODID, key));
-		}
-
-		public Entry() {
-			client = Minecraft.getInstance();
 		}
 
 		public AbstractWidget getListener() {
@@ -318,6 +297,10 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 				description = I18n.get(key);
 		}
 
+		public Title(MutableComponent title) {
+			this.title = title;
+		}
+
 		public MutableComponent getTitle() {
 			return title;
 		}
@@ -325,7 +308,7 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 		@Override
 		public void render(GuiGraphics guiGraphics, int index, int rowTop, int rowLeft, int width, int height, int mouseX, int mouseY, boolean hovered, float deltaTime) {
 			x = rowLeft;
-			guiGraphics.drawString(client.font, title, getTextX(width), rowTop + (height / 4) + (client.font.lineHeight / 2), 16777215);
+			guiGraphics.drawString(client.font, title, getTextX(width), rowTop + (height / 2) - (client.font.lineHeight / 2), 16777215);
 		}
 
 		@Override
