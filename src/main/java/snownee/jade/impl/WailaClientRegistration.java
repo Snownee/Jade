@@ -37,6 +37,7 @@ import snownee.jade.api.callback.JadeItemModNameCallback;
 import snownee.jade.api.callback.JadeRayTraceCallback;
 import snownee.jade.api.callback.JadeRenderBackgroundCallback;
 import snownee.jade.api.callback.JadeTooltipCollectedCallback;
+import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.platform.CustomEnchantPower;
 import snownee.jade.api.view.EnergyView;
 import snownee.jade.api.view.FluidView;
@@ -365,6 +366,11 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	@Override
 	public Accessor.ClientHandler<Accessor<?>> getAccessorHandler(Class<? extends Accessor<?>> clazz) {
 		return Objects.requireNonNull(accessorHandlers.get(clazz), () -> "No accessor handler for " + clazz);
+	}
+
+	@Override
+	public boolean maybeLowVisionUser() {
+		return ClientProxy.maybeLowVisionUser || IWailaConfig.get().getGeneral().shouldEnableTextToSpeech();
 	}
 
 }
