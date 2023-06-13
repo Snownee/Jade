@@ -2,8 +2,8 @@ package snownee.jade.gui;
 
 import java.util.Comparator;
 import java.util.Set;
-import java.util.function.Predicate;
 
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.ChatFormatting;
@@ -13,8 +13,9 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import snownee.jade.Jade;
 import snownee.jade.api.config.IWailaConfig;
-import snownee.jade.gui.config.WailaOptionsList;
+import snownee.jade.gui.config.OptionsList;
 import snownee.jade.gui.config.value.OptionValue;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.WailaClientRegistration;
@@ -36,32 +37,35 @@ public class PluginsConfigScreen extends BaseOptionsScreen {
 	}
 
 	@Override
-	public WailaOptionsList createOptions() {
-		WailaOptionsList options = new WailaOptionsList(this, minecraft, width - 120, height, 0, height - 32, 26, PluginConfig.INSTANCE::save);
-		if (Minecraft.getInstance().level == null || IWailaConfig.get().getGeneral().isDebug() || !ObjectDataCenter.serverConnected) {
-			options.serverFeatures = (int) PluginConfig.INSTANCE.getKeys().stream().filter(Predicate.not(WailaClientRegistration.INSTANCE::isClientFeature)).count();
-		}
+	public OptionsList createOptions() {
+		OptionsList options = new OptionsList(this, minecraft, width - 120, height, 0, height - 32, 26, PluginConfig.INSTANCE::save);
+		boolean noteServerFeature = Minecraft.getInstance().level == null || IWailaConfig.get().getGeneral().isDebug() || !ObjectDataCenter.serverConnected;
 		PluginConfig.INSTANCE.getNamespaces().forEach(namespace -> {
 			MutableComponent title;
 			String translationKey = "plugin_" + namespace;
-			if (ModIdentification.NAMES.containsKey(namespace)) {
+			if (!Jade.MODID.equals(namespace) && ModIdentification.NAMES.containsKey(namespace)) {
 				title = Component.literal(ModIdentification.getModName(namespace));
 			} else {
-				title = Component.translatable(translationKey);
+				title = Component.translatable(OptionsList.Entry.makeKey(translationKey));
 			}
-			options.add(new WailaOptionsList.Title(title));
+			options.add(new OptionsList.Title(title));
 			Set<ResourceLocation> keys = PluginConfig.INSTANCE.getKeys(namespace);
+			MutableObject<OptionValue<?>> lastPrimary = new MutableObject<>();
 			keys.stream().sorted(Comparator.comparingInt(WailaCommonRegistration.INSTANCE.priorities.getSortedList()::indexOf)).forEach(i -> {
 				ConfigEntry<?> configEntry = PluginConfig.INSTANCE.getEntry(i);
 				OptionValue<?> entry = configEntry.createUI(options, translationKey + "." + i.getPath());
 				if (configEntry.isSynced()) {
 					entry.setDisabled(true);
 					entry.appendDescription(ChatFormatting.DARK_RED + I18n.get("gui.jade.forced_plugin_config"));
-				} else if (options.serverFeatures > 0 && !WailaClientRegistration.INSTANCE.isClientFeature(i)) {
-					entry.getTitle().append(Component.literal("*").withStyle(ChatFormatting.GRAY));
+				} else if (noteServerFeature && !WailaClientRegistration.INSTANCE.isClientFeature(i)) {
+					entry.serverFeature = true;
 				}
 				if (i.getPath().contains(".")) {
-					entry.indent(1);
+					if (lastPrimary.getValue() != null) {
+						entry.parent(lastPrimary.getValue());
+					}
+				} else {
+					lastPrimary.setValue(entry);
 				}
 			});
 		});

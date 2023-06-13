@@ -13,13 +13,14 @@ import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import snownee.jade.gui.config.WailaOptionsList;
+import snownee.jade.gui.config.OptionsList;
 
-public abstract class OptionValue<T> extends WailaOptionsList.Entry {
+public abstract class OptionValue<T> extends OptionsList.Entry {
 
+	private static final Component SERVER_FEATURE = Component.literal("*").withStyle(ChatFormatting.GRAY);
 	protected final Consumer<T> setter;
-	private final MutableComponent title;
+	private final Component title;
+	public boolean serverFeature;
 	protected T value;
 	protected int indent;
 	private int x;
@@ -36,7 +37,12 @@ public abstract class OptionValue<T> extends WailaOptionsList.Entry {
 	public final void render(GuiGraphics guiGraphics, int index, int rowTop, int rowLeft, int width, int height, int mouseX, int mouseY, boolean hovered, float deltaTime) {
 		AbstractWidget widget = getListener();
 		Component title0 = widget.active ? title : title.copy().withStyle(ChatFormatting.STRIKETHROUGH, ChatFormatting.GRAY);
-		guiGraphics.drawString(client.font, title0, rowLeft + indent + 10, rowTop + (height / 2) - (client.font.lineHeight / 2), 16777215);
+		int left = rowLeft + indent + 10;
+		int top = rowTop + (height / 2) - (client.font.lineHeight / 2);
+		guiGraphics.drawString(client.font, title0, left, top, 16777215);
+		if (serverFeature) {
+			guiGraphics.drawString(client.font, SERVER_FEATURE, left + getTextWidth() + 1, top, 16777215);
+		}
 		widget.setX(rowLeft + width - 110);
 		widget.setY(rowTop + height / 2 - widget.getHeight() / 2);
 		drawValue(guiGraphics, width, height, mouseX, mouseY, hovered, deltaTime);
@@ -47,14 +53,15 @@ public abstract class OptionValue<T> extends WailaOptionsList.Entry {
 		setter.accept(value);
 	}
 
-	public MutableComponent getTitle() {
+	public Component getTitle() {
 		return title;
 	}
 
 	public void appendDescription(String description) {
 		if (this.description == null)
-			this.description = getTitle().getString();
-		this.description += '\n' + description;
+			this.description = description;
+		else
+			this.description += '\n' + description;
 	}
 
 	public int getX() {
@@ -90,8 +97,16 @@ public abstract class OptionValue<T> extends WailaOptionsList.Entry {
 		return true;
 	}
 
-	public OptionValue<?> indent(int i) {
-		indent = i * 12;
-		return this;
+	@Override
+	public void parent(OptionsList.Entry parent) {
+		super.parent(parent);
+		if (parent instanceof OptionValue) {
+			indent = ((OptionValue<?>) parent).indent + 12;
+		}
+	}
+
+	@Override
+	public List<String> getMessages() {
+		return List.of(getTitle().getString(), getListener().getMessage().getString());
 	}
 }

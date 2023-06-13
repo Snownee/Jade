@@ -1,16 +1,19 @@
 package snownee.jade.gui.config;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Predicates;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
@@ -20,7 +23,9 @@ import com.mojang.blaze3d.vertex.VertexFormat.Mode;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import it.unimi.dsi.fastutil.floats.FloatUnaryOperator;
 import net.minecraft.Util;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.Options;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
@@ -29,10 +34,12 @@ import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.util.StringUtil;
 import snownee.jade.Jade;
 import snownee.jade.gui.BaseOptionsScreen;
 import snownee.jade.gui.config.value.CycleOptionValue;
@@ -41,21 +48,35 @@ import snownee.jade.gui.config.value.OptionValue;
 import snownee.jade.gui.config.value.SliderOptionValue;
 import snownee.jade.util.ClientProxy;
 
-public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsList.Entry> {
+public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry> {
 
+	public static final Component OPTION_ON = CommonComponents.OPTION_ON.copy().withStyle(style -> style.withColor(0xFFB9F6CA));
+	public static final Component OPTION_OFF = CommonComponents.OPTION_OFF.copy().withStyle(style -> style.withColor(0xFFFF8A80));
+	protected final List<Entry> entries = Lists.newArrayList();
 	private final Runnable diskWriter;
-	public int serverFeatures;
+	public Title currentTitle;
+	public KeyMapping selectedKey;
 	private BaseOptionsScreen owner;
 	private double targetScroll;
+	private Entry defaultParent;
+	private int lastActiveIndex;
 
-	public WailaOptionsList(BaseOptionsScreen owner, Minecraft client, int width, int height, int y0, int y1, int entryHeight, Runnable diskWriter) {
+	public OptionsList(BaseOptionsScreen owner, Minecraft client, int width, int height, int y0, int y1, int entryHeight, Runnable diskWriter) {
 		super(client, width, height, y0, y1, entryHeight);
 		this.owner = owner;
 		this.diskWriter = diskWriter;
+		setRenderSelection(false);
 	}
 
-	public WailaOptionsList(BaseOptionsScreen owner, Minecraft client, int width, int height, int y0, int y1, int entryHeight) {
+	public OptionsList(BaseOptionsScreen owner, Minecraft client, int width, int height, int y0, int y1, int entryHeight) {
 		this(owner, client, width, height, y0, y1, entryHeight, null);
+	}
+
+	private static void walkChildren(Entry entry, Consumer<Entry> consumer) {
+		consumer.accept(entry);
+		for (Entry child : entry.children) {
+			walkChildren(child, consumer);
+		}
 	}
 
 	@Override
@@ -92,21 +113,46 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 	}
 
 	@Override
+	protected void renderItem(GuiGraphics guiGraphics, int i, int j, float f, int k, int l, int m, int n, int o) {
+		if (isSelectedItem(k) && isMouseOver(i, j)) {
+			renderSelection(guiGraphics, m, n, o, -1, -1);
+		}
+		super.renderItem(guiGraphics, i, j, f, k, l, m, n, o);
+	}
+
+	@Override
 	protected void renderSelection(GuiGraphics guiGraphics, int i, int j, int k, int l, int m) {
 		guiGraphics.fill(x0, i - 2, x1, i + k + 2, 0x33FFFFFF);
 	}
 
 	@Override
 	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
-		guiGraphics.enableScissor(x0, y0, x1, y1);
-		super.setScrollAmount((targetScroll + super.getScrollAmount()) / 2);
-		if (isMouseOver(mouseX, mouseY)) {
-			Entry entry = getEntryAtPosition(mouseX, mouseY);
-			setSelected(entry);
-		} else {
+		{
+			double diff = targetScroll - super.getScrollAmount();
+			if (Math.abs(diff) > 0.0003) {
+				super.setScrollAmount(super.getScrollAmount() + diff * delta);
+			}
+		}
+		Entry pointAt = getEntryAtPosition(mouseX, mouseY);
+		if (pointAt instanceof Title) {
 			setSelected(null);
+		} else {
+			setSelected(pointAt);
+		}
+		int activeIndex = pointAt != null ? children().indexOf(pointAt) : Mth.clamp((int) getScrollAmount() / itemHeight, 0, getItemCount() - 1);
+		if (activeIndex >= 0 && activeIndex != lastActiveIndex) {
+			lastActiveIndex = activeIndex;
+			Entry entry = getEntry(activeIndex);
+			while (entry != null) {
+				if (entry instanceof Title) {
+					currentTitle = (Title) entry;
+					break;
+				}
+				entry = entry.parent;
+			}
 		}
 
+		enableScissor(guiGraphics);
 		renderBackground(guiGraphics);
 		int scrollPosX = getScrollbarPosition();
 		int j = scrollPosX + 6;
@@ -163,8 +209,32 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 	}
 
 	public <T extends Entry> T add(T entry) {
-		addEntry(entry);
+		entries.add(entry);
+		if (entry instanceof Title) {
+			setDefaultParent(entry);
+		} else if (defaultParent != null) {
+			entry.parent(defaultParent);
+		}
 		return entry;
+	}
+
+	@Nullable
+	public Entry getEntryAt(double x, double y) {
+		return getEntryAtPosition(x, y);
+	}
+
+	@Override
+	public int getRowTop(int i) {
+		return super.getRowTop(i);
+	}
+
+	@Override
+	public int getRowBottom(int i) {
+		return super.getRowBottom(i);
+	}
+
+	public void setDefaultParent(Entry defaultParent) {
+		this.defaultParent = defaultParent;
 	}
 
 	public MutableComponent title(String string) {
@@ -192,7 +262,7 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 	}
 
 	public OptionValue<?> choices(String optionName, boolean value, BooleanConsumer setter, @Nullable Consumer<CycleButton.Builder<Boolean>> builderConsumer) {
-		CycleButton.Builder<Boolean> builder = CycleButton.onOffBuilder();
+		CycleButton.Builder<Boolean> builder = CycleButton.booleanBuilder(OPTION_ON, OPTION_OFF);
 		if (builderConsumer != null) {
 			builderConsumer.accept(builder);
 		}
@@ -205,7 +275,14 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 
 	public <T extends Enum<T>> OptionValue<?> choices(String optionName, T value, Consumer<T> setter, @Nullable Consumer<CycleButton.Builder<T>> builderConsumer) {
 		List<T> values = (List<T>) Arrays.asList(value.getClass().getEnumConstants());
-		CycleButton.Builder<T> builder = CycleButton.<T>builder(v -> Entry.makeTitle(optionName + "_" + v.name().toLowerCase(Locale.ENGLISH))).withValues(values);
+		CycleButton.Builder<T> builder = CycleButton.<T>builder(v -> {
+			String name = v.name().toLowerCase(Locale.ENGLISH);
+			return switch (name) {
+				case "on" -> OPTION_ON;
+				case "off" -> OPTION_OFF;
+				default -> Entry.makeTitle(optionName + "_" + name);
+			};
+		}).withValues(values);
 		if (builderConsumer != null) {
 			builderConsumer.accept(builder);
 		}
@@ -216,13 +293,61 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 		return add(new CycleOptionValue<>(optionName, CycleButton.<T>builder(v -> Component.literal(v.toString())).withValues(values), value, setter));
 	}
 
+	public void keybind(KeyMapping keybind) {
+		add(new KeybindOptionButton(this, keybind));
+	}
+
 	public void onClose() {
+		for (Entry entry : entries) {
+			entry.parent = null;
+			if (!entry.children.isEmpty()) {
+				entry.children.clear();
+			}
+		}
 		clearEntries();
 		owner = null;
 	}
 
+	public void updateSearch(String search) {
+		clearEntries();
+		if (search.isBlank()) {
+			entries.forEach(this::addEntry);
+			return;
+		}
+		Set<Entry> matches = Sets.newLinkedHashSet();
+		String[] keywords = search.split("\\s+");
+		for (Entry entry : entries) {
+			int bingo = 0;
+			for (String keyword : keywords) {
+				keyword = keyword.toLowerCase(Locale.ENGLISH);
+				if (entry.description != null && StringUtil.stripColor(entry.description).toLowerCase(Locale.ENGLISH).contains(keyword)) {
+					bingo++;
+					continue;
+				}
+				for (String message : entry.getMessages()) {
+					if (StringUtil.stripColor(message).toLowerCase(Locale.ENGLISH).contains(keyword)) {
+						bingo++;
+						break;
+					}
+				}
+			}
+			if (bingo == keywords.length) {
+				walkChildren(entry, matches::add);
+				while (entry.parent != null) {
+					entry = entry.parent;
+					matches.add(entry);
+				}
+			}
+		}
+		for (Entry entry : entries) {
+			if (matches.contains(entry)) {
+				addEntry(entry);
+			}
+		}
+	}
+
 	public void updateSaveState() {
-		for (Entry entry : children()) {
+		for (Entry entry : entries) {
 			if (entry instanceof OptionValue<?> value && !value.isValidValue()) {
 				owner.saveButton.active = false;
 				return;
@@ -231,11 +356,41 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 		owner.saveButton.active = true;
 	}
 
+	public void showOnTop(Entry entry) {
+		targetScroll = itemHeight * children().indexOf(entry) + 1;
+	}
+
+	public void resetMappingAndUpdateButtons() {
+		for (Entry entry : entries) {
+			if (entry instanceof KeybindOptionButton button) {
+				button.refresh(selectedKey);
+			}
+		}
+	}
+
+	@Override
+	public boolean keyPressed(int i, int j, int k) {
+		if (selectedKey != null) {
+			Options options = Minecraft.getInstance().options;
+			if (i == 256) {
+				options.setKey(selectedKey, InputConstants.UNKNOWN);
+			} else {
+				options.setKey(selectedKey, InputConstants.getKey(i, j));
+			}
+			selectedKey = null;
+			resetMappingAndUpdateButtons();
+			return true;
+		}
+		return super.keyPressed(i, j, k);
+	}
+
 	public abstract static class Entry extends ContainerObjectSelectionList.Entry<Entry> {
 
 		protected final Minecraft client;
 		@Nullable
 		protected String description;
+		private Entry parent;
+		private List<Entry> children = List.of();
 
 		public Entry() {
 			client = Minecraft.getInstance();
@@ -283,6 +438,19 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 			return 0;
 		}
 
+		public void parent(Entry parent) {
+			this.parent = parent;
+			if (parent.children.isEmpty()) {
+				parent.children = Lists.newArrayList();
+			}
+			parent.children.add(this);
+		}
+
+		public Entry parent() {
+			return parent;
+		}
+
+		public abstract List<String> getMessages();
 	}
 
 	public static class Title extends Entry {
@@ -308,12 +476,12 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 		@Override
 		public void render(GuiGraphics guiGraphics, int index, int rowTop, int rowLeft, int width, int height, int mouseX, int mouseY, boolean hovered, float deltaTime) {
 			x = rowLeft;
-			guiGraphics.drawString(client.font, title, getTextX(width), rowTop + (height / 2) - (client.font.lineHeight / 2), 16777215);
+			guiGraphics.drawString(client.font, title, getTextX(width), rowTop + height - client.font.lineHeight, 16777215);
 		}
 
 		@Override
 		public List<? extends AbstractWidget> children() {
-			return Collections.EMPTY_LIST;
+			return List.of();
 		}
 
 		@Override
@@ -324,6 +492,11 @@ public class WailaOptionsList extends ContainerObjectSelectionList<WailaOptionsL
 		@Override
 		public int getTextWidth() {
 			return client.font.width(title);
+		}
+
+		@Override
+		public List<String> getMessages() {
+			return List.of(title.getString());
 		}
 
 	}

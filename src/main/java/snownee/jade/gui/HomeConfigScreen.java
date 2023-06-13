@@ -13,6 +13,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -62,7 +63,7 @@ public class HomeConfigScreen extends Screen {
 		addRenderableWidget(Button.builder(Component.translatable("gui.jade.plugin_settings"), w -> {
 			minecraft.setScreen(new PluginsConfigScreen(HomeConfigScreen.this));
 		}).bounds(width / 2 + 5, height / 2 - 10, 100, 20).build());
-		addRenderableWidget(Button.builder(Component.translatable("gui.done"), w -> {
+		addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, w -> {
 			Jade.CONFIG.save();
 			PluginConfig.INSTANCE.save();
 			minecraft.setScreen(parent);

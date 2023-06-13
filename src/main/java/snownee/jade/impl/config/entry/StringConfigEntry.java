@@ -3,7 +3,7 @@ package snownee.jade.impl.config.entry;
 import java.util.function.Predicate;
 
 import net.minecraft.resources.ResourceLocation;
-import snownee.jade.gui.config.WailaOptionsList;
+import snownee.jade.gui.config.OptionsList;
 import snownee.jade.gui.config.value.OptionValue;
 import snownee.jade.impl.config.PluginConfig;
 
@@ -22,7 +22,7 @@ public class StringConfigEntry extends ConfigEntry<String> {
 	}
 
 	@Override
-	public OptionValue<?> createUI(WailaOptionsList options, String optionName) {
+	public OptionValue<?> createUI(OptionsList options, String optionName) {
 		return options.input(optionName, getValue(), s -> PluginConfig.INSTANCE.set(id, s), validator);
 	}
 

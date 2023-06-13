@@ -67,7 +67,11 @@ public class OverlayRenderer {
 			return false;
 		}
 
+		ConfigGeneral general = Jade.CONFIG.get().getGeneral();
 		if (mc.screen instanceof BaseOptionsScreen) {
+			if (!general.previewOverlay) {
+				return false;
+			}
 			Rect2i position = tooltipRenderer.getPosition();
 			Window window = mc.getWindow();
 			double x = mc.mouseHandler.xpos() * window.getGuiScaledWidth() / window.getScreenWidth();
@@ -80,7 +84,6 @@ public class OverlayRenderer {
 			}
 		}
 
-		ConfigGeneral general = Jade.CONFIG.get().getGeneral();
 		if (mc.options.renderDebug && general.shouldHideFromDebug())
 			return false;
 

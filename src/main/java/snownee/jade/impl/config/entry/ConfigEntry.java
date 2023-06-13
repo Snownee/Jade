@@ -7,7 +7,7 @@ import java.util.function.Consumer;
 import com.google.common.collect.Lists;
 
 import net.minecraft.resources.ResourceLocation;
-import snownee.jade.gui.config.WailaOptionsList;
+import snownee.jade.gui.config.OptionsList;
 import snownee.jade.gui.config.value.OptionValue;
 
 public abstract class ConfigEntry<T> {
@@ -52,7 +52,7 @@ public abstract class ConfigEntry<T> {
 
 	abstract public boolean isValidValue(Object value);
 
-	abstract public OptionValue<?> createUI(WailaOptionsList options, String optionName);
+	abstract public OptionValue<?> createUI(OptionsList options, String optionName);
 
 	public void addListener(Consumer<ResourceLocation> listener) {
 		if (listeners.isEmpty()) {
