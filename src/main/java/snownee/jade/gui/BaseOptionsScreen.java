@@ -56,7 +56,8 @@ public abstract class BaseOptionsScreen extends Screen {
 		double scroll = options == null ? 0 : options.getScrollAmount();
 		super.init();
 		entryWidgets.clear();
-		options.onClose();
+		if (options != null)
+			options.onClose();
 		options = createOptions();
 		options.setLeftPos(120);
 		optionsNav = new OptionsNav(options, 120, height, 18, height - 32, 18);
