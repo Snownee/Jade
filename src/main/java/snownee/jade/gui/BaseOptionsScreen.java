@@ -57,7 +57,7 @@ public abstract class BaseOptionsScreen extends Screen {
 		super.init();
 		entryWidgets.clear();
 		if (options != null)
-			options.onClose();
+			options.removed();
 		options = createOptions();
 		options.setLeftPos(120);
 		optionsNav = new OptionsNav(options, 120, height, 18, height - 32, 18);
@@ -84,8 +84,7 @@ public abstract class BaseOptionsScreen extends Screen {
 		}).bounds(width - 100, height - 25, 90, 20).build());
 		if (canceller != null) {
 			addRenderableWidget(Button.builder(CommonComponents.GUI_CANCEL, w -> {
-				canceller.run();
-				minecraft.setScreen(parent);
+				onClose();
 			}).bounds(saveButton.getX() - 95, height - 25, 90, 20).build());
 		}
 
@@ -144,8 +143,12 @@ public abstract class BaseOptionsScreen extends Screen {
 	public void onClose() {
 		if (canceller != null)
 			canceller.run();
-		options.onClose();
-		super.onClose();
+		Objects.requireNonNull(minecraft).setScreen(parent);
+	}
+
+	@Override
+	public void removed() {
+		options.removed();
 	}
 
 	public <T extends GuiEventListener & NarratableEntry> T addEntryWidget(T widget) {

@@ -23,6 +23,9 @@ public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
 	protected void renderList(GuiGraphics guiGraphics, int i, int j, float f) {
 		super.renderList(guiGraphics, i, j, f);
 		anchor.tick(f);
+		if (children().isEmpty()) {
+			return;
+		}
 		int top = (int) (y0 + 4 - this.getScrollAmount() + anchor.value * this.itemHeight + this.headerHeight);
 		int left = getRowLeft() + 2;
 		guiGraphics.fill(left, top, left + 2, top + itemHeight - 4, 0xFFFFFFFF);

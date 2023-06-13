@@ -21,8 +21,13 @@ public class OptionButton extends OptionsList.Entry {
 	public OptionButton(Component title, Button button) {
 		this.title = title;
 		this.button = button;
-		if (button != null && button.getMessage().getString().isEmpty()) {
-			button.setMessage(title);
+		addMessage(title.getString());
+		if (button != null) {
+			if (button.getMessage().getString().isEmpty()) {
+				button.setMessage(title);
+			} else {
+				addMessage(button.getMessage().getString());
+			}
 		}
 	}
 
@@ -37,11 +42,6 @@ public class OptionButton extends OptionsList.Entry {
 		button.setX(rowLeft + width - 110);
 		button.setY(rowTop + height / 2 - button.getHeight() / 2);
 		button.render(guiGraphics, mouseX, mouseY, deltaTime);
-	}
-
-	@Override
-	public List<String> getMessages() {
-		return List.of(title.getString(), button.getMessage().getString());
 	}
 
 	@Override

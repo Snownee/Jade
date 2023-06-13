@@ -52,8 +52,8 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 
 	public static final Component OPTION_ON = CommonComponents.OPTION_ON.copy().withStyle(style -> style.withColor(0xFFB9F6CA));
 	public static final Component OPTION_OFF = CommonComponents.OPTION_OFF.copy().withStyle(style -> style.withColor(0xFFFF8A80));
-	protected final List<Entry> entries = Lists.newArrayList();
 	public final Set<OptionsList.Entry> forcePreview = Sets.newIdentityHashSet();
+	protected final List<Entry> entries = Lists.newArrayList();
 	private final Runnable diskWriter;
 	public Title currentTitle;
 	public KeyMapping selectedKey;
@@ -129,6 +129,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 	@Override
 	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
 		{
+			targetScroll = Math.min(targetScroll, getMaxScroll());
 			double diff = targetScroll - super.getScrollAmount();
 			if (Math.abs(diff) > 0.0003) {
 				super.setScrollAmount(super.getScrollAmount() + diff * delta);
@@ -298,7 +299,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		add(new KeybindOptionButton(this, keybind));
 	}
 
-	public void onClose() {
+	public void removed() {
 		forcePreview.clear();
 		for (Entry entry : entries) {
 			entry.parent = null;
@@ -322,12 +323,8 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 			int bingo = 0;
 			for (String keyword : keywords) {
 				keyword = keyword.toLowerCase(Locale.ENGLISH);
-				if (entry.description != null && StringUtil.stripColor(entry.description).toLowerCase(Locale.ENGLISH).contains(keyword)) {
-					bingo++;
-					continue;
-				}
 				for (String message : entry.getMessages()) {
-					if (StringUtil.stripColor(message).toLowerCase(Locale.ENGLISH).contains(keyword)) {
+					if (message.contains(keyword)) {
 						bingo++;
 						break;
 					}
@@ -389,6 +386,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 	public abstract static class Entry extends ContainerObjectSelectionList.Entry<Entry> {
 
 		protected final Minecraft client;
+		private final List<String> messages = Lists.newArrayList();
 		@Nullable
 		protected String description;
 		private Entry parent;
@@ -452,7 +450,20 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 			return parent;
 		}
 
-		public abstract List<String> getMessages();
+		public final List<String> getMessages() {
+			return messages;
+		}
+
+		public void addMessage(String message) {
+			messages.add(StringUtil.stripColor(message).toLowerCase(Locale.ENGLISH));
+		}
+
+		public void addMessageKey(String key) {
+			key = makeKey(key + "_extra_msg");
+			if (I18n.exists(key)) {
+				addMessage(I18n.get(key));
+			}
+		}
 	}
 
 	public static class Title extends Entry {
@@ -462,9 +473,13 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 
 		public Title(String key) {
 			title = makeTitle(key);
+			addMessageKey(key);
+			addMessage(title.getString());
 			key = makeKey(key + "_desc");
-			if (I18n.exists(key))
+			if (I18n.exists(key)) {
 				description = I18n.get(key);
+				addMessage(description);
+			}
 		}
 
 		public Title(MutableComponent title) {
@@ -494,11 +509,6 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		@Override
 		public int getTextWidth() {
 			return client.font.width(title);
-		}
-
-		@Override
-		public List<String> getMessages() {
-			return List.of(title.getString());
 		}
 
 	}

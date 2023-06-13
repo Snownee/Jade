@@ -28,6 +28,8 @@ public abstract class OptionValue<T> extends OptionsList.Entry {
 	public OptionValue(String optionName, Consumer<T> setter) {
 		this.title = makeTitle(optionName);
 		this.setter = setter;
+		addMessage(title.getString());
+		addMessageKey(optionName);
 		String key = makeKey(optionName + "_desc");
 		if (I18n.exists(key))
 			appendDescription(I18n.get(key));
@@ -62,6 +64,7 @@ public abstract class OptionValue<T> extends OptionsList.Entry {
 			this.description = description;
 		else
 			this.description += '\n' + description;
+		addMessage(description);
 	}
 
 	public int getX() {
@@ -105,8 +108,4 @@ public abstract class OptionValue<T> extends OptionsList.Entry {
 		}
 	}
 
-	@Override
-	public List<String> getMessages() {
-		return List.of(getTitle().getString(), getListener().getMessage().getString());
-	}
 }

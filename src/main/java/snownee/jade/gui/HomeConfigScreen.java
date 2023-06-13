@@ -64,10 +64,15 @@ public class HomeConfigScreen extends Screen {
 			minecraft.setScreen(new PluginsConfigScreen(HomeConfigScreen.this));
 		}).bounds(width / 2 + 5, height / 2 - 10, 100, 20).build());
 		addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, w -> {
-			Jade.CONFIG.save();
-			PluginConfig.INSTANCE.save();
-			minecraft.setScreen(parent);
+			onClose();
 		}).bounds(width / 2 - 50, height / 2 + 20, 100, 20).build());
+	}
+
+	@Override
+	public void onClose() {
+		Jade.CONFIG.save();
+		PluginConfig.INSTANCE.save();
+		Objects.requireNonNull(minecraft).setScreen(parent);
 	}
 
 	@Override
