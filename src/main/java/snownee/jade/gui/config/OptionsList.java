@@ -53,6 +53,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 	public static final Component OPTION_ON = CommonComponents.OPTION_ON.copy().withStyle(style -> style.withColor(0xFFB9F6CA));
 	public static final Component OPTION_OFF = CommonComponents.OPTION_OFF.copy().withStyle(style -> style.withColor(0xFFFF8A80));
 	protected final List<Entry> entries = Lists.newArrayList();
+	public final Set<OptionsList.Entry> forcePreview = Sets.newIdentityHashSet();
 	private final Runnable diskWriter;
 	public Title currentTitle;
 	public KeyMapping selectedKey;
@@ -298,6 +299,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 	}
 
 	public void onClose() {
+		forcePreview.clear();
 		for (Entry entry : entries) {
 			entry.parent = null;
 			if (!entry.children.isEmpty()) {

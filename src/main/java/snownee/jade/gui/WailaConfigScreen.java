@@ -76,11 +76,11 @@ public class WailaConfigScreen extends BaseOptionsScreen {
 		options.slider("overlay_alpha", overlay.getAlpha(), overlay::setAlpha);
 		options.choices("overlay_theme", overlay.getTheme().id, overlay.getThemes().stream().map($ -> $.id).collect(Collectors.toList()), overlay::applyTheme);
 		options.choices("overlay_square", overlay.getSquare(), overlay::setSquare);
-		options.slider("overlay_scale", overlay.getOverlayScale(), overlay::setOverlayScale, 0.2f, 2, FloatUnaryOperator.identity());
-		options.slider("overlay_pos_x", overlay.getOverlayPosX(), overlay::setOverlayPosX);
-		options.slider("overlay_pos_y", overlay.getOverlayPosY(), overlay::setOverlayPosY);
-		options.slider("overlay_anchor_x", overlay.getAnchorX(), overlay::setAnchorX);
-		options.slider("overlay_anchor_y", overlay.getAnchorY(), overlay::setAnchorY);
+		options.forcePreview.add(options.slider("overlay_scale", overlay.getOverlayScale(), overlay::setOverlayScale, 0.2f, 2, FloatUnaryOperator.identity()));
+		options.forcePreview.add(options.slider("overlay_pos_x", overlay.getOverlayPosX(), overlay::setOverlayPosX));
+		options.forcePreview.add(options.slider("overlay_pos_y", overlay.getOverlayPosY(), overlay::setOverlayPosY));
+		options.forcePreview.add(options.slider("overlay_anchor_x", overlay.getAnchorX(), overlay::setAnchorX));
+		options.forcePreview.add(options.slider("overlay_anchor_y", overlay.getAnchorY(), overlay::setAnchorY));
 		options.choices("display_item", overlay.getIconMode(), overlay::setIconMode);
 		options.choices("animation", overlay.getAnimation(), overlay::setAnimation);
 

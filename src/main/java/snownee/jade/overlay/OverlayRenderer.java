@@ -68,8 +68,8 @@ public class OverlayRenderer {
 		}
 
 		ConfigGeneral general = Jade.CONFIG.get().getGeneral();
-		if (mc.screen instanceof BaseOptionsScreen) {
-			if (!general.previewOverlay) {
+		if (mc.screen instanceof BaseOptionsScreen optionsScreen) {
+			if (!general.previewOverlay && !optionsScreen.forcePreviewOverlay()) {
 				return false;
 			}
 			Rect2i position = tooltipRenderer.getPosition();
@@ -98,14 +98,14 @@ public class OverlayRenderer {
 	}
 
 	/**
-	 *  NOTE!!!
-	 *
-	 *  Please do NOT replace the whole codes with Mixin.
-	 *  It will make me unable to locate bugs.
-	 *  A regular plugin can also realize the same features.
-	 *
-	 *  Secondly, please notice the license that Jade is using.
-	 *  I don't think it is compatible with some open-source licenses.
+	 * NOTE!!!
+	 * <p>
+	 * Please do NOT replace the whole codes with Mixin.
+	 * It will make me unable to locate bugs.
+	 * A regular plugin can also realize the same features.
+	 * <p>
+	 * Secondly, please notice the license that Jade is using.
+	 * I don't think it is compatible with some open-source licenses.
 	 */
 	public static void renderOverlay478757(GuiGraphics guiGraphics) {
 		shown = false;

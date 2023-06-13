@@ -56,6 +56,7 @@ public abstract class BaseOptionsScreen extends Screen {
 		double scroll = options == null ? 0 : options.getScrollAmount();
 		super.init();
 		entryWidgets.clear();
+		options.onClose();
 		options = createOptions();
 		options.setLeftPos(120);
 		optionsNav = new OptionsNav(options, 120, height, 18, height - 32, 18);
@@ -188,5 +189,15 @@ public abstract class BaseOptionsScreen extends Screen {
 		}
 
 		return Optional.empty();
+	}
+
+	public boolean forcePreviewOverlay() {
+		Objects.requireNonNull(minecraft);
+		if (!isDragging() || options == null)
+			return false;
+		OptionsList.Entry entry = options.getSelected();
+		if (entry == null || entry.getListener() == null)
+			return false;
+		return options.forcePreview.contains(entry);
 	}
 }
