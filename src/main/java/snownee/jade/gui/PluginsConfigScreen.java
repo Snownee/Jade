@@ -27,7 +27,9 @@ import snownee.jade.util.ModIdentification;
 public class PluginsConfigScreen extends BaseOptionsScreen {
 
 	public PluginsConfigScreen(Screen parent) {
-		super(parent, Component.translatable("gui.jade.plugin_settings"), PluginConfig.INSTANCE::save, PluginConfig.INSTANCE::reload);
+		super(parent, Component.translatable("gui.jade.plugin_settings"));
+		this.saver = PluginConfig.INSTANCE::save;
+		this.canceller = PluginConfig.INSTANCE::reload;
 	}
 
 	//TODO jump

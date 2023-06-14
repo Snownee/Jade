@@ -26,28 +26,22 @@ import snownee.jade.gui.config.value.OptionValue;
 public abstract class BaseOptionsScreen extends Screen {
 
 	private final Screen parent;
-	private final Runnable saver;
-	private final Runnable canceller;
 	private final Set<GuiEventListener> entryWidgets = Sets.newIdentityHashSet();
 	public Button saveButton;
+	protected Runnable saver;
+	protected Runnable canceller;
 	protected OptionsList options;
 	protected OptionsNav optionsNav;
 	private NotUglyEditBox searchBox;
 
-	public BaseOptionsScreen(Screen parent, Component title, Runnable saver, Runnable canceller) {
+	public BaseOptionsScreen(Screen parent, Component title) {
 		super(title);
 
 		this.parent = parent;
-		this.saver = saver;
-		this.canceller = canceller;
-	}
-
-	public BaseOptionsScreen(Screen parent, String title, Runnable saver, Runnable canceller) {
-		this(parent, OptionsList.Entry.makeTitle(title), saver, canceller);
 	}
 
 	public BaseOptionsScreen(Screen parent, String title) {
-		this(parent, title, null, null);
+		this(parent, OptionsList.Entry.makeTitle(title));
 	}
 
 	@Override

@@ -5,10 +5,13 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
+import com.mojang.blaze3d.platform.InputConstants;
 
 import it.unimi.dsi.fastutil.floats.FloatUnaryOperator;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.ConfirmScreen;
@@ -26,13 +29,27 @@ import snownee.jade.gui.config.value.OptionValue;
 import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.impl.config.WailaConfig.ConfigGeneral;
 import snownee.jade.impl.config.WailaConfig.ConfigOverlay;
+import snownee.jade.mixin.KeyMappingAccess;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
 
 public class WailaConfigScreen extends BaseOptionsScreen {
 
 	public WailaConfigScreen(Screen parent) {
-		super(parent, Component.translatable("gui.jade.configuration"), Jade.CONFIG::save, Jade.CONFIG::invalidate);
+		super(parent, Component.translatable("gui.jade.configuration"));
+		this.saver = Jade.CONFIG::save;
+		ImmutableMap.Builder<KeyMapping, InputConstants.Key> keyMapBuilder = ImmutableMap.builder();
+		for (KeyMapping keyMapping : Minecraft.getInstance().options.keyMappings) {
+			if (JadeClient.openConfig.getCategory().equals(keyMapping.getCategory())) {
+				keyMapBuilder.put(keyMapping, ((KeyMappingAccess) keyMapping).getKey());
+			}
+		}
+		var keyMap = keyMapBuilder.build();
+		this.canceller = () -> {
+			Jade.CONFIG.invalidate();
+			keyMap.forEach(KeyMapping::setKey);
+			Minecraft.getInstance().options.save();
+		};
 	}
 
 	@Override
@@ -134,4 +151,5 @@ public class WailaConfigScreen extends BaseOptionsScreen {
 
 		return options;
 	}
+
 }

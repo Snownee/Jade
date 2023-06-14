@@ -11,7 +11,8 @@
     "ClientLevelMixin",
     "FontMixin",
     "GameRendererMixin",
-    "KeyAccess"
+    "KeyAccess",
+    "KeyMappingAccess"
   ],
   "injectors": {
     "defaultRequire": 1
