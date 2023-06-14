@@ -7,10 +7,12 @@
     "AbstractHorseAccess"
   ],
   "client": [
-    "KeyAccess",
     "BossHealthOverlayMixin",
     "ClientLevelMixin",
-    "GameRendererMixin"
+    "FontMixin",
+    "GameRendererMixin",
+    "KeyAccess",
+    "KeyMappingAccess"
   ],
   "injectors": {
     "defaultRequire": 1

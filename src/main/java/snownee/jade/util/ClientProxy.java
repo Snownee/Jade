@@ -42,6 +42,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -85,14 +86,20 @@ public final class ClientProxy implements ClientModInitializer {
 	public static boolean hasJEI = CommonProxy.isModLoaded("jei");
 	public static boolean hasREI = false; //isModLoaded("roughlyenoughitems");
 	public static boolean hasFastScroll = CommonProxy.isModLoaded("fastscroll");
+	public static boolean maybeLowVisionUser = CommonProxy.isModLoaded("minecraft_access");
 
 	public static void initModNames(Map<String, String> map) {
 		List<ModContainer> mods = ImmutableList.copyOf(FabricLoader.getInstance().getAllMods());
 		for (ModContainer mod : mods) {
 			String modid = mod.getMetadata().getId();
+			String modMenuKey = "modmenu.nameTranslation.%s".formatted(modid);
+			if (I18n.exists(modMenuKey)) {
+				map.put(modid, I18n.get(modMenuKey));
+				continue;
+			}
 			String name = mod.getMetadata().getName();
 			if (Strings.isNullOrEmpty(name)) {
-				StringUtils.capitalize(modid);
+				name = StringUtils.capitalize(modid);
 			}
 			map.put(modid, name);
 		}
@@ -149,7 +156,7 @@ public final class ClientProxy implements ClientModInitializer {
 	}
 
 	public static KeyMapping registerKeyBinding(String desc, int defaultKey) {
-		KeyMapping key = new KeyMapping("key.jade." + desc, InputConstants.Type.KEYSYM, defaultKey, Jade.NAME);
+		KeyMapping key = new KeyMapping("key.jade." + desc, InputConstants.Type.KEYSYM, defaultKey, "modmenu.nameTranslation.jade");
 		KeyBindingHelper.registerKeyBinding(key);
 		return key;
 	}

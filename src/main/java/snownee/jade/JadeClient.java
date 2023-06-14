@@ -44,6 +44,7 @@ import snownee.jade.api.config.IWailaConfig.DisplayMode;
 import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
 import snownee.jade.api.config.IWailaConfig.TTSMode;
 import snownee.jade.gui.HomeConfigScreen;
+import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.impl.config.WailaConfig.ConfigGeneral;
 import snownee.jade.overlay.DisplayHelper;
@@ -147,6 +148,9 @@ public final class JadeClient {
 
 	@Nullable
 	public static Accessor<?> builtInOverrides(HitResult hitResult, @Nullable Accessor<?> accessor, @Nullable Accessor<?> originalAccessor) {
+		if (WailaClientRegistration.INSTANCE.maybeLowVisionUser()) {
+			return accessor;
+		}
 		if (accessor instanceof BlockAccessor target) {
 			Player player = accessor.getPlayer();
 			if (player.isCreative() || player.isSpectator())

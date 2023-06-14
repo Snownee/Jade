@@ -67,7 +67,11 @@ public class OverlayRenderer {
 			return false;
 		}
 
-		if (mc.screen instanceof BaseOptionsScreen) {
+		ConfigGeneral general = Jade.CONFIG.get().getGeneral();
+		if (mc.screen instanceof BaseOptionsScreen optionsScreen) {
+			if (!general.previewOverlay && !optionsScreen.forcePreviewOverlay()) {
+				return false;
+			}
 			Rect2i position = tooltipRenderer.getPosition();
 			Window window = mc.getWindow();
 			double x = mc.mouseHandler.xpos() * window.getGuiScaledWidth() / window.getScreenWidth();
@@ -80,7 +84,6 @@ public class OverlayRenderer {
 			}
 		}
 
-		ConfigGeneral general = Jade.CONFIG.get().getGeneral();
 		if (mc.options.renderDebug && general.shouldHideFromDebug())
 			return false;
 
@@ -95,14 +98,14 @@ public class OverlayRenderer {
 	}
 
 	/**
-	 *  NOTE!!!
-	 *
-	 *  Please do NOT replace the whole codes with Mixin.
-	 *  It will make me unable to locate bugs.
-	 *  A regular plugin can also realize the same features.
-	 *
-	 *  Secondly, please notice the license that Jade is using.
-	 *  I don't think it is compatible with some open-source licenses.
+	 * NOTE!!!
+	 * <p>
+	 * Please do NOT replace the whole codes with Mixin.
+	 * It will make me unable to locate bugs.
+	 * A regular plugin can also realize the same features.
+	 * <p>
+	 * Secondly, please notice the license that Jade is using.
+	 * I don't think it is compatible with some open-source licenses.
 	 */
 	public static void renderOverlay478757(GuiGraphics guiGraphics) {
 		shown = false;
@@ -192,7 +195,8 @@ public class OverlayRenderer {
 			}
 		}
 
-		matrixStack.translate(morphRect.getX(), morphRect.getY(), 1);
+		float z = Minecraft.getInstance().screen == null ? 1 : 100;
+		matrixStack.translate(morphRect.getX(), morphRect.getY(), z);
 
 		float scale = overlay.getOverlayScale();
 		Window window = Minecraft.getInstance().getWindow();

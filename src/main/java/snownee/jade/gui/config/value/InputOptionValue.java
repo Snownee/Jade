@@ -36,9 +36,7 @@ public class InputOptionValue<T> extends OptionValue<T> {
 	}
 
 	@Override
-	protected void drawValue(GuiGraphics guiGraphics, int entryWidth, int entryHeight, int x, int y, int mouseX, int mouseY, boolean selected, float partialTicks) {
-		textField.setX(x);
-		textField.setY(y + entryHeight / 6);
+	protected void drawValue(GuiGraphics guiGraphics, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean selected, float partialTicks) {
 		textField.render(guiGraphics, mouseX, mouseY, partialTicks);
 	}
 

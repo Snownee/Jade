@@ -32,9 +32,7 @@ public class SliderOptionValue extends OptionValue<Float> {
 	}
 
 	@Override
-	protected void drawValue(GuiGraphics guiGraphics, int entryWidth, int entryHeight, int x, int y, int mouseX, int mouseY, boolean selected, float partialTicks) {
-		slider.setX(x);
-		slider.setY(y + entryHeight / 6);
+	protected void drawValue(GuiGraphics guiGraphics, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean selected, float partialTicks) {
 		slider.render(guiGraphics, mouseX, mouseY, partialTicks);
 	}
 
@@ -52,12 +50,12 @@ public class SliderOptionValue extends OptionValue<Float> {
 			applyValue();
 		}
 
-		public float toScaled() {
-			return parent.aligner.apply(parent.min + (parent.max - parent.min) * (float) value);
-		}
-
 		public static double fromScaled(float f, float min, float max) {
 			return Mth.clamp((f - min) / (max - min), 0, 1);
+		}
+
+		public float toScaled() {
+			return parent.aligner.apply(parent.min + (parent.max - parent.min) * (float) value);
 		}
 
 		//save?

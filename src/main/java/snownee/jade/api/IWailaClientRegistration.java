@@ -171,6 +171,8 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 
 	boolean isShowDetailsPressed();
 
+	boolean maybeLowVisionUser();
+
 	CompoundTag getServerData();
 
 	void setServerData(CompoundTag tag);

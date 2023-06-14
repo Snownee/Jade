@@ -1,7 +1,7 @@
 package snownee.jade.impl.config.entry;
 
 import net.minecraft.resources.ResourceLocation;
-import snownee.jade.gui.config.WailaOptionsList;
+import snownee.jade.gui.config.OptionsList;
 import snownee.jade.gui.config.value.OptionValue;
 import snownee.jade.impl.config.PluginConfig;
 
@@ -17,7 +17,7 @@ public class BooleanConfigEntry extends ConfigEntry<Boolean> {
 	}
 
 	@Override
-	public OptionValue<?> createUI(WailaOptionsList options, String optionName) {
+	public OptionValue<?> createUI(OptionsList options, String optionName) {
 		return options.choices(optionName, getValue(), b -> PluginConfig.INSTANCE.set(id, b));
 	}
 

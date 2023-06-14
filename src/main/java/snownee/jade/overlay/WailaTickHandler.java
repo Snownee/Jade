@@ -3,8 +3,10 @@ package snownee.jade.overlay;
 import com.mojang.text2speech.Narrator;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
@@ -17,6 +19,7 @@ import snownee.jade.api.callback.JadeRayTraceCallback;
 import snownee.jade.api.callback.JadeTooltipCollectedCallback;
 import snownee.jade.api.config.IWailaConfig.DisplayMode;
 import snownee.jade.api.config.IWailaConfig.IConfigGeneral;
+import snownee.jade.gui.BaseOptionsScreen;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.Tooltip;
 import snownee.jade.impl.WailaClientRegistration;
@@ -101,6 +104,11 @@ public class WailaTickHandler {
 					.entity(entityTarget.getEntity())
 					.build();
 			/* on */
+		} else if (client.screen instanceof BaseOptionsScreen) {
+			accessor = WailaClientRegistration.INSTANCE.blockAccessor()
+					.blockState(Blocks.GRASS_BLOCK.defaultBlockState())
+					.hit(new BlockHitResult(player.position(), Direction.UP, player.blockPosition(), false))
+					.build();
 		}
 
 		Accessor<?> originalAccessor = accessor;

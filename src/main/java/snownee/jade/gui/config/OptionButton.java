@@ -4,17 +4,15 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 
-public class OptionButton extends WailaOptionsList.Entry {
+public class OptionButton extends OptionsList.Entry {
 
-	private final Component title;
-	private final Button button;
+	protected final Component title;
+	protected Button button;
 
 	public OptionButton(String titleKey, Button button) {
 		this(makeTitle(titleKey), button);
@@ -23,12 +21,13 @@ public class OptionButton extends WailaOptionsList.Entry {
 	public OptionButton(Component title, Button button) {
 		this.title = title;
 		this.button = button;
-		if (button.getMessage().getString().isEmpty()) {
-			Font font = Minecraft.getInstance().font;
-			if (font.width(title) > button.getWidth()) {
-				title = Component.literal(font.plainSubstrByWidth(title.getString(), button.getWidth() - 10) + "..");
+		addMessage(title.getString());
+		if (button != null) {
+			if (button.getMessage().getString().isEmpty()) {
+				button.setMessage(title);
+			} else {
+				addMessage(button.getMessage().getString());
 			}
-			button.setMessage(title);
 		}
 	}
 
@@ -39,9 +38,9 @@ public class OptionButton extends WailaOptionsList.Entry {
 
 	@Override
 	public void render(GuiGraphics guiGraphics, int index, int rowTop, int rowLeft, int width, int height, int mouseX, int mouseY, boolean hovered, float deltaTime) {
-		guiGraphics.drawString(client.font, title, rowLeft + 10, rowTop + (height / 4) + (client.font.lineHeight / 2), 16777215);
+		guiGraphics.drawString(client.font, title, rowLeft + 10, rowTop + (height / 2) - (client.font.lineHeight / 2), 16777215);
 		button.setX(rowLeft + width - 110);
-		button.setY(rowTop + height / 6);
+		button.setY(rowTop + height / 2 - button.getHeight() / 2);
 		button.render(guiGraphics, mouseX, mouseY, deltaTime);
 	}
 

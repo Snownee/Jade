@@ -22,8 +22,7 @@ import snownee.jade.util.ThemeSerializer;
 
 public class Jade {
 	public static final String MODID = "jade";
-	public static final String NAME = "Jade";
-	public static final Logger LOGGER = LogManager.getLogger(NAME);
+	public static final Logger LOGGER = LogManager.getLogger("Jade");
 	public static int MAX_DISTANCE_SQR = 900;
 
 	public static void loadComplete() {
