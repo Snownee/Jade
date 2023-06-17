@@ -37,7 +37,7 @@
   "narration.jade.armor": "アーマー: %s",
   "narration.jade.bookName": "ブック名: %s",
   "narration.jade.blockpos": "X%s Y%s Z%s ",
-  "narration.jade.negative": "否定 %s",
+  "narration.jade.negative": "マイナス %s",
   "narration.jade.distance": "D%s",
   "config.jade.general": "全般",
   "config.jade.debug_mode": "デバッグモード",
