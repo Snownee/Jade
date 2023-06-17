@@ -157,7 +157,7 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 
 	void addRenderBackgroundCallback(int priority, JadeRenderBackgroundCallback callback);
 
-	Screen createPluginConfigScreen(@Nullable Screen parent, String namespace);
+	Screen createPluginConfigScreen(@Nullable Screen parent, @Nullable String namespace);
 
 	void registerItemStorageClient(IClientExtensionProvider<ItemStack, ItemView> provider);
 

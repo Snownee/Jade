@@ -289,7 +289,7 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	}
 
 	@Override
-	public Screen createPluginConfigScreen(@Nullable Screen parent, String namespace) {
+	public Screen createPluginConfigScreen(@Nullable Screen parent, @Nullable String namespace) {
 		return PluginsConfigScreen.createPluginConfigScreen(parent, namespace, false);
 	}
 

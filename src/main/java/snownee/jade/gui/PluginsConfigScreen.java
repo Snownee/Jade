@@ -33,7 +33,7 @@ public class PluginsConfigScreen extends BaseOptionsScreen {
 	}
 
 	//TODO jump
-	public static Screen createPluginConfigScreen(@Nullable Screen parent, String namespace, boolean dontSave) {
+	public static Screen createPluginConfigScreen(@Nullable Screen parent, @Nullable String namespace, boolean dontSave) {
 		Screen screen = new PluginsConfigScreen(parent);
 		return screen;
 	}
