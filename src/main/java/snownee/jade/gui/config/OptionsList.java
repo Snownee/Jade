@@ -9,6 +9,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector2i;
 
 import com.google.common.base.Predicates;
 import com.google.common.collect.Lists;
@@ -30,6 +31,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.CycleButton;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
@@ -383,10 +385,12 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		return super.keyPressed(i, j, k);
 	}
 
-	public abstract static class Entry extends ContainerObjectSelectionList.Entry<Entry> {
+	public static class Entry extends ContainerObjectSelectionList.Entry<Entry> {
 
 		protected final Minecraft client;
 		private final List<String> messages = Lists.newArrayList();
+		private final List<AbstractWidget> widgets = Lists.newArrayList();
+		private final List<Vector2i> widgetOffsets = Lists.newArrayList();
 		@Nullable
 		protected String description;
 		private Entry parent;
@@ -404,12 +408,23 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 			return Util.makeDescriptionId("config", new ResourceLocation(Jade.MODID, key));
 		}
 
-		public AbstractWidget getListener() {
-			return null;
+		public AbstractWidget getFirstWidget() {
+			return widgets.isEmpty() ? null : widgets.get(0);
+		}
+
+		public void addWidget(AbstractWidget widget, int offsetX) {
+			addWidget(widget, offsetX, -widget.getHeight() / 2);
+		}
+
+		public void addWidget(AbstractWidget widget, int offsetX, int offsetY) {
+			widgets.add(widget);
+			widgetOffsets.add(new Vector2i(offsetX, offsetY));
 		}
 
 		@Override
-		public abstract List<? extends AbstractWidget> children();
+		public List<? extends AbstractWidget> children() {
+			return widgets;
+		}
 
 		@Override
 		public List<? extends NarratableEntry> narratables() {
@@ -417,11 +432,21 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		}
 
 		@Override
-		public abstract void render(GuiGraphics guiGraphics, int index, int rowTop, int rowLeft, int width, int height, int mouseX, int mouseY, boolean hovered, float deltaTime);
+		public void render(GuiGraphics guiGraphics, int index, int rowTop, int rowLeft, int width, int height, int mouseX, int mouseY, boolean hovered, float deltaTime) {
+			for (AbstractWidget widget : widgets) {
+				Vector2i offset = widgetOffsets.get(widgets.indexOf(widget));
+				widget.setX(rowLeft + width - 110 + offset.x);
+				widget.setY(rowTop + height / 2 + offset.y);
+				widget.render(guiGraphics, mouseX, mouseY, deltaTime);
+			}
+		}
 
 		public void setDisabled(boolean b) {
-			if (getListener() != null) {
-				getListener().active = !b;
+			for (AbstractWidget widget : widgets) {
+				widget.active = !b;
+				if (widget instanceof EditBox box) {
+					box.setEditable(!b);
+				}
 			}
 		}
 
@@ -494,11 +519,6 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		public void render(GuiGraphics guiGraphics, int index, int rowTop, int rowLeft, int width, int height, int mouseX, int mouseY, boolean hovered, float deltaTime) {
 			x = rowLeft;
 			guiGraphics.drawString(client.font, title, getTextX(width), rowTop + height - client.font.lineHeight, 16777215);
-		}
-
-		@Override
-		public List<? extends AbstractWidget> children() {
-			return List.of();
 		}
 
 		@Override

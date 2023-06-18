@@ -55,13 +55,13 @@ public class DisplayHelper implements IDisplayHelper {
 		dfCommas.setRoundingMode(RoundingMode.DOWN);
 	}
 
-	private static void renderGuiItemDecorations(GuiGraphics guiGraphics, Font font, ItemStack stack, int i, int j, @Nullable String p_115179_) {
+	private static void renderGuiItemDecorations(GuiGraphics guiGraphics, Font font, ItemStack stack, int i, int j, @Nullable String text) {
 		if (stack.isEmpty()) {
 			return;
 		}
 		guiGraphics.pose().pushPose();
-		if (stack.getCount() != 1 || p_115179_ != null) {
-			String s = p_115179_ == null ? INSTANCE.humanReadableNumber(stack.getCount(), "", false) : p_115179_;
+		if (stack.getCount() != 1 || text != null) {
+			String s = text == null ? INSTANCE.humanReadableNumber(stack.getCount(), "", false) : text;
 			guiGraphics.pose().pushPose();
 			guiGraphics.pose().translate(0.0f, 0.0f, 200.0f);
 			guiGraphics.pose().scale(.75f, .75f, .75f);
@@ -79,6 +79,7 @@ public class DisplayHelper implements IDisplayHelper {
 			guiGraphics.fill(RenderType.guiOverlay(), m, n, m + k, n + 1, l | 0xFF000000);
 		}
 		guiGraphics.pose().popPose();
+		ClientProxy.renderItemDecorationsExtra(guiGraphics, font, stack, i, j, text);
 	}
 
 	public static void drawTexturedModalRect(GuiGraphics guiGraphics, float x, float y, int textureX, int textureY, int width, int height, int tw, int th) {

@@ -26,15 +26,18 @@ import snownee.jade.util.ModIdentification;
 
 public class PluginsConfigScreen extends BaseOptionsScreen {
 
+	private final MutableObject<OptionsList.Entry> jumpToEntry = new MutableObject<>();
+	private String jumpTo;
+
 	public PluginsConfigScreen(Screen parent) {
 		super(parent, Component.translatable("gui.jade.plugin_settings"));
 		this.saver = PluginConfig.INSTANCE::save;
 		this.canceller = PluginConfig.INSTANCE::reload;
 	}
 
-	//TODO jump
 	public static Screen createPluginConfigScreen(@Nullable Screen parent, @Nullable String namespace, boolean dontSave) {
-		Screen screen = new PluginsConfigScreen(parent);
+		PluginsConfigScreen screen = new PluginsConfigScreen(parent);
+		screen.jumpTo = namespace;
 		return screen;
 	}
 
@@ -50,7 +53,11 @@ public class PluginsConfigScreen extends BaseOptionsScreen {
 			} else {
 				title = Component.translatable(OptionsList.Entry.makeKey(translationKey));
 			}
-			options.add(new OptionsList.Title(title));
+			if (namespace.equals(jumpTo)) {
+				jumpToEntry.setValue(options.add(new OptionsList.Title(title)));
+			} else {
+				options.add(new OptionsList.Title(title));
+			}
 			Set<ResourceLocation> keys = PluginConfig.INSTANCE.getKeys(namespace);
 			MutableObject<OptionValue<?>> lastPrimary = new MutableObject<>();
 			keys.stream().sorted(Comparator.comparingInt(WailaCommonRegistration.INSTANCE.priorities.getSortedList()::indexOf)).forEach(i -> {
@@ -71,7 +78,16 @@ public class PluginsConfigScreen extends BaseOptionsScreen {
 				}
 			});
 		});
+		jumpTo = null;
 		return options;
 	}
 
+	@Override
+	protected void init() {
+		super.init();
+		if (jumpToEntry.getValue() != null) {
+			options.showOnTop(jumpToEntry.getValue());
+			jumpToEntry.setValue(null);
+		}
+	}
 }

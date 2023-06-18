@@ -1,10 +1,8 @@
 package snownee.jade.gui.config.value;
 
-import java.util.List;
 import java.util.function.Consumer;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
@@ -37,7 +35,7 @@ public abstract class OptionValue<T> extends OptionsList.Entry {
 
 	@Override
 	public final void render(GuiGraphics guiGraphics, int index, int rowTop, int rowLeft, int width, int height, int mouseX, int mouseY, boolean hovered, float deltaTime) {
-		AbstractWidget widget = getListener();
+		AbstractWidget widget = getFirstWidget();
 		Component title0 = widget.active ? title : title.copy().withStyle(ChatFormatting.STRIKETHROUGH, ChatFormatting.GRAY);
 		int left = rowLeft + indent + 10;
 		int top = rowTop + (height / 2) - (client.font.lineHeight / 2);
@@ -45,9 +43,7 @@ public abstract class OptionValue<T> extends OptionsList.Entry {
 		if (serverFeature) {
 			guiGraphics.drawString(client.font, SERVER_FEATURE, left + getTextWidth() + 1, top, 16777215);
 		}
-		widget.setX(rowLeft + width - 110);
-		widget.setY(rowTop + height / 2 - widget.getHeight() / 2);
-		drawValue(guiGraphics, width, height, mouseX, mouseY, hovered, deltaTime);
+		super.render(guiGraphics, index, rowTop, rowLeft, width, height, mouseX, mouseY, hovered, deltaTime);
 		this.x = rowLeft;
 	}
 
@@ -83,17 +79,10 @@ public abstract class OptionValue<T> extends OptionsList.Entry {
 
 	@Override
 	public void updateNarration(NarrationElementOutput output) {
-		getListener().updateNarration(output);
+		getFirstWidget().updateNarration(output);
 		if (!Strings.isNullOrEmpty(getDescription())) {
 			output.add(NarratedElementType.HINT, Component.translatable(getDescription()));
 		}
-	}
-
-	protected abstract void drawValue(GuiGraphics guiGraphics, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean selected, float partialTicks);
-
-	@Override
-	public List<? extends AbstractWidget> children() {
-		return Lists.newArrayList(getListener());
 	}
 
 	public boolean isValidValue() {

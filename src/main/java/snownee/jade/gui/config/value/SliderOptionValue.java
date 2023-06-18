@@ -4,7 +4,6 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import it.unimi.dsi.fastutil.floats.FloatUnaryOperator;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.network.chat.Component;
@@ -29,15 +28,11 @@ public class SliderOptionValue extends OptionValue<Float> {
 		this.max = max;
 		this.aligner = aligner;
 		slider = new Slider(this, 0, 0, 100, 20, getTitle());
+		addWidget(slider, 0);
 	}
 
 	@Override
-	protected void drawValue(GuiGraphics guiGraphics, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean selected, float partialTicks) {
-		slider.render(guiGraphics, mouseX, mouseY, partialTicks);
-	}
-
-	@Override
-	public AbstractWidget getListener() {
+	public AbstractWidget getFirstWidget() {
 		return slider;
 	}
 

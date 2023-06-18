@@ -4,8 +4,6 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
 
@@ -19,7 +17,6 @@ public class InputOptionValue<T> extends OptionValue<T> {
 
 	public InputOptionValue(Runnable responder, String optionName, T value, Consumer<T> setter, Predicate<String> validator) {
 		super(optionName, setter);
-
 		this.value = value;
 		this.validator = validator;
 		textField = new EditBox(client.font, 0, 0, 98, 18, Component.literal(""));
@@ -33,16 +30,7 @@ public class InputOptionValue<T> extends OptionValue<T> {
 			}
 			responder.run();
 		});
-	}
-
-	@Override
-	protected void drawValue(GuiGraphics guiGraphics, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean selected, float partialTicks) {
-		textField.render(guiGraphics, mouseX, mouseY, partialTicks);
-	}
-
-	@Override
-	public AbstractWidget getListener() {
-		return textField;
+		addWidget(textField, 0);
 	}
 
 	private void setValue(String text) {
@@ -67,12 +55,6 @@ public class InputOptionValue<T> extends OptionValue<T> {
 		}
 
 		save();
-	}
-
-	@Override
-	public void setDisabled(boolean b) {
-		super.setDisabled(b);
-		textField.setEditable(!b);
 	}
 
 	@Override

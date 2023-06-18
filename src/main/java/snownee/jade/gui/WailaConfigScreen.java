@@ -1,5 +1,6 @@
 package snownee.jade.gui;
 
+import java.io.File;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -10,6 +11,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 
 import it.unimi.dsi.fastutil.floats.FloatUnaryOperator;
 import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
@@ -21,10 +23,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
+import snownee.jade.addon.core.CorePlugin;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.gui.config.OptionButton;
 import snownee.jade.gui.config.OptionsList;
-import snownee.jade.gui.config.OptionsList.Entry;
 import snownee.jade.gui.config.value.OptionValue;
 import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.impl.config.WailaConfig.ConfigGeneral;
@@ -52,6 +54,18 @@ public class WailaConfigScreen extends BaseOptionsScreen {
 		};
 	}
 
+	public static OptionsList.Entry editBlocklist(OptionsList.Entry entry, String fileName, Runnable defaultCreator) {
+		entry.getFirstWidget().setWidth(79);
+		entry.addWidget(Button.builder(Component.literal("☰"), b -> {
+			File file = new File(CommonProxy.getConfigDirectory(), "jade/%s.json".formatted(fileName));
+			if (!file.exists()) {
+				defaultCreator.run();
+			}
+			Util.getPlatform().openFile(file);
+		}).size(20, 20).tooltip(Tooltip.create(Component.translatable("config.jade.edit_blocklist"))).build(), 80);
+		return entry;
+	}
+
 	@Override
 	public OptionsList createOptions() {
 		Objects.requireNonNull(minecraft);
@@ -62,16 +76,18 @@ public class WailaConfigScreen extends BaseOptionsScreen {
 		if (CommonProxy.isDevEnv())
 			options.choices("debug_mode", general.isDebug(), general::setDebug);
 		options.choices("display_tooltip", general.shouldDisplayTooltip(), general::setDisplayTooltip);
-		Entry entry = options.choices("display_entities", general.getDisplayEntities(), general::setDisplayEntities);
+		OptionsList.Entry entry = options.choices("display_entities", general.getDisplayEntities(), general::setDisplayEntities);
+		editBlocklist(entry, "hide-entities", () -> CorePlugin.createBlockBlocklist().get());
 		options.choices("display_bosses", general.getDisplayBosses(), general::setDisplayBosses).parent(entry);
 		entry = options.choices("display_blocks", general.getDisplayBlocks(), general::setDisplayBlocks);
+		editBlocklist(entry, "hide-blocks", () -> CorePlugin.createBlockBlocklist().get());
 		options.choices("display_fluids", general.getDisplayFluids(), general::setDisplayFluids).parent(entry);
 		options.choices("display_mode", general.getDisplayMode(), general::setDisplayMode, builder -> {
 			builder.withTooltip(mode -> {
 				String key = "display_mode_" + mode.name().toLowerCase(Locale.ENGLISH) + "_desc";
 				if (mode == IWailaConfig.DisplayMode.LITE && "fabric".equals(CommonProxy.getPlatformIdentifier()))
 					key += ".fabric";
-				return Tooltip.create(Entry.makeTitle(key));
+				return Tooltip.create(OptionsList.Entry.makeTitle(key));
 			});
 		});
 		OptionValue<?> value = options.choices("item_mod_name", general.showItemModNameTooltip(), general::setItemModNameTooltip);
@@ -79,8 +95,8 @@ public class WailaConfigScreen extends BaseOptionsScreen {
 			value.setDisabled(true);
 			value.appendDescription(I18n.get("gui.jade.disabled_by_mods"));
 			ConfigGeneral.itemModNameTooltipDisabledByMods.forEach(value::appendDescription);
-			if (value.getListener() != null) {
-				value.getListener().setTooltip(Tooltip.create(Component.literal(value.getDescription())));
+			if (value.getFirstWidget() != null) {
+				value.getFirstWidget().setTooltip(Tooltip.create(Component.literal(value.getDescription())));
 			}
 		}
 		options.choices("hide_from_debug", general.shouldHideFromDebug(), general::setHideFromDebug);
@@ -146,7 +162,7 @@ public class WailaConfigScreen extends BaseOptionsScreen {
 				}
 				minecraft.setScreen(this);
 				this.options.setScrollAmount(this.options.getMaxScroll());
-			}, title, Component.translatable(Entry.makeKey("reset_settings.confirm")), reset, Component.translatable("gui.cancel")));
+			}, title, Component.translatable(OptionsList.Entry.makeKey("reset_settings.confirm")), reset, Component.translatable("gui.cancel")));
 		}).size(100, 20).build()));
 
 		return options;

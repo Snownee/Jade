@@ -12,7 +12,7 @@ public class KeybindOptionButton extends OptionButton {
 	public KeybindOptionButton(OptionsList owner, KeyMapping keybind) {
 		super(Component.translatable(keybind.getName()), null);
 		this.keybind = keybind;
-		button = Button.builder(keybind.getTranslatedKeyMessage(), button -> {
+		var button = Button.builder(keybind.getTranslatedKeyMessage(), b -> {
 			owner.selectedKey = this.keybind;
 			owner.resetMappingAndUpdateButtons();
 		}).size(100, 20).createNarration(supplier -> {
@@ -21,9 +21,11 @@ public class KeybindOptionButton extends OptionButton {
 			}
 			return Component.translatable("narrator.controls.bound", title, supplier.get());
 		}).build();
+		addWidget(button, 0);
 	}
 
 	public void refresh(KeyMapping selectedKey) {
+		var button = getFirstWidget();
 		if (selectedKey == keybind) {
 			button.setMessage(Component.literal("> ").append(button.getMessage().copy().withStyle(ChatFormatting.WHITE, ChatFormatting.UNDERLINE)).append(" <").withStyle(ChatFormatting.YELLOW));
 		} else {

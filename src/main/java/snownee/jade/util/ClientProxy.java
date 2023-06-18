@@ -35,6 +35,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.Screen;
@@ -237,6 +238,10 @@ public final class ClientProxy implements ClientModInitializer {
 
 	public static KeyMapping registerDetailsKeyBinding() {
 		return registerKeyBinding("show_details_alternative", InputConstants.UNKNOWN.getValue());
+	}
+
+	public static void renderItemDecorationsExtra(GuiGraphics guiGraphics, Font font, ItemStack stack, int x, int y, String text) {
+		// NO-OP
 	}
 
 	@Override
