@@ -12,7 +12,8 @@
     "FontMixin",
     "GameRendererMixin",
     "KeyAccess",
-    "KeyMappingAccess"
+    "KeyMappingAccess",
+    "PlainTextSearchTreeMixin"
   ],
   "injectors": {
     "defaultRequire": 1
