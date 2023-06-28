@@ -7,9 +7,9 @@
   ],
   "client": [
     "FontMixin",
+    "FullTextSearchTreeMixin",
     "GameRendererMixin",
-    "KeyMappingAccess",
-    "PlainTextSearchTreeMixin"
+    "KeyMappingAccess"
   ],
   "injectors": {
     "defaultRequire": 1
