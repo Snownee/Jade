@@ -34,7 +34,7 @@ public class Jade {
 					plugin.registerClient(WailaClientRegistration.INSTANCE);
 				}
 			} catch (Throwable e) {
-				LOGGER.error("Failed to load example plugin", e);
+				// NO-OP
 			}
 		}
 
