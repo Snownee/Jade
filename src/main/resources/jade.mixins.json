@@ -6,7 +6,9 @@
   "mixins": [
   ],
   "client": [
-    "GameRendererMixin"
+    "FontMixin",
+    "GameRendererMixin",
+    "KeyMappingAccess"
   ],
   "injectors": {
     "defaultRequire": 1

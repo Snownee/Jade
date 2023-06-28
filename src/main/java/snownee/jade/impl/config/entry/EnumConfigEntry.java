@@ -6,7 +6,7 @@ import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import snownee.jade.gui.config.WailaOptionsList;
+import snownee.jade.gui.config.OptionsList;
 import snownee.jade.gui.config.value.OptionValue;
 import snownee.jade.impl.config.PluginConfig;
 
@@ -38,10 +38,10 @@ public class EnumConfigEntry<E extends Enum<E>> extends ConfigEntry<E> {
 	}
 
 	@Override
-	public OptionValue<?> createUI(WailaOptionsList options, String optionName) {
+	public OptionValue<?> createUI(OptionsList options, String optionName) {
 		return options.choices(optionName, getValue(), e -> PluginConfig.INSTANCE.set(id, e), builder -> {
 			builder.withTooltip(e -> {
-				String key = WailaOptionsList.Entry.makeKey(optionName + "_" + e.name().toLowerCase(Locale.ENGLISH) + "_desc");
+				String key = OptionsList.Entry.makeKey(optionName + "_" + e.name().toLowerCase(Locale.ENGLISH) + "_desc");
 				if (!I18n.exists(key))
 					return null;
 				return Tooltip.create(Component.translatable(key));

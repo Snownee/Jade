@@ -4,7 +4,6 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import it.unimi.dsi.fastutil.floats.FloatUnaryOperator;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.network.chat.Component;
@@ -29,17 +28,11 @@ public class SliderOptionValue extends OptionValue<Float> {
 		this.max = max;
 		this.aligner = aligner;
 		slider = new Slider(this, 0, 0, 100, 20, getTitle());
+		addWidget(slider, 0);
 	}
 
 	@Override
-	protected void drawValue(GuiGraphics guiGraphics, int entryWidth, int entryHeight, int x, int y, int mouseX, int mouseY, boolean selected, float partialTicks) {
-		slider.setX(x);
-		slider.setY(y + entryHeight / 6);
-		slider.render(guiGraphics, mouseX, mouseY, partialTicks);
-	}
-
-	@Override
-	public AbstractWidget getListener() {
+	public AbstractWidget getFirstWidget() {
 		return slider;
 	}
 
@@ -52,12 +45,12 @@ public class SliderOptionValue extends OptionValue<Float> {
 			applyValue();
 		}
 
-		public float toScaled() {
-			return parent.aligner.apply(parent.min + (parent.max - parent.min) * (float) value);
-		}
-
 		public static double fromScaled(float f, float min, float max) {
 			return Mth.clamp((f - min) / (max - min), 0, 1);
+		}
+
+		public float toScaled() {
+			return parent.aligner.apply(parent.min + (parent.max - parent.min) * (float) value);
 		}
 
 		//save?

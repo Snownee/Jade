@@ -71,6 +71,7 @@ public class WailaConfig implements IWailaConfig {
 		private boolean itemModNameTooltip = true;
 		private BossBarOverlapMode bossBarOverlapMode = BossBarOverlapMode.PUSH_DOWN;
 		public boolean hintOverlayToggle = true;
+		public boolean previewOverlay = true;
 
 		public static void init() {
 			/* off */

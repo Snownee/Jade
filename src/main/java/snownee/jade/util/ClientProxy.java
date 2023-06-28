@@ -14,11 +14,13 @@ import com.mojang.blaze3d.platform.InputConstants;
 
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
@@ -34,6 +36,7 @@ import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraftforge.client.ConfigScreenHandler.ConfigScreenFactory;
+import net.minecraftforge.client.ItemDecoratorHandler;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.CustomizeGuiOverlayEvent;
 import net.minecraftforge.client.event.InputEvent;
@@ -84,6 +87,7 @@ public final class ClientProxy {
 	public static boolean hasJEI = CommonProxy.isModLoaded("jei");
 	public static boolean hasREI = false; //isModLoaded("roughlyenoughitems");
 	public static boolean hasFastScroll = CommonProxy.isModLoaded("fastscroll");
+	public static boolean maybeLowVisionUser = CommonProxy.isModLoaded("minecraft_access");
 	private static boolean bossbarShown;
 	private static int bossbarHeight;
 
@@ -91,9 +95,14 @@ public final class ClientProxy {
 		List<IModInfo> mods = ImmutableList.copyOf(ModList.get().getMods());
 		for (IModInfo mod : mods) {
 			String modid = mod.getModId();
+			String modMenuKey = "modmenu.nameTranslation.%s".formatted(modid);
+			if (I18n.exists(modMenuKey)) {
+				map.put(modid, I18n.get(modMenuKey));
+				continue;
+			}
 			String name = mod.getDisplayName();
 			if (Strings.isNullOrEmpty(name)) {
-				StringUtils.capitalize(modid);
+				name = StringUtils.capitalize(modid);
 			}
 			map.put(modid, name);
 		}
@@ -176,7 +185,7 @@ public final class ClientProxy {
 	}
 
 	public static KeyMapping registerKeyBinding(String desc, int defaultKey) {
-		KeyMapping key = new KeyMapping("key.jade." + desc, KeyConflictContext.IN_GAME, KeyModifier.NONE, InputConstants.Type.KEYSYM.getOrCreate(defaultKey), Jade.NAME);
+		KeyMapping key = new KeyMapping("key.jade." + desc, KeyConflictContext.IN_GAME, KeyModifier.NONE, InputConstants.Type.KEYSYM.getOrCreate(defaultKey), "modmenu.nameTranslation.jade");
 		keys.add(key);
 		return key;
 	}
@@ -271,5 +280,9 @@ public final class ClientProxy {
 		SpecialToolHandler handler = new SpecialToolHandler("sword", Items.WOODEN_SWORD.getDefaultInstance());
 		handler.blocks.add(Blocks.COBWEB);
 		return handler;
+	}
+
+	public static void renderItemDecorationsExtra(GuiGraphics guiGraphics, Font font, ItemStack stack, int x, int y, String text) {
+		ItemDecoratorHandler.of(stack).render(guiGraphics, font, stack, x, y);
 	}
 }

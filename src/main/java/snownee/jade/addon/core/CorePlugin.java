@@ -58,7 +58,16 @@ public class CorePlugin implements IWailaPlugin {
 		registration.markAsClientFeature(Identifiers.CORE_MOD_NAME);
 		registration.markAsClientFeature(Identifiers.CORE_BLOCK_FACE);
 
-		JsonConfig<TargetBlocklist> entityBlocklist = new JsonConfig<>(Jade.MODID + "/hide-entities", TargetBlocklist.class, null, () -> {
+		for (String id : createEntityBlocklist().get().values) {
+			BuiltInRegistries.ENTITY_TYPE.getOptional(ResourceLocation.tryParse(id)).ifPresent(registration::hideTarget);
+		}
+		for (String id : createBlockBlocklist().get().values) {
+			BuiltInRegistries.BLOCK.getOptional(ResourceLocation.tryParse(id)).ifPresent(registration::hideTarget);
+		}
+	}
+
+	public static JsonConfig<TargetBlocklist> createEntityBlocklist() {
+		return new JsonConfig<>(Jade.MODID + "/hide-entities", TargetBlocklist.class, null, () -> {
 			var blocklist = new TargetBlocklist();
 			blocklist.values = Stream.of(EntityType.AREA_EFFECT_CLOUD, EntityType.FIREWORK_ROCKET, EntityType.INTERACTION, EntityType.TEXT_DISPLAY)
 					.map(EntityType::getKey)
@@ -66,16 +75,13 @@ public class CorePlugin implements IWailaPlugin {
 					.toList();
 			return blocklist;
 		});
-		for (String id : entityBlocklist.get().values) {
-			BuiltInRegistries.ENTITY_TYPE.getOptional(ResourceLocation.tryParse(id)).ifPresent(registration::hideTarget);
-		}
-		JsonConfig<TargetBlocklist> blockBlocklist = new JsonConfig<>(Jade.MODID + "/hide-blocks", TargetBlocklist.class, null, () -> {
+	}
+
+	public static JsonConfig<TargetBlocklist> createBlockBlocklist() {
+		return new JsonConfig<>(Jade.MODID + "/hide-blocks", TargetBlocklist.class, null, () -> {
 			var blocklist = new TargetBlocklist();
 			blocklist.values = List.of("minecraft:barrier");
 			return blocklist;
 		});
-		for (String id : blockBlocklist.get().values) {
-			BuiltInRegistries.BLOCK.getOptional(ResourceLocation.tryParse(id)).ifPresent(registration::hideTarget);
-		}
 	}
 }
