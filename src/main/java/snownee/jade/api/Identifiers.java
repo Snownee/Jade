@@ -1,15 +1,26 @@
 package snownee.jade.api;
 
+import org.jetbrains.annotations.ApiStatus.ScheduledForRemoval;
+
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.Jade;
 
 public class Identifiers {
+
+	private static ResourceLocation JADE(String path) {
+		return new ResourceLocation(Jade.MODID, path);
+	}
+
+	private static ResourceLocation MC(String path) {
+		return new ResourceLocation("minecraft", path);
+	}
 
 	public static final ResourceLocation PACKET_RECEIVE_DATA = JADE("receive_data");
 	public static final ResourceLocation PACKET_SERVER_PING = JADE("server_ping");
 	public static final ResourceLocation PACKET_REQUEST_ENTITY = JADE("request_entity");
 	public static final ResourceLocation PACKET_REQUEST_TILE = JADE("request_tile");
 	public static final ResourceLocation PACKET_SHOW_OVERLAY = JADE("show_overlay");
+
 	public static final ResourceLocation CORE_OBJECT_NAME = JADE("object_name");
 	public static final ResourceLocation CORE_REGISTRY_NAME = JADE("registry_name");
 	public static final ResourceLocation CORE_MOD_NAME = JADE("mod_name");
@@ -17,16 +28,32 @@ public class Identifiers {
 	public static final ResourceLocation CORE_COORDINATES = JADE("coordinates");
 	public static final ResourceLocation CORE_REL_COORDINATES = JADE("coordinates.rel");
 	public static final ResourceLocation CORE_BLOCK_FACE = JADE("block_face");
-	public static final ResourceLocation UNIVERSAL_ITEM_STORAGE = MC("item_storage");
-	public static final ResourceLocation UNIVERSAL_FLUID_STORAGE = MC("fluid_storage");
-	public static final ResourceLocation UNIVERSAL_FLUID_STORAGE_DETAILED = MC("fluid_storage.detailed");
+
+	//TODO(1.20): Change names
+	public static final ResourceLocation UNIVERSAL_ITEM_STORAGE = MC("block_inventory");
+	public static final ResourceLocation UNIVERSAL_FLUID_STORAGE = MC("fluid");
+	public static final ResourceLocation UNIVERSAL_FLUID_STORAGE_DETAILED = MC("fluid.detailed");
 	public static final ResourceLocation UNIVERSAL_ENERGY_STORAGE = MC("energy_storage");
 	public static final ResourceLocation UNIVERSAL_ENERGY_STORAGE_DETAILED = MC("energy_storage.detailed");
 	public static final ResourceLocation UNIVERSAL_PROGRESS = MC("progress");
-	public static final ResourceLocation MC_ITEM_STORAGE_DETAILED_AMOUNT = MC("item_storage.detailed_amount");
-	public static final ResourceLocation MC_ITEM_STORAGE_NORMAL_AMOUNT = MC("item_storage.normal_amount");
-	public static final ResourceLocation MC_ITEM_STORAGE_SHOW_NAME_AMOUNT = MC("item_storage.show_name_amount");
-	public static final ResourceLocation MC_ITEM_STORAGE_ITEMS_PER_LINE = MC("item_storage.items_per_line");
+
+	@ScheduledForRemoval(inVersion = "1.20")
+	public static final ResourceLocation FORGE_BLOCK_INVENTORY = UNIVERSAL_ITEM_STORAGE;
+	@ScheduledForRemoval(inVersion = "1.20")
+	public static final ResourceLocation FORGE_FLUID = UNIVERSAL_FLUID_STORAGE;
+	@ScheduledForRemoval(inVersion = "1.20")
+	public static final ResourceLocation FORGE_ENERGY = UNIVERSAL_ENERGY_STORAGE;
+
+	@ScheduledForRemoval(inVersion = "1.20")
+	public static final ResourceLocation FABRIC_BLOCK_INVENTORY = UNIVERSAL_ITEM_STORAGE;
+	@ScheduledForRemoval(inVersion = "1.20")
+	public static final ResourceLocation FABRIC_FLUID = UNIVERSAL_FLUID_STORAGE;
+
+	public static final ResourceLocation MC_BLOCK_INVENTORY_DETAILED_AMOUNT = MC("block_inventory.detailed_amount");
+	public static final ResourceLocation MC_BLOCK_INVENTORY_NORMAL_AMOUNT = MC("block_inventory.normal_amount");
+	public static final ResourceLocation MC_BLOCK_INVENTORY_SHOW_NAME_AMOUNT = MC("block_inventory.show_name_amount");
+	public static final ResourceLocation MC_BLOCK_INVENTORY_ITEMS_PER_LINE = MC("block_inventory.items_per_line");
+
 	public static final ResourceLocation MC_ANIMAL_OWNER = MC("animal_owner");
 	public static final ResourceLocation MC_ANIMAL_OWNER_FETCH_NAMES = MC("animal_owner.fetch_names");
 	public static final ResourceLocation MC_ARMOR_STAND = MC("armor_stand");
@@ -51,7 +78,6 @@ public class Identifiers {
 	public static final ResourceLocation MC_EFFECTIVE_TOOL = MC("harvest_tool.effective_tool");
 	public static final ResourceLocation MC_SHOW_UNBREAKABLE = MC("harvest_tool.show_unbreakable");
 	public static final ResourceLocation MC_HORSE_STATS = MC("horse_stats");
-	public static final ResourceLocation MC_ITEM_BER = MC("item_ber");
 	public static final ResourceLocation MC_ITEM_FRAME = MC("item_frame");
 	public static final ResourceLocation MC_ITEM_TOOLTIP = MC("item_tooltip");
 	public static final ResourceLocation MC_JUKEBOX = MC("jukebox");
@@ -69,13 +95,6 @@ public class Identifiers {
 	public static final ResourceLocation MC_VILLAGER_PROFESSION = MC("villager_profession");
 	public static final ResourceLocation MC_ITEM_DISPLAY = MC("item_display");
 	public static final ResourceLocation MC_BLOCK_DISPLAY = MC("block_display");
+
 	public static final ResourceLocation MC_BREAKING_PROGRESS = MC("breaking_progress");
-
-	private static ResourceLocation JADE(String path) {
-		return new ResourceLocation(Jade.MODID, path);
-	}
-
-	private static ResourceLocation MC(String path) {
-		return new ResourceLocation(path);
-	}
 }

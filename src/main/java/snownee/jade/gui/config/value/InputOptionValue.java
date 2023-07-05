@@ -3,9 +3,12 @@ package snownee.jade.gui.config.value;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
 public class InputOptionValue<T> extends OptionValue<T> {
 
@@ -17,9 +20,10 @@ public class InputOptionValue<T> extends OptionValue<T> {
 
 	public InputOptionValue(Runnable responder, String optionName, T value, Consumer<T> setter, Predicate<String> validator) {
 		super(optionName, setter);
+
 		this.value = value;
 		this.validator = validator;
-		textField = new EditBox(client.font, 0, 0, 98, 18, Component.literal(""));
+		textField = new EditBox(client.font, 0, 0, 98, 18, new TextComponent(""));
 		textField.setValue(String.valueOf(value));
 		textField.setResponder(s -> {
 			if (this.validator.test(s)) {
@@ -30,7 +34,18 @@ public class InputOptionValue<T> extends OptionValue<T> {
 			}
 			responder.run();
 		});
-		addWidget(textField, 0);
+	}
+
+	@Override
+	protected void drawValue(PoseStack matrixStack, int entryWidth, int entryHeight, int x, int y, int mouseX, int mouseY, boolean selected, float partialTicks) {
+		textField.setX(x);
+		textField.y = y + entryHeight / 6;
+		textField.render(matrixStack, mouseX, mouseY, partialTicks);
+	}
+
+	@Override
+	public AbstractWidget getListener() {
+		return textField;
 	}
 
 	private void setValue(String text) {
@@ -55,6 +70,12 @@ public class InputOptionValue<T> extends OptionValue<T> {
 		}
 
 		save();
+	}
+
+	@Override
+	public void setDisabled(boolean b) {
+		super.setDisabled(b);
+		textField.setEditable(!b);
 	}
 
 	@Override

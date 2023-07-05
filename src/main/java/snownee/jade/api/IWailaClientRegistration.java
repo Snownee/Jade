@@ -3,7 +3,9 @@ package snownee.jade.api;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.ApiStatus.NonExtendable;
+import org.jetbrains.annotations.ApiStatus.ScheduledForRemoval;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.client.gui.screens.Screen;
@@ -23,8 +25,11 @@ import snownee.jade.api.callback.JadeRayTraceCallback;
 import snownee.jade.api.callback.JadeRenderBackgroundCallback;
 import snownee.jade.api.callback.JadeTooltipCollectedCallback;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.platform.PlatformWailaClientRegistration;
+import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.IElement;
+import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.api.view.EnergyView;
 import snownee.jade.api.view.FluidView;
 import snownee.jade.api.view.IClientExtensionProvider;
@@ -109,6 +114,15 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 	 */
 	void usePickedResult(EntityType<?> entityType);
 
+	@ScheduledForRemoval(inVersion = "1.20")
+	IElementHelper getElementHelper();
+
+	@ScheduledForRemoval(inVersion = "1.20")
+	IDisplayHelper getDisplayHelper();
+
+	@ScheduledForRemoval(inVersion = "1.20")
+	IWailaConfig getConfig();
+
 	BlockAccessor.Builder blockAccessor();
 
 	EntityAccessor.Builder entityAccessor();
@@ -157,25 +171,27 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 
 	void addRenderBackgroundCallback(int priority, JadeRenderBackgroundCallback callback);
 
-	Screen createPluginConfigScreen(@Nullable Screen parent, @Nullable String namespace);
+	Screen createPluginConfigScreen(@Nullable Screen parent, String namespace);
 
+	@Experimental
 	void registerItemStorageClient(IClientExtensionProvider<ItemStack, ItemView> provider);
 
+	@Experimental
 	void registerFluidStorageClient(IClientExtensionProvider<CompoundTag, FluidView> provider);
 
+	@Experimental
 	void registerEnergyStorageClient(IClientExtensionProvider<CompoundTag, EnergyView> provider);
 
+	@Experimental
 	void registerProgressClient(IClientExtensionProvider<CompoundTag, ProgressView> provider);
 
 	boolean isServerConnected();
 
 	boolean isShowDetailsPressed();
 
-	boolean maybeLowVisionUser();
+	void setServerData(CompoundTag tag);
 
 	CompoundTag getServerData();
-
-	void setServerData(CompoundTag tag);
 
 	ItemStack getBlockCamouflage(LevelAccessor level, BlockPos pos);
 
@@ -184,9 +200,5 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 	void markAsServerFeature(ResourceLocation uid);
 
 	boolean isClientFeature(ResourceLocation uid);
-
-	<T extends Accessor<?>> void registerAccessorHandler(Class<T> clazz, Accessor.ClientHandler<T> handler);
-
-	Accessor.ClientHandler<Accessor<?>> getAccessorHandler(Class<? extends Accessor<?>> clazz);
 
 }

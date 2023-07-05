@@ -2,10 +2,14 @@ package snownee.jade.addon.vanilla;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.RecordItem;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.JukeboxBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.JukeboxBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import snownee.jade.Jade;
@@ -17,7 +21,7 @@ import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.IDisplayHelper;
 
-public enum JukeboxProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
+public enum JukeboxProvider implements IBlockComponentProvider, IServerDataProvider<BlockEntity> {
 
 	INSTANCE;
 
@@ -33,20 +37,22 @@ public enum JukeboxProvider implements IBlockComponentProvider, IServerDataProvi
 				} else {
 					name = stack.getHoverName();
 				}
-				tooltip.add(Component.translatable("record.nowPlaying", IDisplayHelper.get().stripColor(name)));
+				tooltip.add(new TranslatableComponent("record.nowPlaying", IDisplayHelper.get().stripColor(name)));
 			} catch (Exception e) {
 				Jade.LOGGER.catching(e);
 			}
 		} else {
-			tooltip.add(Component.translatable("tooltip.jade.empty"));
+			tooltip.add(new TranslatableComponent("tooltip.jade.empty"));
 		}
 	}
 
 	@Override
-	public void appendServerData(CompoundTag data, BlockAccessor accessor) {
-		ItemStack stack = ((JukeboxBlockEntity) accessor.getBlockEntity()).getFirstItem();
-		if (!stack.isEmpty()) {
-			data.put("Record", stack.save(new CompoundTag()));
+	public void appendServerData(CompoundTag data, ServerPlayer player, Level world, BlockEntity blockEntity, boolean showDetails) {
+		if (blockEntity instanceof JukeboxBlockEntity jukebox) {
+			ItemStack stack = jukebox.getRecord();
+			if (!stack.isEmpty()) {
+				data.put("Record", stack.save(new CompoundTag()));
+			}
 		}
 	}
 

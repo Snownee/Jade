@@ -11,8 +11,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import snownee.jade.Jade;
-import snownee.jade.api.BlockAccessor;
-import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IJadeProvider;
 import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.IWailaCommonRegistration;
@@ -22,8 +20,8 @@ public class WailaCommonRegistration implements IWailaCommonRegistration {
 
 	public static final WailaCommonRegistration INSTANCE = new WailaCommonRegistration();
 
-	public final HierarchyLookup<IServerDataProvider<BlockAccessor>> blockDataProviders;
-	public final HierarchyLookup<IServerDataProvider<EntityAccessor>> entityDataProviders;
+	public final HierarchyLookup<IServerDataProvider<BlockEntity>> blockDataProviders;
+	public final HierarchyLookup<IServerDataProvider<Entity>> entityDataProviders;
 	public final PriorityStore<ResourceLocation, IJadeProvider> priorities;
 
 	public final HierarchyLookup<IServerExtensionProvider<Object, ItemStack>> itemStorageProviders;
@@ -53,22 +51,22 @@ public class WailaCommonRegistration implements IWailaCommonRegistration {
 	}
 
 	@Override
-	public void registerBlockDataProvider(IServerDataProvider<BlockAccessor> dataProvider, Class<? extends BlockEntity> block) {
+	public void registerBlockDataProvider(IServerDataProvider<BlockEntity> dataProvider, Class<? extends BlockEntity> block) {
 		blockDataProviders.register(block, dataProvider);
 	}
 
 	@Override
-	public void registerEntityDataProvider(IServerDataProvider<EntityAccessor> dataProvider, Class<? extends Entity> entity) {
+	public void registerEntityDataProvider(IServerDataProvider<Entity> dataProvider, Class<? extends Entity> entity) {
 		entityDataProviders.register(entity, dataProvider);
 	}
 
 	/* PROVIDER GETTERS */
 
-	public List<IServerDataProvider<BlockAccessor>> getBlockNBTProviders(BlockEntity block) {
+	public List<IServerDataProvider<BlockEntity>> getBlockNBTProviders(BlockEntity block) {
 		return blockDataProviders.get(block);
 	}
 
-	public List<IServerDataProvider<EntityAccessor>> getEntityNBTProviders(Entity entity) {
+	public List<IServerDataProvider<Entity>> getEntityNBTProviders(Entity entity) {
 		return entityDataProviders.get(entity);
 	}
 

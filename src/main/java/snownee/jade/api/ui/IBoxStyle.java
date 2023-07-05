@@ -1,13 +1,14 @@
 package snownee.jade.api.ui;
 
-import net.minecraft.client.gui.GuiGraphics;
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import net.minecraft.resources.ResourceLocation;
 
 public interface IBoxStyle {
 
 	float borderWidth();
 
-	void render(GuiGraphics guiGraphics, float x, float y, float w, float h);
+	void render(PoseStack matrixStack, float x, float y, float w, float h);
 
 	default void tag(ResourceLocation tag) {
 	}
@@ -21,7 +22,7 @@ public interface IBoxStyle {
 		}
 
 		@Override
-		public void render(GuiGraphics guiGraphics, float x, float y, float w, float h) {
+		public void render(PoseStack matrixStack, float x, float y, float w, float h) {
 		}
 	}
 

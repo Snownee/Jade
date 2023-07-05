@@ -12,10 +12,12 @@ version = project.archive_minecraft_version + "-fabric-" + project.mod_version
 group = project.maven_group
 
 repositories {
+    maven { url 'https://maven.aliyun.com/repository/public' }
     maven { url "https://maven.parchmentmc.org" }
     maven { url "https://maven.shedaniel.me/" }
     maven { url "https://maven.terraformersmc.com/releases/" }
     maven { url "https://maven.blamejared.com/" }
+    maven { url = "https://dvs1.progwml6.com/files/maven/" }
     maven {
         url "https://cursemaven.com"
         content {
@@ -50,13 +52,16 @@ dependencies {
     //modApi("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}") {
     //    exclude(group: "net.fabricmc.fabric-api")
     //}
+    
+    // for modmenu
     modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
     
-    //modCompileOnly "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
-    //modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
+    // for REI
+    modCompileOnly "me.shedaniel:RoughlyEnoughItems-api-fabric:${project.rei_version}"
+    modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
     
-    modCompileOnlyApi "mezz.jei:jei-1.19-common-api:${jei_version}"
-    modCompileOnlyApi "mezz.jei:jei-1.19-fabric-api:${jei_version}"
+    //modCompileOnlyApi "mezz.jei:jei-1.19-common-api:${jei_version}"
+    //modCompileOnlyApi "mezz.jei:jei-1.19-fabric-api:${jei_version}"
     //modImplementation "mezz.jei:jei-1.19-fabric:${jei_version}"
 }
 

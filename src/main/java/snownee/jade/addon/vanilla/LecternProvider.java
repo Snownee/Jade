@@ -3,9 +3,12 @@ package snownee.jade.addon.vanilla;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.LecternBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.LecternBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import snownee.jade.api.BlockAccessor;
@@ -17,7 +20,7 @@ import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.IElementHelper;
 
-public enum LecternProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
+public enum LecternProvider implements IBlockComponentProvider, IServerDataProvider<BlockEntity> {
 
 	INSTANCE;
 
@@ -35,8 +38,8 @@ public enum LecternProvider implements IBlockComponentProvider, IServerDataProvi
 	}
 
 	@Override
-	public void appendServerData(CompoundTag data, BlockAccessor accessor) {
-		ItemStack stack = ((LecternBlockEntity) accessor.getBlockEntity()).getBook();
+	public void appendServerData(CompoundTag data, ServerPlayer player, Level world, BlockEntity blockEntity, boolean showDetails) {
+		ItemStack stack = ((LecternBlockEntity) blockEntity).getBook();
 		if (!stack.isEmpty()) {
 			if (stack.hasCustomHoverName() || stack.getItem() != Items.WRITABLE_BOOK) {
 				data.put("Book", stack.save(new CompoundTag()));

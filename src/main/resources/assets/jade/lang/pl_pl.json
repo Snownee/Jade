@@ -12,6 +12,8 @@
   "tooltip.jade.power": "Zasilanie: %d",
   "tooltip.jade.villager_profession":  "Profesja: %s",
 
+  "gui.jade.configuration": "%s — konfiguracja",
+  "gui.jade.jade_settings": "%s — ustawienia",
   "gui.jade.plugin_settings": "Ustawienia pluginu",
 
   "key.jade.config": "Otwórz konfigurację",
@@ -37,9 +39,15 @@
   "config.jade.overlay_pos_y": "Stosunek pionowy",
   "config.jade.overlay_scale": "Skala wyświetlacza",
 
+  "config.jade.overlay_color": "Kolor",
   "config.jade.overlay_alpha": "St. alfa",
   "config.jade.overlay_theme": "Motyw",
 
+  "config.jade.formatting": "Formatowanie",
+  "config.jade.format_mod_name": "Nazwa moda",
+  "config.jade.format_registry_name": "Nazwa rejestru",
+
+  "config.jade.plugin_minecraft": "Minecraft",
   "config.jade.plugin_minecraft.furnace": "Zawartość pieca",
   "config.jade.plugin_minecraft.mob_spawner": "Rodzaj spawnera",
   "config.jade.plugin_minecraft.crop_progress": "Stadium rozwoju plonu",

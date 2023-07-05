@@ -5,8 +5,11 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.IServerDataProvider;
@@ -16,7 +19,7 @@ import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.impl.ui.ProgressArrowElement;
 
-public enum FurnaceProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
+public enum FurnaceProvider implements IBlockComponentProvider, IServerDataProvider<BlockEntity> {
 
 	INSTANCE;
 
@@ -41,14 +44,18 @@ public enum FurnaceProvider implements IBlockComponentProvider, IServerDataProvi
 	}
 
 	@Override
-	public void appendServerData(CompoundTag data, BlockAccessor accessor) {
-		AbstractFurnaceBlockEntity furnace = (AbstractFurnaceBlockEntity) accessor.getBlockEntity();
+	public void appendServerData(CompoundTag data, ServerPlayer player, Level world, BlockEntity blockEntity, boolean showDetails) {
+		AbstractFurnaceBlockEntity furnace = (AbstractFurnaceBlockEntity) blockEntity;
 		ListTag items = new ListTag();
 		for (int i = 0; i < 3; i++) {
 			items.add(furnace.getItem(i).save(new CompoundTag()));
 		}
 		data.put("furnace", items);
-		CompoundTag furnaceTag = furnace.saveWithoutMetadata();
+
+		CompoundTag tag1 = new CompoundTag();
+		furnace.save(tag1);
+
+		CompoundTag furnaceTag = tag1;
 		data.putInt("progress", furnaceTag.getInt("CookTime"));
 		data.putInt("total", furnaceTag.getInt("CookTimeTotal"));
 	}

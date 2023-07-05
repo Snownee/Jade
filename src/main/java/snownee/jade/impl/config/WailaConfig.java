@@ -13,6 +13,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.HumanoidArm;
@@ -21,7 +22,7 @@ import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.Theme;
 import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.overlay.OverlayRenderer;
-import snownee.jade.util.CommonProxy;
+import snownee.jade.util.ClientPlatformProxy;
 import snownee.jade.util.ModIdentification;
 
 /**
@@ -71,12 +72,11 @@ public class WailaConfig implements IWailaConfig {
 		private boolean itemModNameTooltip = true;
 		private BossBarOverlapMode bossBarOverlapMode = BossBarOverlapMode.PUSH_DOWN;
 		public boolean hintOverlayToggle = true;
-		public boolean previewOverlay = true;
 
 		public static void init() {
 			/* off */
 			List<String> names = itemModNameTooltipDisabledByMods.stream()
-					.filter(CommonProxy::isModLoaded)
+					.filter(ClientPlatformProxy::isModLoaded)
 					.map(ModIdentification::getModName)
 					.toList();
 			/* on */
@@ -321,7 +321,7 @@ public class WailaConfig implements IWailaConfig {
 
 		@Override
 		public float tryFlip(float f) {
-			if (Minecraft.getInstance().options.mainHand().get() == HumanoidArm.LEFT)
+			if (Minecraft.getInstance().options.mainHand == HumanoidArm.LEFT)
 				f = 1 - f;
 			return f;
 		}
@@ -413,14 +413,14 @@ public class WailaConfig implements IWailaConfig {
 			if (title instanceof Component) {
 				component = (MutableComponent) title;
 			} else {
-				component = Component.literal(Objects.toString(title));
+				component = new TextComponent(Objects.toString(title));
 			}
 			return DisplayHelper.INSTANCE.stripColor(component).withStyle($ -> $.withColor(OverlayRenderer.stressedTextColorRaw));
 		}
 
 		@Override
 		public Component registryName(String name) {
-			return Component.literal(name).withStyle(ChatFormatting.GRAY);
+			return new TextComponent(name).withStyle(ChatFormatting.GRAY);
 		}
 	}
 

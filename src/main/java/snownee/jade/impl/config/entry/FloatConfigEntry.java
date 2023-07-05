@@ -1,12 +1,12 @@
 package snownee.jade.impl.config.entry;
 
-import it.unimi.dsi.fastutil.floats.FloatUnaryOperator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import snownee.jade.gui.config.OptionsList;
+import snownee.jade.gui.config.WailaOptionsList;
 import snownee.jade.gui.config.value.InputOptionValue;
 import snownee.jade.gui.config.value.OptionValue;
 import snownee.jade.impl.config.PluginConfig;
+import snownee.jade.util.FloatUnaryOperator;
 
 public class FloatConfigEntry extends ConfigEntry<Float> {
 
@@ -32,7 +32,7 @@ public class FloatConfigEntry extends ConfigEntry<Float> {
 	}
 
 	@Override
-	public OptionValue<?> createUI(OptionsList options, String optionName) {
+	public OptionValue<?> createUI(WailaOptionsList options, String optionName) {
 		if (slider) {
 			return options.slider(optionName, getValue(), f -> PluginConfig.INSTANCE.set(id, f), min, max, FloatUnaryOperator.identity());
 		} else {

@@ -2,9 +2,10 @@ package snownee.jade.impl.ui;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec2;
@@ -49,10 +50,10 @@ public class ProgressElement extends Element {
 	}
 
 	@Override
-	public void render(GuiGraphics guiGraphics, float x, float y, float maxX, float maxY) {
+	public void render(PoseStack matrixStack, float x, float y, float maxX, float maxY) {
 		Vec2 size = getCachedSize();
 		float b = boxStyle.borderWidth();
-		boxStyle.render(guiGraphics, x, y, maxX - x, size.y - 2);
+		boxStyle.render(matrixStack, x, y, maxX - x, size.y - 2);
 		float progress = this.progress;
 		if (track == null && getTag() != null) {
 			track = WailaTickHandler.instance().progressTracker.createInfo(getTag(), progress, canDecrease, getSize().y);
@@ -60,7 +61,7 @@ public class ProgressElement extends Element {
 		if (track != null) {
 			progress = track.tick(Minecraft.getInstance().getDeltaFrameTime());
 		}
-		style.render(guiGraphics, x + b, y + b, maxX - x - b * 2, size.y - b * 2 - 2, progress, text);
+		style.render(matrixStack, x + b, y + b, maxX - x - b * 2, size.y - b * 2 - 2, progress, text);
 	}
 
 }

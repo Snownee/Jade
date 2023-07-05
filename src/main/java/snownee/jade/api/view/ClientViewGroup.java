@@ -5,6 +5,7 @@ import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
+import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.network.chat.Component;
@@ -15,6 +16,7 @@ import snownee.jade.api.ui.IBoxElement;
 import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.api.ui.ITooltipRenderer;
 
+@Experimental
 public class ClientViewGroup<T> {
 
 	public final List<T> views;

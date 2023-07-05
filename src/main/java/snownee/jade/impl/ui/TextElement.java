@@ -2,9 +2,10 @@ package snownee.jade.impl.ui;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.world.phys.Vec2;
@@ -31,8 +32,8 @@ public class TextElement extends Element {
 	}
 
 	@Override
-	public void render(GuiGraphics guiGraphics, float x, float y, float maxX, float maxY) {
-		DisplayHelper.INSTANCE.drawText(guiGraphics, text, x, y, OverlayRenderer.normalTextColorRaw);
+	public void render(PoseStack matrixStack, float x, float y, float maxX, float maxY) {
+		DisplayHelper.INSTANCE.drawText(matrixStack, text, x, y, OverlayRenderer.normalTextColorRaw);
 	}
 
 	@Override

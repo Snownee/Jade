@@ -1,9 +1,12 @@
 package snownee.jade.addon.harvest;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+
+import org.jetbrains.annotations.Nullable;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -11,9 +14,12 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import net.fabricmc.fabric.api.mininglevel.v1.FabricMineableTags;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
@@ -34,8 +40,7 @@ import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElement.Align;
 import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.impl.ui.SubTextElement;
-import snownee.jade.util.ClientProxy;
-import snownee.jade.util.CommonProxy;
+import snownee.jade.util.PlatformProxy;
 
 public enum HarvestToolProvider implements IBlockComponentProvider, ResourceManagerReloadListener {
 
@@ -44,22 +49,21 @@ public enum HarvestToolProvider implements IBlockComponentProvider, ResourceMana
 	public static final Cache<BlockState, ImmutableList<ItemStack>> resultCache = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
 	public static final Map<String, ToolHandler> TOOL_HANDLERS = Maps.newLinkedHashMap();
 
-	private static final Component UNBREAKABLE_TEXT = Component.translatable("jade.harvest_tool.unbreakable").withStyle(ChatFormatting.DARK_RED);
-	private static final Component CHECK = Component.literal("✔").withStyle(ChatFormatting.GREEN);
-	private static final Component X = Component.literal("✕").withStyle(ChatFormatting.RED);
+	private static final Component UNBREAKABLE_TEXT = new TranslatableComponent("jade.harvest_tool.unbreakable").withStyle(ChatFormatting.DARK_RED);
+	private static final Component CHECK = new TextComponent("✔").withStyle(ChatFormatting.GREEN);
+	private static final Component X = new TextComponent("✕").withStyle(ChatFormatting.RED);
 	private static final Vec2 ITEM_SIZE = new Vec2(10, 0);
 
 	static {
-		if (CommonProxy.isPhysicallyClient()) {
-			registerHandler(new SimpleToolHandler("pickaxe", BlockTags.MINEABLE_WITH_PICKAXE, Items.WOODEN_PICKAXE, Items.STONE_PICKAXE, Items.IRON_PICKAXE, Items.DIAMOND_PICKAXE, Items.NETHERITE_PICKAXE));
-			registerHandler(new SimpleToolHandler("axe", BlockTags.MINEABLE_WITH_AXE, Items.WOODEN_AXE, Items.STONE_AXE, Items.IRON_AXE, Items.DIAMOND_AXE, Items.NETHERITE_AXE));
-			registerHandler(new SimpleToolHandler("shovel", BlockTags.MINEABLE_WITH_SHOVEL, Items.WOODEN_SHOVEL, Items.STONE_SHOVEL, Items.IRON_SHOVEL, Items.DIAMOND_SHOVEL, Items.NETHERITE_SHOVEL));
-			registerHandler(new SimpleToolHandler("hoe", BlockTags.MINEABLE_WITH_HOE, Items.WOODEN_HOE, Items.STONE_HOE, Items.IRON_HOE, Items.DIAMOND_HOE, Items.NETHERITE_HOE));
-			registerHandler(ClientProxy.createSwordToolHandler());
-			registerHandler(new ShearsToolHandler());
-		}
+		registerHandler(new SimpleToolHandler("pickaxe", BlockTags.MINEABLE_WITH_PICKAXE, Items.WOODEN_PICKAXE, Items.STONE_PICKAXE, Items.IRON_PICKAXE, Items.DIAMOND_PICKAXE, Items.NETHERITE_PICKAXE));
+		registerHandler(new SimpleToolHandler("axe", BlockTags.MINEABLE_WITH_AXE, Items.WOODEN_AXE, Items.STONE_AXE, Items.IRON_AXE, Items.DIAMOND_AXE, Items.NETHERITE_AXE));
+		registerHandler(new SimpleToolHandler("shovel", BlockTags.MINEABLE_WITH_SHOVEL, Items.WOODEN_SHOVEL, Items.STONE_SHOVEL, Items.IRON_SHOVEL, Items.DIAMOND_SHOVEL, Items.NETHERITE_SHOVEL));
+		registerHandler(new SimpleToolHandler("hoe", BlockTags.MINEABLE_WITH_HOE, Items.WOODEN_HOE, Items.STONE_HOE, Items.IRON_HOE, Items.DIAMOND_HOE, Items.NETHERITE_HOE));
+		registerHandler(new SimpleToolHandler("sword", FabricMineableTags.SWORD_MINEABLE, Items.WOODEN_SWORD));
+		registerHandler(new ShearsToolHandler());
 	}
 
+	@Nullable
 	public static ImmutableList<ItemStack> getTool(BlockState state, Level world, BlockPos pos) {
 		ImmutableList.Builder<ItemStack> tools = ImmutableList.builder();
 		for (ToolHandler handler : TOOL_HANDLERS.values()) {
@@ -107,17 +111,17 @@ public enum HarvestToolProvider implements IBlockComponentProvider, ResourceMana
 
 	public List<IElement> getText(BlockAccessor accessor, IPluginConfig config, IElementHelper helper) {
 		BlockState state = accessor.getBlockState();
-		if (!state.requiresCorrectToolForDrops() && !config.get(Identifiers.MC_EFFECTIVE_TOOL)) {
-			return List.of();
-		}
-		List<ItemStack> tools = List.of();
+		List<ItemStack> tools = Collections.EMPTY_LIST;
 		try {
 			tools = resultCache.get(state, () -> getTool(state, accessor.getLevel(), accessor.getPosition()));
 		} catch (ExecutionException e) {
 			e.printStackTrace();
 		}
 		if (tools.isEmpty()) {
-			return List.of();
+			return Collections.EMPTY_LIST;
+		}
+		if (!state.requiresCorrectToolForDrops() && !config.get(Identifiers.MC_EFFECTIVE_TOOL)) {
+			return Collections.EMPTY_LIST;
 		}
 
 		int offsetY = 0;
@@ -133,7 +137,7 @@ public enum HarvestToolProvider implements IBlockComponentProvider, ResourceMana
 			elements.add(0, helper.spacer(5, 0));
 			ItemStack held = accessor.getPlayer().getMainHandItem();
 			boolean canHarvest = held.isCorrectToolForDrops(state);
-			if (CommonProxy.isShearable(state) && CommonProxy.isShears(held)) {
+			if (PlatformProxy.isShearable(state) && PlatformProxy.isShears(held)) {
 				canHarvest = true;
 			}
 			if (state.requiresCorrectToolForDrops()) {

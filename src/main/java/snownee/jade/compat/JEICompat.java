@@ -1,3 +1,4 @@
+/*
 package snownee.jade.compat;
 
 import mezz.jei.api.IModPlugin;
@@ -60,3 +61,6 @@ public class JEICompat implements IModPlugin {
 		gui.show(factory.createFocus(showUses ? RecipeIngredientRole.INPUT : RecipeIngredientRole.OUTPUT, VanillaTypes.ITEM_STACK, stack));
 	}
 }
+
+
+ */

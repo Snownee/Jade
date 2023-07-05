@@ -9,23 +9,53 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
-import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.IElementHelper;
 
-public enum PotionEffectsProvider implements IEntityComponentProvider, IServerDataProvider<EntityAccessor> {
+public enum PotionEffectsProvider implements IEntityComponentProvider, IServerDataProvider<Entity> {
 
 	INSTANCE;
+
+	@Override
+	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
+		if (!accessor.getServerData().contains("Potions")) {
+			return;
+		}
+		IElementHelper helper = tooltip.getElementHelper();
+		ITooltip box = helper.tooltip();
+		ListTag list = accessor.getServerData().getList("Potions", Tag.TAG_COMPOUND);
+		Component[] lines = new Component[list.size()];
+		for (int i = 0; i < lines.length; i++) {
+			CompoundTag compound = list.getCompound(i);
+			int duration = compound.getInt("Duration");
+			MutableComponent name = new TranslatableComponent(compound.getString("Name"));
+			String amplifierKey = "potion.potency." + compound.getInt("Amplifier");
+			Component amplifier;
+			if (I18n.exists(amplifierKey)) {
+				amplifier = new TranslatableComponent(amplifierKey);
+			} else {
+				amplifier = new TextComponent(Integer.toString(compound.getInt("Amplifier")));
+			}
+			MutableComponent s = new TranslatableComponent("jade.potion", name, amplifier, getPotionDurationString(duration));
+			box.add(s.withStyle(compound.getBoolean("Bad") ? ChatFormatting.RED : ChatFormatting.GREEN));
+		}
+		tooltip.add(helper.box(box));
+	}
 
 	public static String getPotionDurationString(int duration) {
 		if (duration >= 32767) {
@@ -44,34 +74,8 @@ public enum PotionEffectsProvider implements IEntityComponentProvider, IServerDa
 	}
 
 	@Override
-	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
-		if (!accessor.getServerData().contains("Potions")) {
-			return;
-		}
-		IElementHelper helper = tooltip.getElementHelper();
-		ITooltip box = helper.tooltip();
-		ListTag list = accessor.getServerData().getList("Potions", Tag.TAG_COMPOUND);
-		Component[] lines = new Component[list.size()];
-		for (int i = 0; i < lines.length; i++) {
-			CompoundTag compound = list.getCompound(i);
-			int duration = compound.getInt("Duration");
-			MutableComponent name = Component.translatable(compound.getString("Name"));
-			String amplifierKey = "potion.potency." + compound.getInt("Amplifier");
-			Component amplifier;
-			if (I18n.exists(amplifierKey)) {
-				amplifier = Component.translatable(amplifierKey);
-			} else {
-				amplifier = Component.literal(Integer.toString(compound.getInt("Amplifier")));
-			}
-			MutableComponent s = Component.translatable("jade.potion", name, amplifier, getPotionDurationString(duration));
-			box.add(s.withStyle(compound.getBoolean("Bad") ? ChatFormatting.RED : ChatFormatting.GREEN));
-		}
-		tooltip.add(helper.box(box, BoxStyle.DEFAULT));
-	}
-
-	@Override
-	public void appendServerData(CompoundTag tag, EntityAccessor accessor) {
-		LivingEntity living = (LivingEntity) accessor.getEntity();
+	public void appendServerData(CompoundTag tag, ServerPlayer player, Level arg2, Entity entity, boolean showDetails) {
+		LivingEntity living = (LivingEntity) entity;
 		Collection<MobEffectInstance> effects = living.getActiveEffects();
 		if (effects.isEmpty()) {
 			return;

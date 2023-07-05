@@ -2,10 +2,12 @@ package snownee.jade.addon.vanilla;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.AgeableMob;
-import net.minecraft.world.entity.animal.frog.Tadpole;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.IServerDataProvider;
@@ -13,7 +15,7 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
 
-public enum MobGrowthProvider implements IEntityComponentProvider, IServerDataProvider<EntityAccessor> {
+public enum MobGrowthProvider implements IEntityComponentProvider, IServerDataProvider<Entity> {
 
 	INSTANCE;
 
@@ -24,18 +26,15 @@ public enum MobGrowthProvider implements IEntityComponentProvider, IServerDataPr
 		}
 		int time = accessor.getServerData().getInt("GrowingTime");
 		if (time > 0) {
-			tooltip.add(Component.translatable("jade.mobgrowth.time", time / 20));
+			tooltip.add(new TranslatableComponent("jade.mobgrowth.time", time / 20));
 		}
 	}
 
 	@Override
-	public void appendServerData(CompoundTag tag, EntityAccessor accessor) {
+	public void appendServerData(CompoundTag tag, ServerPlayer player, Level world, Entity entity, boolean showDetails) {
 		int time = -1;
-		Object entity = accessor.getEntity();
 		if (entity instanceof AgeableMob ageable) {
 			time = -ageable.getAge();
-		} else if (entity instanceof Tadpole tadpole) {
-			time = tadpole.getTicksLeftUntilAdult();
 		}
 		if (time > 0) {
 			tag.putInt("GrowingTime", time);

@@ -1,12 +1,21 @@
 package snownee.jade.gui.config;
 
-import net.minecraft.client.gui.GuiGraphics;
+import java.util.List;
+
+import com.google.common.collect.Lists;
+import com.mojang.blaze3d.vertex.PoseStack;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
-public class OptionButton extends OptionsList.Entry {
+public class OptionButton extends WailaOptionsList.Entry {
 
-	protected final Component title;
+	private final Component title;
+	private final Button button;
 
 	public OptionButton(String titleKey, Button button) {
 		this(makeTitle(titleKey), button);
@@ -14,21 +23,32 @@ public class OptionButton extends OptionsList.Entry {
 
 	public OptionButton(Component title, Button button) {
 		this.title = title;
-		addMessage(title.getString());
-		if (button != null) {
-			if (button.getMessage().getString().isEmpty()) {
-				button.setMessage(title);
-			} else {
-				addMessage(button.getMessage().getString());
+		this.button = button;
+		if (button.getMessage().getString().isEmpty()) {
+			Font font = Minecraft.getInstance().font;
+			if (font.width(title) > button.getWidth()) {
+				title = new TextComponent(font.plainSubstrByWidth(title.getString(), button.getWidth() - 10) + "..");
 			}
-			addWidget(button, 0);
+			button.setMessage(title);
 		}
 	}
 
 	@Override
-	public void render(GuiGraphics guiGraphics, int index, int rowTop, int rowLeft, int width, int height, int mouseX, int mouseY, boolean hovered, float deltaTime) {
-		guiGraphics.drawString(client.font, title, rowLeft + 10, rowTop + (height / 2) - (client.font.lineHeight / 2), 16777215);
-		super.render(guiGraphics, index, rowTop, rowLeft, width, height, mouseX, mouseY, hovered, deltaTime);
+	public AbstractWidget getListener() {
+		return button;
+	}
+
+	@Override
+	public void render(PoseStack matrixStack, int index, int rowTop, int rowLeft, int width, int height, int mouseX, int mouseY, boolean hovered, float deltaTime) {
+		client.font.drawShadow(matrixStack, title, rowLeft + 10, rowTop + (height / 4) + (client.font.lineHeight / 2), 16777215);
+		button.x = rowLeft + width - 110;
+		button.y = rowTop + height / 6;
+		button.render(matrixStack, mouseX, mouseY, deltaTime);
+	}
+
+	@Override
+	public List<? extends AbstractWidget> children() {
+		return Lists.newArrayList(button);
 	}
 
 }

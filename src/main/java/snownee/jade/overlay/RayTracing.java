@@ -5,6 +5,8 @@ import java.util.function.Predicate;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.google.common.base.Predicates;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
@@ -32,8 +34,8 @@ public class RayTracing {
 
 	public static final RayTracing INSTANCE = new RayTracing();
 	private HitResult target = null;
-	private final Minecraft mc = Minecraft.getInstance();
-	public static Predicate<Entity> ENTITY_FILTER = entity -> true;
+	private Minecraft mc = Minecraft.getInstance();
+	public static Predicate<Entity> ENTITY_FILTER = Predicates.alwaysTrue();
 
 	private RayTracing() {
 	}
@@ -43,7 +45,7 @@ public class RayTracing {
 		if (viewpoint == null)
 			return;
 
-		if (mc.hitResult != null && mc.hitResult.getType() == Type.ENTITY) {
+		if (mc.hitResult != null && mc.hitResult.getType() == HitResult.Type.ENTITY) {
 			Entity targetEntity = ((EntityHitResult) mc.hitResult).getEntity();
 			if (canBeTarget(targetEntity, viewpoint)) {
 				target = mc.hitResult;
@@ -70,7 +72,7 @@ public class RayTracing {
 			traceEnd = eyePosition.add(lookVector.x * playerReach, lookVector.y * playerReach, lookVector.z * playerReach);
 		}
 
-		Level world = entity.level();
+		Level world = entity.level;
 		AABB bound = new AABB(eyePosition, traceEnd);
 		Predicate<Entity> predicate = e -> canBeTarget(e, entity);
 		EntityHitResult entityResult = getEntityHitResult(world, entity, eyePosition, traceEnd, bound, predicate);
@@ -80,7 +82,7 @@ public class RayTracing {
 			traceEnd = eyePosition.add(lookVector.x * playerReach, lookVector.y * playerReach, lookVector.z * playerReach);
 		}
 
-		Block eyeBlock = world.getBlockState(BlockPos.containing(eyePosition)).getBlock();
+		Block eyeBlock = world.getBlockState(new BlockPos(eyePosition)).getBlock();
 		ClipContext.Fluid fluidView = ClipContext.Fluid.NONE;
 		if (!(eyeBlock instanceof LiquidBlock)) {
 			fluidView = Jade.CONFIG.get().getGeneral().getDisplayFluids().ctx;
@@ -159,7 +161,7 @@ public class RayTracing {
 		if (accessor == null)
 			return null;
 
-		IElement icon = ObjectDataCenter.getIcon();
+		IElement icon = accessor._getIcon();
 		if (isEmptyElement(icon))
 			return null;
 		else

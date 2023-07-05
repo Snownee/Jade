@@ -24,3 +24,4 @@ run
 *.log
 /docs/site/
 /site/
+.history

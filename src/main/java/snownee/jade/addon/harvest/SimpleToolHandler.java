@@ -7,7 +7,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.tags.TagKey;
+import net.minecraft.tags.Tag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -18,10 +18,10 @@ public class SimpleToolHandler implements ToolHandler {
 
 	private final String name;
 	protected final List<ItemStack> tools = Lists.newArrayList();
-	protected final TagKey<Block> tag;
+	protected final Tag<Block> tag;
 	public final Set<Block> blocks = Sets.newIdentityHashSet();
 
-	public SimpleToolHandler(String name, TagKey<Block> tag, Item... tools) {
+	public SimpleToolHandler(String name, Tag<Block> tag, Item... tools) {
 		this.tag = tag;
 		this.name = name;
 		for (Item tool : tools) {

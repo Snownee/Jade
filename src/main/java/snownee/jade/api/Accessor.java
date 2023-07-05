@@ -2,10 +2,10 @@ package snownee.jade.api;
 
 import java.util.function.Function;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -33,27 +33,24 @@ public interface Accessor<T extends HitResult> {
 
 	ItemStack getPickedResult();
 
+	boolean shouldDisplay();
+
+	boolean shouldRequestData();
+
 	boolean showDetails();
 
 	Object getTarget();
 
-	Class<? extends Accessor<?>> getAccessorType();
+	@ApiStatus.Internal
+	void _requestData();
 
-	void toNetwork(FriendlyByteBuf buf);
+	@ApiStatus.Internal
+	boolean _verifyData(CompoundTag serverData);
 
-	interface ClientHandler<T extends Accessor<?>> {
+	@ApiStatus.Internal
+	IElement _getIcon();
 
-		boolean shouldDisplay(T accessor);
-
-		boolean shouldRequestData(T accessor);
-
-		void requestData(T accessor);
-
-		boolean verifyData(T accessor);
-
-		IElement getIcon(T accessor);
-
-		void gatherComponents(T accessor, Function<IJadeProvider, ITooltip> tooltipProvider);
-	}
+	@ApiStatus.Internal
+	void _gatherComponents(Function<IJadeProvider, ITooltip> tooltipProvider);
 
 }

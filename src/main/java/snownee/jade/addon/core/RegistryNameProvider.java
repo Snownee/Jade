@@ -10,8 +10,7 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IPluginConfig;
-import snownee.jade.api.config.IWailaConfig;
-import snownee.jade.util.CommonProxy;
+import snownee.jade.util.PlatformProxy;
 
 public enum RegistryNameProvider implements IBlockComponentProvider, IEntityComponentProvider {
 
@@ -19,12 +18,12 @@ public enum RegistryNameProvider implements IBlockComponentProvider, IEntityComp
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		append(tooltip, CommonProxy.getId(accessor.getBlock()).toString(), config);
+		append(tooltip, PlatformProxy.getId(accessor.getBlock()).toString(), config);
 	}
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
-		append(tooltip, CommonProxy.getId(accessor.getEntity().getType()).toString(), config);
+		append(tooltip, PlatformProxy.getId(accessor.getEntity().getType()).toString(), config);
 	}
 
 	public void append(ITooltip tooltip, String id, IPluginConfig config) {
@@ -33,7 +32,7 @@ public enum RegistryNameProvider implements IBlockComponentProvider, IEntityComp
 			return;
 		if (mode == Mode.ADVANCED_TOOLTIPS && !Minecraft.getInstance().options.advancedItemTooltips)
 			return;
-		tooltip.add(IWailaConfig.get().getFormatting().registryName(id));
+		tooltip.add(config.getWailaConfig().getFormatting().registryName(id));
 	}
 
 	@Override
