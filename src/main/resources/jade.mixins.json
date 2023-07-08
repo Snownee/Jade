@@ -10,10 +10,10 @@
     "BossHealthOverlayMixin",
     "ClientLevelMixin",
     "FontMixin",
+    "FullTextSearchTreeMixin",
     "GameRendererMixin",
     "KeyAccess",
-    "KeyMappingAccess",
-    "PlainTextSearchTreeMixin"
+    "KeyMappingAccess"
   ],
   "injectors": {
     "defaultRequire": 1
