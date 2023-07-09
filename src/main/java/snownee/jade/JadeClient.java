@@ -161,15 +161,17 @@ public final class JadeClient {
 				if (state != target.getBlockState()) {
 					return client.blockAccessor().from(target).blockState(state).build();
 				}
-			} else if (target.getBlock() instanceof InfestedBlock) {
+			}
+			BlockAccessor.Builder builder = client.blockAccessor().from(target).blockEntity(() -> null);
+			if (target.getBlock() instanceof InfestedBlock) {
 				Block block = ((InfestedBlock) target.getBlock()).getHostBlock();
-				return client.blockAccessor().from(target).blockState(block.defaultBlockState()).build();
+				return builder.blockState(block.defaultBlockState()).build();
 			} else if (target.getBlock() == Blocks.POWDER_SNOW) {
 				Block block = Blocks.SNOW_BLOCK;
-				return client.blockAccessor().from(target).blockState(block.defaultBlockState()).build();
+				return builder.blockState(block.defaultBlockState()).build();
 			} else if (target.getBlock() instanceof BrushableBlock brushable) {
 				Block block = brushable.getTurnsInto();
-				return client.blockAccessor().from(target).blockState(block.defaultBlockState()).build();
+				return builder.blockState(block.defaultBlockState()).build();
 			}
 		}
 		return accessor;
