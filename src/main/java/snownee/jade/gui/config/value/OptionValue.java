@@ -79,7 +79,7 @@ public abstract class OptionValue<T> extends OptionsList.Entry {
 
 	@Override
 	public void updateNarration(NarrationElementOutput output) {
-		getFirstWidget().updateNarration(output);
+		super.updateNarration(output);
 		if (!Strings.isNullOrEmpty(getDescription())) {
 			output.add(NarratedElementType.HINT, Component.translatable(getDescription()));
 		}
