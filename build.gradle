@@ -48,28 +48,29 @@ dependencies {
 
     // PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
     // You may need to force-disable transitiveness on them.
-    
+
     //modApi("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}") {
     //    exclude(group: "net.fabricmc.fabric-api")
     //}
-    
+
     // for modmenu
     modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
-    
+
     // for REI
     modCompileOnly "me.shedaniel:RoughlyEnoughItems-api-fabric:${project.rei_version}"
     modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
-    
+
     //modCompileOnlyApi "mezz.jei:jei-1.19-common-api:${jei_version}"
     //modCompileOnlyApi "mezz.jei:jei-1.19-fabric-api:${jei_version}"
     //modImplementation "mezz.jei:jei-1.19-fabric:${jei_version}"
+    //implementation("it.unimi.dsi:fastutil:8.5.12")
 }
 
 loom {
     mixin {
         defaultRefmapName = "${project.mod_id}.refmap.json"
     }
-    
+
     accessWidenerPath = file("src/main/resources/${project.mod_id}.accesswidener")
 }
 
