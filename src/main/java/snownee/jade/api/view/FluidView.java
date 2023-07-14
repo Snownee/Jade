@@ -4,12 +4,14 @@ import java.util.Objects;
 
 import org.jetbrains.annotations.Nullable;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
 import snownee.jade.api.fluid.JadeFluidObject;
+import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.util.CommonProxy;
@@ -45,12 +47,12 @@ public class FluidView {
 		JadeFluidObject fluidObject = JadeFluidObject.of(fluid, amount, nbt);
 		FluidView fluidView = new FluidView(IElementHelper.get().fluid(fluidObject));
 		fluidView.fluidName = CommonProxy.getFluidName(fluidObject);
-		if (amount <= 0) {
-			fluidView.overrideText = EMPTY_FLUID;
-		}
 		fluidView.current = FluidTextHelper.getUnicodeMillibuckets(amount, true);
 		fluidView.max = FluidTextHelper.getUnicodeMillibuckets(capacity, true);
 		fluidView.ratio = (float) ((double) amount / capacity);
+		if (amount <= 0){
+			fluidView.overrideText = Component.translatable("jade.fluid", EMPTY_FLUID, Component.literal(fluidView.max).withStyle(ChatFormatting.GRAY));
+		}
 		return fluidView;
 	}
 
