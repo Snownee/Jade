@@ -118,7 +118,7 @@ public final class ClientPlatformProxy {
 			client.execute(() -> {
 				ObjectDataCenter.serverConnected = true;
 				PluginConfig.INSTANCE.reload(); // clear the server config last time we applied
-				if (json != null && !json.keySet().isEmpty())
+				if (json != null && !json.entrySet().isEmpty())
 					PluginConfig.INSTANCE.applyServerConfigs(json);
 				Jade.LOGGER.info("Received config from the server: {}", s);
 			});
