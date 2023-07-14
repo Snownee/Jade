@@ -15,7 +15,6 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.block.BlockPickInteractionAware;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.lookup.v1.block.BlockApiLookup;
 import net.fabricmc.fabric.api.mininglevel.v1.FabricMineableTags;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
@@ -25,14 +24,12 @@ import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
-import net.fabricmc.fabric.api.transfer.v1.storage.base.SidedStorageBlockEntity;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -81,7 +78,6 @@ import snownee.jade.mixin.AbstractHorseAccess;
 public final class CommonProxy implements ModInitializer {
 
 	public static final TagKey<EntityType<?>> BOSSES = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("c:bosses"));
-	private static final Direction[] DIRECTIONS = Direction.values();
 
 	@Nullable
 	public static String getLastKnownUsername(UUID uuid) {
@@ -141,48 +137,32 @@ public final class CommonProxy implements ModInitializer {
 		if (player != null && target instanceof EnderChestBlockEntity) {
 			return List.of(ItemView.fromContainer(player.getEnderChestInventory(), size, 0));
 		}
-		if (target instanceof SidedStorageBlockEntity be) {
-			var storage = be.getItemStorage(null);
-			if (storage != null) {
-				return List.of(JadeFabricUtils.fromItemStorage(storage, size, 0));
+		if (target instanceof BlockEntity be) {
+			try {
+				var storage = ItemStorage.SIDED.find(be.getLevel(), be.getBlockPos(), be.getBlockState(), be, null);
+				if (storage != null) {
+					return List.of(JadeFabricUtils.fromItemStorage(storage, size, 0));
+				}
+			} catch (Throwable e) {
+				WailaExceptionHandler.handleErr(e, null, null);
 			}
-		}
-		var storage = lookupBlock(ItemStorage.SIDED, target);
-		if (storage != null) {
-			return List.of(JadeFabricUtils.fromItemStorage(storage, size, 0));
 		}
 		return null;
 	}
 
 	@SuppressWarnings("UnstableApiUsage")
 	public static List<ViewGroup<CompoundTag>> wrapFluidStorage(Object target, ServerPlayer player) {
-		if (target instanceof SidedStorageBlockEntity be) {
-			var storage = be.getFluidStorage(null);
-			if (storage != null) {
-				return JadeFabricUtils.fromFluidStorage(storage);
+		if (target instanceof BlockEntity be) {
+			try {
+				var storage = FluidStorage.SIDED.find(be.getLevel(), be.getBlockPos(), be.getBlockState(), be, null);
+				if (storage != null) {
+					return JadeFabricUtils.fromFluidStorage(storage);
+				}
+			} catch (Throwable e) {
+				WailaExceptionHandler.handleErr(e, null, null);
 			}
-		}
-		var storage = lookupBlock(FluidStorage.SIDED, target);
-		if (storage != null) {
-			return JadeFabricUtils.fromFluidStorage(storage);
 		}
 		return null;
-	}
-
-	public static <T> T lookupBlock(BlockApiLookup<T, Direction> sided, Object target) {
-		T found = null;
-		if (target instanceof BlockEntity be) {
-			for (Direction direction : DIRECTIONS) {
-				T t = sided.find(be.getLevel(), be.getBlockPos(), be.getBlockState(), be, direction);
-				if (found != t && found != null && t != null) {
-					return null;
-				}
-				if (t != null) {
-					found = t;
-				}
-			}
-		}
-		return found;
 	}
 
 	public static List<ViewGroup<CompoundTag>> wrapEnergyStorage(Object target, ServerPlayer player) {
