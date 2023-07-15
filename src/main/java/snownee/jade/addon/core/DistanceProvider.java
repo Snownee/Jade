@@ -16,12 +16,13 @@ import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.ui.IElementHelper;
 
 public enum DistanceProvider implements IBlockComponentProvider, IEntityComponentProvider {
 
 	INSTANCE;
 
-	public static DecimalFormat fmt = new DecimalFormat("#.#");
+	public static final DecimalFormat fmt = new DecimalFormat("#.#");
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
@@ -44,10 +45,10 @@ public enum DistanceProvider implements IBlockComponentProvider, IEntityComponen
 				xyz(tooltip, pos);
 			}
 			if (distance) {
-				tooltip.append(tooltip.getElementHelper().text(Component.translatable("jade.distance1", distanceVal)).message(distanceMsg));
+				tooltip.append(IElementHelper.get().text(Component.translatable("jade.distance1", distanceVal)).message(distanceMsg));
 			}
 		} else if (distance) {
-			tooltip.add(tooltip.getElementHelper().text(Component.translatable("jade.distance2", distanceVal)).message(distanceMsg));
+			tooltip.add(IElementHelper.get().text(Component.translatable("jade.distance2", distanceVal)).message(distanceMsg));
 		}
 	}
 
@@ -58,7 +59,7 @@ public enum DistanceProvider implements IBlockComponentProvider, IEntityComponen
 	public static void xyz(ITooltip tooltip, Vec3i pos) {
 		Component display = Component.translatable("jade.blockpos", display(pos.getX(), 0xef9a9a), display(pos.getY(), 0xa5d6a7), display(pos.getZ(), 0x90caf9));
 		String narrate = I18n.get("narration.jade.blockpos", narrate(pos.getX()), narrate(pos.getY()), narrate(pos.getZ()));
-		tooltip.add(tooltip.getElementHelper().text(display).message(narrate));
+		tooltip.add(IElementHelper.get().text(display).message(narrate));
 	}
 
 	public static Component display(int i, int color) {

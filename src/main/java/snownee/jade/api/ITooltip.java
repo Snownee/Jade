@@ -11,7 +11,7 @@ import snownee.jade.api.ui.IElement.Align;
 import snownee.jade.api.ui.IElementHelper;
 
 /**
- * Tooltip that you can append text and other renderable stuffs to.
+ * Tooltip that you can append text and other render-able stuffs to.
  *
  * @author Snownee
  */
@@ -48,7 +48,7 @@ public interface ITooltip {
 	}
 
 	default void add(int index, Component component, ResourceLocation tag) {
-		add(index, getElementHelper().text(component).tag(tag));
+		add(index, IElementHelper.get().text(component).tag(tag));
 	}
 
 	default void addAll(List<Component> components) {
@@ -56,7 +56,7 @@ public interface ITooltip {
 	}
 
 	/**
-	 * Add a renderable element to a new line
+	 * Add a render-able element to a new line
 	 */
 	default void add(IElement element) {
 		add(size(), element);
@@ -82,6 +82,7 @@ public interface ITooltip {
 
 	/**
 	 * Append a text to the last line
+	 * <p>
 	 * IMPORTANT: DO NOT use this to concat texts
 	 */
 	default void append(Component component) {
@@ -90,21 +91,22 @@ public interface ITooltip {
 
 	/**
 	 * Append a tagged text to the last line
+	 * <p>
 	 * IMPORTANT: DO NOT use this to concat texts
 	 */
 	default void append(Component component, ResourceLocation tag) {
-		append(getElementHelper().text(component).tag(tag));
+		append(IElementHelper.get().text(component).tag(tag));
 	}
 
 	/**
-	 * Append a renderable element to the last line
+	 * Append a render-able element to the last line
 	 */
 	default void append(IElement element) {
 		append(size() - 1, element);
 	}
 
 	/**
-	 * Append renderable elements to the last line
+	 * Append render-able elements to the last line
 	 */
 	default void append(int index, List<IElement> elements) {
 		for (IElement element : elements) {

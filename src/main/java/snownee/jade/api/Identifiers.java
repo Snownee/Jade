@@ -1,7 +1,6 @@
 package snownee.jade.api;
 
 import net.minecraft.resources.ResourceLocation;
-import snownee.jade.Jade;
 
 public class Identifiers {
 
@@ -71,8 +70,8 @@ public class Identifiers {
 	public static final ResourceLocation MC_BLOCK_DISPLAY = MC("block_display");
 	public static final ResourceLocation MC_BREAKING_PROGRESS = MC("breaking_progress");
 
-	private static ResourceLocation JADE(String path) {
-		return new ResourceLocation(Jade.MODID, path);
+	public static ResourceLocation JADE(String path) {
+		return new ResourceLocation("jade", path);
 	}
 
 	private static ResourceLocation MC(String path) {

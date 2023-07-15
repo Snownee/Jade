@@ -7,7 +7,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec2;
 
 /**
- * A basic renderable element to be drawn in Jade's tooltip.
+ * A basic render-able element to be drawn in Jade's tooltip.
  *
  * @author Snownee
  */
@@ -20,7 +20,7 @@ public interface IElement {
 
 	/**
 	 * Calculate the default reserved area of this element.
-	 *
+	 * <p>
 	 * Modders call getCachedSize instead
 	 */
 	Vec2 getSize();

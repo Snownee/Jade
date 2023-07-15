@@ -10,7 +10,9 @@ import java.lang.annotation.Target;
 public @interface WailaPlugin {
 
 	/**
-	 * Defines a modid required before this plugin can be loaded. If this modid is not found, the class will not be loaded.
+	 * Defines a modid required before this plugin can be loaded. Leave it empty if the plugin is included in the same mod.
+	 * <p>
+	 * On Forge, if this modid is not found, the class will not be loaded. While on other platforms, the class will be loaded, but the plugin will not be registered.
 	 *
 	 * @return a modid required for this plugin
 	 */

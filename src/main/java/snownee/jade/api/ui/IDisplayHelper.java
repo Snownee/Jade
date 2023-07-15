@@ -8,12 +8,12 @@ import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
-import snownee.jade.overlay.DisplayHelper;
+import snownee.jade.Internals;
 
 public interface IDisplayHelper {
 
 	static IDisplayHelper get() {
-		return DisplayHelper.INSTANCE;
+		return Internals.getDisplayHelper();
 	}
 
 	void drawItem(GuiGraphics guiGraphics, float x, float y, ItemStack stack, float scale, @Nullable String text);

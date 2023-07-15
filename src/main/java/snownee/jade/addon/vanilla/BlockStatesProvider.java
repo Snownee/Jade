@@ -27,7 +27,7 @@ public enum BlockStatesProvider implements IBlockComponentProvider {
 		Collection<Property<?>> properties = state.getProperties();
 		if (properties.isEmpty())
 			return;
-		IElementHelper helper = tooltip.getElementHelper();
+		IElementHelper helper = IElementHelper.get();
 		ITooltip box = helper.tooltip();
 		properties.forEach(p -> {
 			Comparable<?> value = state.getValue(p);

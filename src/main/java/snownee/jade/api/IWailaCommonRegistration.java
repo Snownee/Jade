@@ -12,7 +12,7 @@ import snownee.jade.api.view.IServerExtensionProvider;
 public interface IWailaCommonRegistration {
 
 	/**
-	 * Register an {@link IServerDataProvider<BlockEntity>} instance for data syncing purposes.
+	 * Register an {@link IServerDataProvider<BlockAccessor>} instance for data syncing purposes.
 	 *
 	 * @param dataProvider The data provider instance
 	 * @param block        The highest level class to apply to
@@ -20,7 +20,7 @@ public interface IWailaCommonRegistration {
 	void registerBlockDataProvider(IServerDataProvider<BlockAccessor> dataProvider, Class<? extends BlockEntity> block);
 
 	/**
-	 * Register an {@link IServerDataProvider<Entity>} instance for data syncing purposes.
+	 * Register an {@link IServerDataProvider<EntityAccessor>} instance for data syncing purposes.
 	 *
 	 * @param dataProvider The data provider instance
 	 * @param entity       The highest level class to apply to
