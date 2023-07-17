@@ -100,6 +100,7 @@ public final class PlatformProxy {
 		CommandRegistrationCallback.EVENT.register(PlatformProxy::registerServerCommand);
 	}
 
+	@SuppressWarnings("UnstableApiUsage")
 	public static List<ViewGroup<ItemStack>> wrapItemStorage(Object target, ServerPlayer player) {
 		int size = 54;
 		if (target instanceof AbstractHorseAccess horse) {
@@ -119,49 +120,32 @@ public final class PlatformProxy {
 		if (player != null && target instanceof EnderChestBlockEntity) {
 			return List.of(ItemView.fromContainer(player.getEnderChestInventory(), size, 0));
 		}
-		if (target instanceof SidedStorageBlockEntity be) {
-			var storage = be.getItemStorage(null);
-			if (storage != null) {
-				return List.of(JadeFabricUtils.fromItemStorage(storage, size, 0));
-			}
-		}
-		var storage = lookupBlock(ItemStorage.SIDED, target);
-		if (storage != null) {
-			return List.of(JadeFabricUtils.fromItemStorage(storage, size, 0));
-		}
-		return null;
-	}
-
-	public static List<ViewGroup<CompoundTag>> wrapFluidStorage(Object target, ServerPlayer player) {
-		if (target instanceof SidedStorageBlockEntity be) {
-			var storage = be.getFluidStorage(null);
-			if (storage != null) {
-				return JadeFabricUtils.fromFluidStorage(storage);
-			}
-		}
-		var storage = lookupBlock(FluidStorage.SIDED, target);
-		if (storage != null) {
-			return JadeFabricUtils.fromFluidStorage(storage);
-		}
-		return null;
-	}
-
-	private static final Direction[] DIRECTIONS = Direction.values();
-
-	public static <T> T lookupBlock(BlockApiLookup<T, Direction> sided, Object target) {
-		T found = null;
 		if (target instanceof BlockEntity be) {
-			for (Direction direction : DIRECTIONS) {
-				T t = sided.find(be.getLevel(), be.getBlockPos(), be.getBlockState(), be, direction);
-				if (found != t && found != null && t != null) {
-					return null;
+			try {
+				var storage = ItemStorage.SIDED.find(be.getLevel(), be.getBlockPos(), be.getBlockState(), be, null);
+				if (storage != null) {
+					return List.of(JadeFabricUtils.fromItemStorage(storage, size, 0));
 				}
-				if (t != null) {
-					found = t;
-				}
+			} catch (Throwable e) {
+				WailaExceptionHandler.handleErr(e, null, null);
 			}
 		}
-		return found;
+		return null;
+	}
+
+	@SuppressWarnings("UnstableApiUsage")
+	public static List<ViewGroup<CompoundTag>> wrapFluidStorage(Object target, ServerPlayer player) {
+		if (target instanceof BlockEntity be) {
+			try {
+				var storage = FluidStorage.SIDED.find(be.getLevel(), be.getBlockPos(), be.getBlockState(), be, null);
+				if (storage != null) {
+					return JadeFabricUtils.fromFluidStorage(storage);
+				}
+			} catch (Throwable e) {
+				WailaExceptionHandler.handleErr(e, null, null);
+			}
+		}
+		return null;
 	}
 
 	public static List<ViewGroup<CompoundTag>> wrapEnergyStorage(Object target, ServerPlayer player) {
