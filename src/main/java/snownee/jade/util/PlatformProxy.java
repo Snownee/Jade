@@ -13,6 +13,8 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.lookup.v1.block.BlockApiLookup;
 import net.fabricmc.fabric.api.mininglevel.v1.FabricMineableTags;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.fabricmc.fabric.api.transfer.v1.storage.base.SidedStorageBlockEntity;
 import net.fabricmc.loader.api.FabricLoader;
@@ -46,6 +48,8 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.entity.EnderChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
+import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.view.ItemView;
 import snownee.jade.api.view.ViewGroup;
 import snownee.jade.command.JadeServerCommand;
@@ -208,5 +212,12 @@ public final class PlatformProxy {
 	public static boolean isBoss(Entity entity) {
 		EntityType<?> entityType = entity.getType();
 		return entityType.is(BOSSES) || entityType == EntityType.ENDER_DRAGON || entityType == EntityType.WITHER;
+	}
+
+	@SuppressWarnings("UnstableApiUsage")
+	public static Component getFluidName(JadeFluidObject fluidObject) {
+		Fluid fluid = fluidObject.getType();
+		CompoundTag nbt = fluidObject.getTag();
+		return FluidVariantAttributes.getName(FluidVariant.of(fluid, nbt));
 	}
 }

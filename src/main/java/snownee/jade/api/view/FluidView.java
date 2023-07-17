@@ -2,21 +2,20 @@ package snownee.jade.api.view;
 
 import java.util.Objects;
 
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.material.Fluid;
-
 import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.Nullable;
 
-import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
-import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.material.Fluid;
 import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.util.FluidTextHelper;
+import snownee.jade.util.PlatformProxy;
 
 @Experimental
 public class FluidView {
@@ -48,13 +47,13 @@ public class FluidView {
 		long amount = tag.getLong("amount");
 		JadeFluidObject fluidObject = JadeFluidObject.of(fluid, amount, nbt);
 		FluidView fluidView = new FluidView(IElementHelper.get().fluid(fluidObject));
-		fluidView.fluidName = FluidVariantAttributes.getName(FluidVariant.of(fluid, nbt));
-		if (amount <= 0) {
-			fluidView.overrideText = EMPTY_FLUID;
-		}
+		fluidView.fluidName = PlatformProxy.getFluidName(fluidObject);
 		fluidView.current = FluidTextHelper.getUnicodeMillibuckets(amount, true);
 		fluidView.max = FluidTextHelper.getUnicodeMillibuckets(capacity, true);
 		fluidView.ratio = (float) ((double) amount / capacity);
+		if (amount <= 0){
+			fluidView.overrideText = Component.translatable("jade.fluid", EMPTY_FLUID, Component.literal(fluidView.max).withStyle(ChatFormatting.GRAY));
+		}
 		return fluidView;
 	}
 
