@@ -69,6 +69,7 @@ public class Identifiers {
 	public static final ResourceLocation MC_ITEM_DISPLAY = MC("item_display");
 	public static final ResourceLocation MC_BLOCK_DISPLAY = MC("block_display");
 	public static final ResourceLocation MC_BREAKING_PROGRESS = MC("breaking_progress");
+	public static final ResourceLocation MC_ZOMBIE_VILLAGER = MC("zombie_villager");
 
 	public static ResourceLocation JADE(String path) {
 		return new ResourceLocation("jade", path);

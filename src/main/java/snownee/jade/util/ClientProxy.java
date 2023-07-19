@@ -11,6 +11,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.platform.InputConstants.Key;
 
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -284,5 +285,9 @@ public final class ClientProxy {
 
 	public static void renderItemDecorationsExtra(GuiGraphics guiGraphics, Font font, ItemStack stack, int x, int y, String text) {
 		ItemDecoratorHandler.of(stack).render(guiGraphics, font, stack, x, y);
+	}
+
+	public static InputConstants.Key getBoundKeyOf(KeyMapping keyMapping) {
+		return keyMapping.getKey();
 	}
 }

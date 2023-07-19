@@ -40,6 +40,7 @@ public final class ObjectDataCenter {
 		}
 	}
 
+	@Nullable
 	public static Accessor<?> get() {
 		return accessor;
 	}

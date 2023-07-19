@@ -115,6 +115,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerEntityDataProvider(MobBreedingProvider.INSTANCE, Animal.class);
 		registration.registerEntityDataProvider(MobBreedingProvider.INSTANCE, Allay.class);
 		registration.registerEntityDataProvider(ChickenEggProvider.INSTANCE, Chicken.class);
+		registration.registerEntityDataProvider(ZombieVillagerProvider.INSTANCE, ZombieVillager.class);
 	}
 
 	@Override
@@ -173,6 +174,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerBlockIcon(ChiseledBookshelfProvider.INSTANCE, ChiseledBookShelfBlock.class);
 		registration.registerEntityIcon(ItemDisplayProvider.INSTANCE, ItemDisplay.class);
 		registration.registerEntityIcon(BlockDisplayProvider.INSTANCE, BlockDisplay.class);
+		registration.registerEntityComponent(ZombieVillagerProvider.INSTANCE, ZombieVillager.class);
 
 		ClientProxy.registerReloadListener(HarvestToolProvider.INSTANCE);
 
