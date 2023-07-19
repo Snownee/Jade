@@ -1,9 +1,14 @@
 package snownee.jade.overlay;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
+
+import com.google.common.base.Suppliers;
 import com.mojang.text2speech.Narrator;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Direction;
+import net.minecraft.util.StringUtil;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -29,14 +34,11 @@ import snownee.jade.util.ClientProxy;
 public class WailaTickHandler {
 
 	private static WailaTickHandler INSTANCE = new WailaTickHandler();
-	private static Narrator narrator;
+	private static final Supplier<Narrator> NARRATOR = Suppliers.memoize(Narrator::getNarrator);
 	private static String lastNarration = "";
+	private static long lastNarrationTime = 0;
 	public TooltipRenderer tooltipRenderer = null;
 	public ProgressTracker progressTracker = new ProgressTracker();
-
-	private static Narrator getNarrator() {
-		return narrator == null ? narrator = Narrator.getNarrator() : narrator;
-	}
 
 	public static WailaTickHandler instance() {
 		if (INSTANCE == null)
@@ -45,15 +47,24 @@ public class WailaTickHandler {
 	}
 
 	public static void narrate(ITooltip tooltip, boolean dedupe) {
-		if (!getNarrator().active() || tooltip.isEmpty())
+		if (!NARRATOR.get().active() || tooltip.isEmpty())
 			return;
 		String narration = tooltip.getMessage();
-		if (dedupe && narration.equals(lastNarration))
-			return;
-		Narrator narrator = getNarrator();
-		System.out.println(tooltip.getMessage());
-		narrator.say(narration, true);
+		if (dedupe) {
+			if (narration.equals(lastNarration)) {
+				return;
+			}
+			if (System.currentTimeMillis() - lastNarrationTime < 500) {
+				return;
+			}
+		}
+		CompletableFuture.runAsync(() -> {
+			Narrator narrator = NARRATOR.get();
+			narrator.clear();
+			narrator.say(StringUtil.stripColor(narration), false);
+		});
 		lastNarration = narration;
+		lastNarrationTime = System.currentTimeMillis();
 	}
 
 	public void tickClient() {
@@ -106,10 +117,12 @@ public class WailaTickHandler {
 					.build();
 			/* on */
 		} else if (client.screen instanceof BaseOptionsScreen) {
+			/* off */
 			accessor = WailaClientRegistration.INSTANCE.blockAccessor()
 					.blockState(Blocks.GRASS_BLOCK.defaultBlockState())
 					.hit(new BlockHitResult(player.position(), Direction.UP, player.blockPosition(), false))
 					.build();
+			/* on */
 		}
 
 		Accessor<?> originalAccessor = accessor;
