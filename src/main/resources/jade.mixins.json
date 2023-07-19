@@ -11,8 +11,7 @@
     "ClientLevelMixin",
     "FontMixin",
     "FullTextSearchTreeMixin",
-    "KeyAccess",
-    "KeyMappingAccess"
+    "KeyAccess"
   ],
   "injectors": {
     "defaultRequire": 1

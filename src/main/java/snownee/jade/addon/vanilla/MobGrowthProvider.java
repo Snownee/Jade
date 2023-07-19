@@ -5,6 +5,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.AgeableMob;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.animal.frog.Tadpole;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
@@ -31,7 +32,7 @@ public enum MobGrowthProvider implements IEntityComponentProvider, IServerDataPr
 	@Override
 	public void appendServerData(CompoundTag tag, EntityAccessor accessor) {
 		int time = -1;
-		Object entity = accessor.getEntity();
+		Entity entity = accessor.getEntity();
 		if (entity instanceof AgeableMob ageable) {
 			time = -ageable.getAge();
 		} else if (entity instanceof Tadpole tadpole) {

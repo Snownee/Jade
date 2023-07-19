@@ -245,6 +245,10 @@ public final class ClientProxy implements ClientModInitializer {
 		// NO-OP
 	}
 
+	public static InputConstants.Key getBoundKeyOf(KeyMapping keyMapping) {
+		return KeyBindingHelper.getBoundKeyOf(keyMapping);
+	}
+
 	@Override
 	public void onInitializeClient() {
 		ClientLifecycleEvents.CLIENT_STARTED.register(mc -> CommonProxy.loadComplete());

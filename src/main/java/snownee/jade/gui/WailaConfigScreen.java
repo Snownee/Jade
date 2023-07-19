@@ -32,7 +32,6 @@ import snownee.jade.gui.config.value.OptionValue;
 import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.impl.config.WailaConfig.ConfigGeneral;
 import snownee.jade.impl.config.WailaConfig.ConfigOverlay;
-import snownee.jade.mixin.KeyMappingAccess;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
 
@@ -44,7 +43,7 @@ public class WailaConfigScreen extends BaseOptionsScreen {
 		ImmutableMap.Builder<KeyMapping, InputConstants.Key> keyMapBuilder = ImmutableMap.builder();
 		for (KeyMapping keyMapping : Minecraft.getInstance().options.keyMappings) {
 			if (JadeClient.openConfig.getCategory().equals(keyMapping.getCategory())) {
-				keyMapBuilder.put(keyMapping, ((KeyMappingAccess) keyMapping).getKey());
+				keyMapBuilder.put(keyMapping, ClientProxy.getBoundKeyOf(keyMapping));
 			}
 		}
 		var keyMap = keyMapBuilder.build();

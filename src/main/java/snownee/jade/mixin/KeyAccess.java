@@ -9,6 +9,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.LazyLoadedValue;
 
+// We can't access-transform classes in Blaze3D, so we use Mixin here.
 @Mixin(InputConstants.Key.class)
 @SuppressWarnings("deprecation")
 public interface KeyAccess {
