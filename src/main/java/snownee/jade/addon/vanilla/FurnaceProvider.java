@@ -22,17 +22,19 @@ public enum FurnaceProvider implements IBlockComponentProvider, IServerDataProvi
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		int progress = accessor.getServerData().getInt("progress");
-		if (progress == 0)
+		CompoundTag data = accessor.getServerData();
+		if (!data.contains("progress")) {
 			return;
+		}
+		int progress = data.getInt("progress");
 
-		ListTag furnaceItems = accessor.getServerData().getList("furnace", Tag.TAG_COMPOUND);
+		ListTag furnaceItems = data.getList("furnace", Tag.TAG_COMPOUND);
 		NonNullList<ItemStack> inventory = NonNullList.withSize(3, ItemStack.EMPTY);
 		for (int i = 0; i < furnaceItems.size(); i++)
 			inventory.set(i, ItemStack.of(furnaceItems.getCompound(i)));
 
-		IElementHelper helper = tooltip.getElementHelper();
-		int total = accessor.getServerData().getInt("total");
+		IElementHelper helper = IElementHelper.get();
+		int total = data.getInt("total");
 
 		tooltip.add(helper.item(inventory.get(0)));
 		tooltip.append(helper.item(inventory.get(1)));
@@ -43,6 +45,9 @@ public enum FurnaceProvider implements IBlockComponentProvider, IServerDataProvi
 	@Override
 	public void appendServerData(CompoundTag data, BlockAccessor accessor) {
 		AbstractFurnaceBlockEntity furnace = (AbstractFurnaceBlockEntity) accessor.getBlockEntity();
+		if (furnace.isEmpty()) {
+			return;
+		}
 		ListTag items = new ListTag();
 		for (int i = 0; i < 3; i++) {
 			items.add(furnace.getItem(i).save(new CompoundTag()));
