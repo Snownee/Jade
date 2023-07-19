@@ -51,6 +51,7 @@ public class WailaTickHandler {
 		if (dedupe && narration.equals(lastNarration))
 			return;
 		Narrator narrator = getNarrator();
+		System.out.println(tooltip.getMessage());
 		narrator.say(narration, true);
 		lastNarration = narration;
 	}
