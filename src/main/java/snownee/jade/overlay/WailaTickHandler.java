@@ -1,8 +1,13 @@
 package snownee.jade.overlay;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
+
+import com.google.common.base.Suppliers;
 import com.mojang.text2speech.Narrator;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.StringUtil;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -26,10 +31,38 @@ import snownee.jade.util.ClientPlatformProxy;
 public class WailaTickHandler {
 
 	private static WailaTickHandler INSTANCE = new WailaTickHandler();
-	private static Narrator narrator;
+	private static final Supplier<Narrator> NARRATOR = Suppliers.memoize(Narrator::getNarrator);
 	private static String lastNarration = "";
+	private static long lastNarrationTime = 0;
 	public TooltipRenderer tooltipRenderer = null;
 	public ProgressTracker progressTracker = new ProgressTracker();
+
+	public static WailaTickHandler instance() {
+		if (INSTANCE == null)
+			INSTANCE = new WailaTickHandler();
+		return INSTANCE;
+	}
+
+	public static void narrate(ITooltip tooltip, boolean dedupe) {
+		if (!NARRATOR.get().active() || tooltip.isEmpty())
+			return;
+		String narration = tooltip.getMessage();
+		if (dedupe) {
+			if (narration.equals(lastNarration)) {
+				return;
+			}
+			if (System.currentTimeMillis() - lastNarrationTime < 500) {
+				return;
+			}
+		}
+		CompletableFuture.runAsync(() -> {
+			Narrator narrator = NARRATOR.get();
+			narrator.clear();
+			narrator.say(StringUtil.stripColor(narration), false);
+		});
+		lastNarration = narration;
+		lastNarrationTime = System.currentTimeMillis();
+	}
 
 	public void tickClient() {
 		progressTracker.tick();
@@ -131,26 +164,5 @@ public class WailaTickHandler {
 			callback.onTooltipCollected(tooltip, accessor);
 		}
 		tooltipRenderer = new TooltipRenderer(tooltip, true);
-	}
-
-	private static Narrator getNarrator() {
-		return narrator == null ? narrator = Narrator.getNarrator() : narrator;
-	}
-
-	public static WailaTickHandler instance() {
-		if (INSTANCE == null)
-			INSTANCE = new WailaTickHandler();
-		return INSTANCE;
-	}
-
-	public static void narrate(ITooltip tooltip, boolean dedupe) {
-		if (!getNarrator().active() || tooltip.isEmpty())
-			return;
-		String narration = tooltip.getMessage();
-		if (dedupe && narration.equals(lastNarration))
-			return;
-		Narrator narrator = getNarrator();
-		narrator.say(narration, true);
-		lastNarration = narration;
 	}
 }
