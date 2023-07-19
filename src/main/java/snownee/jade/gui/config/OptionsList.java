@@ -23,6 +23,7 @@ import com.mojang.blaze3d.vertex.VertexFormat.Mode;
 
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import it.unimi.dsi.fastutil.floats.FloatUnaryOperator;
+import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -33,6 +34,8 @@ import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.client.gui.narration.NarratedElementType;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.resources.language.I18n;
@@ -137,13 +140,16 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 				super.setScrollAmount(super.getScrollAmount() + diff * delta);
 			}
 		}
-		Entry pointAt = getEntryAtPosition(mouseX, mouseY);
-		if (pointAt instanceof Title) {
+		hovered = null;
+		if (isMouseOver(mouseX, mouseY)) {
+			hovered = getEntryAtPosition(mouseX, mouseY);
+		}
+		if (hovered instanceof Title) {
 			setSelected(null);
 		} else {
-			setSelected(pointAt);
+			setSelected(hovered);
 		}
-		int activeIndex = pointAt != null ? children().indexOf(pointAt) : Mth.clamp((int) getScrollAmount() / itemHeight, 0, getItemCount() - 1);
+		int activeIndex = hovered != null ? children().indexOf(hovered) : Mth.clamp((int) getScrollAmount() / itemHeight, 0, getItemCount() - 1);
 		if (activeIndex >= 0 && activeIndex != lastActiveIndex) {
 			lastActiveIndex = activeIndex;
 			Entry entry = getEntry(activeIndex);
@@ -345,6 +351,9 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 				addEntry(entry);
 			}
 		}
+		if (matches.isEmpty()) {
+			addEntry(new Title(Component.translatable("gui.jade.no_results").withStyle(ChatFormatting.GRAY)));
+		}
 	}
 
 	public void updateSaveState() {
@@ -493,6 +502,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 
 	public static class Title extends Entry {
 
+		public Component narration;
 		private final MutableComponent title;
 		private int x;
 
@@ -505,10 +515,12 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 				description = I18n.get(key);
 				addMessage(description);
 			}
+			narration = Component.translatable("narration.jade.category", title);
 		}
 
 		public Title(MutableComponent title) {
 			this.title = title;
+			narration = title;
 		}
 
 		public MutableComponent getTitle() {
@@ -529,6 +541,22 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		@Override
 		public int getTextWidth() {
 			return client.font.width(title);
+		}
+
+		@Override
+		public List<? extends NarratableEntry> narratables() {
+			return List.of(new NarratableEntry() {
+
+				@Override
+				public NarratableEntry.NarrationPriority narrationPriority() {
+					return NarratableEntry.NarrationPriority.HOVERED;
+				}
+
+				@Override
+				public void updateNarration(NarrationElementOutput narrationElementOutput) {
+					narrationElementOutput.add(NarratedElementType.TITLE, narration);
+				}
+			});
 		}
 
 	}

@@ -51,6 +51,7 @@ public class NotUglyEditBox extends AbstractWidget implements Renderable {
 	private BiFunction<String, Integer, FormattedCharSequence> formatter = (string, integer) -> FormattedCharSequence.forward(string, Style.EMPTY);
 	@Nullable
 	private Component hint;
+	private boolean isMouseOverCross;
 
 	public NotUglyEditBox(Font font, int i, int j, int k, int l, Component component) {
 		this(font, i, j, k, l, null, component);
@@ -75,7 +76,8 @@ public class NotUglyEditBox extends AbstractWidget implements Renderable {
 	@Override
 	protected MutableComponent createNarrationMessage() {
 		Component component = this.getMessage();
-		return Component.translatable("gui.narrate.editBox", component, this.value);
+		String value = isMouseOverCross ? "" : this.value;
+		return Component.translatable("gui.narrate.editBox", component, value);
 	}
 
 	public String getValue() {
@@ -320,7 +322,7 @@ public class NotUglyEditBox extends AbstractWidget implements Renderable {
 
 	@Override
 	public void onClick(double x, double y) {
-		if (isEditable && !value.isEmpty() && x > width - paddingRight + 4) {
+		if (isMouseOverCross) {
 			setValue("");
 			super.playDownSound(Minecraft.getInstance().getSoundManager());
 			return;
@@ -340,12 +342,14 @@ public class NotUglyEditBox extends AbstractWidget implements Renderable {
 
 	@Override
 	public void renderWidget(GuiGraphics guiGraphics, int i, int j, float f) {
+		isMouseOverCross = false;
 		if (!this.isVisible()) {
 			return;
 		}
 		this.renderBackground(guiGraphics, i, j, f);
 		if (isEditable && !value.isEmpty()) {
-			int c = isHovered && i > width - paddingRight + 4 ? textColor : textColorUneditable;
+			isMouseOverCross = isHovered && i > width - paddingRight + 4;
+			int c = isMouseOverCross ? textColor : textColorUneditable;
 			guiGraphics.drawString(font, "×", getX() + width - 10, getY() + paddingTop + 1, c);
 		}
 		int k = this.isEditable ? this.textColor : this.textColorUneditable;
@@ -523,7 +527,10 @@ public class NotUglyEditBox extends AbstractWidget implements Renderable {
 
 	@Override
 	public void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
-		narrationElementOutput.add(NarratedElementType.TITLE, (Component) this.createNarrationMessage());
+		narrationElementOutput.add(NarratedElementType.TITLE, this.createNarrationMessage());
+		if (isMouseOverCross) {
+			narrationElementOutput.add(NarratedElementType.USAGE, Component.translatable("narration.jade.clear_content.usage"));
+		}
 	}
 
 	public void setHint(Component component) {

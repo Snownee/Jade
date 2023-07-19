@@ -20,6 +20,7 @@ import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
@@ -38,7 +39,7 @@ import snownee.jade.util.CommonProxy;
 public class WailaConfigScreen extends BaseOptionsScreen {
 
 	public WailaConfigScreen(Screen parent) {
-		super(parent, Component.translatable("gui.jade.configuration"));
+		super(parent, Component.translatable("gui.jade.jade_settings"));
 		this.saver = Jade.CONFIG::save;
 		ImmutableMap.Builder<KeyMapping, InputConstants.Key> keyMapBuilder = ImmutableMap.builder();
 		for (KeyMapping keyMapping : Minecraft.getInstance().options.keyMappings) {
@@ -56,13 +57,14 @@ public class WailaConfigScreen extends BaseOptionsScreen {
 
 	public static OptionsList.Entry editBlocklist(OptionsList.Entry entry, String fileName, Runnable defaultCreator) {
 		entry.getFirstWidget().setWidth(79);
+		MutableComponent tooltip = Component.translatable("config.jade.edit_blocklist");
 		entry.addWidget(Button.builder(Component.literal("☰"), b -> {
 			File file = new File(CommonProxy.getConfigDirectory(), "jade/%s.json".formatted(fileName));
 			if (!file.exists()) {
 				defaultCreator.run();
 			}
 			Util.getPlatform().openFile(file);
-		}).size(20, 20).tooltip(Tooltip.create(Component.translatable("config.jade.edit_blocklist"))).build(), 80);
+		}).size(20, 20).tooltip(Tooltip.create(tooltip)).createNarration($ -> tooltip).build(), 80);
 		return entry;
 	}
 

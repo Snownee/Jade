@@ -47,6 +47,9 @@ public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
 
 	public void refresh() {
 		clearEntries();
+		if (options.children().size() <= 1) {
+			return; // only the "no results" entry
+		}
 		for (OptionsList.Entry child : options.children()) {
 			if (child instanceof OptionsList.Title titleEntry) {
 				addEntry(titleEntry);
@@ -85,7 +88,7 @@ public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
 
 		@Override
 		public Component getNarration() {
-			return title.getTitle();
+			return title.narration;
 		}
 	}
 
