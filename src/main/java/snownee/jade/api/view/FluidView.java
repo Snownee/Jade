@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.google.common.math.IntMath;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraftforge.fluids.FluidStack;
@@ -45,12 +46,12 @@ public class FluidView {
 		FluidStack fluid = FluidStack.loadFluidStackFromNBT(tag);
 		FluidView fluidView = new FluidView(IElementHelper.get().fluid(fluid));
 		fluidView.fluidName = fluid.getDisplayName();
-		if (fluid.isEmpty()) {
-			fluidView.overrideText = EMPTY_FLUID;
-		}
 		fluidView.current = IDisplayHelper.get().humanReadableNumber(fluid.getAmount(), "B", true);
 		fluidView.max = IDisplayHelper.get().humanReadableNumber(capacity, "B", true);
 		fluidView.ratio = (float) fluid.getAmount() / capacity;
+		if (fluid.isEmpty()) {
+			fluidView.overrideText = Component.translatable("jade.fluid", EMPTY_FLUID, Component.literal(fluidView.max).withStyle(ChatFormatting.GRAY));
+		}
 		return fluidView;
 	}
 
