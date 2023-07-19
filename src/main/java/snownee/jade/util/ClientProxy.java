@@ -11,7 +11,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.platform.InputConstants.Key;
 
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -44,6 +43,7 @@ import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RegisterClientCommandsEvent;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
+import net.minecraftforge.client.event.RenderGuiEvent;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.minecraftforge.client.settings.KeyConflictContext;
@@ -119,6 +119,14 @@ public final class ClientProxy {
 		MinecraftForge.EVENT_BUS.addListener(ClientProxy::onKeyPressed);
 		MinecraftForge.EVENT_BUS.addListener(ClientProxy::onGui);
 		MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, true, ClientProxy::onDrawBossBar);
+		MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, RenderGuiEvent.Post.class, event -> {
+			if (Minecraft.getInstance().screen == null) {
+				onRenderTick(event.getGuiGraphics());
+			}
+		});
+		MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, ScreenEvent.Render.Post.class, event -> {
+			onRenderTick(event.getGuiGraphics());
+		});
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientProxy::onKeyMappingEvent);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientProxy::onRegisterReloadListener);
 		ModLoadingContext.get().registerExtensionPoint(ConfigScreenFactory.class, () -> new ConfigScreenFactory((minecraft, screen) -> new HomeConfigScreen(screen)));
