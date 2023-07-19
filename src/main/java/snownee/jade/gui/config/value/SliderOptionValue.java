@@ -12,10 +12,6 @@ import snownee.jade.overlay.DisplayHelper;
 
 public class SliderOptionValue extends OptionValue<Float> {
 
-	public static final Predicate<String> ANY = s -> true;
-	public static final Predicate<String> INTEGER = s -> s.matches("^[0-9]*$");
-	public static final Predicate<String> FLOAT = s -> s.matches("[-+]?([0-9]*\\.[0-9]+|[0-9]+)") || s.endsWith(".") || s.isEmpty();
-
 	private final Slider slider;
 	private float min;
 	private float max;
