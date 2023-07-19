@@ -82,7 +82,7 @@ public enum HarvestToolProvider implements IBlockComponentProvider, ResourceMana
 		if (player.isCreative() || player.isSpectator()) {
 			return;
 		}
-		IElementHelper helper = tooltip.getElementHelper();
+		IElementHelper helper = IElementHelper.get();
 		BlockState state = accessor.getBlockState();
 		float hardness = state.getDestroySpeed(accessor.getLevel(), accessor.getPosition());
 		if (hardness < 0) {
@@ -93,7 +93,7 @@ public enum HarvestToolProvider implements IBlockComponentProvider, ResourceMana
 		}
 
 		boolean newLine = config.get(Identifiers.MC_HARVEST_TOOL_NEW_LINE);
-		List<IElement> elements = getText(accessor, config, tooltip.getElementHelper());
+		List<IElement> elements = getText(accessor, config);
 		if (elements.isEmpty()) {
 			return;
 		}
@@ -106,7 +106,7 @@ public enum HarvestToolProvider implements IBlockComponentProvider, ResourceMana
 		}
 	}
 
-	public List<IElement> getText(BlockAccessor accessor, IPluginConfig config, IElementHelper helper) {
+	public List<IElement> getText(BlockAccessor accessor, IPluginConfig config) {
 		BlockState state = accessor.getBlockState();
 		if (!state.requiresCorrectToolForDrops() && !config.get(Identifiers.MC_EFFECTIVE_TOOL)) {
 			return List.of();
@@ -127,11 +127,11 @@ public enum HarvestToolProvider implements IBlockComponentProvider, ResourceMana
 		}
 		List<IElement> elements = Lists.newArrayList();
 		for (ItemStack tool : tools) {
-			elements.add(helper.item(tool, 0.75f).translate(new Vec2(-1, offsetY)).size(ITEM_SIZE).message(null));
+			elements.add(IElementHelper.get().item(tool, 0.75f).translate(new Vec2(-1, offsetY)).size(ITEM_SIZE).message(null));
 		}
 
 		if (!elements.isEmpty()) {
-			elements.add(0, helper.spacer(5, 0));
+			elements.add(0, IElementHelper.get().spacer(5, 0));
 			ItemStack held = accessor.getPlayer().getMainHandItem();
 			boolean canHarvest = held.isCorrectToolForDrops(state);
 			if (CommonProxy.isShearable(state) && CommonProxy.isShears(held)) {

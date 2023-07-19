@@ -96,7 +96,7 @@ public class Tooltip implements ITooltip {
 
 	@Override
 	public IElementHelper getElementHelper() {
-		return ElementHelper.INSTANCE;
+		return IElementHelper.get();
 	}
 
 	@Override

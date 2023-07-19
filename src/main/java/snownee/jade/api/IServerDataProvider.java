@@ -9,7 +9,7 @@ public interface IServerDataProvider<T extends Accessor<?>> extends IJadeProvide
 	 * Will only be called if the implementing class is registered via {@link IWailaCommonRegistration#registerBlockDataProvider} or {@link IWailaCommonRegistration#registerEntityDataProvider}.</br>
 	 *
 	 * @param data     Current synchronization tag (might have been processed by other providers and might be processed by other providers).
-	 * @param accessor Contains most of the relevant information about the current environment.
+	 * @param accessor Contains the relevant information about the current environment.
 	 */
 	void appendServerData(CompoundTag data, T accessor);
 }

@@ -27,7 +27,7 @@ public interface Accessor<T extends HitResult> {
 	T getHitResult();
 
 	/**
-	 * Returns true if dedicated server has Jade installed.
+	 * @return {@code true} if the dedicated server has Jade installed.
 	 */
 	boolean isServerConnected();
 

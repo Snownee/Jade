@@ -48,7 +48,7 @@ public enum PotionEffectsProvider implements IEntityComponentProvider, IServerDa
 		if (!accessor.getServerData().contains("Potions")) {
 			return;
 		}
-		IElementHelper helper = tooltip.getElementHelper();
+		IElementHelper helper = IElementHelper.get();
 		ITooltip box = helper.tooltip();
 		ListTag list = accessor.getServerData().getList("Potions", Tag.TAG_COMPOUND);
 		Component[] lines = new Component[list.size()];
