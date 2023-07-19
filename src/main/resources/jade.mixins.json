@@ -11,7 +11,6 @@
     "ClientLevelMixin",
     "FontMixin",
     "FullTextSearchTreeMixin",
-    "GameRendererMixin",
     "KeyAccess",
     "KeyMappingAccess"
   ],

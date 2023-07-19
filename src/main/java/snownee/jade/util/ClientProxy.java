@@ -23,6 +23,7 @@ import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.entity.EntityPickInteractionAware;
 import net.fabricmc.fabric.api.event.Event;
@@ -122,7 +123,7 @@ public final class ClientProxy implements ClientModInitializer {
 		JadeClient.onTooltip(lines, stack);
 	}
 
-	public static void onRenderTick(GuiGraphics guiGraphics) {
+	public static void onRenderTick(GuiGraphics guiGraphics, float tickDelta) {
 		try {
 			OverlayRenderer.renderOverlay478757(guiGraphics);
 		} catch (Throwable e) {
@@ -257,6 +258,14 @@ public final class ClientProxy implements ClientModInitializer {
 		ClientTickEvents.END_CLIENT_TICK.register(ClientProxy::onKeyPressed);
 		ScreenEvents.AFTER_INIT.register((Minecraft client, Screen screen, int scaledWidth, int scaledHeight) -> onGui(screen));
 		ClientCommandRegistrationCallback.EVENT.register(ClientProxy::registerClientCommand);
+		HudRenderCallback.EVENT.register(ClientProxy::onRenderTick);
+		ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
+			if (shouldShowWithOverlay(client, screen)) {
+				ScreenEvents.afterRender(screen).register((screen1, guiGraphics, mouseX, mouseY, tickDelta) -> {
+					onRenderTick(guiGraphics, tickDelta);
+				});
+			}
+		});
 
 		ClientPlayNetworking.registerGlobalReceiver(Identifiers.PACKET_RECEIVE_DATA, (client, handler, buf, responseSender) -> {
 			CompoundTag nbt = buf.readNbt();
