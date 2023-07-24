@@ -472,12 +472,13 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 			return 0;
 		}
 
-		public void parent(Entry parent) {
+		public Entry parent(Entry parent) {
 			this.parent = parent;
 			if (parent.children.isEmpty()) {
 				parent.children = Lists.newArrayList();
 			}
 			parent.children.add(this);
+			return this;
 		}
 
 		public Entry parent() {

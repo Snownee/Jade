@@ -90,11 +90,12 @@ public abstract class OptionValue<T> extends OptionsList.Entry {
 	}
 
 	@Override
-	public void parent(OptionsList.Entry parent) {
+	public OptionsList.Entry parent(OptionsList.Entry parent) {
 		super.parent(parent);
 		if (parent instanceof OptionValue) {
 			indent = ((OptionValue<?>) parent).indent + 12;
 		}
+		return this;
 	}
 
 }
