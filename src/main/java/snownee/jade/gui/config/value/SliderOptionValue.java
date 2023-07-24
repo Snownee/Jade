@@ -1,7 +1,6 @@
 package snownee.jade.gui.config.value;
 
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 import it.unimi.dsi.fastutil.floats.FloatUnaryOperator;
 import net.minecraft.client.gui.components.AbstractSliderButton;

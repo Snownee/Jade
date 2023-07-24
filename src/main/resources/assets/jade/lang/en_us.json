@@ -76,6 +76,7 @@
   "config.jade.boss_bar_overlap_extra_msg": "bossbars,hide,push,down",
   "config.jade.boss_bar_overlap_no_operation": "No Operation",
   "config.jade.boss_bar_overlap_hide_boss_bar": "Hide Boss Bar",
+  "config.jade.boss_bar_overlap_hide_tooltip": "Hide Tooltip",
   "config.jade.boss_bar_overlap_push_down": "Push Down Tooltip",
   "config.jade.display_item": "Icon Position",
   "config.jade.display_item_extra_msg": "hide,top,centered",

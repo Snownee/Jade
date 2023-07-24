@@ -3,7 +3,6 @@ package snownee.jade.api;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.Level;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.IElement;
 
