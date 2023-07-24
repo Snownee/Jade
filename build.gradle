@@ -58,6 +58,10 @@ dependencies {
     modCompileOnlyApi "mezz.jei:jei-1.19-common-api:${jei_version}"
     modCompileOnlyApi "mezz.jei:jei-1.19-fabric-api:${jei_version}"
     //modImplementation "mezz.jei:jei-1.19-fabric:${jei_version}"
+    
+    modApi("teamreborn:energy:${project.tr_energy_version}") {
+        exclude(group: "net.fabricmc.fabric-api")
+    }
 }
 
 loom {

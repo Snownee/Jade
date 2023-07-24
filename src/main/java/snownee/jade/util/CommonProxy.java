@@ -65,6 +65,7 @@ import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.WailaPlugin;
 import snownee.jade.api.fluid.JadeFluidObject;
+import snownee.jade.api.view.EnergyView;
 import snownee.jade.api.view.ItemView;
 import snownee.jade.api.view.ViewGroup;
 import snownee.jade.command.JadeServerCommand;
@@ -78,6 +79,7 @@ import snownee.jade.mixin.AbstractHorseAccess;
 public final class CommonProxy implements ModInitializer {
 
 	public static final TagKey<EntityType<?>> BOSSES = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("c:bosses"));
+	public static boolean hasTechRebornEnergy = isModLoaded("team_reborn_energy");
 
 	@Nullable
 	public static String getLastKnownUsername(UUID uuid) {
@@ -166,6 +168,18 @@ public final class CommonProxy implements ModInitializer {
 	}
 
 	public static List<ViewGroup<CompoundTag>> wrapEnergyStorage(Object target, ServerPlayer player) {
+		if (hasTechRebornEnergy && target instanceof BlockEntity be) {
+			try {
+				var storage = TechRebornEnergyCompat.getSided().find(be.getLevel(), be.getBlockPos(), be.getBlockState(), be, null);
+				if (storage != null) {
+					var group = new ViewGroup<>(List.of(EnergyView.of(storage.getAmount(), storage.getCapacity())));
+					group.getExtraData().putString("Unit", "E");
+					return List.of(group);
+				}
+			} catch (Throwable e) {
+				WailaExceptionHandler.handleErr(e, null, null);
+			}
+		}
 		return null;
 	}
 
