@@ -188,6 +188,6 @@ public interface IWailaConfig {
 	}
 
 	enum BossBarOverlapMode {
-		NO_OPERATION, HIDE_BOSS_BAR, PUSH_DOWN
+		NO_OPERATION, HIDE_BOSS_BAR, HIDE_TOOLTIP, PUSH_DOWN
 	}
 }
