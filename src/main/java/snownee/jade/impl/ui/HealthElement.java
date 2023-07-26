@@ -48,9 +48,10 @@ public class HealthElement extends Element {
 	public void render(PoseStack matrixStack, float x, float y, float maxX, float maxY) {
 		float maxHearts = PluginConfig.INSTANCE.getInt(Identifiers.MC_ENTITY_HEALTH_ICONS_PER_LINE);
 		int maxHeartsForRender = PluginConfig.INSTANCE.getInt(Identifiers.MC_ENTITY_HEALTH_MAX_FOR_RENDER);
+		boolean showNumbers = maxHealth > maxHeartsForRender;
 
-		int heartCount = maxHealth > maxHeartsForRender ? 1 : Mth.ceil(maxHealth * 0.5F);
-		float health = maxHealth > maxHeartsForRender ? 1 : (this.health * 0.5F);
+		int heartCount = showNumbers ? 1 : Mth.ceil(maxHealth * 0.5F);
+		float health = showNumbers ? 1 : (this.health * 0.5F);
 		int heartsPerLine = (int) (Math.min(maxHearts, Math.ceil(maxHealth)));
 
 		int xOffset = 0;
@@ -70,14 +71,13 @@ public class HealthElement extends Element {
 				xOffset += 8;
 			}
 
-			if (i % heartsPerLine == 0) {
+			if (!showNumbers && i % heartsPerLine == 0) {
 				y += 10;
 				xOffset = 0;
 			}
-
 		}
 
-		if (maxHealth > maxHeartsForRender) {
+		if (showNumbers) {
 			DisplayHelper.INSTANCE.drawText(matrixStack, text, x + 8, y, OverlayRenderer.normalTextColorRaw);
 		}
 	}
