@@ -121,7 +121,7 @@
   "config.jade.plugin_jade.registry_name_advanced_tooltips": "Advanced Tooltips",
   "config.jade.plugin_jade.registry_name_advanced_tooltips_desc": "Follow the advanced tooltips option.",
   "config.jade.plugin_minecraft.entity_health": "Entity Health",
-  "config.jade.plugin_minecraft.entity_health.max_for_render": "Max Hearts for Render",
+  "config.jade.plugin_minecraft.entity_health.max_for_render": "Max Health for Render",
   "config.jade.plugin_minecraft.entity_health.icons_per_line": "Icons per Line",
   "config.jade.plugin_minecraft.entity_health.show_fractions": "Show Fractions",
   "config.jade.plugin_minecraft.entity_armor": "Entity Armor",
