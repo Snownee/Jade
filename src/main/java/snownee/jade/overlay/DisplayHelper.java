@@ -33,6 +33,7 @@ import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
 import snownee.jade.Jade;
+import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
 import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.ui.IDisplayHelper;
@@ -254,7 +255,18 @@ public class DisplayHelper implements IDisplayHelper {
 		}
 
 		ClientProxy.getFluidSpriteAndColor(fluid, (sprite, color) -> {
-			drawTiledSprite(guiGraphics, xPosition, yPosition, width, height, color, scaledAmount.floatValue(), sprite);
+			if (sprite == null) {
+				float maxY = yPosition + height;
+				if (color == -1) {
+					color = 0xAAAAAAAA;
+				}
+				fill(guiGraphics, xPosition, maxY - scaledAmount.floatValue(), xPosition + width, maxY, color);
+			} else {
+				if (OverlayRenderer.alpha != 1) {
+					color = IWailaConfig.IConfigOverlay.applyAlpha(color, OverlayRenderer.alpha);
+				}
+				drawTiledSprite(guiGraphics, xPosition, yPosition, width, height, color, scaledAmount.floatValue(), sprite);
+			}
 		});
 	}
 

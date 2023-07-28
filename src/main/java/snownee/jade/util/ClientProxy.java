@@ -69,7 +69,6 @@ import snownee.jade.addon.harvest.ToolHandler;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.Identifiers;
-import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.command.JadeClientCommand;
@@ -221,15 +220,13 @@ public final class ClientProxy implements ClientModInitializer {
 	}
 
 	@SuppressWarnings("UnstableApiUsage")
-	public static void getFluidSpriteAndColor(JadeFluidObject fluid, BiConsumer<TextureAtlasSprite, Integer> consumer) {
+	public static void getFluidSpriteAndColor(JadeFluidObject fluid, BiConsumer<@Nullable TextureAtlasSprite, Integer> consumer) {
 		Fluid type = fluid.getType();
 		FluidVariant variant = FluidVariant.of(type, fluid.getTag());
 		FluidVariantRenderHandler handler = FluidVariantRendering.getHandlerOrDefault(type);
-		TextureAtlasSprite fluidStillSprite = handler.getSprites(variant)[0];
+		TextureAtlasSprite[] sprites = handler.getSprites(variant);
+		TextureAtlasSprite fluidStillSprite = sprites == null ? null : sprites[0];
 		int fluidColor = handler.getColor(variant, Minecraft.getInstance().level, null);
-		if (OverlayRenderer.alpha != 1) {
-			fluidColor = IWailaConfig.IConfigOverlay.applyAlpha(fluidColor, OverlayRenderer.alpha);
-		}
 		consumer.accept(fluidStillSprite, fluidColor);
 	}
 
