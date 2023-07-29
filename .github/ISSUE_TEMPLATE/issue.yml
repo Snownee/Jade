@@ -1,4 +1,4 @@
-name: New Issue
+name: New Issue (Bug / Suggestion)
 description: Do not write different problems/ideas in one issue. Separate them
 body:
   - type: dropdown
@@ -6,15 +6,17 @@ body:
     attributes:
       label: Mod loader
       options:
-        - Forge
         - Fabric
+        - NeoForge
+        - Forge
+        - Quilt
     validations:
       required: true
   - type: input
     id: mc-version
     attributes:
       label: Minecraft version
-      placeholder: eg. 1.17.1
+      placeholder: eg. 1.20.1
     validations:
       required: true
   - type: input
@@ -53,4 +55,4 @@ body:
   - type: textarea
     attributes:
       label: Issue description
-      placeholder: A description of the issue.
+      placeholder: A description of the bug / suggestion.
