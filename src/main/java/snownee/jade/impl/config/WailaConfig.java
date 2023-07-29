@@ -245,7 +245,7 @@ public class WailaConfig implements IWailaConfig {
 		private boolean overlaySquare = false;
 		private boolean flipMainHand = false;
 		@Expose
-		private float autoScaleThreshold = 0.5f;
+		private float autoScaleThreshold = 0.4f;
 		private float alpha = 0.7f;
 		private Map<ResourceLocation, Theme> themes = Maps.newLinkedHashMap();
 		private ResourceLocation activeTheme = Theme.DARK.id;

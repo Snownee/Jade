@@ -1,5 +1,7 @@
 package snownee.jade.overlay;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.mojang.blaze3d.platform.Window;
 
 import net.minecraft.client.Minecraft;
@@ -9,12 +11,15 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.Jade;
 import snownee.jade.api.config.IWailaConfig;
+import snownee.jade.api.config.IWailaConfig.BossBarOverlapMode;
 import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
 import snownee.jade.api.config.IWailaConfig.IconMode;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.ITooltipRenderer;
 import snownee.jade.impl.Tooltip;
 import snownee.jade.impl.Tooltip.Line;
+import snownee.jade.impl.config.WailaConfig.ConfigOverlay;
+import snownee.jade.util.ClientProxy;
 
 public class TooltipRenderer implements ITooltipRenderer {
 
@@ -24,6 +29,8 @@ public class TooltipRenderer implements ITooltipRenderer {
 	private IElement icon;
 	// top, right, bottom, left
 	private float[] padding = new float[] { 4, 3, 1, 4 };
+	private Rect2i realRect;
+	private float realScale = 1;
 
 	public TooltipRenderer(Tooltip tooltip, boolean showIcon) {
 		this.showIcon = showIcon;
@@ -156,6 +163,64 @@ public class TooltipRenderer implements ITooltipRenderer {
 	@Override
 	public void setSize(Vec2 totalSize) {
 		this.totalSize = totalSize;
+	}
+
+	@Override
+	public float getRealScale() {
+		return realScale;
+	}
+
+	@Override
+	@Nullable
+	public Rect2i getRealRect() {
+		return realRect;
+	}
+
+	@Override
+	public void recalculateRealRect() {
+		Rect2i position = getPosition();
+		ConfigOverlay overlay = Jade.CONFIG.get().getOverlay();
+		if (!overlay.getSquare()) {
+			position.setWidth(position.getWidth() + 2);
+			position.setHeight(position.getHeight() + 2);
+			position.setPosition(position.getX() + 1, position.getY() + 1);
+		}
+
+		realScale = overlay.getOverlayScale();
+		Window window = Minecraft.getInstance().getWindow();
+		float thresholdHeight = window.getGuiScaledHeight() * overlay.getAutoScaleThreshold();
+		if (totalSize.y * realScale > thresholdHeight) {
+			realScale = Math.max(realScale * 0.5f, thresholdHeight / totalSize.y);
+		}
+
+		position.setWidth((int) (position.getWidth() * realScale));
+		position.setHeight((int) (position.getHeight() * realScale));
+		position.setX((int) (position.getX() - position.getWidth() * overlay.tryFlip(overlay.getAnchorX())));
+		position.setY((int) (position.getY() - position.getHeight() * overlay.getAnchorY()));
+
+		BossBarOverlapMode mode = Jade.CONFIG.get().getGeneral().getBossBarOverlapMode();
+		if (mode == BossBarOverlapMode.PUSH_DOWN) {
+			Rect2i rect = ClientProxy.getBossBarRect();
+			if (rect != null) {
+				int tw = position.getWidth();
+				int th = position.getHeight();
+				int rw = rect.getWidth();
+				int rh = rect.getHeight();
+				int tx = position.getX();
+				int ty = position.getY();
+				int rx = rect.getX();
+				int ry = rect.getY();
+				rw += rx;
+				rh += ry;
+				tw += tx;
+				th += ty;
+				// check if tooltip intersects with boss bar
+				if (rw > tx && rh > ty && tw > rx && th > ry) {
+					position.setY(rect.getHeight());
+				}
+			}
+		}
+		realRect = position;
 	}
 
 }
