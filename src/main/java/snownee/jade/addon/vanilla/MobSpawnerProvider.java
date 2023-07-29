@@ -18,6 +18,7 @@ import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
+import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IPluginConfig;
 
 public enum MobSpawnerProvider implements IBlockComponentProvider, IEntityComponentProvider {
@@ -44,12 +45,17 @@ public enum MobSpawnerProvider implements IBlockComponentProvider, IEntityCompon
 		if (entity != null) {
 			name = Component.translatable("jade.spawner", name, entity.getDisplayName());
 			tooltip.remove(Identifiers.CORE_OBJECT_NAME);
-			tooltip.add(Jade.CONFIG.get().getFormatting().title(name), Identifiers.CORE_OBJECT_NAME);
+			tooltip.add(0, Jade.CONFIG.get().getFormatting().title(name), Identifiers.CORE_OBJECT_NAME);
 		}
 	}
 
 	@Override
 	public ResourceLocation getUid() {
 		return Identifiers.MC_MOB_SPAWNER;
+	}
+
+	@Override
+	public int getDefaultPriority() {
+		return TooltipPosition.HEAD - 99;
 	}
 }
