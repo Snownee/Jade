@@ -1,6 +1,7 @@
 package snownee.jade.api.ui;
 
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.phys.Vec2;
@@ -33,4 +34,11 @@ public interface ITooltipRenderer {
 	void setSize(Vec2 size);
 
 	void recalculateSize();
+
+	float getRealScale();
+
+	@Nullable
+	Rect2i getRealRect();
+
+	void recalculateRealRect();
 }

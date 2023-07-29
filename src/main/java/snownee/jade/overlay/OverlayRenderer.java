@@ -72,18 +72,16 @@ public class OverlayRenderer {
 			return false;
 		}
 
+		tooltipRenderer.recalculateRealRect();
 		ConfigGeneral general = Jade.CONFIG.get().getGeneral();
 		if (mc.screen instanceof BaseOptionsScreen optionsScreen) {
 			if (!general.previewOverlay && !optionsScreen.forcePreviewOverlay()) {
 				return false;
 			}
-			Rect2i position = tooltipRenderer.getPosition();
+			Rect2i position = tooltipRenderer.getRealRect();
 			Window window = mc.getWindow();
 			double x = mc.mouseHandler.xpos() * window.getGuiScaledWidth() / window.getScreenWidth();
 			double y = mc.mouseHandler.ypos() * window.getGuiScaledHeight() / window.getScreenHeight();
-			ConfigOverlay overlay = Jade.CONFIG.get().getOverlay();
-			x += position.getWidth() * overlay.tryFlip(overlay.getAnchorX());
-			y += position.getHeight() * overlay.getAnchorY();
 			if (position.contains((int) x, (int) y)) {
 				return false;
 			}
@@ -148,36 +146,7 @@ public class OverlayRenderer {
 		PoseStack matrixStack = guiGraphics.pose();
 		matrixStack.pushPose();
 
-		Rect2i position = tooltip.getPosition();
-		ConfigOverlay overlay = Jade.CONFIG.get().getOverlay();
-		if (!overlay.getSquare()) {
-			position.setWidth(position.getWidth() + 2);
-			position.setHeight(position.getHeight() + 2);
-			position.setPosition(position.getX() + 1, position.getY() + 1);
-		}
-
-		BossBarOverlapMode mode = Jade.CONFIG.get().getGeneral().getBossBarOverlapMode();
-		if (mode == BossBarOverlapMode.PUSH_DOWN) {
-			Rect2i rect = ClientProxy.getBossBarRect();
-			if (rect != null) {
-				int tw = position.getWidth();
-				int th = position.getHeight();
-				int rw = rect.getWidth();
-				int rh = rect.getHeight();
-				int tx = position.getX();
-				int ty = position.getY();
-				int rx = rect.getX();
-				int ry = rect.getY();
-				rw += rx;
-				rh += ry;
-				tw += tx;
-				th += ty;
-				// check if tooltip intersects with boss bar
-				if (rw > tx && rh > ty && tw > rx && th > ry) {
-					position.setY(rect.getHeight());
-				}
-			}
-		}
+		Rect2i position = tooltip.getRealRect();
 
 		if (morphRect == null) {
 			morphRect = new Rect2i(position.getX(), position.getY(), position.getWidth(), position.getHeight());
@@ -189,6 +158,7 @@ public class OverlayRenderer {
 		}
 
 		ColorSetting colorSetting = new ColorSetting();
+		ConfigOverlay overlay = Jade.CONFIG.get().getOverlay();
 		colorSetting.alpha = overlay.getAlpha();
 		colorSetting.backgroundColor = backgroundColorRaw;
 		colorSetting.gradientStart = gradientStartRaw;
@@ -203,17 +173,10 @@ public class OverlayRenderer {
 		float z = Minecraft.getInstance().screen == null ? 1 : 100;
 		matrixStack.translate(morphRect.getX(), morphRect.getY(), z);
 
-		float scale = overlay.getOverlayScale();
-		Window window = Minecraft.getInstance().getWindow();
-		float thresholdHeight = window.getGuiScaledHeight() * overlay.getAutoScaleThreshold();
-		if (position.getHeight() * scale > thresholdHeight) {
-			scale = Math.max(scale * 0.5f, thresholdHeight / position.getHeight());
-		}
-
+		float scale = tooltip.getRealScale();
 		if (scale != 1) {
 			matrixStack.scale(scale, scale, 1.0F);
 		}
-		matrixStack.translate((int) (-morphRect.getWidth() * overlay.tryFlip(overlay.getAnchorX())), (int) (-morphRect.getHeight() * overlay.getAnchorY()), 0);
 
 		boolean doDefault = true;
 		colorSetting.alpha *= alpha;
@@ -224,7 +187,7 @@ public class OverlayRenderer {
 			}
 		}
 		if (doDefault && colorSetting.alpha > 0) {
-			drawTooltipBox(guiGraphics, 0, 0, morphRect.getWidth(), morphRect.getHeight(), IConfigOverlay.applyAlpha(colorSetting.backgroundColor, colorSetting.alpha), IConfigOverlay.applyAlpha(colorSetting.gradientStart, colorSetting.alpha), IConfigOverlay.applyAlpha(colorSetting.gradientEnd, colorSetting.alpha), overlay.getSquare());
+			drawTooltipBox(guiGraphics, 0, 0, Mth.ceil(morphRect.getWidth() / scale), Mth.ceil(morphRect.getHeight() / scale), IConfigOverlay.applyAlpha(colorSetting.backgroundColor, colorSetting.alpha), IConfigOverlay.applyAlpha(colorSetting.gradientStart, colorSetting.alpha), IConfigOverlay.applyAlpha(colorSetting.gradientEnd, colorSetting.alpha), overlay.getSquare());
 		}
 
 		RenderSystem.enableBlend();
