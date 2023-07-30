@@ -1,5 +1,6 @@
 package snownee.jade.gui.config.value;
 
+import java.text.DecimalFormat;
 import java.util.function.Consumer;
 
 import it.unimi.dsi.fastutil.floats.FloatUnaryOperator;
@@ -7,7 +8,6 @@ import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
-import snownee.jade.overlay.DisplayHelper;
 
 public class SliderOptionValue extends OptionValue<Float> {
 
@@ -31,7 +31,13 @@ public class SliderOptionValue extends OptionValue<Float> {
 		return slider;
 	}
 
+	@Override
+	public void setValue(Float value) {
+		slider.setValue(value);
+	}
+
 	public static class Slider extends AbstractSliderButton {
+		private static DecimalFormat fmt = new DecimalFormat("##.##");
 		private final SliderOptionValue parent;
 
 		public Slider(SliderOptionValue parent, int x, int y, int width, int height, Component message) {
@@ -58,7 +64,13 @@ public class SliderOptionValue extends OptionValue<Float> {
 		//get title
 		@Override
 		protected void applyValue() {
-			setMessage(Component.literal(DisplayHelper.dfCommas.format(toScaled())));
+			setMessage(Component.literal(fmt.format(toScaled())));
+		}
+
+		private void setValue(float value) {
+			this.value = fromScaled(value, parent.min, parent.max);
+			applyValue();
+			updateMessage();
 		}
 	}
 }

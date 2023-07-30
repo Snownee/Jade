@@ -16,13 +16,36 @@ import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.impl.theme.ThemeHelper;
 
 public enum DistanceProvider implements IBlockComponentProvider, IEntityComponentProvider {
 
 	INSTANCE;
 
 	public static final DecimalFormat fmt = new DecimalFormat("#.#");
+	private static final int[] colors = {0xef9a9a, 0xa5d6a7, 0x90caf9, 0xb02a37, 0x198754, 0x0a58ca};
+
+	public static String distance(Accessor<?> accessor) {
+		return fmt.format(accessor.getPlayer().getEyePosition().distanceTo(accessor.getHitResult().getLocation()));
+	}
+
+	public static void xyz(ITooltip tooltip, Vec3i pos) {
+		Component display = Component.translatable("jade.blockpos", display(pos.getX(), 0), display(pos.getY(), 1), display(pos.getZ(), 2));
+		String narrate = I18n.get("narration.jade.blockpos", narrate(pos.getX()), narrate(pos.getY()), narrate(pos.getZ()));
+		tooltip.add(IElementHelper.get().text(display).message(narrate));
+	}
+
+	public static Component display(int i, int colorIndex) {
+		if (IThemeHelper.get().isLightColorScheme())
+			colorIndex += 3;
+		return Component.literal(Integer.toString(i)).withStyle(ThemeHelper.colorStyle(colors[colorIndex]));
+	}
+
+	public static String narrate(int i) {
+		return i >= 0 ? Integer.toString(i) : I18n.get("narration.jade.negative", -i);
+	}
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
@@ -50,24 +73,6 @@ public enum DistanceProvider implements IBlockComponentProvider, IEntityComponen
 		} else if (distance) {
 			tooltip.add(IElementHelper.get().text(Component.translatable("jade.distance2", distanceVal)).message(distanceMsg));
 		}
-	}
-
-	public static String distance(Accessor<?> accessor) {
-		return fmt.format(accessor.getPlayer().getEyePosition().distanceTo(accessor.getHitResult().getLocation()));
-	}
-
-	public static void xyz(ITooltip tooltip, Vec3i pos) {
-		Component display = Component.translatable("jade.blockpos", display(pos.getX(), 0xef9a9a), display(pos.getY(), 0xa5d6a7), display(pos.getZ(), 0x90caf9));
-		String narrate = I18n.get("narration.jade.blockpos", narrate(pos.getX()), narrate(pos.getY()), narrate(pos.getZ()));
-		tooltip.add(IElementHelper.get().text(display).message(narrate));
-	}
-
-	public static Component display(int i, int color) {
-		return Component.literal(Integer.toString(i)).withStyle($ -> $.withColor(color));
-	}
-
-	public static String narrate(int i) {
-		return i >= 0 ? Integer.toString(i) : I18n.get("narration.jade.negative", -i);
 	}
 
 	@Override

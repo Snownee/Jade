@@ -11,7 +11,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -30,6 +29,7 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElement.Align;
 import snownee.jade.api.ui.IElementHelper;
@@ -43,10 +43,8 @@ public enum HarvestToolProvider implements IBlockComponentProvider, ResourceMana
 
 	public static final Cache<BlockState, ImmutableList<ItemStack>> resultCache = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
 	public static final Map<String, ToolHandler> TOOL_HANDLERS = Maps.newLinkedHashMap();
-
-	private static final Component UNBREAKABLE_TEXT = Component.translatable("jade.harvest_tool.unbreakable").withStyle(ChatFormatting.DARK_RED);
-	private static final Component CHECK = Component.literal("✔").withStyle(ChatFormatting.GREEN);
-	private static final Component X = Component.literal("✕").withStyle(ChatFormatting.RED);
+	private static final Component CHECK = Component.literal("✔");
+	private static final Component X = Component.literal("✕");
 	private static final Vec2 ITEM_SIZE = new Vec2(10, 0);
 
 	static {
@@ -81,12 +79,12 @@ public enum HarvestToolProvider implements IBlockComponentProvider, ResourceMana
 		if (player.isCreative() || player.isSpectator()) {
 			return;
 		}
-		IElementHelper helper = IElementHelper.get();
 		BlockState state = accessor.getBlockState();
 		float hardness = state.getDestroySpeed(accessor.getLevel(), accessor.getPosition());
 		if (hardness < 0) {
 			if (config.get(Identifiers.MC_SHOW_UNBREAKABLE)) {
-				tooltip.add(helper.text(UNBREAKABLE_TEXT).message(null));
+				Component text = IThemeHelper.get().failure(Component.translatable("jade.harvest_tool.unbreakable"));
+				tooltip.add(IElementHelper.get().text(text).message(null));
 			}
 			return;
 		}
@@ -136,11 +134,10 @@ public enum HarvestToolProvider implements IBlockComponentProvider, ResourceMana
 			if (CommonProxy.isShearable(state) && CommonProxy.isShears(held)) {
 				canHarvest = true;
 			}
-			if (state.requiresCorrectToolForDrops()) {
-				Component sub = canHarvest ? CHECK : X;
-				elements.add(new SubTextElement(sub).translate(new Vec2(-3, 7 + offsetY)));
-			} else if (canHarvest) {
-				elements.add(new SubTextElement(CHECK).translate(new Vec2(-3, 7 + offsetY)));
+			if (state.requiresCorrectToolForDrops() || canHarvest) {
+				IThemeHelper t = IThemeHelper.get();
+				Component text = canHarvest ? t.success(CHECK) : t.danger(X);
+				elements.add(new SubTextElement(text).translate(new Vec2(-3, 7 + offsetY)));
 			}
 		}
 

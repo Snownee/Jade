@@ -23,7 +23,7 @@ public enum AnimalOwnerProvider implements IEntityComponentProvider, IServerData
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
-		String name = null;
+		String name;
 		if (accessor.getServerData().contains("OwnerName")) {
 			name = accessor.getServerData().getString("OwnerName");
 		} else {

@@ -10,6 +10,7 @@ import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.theme.IThemeHelper;
 
 public enum ChickenEggProvider implements IEntityComponentProvider, IServerDataProvider<EntityAccessor> {
 
@@ -17,16 +18,16 @@ public enum ChickenEggProvider implements IEntityComponentProvider, IServerDataP
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
-		if (!accessor.getServerData().contains("NextEgg")) {
+		if (!accessor.getServerData().contains("NextEggIn")) {
 			return;
 		}
-		tooltip.add(Component.translatable("jade.nextEgg", accessor.getServerData().getInt("NextEgg")));
+		tooltip.add(Component.translatable("jade.nextEgg", IThemeHelper.get().seconds(accessor.getServerData().getInt("NextEggIn"))));
 	}
 
 	@Override
 	public void appendServerData(CompoundTag tag, EntityAccessor accessor) {
 		Chicken chicken = (Chicken) accessor.getEntity();
-		tag.putInt("NextEgg", chicken.eggTime / 20);
+		tag.putInt("NextEggIn", chicken.eggTime);
 	}
 
 	@Override

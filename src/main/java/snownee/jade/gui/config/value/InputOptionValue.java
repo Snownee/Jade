@@ -62,4 +62,9 @@ public class InputOptionValue<T> extends OptionValue<T> {
 		return validator.test(textField.getValue());
 	}
 
+	@Override
+	public void setValue(T value) {
+		textField.setValue(String.valueOf(value));
+	}
+
 }

@@ -1,7 +1,10 @@
 package snownee.jade.overlay;
 
+import java.util.Objects;
 import java.util.function.IntConsumer;
 import java.util.function.ToIntFunction;
+
+import org.apache.commons.lang3.mutable.MutableObject;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.Window;
@@ -19,24 +22,18 @@ import snownee.jade.api.callback.JadeBeforeRenderCallback.ColorSetting;
 import snownee.jade.api.callback.JadeRenderBackgroundCallback;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.IWailaConfig.BossBarOverlapMode;
-import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
-import snownee.jade.api.config.Theme;
+import snownee.jade.api.theme.Theme;
 import snownee.jade.gui.BaseOptionsScreen;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.config.WailaConfig.ConfigGeneral;
 import snownee.jade.impl.config.WailaConfig.ConfigOverlay;
 import snownee.jade.util.ClientProxy;
-import snownee.jade.util.Color;
 
 public class OverlayRenderer {
 
+	public static final MutableObject<Theme> theme = new MutableObject<>(IWailaConfig.get().getOverlay().getTheme());
 	public static float ticks;
-	public static int backgroundColorRaw;
-	public static int gradientStartRaw;
-	public static int gradientEndRaw;
-	public static int stressedTextColorRaw;
-	public static int normalTextColorRaw;
 	public static boolean shown;
 	public static float alpha;
 	private static TooltipRenderer fadeTooltip;
@@ -146,7 +143,7 @@ public class OverlayRenderer {
 		PoseStack matrixStack = guiGraphics.pose();
 		matrixStack.pushPose();
 
-		Rect2i position = tooltip.getRealRect();
+		Rect2i position = Objects.requireNonNull(tooltip.getRealRect());
 
 		if (morphRect == null) {
 			morphRect = new Rect2i(position.getX(), position.getY(), position.getWidth(), position.getHeight());
@@ -160,14 +157,17 @@ public class OverlayRenderer {
 		ColorSetting colorSetting = new ColorSetting();
 		ConfigOverlay overlay = Jade.CONFIG.get().getOverlay();
 		colorSetting.alpha = overlay.getAlpha();
-		colorSetting.backgroundColor = backgroundColorRaw;
-		colorSetting.gradientStart = gradientStartRaw;
-		colorSetting.gradientEnd = gradientEndRaw;
+		Theme themeBefore = overlay.getTheme();
+		theme.setValue(themeBefore);
+		colorSetting.theme = theme;
 		for (JadeBeforeRenderCallback callback : WailaClientRegistration.INSTANCE.beforeRenderCallback.callbacks()) {
 			if (callback.beforeRender(tooltip.getTooltip(), morphRect, guiGraphics, ObjectDataCenter.get(), colorSetting)) {
 				matrixStack.popPose();
 				return;
 			}
+		}
+		if (themeBefore != theme.getValue()) {
+			tooltip.setPaddingFromTheme(theme.getValue());
 		}
 
 		float z = Minecraft.getInstance().screen == null ? 1 : 100;
@@ -186,11 +186,11 @@ public class OverlayRenderer {
 				break;
 			}
 		}
+		RenderSystem.enableBlend();
 		if (doDefault && colorSetting.alpha > 0) {
-			drawTooltipBox(guiGraphics, 0, 0, Mth.ceil(morphRect.getWidth() / scale), Mth.ceil(morphRect.getHeight() / scale), IConfigOverlay.applyAlpha(colorSetting.backgroundColor, colorSetting.alpha), IConfigOverlay.applyAlpha(colorSetting.gradientStart, colorSetting.alpha), IConfigOverlay.applyAlpha(colorSetting.gradientEnd, colorSetting.alpha), overlay.getSquare());
+			drawTooltipBox(guiGraphics, 0, 0, Mth.ceil(morphRect.getWidth() / scale), Mth.ceil(morphRect.getHeight() / scale), colorSetting.alpha, overlay.getSquare());
 		}
 
-		RenderSystem.enableBlend();
 		RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 		tooltip.draw(guiGraphics);
 		RenderSystem.disableBlend();
@@ -229,30 +229,36 @@ public class OverlayRenderer {
 		}
 	}
 
-	public static void drawTooltipBox(GuiGraphics guiGraphics, int x, int y, int w, int h, int bg, int grad1, int grad2, boolean square) {
-		if (!square) {
-			w -= 2;
-			h -= 2;
+	public static void drawTooltipBox(GuiGraphics guiGraphics, int x, int y, int w, int h, float alpha, boolean square) {
+		Theme theme = OverlayRenderer.theme.getValue();
+		if (theme.backgroundTexture != null) {
+			RenderSystem.setShaderColor(1, 1, 1, alpha);
+			guiGraphics.blitNineSliced(theme.backgroundTexture, x, y, w, h, theme.backgroundTextureUV[0], theme.backgroundTextureUV[1], theme.backgroundTextureUV[2], theme.backgroundTextureUV[3], theme.backgroundTextureUV[4], theme.backgroundTextureUV[5], theme.backgroundTextureUV[6], theme.backgroundTextureUV[7]);
+			RenderSystem.setShaderColor(1, 1, 1, 1);
+		} else {
+			if (!square) {
+				w -= 2;
+				h -= 2;
+			}
+			int bg = theme.backgroundColor;
+			if (bg != -1) {
+				bg = IWailaConfig.IConfigOverlay.applyAlpha(bg, alpha);
+				DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x + 1, y + 1, w - 2, h - 2, bg, bg);//center
+				if (!square) {
+					DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x, y - 1, w, 1, bg, bg);
+					DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x, y + h, w, 1, bg, bg);
+					DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x - 1, y, 1, h, bg, bg);
+					DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x + w, y, 1, h, bg, bg);
+				}
+			}
+			int[] borderColors = new int[4];
+			for (int i = 0; i < 4; i++) {
+				borderColors[i] = IWailaConfig.IConfigOverlay.applyAlpha(theme.borderColor[i], alpha);
+			}
+			DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x, y + 1, 1, h - 2, borderColors[0], borderColors[3]);
+			DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x + w - 1, y + 1, 1, h - 2, borderColors[1], borderColors[2]);
+			DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x, y, w, 1, borderColors[0], borderColors[1]);
+			DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x, y + h - 1, w, 1, borderColors[3], borderColors[2]);
 		}
-		DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x + 1, y + 1, w - 2, h - 2, bg, bg);//center
-		if (!square) {
-			DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x, y - 1, w, 1, bg, bg);
-			DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x, y + h, w, 1, bg, bg);
-			DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x - 1, y, 1, h, bg, bg);
-			DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x + w, y, 1, h, bg, bg);
-		}
-		DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x, y + 1, 1, h - 2, grad1, grad2);
-		DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x + w - 1, y + 1, 1, h - 2, grad1, grad2);
-		DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x, y, w, 1, grad1, grad1);
-		DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x, y + h - 1, w, 1, grad2, grad2);
-	}
-
-	public static void updateTheme() {
-		Theme theme = Jade.CONFIG.get().getOverlay().getTheme();
-		backgroundColorRaw = Color.valueOf(theme.backgroundColor).toInt();
-		gradientEndRaw = Color.valueOf(theme.gradientEnd).toInt();
-		gradientStartRaw = Color.valueOf(theme.gradientStart).toInt();
-		normalTextColorRaw = IConfigOverlay.applyAlpha(Color.valueOf(theme.normalTextColor).toInt(), 1);
-		stressedTextColorRaw = IConfigOverlay.applyAlpha(Color.valueOf(theme.stressedTextColor).toInt(), 1);
 	}
 }

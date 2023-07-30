@@ -11,7 +11,8 @@
     "ClientLevelMixin",
     "FontMixin",
     "FullTextSearchTreeMixin",
-    "KeyAccess"
+    "KeyAccess",
+    "ThemeHelperMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -21,7 +21,6 @@ import snownee.jade.api.view.ClientViewGroup;
 import snownee.jade.api.view.ViewGroup;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
-import snownee.jade.impl.ui.HorizontalLineElement;
 import snownee.jade.impl.ui.ScaledTextElement;
 
 public enum ProgressProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
@@ -43,13 +42,7 @@ public enum ProgressProvider implements IBlockComponentProvider, IServerDataProv
 				box.bgColor = 0x88000000;
 				ClientViewGroup.tooltip(tooltip, groups, renderGroup, (theTooltip, group) -> {
 					if (renderGroup) {
-						if (group.title != null) {
-							theTooltip.add(new HorizontalLineElement());
-							theTooltip.append(new ScaledTextElement(group.title, 0.5F));
-							theTooltip.append(new HorizontalLineElement());
-						} else if (group.bgColor == 0) {
-							theTooltip.add(new HorizontalLineElement());
-						}
+						group.renderHeader(theTooltip);
 					}
 					for (var view : group.views) {
 						if (view.text != null)

@@ -24,6 +24,7 @@ import snownee.jade.api.callback.JadeRayTraceCallback;
 import snownee.jade.api.callback.JadeTooltipCollectedCallback;
 import snownee.jade.api.config.IWailaConfig.DisplayMode;
 import snownee.jade.api.config.IWailaConfig.IConfigGeneral;
+import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.gui.BaseOptionsScreen;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.Tooltip;
@@ -172,5 +173,6 @@ public class WailaTickHandler {
 			callback.onTooltipCollected(tooltip, accessor);
 		}
 		tooltipRenderer = new TooltipRenderer(tooltip, true);
+		tooltipRenderer.setPaddingFromTheme(IThemeHelper.get().theme());
 	}
 }

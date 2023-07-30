@@ -3,7 +3,6 @@ package snownee.jade.gui;
 import java.io.File;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
@@ -26,6 +25,8 @@ import snownee.jade.Jade;
 import snownee.jade.JadeClient;
 import snownee.jade.addon.core.CorePlugin;
 import snownee.jade.api.config.IWailaConfig;
+import snownee.jade.api.theme.IThemeHelper;
+import snownee.jade.api.theme.Theme;
 import snownee.jade.gui.config.OptionButton;
 import snownee.jade.gui.config.OptionsList;
 import snownee.jade.gui.config.value.OptionValue;
@@ -36,6 +37,9 @@ import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
 
 public class WailaConfigScreen extends BaseOptionsScreen {
+
+	private OptionValue<Boolean> squareEntry;
+	private OptionValue<Float> opacityEntry;
 
 	public WailaConfigScreen(Screen parent) {
 		super(parent, Component.translatable("gui.jade.jade_settings"));
@@ -107,9 +111,16 @@ public class WailaConfigScreen extends BaseOptionsScreen {
 
 		ConfigOverlay overlay = Jade.CONFIG.get().getOverlay();
 		options.title("overlay");
-		options.slider("overlay_alpha", overlay.getAlpha(), overlay::setAlpha);
-		options.choices("overlay_theme", overlay.getTheme().id, overlay.getThemes().stream().map($ -> $.id).collect(Collectors.toList()), overlay::applyTheme);
-		options.choices("overlay_square", overlay.getSquare(), overlay::setSquare);
+		options.choices("overlay_theme", overlay.getTheme().id, IThemeHelper.get().getThemes().stream().map($ -> $.id).toList(), id -> {
+			overlay.applyTheme(id);
+			Theme theme = overlay.getTheme();
+			if (theme.squareBorder != null)
+				squareEntry.setValue(theme.squareBorder);
+			if (theme.opacity != 0)
+				opacityEntry.setValue(theme.opacity);
+		}, id -> Component.translatable(Util.makeDescriptionId("jade.theme", id)));
+		squareEntry = options.choices("overlay_square", overlay.getSquare(), overlay::setSquare);
+		opacityEntry = options.slider("overlay_alpha", overlay.getAlpha(), overlay::setAlpha);
 		options.forcePreview.add(options.slider("overlay_scale", overlay.getOverlayScale(), overlay::setOverlayScale, 0.2f, 2, FloatUnaryOperator.identity()));
 		options.forcePreview.add(entry = options.slider("overlay_pos_x", overlay.getOverlayPosX(), overlay::setOverlayPosX));
 		options.forcePreview.add(options.slider("overlay_anchor_x", overlay.getAnchorX(), overlay::setAnchorX).parent(entry));
@@ -152,9 +163,12 @@ public class WailaConfigScreen extends BaseOptionsScreen {
 					}
 					minecraft.options.save();
 					try {
+						int themesHash = Jade.CONFIG.get().getOverlay().themesHash;
 						Preconditions.checkState(Jade.CONFIG.getFile().delete());
 						Preconditions.checkState(PluginConfig.INSTANCE.getFile().delete());
 						Jade.CONFIG.invalidate();
+						Jade.CONFIG.get().getOverlay().themesHash = themesHash;
+						Jade.CONFIG.save();
 						PluginConfig.INSTANCE.reload();
 						rebuildWidgets();
 					} catch (Throwable e) {

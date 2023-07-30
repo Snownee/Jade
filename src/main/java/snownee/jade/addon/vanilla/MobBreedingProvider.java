@@ -13,6 +13,7 @@ import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.theme.IThemeHelper;
 
 public enum MobBreedingProvider implements IEntityComponentProvider, IServerDataProvider<EntityAccessor> {
 
@@ -25,7 +26,7 @@ public enum MobBreedingProvider implements IEntityComponentProvider, IServerData
 		}
 		int time = accessor.getServerData().getInt("BreedingCD");
 		if (time > 0) {
-			tooltip.add(Component.translatable(accessor.getEntity() instanceof Allay ? "jade.mobduplication.time" : "jade.mobbreeding.time", time / 20));
+			tooltip.add(Component.translatable(accessor.getEntity() instanceof Allay ? "jade.mobduplication.time" : "jade.mobbreeding.time", IThemeHelper.get().seconds(time)));
 		}
 	}
 

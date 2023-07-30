@@ -13,7 +13,6 @@ public class BoxStyle implements IBoxStyle {
 
 	static {
 		DEFAULT = new BoxStyle();
-		DEFAULT.borderColor = 0xFF808080;
 		DEFAULT.borderWidth = 1;
 	}
 

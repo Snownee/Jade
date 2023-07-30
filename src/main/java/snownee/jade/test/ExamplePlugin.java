@@ -13,6 +13,7 @@ import snownee.jade.api.IWailaClientRegistration;
 import snownee.jade.api.IWailaCommonRegistration;
 import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.WailaPlugin;
+import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.impl.config.PluginConfig;
 
 @WailaPlugin
@@ -45,7 +46,7 @@ public class ExamplePlugin implements IWailaPlugin {
 		registration.addConfig(UID_TEST_FLOAT_CFG, 0F, 0F, 100F, false);
 
 		registration.addRayTraceCallback((hitResult, accessor, originalAccessor) -> {
-			if (accessor instanceof BlockAccessor blockAccessor) {
+			if (IWailaConfig.get().getGeneral().isDebug() && accessor instanceof BlockAccessor blockAccessor) {
 				if (blockAccessor.getBlock() == Blocks.GRASS_BLOCK) {
 					return client.blockAccessor().from(blockAccessor).blockState(Blocks.TNT.defaultBlockState()).build();
 				}

@@ -2,7 +2,6 @@ package snownee.jade.addon.vanilla;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -13,6 +12,7 @@ import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.IElementHelper;
 
 public enum BrewingStandProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
@@ -29,11 +29,11 @@ public enum BrewingStandProvider implements IBlockComponentProvider, IServerData
 		int time = tag.getInt("Time");
 		IElementHelper helper = IElementHelper.get();
 		tooltip.add(helper.smallItem(new ItemStack(Items.BLAZE_POWDER)));
-		tooltip.append(Component.literal(Integer.toString(fuel)));
+		tooltip.append(IThemeHelper.get().info(fuel));
 		if (time > 0) {
 			tooltip.append(helper.spacer(5, 0));
 			tooltip.append(helper.smallItem(new ItemStack(Items.CLOCK)));
-			tooltip.append(Component.translatable("jade.seconds", time / 20));
+			tooltip.append(IThemeHelper.get().seconds(time));
 		}
 	}
 

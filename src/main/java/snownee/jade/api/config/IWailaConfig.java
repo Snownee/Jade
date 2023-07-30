@@ -9,6 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.ClipContext;
 import snownee.jade.Internals;
+import snownee.jade.api.theme.Theme;
 
 @NonExtendable
 public interface IWailaConfig {
@@ -162,6 +163,7 @@ public interface IWailaConfig {
 
 		Component registryName(String name);
 
+		@Deprecated
 		Component title(Object title);
 	}
 

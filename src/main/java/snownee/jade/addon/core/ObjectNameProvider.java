@@ -23,7 +23,7 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IPluginConfig;
-import snownee.jade.api.config.IWailaConfig;
+import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.impl.WailaClientRegistration;
 
 public enum ObjectNameProvider
@@ -82,15 +82,13 @@ public enum ObjectNameProvider
 				}
 			}
 		}
-		if (name != null) {
-			tooltip.add(IWailaConfig.get().getFormatting().title(name));
-		}
+		tooltip.add(IThemeHelper.get().title(name));
 	}
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		Component name = getEntityName(accessor.getEntity());
-		tooltip.add(IWailaConfig.get().getFormatting().title(name));
+		tooltip.add(IThemeHelper.get().title(name));
 	}
 
 	@Override

@@ -7,7 +7,6 @@ import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
-import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.IElement.Align;
 
@@ -32,7 +31,7 @@ public enum BlockFaceProvider implements IBlockComponentProvider {
 
 	@Override
 	public int getDefaultPriority() {
-		return TooltipPosition.HEAD;
+		return ObjectNameProvider.INSTANCE.getDefaultPriority() + 1;
 	}
 
 	@Override

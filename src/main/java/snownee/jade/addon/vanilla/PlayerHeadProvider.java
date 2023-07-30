@@ -13,7 +13,7 @@ import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
-import snownee.jade.api.config.IWailaConfig;
+import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.util.CommonProxy;
 
 public enum PlayerHeadProvider implements IBlockComponentProvider {
@@ -22,8 +22,7 @@ public enum PlayerHeadProvider implements IBlockComponentProvider {
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		if (accessor.getBlockEntity() instanceof SkullBlockEntity) {
-			SkullBlockEntity tile = (SkullBlockEntity) accessor.getBlockEntity();
+		if (accessor.getBlockEntity() instanceof SkullBlockEntity tile) {
 			GameProfile profile = tile.getOwnerProfile();
 			if (profile == null)
 				return;
@@ -38,7 +37,7 @@ public enum PlayerHeadProvider implements IBlockComponentProvider {
 				name = I18n.get(Items.PLAYER_HEAD.getDescriptionId() + ".named", name);
 			}
 			tooltip.remove(Identifiers.CORE_OBJECT_NAME);
-			tooltip.add(0, IWailaConfig.get().getFormatting().title(name), Identifiers.CORE_OBJECT_NAME);
+			tooltip.add(0, IThemeHelper.get().title(name), Identifiers.CORE_OBJECT_NAME);
 		}
 	}
 

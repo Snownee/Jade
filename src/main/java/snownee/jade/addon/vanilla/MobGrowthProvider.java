@@ -13,6 +13,7 @@ import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.theme.IThemeHelper;
 
 public enum MobGrowthProvider implements IEntityComponentProvider, IServerDataProvider<EntityAccessor> {
 
@@ -25,7 +26,7 @@ public enum MobGrowthProvider implements IEntityComponentProvider, IServerDataPr
 		}
 		int time = accessor.getServerData().getInt("GrowingTime");
 		if (time > 0) {
-			tooltip.add(Component.translatable("jade.mobgrowth.time", time / 20));
+			tooltip.add(Component.translatable("jade.mobgrowth.time", IThemeHelper.get().seconds(time)));
 		}
 	}
 

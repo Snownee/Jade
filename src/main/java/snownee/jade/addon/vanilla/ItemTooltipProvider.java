@@ -1,6 +1,7 @@
 package snownee.jade.addon.vanilla;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import com.google.common.collect.Lists;
@@ -11,6 +12,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
@@ -34,7 +37,15 @@ public enum ItemTooltipProvider implements IEntityComponentProvider {
 		ItemStack stack = ((ItemEntity) accessor.getEntity()).getItem();
 		JadeClient.hideModName = true;
 		List<Either<FormattedText, TooltipComponent>> lines = Lists.newArrayList();
-		stack.getTooltipLines(null, TooltipFlag.Default.NORMAL).stream().map(Either::<FormattedText, TooltipComponent>left).forEach(lines::add);
+		stack.getTooltipLines(null, TooltipFlag.Default.NORMAL)
+				.stream()
+				.peek(component -> {
+					if (component instanceof MutableComponent mutable && mutable.getStyle().getColor() != null) {
+						mutable.setStyle(mutable.getStyle().withColor((TextColor) null));
+					}
+				})
+				.map(Either::<FormattedText, TooltipComponent>left)
+				.forEach(lines::add);
 		JadeClient.hideModName = false;
 		if (lines.isEmpty()) {
 			return;
@@ -44,7 +55,7 @@ public enum ItemTooltipProvider implements IEntityComponentProvider {
 		Font font = Minecraft.getInstance().font;
 		int maxWidth = 250;
 		for (FormattedText text : realLines) {
-			if (ChatFormatting.stripFormatting(text.getString()).equals(modName)) {
+			if (Objects.equals(ChatFormatting.stripFormatting(text.getString()), modName)) {
 				continue;
 			}
 			int width = font.width(text);
