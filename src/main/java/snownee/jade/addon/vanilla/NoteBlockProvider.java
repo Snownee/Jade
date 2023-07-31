@@ -31,9 +31,6 @@ public enum NoteBlockProvider implements IBlockComponentProvider {
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		BlockState state = accessor.getBlockState();
-		int note = state.getValue(NoteBlock.NOTE);
-		String pitch = PITCH[note % PITCH.length];
-		ChatFormatting octave = (IThemeHelper.get().isLightColorScheme() ? OCTAVE_LIGHT : OCTAVE)[note / PITCH.length];
 		NoteBlockInstrument instrument = state.getValue(NoteBlock.INSTRUMENT);
 		String key = "jade.instrument." + instrument.getSerializedName();
 		String name;
@@ -42,7 +39,14 @@ public enum NoteBlockProvider implements IBlockComponentProvider {
 		} else {
 			name = Joiner.on(' ').join(Stream.of(instrument.getSerializedName().replace('_', ' ').split(" ")).map(StringUtils::capitalize).toList());
 		}
-		tooltip.add(Component.literal("%s %s".formatted(name, octave + pitch)));
+		if (instrument.isTunable()) {
+			int note = state.getValue(NoteBlock.NOTE);
+			String pitch = PITCH[note % PITCH.length];
+			ChatFormatting octave = (IThemeHelper.get().isLightColorScheme() ? OCTAVE_LIGHT : OCTAVE)[note / PITCH.length];
+			tooltip.add(Component.literal("%s %s".formatted(name, octave + pitch)));
+		} else {
+			tooltip.add(Component.literal(name));
+		}
 	}
 
 	@Override
