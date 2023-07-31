@@ -12,6 +12,7 @@
   "tooltip.jade.state_on": "On",
   "tooltip.jade.state_off": "Off",
   "tooltip.jade.power": "Power: %d",
+  "jade.input_signal": "Input: %d",
   "tooltip.jade.villager_profession": "Profession: %s",
   "gui.jade.by": "Made with %s by Snownee",
   "gui.jade.configuration": "Jade Configuration",
