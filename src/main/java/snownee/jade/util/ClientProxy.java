@@ -267,7 +267,7 @@ public final class ClientProxy {
 		return screen == null || screen instanceof BaseOptionsScreen || screen instanceof ChatScreen;
 	}
 
-	public static void getFluidSpriteAndColor(JadeFluidObject fluid, BiConsumer<TextureAtlasSprite, Integer> consumer) {
+	public static void getFluidSpriteAndColor(JadeFluidObject fluid, BiConsumer<@Nullable TextureAtlasSprite, Integer> consumer) {
 		Fluid type = fluid.getType();
 		FluidStack fluidStack = CommonProxy.toFluidStack(fluid);
 		Minecraft minecraft = Minecraft.getInstance();
