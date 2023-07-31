@@ -1,5 +1,6 @@
 package snownee.jade.gui.config.value;
 
+import java.text.DecimalFormat;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -45,6 +46,7 @@ public class SliderOptionValue extends OptionValue<Float> {
 	}
 
 	public static class Slider extends AbstractSliderButton {
+		private static DecimalFormat fmt = new DecimalFormat("0.##");
 		private final SliderOptionValue parent;
 
 		public Slider(SliderOptionValue parent, int x, int y, int width, int height, Component message) {
@@ -54,7 +56,8 @@ public class SliderOptionValue extends OptionValue<Float> {
 		}
 
 		public float toScaled() {
-			return parent.aligner.apply(parent.min + (parent.max - parent.min) * (float) value);
+			String s = fmt.format(parent.aligner.apply(parent.min + (parent.max - parent.min) * (float) value));
+			return Float.parseFloat(s);
 		}
 
 		public static double fromScaled(float f, float min, float max) {
