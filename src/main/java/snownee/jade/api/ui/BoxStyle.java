@@ -17,13 +17,17 @@ public class BoxStyle implements IBoxStyle {
 	}
 
 	public int bgColor = 0;
-	public int borderColor = 0;
+	public int borderColor;
 	public float borderWidth = 0;
 	public boolean roundCorner;
 	public int progressColor = 0;
 	public float progress;
 	private ResourceLocation tag;
 	private Object track; //TODO: API
+
+	public BoxStyle() {
+		borderColor = DEFAULT.borderColor;
+	}
 
 	@Override
 	public float borderWidth() {

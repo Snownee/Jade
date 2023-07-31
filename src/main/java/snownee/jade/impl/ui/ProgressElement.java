@@ -8,6 +8,8 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec2;
+import snownee.jade.api.theme.IThemeHelper;
+import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.IBoxStyle;
 import snownee.jade.api.ui.IProgressStyle;
@@ -27,6 +29,12 @@ public class ProgressElement extends Element {
 		this.progress = Mth.clamp(progress, 0, 1);
 		this.text = text;
 		this.style = style;
+		if (boxStyle == BoxStyle.DEFAULT && IThemeHelper.get().isLightColorScheme()) {
+			BoxStyle newStyle = new BoxStyle();
+			newStyle.borderWidth = BoxStyle.DEFAULT.borderWidth;
+			newStyle.bgColor = 0x44444444;
+			boxStyle = newStyle;
+		}
 		this.boxStyle = boxStyle;
 		this.canDecrease = canDecrease;
 	}
