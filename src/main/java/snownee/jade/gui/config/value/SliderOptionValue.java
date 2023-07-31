@@ -5,7 +5,6 @@ import java.util.function.Consumer;
 
 import it.unimi.dsi.fastutil.floats.FloatUnaryOperator;
 import net.minecraft.client.gui.components.AbstractSliderButton;
-import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 
@@ -24,11 +23,6 @@ public class SliderOptionValue extends OptionValue<Float> {
 		this.aligner = aligner;
 		slider = new Slider(this, 0, 0, 100, 20, getTitle());
 		addWidget(slider, 0);
-	}
-
-	@Override
-	public AbstractWidget getFirstWidget() {
-		return slider;
 	}
 
 	@Override
@@ -51,7 +45,8 @@ public class SliderOptionValue extends OptionValue<Float> {
 		}
 
 		public float toScaled() {
-			return parent.aligner.apply(parent.min + (parent.max - parent.min) * (float) value);
+			String s = fmt.format(parent.aligner.apply(parent.min + (parent.max - parent.min) * (float) value));
+			return Float.parseFloat(s);
 		}
 
 		//save?
