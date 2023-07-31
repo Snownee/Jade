@@ -13,9 +13,7 @@ buildscript {
 }
 
 plugins {
-    id "com.modrinth.minotaur" version "2.+"
-    // It's safest to have this on 2.+ to get the latest features and
-    // bug fixes without having to worry about breaking changes.
+    id "me.shedaniel.unified-publishing" version "0.1.+"
 }
 
 apply plugin: 'net.minecraftforge.gradle'
@@ -201,7 +199,7 @@ dependencies {
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
     annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
-    
+
     compileOnly fg.deobf("mezz.jei:jei-1.19.2-common-api:${jei_version}")
     compileOnly fg.deobf("mezz.jei:jei-1.19.2-forge-api:${jei_version}")
     //runtimeOnly fg.deobf("mezz.jei:jei-1.17.1:8.0.0.14")
@@ -213,10 +211,10 @@ jar {
     exclude '/snownee/jade/test'
     manifest {
         attributes([
-            "Implementation-Title": project.name,
-            "Implementation-Version": "${version}",
-            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-            "MixinConfigs": "${mod_id}.mixins.json"
+                "Implementation-Title"    : project.name,
+                "Implementation-Version"  : "${version}",
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                "MixinConfigs"            : "${mod_id}.mixins.json"
         ])
     }
 }
@@ -240,18 +238,35 @@ publishing {
     }
 }
 
-modrinth {
-    token = System.getenv("MODRINTH_TOKEN") // This is the default. Remember to have the MODRINTH_TOKEN environment variable set or else this will fail, or set it to whatever you want - just make sure it stays private!
-    projectId = "nvQzSEkH" // This can be the project ID or the slug. Either will work!
-    versionNumber = project.mod_version // You don't need to set this manually. Will fail if Modrinth has this version already
-    versionType = "release" // This is the default -- can also be `beta` or `alpha`
-    uploadFile = jar // With Loom, this MUST be set to `remapJar` instead of `jar`!
-    gameVersions = ["1.20", "1.20.1"] // Must be an array, even with only one version
-    loaders = ["forge"] // Must also be an array - no need to specify this if you're using Loom or ForgeGradle
-    dependencies { // A special DSL for creating dependencies
-        // scope.type
-        // The scope can be `required`, `optional`, `incompatible`, or `embedded`
-        // The type can either be `project` or `version`
-        // required.project "fabric-api"
+unifiedPublishing {
+    project {
+        displayName = project.version
+        version = project.mod_version // Optional, Inferred from project by default
+        changelog = file("CHANGELOG.md").exists() ? file("CHANGELOG.md").text : "" // Optional, in markdown format
+        releaseType = "release" // Optional, use "release", "beta" or "alpha"
+        gameVersions = ["1.20", "1.20.1"]
+        gameLoaders = ["forge", "neoforge"]
+
+        mainPublication tasks.jar // Declares the publicated jar
+        secondaryPublications.builtBy(tasks.apiJar)
+
+        curseforge {
+            token = System.getenv("CURSE_TOKEN")
+            id = "324717" // Required, must be a string, ID of CurseForge project
+
+            relations { // Optional, Inferred from the relations above by default
+                optional "jei"
+            }
+        }
+
+        modrinth {
+            token = System.getenv("MODRINTH_TOKEN")
+            id = "nvQzSEkH" // Required, must be a string, ID of Modrinth project
+            displayName = project.mod_version
+
+            relations { // Optional, Inferred from the relations above by default
+                optional "jei"
+            }
+        }
     }
 }
