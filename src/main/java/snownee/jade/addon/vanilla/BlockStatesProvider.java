@@ -2,7 +2,6 @@ package snownee.jade.addon.vanilla;
 
 import java.util.Collection;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -14,6 +13,7 @@ import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.IElementHelper;
 
@@ -28,12 +28,13 @@ public enum BlockStatesProvider implements IBlockComponentProvider {
 		if (properties.isEmpty())
 			return;
 		IElementHelper helper = IElementHelper.get();
+		IThemeHelper t = IThemeHelper.get();
 		ITooltip box = helper.tooltip();
 		properties.forEach(p -> {
 			Comparable<?> value = state.getValue(p);
-			MutableComponent valueText = Component.literal(" " + value.toString()).withStyle();
+			MutableComponent valueText = Component.literal(" " + value).withStyle();
 			if (p instanceof BooleanProperty)
-				valueText = valueText.withStyle(value == Boolean.TRUE ? ChatFormatting.GREEN : ChatFormatting.RED);
+				valueText = value == Boolean.TRUE ? t.success(valueText) : t.danger(valueText);
 			box.add(Component.literal(p.getName() + ":").append(valueText));
 		});
 		tooltip.add(helper.box(box, BoxStyle.DEFAULT));

@@ -11,6 +11,7 @@ import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.theme.IThemeHelper;
 
 public enum ZombieVillagerProvider implements IEntityComponentProvider, IServerDataProvider<EntityAccessor> {
 
@@ -23,7 +24,7 @@ public enum ZombieVillagerProvider implements IEntityComponentProvider, IServerD
 		}
 		int time = accessor.getServerData().getInt("ConversionTime");
 		if (time > 0) {
-			tooltip.add(Component.translatable("jade.zombieConversion.time", time / 20));
+			tooltip.add(Component.translatable("jade.zombieConversion.time", IThemeHelper.get().seconds(time / 20)));
 		}
 	}
 

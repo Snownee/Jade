@@ -9,11 +9,11 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.Identifiers;
+import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.Element;
 import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.overlay.IconUI;
-import snownee.jade.overlay.OverlayRenderer;
 
 public class ArmorElement extends Element {
 
@@ -44,7 +44,7 @@ public class ArmorElement extends Element {
 		if (armor > PluginConfig.INSTANCE.getInt(Identifiers.MC_ENTITY_ARMOR_MAX_FOR_RENDER)) {
 			DisplayHelper.renderIcon(guiGraphics, x, y, 8, 8, IconUI.ARMOR);
 			String text = "  " + DisplayHelper.dfCommas.format(armor);
-			DisplayHelper.INSTANCE.drawText(guiGraphics, text, x + 8, y, OverlayRenderer.normalTextColorRaw);
+			DisplayHelper.INSTANCE.drawText(guiGraphics, text, x + 8, y, IThemeHelper.get().getNormalColor());
 		} else {
 			float armor = this.armor * 0.5F;
 			int maxHearts = PluginConfig.INSTANCE.getInt(Identifiers.MC_ENTITY_HEALTH_ICONS_PER_LINE);

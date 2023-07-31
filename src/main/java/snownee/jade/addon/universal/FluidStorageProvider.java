@@ -28,8 +28,6 @@ import snownee.jade.api.view.IServerExtensionProvider;
 import snownee.jade.api.view.ViewGroup;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
-import snownee.jade.impl.ui.HorizontalLineElement;
-import snownee.jade.impl.ui.ScaledTextElement;
 import snownee.jade.util.CommonProxy;
 
 public enum FluidStorageProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor>,
@@ -53,13 +51,7 @@ public enum FluidStorageProvider implements IBlockComponentProvider, IServerData
 				boolean renderGroup = groups.size() > 1 || groups.get(0).shouldRenderGroup();
 				ClientViewGroup.tooltip(tooltip, groups, renderGroup, (theTooltip, group) -> {
 					if (renderGroup) {
-						if (group.title != null) {
-							theTooltip.add(new HorizontalLineElement());
-							theTooltip.append(new ScaledTextElement(group.title, 0.5F));
-							theTooltip.append(new HorizontalLineElement());
-						} else if (group.bgColor == 0) {
-							theTooltip.add(new HorizontalLineElement());
-						}
+						group.renderHeader(theTooltip);
 					}
 					for (var view : group.views) {
 						Component text;

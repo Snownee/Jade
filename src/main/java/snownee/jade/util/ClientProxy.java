@@ -54,6 +54,7 @@ import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.EntityLeaveLevelEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -74,6 +75,7 @@ import snownee.jade.compat.JEICompat;
 import snownee.jade.gui.BaseOptionsScreen;
 import snownee.jade.gui.HomeConfigScreen;
 import snownee.jade.impl.ObjectDataCenter;
+import snownee.jade.impl.theme.ThemeHelper;
 import snownee.jade.impl.ui.FluidStackElement;
 import snownee.jade.network.RequestEntityPacket;
 import snownee.jade.network.RequestTilePacket;
@@ -127,8 +129,16 @@ public final class ClientProxy {
 		MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, ScreenEvent.Render.Post.class, event -> {
 			onRenderTick(event.getGuiGraphics());
 		});
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientProxy::onKeyMappingEvent);
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientProxy::onRegisterReloadListener);
+		IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+		modEventBus.addListener(EventPriority.NORMAL, false, RegisterClientReloadListenersEvent.class, event -> {
+			event.registerReloadListener(ThemeHelper.INSTANCE);
+			listeners.forEach(event::registerReloadListener);
+			listeners.clear();
+		});
+		modEventBus.addListener(EventPriority.NORMAL, false, RegisterKeyMappingsEvent.class, event -> {
+			keys.forEach(event::register);
+			keys.clear();
+		});
 		ModLoadingContext.get().registerExtensionPoint(ConfigScreenFactory.class, () -> new ConfigScreenFactory((minecraft, screen) -> new HomeConfigScreen(screen)));
 
 		for (int i = 320; i < 330; i++) {
@@ -199,11 +209,6 @@ public final class ClientProxy {
 		return key;
 	}
 
-	private static void onKeyMappingEvent(RegisterKeyMappingsEvent event) {
-		keys.forEach(event::register);
-		keys.clear();
-	}
-
 	public static boolean shouldRegisterRecipeViewerKeys() {
 		return hasJEI || hasREI;
 	}
@@ -227,11 +232,6 @@ public final class ClientProxy {
 
 	public static void registerReloadListener(ResourceManagerReloadListener listener) {
 		listeners.add(listener);
-	}
-
-	private static void onRegisterReloadListener(RegisterClientReloadListenersEvent event) {
-		listeners.forEach(event::registerReloadListener);
-		listeners.clear();
 	}
 
 	private static void onDrawBossBar(CustomizeGuiOverlayEvent.BossEventProgress event) {

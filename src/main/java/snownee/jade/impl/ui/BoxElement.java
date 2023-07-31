@@ -21,6 +21,7 @@ public class BoxElement extends Element implements IBoxElement {
 
 	public BoxElement(Tooltip tooltip, IBoxStyle box) {
 		this.tooltip = new TooltipRenderer(tooltip, false);
+		this.tooltip.recalculateSize();
 		this.box = box;
 	}
 

@@ -43,6 +43,8 @@ import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.IWailaConfig.DisplayMode;
 import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
 import snownee.jade.api.config.IWailaConfig.TTSMode;
+import snownee.jade.api.theme.IThemeHelper;
+import snownee.jade.api.theme.Theme;
 import snownee.jade.gui.HomeConfigScreen;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.config.PluginConfig;
@@ -190,10 +192,11 @@ public final class JadeClient {
 		BlockState state = mc.level.getBlockState(playerController.destroyBlockPos);
 		if (playerController.isDestroying())
 			canHarvest = CommonProxy.isCorrectToolForDrops(state, mc.player);
-		int color = canHarvest ? 0xFFFFFF : 0xFF4444;
+		Theme theme = IThemeHelper.get().theme();
+		int color = canHarvest ? theme.bottomProgressNormalColor : theme.bottomProgressFailureColor;
 		int height = rect.getHeight();
 		int width = rect.getWidth();
-		if (!IWailaConfig.get().getOverlay().getSquare()) {
+		if (!IWailaConfig.get().getOverlay().getSquare() && theme.backgroundTexture == null) {
 			height -= 1;
 			width -= 2;
 		}
@@ -202,16 +205,22 @@ public final class JadeClient {
 			progressAlpha = Math.min(progressAlpha, 0.53F); //0x88 = 0.53 * 255
 			float progress = state.getDestroyProgress(mc.player, mc.player.level(), playerController.destroyBlockPos);
 			if (playerController.destroyProgress + progress >= 1) {
-				progressAlpha = 1;
+				progressAlpha = savedProgress = 1;
+			} else {
+				progress = playerController.destroyProgress + mc.getFrameTime() * progress;
+				savedProgress = Mth.clamp(progress, 0, 1);
 			}
-			progress = playerController.destroyProgress + mc.getFrameTime() * progress;
-			progress = Mth.clamp(progress, 0, 1);
-			savedProgress = progress;
 		} else {
 			progressAlpha = Math.max(progressAlpha, 0);
 		}
 		color = IConfigOverlay.applyAlpha(color, progressAlpha);
-		DisplayHelper.fill(guiGraphics, 0, height - 1, width * savedProgress, height, color);
+		if (theme.bottomProgressOffset == null) {
+			DisplayHelper.fill(guiGraphics, 0, height - 1, width * savedProgress, height, color);
+		} else {
+			int[] offset = theme.bottomProgressOffset;
+			width += offset[1] - offset[3];
+			DisplayHelper.fill(guiGraphics, offset[3], height - 1 + offset[0], offset[3] + width * savedProgress, height + offset[2], color);
+		}
 	}
 
 	public static MutableComponent format(String s, Object... objects) {

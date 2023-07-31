@@ -14,6 +14,8 @@ import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.IBoxElement;
 import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.api.ui.ITooltipRenderer;
+import snownee.jade.impl.ui.HorizontalLineElement;
+import snownee.jade.impl.ui.ScaledTextElement;
 
 public class ClientViewGroup<T> {
 
@@ -69,4 +71,13 @@ public class ClientViewGroup<T> {
 		}
 	}
 
+	public void renderHeader(ITooltip tooltip) {
+		if (title != null) {
+			tooltip.add(new HorizontalLineElement());
+			tooltip.append(new ScaledTextElement(title, 0.5F));
+			tooltip.append(new HorizontalLineElement());
+		} else if (bgColor == 0) {
+			tooltip.add(new HorizontalLineElement());
+		}
+	}
 }

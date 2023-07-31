@@ -15,6 +15,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import net.minecraft.resources.ResourceLocation;
+import snownee.jade.api.theme.Theme;
+import snownee.jade.impl.theme.ThemeSerializer;
 
 public class JsonConfig<T> {
 
@@ -24,6 +26,7 @@ public class JsonConfig<T> {
 			.serializeNulls()
 			.enableComplexMapKeySerialization()
 			.registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
+			.registerTypeAdapter(Theme.class, new ThemeSerializer())
 			.setLenient()
 			.create();
 	/* on */
@@ -43,8 +46,8 @@ public class JsonConfig<T> {
 			try (FileReader reader = new FileReader(configFile, StandardCharsets.UTF_8)) {
 				T ret = gson.fromJson(reader, configClass);
 				if (ret == null) {
-					T def = defaultFactory.get();
-					write(def, false);
+					ret = defaultFactory.get();
+					write(ret, false);
 				}
 				return ret;
 			} catch (Exception e) {

@@ -18,20 +18,22 @@ import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.theme.IThemeHelper;
 
 public enum NoteBlockProvider implements IBlockComponentProvider {
 
 	INSTANCE;
 
-	private static final String[] PITCH = { "F♯/G♭", "G", "G♯/A♭", "A", "A♯/B♭", "B", "C", "C♯/D♭", "D", "D♯/E♭", "E", "F" };
-	private static final ChatFormatting[] OCTAVE = { ChatFormatting.WHITE, ChatFormatting.YELLOW, ChatFormatting.GOLD };
+	private static final String[] PITCH = {"F♯/G♭", "G", "G♯/A♭", "A", "A♯/B♭", "B", "C", "C♯/D♭", "D", "D♯/E♭", "E", "F"};
+	private static final ChatFormatting[] OCTAVE = {ChatFormatting.WHITE, ChatFormatting.YELLOW, ChatFormatting.GOLD};
+	private static final ChatFormatting[] OCTAVE_LIGHT = {ChatFormatting.DARK_PURPLE, ChatFormatting.DARK_BLUE, ChatFormatting.BLUE};
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		BlockState state = accessor.getBlockState();
 		int note = state.getValue(NoteBlock.NOTE);
 		String pitch = PITCH[note % PITCH.length];
-		ChatFormatting octave = OCTAVE[note / PITCH.length];
+		ChatFormatting octave = (IThemeHelper.get().isLightColorScheme() ? OCTAVE_LIGHT : OCTAVE)[note / PITCH.length];
 		NoteBlockInstrument instrument = state.getValue(NoteBlock.INSTRUMENT);
 		String key = "jade.instrument." + instrument.getSerializedName();
 		String name;
@@ -40,7 +42,7 @@ public enum NoteBlockProvider implements IBlockComponentProvider {
 		} else {
 			name = Joiner.on(' ').join(Stream.of(instrument.getSerializedName().replace('_', ' ').split(" ")).map(StringUtils::capitalize).toList());
 		}
-		tooltip.add(Component.translatable("%s %s", name, octave + pitch));
+		tooltip.add(Component.literal("%s %s".formatted(name, octave + pitch)));
 	}
 
 	@Override

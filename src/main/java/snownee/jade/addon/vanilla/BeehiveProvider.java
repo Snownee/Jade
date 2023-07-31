@@ -1,8 +1,8 @@
 package snownee.jade.addon.vanilla;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.BeehiveBlock;
 import net.minecraft.world.level.block.entity.BeehiveBlockEntity;
@@ -13,6 +13,7 @@ import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.theme.IThemeHelper;
 
 public enum BeehiveProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
 
@@ -22,11 +23,13 @@ public enum BeehiveProvider implements IBlockComponentProvider, IServerDataProvi
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		BlockState state = accessor.getBlockState();
 		int level = state.getValue(BeehiveBlock.HONEY_LEVEL); // 0~5
-		tooltip.add(Component.translatable("jade.beehive.honey", Component.translatable("jade.fraction", level, 5).withStyle(level == 5 ? ChatFormatting.GREEN : ChatFormatting.WHITE)));
+		IThemeHelper t = IThemeHelper.get();
+		MutableComponent value = Component.translatable("jade.fraction", level, 5);
+		tooltip.add(Component.translatable("jade.beehive.honey", level == 5 ? t.success(value) : t.info(value)));
 		if (accessor.getServerData().contains("Full")) {
 			boolean full = accessor.getServerData().getBoolean("Full");
 			int bees = accessor.getServerData().getByte("Bees");
-			tooltip.add(Component.translatable("jade.beehive.bees", (full ? ChatFormatting.GREEN.toString() : "") + bees));
+			tooltip.add(Component.translatable("jade.beehive.bees", full ? t.success(bees) : t.info(bees)));
 		}
 	}
 

@@ -10,14 +10,19 @@ import snownee.jade.impl.Tooltip;
 @ApiStatus.NonExtendable
 public interface ITooltipRenderer {
 
-	static final int TOP = 0;
-	static final int RIGHT = 1;
-	static final int BOTTOM = 2;
-	static final int LEFT = 3;
+	int TOP = 0;
+	int RIGHT = 1;
+	int BOTTOM = 2;
+	int LEFT = 3;
 
-	float getPadding(int i);
+	int getPadding(int i);
 
-	void setPadding(int i, float value);
+	@Deprecated
+	default void setPadding(int i, float value) {
+		setPadding(i, (int) value);
+	}
+
+	void setPadding(int i, int value);
 
 	Tooltip getTooltip();
 

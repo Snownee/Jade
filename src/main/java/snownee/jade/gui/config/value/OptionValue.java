@@ -98,4 +98,6 @@ public abstract class OptionValue<T> extends OptionsList.Entry {
 		return this;
 	}
 
+	public abstract void setValue(T value);
+
 }

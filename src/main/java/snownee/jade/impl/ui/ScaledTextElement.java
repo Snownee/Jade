@@ -9,8 +9,8 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec2;
+import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.overlay.DisplayHelper;
-import snownee.jade.overlay.OverlayRenderer;
 
 public class ScaledTextElement extends TextElement {
 
@@ -33,7 +33,7 @@ public class ScaledTextElement extends TextElement {
 		matrixStack.pushPose();
 		matrixStack.translate(x, y + scale, 0);
 		matrixStack.scale(scale, scale, 1);
-		DisplayHelper.INSTANCE.drawText(guiGraphics, text, 0, 0, OverlayRenderer.normalTextColorRaw);
+		DisplayHelper.INSTANCE.drawText(guiGraphics, text, 0, 0, IThemeHelper.get().getNormalColor());
 		matrixStack.popPose();
 	}
 

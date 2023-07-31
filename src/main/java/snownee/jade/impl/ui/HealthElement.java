@@ -9,11 +9,11 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.Identifiers;
+import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.Element;
 import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.overlay.IconUI;
-import snownee.jade.overlay.OverlayRenderer;
 
 public class HealthElement extends Element {
 
@@ -81,7 +81,7 @@ public class HealthElement extends Element {
 		}
 
 		if (showNumbers) {
-			DisplayHelper.INSTANCE.drawText(guiGraphics, text, x + 8, y, OverlayRenderer.normalTextColorRaw);
+			DisplayHelper.INSTANCE.drawText(guiGraphics, text, x + 8, y, IThemeHelper.get().getNormalColor());
 		}
 	}
 

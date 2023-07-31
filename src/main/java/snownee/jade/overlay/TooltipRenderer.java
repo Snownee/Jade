@@ -14,6 +14,8 @@ import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.IWailaConfig.BossBarOverlapMode;
 import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
 import snownee.jade.api.config.IWailaConfig.IconMode;
+import snownee.jade.api.theme.IThemeHelper;
+import snownee.jade.api.theme.Theme;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.ITooltipRenderer;
 import snownee.jade.impl.Tooltip;
@@ -28,33 +30,25 @@ public class TooltipRenderer implements ITooltipRenderer {
 	private Vec2 totalSize;
 	private IElement icon;
 	// top, right, bottom, left
-	private float[] padding = new float[] { 4, 3, 1, 4 };
+	private final int[] padding = new int[] { 4, 3, 1, 4 };
 	private Rect2i realRect;
 	private float realScale = 1;
 
 	public TooltipRenderer(Tooltip tooltip, boolean showIcon) {
 		this.showIcon = showIcon;
 		this.tooltip = tooltip;
-
-		//		setPadding(0, 0);
-		//		setPadding(1, 0);
-		//		setPadding(2, 0);
-		//		setPadding(3, 0);
-
 		if (showIcon) {
 			icon = RayTracing.INSTANCE.getIcon();
 		}
-
-		recalculateSize();
 	}
 
 	@Override
-	public float getPadding(int i) {
+	public int getPadding(int i) {
 		return padding[i];
 	}
 
 	@Override
-	public void setPadding(int i, float value) {
+	public void setPadding(int i, int value) {
 		padding[i] = value;
 	}
 
@@ -101,7 +95,7 @@ public class TooltipRenderer implements ITooltipRenderer {
 				if (alphaChannel > 4) {
 					guiGraphics.pose().pushPose();
 					guiGraphics.pose().translate(x, y, 0);
-					DisplayHelper.INSTANCE.drawText(guiGraphics, "▾", 0, 0, 0xFFFFFF | alphaChannel << 24);
+					DisplayHelper.INSTANCE.drawText(guiGraphics, "▾", 0, 0, IThemeHelper.get().theme().infoColor & 0x00FFFFFF | alphaChannel << 24);
 					guiGraphics.pose().popPose();
 				}
 			}
@@ -180,7 +174,7 @@ public class TooltipRenderer implements ITooltipRenderer {
 	public void recalculateRealRect() {
 		Rect2i position = getPosition();
 		ConfigOverlay overlay = Jade.CONFIG.get().getOverlay();
-		if (!overlay.getSquare()) {
+		if (!overlay.getSquare() || IThemeHelper.get().theme().backgroundTexture != null) {
 			position.setWidth(position.getWidth() + 2);
 			position.setHeight(position.getHeight() + 2);
 			position.setPosition(position.getX() + 1, position.getY() + 1);
@@ -223,4 +217,10 @@ public class TooltipRenderer implements ITooltipRenderer {
 		realRect = position;
 	}
 
+	public void setPaddingFromTheme(Theme theme) {
+		for (int i = 0; i < 4; i++) {
+			setPadding(i, theme.padding[i]);
+		}
+		recalculateSize();
+	}
 }

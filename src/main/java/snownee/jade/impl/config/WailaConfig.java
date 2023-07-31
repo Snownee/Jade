@@ -2,30 +2,26 @@ package snownee.jade.impl.config;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.gson.annotations.Expose;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.HumanoidArm;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
-import snownee.jade.api.config.Theme;
-import snownee.jade.overlay.DisplayHelper;
-import snownee.jade.overlay.OverlayRenderer;
+import snownee.jade.api.theme.IThemeHelper;
+import snownee.jade.api.theme.Theme;
+import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.util.CommonProxy;
 import snownee.jade.util.ModIdentification;
 
 /**
- * Get this instance from {@link snownee.jade.api.IWailaClientRegistration#getConfig}
+ * Get this instance from {@link IWailaConfig#get()}
  */
 public class WailaConfig implements IWailaConfig {
 
@@ -55,6 +51,8 @@ public class WailaConfig implements IWailaConfig {
 
 	public static class ConfigGeneral implements IConfigGeneral {
 		public static final List<String> itemModNameTooltipDisabledByMods = Lists.newArrayList("emi");
+		public boolean hintOverlayToggle = true;
+		public boolean previewOverlay = true;
 		private boolean displayTooltip = true;
 		private boolean displayBlocks = true;
 		private boolean displayEntities = true;
@@ -70,8 +68,6 @@ public class WailaConfig implements IWailaConfig {
 		private boolean debug = false;
 		private boolean itemModNameTooltip = true;
 		private BossBarOverlapMode bossBarOverlapMode = BossBarOverlapMode.PUSH_DOWN;
-		public boolean hintOverlayToggle = true;
-		public boolean previewOverlay = true;
 
 		public static void init() {
 			/* off */
@@ -95,6 +91,11 @@ public class WailaConfig implements IWailaConfig {
 		}
 
 		@Override
+		public void setDisplayEntities(boolean displayEntities) {
+			this.displayEntities = displayEntities;
+		}
+
+		@Override
 		public boolean getDisplayBlocks() {
 			return displayBlocks;
 		}
@@ -102,16 +103,6 @@ public class WailaConfig implements IWailaConfig {
 		@Override
 		public void setDisplayBlocks(boolean displayBlocks) {
 			this.displayBlocks = displayBlocks;
-		}
-
-		@Override
-		public void setDisplayEntities(boolean displayEntities) {
-			this.displayEntities = displayEntities;
-		}
-
-		@Override
-		public void setDisplayMode(DisplayMode displayMode) {
-			this.displayMode = displayMode;
 		}
 
 		@Override
@@ -125,21 +116,6 @@ public class WailaConfig implements IWailaConfig {
 		}
 
 		@Override
-		public void setTTSMode(TTSMode ttsMode) {
-			this.ttsMode = ttsMode;
-		}
-
-		@Override
-		public void setDisplayFluids(boolean displayFluids) {
-			fluidMode = displayFluids ? FluidMode.ANY : FluidMode.NONE;
-		}
-
-		@Override
-		public void setDisplayFluids(FluidMode displayFluids) {
-			fluidMode = displayFluids;
-		}
-
-		@Override
 		public boolean shouldDisplayTooltip() {
 			return displayTooltip;
 		}
@@ -147,6 +123,11 @@ public class WailaConfig implements IWailaConfig {
 		@Override
 		public DisplayMode getDisplayMode() {
 			return displayMode;
+		}
+
+		@Override
+		public void setDisplayMode(DisplayMode displayMode) {
+			this.displayMode = displayMode;
 		}
 
 		@Override
@@ -165,6 +146,11 @@ public class WailaConfig implements IWailaConfig {
 		}
 
 		@Override
+		public void setTTSMode(TTSMode ttsMode) {
+			this.ttsMode = ttsMode;
+		}
+
+		@Override
 		public boolean shouldDisplayFluids() {
 			return fluidMode != FluidMode.NONE;
 		}
@@ -172,6 +158,16 @@ public class WailaConfig implements IWailaConfig {
 		@Override
 		public FluidMode getDisplayFluids() {
 			return fluidMode;
+		}
+
+		@Override
+		public void setDisplayFluids(boolean displayFluids) {
+			fluidMode = displayFluids ? FluidMode.ANY : FluidMode.NONE;
+		}
+
+		@Override
+		public void setDisplayFluids(FluidMode displayFluids) {
+			fluidMode = displayFluids;
 		}
 
 		@Override
@@ -185,13 +181,13 @@ public class WailaConfig implements IWailaConfig {
 		}
 
 		@Override
-		public void setDebug(boolean debug) {
-			this.debug = debug;
+		public boolean isDebug() {
+			return debug;
 		}
 
 		@Override
-		public boolean isDebug() {
-			return debug;
+		public void setDebug(boolean debug) {
+			this.debug = debug;
 		}
 
 		@Override
@@ -237,6 +233,8 @@ public class WailaConfig implements IWailaConfig {
 	}
 
 	public static class ConfigOverlay implements IConfigOverlay {
+		public ResourceLocation activeTheme = Theme.DARK.id;
+		public int themesHash;
 		private float overlayPosX = 0.5F;
 		private float overlayPosY = 1.0F;
 		private float overlayScale = 1.0F;
@@ -247,16 +245,13 @@ public class WailaConfig implements IWailaConfig {
 		@Expose
 		private float autoScaleThreshold = 0.4f;
 		private float alpha = 0.7f;
-		private Map<ResourceLocation, Theme> themes = Maps.newLinkedHashMap();
-		private ResourceLocation activeTheme = Theme.DARK.id;
+		private transient Theme activeThemeInstance;
 		private IconMode iconMode = IconMode.TOP;
 		private boolean animation = true;
 
-		public ConfigOverlay() {
-			themes.put(Theme.WAILA.id, Theme.WAILA);
-			themes.put(Theme.DARK.id, Theme.DARK);
-			themes.put(Theme.CREATE.id, Theme.CREATE);
-			themes.put(Theme.TOP.id, Theme.TOP);
+		@Override
+		public float getOverlayPosX() {
+			return Mth.clamp(overlayPosX, 0.0F, 1.0F);
 		}
 
 		@Override
@@ -265,33 +260,13 @@ public class WailaConfig implements IWailaConfig {
 		}
 
 		@Override
-		public void setOverlayPosY(float overlayPosY) {
-			this.overlayPosY = Mth.clamp(overlayPosY, 0.0F, 1.0F);
-		}
-
-		@Override
-		public void setOverlayScale(float overlayScale) {
-			this.overlayScale = Mth.clamp(overlayScale, 0.2F, 2.0F);
-		}
-
-		@Override
-		public void setAnchorX(float overlayAnchorX) {
-			this.overlayAnchorX = Mth.clamp(overlayAnchorX, 0.0F, 1.0F);
-		}
-
-		@Override
-		public void setAnchorY(float overlayAnchorY) {
-			this.overlayAnchorY = Mth.clamp(overlayAnchorY, 0.0F, 1.0F);
-		}
-
-		@Override
-		public float getOverlayPosX() {
-			return Mth.clamp(overlayPosX, 0.0F, 1.0F);
-		}
-
-		@Override
 		public float getOverlayPosY() {
 			return Mth.clamp(overlayPosY, 0.0F, 1.0F);
+		}
+
+		@Override
+		public void setOverlayPosY(float overlayPosY) {
+			this.overlayPosY = Mth.clamp(overlayPosY, 0.0F, 1.0F);
 		}
 
 		@Override
@@ -300,8 +275,18 @@ public class WailaConfig implements IWailaConfig {
 		}
 
 		@Override
+		public void setOverlayScale(float overlayScale) {
+			this.overlayScale = Mth.clamp(overlayScale, 0.2F, 2.0F);
+		}
+
+		@Override
 		public float getAnchorX() {
 			return Mth.clamp(overlayAnchorX, 0.0F, 1.0F);
+		}
+
+		@Override
+		public void setAnchorX(float overlayAnchorX) {
+			this.overlayAnchorX = Mth.clamp(overlayAnchorX, 0.0F, 1.0F);
 		}
 
 		@Override
@@ -310,13 +295,18 @@ public class WailaConfig implements IWailaConfig {
 		}
 
 		@Override
-		public void setFlipMainHand(boolean overlaySquare) {
-			flipMainHand = overlaySquare;
+		public void setAnchorY(float overlayAnchorY) {
+			this.overlayAnchorY = Mth.clamp(overlayAnchorY, 0.0F, 1.0F);
 		}
 
 		@Override
 		public boolean getFlipMainHand() {
 			return flipMainHand;
+		}
+
+		@Override
+		public void setFlipMainHand(boolean overlaySquare) {
+			flipMainHand = overlaySquare;
 		}
 
 		@Override
@@ -327,13 +317,13 @@ public class WailaConfig implements IWailaConfig {
 		}
 
 		@Override
-		public void setSquare(boolean overlaySquare) {
-			this.overlaySquare = overlaySquare;
+		public boolean getSquare() {
+			return overlaySquare;
 		}
 
 		@Override
-		public boolean getSquare() {
-			return overlaySquare;
+		public void setSquare(boolean overlaySquare) {
+			this.overlaySquare = overlaySquare;
 		}
 
 		@Override
@@ -347,29 +337,28 @@ public class WailaConfig implements IWailaConfig {
 		}
 
 		@Override
-		public Theme getTheme() {
-			return themes.getOrDefault(activeTheme, Theme.DARK);
-		}
-
-		@Override
-		public Collection<Theme> getThemes() {
-			return themes.values();
-		}
-
-		@Override
 		public void setAlpha(float alpha) {
 			this.alpha = Mth.clamp(alpha, 0, 1);
 		}
 
 		@Override
-		public void applyTheme(ResourceLocation id) {
-			activeTheme = themes.containsKey(id) ? id : activeTheme;
-			OverlayRenderer.updateTheme();
+		public Theme getTheme() {
+			if (activeThemeInstance == null)
+				applyTheme(activeTheme);
+			return activeThemeInstance;
 		}
 
 		@Override
-		public void setIconMode(IconMode iconMode) {
-			this.iconMode = iconMode;
+		@Deprecated
+		public Collection<Theme> getThemes() {
+			return IThemeHelper.get().getThemes();
+		}
+
+		@Override
+		public void applyTheme(ResourceLocation id) {
+			activeThemeInstance = IThemeHelper.get().getTheme(id);
+			activeTheme = activeThemeInstance.id;
+			BoxStyle.DEFAULT.borderColor = activeThemeInstance.boxBorderColor;
 		}
 
 		@Override
@@ -378,18 +367,23 @@ public class WailaConfig implements IWailaConfig {
 		}
 
 		@Override
+		public void setIconMode(IconMode iconMode) {
+			this.iconMode = iconMode;
+		}
+
+		@Override
 		public boolean shouldShowIcon() {
 			return iconMode != IconMode.HIDE;
 		}
 
 		@Override
-		public void setAnimation(boolean animation) {
-			this.animation = animation;
+		public boolean getAnimation() {
+			return animation;
 		}
 
 		@Override
-		public boolean getAnimation() {
-			return animation;
+		public void setAnimation(boolean animation) {
+			this.animation = animation;
 		}
 
 	}
@@ -398,29 +392,24 @@ public class WailaConfig implements IWailaConfig {
 		private String modName = "§9§o%s";
 
 		@Override
-		public void setModName(String modName) {
-			this.modName = modName;
-		}
-
-		@Override
 		public String getModName() {
 			return modName;
 		}
 
 		@Override
+		public void setModName(String modName) {
+			this.modName = modName;
+		}
+
+		@Override
+		@Deprecated
 		public Component title(Object title) {
-			Component component;
-			if (title instanceof Component) {
-				component = (MutableComponent) title;
-			} else {
-				component = Component.literal(Objects.toString(title));
-			}
-			return DisplayHelper.INSTANCE.stripColor(component).withStyle($ -> $.withColor(OverlayRenderer.stressedTextColorRaw));
+			return IThemeHelper.get().title(title);
 		}
 
 		@Override
 		public Component registryName(String name) {
-			return Component.literal(name).withStyle(ChatFormatting.GRAY);
+			return Component.literal(name).withStyle(IThemeHelper.get().isLightColorScheme() ? ChatFormatting.DARK_GRAY : ChatFormatting.GRAY);
 		}
 	}
 

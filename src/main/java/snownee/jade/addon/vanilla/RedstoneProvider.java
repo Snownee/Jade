@@ -1,6 +1,5 @@
 package snownee.jade.addon.vanilla;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -20,6 +19,7 @@ import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.theme.IThemeHelper;
 
 public enum RedstoneProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
 
@@ -29,33 +29,40 @@ public enum RedstoneProvider implements IBlockComponentProvider, IServerDataProv
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		BlockState state = accessor.getBlockState();
 		Block block = state.getBlock();
+		IThemeHelper t = IThemeHelper.get();
 		if (block instanceof LeverBlock) {
-			boolean active = state.getValue(BlockStateProperties.POWERED);
-			tooltip.add(Component.translatable("tooltip.jade.state", Component.translatable("tooltip.jade.state_" + (active ? "on" : "off"))));
+			Component info;
+			if (state.getValue(BlockStateProperties.POWERED)) {
+				info = t.success(Component.translatable("tooltip.jade.state_on"));
+			} else {
+				info = t.danger(Component.translatable("tooltip.jade.state_off"));
+			}
+			tooltip.add(Component.translatable("tooltip.jade.state", info));
 			return;
 		}
 
 		if (block == Blocks.REPEATER) {
 			int delay = state.getValue(BlockStateProperties.DELAY);
-			tooltip.add(Component.translatable("tooltip.jade.delay", ChatFormatting.WHITE.toString() + delay));
+			tooltip.add(Component.translatable("tooltip.jade.delay", t.info(delay)));
 			return;
 		}
 
 		if (block == Blocks.COMPARATOR) {
 			ComparatorMode mode = state.getValue(BlockStateProperties.MODE_COMPARATOR);
-			tooltip.add(Component.translatable("tooltip.jade.mode", Component.translatable("tooltip.jade.mode_" + (mode == ComparatorMode.COMPARE ? "comparator" : "subtractor")).withStyle(ChatFormatting.WHITE)));
+			Component modeInfo = t.info(Component.translatable("tooltip.jade.mode_" + (mode == ComparatorMode.COMPARE ? "comparator" : "subtractor")));
+			tooltip.add(Component.translatable("tooltip.jade.mode", modeInfo));
 			if (accessor.getServerData().contains("Signal")) {
-				tooltip.add(Component.translatable("tooltip.jade.power", ChatFormatting.WHITE.toString() + accessor.getServerData().getInt("Signal")));
+				tooltip.add(Component.translatable("tooltip.jade.power", t.info(accessor.getServerData().getInt("Signal"))));
 			}
 			return;
 		}
 
 		if (state.hasProperty(BlockStateProperties.POWER)) {
-			tooltip.add(Component.translatable("tooltip.jade.power", ChatFormatting.WHITE.toString() + state.getValue(BlockStateProperties.POWER)));
+			tooltip.add(Component.translatable("tooltip.jade.power", t.info(state.getValue(BlockStateProperties.POWER))));
 		}
 
 		if (state.getBlock() instanceof HopperBlock && accessor.getServerData().contains("HopperLocked")) {
-			tooltip.add(Component.translatable("jade.hopper.locked").withStyle(ChatFormatting.RED));
+			tooltip.add(t.danger(Component.translatable("jade.hopper.locked")));
 		}
 	}
 

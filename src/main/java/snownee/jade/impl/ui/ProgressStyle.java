@@ -15,6 +15,7 @@ import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IProgressStyle;
 import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.overlay.OverlayRenderer;
+import snownee.jade.util.Color;
 
 public class ProgressStyle implements IProgressStyle {
 
@@ -92,8 +93,8 @@ public class ProgressStyle implements IProgressStyle {
 				overlay.size(size);
 				overlay.render(guiGraphics, x, progressY, size.x, size.y);
 			} else {
-				int alpha = (int) (((color >> 24) & 0xFF) * 0.7f);
-				int lighter = (color & 0xFFFFFF) | alpha << 24;
+				Color color3 = Color.rgb(color);
+				int lighter = Color.hsl(color3.getHue(), color3.getSaturation(), color3.getLightness() * 0.7f, color3.getOpacity()).toInt();
 
 				float half = choose(true, height, width) / 2;
 				DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x, progressY, choose(true, progress, half), choose(false, progress, half), lighter, color, vertical);

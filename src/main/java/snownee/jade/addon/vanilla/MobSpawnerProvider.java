@@ -9,7 +9,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.vehicle.MinecartSpawner;
 import net.minecraft.world.level.BaseSpawner;
 import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
-import snownee.jade.Jade;
 import snownee.jade.addon.core.ObjectNameProvider;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.BlockAccessor;
@@ -18,8 +17,8 @@ import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
-import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.theme.IThemeHelper;
 
 public enum MobSpawnerProvider implements IBlockComponentProvider, IEntityComponentProvider {
 
@@ -45,7 +44,7 @@ public enum MobSpawnerProvider implements IBlockComponentProvider, IEntityCompon
 		if (entity != null) {
 			name = Component.translatable("jade.spawner", name, entity.getDisplayName());
 			tooltip.remove(Identifiers.CORE_OBJECT_NAME);
-			tooltip.add(0, Jade.CONFIG.get().getFormatting().title(name), Identifiers.CORE_OBJECT_NAME);
+			tooltip.add(0, IThemeHelper.get().title(name), Identifiers.CORE_OBJECT_NAME);
 		}
 	}
 
@@ -56,6 +55,6 @@ public enum MobSpawnerProvider implements IBlockComponentProvider, IEntityCompon
 
 	@Override
 	public int getDefaultPriority() {
-		return TooltipPosition.HEAD - 99;
+		return ObjectNameProvider.INSTANCE.getDefaultPriority() + 10;
 	}
 }

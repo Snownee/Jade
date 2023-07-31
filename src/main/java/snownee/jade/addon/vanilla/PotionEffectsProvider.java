@@ -2,7 +2,6 @@ package snownee.jade.addon.vanilla;
 
 import java.util.Collection;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -20,6 +19,7 @@ import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.IElementHelper;
 
@@ -64,7 +64,8 @@ public enum PotionEffectsProvider implements IEntityComponentProvider, IServerDa
 				amplifier = Component.literal(Integer.toString(compound.getInt("Amplifier")));
 			}
 			MutableComponent s = Component.translatable("jade.potion", name, amplifier, getPotionDurationString(duration));
-			box.add(s.withStyle(compound.getBoolean("Bad") ? ChatFormatting.RED : ChatFormatting.GREEN));
+			IThemeHelper t = IThemeHelper.get();
+			box.add(compound.getBoolean("Bad") ? t.danger(s) : t.success(s));
 		}
 		tooltip.add(helper.box(box, BoxStyle.DEFAULT));
 	}
