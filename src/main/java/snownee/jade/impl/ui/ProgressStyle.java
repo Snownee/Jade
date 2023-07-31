@@ -25,6 +25,7 @@ public class ProgressStyle implements IProgressStyle {
 	public int textColor;
 	public boolean vertical;
 	public IElement overlay;
+	@Deprecated
 	public boolean glowText;
 	public boolean shadow = true;
 
