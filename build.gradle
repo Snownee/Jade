@@ -148,7 +148,7 @@ unifiedPublishing {
         changelog = file("CHANGELOG.md").exists() ? file("CHANGELOG.md").text : "" // Optional, in markdown format
         releaseType = "release" // Optional, use "release", "beta" or "alpha"
         gameVersions = ["1.20", "1.20.1"]
-        gameLoaders = ["fabric"]
+        gameLoaders = ["fabric", "quilt"]
 
         mainPublication tasks.remapJar // Declares the publicated jar
         secondaryPublications.builtBy(tasks.apiJar)
