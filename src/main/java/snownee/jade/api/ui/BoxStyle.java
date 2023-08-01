@@ -9,10 +9,9 @@ import snownee.jade.overlay.WailaTickHandler;
 
 public class BoxStyle implements IBoxStyle {
 
-	public static final BoxStyle DEFAULT;
+	public static final BoxStyle DEFAULT = new BoxStyle();
 
 	static {
-		DEFAULT = new BoxStyle();
 		DEFAULT.borderWidth = 1;
 	}
 
@@ -26,7 +25,8 @@ public class BoxStyle implements IBoxStyle {
 	private Object track; //TODO: API
 
 	public BoxStyle() {
-		borderColor = DEFAULT.borderColor;
+		if (DEFAULT != null)
+			borderColor = DEFAULT.borderColor;
 	}
 
 	@Override

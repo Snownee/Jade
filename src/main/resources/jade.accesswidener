@@ -29,3 +29,6 @@ accessible method net/minecraft/world/level/block/ChiseledBookShelfBlock getHitS
 accessible method net/minecraft/world/entity/Display$BlockDisplay getBlockState ()Lnet/minecraft/world/level/block/state/BlockState;
 
 accessible field net/minecraft/world/entity/monster/ZombieVillager villagerConversionTime I
+
+accessible field net/minecraft/world/entity/animal/horse/AbstractHorse MAX_MOVEMENT_SPEED F
+accessible field net/minecraft/world/entity/animal/horse/AbstractHorse MAX_JUMP_STRENGTH F
