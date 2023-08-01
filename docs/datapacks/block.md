@@ -32,7 +32,7 @@ In the above case, it will show a barrel with model **1002**.
 
 ## Contents and Background Items
 
-If you want Jade to ignore an content item, you need to tag the item with an entry that:
+If you want Jade to ignore a content item, you need to tag the item with an entry that:
 
   - Key ends with "clear"
   - Value is `1b`
