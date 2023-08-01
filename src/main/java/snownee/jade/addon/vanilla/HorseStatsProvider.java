@@ -32,7 +32,7 @@ public enum HorseStatsProvider implements IEntityComponentProvider {
 		double jumpStrength = horse.getCustomJump();
 		double jumpHeight = -0.1817584952 * jumpStrength * jumpStrength * jumpStrength + 3.689713992 * jumpStrength * jumpStrength + 2.128599134 * jumpStrength - 0.343930367;
 		// https://minecraft.fandom.com/wiki/Horse?so=search#Movement_speed
-		double speed = horse.getAttributeValue(Attributes.MOVEMENT_SPEED) * 43.17;
+		double speed = horse.getAttributeValue(Attributes.MOVEMENT_SPEED) * 42.16;
 		tooltip.add(Component.translatable("jade.horseStat.jump", t.info(DisplayHelper.dfCommas.format(jumpHeight))));
 		tooltip.add(Component.translatable("jade.horseStat.speed", t.info(DisplayHelper.dfCommas.format(speed))));
 	}
