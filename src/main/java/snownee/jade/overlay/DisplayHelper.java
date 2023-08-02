@@ -36,6 +36,7 @@ import snownee.jade.Jade;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
 import snownee.jade.api.fluid.JadeFluidObject;
+import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.Color;
@@ -66,7 +67,8 @@ public class DisplayHelper implements IDisplayHelper {
 			guiGraphics.pose().pushPose();
 			guiGraphics.pose().translate(0.0f, 0.0f, 200.0f);
 			guiGraphics.pose().scale(.75f, .75f, .75f);
-			INSTANCE.drawText(guiGraphics, s, i + 22 - font.width(s), j + 13, 16777215);
+			int color = IThemeHelper.get().theme().itemAmountColor;
+			guiGraphics.drawString(font, s, i + 22 - font.width(s), j + 13, color, color != 0xFF000000);
 			guiGraphics.pose().popPose();
 		}
 

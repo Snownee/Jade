@@ -189,7 +189,7 @@ public class OverlayRenderer {
 		}
 		RenderSystem.enableBlend();
 		if (doDefault && colorSetting.alpha > 0) {
-			drawTooltipBox(guiGraphics, 0, 0, Mth.ceil(morphRect.getWidth() / scale), Mth.ceil(morphRect.getHeight() / scale), colorSetting.alpha, overlay.getSquare());
+			drawTooltipBox(guiGraphics, 0, 0, Mth.ceil(morphRect.getWidth() / scale), Mth.ceil(morphRect.getHeight() / scale), colorSetting.alpha, overlay.getSquare(), tooltip);
 		}
 
 		RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
@@ -230,12 +230,18 @@ public class OverlayRenderer {
 		}
 	}
 
-	public static void drawTooltipBox(GuiGraphics guiGraphics, int x, int y, int w, int h, float alpha, boolean square) {
+	public static void drawTooltipBox(GuiGraphics guiGraphics, int x, int y, int w, int h, float alpha, boolean square, TooltipRenderer tooltip) {
 		Theme theme = OverlayRenderer.theme.getValue();
 		if (theme.backgroundTexture != null) {
+			ResourceLocation texture = theme.backgroundTexture;
+			int[] uv = theme.backgroundTextureUV;
+			if (theme.backgroundTexture_withIcon != null && tooltip.hasIcon()) {
+				texture = theme.backgroundTexture_withIcon;
+				uv = theme.backgroundTextureUV_withIcon;
+			}
 			RenderSystem.setShaderColor(1, 1, 1, alpha);
 			//guiGraphics.blitNineSliced(theme.backgroundTexture, x, y, w, h, theme.backgroundTextureUV[0], theme.backgroundTextureUV[1], theme.backgroundTextureUV[2], theme.backgroundTextureUV[3], theme.backgroundTextureUV[4], theme.backgroundTextureUV[5], theme.backgroundTextureUV[6], theme.backgroundTextureUV[7]);
-			blitNineSliced(guiGraphics, theme.backgroundTexture, x, y, w, h, theme.backgroundTextureUV[3], theme.backgroundTextureUV[0], theme.backgroundTextureUV[1], theme.backgroundTextureUV[2], theme.backgroundTextureUV[4], theme.backgroundTextureUV[5], theme.backgroundTextureUV[6], theme.backgroundTextureUV[7]);
+			blitNineSliced(guiGraphics, texture, x, y, w, h, uv[3], uv[0], uv[1], uv[2], uv[4], uv[5], uv[6], uv[7]);
 			RenderSystem.setShaderColor(1, 1, 1, 1);
 		} else {
 			if (!square) {
