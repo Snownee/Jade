@@ -23,9 +23,12 @@ public class Theme {
 	public int dangerColor = 0xFFFF5555;
 	public int failureColor = 0xFFAA0000;
 	public int boxBorderColor = 0xFF808080;
+	public int itemAmountColor = 0xFFFFFFFF;
 	public boolean textShadow = true;
 	public ResourceLocation backgroundTexture;
 	public int[] backgroundTextureUV;
+	public ResourceLocation backgroundTexture_withIcon;
+	public int[] backgroundTextureUV_withIcon;
 	public final int[] padding = new int[] { 4, 3, 1, 4 };
 	public Boolean squareBorder;
 	public float opacity;
@@ -33,5 +36,6 @@ public class Theme {
 	public int bottomProgressNormalColor = 0xFFFFFFFF;
 	public int bottomProgressFailureColor = 0xFFFF4444;
 	public boolean lightColorScheme;
+	public boolean hidden;
 
 }

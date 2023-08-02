@@ -100,7 +100,7 @@ public class WailaConfigScreen extends BaseOptionsScreen {
 			value.setDisabled(true);
 			value.appendDescription(I18n.get("gui.jade.disabled_by_mods"));
 			ConfigGeneral.itemModNameTooltipDisabledByMods.forEach(value::appendDescription);
-			if (value.getFirstWidget() != null) {
+			if (value.getFirstWidget() != null && value.getDescription() != null) {
 				value.getFirstWidget().setTooltip(Tooltip.create(Component.literal(value.getDescription())));
 			}
 		}
@@ -111,7 +111,7 @@ public class WailaConfigScreen extends BaseOptionsScreen {
 
 		ConfigOverlay overlay = Jade.CONFIG.get().getOverlay();
 		options.title("overlay");
-		options.choices("overlay_theme", overlay.getTheme().id, IThemeHelper.get().getThemes().stream().map($ -> $.id).toList(), id -> {
+		options.choices("overlay_theme", overlay.getTheme().id, IThemeHelper.get().getThemes().stream().filter($ -> !$.hidden).map($ -> $.id).toList(), id -> {
 			overlay.applyTheme(id);
 			Theme theme = overlay.getTheme();
 			if (theme.squareBorder != null)
