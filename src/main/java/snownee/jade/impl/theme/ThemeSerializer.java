@@ -78,6 +78,9 @@ public class ThemeSerializer implements JsonDeserializer<Theme>, JsonSerializer<
 	@Override
 	public Theme deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
 		JsonObject o = json.getAsJsonObject();
+		if (GsonHelper.getAsInt(o, "version", 0) != 0) {
+			throw new JsonParseException("Unsupported theme version");
+		}
 		Theme theme = new Theme();
 		if (o.has("backgroundImage")) {
 			JsonArray array = o.getAsJsonArray("backgroundImage");

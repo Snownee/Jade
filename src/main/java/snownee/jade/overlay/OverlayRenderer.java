@@ -14,6 +14,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
@@ -233,7 +234,8 @@ public class OverlayRenderer {
 		Theme theme = OverlayRenderer.theme.getValue();
 		if (theme.backgroundTexture != null) {
 			RenderSystem.setShaderColor(1, 1, 1, alpha);
-			guiGraphics.blitNineSliced(theme.backgroundTexture, x, y, w, h, theme.backgroundTextureUV[0], theme.backgroundTextureUV[1], theme.backgroundTextureUV[2], theme.backgroundTextureUV[3], theme.backgroundTextureUV[4], theme.backgroundTextureUV[5], theme.backgroundTextureUV[6], theme.backgroundTextureUV[7]);
+			//guiGraphics.blitNineSliced(theme.backgroundTexture, x, y, w, h, theme.backgroundTextureUV[0], theme.backgroundTextureUV[1], theme.backgroundTextureUV[2], theme.backgroundTextureUV[3], theme.backgroundTextureUV[4], theme.backgroundTextureUV[5], theme.backgroundTextureUV[6], theme.backgroundTextureUV[7]);
+			blitNineSliced(guiGraphics, theme.backgroundTexture, x, y, w, h, theme.backgroundTextureUV[3], theme.backgroundTextureUV[0], theme.backgroundTextureUV[1], theme.backgroundTextureUV[2], theme.backgroundTextureUV[4], theme.backgroundTextureUV[5], theme.backgroundTextureUV[6], theme.backgroundTextureUV[7]);
 			RenderSystem.setShaderColor(1, 1, 1, 1);
 		} else {
 			if (!square) {
@@ -259,6 +261,34 @@ public class OverlayRenderer {
 			DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x + w - 1, y + 1, 1, h - 2, borderColors[1], borderColors[2]);
 			DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x, y, w, 1, borderColors[0], borderColors[1]);
 			DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x, y + h - 1, w, 1, borderColors[3], borderColors[2]);
+		}
+	}
+
+	public static void blitNineSliced(GuiGraphics guiGraphics, ResourceLocation pAtlasLocation, int pTargetX, int pTargetY, int pTargetWidth, int pTargetHeight, int pCornerWidth, int pCornerHeight, int pEdgeWidth, int pEdgeHeight, int pSourceWidth, int pSourceHeight, int pSourceX, int pSourceY) {
+		pCornerWidth = Math.min(pCornerWidth, pTargetWidth / 2);
+		pEdgeWidth = Math.min(pEdgeWidth, pTargetWidth / 2);
+		pCornerHeight = Math.min(pCornerHeight, pTargetHeight / 2);
+		pEdgeHeight = Math.min(pEdgeHeight, pTargetHeight / 2);
+		if (pTargetWidth == pSourceWidth && pTargetHeight == pSourceHeight) {
+			guiGraphics.blit(pAtlasLocation, pTargetX, pTargetY, pSourceX, pSourceY, pTargetWidth, pTargetHeight);
+		} else if (pTargetHeight == pSourceHeight) {
+			guiGraphics.blit(pAtlasLocation, pTargetX, pTargetY, pSourceX, pSourceY, pCornerWidth, pTargetHeight);
+			guiGraphics.blitRepeating(pAtlasLocation, pTargetX + pCornerWidth, pTargetY, pTargetWidth - pEdgeWidth - pCornerWidth, pTargetHeight, pSourceX + pCornerWidth, pSourceY, pSourceWidth - pEdgeWidth - pCornerWidth, pSourceHeight);
+			guiGraphics.blit(pAtlasLocation, pTargetX + pTargetWidth - pEdgeWidth, pTargetY, pSourceX + pSourceWidth - pEdgeWidth, pSourceY, pEdgeWidth, pTargetHeight);
+		} else if (pTargetWidth == pSourceWidth) {
+			guiGraphics.blit(pAtlasLocation, pTargetX, pTargetY, pSourceX, pSourceY, pTargetWidth, pCornerHeight);
+			guiGraphics.blitRepeating(pAtlasLocation, pTargetX, pTargetY + pCornerHeight, pTargetWidth, pTargetHeight - pEdgeHeight - pCornerHeight, pSourceX, pSourceY + pCornerHeight, pSourceWidth, pSourceHeight - pEdgeHeight - pCornerHeight);
+			guiGraphics.blit(pAtlasLocation, pTargetX, pTargetY + pTargetHeight - pEdgeHeight, pSourceX, pSourceY + pSourceHeight - pEdgeHeight, pTargetWidth, pEdgeHeight);
+		} else {
+			guiGraphics.blit(pAtlasLocation, pTargetX, pTargetY, pSourceX, pSourceY, pCornerWidth, pCornerHeight);
+			guiGraphics.blitRepeating(pAtlasLocation, pTargetX + pCornerWidth, pTargetY, pTargetWidth - pEdgeWidth - pCornerWidth, pCornerHeight, pSourceX + pCornerWidth, pSourceY, pSourceWidth - pEdgeWidth - pCornerWidth, pCornerHeight);
+			guiGraphics.blit(pAtlasLocation, pTargetX + pTargetWidth - pEdgeWidth, pTargetY, pSourceX + pSourceWidth - pEdgeWidth, pSourceY, pEdgeWidth, pCornerHeight);
+			guiGraphics.blit(pAtlasLocation, pTargetX, pTargetY + pTargetHeight - pEdgeHeight, pSourceX, pSourceY + pSourceHeight - pEdgeHeight, pCornerWidth, pEdgeHeight);
+			guiGraphics.blitRepeating(pAtlasLocation, pTargetX + pCornerWidth, pTargetY + pTargetHeight - pEdgeHeight, pTargetWidth - pEdgeWidth - pCornerWidth, pEdgeHeight, pSourceX + pCornerWidth, pSourceY + pSourceHeight - pEdgeHeight, pSourceWidth - pEdgeWidth - pCornerWidth, pEdgeHeight);
+			guiGraphics.blit(pAtlasLocation, pTargetX + pTargetWidth - pEdgeWidth, pTargetY + pTargetHeight - pEdgeHeight, pSourceX + pSourceWidth - pEdgeWidth, pSourceY + pSourceHeight - pEdgeHeight, pEdgeWidth, pEdgeHeight);
+			guiGraphics.blitRepeating(pAtlasLocation, pTargetX, pTargetY + pCornerHeight, pCornerWidth, pTargetHeight - pEdgeHeight - pCornerHeight, pSourceX, pSourceY + pCornerHeight, pCornerWidth, pSourceHeight - pEdgeHeight - pCornerHeight);
+			guiGraphics.blitRepeating(pAtlasLocation, pTargetX + pCornerWidth, pTargetY + pCornerHeight, pTargetWidth - pEdgeWidth - pCornerWidth, pTargetHeight - pEdgeHeight - pCornerHeight, pSourceX + pCornerWidth, pSourceY + pCornerHeight, pSourceWidth - pEdgeWidth - pCornerWidth, pSourceHeight - pEdgeHeight - pCornerHeight);
+			guiGraphics.blitRepeating(pAtlasLocation, pTargetX + pTargetWidth - pEdgeWidth, pTargetY + pCornerHeight, pEdgeWidth, pTargetHeight - pEdgeHeight - pCornerHeight, pSourceX + pSourceWidth - pEdgeWidth, pSourceY + pCornerHeight, pEdgeWidth, pSourceHeight - pEdgeHeight - pCornerHeight);
 		}
 	}
 }
