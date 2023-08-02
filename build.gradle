@@ -158,7 +158,7 @@ unifiedPublishing {
             id = "324717" // Required, must be a string, ID of CurseForge project
 
             relations { // Optional, Inferred from the relations above by default
-                depends "fabric-api"
+                //depends "fabric-api"
                 optional "jei"
             }
         }
@@ -169,7 +169,7 @@ unifiedPublishing {
             displayName = project.mod_version
 
             relations { // Optional, Inferred from the relations above by default
-                depends "fabric-api"
+                //depends "fabric-api"
                 optional "jei"
             }
         }
