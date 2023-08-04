@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.Identifiers;
@@ -13,9 +14,12 @@ import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.Element;
 import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.overlay.DisplayHelper;
-import snownee.jade.overlay.IconUI;
 
 public class ArmorElement extends Element {
+
+	public static final ResourceLocation ARMOR = new ResourceLocation("hud/armor_full");
+	public static final ResourceLocation HALF_ARMOR = new ResourceLocation("hud/armor_half");
+	public static final ResourceLocation EMPTY_ARMOR = new ResourceLocation("hud/armor_empty");
 
 	private final float armor;
 
@@ -31,20 +35,20 @@ public class ArmorElement extends Element {
 		if (armor > PluginConfig.INSTANCE.getInt(Identifiers.MC_ENTITY_ARMOR_MAX_FOR_RENDER)) {
 			String text = "  " + DisplayHelper.dfCommas.format(armor);
 			Font font = Minecraft.getInstance().font;
-			return new Vec2(8 + font.width(text), 10);
+			return new Vec2(9 + font.width(text), 10);
 		} else {
 			int maxHearts = PluginConfig.INSTANCE.getInt(Identifiers.MC_ENTITY_HEALTH_ICONS_PER_LINE);
 			int lineCount = (int) (Math.ceil(armor / maxHearts * 0.5F));
-			return new Vec2(8 * maxHearts, 10 * lineCount);
+			return new Vec2(9 * maxHearts, 10 * lineCount);
 		}
 	}
 
 	@Override
 	public void render(GuiGraphics guiGraphics, float x, float y, float maxX, float maxY) {
 		if (armor > PluginConfig.INSTANCE.getInt(Identifiers.MC_ENTITY_ARMOR_MAX_FOR_RENDER)) {
-			DisplayHelper.renderIcon(guiGraphics, x, y, 8, 8, IconUI.ARMOR);
+			guiGraphics.blitSprite(ARMOR, (int) x, (int) y, 9, 9);
 			String text = "  " + DisplayHelper.dfCommas.format(armor);
-			DisplayHelper.INSTANCE.drawText(guiGraphics, text, x + 8, y, IThemeHelper.get().getNormalColor());
+			DisplayHelper.INSTANCE.drawText(guiGraphics, text, x + 9, y, IThemeHelper.get().getNormalColor());
 		} else {
 			float armor = this.armor * 0.5F;
 			int maxHearts = PluginConfig.INSTANCE.getInt(Identifiers.MC_ENTITY_HEALTH_ICONS_PER_LINE);
@@ -53,18 +57,18 @@ public class ArmorElement extends Element {
 			int xOffset = 0;
 			for (int i = 1; i <= armorCount; i++) {
 				if (i <= Mth.floor(armor)) {
-					DisplayHelper.renderIcon(guiGraphics, x + xOffset, y, 8, 8, IconUI.ARMOR);
-					xOffset += 8;
+					guiGraphics.blitSprite(ARMOR, (int) x + xOffset, (int) y, 9, 9);
+					xOffset += 9;
 				}
 
 				if ((i > armor) && (i < armor + 1)) {
-					DisplayHelper.renderIcon(guiGraphics, x + xOffset, y, 8, 8, IconUI.HALF_ARMOR);
-					xOffset += 8;
+					guiGraphics.blitSprite(HALF_ARMOR, (int) x + xOffset, (int) y, 9, 9);
+					xOffset += 9;
 				}
 
 				if (i >= armor + 1) {
-					DisplayHelper.renderIcon(guiGraphics, x + xOffset, y, 8, 8, IconUI.EMPTY_ARMOR);
-					xOffset += 8;
+					guiGraphics.blitSprite(EMPTY_ARMOR, (int) x + xOffset, (int) y, 9, 9);
+					xOffset += 9;
 				}
 
 				if (i % maxHearts == 0) {

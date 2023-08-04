@@ -103,9 +103,9 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 	}
 
 	@Override
-	public boolean mouseScrolled(double d, double e, double f) {
+	public boolean mouseScrolled(double mouseX, double mouseY, double deltaX, double deltaY) {
 		double speed = !ClientProxy.hasFastScroll && Screen.hasControlDown() ? 4.5 : 1.5;
-		targetScroll = this.getScrollAmount() - f * (double) this.itemHeight * speed;
+		targetScroll = this.getScrollAmount() - deltaY * (double) this.itemHeight * speed;
 		return true;
 	}
 
@@ -164,7 +164,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		}
 
 		enableScissor(guiGraphics);
-		renderBackground(guiGraphics);
+		// renderBackground(guiGraphics, mouseX, mouseY, delta);
 		int scrollPosX = getScrollbarPosition();
 		int j = scrollPosX + 6;
 		RenderSystem.setShader(GameRenderer::getPositionTexColorShader);

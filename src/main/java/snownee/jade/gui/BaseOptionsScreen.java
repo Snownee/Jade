@@ -96,7 +96,7 @@ public abstract class BaseOptionsScreen extends Screen {
 
 	@Override
 	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-		renderBackground(guiGraphics);
+		renderBackground(guiGraphics, mouseX, mouseY, partialTicks);
 		super.render(guiGraphics, mouseX, mouseY, partialTicks);
 
 		OptionsList.Entry entry = options.isMouseOver(mouseX, mouseY) ? options.getEntryAt(mouseX, mouseY) : null;
@@ -127,10 +127,10 @@ public abstract class BaseOptionsScreen extends Screen {
 	public abstract OptionsList createOptions();
 
 	@Override
-	public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+	public boolean mouseScrolled(double mouseX, double mouseY, double deltaX, double deltaY) {
 		if (optionsNav.isMouseOver(mouseX, mouseY))
-			return optionsNav.mouseScrolled(mouseX, mouseY, delta);
-		return options.mouseScrolled(mouseX, mouseY, delta);
+			return optionsNav.mouseScrolled(mouseX, mouseY, deltaX, deltaY);
+		return options.mouseScrolled(mouseX, mouseY, deltaX, deltaY);
 	}
 
 	@Override

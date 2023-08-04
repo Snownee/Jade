@@ -16,7 +16,7 @@ public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
 		this.options = options;
 		this.anchor = new SmoothChasingValue();
 		setRenderSelection(false);
-		setRenderTopAndBottom(false);
+		// setRenderTopAndBottom(false);
 	}
 
 	@Override

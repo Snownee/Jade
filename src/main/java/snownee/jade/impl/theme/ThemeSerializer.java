@@ -1,7 +1,6 @@
 package snownee.jade.impl.theme;
 
 import java.lang.reflect.Type;
-import java.util.function.Consumer;
 
 import com.google.common.base.Preconditions;
 import com.google.gson.JsonArray;
@@ -34,20 +33,7 @@ public class ThemeSerializer implements JsonDeserializer<Theme>/*, JsonSerialize
 		}
 	}
 
-	private static void readImage(JsonObject o, String imageKey, Consumer<ResourceLocation> imageConsumer, Consumer<int[]> uvConsumer) {
-		if (o.has(imageKey)) {
-			JsonArray array = o.getAsJsonArray(imageKey);
-			Preconditions.checkArgument(array.size() == 9, imageKey + " must have 9 elements");
-			imageConsumer.accept(new ResourceLocation(array.get(0).getAsString()));
-			int[] uv = new int[8];
-			for (int i = 0; i < 8; i++) {
-				uv[i] = array.get(i + 1).getAsInt();
-			}
-			uvConsumer.accept(uv);
-		}
-	}
-
-/*	@Override
+	/*	@Override
 	public JsonElement serialize(Theme src, Type typeOfSrc, JsonSerializationContext context) {
 		JsonObject o = new JsonObject();
 		o.addProperty("id", src.id.toString());
@@ -105,13 +91,16 @@ public class ThemeSerializer implements JsonDeserializer<Theme>/*, JsonSerialize
 	@Override
 	public Theme deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
 		JsonObject o = json.getAsJsonObject();
-		if (GsonHelper.getAsInt(o, "version", 0) > 1) {
+		int version = GsonHelper.getAsInt(o, "version", 0);
+		if (version < 10 || version >= 20) {
 			throw new JsonParseException("Unsupported theme version");
 		}
 		Theme theme = new Theme();
 		if (o.has("backgroundImage")) {
-			readImage(o, "backgroundImage", $ -> theme.backgroundTexture = $, $ -> theme.backgroundTextureUV = $);
-			readImage(o, "backgroundImage_withIcon", $ -> theme.backgroundTexture_withIcon = $, $ -> theme.backgroundTextureUV_withIcon = $);
+			theme.backgroundTexture = new ResourceLocation(o.get("backgroundImage").getAsString());
+			if (o.has("backgroundImage")) {
+				theme.backgroundTexture_withIcon = new ResourceLocation(o.get("backgroundImage_withIcon").getAsString());
+			}
 		} else {
 			theme.backgroundColor = readColor(o.get("backgroundColor"), theme.backgroundColor);
 			JsonArray array = o.get("borderColor").getAsJsonArray();

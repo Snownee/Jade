@@ -26,9 +26,7 @@ public class Theme {
 	public int itemAmountColor = 0xFFFFFFFF;
 	public boolean textShadow = true;
 	public ResourceLocation backgroundTexture;
-	public int[] backgroundTextureUV;
 	public ResourceLocation backgroundTexture_withIcon;
-	public int[] backgroundTextureUV_withIcon;
 	public final int[] padding = new int[] { 4, 3, 1, 4 };
 	public Boolean squareBorder;
 	public float opacity;

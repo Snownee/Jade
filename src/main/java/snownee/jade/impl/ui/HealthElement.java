@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.Identifiers;
@@ -13,13 +14,16 @@ import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.Element;
 import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.overlay.DisplayHelper;
-import snownee.jade.overlay.IconUI;
 
 public class HealthElement extends Element {
 
+	public static final ResourceLocation HEART = new ResourceLocation("hud/heart/full");
+	public static final ResourceLocation HALF_HEART = new ResourceLocation("hud/heart/half");
+	public static final ResourceLocation EMPTY_HEART = new ResourceLocation("hud/heart/container");
+
 	private final float maxHealth;
 	private final float health;
-	private String text;
+	private final String text;
 
 	public HealthElement(float maxHealth, float health) {
 		if (!PluginConfig.INSTANCE.get(Identifiers.MC_ENTITY_HEALTH_SHOW_FRACTIONS)) {
@@ -35,7 +39,7 @@ public class HealthElement extends Element {
 	public Vec2 getSize() {
 		if (maxHealth > PluginConfig.INSTANCE.getInt(Identifiers.MC_ENTITY_HEALTH_MAX_FOR_RENDER)) {
 			Font font = Minecraft.getInstance().font;
-			return new Vec2(8 + font.width(text), 10);
+			return new Vec2(9 + font.width(text), 10);
 		} else {
 			float maxHearts = PluginConfig.INSTANCE.getInt(Identifiers.MC_ENTITY_HEALTH_ICONS_PER_LINE);
 
@@ -43,7 +47,7 @@ public class HealthElement extends Element {
 			int heartsPerLine = (int) (Math.min(maxHearts, Math.ceil(maxHealth)));
 			int lineCount = (int) (Math.ceil(maxHealth / maxHearts));
 
-			return new Vec2(8 * heartsPerLine, 10 * lineCount);
+			return new Vec2(9 * heartsPerLine, 10 * lineCount);
 		}
 	}
 
@@ -60,18 +64,18 @@ public class HealthElement extends Element {
 		int xOffset = 0;
 		for (int i = 1; i <= heartCount; i++) {
 			if (i <= Mth.floor(health)) {
-				DisplayHelper.renderIcon(guiGraphics, x + xOffset, y, 8, 8, IconUI.HEART);
-				xOffset += 8;
+				guiGraphics.blitSprite(HEART, (int) (x + xOffset), (int) y, 9, 9);
+				xOffset += 9;
 			}
 
 			if ((i > health) && (i < health + 1)) {
-				DisplayHelper.renderIcon(guiGraphics, x + xOffset, y, 8, 8, IconUI.HALF_HEART);
-				xOffset += 8;
+				guiGraphics.blitSprite(HALF_HEART, (int) (x + xOffset), (int) y, 9, 9);
+				xOffset += 9;
 			}
 
 			if (i >= health + 1) {
-				DisplayHelper.renderIcon(guiGraphics, x + xOffset, y, 8, 8, IconUI.EMPTY_HEART);
-				xOffset += 8;
+				guiGraphics.blitSprite(EMPTY_HEART, (int) (x + xOffset), (int) y, 9, 9);
+				xOffset += 9;
 			}
 
 			if (!showNumbers && i % heartsPerLine == 0) {

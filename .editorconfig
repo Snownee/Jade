@@ -3,8 +3,6 @@ root = true
 
 [*]
 indent_style = space
-indent_size = 4
-continuation_indent_size = 8
 end_of_line = lf
 charset = utf-8
 trim_trailing_whitespace = true
@@ -16,6 +14,8 @@ indent_size = 2
 
 [*.java]
 indent_style = tab
+indent_size = 4
+continuation_indent_size = 8
 ij_java_class_count_to_use_import_on_demand = 99
 ij_java_names_count_to_use_import_on_demand = 99
 ij_java_imports_layout = $*,|,java.**,|,javax.**,|,org.**,|,com.**,|,*

@@ -28,7 +28,6 @@ import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
@@ -45,7 +44,6 @@ public class DisplayHelper implements IDisplayHelper {
 
 	public static final DisplayHelper INSTANCE = new DisplayHelper();
 	private static final Minecraft CLIENT = Minecraft.getInstance();
-	private static final ResourceLocation GUI_ICONS_LOCATION = new ResourceLocation("textures/gui/icons.png");
 	//https://github.com/mezz/JustEnoughItems/blob/1.16/src/main/java/mezz/jei/plugins/vanilla/ingredients/fluid/FluidStackRenderer.java
 	private static final int TEX_WIDTH = 16;
 	private static final int TEX_HEIGHT = 16;
@@ -83,37 +81,6 @@ public class DisplayHelper implements IDisplayHelper {
 		}
 		guiGraphics.pose().popPose();
 		ClientProxy.renderItemDecorationsExtra(guiGraphics, font, stack, i, j, text);
-	}
-
-	public static void drawTexturedModalRect(GuiGraphics guiGraphics, float x, float y, int textureX, int textureY, int width, int height, int tw, int th) {
-		Matrix4f matrix = guiGraphics.pose().last().pose();
-		float f = 0.00390625F;
-		float f1 = 0.00390625F;
-		float zLevel = 0.0F;
-		Tesselator tessellator = Tesselator.getInstance();
-		BufferBuilder buffer = tessellator.getBuilder();
-		RenderSystem.setShader(GameRenderer::getPositionTexShader);
-		buffer.begin(Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-		buffer.vertex(matrix, x, y + height, zLevel).uv(((textureX) * f), ((textureY + th) * f1)).endVertex();
-		buffer.vertex(matrix, x + width, y + height, zLevel).uv(((textureX + tw) * f), ((textureY + th) * f1)).endVertex();
-		buffer.vertex(matrix, x + width, y, zLevel).uv(((textureX + tw) * f), ((textureY) * f1)).endVertex();
-		buffer.vertex(matrix, x, y, zLevel).uv(((textureX) * f), ((textureY) * f1)).endVertex();
-		BufferUploader.drawWithShader(buffer.end());
-	}
-
-	public static void renderIcon(GuiGraphics guiGraphics, float x, float y, int sx, int sy, IconUI icon) {
-		if (icon == null)
-			return;
-
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, OverlayRenderer.alpha);
-		RenderSystem.setShaderTexture(0, GUI_ICONS_LOCATION);
-		RenderSystem.enableBlend();
-		RenderSystem.defaultBlendFunc();
-
-		if (icon.bu != -1)
-			DisplayHelper.drawTexturedModalRect(guiGraphics, x, y, icon.bu, icon.bv, sx, sy, icon.bsu, icon.bsv);
-		DisplayHelper.drawTexturedModalRect(guiGraphics, x, y, icon.u, icon.v, sx, sy, icon.su, icon.sv);
-		RenderSystem.setShaderColor(1, 1, 1, 1);
 	}
 
 	private static void setGLColorFromInt(int color) {
@@ -272,6 +239,7 @@ public class DisplayHelper implements IDisplayHelper {
 		});
 	}
 
+	@Deprecated
 	private void drawTiledSprite(GuiGraphics guiGraphics, final float xPosition, final float yPosition, final float tiledWidth, final float tiledHeight, int color, float scaledAmount, TextureAtlasSprite sprite) {
 		RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
 		Matrix4f matrix = guiGraphics.pose().last().pose();

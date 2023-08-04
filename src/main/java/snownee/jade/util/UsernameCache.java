@@ -181,8 +181,7 @@ public final class UsernameCache {
 		public void run() {
 			try {
 				//if the downloading fails for some reason and throws an error,
-				GameProfile profile = new GameProfile(uuid, "???");
-				profile = Minecraft.getInstance().getMinecraftSessionService().fillProfileProperties(profile, true);
+				GameProfile profile = Minecraft.getInstance().getMinecraftSessionService().fetchProfile(uuid, true);
 				if (!(profile.getName() == null || profile.getName().equals("???"))) {
 					//only remove from list if it was successfull
 					//if it failed for some reason leave it in the channel so no repeated tries are made

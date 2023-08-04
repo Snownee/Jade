@@ -14,7 +14,7 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.IElementHelper;
-import snownee.jade.impl.ui.ProgressArrowElement;
+import snownee.jade.impl.ui.ProgressSpriteElement;
 
 // TODO: images for light themes
 public enum FurnaceProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
@@ -39,7 +39,7 @@ public enum FurnaceProvider implements IBlockComponentProvider, IServerDataProvi
 
 		tooltip.add(helper.item(inventory.get(0)));
 		tooltip.append(helper.item(inventory.get(1)));
-		tooltip.append(new ProgressArrowElement((float) progress / total));
+		tooltip.append(new ProgressSpriteElement((float) progress / total));
 		tooltip.append(helper.item(inventory.get(2)));
 	}
 
