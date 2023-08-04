@@ -1,6 +1,7 @@
 package snownee.jade.gui.config.value;
 
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.util.function.Consumer;
 
 import it.unimi.dsi.fastutil.floats.FloatUnaryOperator;
@@ -45,8 +46,13 @@ public class SliderOptionValue extends OptionValue<Float> {
 		}
 
 		public float toScaled() {
-			String s = fmt.format(parent.aligner.apply(parent.min + (parent.max - parent.min) * (float) value));
-			return Float.parseFloat(s);
+			float f = parent.aligner.apply(parent.min + (parent.max - parent.min) * (float) value);
+			String s = fmt.format(f);
+			try {
+				return fmt.parse(s).floatValue();
+			} catch (ParseException e) {
+				return f;
+			}
 		}
 
 		//save?
