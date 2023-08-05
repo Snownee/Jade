@@ -52,6 +52,7 @@ public class WailaConfig implements IWailaConfig {
 	public static class ConfigGeneral implements IConfigGeneral {
 		public static final List<String> itemModNameTooltipDisabledByMods = Lists.newArrayList("emi");
 		public boolean hintOverlayToggle = true;
+		public boolean hintNarratorToggle = true;
 		public boolean previewOverlay = true;
 		private boolean displayTooltip = true;
 		private boolean displayBlocks = true;

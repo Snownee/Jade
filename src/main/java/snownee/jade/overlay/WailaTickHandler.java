@@ -50,14 +50,12 @@ public class WailaTickHandler {
 	public static void narrate(ITooltip tooltip, boolean dedupe) {
 		if (!NARRATOR.get().active() || tooltip.isEmpty())
 			return;
+		if (System.currentTimeMillis() - lastNarrationTime < 500) {
+			return;
+		}
 		String narration = tooltip.getMessage();
-		if (dedupe) {
-			if (narration.equals(lastNarration)) {
-				return;
-			}
-			if (System.currentTimeMillis() - lastNarrationTime < 500) {
-				return;
-			}
+		if (dedupe && narration.equals(lastNarration)) {
+			return;
 		}
 		CompletableFuture.runAsync(() -> {
 			Narrator narrator = NARRATOR.get();
@@ -66,6 +64,10 @@ public class WailaTickHandler {
 		});
 		lastNarration = narration;
 		lastNarrationTime = System.currentTimeMillis();
+	}
+
+	public static void clearLastNarration() {
+		lastNarration = "";
 	}
 
 	public void tickClient() {
