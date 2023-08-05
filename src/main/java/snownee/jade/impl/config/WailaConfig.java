@@ -248,6 +248,7 @@ public class WailaConfig implements IWailaConfig {
 		private transient Theme activeThemeInstance;
 		private IconMode iconMode = IconMode.TOP;
 		private boolean animation = true;
+		private float disappearingDelay;
 
 		@Override
 		public float getOverlayPosX() {
@@ -384,6 +385,16 @@ public class WailaConfig implements IWailaConfig {
 		@Override
 		public void setAnimation(boolean animation) {
 			this.animation = animation;
+		}
+
+		@Override
+		public void setDisappearingDelay(float delay) {
+			disappearingDelay = delay;
+		}
+
+		@Override
+		public float getDisappearingDelay() {
+			return disappearingDelay;
 		}
 
 	}
