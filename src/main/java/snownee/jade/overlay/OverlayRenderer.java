@@ -116,7 +116,10 @@ public class OverlayRenderer {
 		float delta = Minecraft.getInstance().getDeltaFrameTime();
 		ConfigOverlay overlay = Jade.CONFIG.get().getOverlay();
 		ConfigGeneral general = Jade.CONFIG.get().getGeneral();
-		if (overlay.getDisappearingDelay() > 0 && tooltipRenderer == null) {
+		if (tooltipRenderer != null) {
+			lingerTooltip = tooltipRenderer;
+		}
+		if (tooltipRenderer == null && lingerTooltip != null) {
 			disappearTicks += delta;
 			if (disappearTicks < overlay.getDisappearingDelay()) {
 				tooltipRenderer = lingerTooltip;
@@ -125,12 +128,8 @@ public class OverlayRenderer {
 		} else {
 			disappearTicks = 0;
 		}
-		if (overlay.getAnimation()) {
-			if (tooltipRenderer == null) {
-				tooltipRenderer = lingerTooltip;
-			} else {
-				lingerTooltip = tooltipRenderer;
-			}
+		if (overlay.getAnimation() && lingerTooltip != null) {
+			tooltipRenderer = lingerTooltip;
 			float speed = general.isDebug() ? 0.1F : 0.6F;
 			alpha += (show ? speed : -speed) * delta;
 			alpha = Mth.clamp(alpha, 0, 1);
@@ -141,6 +140,7 @@ public class OverlayRenderer {
 		if (alpha < 0.1F || tooltipRenderer == null || !shouldShowImmediately(tooltipRenderer)) {
 			lingerTooltip = null;
 			morphRect = null;
+			WailaTickHandler.clearLastNarration();
 			return;
 		}
 
@@ -204,16 +204,16 @@ public class OverlayRenderer {
 
 		RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 		tooltip.draw(guiGraphics);
-		RenderSystem.disableBlend();
 
 		WailaClientRegistration.INSTANCE.afterRenderCallback.call(callback -> {
 			callback.afterRender(tooltip.getTooltip(), morphRect, guiGraphics, ObjectDataCenter.get());
 		});
 
+		RenderSystem.enableBlend();
 		RenderSystem.enableDepthTest();
 		matrixStack.popPose();
 
-		if (Jade.CONFIG.get().getGeneral().shouldEnableTextToSpeech() && Minecraft.getInstance().level != null && Minecraft.getInstance().level.getGameTime() % 5 == 0) {
+		if (Jade.CONFIG.get().getGeneral().shouldEnableTextToSpeech()) {
 			WailaTickHandler.narrate(tooltip.getTooltip(), true);
 		}
 
