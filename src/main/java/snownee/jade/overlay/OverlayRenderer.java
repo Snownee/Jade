@@ -37,7 +37,8 @@ public class OverlayRenderer {
 	public static float ticks;
 	public static boolean shown;
 	public static float alpha;
-	private static TooltipRenderer fadeTooltip;
+	private static TooltipRenderer lingerTooltip;
+	private static float disappearTicks;
 	private static Rect2i morphRect;
 
 	public static boolean shouldShow() {
@@ -115,11 +116,20 @@ public class OverlayRenderer {
 		float delta = Minecraft.getInstance().getDeltaFrameTime();
 		ConfigOverlay overlay = Jade.CONFIG.get().getOverlay();
 		ConfigGeneral general = Jade.CONFIG.get().getGeneral();
+		if (overlay.getDisappearingDelay() > 0 && tooltipRenderer == null) {
+			disappearTicks += delta;
+			if (disappearTicks < overlay.getDisappearingDelay()) {
+				tooltipRenderer = lingerTooltip;
+				show = true;
+			}
+		} else {
+			disappearTicks = 0;
+		}
 		if (overlay.getAnimation()) {
 			if (tooltipRenderer == null) {
-				tooltipRenderer = fadeTooltip;
+				tooltipRenderer = lingerTooltip;
 			} else {
-				fadeTooltip = tooltipRenderer;
+				lingerTooltip = tooltipRenderer;
 			}
 			float speed = general.isDebug() ? 0.1F : 0.6F;
 			alpha += (show ? speed : -speed) * delta;
@@ -129,7 +139,7 @@ public class OverlayRenderer {
 		}
 
 		if (alpha < 0.1F || tooltipRenderer == null || !shouldShowImmediately(tooltipRenderer)) {
-			fadeTooltip = null;
+			lingerTooltip = null;
 			morphRect = null;
 			return;
 		}

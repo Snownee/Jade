@@ -152,6 +152,10 @@ public interface IWailaConfig {
 		void setAnimation(boolean animation);
 
 		boolean getAnimation();
+
+		void setDisappearingDelay(float delay);
+
+		float getDisappearingDelay();
 	}
 
 	@NonExtendable
