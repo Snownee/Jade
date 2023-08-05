@@ -31,3 +31,9 @@ Use "_desc" as a suffix to the option key to make it the description (tooltip) o
 Use "_extra_msg" as a suffix to the option key to add extra keywords of the option so that users can search by them.
 
 You should add the keywords according to your language. If you don't want the extra keywords, you can leave it empty.
+
+## Plural form
+
+There is a key called `jade.seconds`, which is used to display the time in seconds. If your language has plural form for describing seconds, you can follow [this guide](https://www.baeldung.com/java-localization-messages-formatting) to display the seconds correctly.
+
+I will probably add more keys like this in the future.
