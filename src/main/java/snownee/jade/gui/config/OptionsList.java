@@ -164,7 +164,6 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		}
 
 		enableScissor(guiGraphics);
-		// renderBackground(guiGraphics, mouseX, mouseY, delta);
 		int scrollPosX = getScrollbarPosition();
 		int j = scrollPosX + 6;
 		RenderSystem.setShader(GameRenderer::getPositionTexColorShader);

@@ -41,7 +41,7 @@ public class ProgressSpriteElement extends Element {
 		if (progress > 0) {
 			int progress = (int) (this.progress * width);
 			// Draws the "full" foreground arrow based on the progress
-			guiGraphics.blitSprite(progressTexture, (int) (x + 2), (int) y, progress + 1, height);
+			guiGraphics.blitSprite(progressTexture, width, height, 0, 0, (int) (x + 2), (int) y, progress + 1, height);
 		}
 	}
 

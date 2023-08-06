@@ -120,7 +120,7 @@ public final class CommonProxy implements ModInitializer {
 	}
 
 	@SuppressWarnings("UnstableApiUsage")
-	public static List<ViewGroup<ItemStack>> wrapItemStorage(Object target, ServerPlayer player) {
+	public static List<ViewGroup<ItemStack>> wrapItemStorage(Object target, Player player) {
 		int size = 54;
 		if (target instanceof AbstractHorseAccess horse) {
 			return List.of(ItemView.fromContainer(horse.getInventory(), size, 2));
@@ -153,7 +153,7 @@ public final class CommonProxy implements ModInitializer {
 	}
 
 	@SuppressWarnings("UnstableApiUsage")
-	public static List<ViewGroup<CompoundTag>> wrapFluidStorage(Object target, ServerPlayer player) {
+	public static List<ViewGroup<CompoundTag>> wrapFluidStorage(Object target, Player player) {
 		if (target instanceof BlockEntity be) {
 			try {
 				var storage = FluidStorage.SIDED.find(be.getLevel(), be.getBlockPos(), be.getBlockState(), be, null);
@@ -167,7 +167,7 @@ public final class CommonProxy implements ModInitializer {
 		return null;
 	}
 
-	public static List<ViewGroup<CompoundTag>> wrapEnergyStorage(Object target, ServerPlayer player) {
+	public static List<ViewGroup<CompoundTag>> wrapEnergyStorage(Object target, Player player) {
 		if (hasTechRebornEnergy && target instanceof BlockEntity be) {
 			try {
 				var storage = TechRebornEnergyCompat.getSided().find(be.getLevel(), be.getBlockPos(), be.getBlockState(), be, null);

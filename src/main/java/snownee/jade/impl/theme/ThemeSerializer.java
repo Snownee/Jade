@@ -93,12 +93,12 @@ public class ThemeSerializer implements JsonDeserializer<Theme>/*, JsonSerialize
 		JsonObject o = json.getAsJsonObject();
 		int version = GsonHelper.getAsInt(o, "version", 0);
 		if (version < 10 || version >= 20) {
-			throw new JsonParseException("Unsupported theme version");
+			throw new JsonParseException("Unsupported theme version: " + version);
 		}
 		Theme theme = new Theme();
 		if (o.has("backgroundImage")) {
 			theme.backgroundTexture = new ResourceLocation(o.get("backgroundImage").getAsString());
-			if (o.has("backgroundImage")) {
+			if (o.has("backgroundImage_withIcon")) {
 				theme.backgroundTexture_withIcon = new ResourceLocation(o.get("backgroundImage_withIcon").getAsString());
 			}
 		} else {

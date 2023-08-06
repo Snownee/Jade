@@ -5,8 +5,6 @@ import java.util.List;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.monster.Slime;
 import net.minecraft.world.level.material.Fluids;
 import snownee.jade.api.Accessor;
@@ -36,7 +34,7 @@ public enum ExampleFluidStorageProvider
 	}
 
 	@Override
-	public List<ViewGroup<CompoundTag>> getGroups(ServerPlayer player, ServerLevel world, Slime target, boolean showDetails) {
+	public List<ViewGroup<CompoundTag>> getGroups(Accessor<?> accessor, Slime target) {
 		var tank1 = new ViewGroup<>(List.of(FluidView.writeDefault(JadeFluidObject.of(Fluids.LAVA, 1000), 2000)));
 		tank1.id = "1";
 		var tank2 = new ViewGroup<>(List.of(FluidView.writeDefault(JadeFluidObject.of(Fluids.WATER, 500), 2000), FluidView.writeDefault(JadeFluidObject.empty(), 2000)));

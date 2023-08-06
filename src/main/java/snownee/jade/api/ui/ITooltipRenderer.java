@@ -17,11 +17,6 @@ public interface ITooltipRenderer {
 
 	int getPadding(int i);
 
-	@Deprecated
-	default void setPadding(int i, float value) {
-		setPadding(i, (int) value);
-	}
-
 	void setPadding(int i, int value);
 
 	Tooltip getTooltip();

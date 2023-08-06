@@ -1,7 +1,5 @@
 package snownee.jade.api.config;
 
-import java.util.Collection;
-
 import org.jetbrains.annotations.ApiStatus.NonExtendable;
 
 import net.minecraft.network.chat.Component;
@@ -128,8 +126,6 @@ public interface IWailaConfig {
 		float getAlpha();
 
 		Theme getTheme();
-
-		Collection<Theme> getThemes();
 
 		void setAlpha(float alpha);
 

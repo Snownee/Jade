@@ -1,6 +1,5 @@
 package snownee.jade.impl.config;
 
-import java.util.Collection;
 import java.util.List;
 
 import com.google.common.collect.Lists;
@@ -348,12 +347,6 @@ public class WailaConfig implements IWailaConfig {
 			if (activeThemeInstance == null)
 				applyTheme(activeTheme);
 			return activeThemeInstance;
-		}
-
-		@Override
-		@Deprecated
-		public Collection<Theme> getThemes() {
-			return IThemeHelper.get().getThemes();
 		}
 
 		@Override

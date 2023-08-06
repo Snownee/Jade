@@ -10,9 +10,8 @@ import com.google.common.collect.Lists;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.LockCode;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.ContainerEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
@@ -136,10 +135,9 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 	public static void putData(Accessor<?> accessor) {
 		CompoundTag tag = accessor.getServerData();
 		Object target = accessor.getTarget();
-		ServerPlayer player = (ServerPlayer) accessor.getPlayer();
-		boolean showDetails = accessor.showDetails();
+		Player player = accessor.getPlayer();
 		for (var provider : WailaCommonRegistration.INSTANCE.itemStorageProviders.get(target)) {
-			var groups = provider.getGroups(player, player.serverLevel(), target, showDetails);
+			var groups = provider.getGroups(accessor, target);
 			if (groups != null) {
 				if (ViewGroup.saveList(tag, "JadeItemStorage", groups, item -> {
 					CompoundTag itemTag = new CompoundTag();
@@ -199,13 +197,14 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 	}
 
 	@Override
-	public List<ViewGroup<ItemStack>> getGroups(ServerPlayer player, ServerLevel world, Object target, boolean showDetails) {
+	public List<ViewGroup<ItemStack>> getGroups(Accessor<?> accessor, Object target) {
 		if (target instanceof RandomizableContainerBlockEntity te && te.lootTable != null) {
 			return List.of();
 		}
 		if (target instanceof ContainerEntity containerEntity && containerEntity.getLootTable() != null) {
 			return List.of();
 		}
+		Player player = accessor.getPlayer();
 		if (!JadeCommonConfig.bypassLockedContainer && !player.isCreative() && !player.isSpectator() && target instanceof BaseContainerBlockEntity te) {
 			if (te.lockKey != LockCode.NO_LOCK) {
 				return List.of();

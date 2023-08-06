@@ -2,12 +2,9 @@ package snownee.jade.impl.ui;
 
 import org.joml.Vector3f;
 
-import com.mojang.blaze3d.vertex.Tesselator;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
@@ -25,8 +22,6 @@ public class ProgressStyle implements IProgressStyle {
 	public int textColor;
 	public boolean vertical;
 	public IElement overlay;
-	@Deprecated
-	public boolean glowText;
 	public boolean shadow = true;
 
 	public ProgressStyle() {
@@ -132,14 +127,7 @@ public class ProgressStyle implements IProgressStyle {
 				y += font.lineHeight + 2;
 			}
 			int color = IConfigOverlay.applyAlpha(textColor, OverlayRenderer.alpha);
-			if (glowText) {
-				MultiBufferSource.BufferSource multibuffersource$buffersource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-				//TODO alpha
-				font.drawInBatch8xOutline(text.getVisualOrderText(), x + 1, y, 0xFFFFFFFF, 0xFF333333, guiGraphics.pose().last().pose(), multibuffersource$buffersource, 15728880);
-				multibuffersource$buffersource.endBatch();
-			} else {
-				guiGraphics.drawString(font, text, (int) x + 1, (int) y, color, shadow);
-			}
+			guiGraphics.drawString(font, text, (int) x + 1, (int) y, color, shadow);
 		}
 	}
 
@@ -151,11 +139,6 @@ public class ProgressStyle implements IProgressStyle {
 	public IProgressStyle textColor(int color) {
 		textColor = color;
 		autoTextColor = false;
-		return this;
-	}
-
-	public IProgressStyle glowText(boolean glowText) {
-		this.glowText = glowText;
 		return this;
 	}
 

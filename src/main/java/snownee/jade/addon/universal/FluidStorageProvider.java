@@ -7,8 +7,6 @@ import java.util.function.Function;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
@@ -73,10 +71,8 @@ public enum FluidStorageProvider implements IBlockComponentProvider, IServerData
 	public static void putData(Accessor<?> accessor) {
 		CompoundTag tag = accessor.getServerData();
 		Object target = accessor.getTarget();
-		ServerPlayer player = (ServerPlayer) accessor.getPlayer();
-		boolean showDetails = accessor.showDetails();
 		for (var provider : WailaCommonRegistration.INSTANCE.fluidStorageProviders.get(target)) {
-			var groups = provider.getGroups(player, player.serverLevel(), target, showDetails);
+			var groups = provider.getGroups(accessor, target);
 			if (groups != null) {
 				if (ViewGroup.saveList(tag, "JadeFluidStorage", groups, Function.identity()))
 					tag.putString("JadeFluidStorageUid", provider.getUid().toString());
@@ -111,8 +107,8 @@ public enum FluidStorageProvider implements IBlockComponentProvider, IServerData
 	}
 
 	@Override
-	public List<ViewGroup<CompoundTag>> getGroups(ServerPlayer player, ServerLevel world, Object target, boolean showDetails) {
-		return CommonProxy.wrapFluidStorage(target, player);
+	public List<ViewGroup<CompoundTag>> getGroups(Accessor<?> accessor, Object target) {
+		return CommonProxy.wrapFluidStorage(target, accessor.getPlayer());
 	}
 
 }

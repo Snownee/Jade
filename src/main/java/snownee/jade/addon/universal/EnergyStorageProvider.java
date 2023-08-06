@@ -9,8 +9,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
@@ -72,10 +70,8 @@ public enum EnergyStorageProvider implements IBlockComponentProvider, IServerDat
 	public static void putData(Accessor<?> accessor) {
 		CompoundTag tag = accessor.getServerData();
 		Object target = accessor.getTarget();
-		ServerPlayer player = (ServerPlayer) accessor.getPlayer();
-		boolean showDetails = accessor.showDetails();
 		for (var provider : WailaCommonRegistration.INSTANCE.energyStorageProviders.get(target)) {
-			var groups = provider.getGroups(player, player.serverLevel(), target, showDetails);
+			var groups = provider.getGroups(accessor, target);
 			if (groups != null) {
 				if (ViewGroup.saveList(tag, "JadeEnergyStorage", groups, Function.identity()))
 					tag.putString("JadeEnergyStorageUid", provider.getUid().toString());
@@ -113,8 +109,8 @@ public enum EnergyStorageProvider implements IBlockComponentProvider, IServerDat
 	}
 
 	@Override
-	public List<ViewGroup<CompoundTag>> getGroups(ServerPlayer player, ServerLevel world, Object target, boolean showDetails) {
-		return CommonProxy.wrapEnergyStorage(target, player);
+	public List<ViewGroup<CompoundTag>> getGroups(Accessor<?> accessor, Object target) {
+		return CommonProxy.wrapEnergyStorage(target, accessor.getPlayer());
 	}
 
 }

@@ -5,7 +5,6 @@ import java.util.function.Function;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.BlockAccessor;
@@ -57,10 +56,8 @@ public enum ProgressProvider implements IBlockComponentProvider, IServerDataProv
 	public static void putData(Accessor<?> accessor) {
 		CompoundTag tag = accessor.getServerData();
 		Object target = accessor.getTarget();
-		ServerPlayer player = (ServerPlayer) accessor.getPlayer();
-		boolean showDetails = accessor.showDetails();
 		for (var provider : WailaCommonRegistration.INSTANCE.progressProviders.get(target)) {
-			var groups = provider.getGroups(player, player.serverLevel(), target, showDetails);
+			var groups = provider.getGroups(accessor, target);
 			if (groups != null) {
 				if (ViewGroup.saveList(tag, "JadeProgress", groups, Function.identity()))
 					tag.putString("JadeProgressUid", provider.getUid().toString());
