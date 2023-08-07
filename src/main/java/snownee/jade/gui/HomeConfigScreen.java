@@ -87,7 +87,7 @@ public class HomeConfigScreen extends Screen {
 				}
 			}
 		}
-		credit = Component.translatable("gui.jade.by", Component.literal("♥").withStyle(ChatFormatting.RED)).withStyle(s -> {
+		credit = Component.translatable("gui.jade.by", Component.literal("❤").withStyle(ChatFormatting.RED)).withStyle(s -> {
 			if (festival != 0) {
 				s = s.withColor(0xF1E3A4);
 			}
