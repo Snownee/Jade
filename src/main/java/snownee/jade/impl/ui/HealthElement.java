@@ -39,7 +39,7 @@ public class HealthElement extends Element {
 	public Vec2 getSize() {
 		if (maxHealth > PluginConfig.INSTANCE.getInt(Identifiers.MC_ENTITY_HEALTH_MAX_FOR_RENDER)) {
 			Font font = Minecraft.getInstance().font;
-			return new Vec2(9 + font.width(text), 10);
+			return new Vec2(8 + font.width(text), 10);
 		} else {
 			float maxHearts = PluginConfig.INSTANCE.getInt(Identifiers.MC_ENTITY_HEALTH_ICONS_PER_LINE);
 
@@ -47,7 +47,7 @@ public class HealthElement extends Element {
 			int heartsPerLine = (int) (Math.min(maxHearts, Math.ceil(maxHealth)));
 			int lineCount = (int) (Math.ceil(maxHealth / maxHearts));
 
-			return new Vec2(9 * heartsPerLine, 10 * lineCount);
+			return new Vec2(8 * heartsPerLine, 10 * lineCount);
 		}
 	}
 
@@ -65,19 +65,17 @@ public class HealthElement extends Element {
 		for (int i = 1; i <= heartCount; i++) {
 			if (i <= Mth.floor(health)) {
 				guiGraphics.blitSprite(HEART, (int) (x + xOffset), (int) y, 9, 9);
-				xOffset += 9;
 			}
 
 			if ((i > health) && (i < health + 1)) {
 				guiGraphics.blitSprite(HALF_HEART, (int) (x + xOffset), (int) y, 9, 9);
-				xOffset += 9;
 			}
 
 			if (i >= health + 1) {
 				guiGraphics.blitSprite(EMPTY_HEART, (int) (x + xOffset), (int) y, 9, 9);
-				xOffset += 9;
 			}
 
+			xOffset += 8;
 			if (!showNumbers && i % heartsPerLine == 0) {
 				y += 10;
 				xOffset = 0;

@@ -12,6 +12,7 @@
     "FontMixin",
     "FullTextSearchTreeMixin",
     "KeyAccess",
+    "StringRenderOutputMixin",
     "ThemeHelperMixin"
   ],
   "injectors": {

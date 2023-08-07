@@ -35,11 +35,11 @@ public class ArmorElement extends Element {
 		if (armor > PluginConfig.INSTANCE.getInt(Identifiers.MC_ENTITY_ARMOR_MAX_FOR_RENDER)) {
 			String text = "  " + DisplayHelper.dfCommas.format(armor);
 			Font font = Minecraft.getInstance().font;
-			return new Vec2(9 + font.width(text), 10);
+			return new Vec2(8 + font.width(text), 10);
 		} else {
 			int maxHearts = PluginConfig.INSTANCE.getInt(Identifiers.MC_ENTITY_HEALTH_ICONS_PER_LINE);
 			int lineCount = (int) (Math.ceil(armor / maxHearts * 0.5F));
-			return new Vec2(9 * maxHearts, 10 * lineCount);
+			return new Vec2(8 * maxHearts, 10 * lineCount);
 		}
 	}
 
@@ -58,19 +58,17 @@ public class ArmorElement extends Element {
 			for (int i = 1; i <= armorCount; i++) {
 				if (i <= Mth.floor(armor)) {
 					guiGraphics.blitSprite(ARMOR, (int) x + xOffset, (int) y, 9, 9);
-					xOffset += 9;
 				}
 
 				if ((i > armor) && (i < armor + 1)) {
 					guiGraphics.blitSprite(HALF_ARMOR, (int) x + xOffset, (int) y, 9, 9);
-					xOffset += 9;
 				}
 
 				if (i >= armor + 1) {
 					guiGraphics.blitSprite(EMPTY_ARMOR, (int) x + xOffset, (int) y, 9, 9);
-					xOffset += 9;
 				}
 
+				xOffset += 8;
 				if (i % maxHearts == 0) {
 					y += 10;
 					xOffset = 0;
