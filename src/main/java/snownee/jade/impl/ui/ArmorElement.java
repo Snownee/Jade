@@ -12,6 +12,7 @@ import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.Element;
+import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.overlay.DisplayHelper;
 
@@ -35,20 +36,21 @@ public class ArmorElement extends Element {
 		if (armor > PluginConfig.INSTANCE.getInt(Identifiers.MC_ENTITY_ARMOR_MAX_FOR_RENDER)) {
 			String text = "  " + DisplayHelper.dfCommas.format(armor);
 			Font font = Minecraft.getInstance().font;
-			return new Vec2(8 + font.width(text), 10);
+			return new Vec2(9 + font.width(text), 10);
 		} else {
 			int maxHearts = PluginConfig.INSTANCE.getInt(Identifiers.MC_ENTITY_HEALTH_ICONS_PER_LINE);
 			int lineCount = (int) (Math.ceil(armor / maxHearts * 0.5F));
-			return new Vec2(8 * maxHearts, 10 * lineCount);
+			return new Vec2(9 * maxHearts, 10 * lineCount);
 		}
 	}
 
 	@Override
 	public void render(GuiGraphics guiGraphics, float x, float y, float maxX, float maxY) {
+		IDisplayHelper helper = IDisplayHelper.get();
 		if (armor > PluginConfig.INSTANCE.getInt(Identifiers.MC_ENTITY_ARMOR_MAX_FOR_RENDER)) {
-			guiGraphics.blitSprite(ARMOR, (int) x, (int) y, 9, 9);
+			helper.blitSprite(guiGraphics, ARMOR, (int) x, (int) y, 9, 9);
 			String text = "  " + DisplayHelper.dfCommas.format(armor);
-			DisplayHelper.INSTANCE.drawText(guiGraphics, text, x + 9, y, IThemeHelper.get().getNormalColor());
+			helper.drawText(guiGraphics, text, x + 9, y, IThemeHelper.get().getNormalColor());
 		} else {
 			float armor = this.armor * 0.5F;
 			int maxHearts = PluginConfig.INSTANCE.getInt(Identifiers.MC_ENTITY_HEALTH_ICONS_PER_LINE);
@@ -57,18 +59,18 @@ public class ArmorElement extends Element {
 			int xOffset = 0;
 			for (int i = 1; i <= armorCount; i++) {
 				if (i <= Mth.floor(armor)) {
-					guiGraphics.blitSprite(ARMOR, (int) x + xOffset, (int) y, 9, 9);
+					helper.blitSprite(guiGraphics, ARMOR, (int) x + xOffset, (int) y, 9, 9);
 				}
 
 				if ((i > armor) && (i < armor + 1)) {
-					guiGraphics.blitSprite(HALF_ARMOR, (int) x + xOffset, (int) y, 9, 9);
+					helper.blitSprite(guiGraphics, HALF_ARMOR, (int) x + xOffset, (int) y, 9, 9);
 				}
 
 				if (i >= armor + 1) {
-					guiGraphics.blitSprite(EMPTY_ARMOR, (int) x + xOffset, (int) y, 9, 9);
+					helper.blitSprite(guiGraphics, EMPTY_ARMOR, (int) x + xOffset, (int) y, 9, 9);
 				}
 
-				xOffset += 8;
+				xOffset += 9;
 				if (i % maxHearts == 0) {
 					y += 10;
 					xOffset = 0;

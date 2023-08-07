@@ -12,6 +12,7 @@ import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.Element;
+import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.overlay.DisplayHelper;
 
@@ -39,7 +40,7 @@ public class HealthElement extends Element {
 	public Vec2 getSize() {
 		if (maxHealth > PluginConfig.INSTANCE.getInt(Identifiers.MC_ENTITY_HEALTH_MAX_FOR_RENDER)) {
 			Font font = Minecraft.getInstance().font;
-			return new Vec2(8 + font.width(text), 10);
+			return new Vec2(9 + font.width(text), 10);
 		} else {
 			float maxHearts = PluginConfig.INSTANCE.getInt(Identifiers.MC_ENTITY_HEALTH_ICONS_PER_LINE);
 
@@ -47,7 +48,7 @@ public class HealthElement extends Element {
 			int heartsPerLine = (int) (Math.min(maxHearts, Math.ceil(maxHealth)));
 			int lineCount = (int) (Math.ceil(maxHealth / maxHearts));
 
-			return new Vec2(8 * heartsPerLine, 10 * lineCount);
+			return new Vec2(9 * heartsPerLine, 10 * lineCount);
 		}
 	}
 
@@ -61,21 +62,21 @@ public class HealthElement extends Element {
 		float health = showNumbers ? 1 : (this.health * 0.5F);
 		int heartsPerLine = (int) (Math.min(maxHearts, Math.ceil(maxHealth)));
 
+		IDisplayHelper helper = IDisplayHelper.get();
 		int xOffset = 0;
 		for (int i = 1; i <= heartCount; i++) {
+			helper.blitSprite(guiGraphics, EMPTY_HEART, (int) (x + xOffset), (int) y, 9, 9);
+
 			if (i <= Mth.floor(health)) {
-				guiGraphics.blitSprite(HEART, (int) (x + xOffset), (int) y, 9, 9);
+				helper.blitSprite(guiGraphics, HEART, (int) (x + xOffset), (int) y, 9, 9);
 			}
 
 			if ((i > health) && (i < health + 1)) {
-				guiGraphics.blitSprite(HALF_HEART, (int) (x + xOffset), (int) y, 9, 9);
+				helper.blitSprite(guiGraphics, HALF_HEART, (int) (x + xOffset), (int) y, 9, 9);
 			}
 
-			if (i >= health + 1) {
-				guiGraphics.blitSprite(EMPTY_HEART, (int) (x + xOffset), (int) y, 9, 9);
-			}
 
-			xOffset += 8;
+			xOffset += 9;
 			if (!showNumbers && i % heartsPerLine == 0) {
 				y += 10;
 				xOffset = 0;
@@ -83,7 +84,7 @@ public class HealthElement extends Element {
 		}
 
 		if (showNumbers) {
-			DisplayHelper.INSTANCE.drawText(guiGraphics, text, x + 8, y, IThemeHelper.get().getNormalColor());
+			helper.drawText(guiGraphics, text, x + 8, y, IThemeHelper.get().getNormalColor());
 		}
 	}
 

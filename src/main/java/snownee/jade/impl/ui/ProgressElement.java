@@ -11,7 +11,6 @@ import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.Element;
-import snownee.jade.api.ui.IBoxStyle;
 import snownee.jade.api.ui.IProgressStyle;
 import snownee.jade.overlay.ProgressTracker.TrackInfo;
 import snownee.jade.overlay.WailaTickHandler;
@@ -21,17 +20,16 @@ public class ProgressElement extends Element {
 	@Nullable
 	private final Component text;
 	private final IProgressStyle style;
-	private final IBoxStyle boxStyle;
+	private final BoxStyle boxStyle;
 	private TrackInfo track;
 	private boolean canDecrease;
 
-	public ProgressElement(float progress, Component text, IProgressStyle style, IBoxStyle boxStyle, boolean canDecrease) {
+	public ProgressElement(float progress, Component text, IProgressStyle style, BoxStyle boxStyle, boolean canDecrease) {
 		this.progress = Mth.clamp(progress, 0, 1);
 		this.text = text;
 		this.style = style;
-		if (boxStyle == BoxStyle.DEFAULT && IThemeHelper.get().isLightColorScheme()) {
-			BoxStyle newStyle = new BoxStyle();
-			newStyle.borderWidth = BoxStyle.DEFAULT.borderWidth;
+		if (boxStyle == BoxStyle.getDefault() && IThemeHelper.get().isLightColorScheme()) {
+			var newStyle = BoxStyle.createGradientBorder();
 			newStyle.bgColor = 0x44444444;
 			boxStyle = newStyle;
 		}

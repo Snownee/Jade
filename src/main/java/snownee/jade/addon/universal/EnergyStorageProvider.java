@@ -60,7 +60,7 @@ public enum EnergyStorageProvider implements IBlockComponentProvider, IServerDat
 							text = Component.translatable("jade.fe", ChatFormatting.WHITE + view.current, view.max).withStyle(ChatFormatting.GRAY);
 						}
 						IProgressStyle progressStyle = helper.progressStyle().color(0xFFAA0000, 0xFF660000);
-						theTooltip.add(helper.progress(view.ratio, text, progressStyle, BoxStyle.DEFAULT, true));
+						theTooltip.add(helper.progress(view.ratio, text, progressStyle, BoxStyle.getDefault(), true));
 					}
 				});
 			}

@@ -4,6 +4,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.ui.Element;
+import snownee.jade.api.ui.IDisplayHelper;
 
 public class SpriteElement extends Element {
 
@@ -24,7 +25,7 @@ public class SpriteElement extends Element {
 
 	@Override
 	public void render(GuiGraphics guiGraphics, float x, float y, float maxX, float maxY) {
-		guiGraphics.blitSprite(sprite, (int) x, (int) y, width, height);
+		IDisplayHelper.get().blitSprite(guiGraphics, sprite, (int) x, (int) y, width, height);
 	}
 
 }

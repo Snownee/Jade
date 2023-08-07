@@ -37,7 +37,7 @@ public enum ProgressProvider implements IBlockComponentProvider, IServerDataProv
 
 				IElementHelper helper = IElementHelper.get();
 				boolean renderGroup = groups.size() > 1 || groups.get(0).shouldRenderGroup();
-				var box = new BoxStyle();
+				var box = BoxStyle.createGradientBorder();
 				box.bgColor = 0x88000000;
 				ClientViewGroup.tooltip(tooltip, groups, renderGroup, (theTooltip, group) -> {
 					if (renderGroup) {

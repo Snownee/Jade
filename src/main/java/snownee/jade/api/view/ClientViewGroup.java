@@ -53,7 +53,7 @@ public class ClientViewGroup<T> {
 			ITooltip theTooltip = renderGroup ? IElementHelper.get().tooltip() : tooltip;
 			consumer.accept(theTooltip, group);
 			if (renderGroup) {
-				var boxStyle = new BoxStyle();
+				var boxStyle = BoxStyle.createGradientBorder();
 				boxStyle.borderColor = group.bgColor;
 				boxStyle.bgColor = group.bgColor;
 				boxStyle.progress = group.progress;

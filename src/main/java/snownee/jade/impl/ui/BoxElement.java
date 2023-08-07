@@ -7,9 +7,9 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec2;
+import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.IBoxElement;
-import snownee.jade.api.ui.IBoxStyle;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.ITooltipRenderer;
 import snownee.jade.impl.Tooltip;
@@ -17,9 +17,9 @@ import snownee.jade.overlay.TooltipRenderer;
 
 public class BoxElement extends Element implements IBoxElement {
 	private final TooltipRenderer tooltip;
-	private final IBoxStyle box;
+	private final BoxStyle box;
 
-	public BoxElement(Tooltip tooltip, IBoxStyle box) {
+	public BoxElement(Tooltip tooltip, BoxStyle box) {
 		this.tooltip = new TooltipRenderer(tooltip, false);
 		this.tooltip.recalculateSize();
 		this.box = box;

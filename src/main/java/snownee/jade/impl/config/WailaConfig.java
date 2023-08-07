@@ -15,7 +15,6 @@ import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
-import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.util.CommonProxy;
 import snownee.jade.util.ModIdentification;
 
@@ -353,7 +352,6 @@ public class WailaConfig implements IWailaConfig {
 		public void applyTheme(ResourceLocation id) {
 			activeThemeInstance = IThemeHelper.get().getTheme(id);
 			activeTheme = activeThemeInstance.id;
-			BoxStyle.DEFAULT.borderColor = activeThemeInstance.boxBorderColor;
 		}
 
 		@Override

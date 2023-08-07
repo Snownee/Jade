@@ -5,6 +5,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.Jade;
 import snownee.jade.api.ui.Element;
+import snownee.jade.api.ui.IDisplayHelper;
 
 public class ProgressSpriteElement extends Element {
 
@@ -35,13 +36,14 @@ public class ProgressSpriteElement extends Element {
 
 	@Override
 	public void render(GuiGraphics guiGraphics, float x, float y, float maxX, float maxY) {
+		IDisplayHelper helper = IDisplayHelper.get();
 		// Draws the "empty" background arrow
-		guiGraphics.blitSprite(progressBaseTexture, (int) (x + 2), (int) y, width, height);
+		helper.blitSprite(guiGraphics, progressBaseTexture, (int) (x + 2), (int) y, width, height);
 
 		if (progress > 0) {
 			int progress = (int) (this.progress * width);
 			// Draws the "full" foreground arrow based on the progress
-			guiGraphics.blitSprite(progressTexture, width, height, 0, 0, (int) (x + 2), (int) y, progress + 1, height);
+			helper.blitSprite(guiGraphics, progressTexture, width, height, 0, 0, (int) (x + 2), (int) y, progress + 1, height);
 		}
 	}
 

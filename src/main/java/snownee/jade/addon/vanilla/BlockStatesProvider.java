@@ -37,7 +37,7 @@ public enum BlockStatesProvider implements IBlockComponentProvider {
 				valueText = value == Boolean.TRUE ? t.success(valueText) : t.danger(valueText);
 			box.add(Component.literal(p.getName() + ":").append(valueText));
 		});
-		tooltip.add(helper.box(box, BoxStyle.DEFAULT));
+		tooltip.add(helper.box(box, BoxStyle.getDefault()));
 	}
 
 	@Override

@@ -61,7 +61,7 @@ public enum FluidStorageProvider implements IBlockComponentProvider, IServerData
 							text = Component.translatable("jade.fluid", IDisplayHelper.get().stripColor(view.fluidName), view.current);
 						}
 						IProgressStyle progressStyle = helper.progressStyle().overlay(view.overlay);
-						theTooltip.add(helper.progress(view.ratio, text, progressStyle, BoxStyle.DEFAULT, true));
+						theTooltip.add(helper.progress(view.ratio, text, progressStyle, BoxStyle.getDefault(), true));
 					}
 				});
 			}

@@ -28,6 +28,7 @@ import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
@@ -152,7 +153,7 @@ public class DisplayHelper implements IDisplayHelper {
 
 	@Override
 	public void drawItem(GuiGraphics guiGraphics, float x, float y, ItemStack stack, float scale, @Nullable String text) {
-		if (OverlayRenderer.alpha < 0.5F) {
+		if (opacity() < 0.5F) {
 			return;
 		}
 		guiGraphics.pose().pushPose();
@@ -172,11 +173,11 @@ public class DisplayHelper implements IDisplayHelper {
 		float zLevel = 0.0F;
 		Matrix4f matrix = guiGraphics.pose().last().pose();
 
-		float f = (startColor >> 24 & 255) / 255.0F * OverlayRenderer.alpha;
+		float f = (startColor >> 24 & 255) / 255.0F * opacity();
 		float f1 = (startColor >> 16 & 255) / 255.0F;
 		float f2 = (startColor >> 8 & 255) / 255.0F;
 		float f3 = (startColor & 255) / 255.0F;
-		float f4 = (endColor >> 24 & 255) / 255.0F * OverlayRenderer.alpha;
+		float f4 = (endColor >> 24 & 255) / 255.0F * opacity();
 		float f5 = (endColor >> 16 & 255) / 255.0F;
 		float f6 = (endColor >> 8 & 255) / 255.0F;
 		float f7 = (endColor & 255) / 255.0F;
@@ -236,8 +237,8 @@ public class DisplayHelper implements IDisplayHelper {
 				}
 				fill(guiGraphics, xPosition, maxY - scaledAmount.floatValue(), xPosition + width, maxY, color);
 			} else {
-				if (OverlayRenderer.alpha != 1) {
-					color = IWailaConfig.IConfigOverlay.applyAlpha(color, OverlayRenderer.alpha);
+				if (opacity() != 1) {
+					color = IWailaConfig.IConfigOverlay.applyAlpha(color, opacity());
 				}
 				drawTiledSprite(guiGraphics, xPosition, yPosition, width, height, color, scaledAmount.floatValue(), sprite);
 			}
@@ -324,8 +325,8 @@ public class DisplayHelper implements IDisplayHelper {
 	@Override
 	public void drawText(GuiGraphics guiGraphics, FormattedCharSequence text, float x, float y, int color) {
 		boolean shadow = Jade.CONFIG.get().getOverlay().getTheme().textShadow;
-		if (OverlayRenderer.alpha != 1) {
-			color = IConfigOverlay.applyAlpha(color, OverlayRenderer.alpha);
+		if (opacity() != 1) {
+			color = IConfigOverlay.applyAlpha(color, opacity());
 		}
 		betterTextShadow = true;
 		guiGraphics.drawString(CLIENT.font, text, (int) x, (int) y, color, shadow);
@@ -357,5 +358,42 @@ public class DisplayHelper implements IDisplayHelper {
 			return Optional.empty();
 		}, Style.EMPTY);
 		return mutableComponent;
+	}
+
+	@Override
+	public void blitSprite(GuiGraphics guiGraphics, ResourceLocation resourceLocation, int i, int j, int k, int l) {
+		RenderSystem.enableBlend();
+		guiGraphics.setColor(1, 1, 1, opacity());
+		guiGraphics.blitSprite(resourceLocation, i, j, k, l);
+		guiGraphics.setColor(1, 1, 1, 1);
+	}
+
+	@Override
+	public void blitSprite(GuiGraphics guiGraphics, ResourceLocation resourceLocation, int i, int j, int k, int l, int m) {
+		RenderSystem.enableBlend();
+		guiGraphics.setColor(1, 1, 1, opacity());
+		guiGraphics.blitSprite(resourceLocation, i, j, k, l, m);
+		guiGraphics.setColor(1, 1, 1, 1);
+	}
+
+	@Override
+	public void blitSprite(GuiGraphics guiGraphics, ResourceLocation resourceLocation, int i, int j, int k, int l, int m, int n, int o, int p) {
+		RenderSystem.enableBlend();
+		guiGraphics.setColor(1, 1, 1, opacity());
+		guiGraphics.blitSprite(resourceLocation, i, j, k, l, m, n, o, p);
+		guiGraphics.setColor(1, 1, 1, 1);
+	}
+
+	@Override
+	public void blitSprite(GuiGraphics guiGraphics, ResourceLocation resourceLocation, int i, int j, int k, int l, int m, int n, int o, int p, int q) {
+		RenderSystem.enableBlend();
+		RenderSystem.setShaderColor(1, 1, 1, opacity());
+		guiGraphics.blitSprite(resourceLocation, i, j, k, l, m, n, o, p, q);
+		RenderSystem.setShaderColor(1, 1, 1, 1);
+	}
+
+	@Override
+	public float opacity() {
+		return OverlayRenderer.alpha;
 	}
 }

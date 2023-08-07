@@ -28,12 +28,12 @@ public interface IElementHelper {
 
 	IElement fluid(JadeFluidObject fluid);
 
-	IElement progress(float progress, @Nullable Component text, IProgressStyle style, IBoxStyle boxStyle, boolean canDecrease);
+	IElement progress(float progress, @Nullable Component text, IProgressStyle style, BoxStyle boxStyle, boolean canDecrease);
 
 	/**
 	 * Display a nested tooltip
 	 */
-	IBoxElement box(ITooltip tooltip, IBoxStyle boxStyle);
+	IBoxElement box(ITooltip tooltip, BoxStyle boxStyle);
 
 	/**
 	 * Create an empty tooltip. Used by the {@code box} method.
