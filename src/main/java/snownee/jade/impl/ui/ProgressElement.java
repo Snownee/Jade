@@ -71,4 +71,8 @@ public class ProgressElement extends Element {
 		style.render(guiGraphics, x + b, y + b, maxX - x - b * 2, size.y - b * 2 - 2, progress, text);
 	}
 
+	@Override
+	public @Nullable String getMessage() {
+		return text == null ? null : text.getString();
+	}
 }
