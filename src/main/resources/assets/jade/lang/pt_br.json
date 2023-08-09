@@ -258,7 +258,7 @@
   "config.jade.plugin_minecraft.jukebox": "Gravação Toca-discos",
   "config.jade.plugin_minecraft.villager_profession": "Profissão Aldeão",
   "jade.spawner": "%s (%s)",
-  "config.jade.plugin_minecraft.chiseled_bookshelf": "Chiseled Bookshelf",
+  "config.jade.plugin_minecraft.chiseled_bookshelf": "Porta-livros",
   "config.jade.plugin_minecraft.zombie_villager": "Conversão p/ Aldeão Zumbi",
   "jade.zombieConversion.time": "Tempo p/ conversão: %s",
   "toast.jade.toggle_hint.1": "Jade agora está fechado",
