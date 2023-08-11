@@ -7,13 +7,14 @@ import java.util.function.Function;
 
 import org.jetbrains.annotations.Nullable;
 
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import snownee.jade.api.ITooltip;
-import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.ui.BoxStyle;
+import snownee.jade.api.ui.Direction2D;
 import snownee.jade.api.ui.IBoxElement;
 import snownee.jade.api.ui.IElementHelper;
-import snownee.jade.api.ui.ITooltipRenderer;
+import snownee.jade.api.ui.MessageType;
 import snownee.jade.impl.ui.HorizontalLineElement;
 import snownee.jade.impl.ui.ScaledTextElement;
 
@@ -22,24 +23,24 @@ public class ClientViewGroup<T> {
 	public final List<T> views;
 	@Nullable
 	public Component title;
-	public int bgColor;
-	public int progressColor;
-	public float progress;
+	public MessageType messageType = MessageType.NORMAL;
+	public float boxProgress;
 
 	public ClientViewGroup(List<T> views) {
 		this.views = views;
 	}
 
-	public boolean shouldRenderGroup() {
-		return title != null || bgColor != 0 || progressColor != 0;
-	}
-
 	public static <IN, OUT> List<ClientViewGroup<OUT>> map(List<ViewGroup<IN>> groups, Function<IN, OUT> itemFactory, @Nullable BiConsumer<ViewGroup<IN>, ClientViewGroup<OUT>> clientGroupDecorator) {
 		return groups.stream().map($ -> {
 			var group = new ClientViewGroup<>($.views.stream().map(itemFactory).filter(Objects::nonNull).toList());
-			if ($.extraData != null && $.getExtraData().contains("Progress")) {
-				group.progress = $.getExtraData().getFloat("Progress");
-				group.progressColor = 0xFFCCCCCC;
+			CompoundTag data = $.extraData;
+			if (data != null) {
+				if (data.contains("Progress")) {
+					group.boxProgress = data.getFloat("Progress");
+				}
+				if (data.contains("MessageType")) {
+					group.messageType = MessageType.parse(data.getString("MessageType"));
+				}
 			}
 			if (clientGroupDecorator != null) {
 				clientGroupDecorator.accept($, group);
@@ -53,22 +54,24 @@ public class ClientViewGroup<T> {
 			ITooltip theTooltip = renderGroup ? IElementHelper.get().tooltip() : tooltip;
 			consumer.accept(theTooltip, group);
 			if (renderGroup) {
-				var boxStyle = BoxStyle.createGradientBorder();
-				boxStyle.borderColor = group.bgColor;
-				boxStyle.bgColor = group.bgColor;
-				boxStyle.progress = group.progress;
-				boxStyle.progressColor = group.progressColor;
-				boxStyle.borderWidth = 0.75F;
-				boxStyle.roundCorner = !IWailaConfig.get().getOverlay().getSquare();
+				BoxStyle boxStyle = BoxStyle.getViewGroup().clone();
 				IBoxElement box = IElementHelper.get().box(theTooltip, boxStyle);
-				ITooltipRenderer tooltipRenderer = box.getTooltipRenderer();
-				tooltipRenderer.setPadding(ITooltipRenderer.TOP, group.title == null ? 2 : 0);
-				tooltipRenderer.setPadding(ITooltipRenderer.LEFT, 2);
-				tooltipRenderer.setPadding(ITooltipRenderer.RIGHT, 2);
-				tooltipRenderer.recalculateSize();
+				box.setBoxProgress(group.messageType, group.boxProgress);
+				if (group.title != null) {
+					box.setPadding(Direction2D.UP, 0);
+					box.size(null);
+				}
 				tooltip.add(box);
+				if (box.getStyle().hasRoundCorner()) {
+					tooltip.setLineMargin(-1, Direction2D.UP, 3);
+					tooltip.setLineMargin(-1, Direction2D.DOWN, 3);
+				}
 			}
 		}
+	}
+
+	public boolean shouldRenderGroup() {
+		return title != null || boxProgress > 0;
 	}
 
 	public void renderHeader(ITooltip tooltip) {
@@ -76,8 +79,9 @@ public class ClientViewGroup<T> {
 			tooltip.add(new HorizontalLineElement());
 			tooltip.append(new ScaledTextElement(title, 0.5F));
 			tooltip.append(new HorizontalLineElement());
-		} else if (bgColor == 0) {
-			tooltip.add(new HorizontalLineElement());
 		}
+//		else if (bgColor == 0) {
+//			tooltip.add(new HorizontalLineElement());
+//		}
 	}
 }

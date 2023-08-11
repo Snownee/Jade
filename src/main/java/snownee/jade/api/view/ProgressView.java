@@ -6,17 +6,17 @@ import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import snownee.jade.api.ui.IProgressStyle;
+import snownee.jade.api.ui.ProgressStyle;
 import snownee.jade.impl.ui.SlimProgressStyle;
 
 public class ProgressView {
 
-	public IProgressStyle style;
+	public ProgressStyle style;
 	public float progress;
 	@Nullable
 	public Component text;
 
-	public ProgressView(IProgressStyle style) {
+	public ProgressView(ProgressStyle style) {
 		this.style = style;
 		Objects.requireNonNull(style);
 	}

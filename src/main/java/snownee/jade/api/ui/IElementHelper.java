@@ -3,6 +3,7 @@ package snownee.jade.api.ui;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import snownee.jade.Internals;
 import snownee.jade.api.ITooltip;
@@ -28,7 +29,11 @@ public interface IElementHelper {
 
 	IElement fluid(JadeFluidObject fluid);
 
-	IElement progress(float progress, @Nullable Component text, IProgressStyle style, BoxStyle boxStyle, boolean canDecrease);
+	IElement progress(float progress, @Nullable Component text, ProgressStyle style, BoxStyle boxStyle, boolean canDecrease);
+
+	IElement progress(float progress);
+
+	IElement progress(float progress, ResourceLocation baseSprite, ResourceLocation progressSprite, int width, int height, boolean canDecrease);
 
 	/**
 	 * Display a nested tooltip
@@ -40,6 +45,7 @@ public interface IElementHelper {
 	 */
 	ITooltip tooltip();
 
-	IProgressStyle progressStyle();
+	ProgressStyle progressStyle();
 
+	IElement sprite(ResourceLocation sprite, int width, int height);
 }

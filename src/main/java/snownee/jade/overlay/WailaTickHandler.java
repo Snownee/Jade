@@ -3,6 +3,7 @@ package snownee.jade.overlay;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Suppliers;
 import com.mojang.text2speech.Narrator;
 
@@ -20,8 +21,10 @@ import net.minecraft.world.phys.HitResult;
 import snownee.jade.Jade;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.ITooltip;
+import snownee.jade.api.Identifiers;
 import snownee.jade.api.callback.JadeRayTraceCallback;
 import snownee.jade.api.callback.JadeTooltipCollectedCallback;
+import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.IWailaConfig.DisplayMode;
 import snownee.jade.api.config.IWailaConfig.IConfigGeneral;
 import snownee.jade.api.theme.IThemeHelper;
@@ -30,15 +33,16 @@ import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.Tooltip;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
+import snownee.jade.impl.ui.BoxElement;
 import snownee.jade.util.ClientProxy;
 
 public class WailaTickHandler {
 
-	private static WailaTickHandler INSTANCE = new WailaTickHandler();
 	private static final Supplier<Narrator> NARRATOR = Suppliers.memoize(Narrator::getNarrator);
+	private static WailaTickHandler INSTANCE = new WailaTickHandler();
 	private static String lastNarration = "";
 	private static long lastNarrationTime = 0;
-	public TooltipRenderer tooltipRenderer = null;
+	public BoxElement rootElement;
 	public ProgressTracker progressTracker = new ProgressTracker();
 
 	public static WailaTickHandler instance() {
@@ -75,7 +79,7 @@ public class WailaTickHandler {
 
 		IConfigGeneral config = Jade.CONFIG.get().getGeneral();
 		if (!config.shouldDisplayTooltip()) {
-			tooltipRenderer = null;
+			rootElement = null;
 			return;
 		}
 
@@ -87,7 +91,7 @@ public class WailaTickHandler {
 		Level world = client.level;
 		Player player = client.player;
 		if (world == null || player == null) {
-			tooltipRenderer = null;
+			rootElement = null;
 			return;
 		}
 
@@ -97,7 +101,7 @@ public class WailaTickHandler {
 		Tooltip tooltip = new Tooltip();
 
 		if (target == null) {
-			tooltipRenderer = null;
+			rootElement = null;
 			return;
 		}
 
@@ -134,13 +138,13 @@ public class WailaTickHandler {
 		}
 		ObjectDataCenter.set(accessor);
 		if (accessor == null || accessor.getHitResult() == null) {
-			tooltipRenderer = null;
+			rootElement = null;
 			return;
 		}
 
 		var handler = WailaClientRegistration.INSTANCE.getAccessorHandler(accessor.getAccessorType());
 		if (!handler.shouldDisplay(accessor)) {
-			tooltipRenderer = null;
+			rootElement = null;
 			return;
 		}
 		if (accessor.isServerConnected()) {
@@ -154,6 +158,13 @@ public class WailaTickHandler {
 				return;
 			}
 		}
+
+		OverlayRenderer.theme.setValue(IWailaConfig.get().getOverlay().getTheme());
+		Accessor<?> accessor0 = accessor;
+		WailaClientRegistration.INSTANCE.beforeTooltipCollectCallback.call(callback -> {
+			callback.beforeCollecting(OverlayRenderer.theme, accessor0);
+		});
+		Preconditions.checkNotNull(OverlayRenderer.theme.getValue(), "Theme cannot be null");
 
 		if (config.getDisplayMode() == DisplayMode.LITE && !ClientProxy.isShowDetailsPressed()) {
 			Tooltip dummyTooltip = new Tooltip();
@@ -171,10 +182,13 @@ public class WailaTickHandler {
 			handler.gatherComponents(accessor, $ -> tooltip);
 		}
 
+		rootElement = new BoxElement(tooltip, IThemeHelper.get().theme().tooltipStyle);
+		rootElement.tag(Identifiers.ROOT);
 		for (JadeTooltipCollectedCallback callback : WailaClientRegistration.INSTANCE.tooltipCollectedCallback.callbacks()) {
-			callback.onTooltipCollected(tooltip, accessor);
+			callback.onTooltipCollected(rootElement, accessor);
 		}
-		tooltipRenderer = new TooltipRenderer(tooltip, true);
-		tooltipRenderer.setPaddingFromTheme(IThemeHelper.get().theme());
+		if (IWailaConfig.get().getOverlay().shouldShowIcon()) {
+			rootElement.setIcon(RayTracing.INSTANCE.getIcon());
+		}
 	}
 }

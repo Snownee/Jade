@@ -24,7 +24,7 @@ import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.impl.config.entry.ConfigEntry;
 import snownee.jade.util.ModIdentification;
 
-public class PluginsConfigScreen extends BaseOptionsScreen {
+public class PluginsConfigScreen extends PreviewOptionsScreen {
 
 	private final MutableObject<OptionsList.Entry> jumpToEntry = new MutableObject<>();
 	private String jumpTo;

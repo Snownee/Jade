@@ -19,7 +19,7 @@ import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.IElementHelper;
-import snownee.jade.api.ui.IProgressStyle;
+import snownee.jade.api.ui.ProgressStyle;
 import snownee.jade.api.view.ClientViewGroup;
 import snownee.jade.api.view.EnergyView;
 import snownee.jade.api.view.IClientExtensionProvider;
@@ -59,8 +59,8 @@ public enum EnergyStorageProvider implements IBlockComponentProvider, IServerDat
 						} else {
 							text = Component.translatable("jade.fe", ChatFormatting.WHITE + view.current, view.max).withStyle(ChatFormatting.GRAY);
 						}
-						IProgressStyle progressStyle = helper.progressStyle().color(0xFFAA0000, 0xFF660000);
-						theTooltip.add(helper.progress(view.ratio, text, progressStyle, BoxStyle.getDefault(), true));
+						ProgressStyle progressStyle = helper.progressStyle().color(0xFFAA0000, 0xFF660000);
+						theTooltip.add(helper.progress(view.ratio, text, progressStyle, BoxStyle.getNestedBox(), true));
 					}
 				});
 			}

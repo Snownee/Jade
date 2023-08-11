@@ -4,6 +4,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public class Identifiers {
 
+	public static final ResourceLocation ROOT = MC("root");
 	public static final ResourceLocation PACKET_RECEIVE_DATA = JADE("receive_data");
 	public static final ResourceLocation PACKET_SERVER_PING = JADE("server_ping");
 	public static final ResourceLocation PACKET_REQUEST_ENTITY = JADE("request_entity");

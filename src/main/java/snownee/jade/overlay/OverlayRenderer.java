@@ -1,48 +1,41 @@
 package snownee.jade.overlay;
 
-import java.util.Objects;
-import java.util.function.IntConsumer;
-import java.util.function.ToIntFunction;
-
 import org.apache.commons.lang3.mutable.MutableObject;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
 import snownee.jade.api.callback.JadeBeforeRenderCallback;
-import snownee.jade.api.callback.JadeBeforeRenderCallback.ColorSetting;
-import snownee.jade.api.callback.JadeRenderBackgroundCallback;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.IWailaConfig.BossBarOverlapMode;
 import snownee.jade.api.theme.Theme;
-import snownee.jade.gui.BaseOptionsScreen;
+import snownee.jade.api.ui.TooltipRect;
+import snownee.jade.gui.PreviewOptionsScreen;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.config.WailaConfig.ConfigGeneral;
 import snownee.jade.impl.config.WailaConfig.ConfigOverlay;
+import snownee.jade.impl.ui.BoxElement;
 import snownee.jade.util.ClientProxy;
 
 public class OverlayRenderer {
 
 	public static final MutableObject<Theme> theme = new MutableObject<>(IWailaConfig.get().getOverlay().getTheme());
+	private static final TooltipRect rect = new TooltipRect();
 	public static float ticks;
 	public static boolean shown;
 	public static float alpha;
-	private static TooltipRenderer lingerTooltip;
+	private static BoxElement lingerTooltip;
 	private static float disappearTicks;
-	private static Rect2i morphRect;
 
 	public static boolean shouldShow() {
-		if (WailaTickHandler.instance().tooltipRenderer == null) {
+		if (WailaTickHandler.instance().rootElement == null) {
 			return false;
 		}
 
@@ -61,7 +54,7 @@ public class OverlayRenderer {
 		return true;
 	}
 
-	public static boolean shouldShowImmediately(TooltipRenderer tooltipRenderer) {
+	public static boolean shouldShowImmediately(BoxElement box) {
 		Minecraft mc = Minecraft.getInstance();
 
 		if (mc.level == null)
@@ -71,17 +64,16 @@ public class OverlayRenderer {
 			return false;
 		}
 
-		tooltipRenderer.recalculateRealRect();
+		box.updateExpectedRect(rect);
 		ConfigGeneral general = Jade.CONFIG.get().getGeneral();
-		if (mc.screen instanceof BaseOptionsScreen optionsScreen) {
+		if (mc.screen instanceof PreviewOptionsScreen optionsScreen) {
 			if (!general.previewOverlay && !optionsScreen.forcePreviewOverlay()) {
 				return false;
 			}
-			Rect2i position = tooltipRenderer.getRealRect();
 			Window window = mc.getWindow();
 			double x = mc.mouseHandler.xpos() * window.getGuiScaledWidth() / window.getScreenWidth();
 			double y = mc.mouseHandler.ypos() * window.getGuiScaledHeight() / window.getScreenHeight();
-			if (position.contains((int) x, (int) y)) {
+			if (rect.expectedRect.contains((int) x, (int) y)) {
 				return false;
 			}
 		}
@@ -112,24 +104,24 @@ public class OverlayRenderer {
 	public static void renderOverlay478757(GuiGraphics guiGraphics) {
 		shown = false;
 		boolean show = shouldShow();
-		TooltipRenderer tooltipRenderer = WailaTickHandler.instance().tooltipRenderer;
+		BoxElement root = WailaTickHandler.instance().rootElement;
 		float delta = Minecraft.getInstance().getDeltaFrameTime();
 		ConfigOverlay overlay = Jade.CONFIG.get().getOverlay();
 		ConfigGeneral general = Jade.CONFIG.get().getGeneral();
-		if (tooltipRenderer != null) {
-			lingerTooltip = tooltipRenderer;
+		if (root != null) {
+			lingerTooltip = root;
 		}
-		if (tooltipRenderer == null && lingerTooltip != null) {
+		if (root == null && lingerTooltip != null) {
 			disappearTicks += delta;
 			if (disappearTicks < overlay.getDisappearingDelay()) {
-				tooltipRenderer = lingerTooltip;
+				root = lingerTooltip;
 				show = true;
 			}
 		} else {
 			disappearTicks = 0;
 		}
 		if (overlay.getAnimation() && lingerTooltip != null) {
-			tooltipRenderer = lingerTooltip;
+			root = lingerTooltip;
 			float speed = general.isDebug() ? 0.1F : 0.6F;
 			alpha += (show ? speed : -speed) * delta;
 			alpha = Mth.clamp(alpha, 0, 1);
@@ -137,76 +129,54 @@ public class OverlayRenderer {
 			alpha = show ? 1 : 0;
 		}
 
-		if (alpha < 0.1F || tooltipRenderer == null || !shouldShowImmediately(tooltipRenderer)) {
+		if (alpha < 0.1F || root == null || !shouldShowImmediately(root)) {
 			lingerTooltip = null;
-			morphRect = null;
+			rect.rect.setWidth(0); // mark dirty
 			WailaTickHandler.clearLastNarration();
 			return;
 		}
 
 		ticks += delta;
 		Minecraft.getInstance().getProfiler().push("Jade Overlay");
-		renderOverlay(tooltipRenderer, guiGraphics);
+		renderOverlay(root, guiGraphics);
 		Minecraft.getInstance().getProfiler().pop();
 	}
 
-	public static void renderOverlay(TooltipRenderer tooltip, GuiGraphics guiGraphics) {
-		PoseStack matrixStack = guiGraphics.pose();
-		matrixStack.pushPose();
+	public static void renderOverlay(BoxElement root, GuiGraphics guiGraphics) {
+		root.updateRect(rect);
 
-		Rect2i position = Objects.requireNonNull(tooltip.getRealRect());
-
-		if (morphRect == null) {
-			morphRect = new Rect2i(position.getX(), position.getY(), position.getWidth(), position.getHeight());
-		} else {
-			chase(position, Rect2i::getX, morphRect::setX);
-			chase(position, Rect2i::getY, morphRect::setY);
-			chase(position, Rect2i::getWidth, morphRect::setWidth);
-			chase(position, Rect2i::getHeight, morphRect::setHeight);
-		}
-
-		ColorSetting colorSetting = new ColorSetting();
-		ConfigOverlay overlay = Jade.CONFIG.get().getOverlay();
-		colorSetting.alpha = overlay.getAlpha();
-		Theme themeBefore = overlay.getTheme();
-		theme.setValue(themeBefore);
-		colorSetting.theme = theme;
 		for (JadeBeforeRenderCallback callback : WailaClientRegistration.INSTANCE.beforeRenderCallback.callbacks()) {
-			if (callback.beforeRender(tooltip.getTooltip(), morphRect, guiGraphics, ObjectDataCenter.get(), colorSetting)) {
-				matrixStack.popPose();
+			if (callback.beforeRender(root, rect, guiGraphics, ObjectDataCenter.get())) {
 				return;
 			}
 		}
-		if (themeBefore != theme.getValue()) {
-			tooltip.setPaddingFromTheme(theme.getValue());
-		}
 
+		PoseStack matrixStack = guiGraphics.pose();
+		matrixStack.pushPose();
 		float z = Minecraft.getInstance().screen == null ? 1 : 100;
-		matrixStack.translate(morphRect.getX(), morphRect.getY(), z);
+		matrixStack.translate(rect.rect.getX(), rect.rect.getY(), z);
 
-		float scale = tooltip.getRealScale();
+		float scale = rect.scale;
 		if (scale != 1) {
 			matrixStack.scale(scale, scale, 1.0F);
 		}
 
-		boolean doDefault = true;
-		colorSetting.alpha *= alpha;
-		for (JadeRenderBackgroundCallback callback : WailaClientRegistration.INSTANCE.renderBackgroundCallback.callbacks()) {
-			if (callback.onRender(tooltip, morphRect, guiGraphics, ObjectDataCenter.get(), colorSetting)) {
-				doDefault = false;
-				break;
-			}
-		}
 		RenderSystem.enableBlend();
-		if (doDefault && colorSetting.alpha > 0) {
-			drawTooltipBox(guiGraphics, 0, 0, Mth.ceil(morphRect.getWidth() / scale), Mth.ceil(morphRect.getHeight() / scale), colorSetting.alpha, overlay.getSquare(), tooltip);
+		{
+			float maxWidth = rect.rect.getWidth();
+			float maxHeight = rect.rect.getHeight();
+			if (root.getStyle().hasRoundCorner()) {
+				maxWidth -= 2;
+				maxHeight -= 2;
+			}
+			maxWidth = maxWidth / scale;
+			maxHeight = maxHeight / scale;
+//			Jade.LOGGER.info("maxWidth: " + maxWidth + ", expectedWidth: " + root.getCachedSize().x * scale);
+			root.render(guiGraphics, 0, 0, maxWidth, maxHeight);
 		}
-
-		RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-		tooltip.draw(guiGraphics);
 
 		WailaClientRegistration.INSTANCE.afterRenderCallback.call(callback -> {
-			callback.afterRender(tooltip.getTooltip(), morphRect, guiGraphics, ObjectDataCenter.get());
+			callback.afterRender(root, rect, guiGraphics, ObjectDataCenter.get());
 		});
 
 		RenderSystem.enableBlend();
@@ -214,66 +184,9 @@ public class OverlayRenderer {
 		matrixStack.popPose();
 
 		if (Jade.CONFIG.get().getGeneral().shouldEnableTextToSpeech()) {
-			WailaTickHandler.narrate(tooltip.getTooltip(), true);
+			WailaTickHandler.narrate(root.getTooltip(), true);
 		}
 
 		shown = true;
-	}
-
-	private static void chase(Rect2i pos, ToIntFunction<Rect2i> getter, IntConsumer setter) {
-		if (Jade.CONFIG.get().getOverlay().getAnimation()) {
-			int value = getter.applyAsInt(morphRect);
-			int target = getter.applyAsInt(pos);
-			float diff = target - value;
-			if (diff == 0) {
-				return;
-			}
-			float delta = Minecraft.getInstance().getDeltaFrameTime() * 2;
-			if (delta < 1)
-				diff *= delta;
-			if (Mth.abs(diff) < 1) {
-				diff = diff > 0 ? 1 : -1;
-			}
-			setter.accept((int) (value + diff));
-		} else {
-			setter.accept(getter.applyAsInt(pos));
-		}
-	}
-
-	public static void drawTooltipBox(GuiGraphics guiGraphics, int x, int y, int w, int h, float alpha, boolean square, TooltipRenderer tooltip) {
-		Theme theme = OverlayRenderer.theme.getValue();
-		if (theme.backgroundTexture != null) {
-			ResourceLocation texture = theme.backgroundTexture;
-			if (theme.backgroundTexture_withIcon != null && tooltip.hasIcon()) {
-				texture = theme.backgroundTexture_withIcon;
-			}
-			RenderSystem.setShaderColor(1, 1, 1, alpha);
-			guiGraphics.blitSprite(texture, x, y, w, h);
-			RenderSystem.setShaderColor(1, 1, 1, 1);
-		} else {
-			if (!square) {
-				w -= 2;
-				h -= 2;
-			}
-			int bg = theme.backgroundColor;
-			if (bg != -1) {
-				bg = IWailaConfig.IConfigOverlay.applyAlpha(bg, alpha);
-				DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x + 1, y + 1, w - 2, h - 2, bg, bg);//center
-				if (!square) {
-					DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x, y - 1, w, 1, bg, bg);
-					DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x, y + h, w, 1, bg, bg);
-					DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x - 1, y, 1, h, bg, bg);
-					DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x + w, y, 1, h, bg, bg);
-				}
-			}
-			int[] borderColors = new int[4];
-			for (int i = 0; i < 4; i++) {
-				borderColors[i] = IWailaConfig.IConfigOverlay.applyAlpha(theme.borderColor[i], alpha);
-			}
-			DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x, y + 1, 1, h - 2, borderColors[0], borderColors[3]);
-			DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x + w - 1, y + 1, 1, h - 2, borderColors[1], borderColors[2]);
-			DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x, y, w, 1, borderColors[0], borderColors[1]);
-			DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x, y + h - 1, w, 1, borderColors[3], borderColors[2]);
-		}
 	}
 }

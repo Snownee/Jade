@@ -10,11 +10,13 @@ import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.Jade;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
+import snownee.jade.api.ui.Direction2D;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElement.Align;
 import snownee.jade.api.ui.IElementHelper;
@@ -23,58 +25,19 @@ import snownee.jade.overlay.DisplayHelper;
 
 public class Tooltip implements ITooltip {
 
-	public static class Line {
-		private final List<IElement> left = new ArrayList<>();
-		private final List<IElement> right = new ArrayList<>(0);
-		private Vec2 size;
+	public final List<Line> lines = new ArrayList<>();
+	public boolean sneakyDetails;
 
-		public List<IElement> getAlignedElements(Align align) {
-			return align == Align.LEFT ? left : right;
-		}
-
-		public Vec2 getSize() {
-			if (size == null) {
-				float width = 0, height = 0;
-				for (IElement element : left) {
-					Vec2 elementSize = element.getCachedSize();
-					width += elementSize.x;
-					height = Math.max(height, elementSize.y);
-				}
-				for (IElement element : right) {
-					Vec2 elementSize = element.getCachedSize();
-					width += elementSize.x;
-					height = Math.max(height, elementSize.y);
-				}
-				size = new Vec2(width, height);
-			}
-			return size;
-		}
-
-		public void render(GuiGraphics guiGraphics, float x, float y, float maxWidth, float y2) {
-			float ox = maxWidth, oy = y;
-			for (int i = right.size() - 1; i >= 0; i--) {
-				IElement element = right.get(i);
-				Vec2 translate = element.getTranslation();
-				Vec2 size = element.getCachedSize();
-				ox -= size.x;
-				drawBorder(guiGraphics, ox, oy, element);
-				element.render(guiGraphics, ox + translate.x, oy + translate.y, x + size.x + translate.x, y + y2 + translate.y);
-			}
-			maxWidth = ox;
-			ox = x;
-			for (int i = 0; i < left.size(); i++) {
-				IElement element = left.get(i);
-				Vec2 translate = element.getTranslation();
-				Vec2 size = element.getCachedSize();
-				drawBorder(guiGraphics, ox, oy, element);
-				element.render(guiGraphics, ox + translate.x, oy + translate.y, ((i == left.size() - 1) ? maxWidth : (ox + size.x)) + translate.x, y + y2 + translate.y);
-				ox += size.x;
+	public static void drawDebugBorder(GuiGraphics guiGraphics, float x, float y, IElement element) {
+		if (Jade.CONFIG.get().getGeneral().isDebug() && Screen.hasControlDown()) {
+			Vec2 translate = element.getTranslation();
+			Vec2 size = element.getCachedSize();
+			DisplayHelper.INSTANCE.drawBorder(guiGraphics, x, y, x + size.x, y + size.y, 1, 0x88FF0000, true);
+			if (!Vec2.ZERO.equals(translate)) {
+				DisplayHelper.INSTANCE.drawBorder(guiGraphics, x + translate.x, y + translate.y, x + translate.x + size.x, y + translate.y + size.y, 1, 0x880000FF, true);
 			}
 		}
 	}
-
-	public final List<Line> lines = new ArrayList<>();
-	public boolean sneakyDetails;
 
 	@Override
 	public void clear() {
@@ -132,23 +95,12 @@ public class Tooltip implements ITooltip {
 
 	@Override
 	public void remove(ResourceLocation tag) {
-		for (Iterator<Line> iterator = lines.iterator(); iterator.hasNext();) {
+		for (Iterator<Line> iterator = lines.iterator(); iterator.hasNext(); ) {
 			Line line = iterator.next();
 			line.left.removeIf(e -> Objects.equal(tag, e.getTag()));
 			line.right.removeIf(e -> Objects.equal(tag, e.getTag()));
 			if (line.left.isEmpty() && line.right.isEmpty()) {
 				iterator.remove();
-			}
-		}
-	}
-
-	public static void drawBorder(GuiGraphics guiGraphics, float x, float y, IElement element) {
-		if (Jade.CONFIG.get().getGeneral().isDebug()) {
-			Vec2 translate = element.getTranslation();
-			Vec2 size = element.getCachedSize();
-			DisplayHelper.INSTANCE.drawBorder(guiGraphics, x, y, x + size.x, y + size.y, 1, 0x88FF0000, true);
-			if (!Vec2.ZERO.equals(translate)) {
-				DisplayHelper.INSTANCE.drawBorder(guiGraphics, x + translate.x, y + translate.y, x + translate.x + size.x, y + translate.y + size.y, 1, 0x880000FF, true);
 			}
 		}
 	}
@@ -169,6 +121,71 @@ public class Tooltip implements ITooltip {
 			/* on */
 		}
 		return Joiner.on('\n').join(msgs);
+	}
+
+	@Override
+	public void setLineMargin(int index, Direction2D side, int margin) {
+		if (index < 0) {
+			index += lines.size();
+		}
+		Line line = lines.get(index);
+		switch (side) {
+			case UP -> line.marginTop = margin;
+			case DOWN -> line.marginBottom = margin;
+			default -> throw new IllegalArgumentException("Only TOP and BOTTOM are allowed.");
+		}
+	}
+
+	public static class Line {
+		private final List<IElement> left = new ArrayList<>();
+		private final List<IElement> right = new ArrayList<>(0);
+		public int marginTop = 0;
+		public int marginBottom = 2;
+		private Vec2 size;
+
+		public List<IElement> getAlignedElements(Align align) {
+			return align == Align.LEFT ? left : right;
+		}
+
+		public Vec2 getSize() {
+			if (size == null) {
+				float width = 0, height = 0;
+				for (IElement element : left) {
+					Vec2 elementSize = element.getCachedSize();
+					width += elementSize.x;
+					height = Math.max(height, elementSize.y);
+				}
+				for (IElement element : right) {
+					Vec2 elementSize = element.getCachedSize();
+					width += elementSize.x;
+					height = Math.max(height, elementSize.y);
+				}
+				size = new Vec2(width, height);
+			}
+			return size;
+		}
+
+		public void render(GuiGraphics guiGraphics, float x, float y, float maxWidth, float maxHeight) {
+			float ox = maxWidth;
+			for (int i = right.size() - 1; i >= 0; i--) {
+				IElement element = right.get(i);
+				Vec2 translate = element.getTranslation();
+				Vec2 size = element.getCachedSize();
+				ox -= size.x;
+				drawDebugBorder(guiGraphics, ox, y, element);
+				element.render(guiGraphics, ox + translate.x, y + translate.y, x + size.x + translate.x, y + maxHeight + translate.y);
+			}
+			maxWidth = ox;
+			ox = x;
+			for (int i = 0; i < left.size(); i++) {
+				IElement element = left.get(i);
+				Vec2 translate = element.getTranslation();
+				Vec2 size = element.getCachedSize();
+				drawDebugBorder(guiGraphics, ox, y, element);
+				element.render(guiGraphics, ox + translate.x, y + translate.y, ((i == left.size() - 1) ? maxWidth : (ox + size.x)) + translate.x, y + maxHeight + translate.y);
+				ox += size.x;
+			}
+		}
 	}
 
 }

@@ -12,9 +12,14 @@ import org.jetbrains.annotations.NotNull;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.JsonOps;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import net.minecraft.CrashReport;
+import net.minecraft.ReportedException;
+import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
@@ -25,6 +30,7 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.util.profiling.ProfilerFiller;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
+import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
 import snownee.jade.impl.config.WailaConfig;
@@ -37,6 +43,9 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener implements ITh
 	public static final ResourceLocation ID = new ResourceLocation(Jade.MODID, "themes");
 	private static final Int2ObjectMap<Style> styleCache = new Int2ObjectOpenHashMap<>(6);
 	private final Map<ResourceLocation, Theme> themes = Maps.newTreeMap(Comparator.comparing(ResourceLocation::toString));
+	private final MinMaxBounds.Ints allowedVersions = MinMaxBounds.Ints.between(100, 199);
+	private Theme fallback;
+	private Style[] modNameStyleCache = new Style[3];
 
 	public ThemeHelper() {
 		super(JsonConfig.DEFAULT_GSON, "jade_themes");
@@ -59,32 +68,32 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener implements ITh
 	@Override
 	@NotNull
 	public Theme getTheme(ResourceLocation id) {
-		return themes.getOrDefault(id, Theme.DARK);
+		return Objects.requireNonNull(themes.getOrDefault(id, fallback));
 	}
 
 	@Override
 	public MutableComponent info(Object componentOrString) {
-		return color(componentOrString, theme().infoColor);
+		return color(componentOrString, theme().textColors.info());
 	}
 
 	@Override
 	public MutableComponent success(Object componentOrString) {
-		return color(componentOrString, theme().successColor);
+		return color(componentOrString, theme().textColors.success());
 	}
 
 	@Override
 	public MutableComponent warning(Object componentOrString) {
-		return color(componentOrString, theme().warningColor);
+		return color(componentOrString, theme().textColors.warning());
 	}
 
 	@Override
 	public MutableComponent danger(Object componentOrString) {
-		return color(componentOrString, theme().dangerColor);
+		return color(componentOrString, theme().textColors.danger());
 	}
 
 	@Override
 	public MutableComponent failure(Object componentOrString) {
-		return color(componentOrString, theme().failureColor);
+		return color(componentOrString, theme().textColors.failure());
 	}
 
 	@Override
@@ -95,7 +104,29 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener implements ITh
 		} else {
 			component = Component.literal(Objects.toString(componentOrString));
 		}
-		return color(DisplayHelper.INSTANCE.stripColor(component), theme().titleColor);
+		return color(DisplayHelper.INSTANCE.stripColor(component), theme().textColors.title());
+	}
+
+	@Override
+	public MutableComponent modName(Object componentOrString) {
+		MutableComponent component;
+		if (componentOrString instanceof MutableComponent) {
+			component = (MutableComponent) componentOrString;
+		} else {
+			component = Component.literal(Objects.toString(componentOrString));
+		}
+		Style itemStyle = IWailaConfig.get().getFormatting().getItemModNameStyle();
+		Style themeStyle = theme().modNameStyle;
+		if (modNameStyleCache[0] != itemStyle || modNameStyleCache[1] != themeStyle) {
+			Style style = itemStyle;
+			if (themeStyle != null) {
+				style = themeStyle.applyTo(style);
+			}
+			modNameStyleCache[0] = itemStyle;
+			modNameStyleCache[1] = themeStyle;
+			modNameStyleCache[2] = style;
+		}
+		return component.withStyle(modNameStyleCache[2]);
 	}
 
 	@Override
@@ -122,18 +153,29 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener implements ITh
 		WailaConfig.ConfigOverlay config = Jade.CONFIG.get().getOverlay();
 		themes.clear();
 		map.forEach((id, json) -> {
+			JsonObject o = json.getAsJsonObject();
+			int version = GsonHelper.getAsInt(o, "version", 0);
+			if (!allowedVersions.matches(version)) {
+				Jade.LOGGER.warn("Theme {} has unsupported version {}. Skipping.", id, version);
+				return;
+			}
 			try {
-				JsonObject o = json.getAsJsonObject();
-				Theme theme = JsonConfig.DEFAULT_GSON.fromJson(o, Theme.class);
-				theme.id = id;
-				themes.put(id, theme);
-				if (enable.getValue() == null && GsonHelper.getAsBoolean(o, "autoEnable", false) && !existingKeys.contains(id)) {
-					enable.setValue(theme);
-				}
+				ThemeCodecs.CODEC.decode(JsonOps.INSTANCE, o).resultOrPartial(Jade.LOGGER::error).map(Pair::getFirst).ifPresent(theme -> {
+					theme.id = id;
+					themes.put(id, theme);
+					if (enable.getValue() == null && GsonHelper.getAsBoolean(o, "autoEnable", false) && !existingKeys.contains(id)) {
+						enable.setValue(theme);
+					}
+				});
 			} catch (Exception e) {
 				Jade.LOGGER.error("Failed to load theme {}", id, e);
 			}
 		});
+		fallback = themes.get(Theme.DEFAULT_THEME_ID);
+		if (fallback == null) {
+			CrashReport crashreport = CrashReport.forThrowable(new NullPointerException(), "Missing default theme");
+			throw new ReportedException(crashreport);
+		}
 		int hash = 0;
 		for (ResourceLocation id : themes.keySet()) {
 			hash = 31 * hash + id.hashCode();
@@ -143,18 +185,15 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener implements ITh
 				Theme theme = enable.getValue();
 				config.activeTheme = theme.id;
 				Jade.LOGGER.info("Auto enabled theme {}", theme.id);
-				if (theme.squareBorder != null) {
-					config.setSquare(theme.squareBorder);
+				if (theme.changeRoundCorner != null) {
+					config.setSquare(theme.changeRoundCorner);
 				}
-				if (theme.opacity != 0) {
-					config.setAlpha(theme.opacity);
+				if (theme.changeOpacity != 0) {
+					config.setAlpha(theme.changeOpacity);
 				}
 			}
 			config.themesHash = hash;
 			Jade.CONFIG.save();
-		}
-		if (themes.isEmpty()) {
-			themes.put(Theme.DARK.id, Theme.DARK);
 		}
 		config.applyTheme(config.activeTheme);
 	}

@@ -33,9 +33,9 @@ import snownee.jade.api.IToggleableProvider;
 import snownee.jade.api.IWailaClientRegistration;
 import snownee.jade.api.callback.JadeAfterRenderCallback;
 import snownee.jade.api.callback.JadeBeforeRenderCallback;
+import snownee.jade.api.callback.JadeBeforeTooltipCollectCallback;
 import snownee.jade.api.callback.JadeItemModNameCallback;
 import snownee.jade.api.callback.JadeRayTraceCallback;
-import snownee.jade.api.callback.JadeRenderBackgroundCallback;
 import snownee.jade.api.callback.JadeTooltipCollectedCallback;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.platform.CustomEnchantPower;
@@ -74,7 +74,7 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	public final CallbackContainer<JadeRayTraceCallback> rayTraceCallback = new CallbackContainer<>();
 	public final CallbackContainer<JadeTooltipCollectedCallback> tooltipCollectedCallback = new CallbackContainer<>();
 	public final CallbackContainer<JadeItemModNameCallback> itemModNameCallback = new CallbackContainer<>();
-	public final CallbackContainer<JadeRenderBackgroundCallback> renderBackgroundCallback = new CallbackContainer<>();
+	public final CallbackContainer<JadeBeforeTooltipCollectCallback> beforeTooltipCollectCallback = new CallbackContainer<>();
 
 	public final Map<Block, CustomEnchantPower> customEnchantPowers = Maps.newHashMap();
 	public final Map<ResourceLocation, IClientExtensionProvider<ItemStack, ItemView>> itemStorageProviders = Maps.newHashMap();
@@ -224,7 +224,7 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 		blockIconProviders.loadComplete(priorities);
 		entityComponentProviders.loadComplete(priorities);
 		entityIconProviders.loadComplete(priorities);
-		Stream.of(afterRenderCallback, beforeRenderCallback, rayTraceCallback, tooltipCollectedCallback, itemModNameCallback, renderBackgroundCallback).forEach(CallbackContainer::sort);
+		Stream.of(afterRenderCallback, beforeRenderCallback, rayTraceCallback, tooltipCollectedCallback, itemModNameCallback, beforeTooltipCollectCallback).forEach(CallbackContainer::sort);
 	}
 
 	@Override
@@ -253,8 +253,8 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	}
 
 	@Override
-	public void addRenderBackgroundCallback(int priority, JadeRenderBackgroundCallback callback) {
-		renderBackgroundCallback.add(priority, callback);
+	public void addBeforeTooltipCollectCallback(int priority, JadeBeforeTooltipCollectCallback callback) {
+		beforeTooltipCollectCallback.add(priority, callback);
 	}
 
 	@Override

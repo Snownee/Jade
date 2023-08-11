@@ -9,6 +9,7 @@ import net.minecraft.world.entity.monster.Slime;
 import net.minecraft.world.level.material.Fluids;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.fluid.JadeFluidObject;
+import snownee.jade.api.ui.MessageType;
 import snownee.jade.api.view.ClientViewGroup;
 import snownee.jade.api.view.FluidView;
 import snownee.jade.api.view.IClientExtensionProvider;
@@ -29,7 +30,7 @@ public enum ExampleFluidStorageProvider
 		return ClientViewGroup.map(groups, FluidView::readDefault, (group, clientGroup) -> {
 			if (group.id != null)
 				clientGroup.title = Component.literal(group.id);
-			clientGroup.bgColor = 0x55666666;
+			clientGroup.messageType = MessageType.SUCCESS;
 		});
 	}
 

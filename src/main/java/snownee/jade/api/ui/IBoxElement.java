@@ -1,7 +1,24 @@
 package snownee.jade.api.ui;
 
-public interface IBoxElement extends IElement {
+import org.jetbrains.annotations.Nullable;
 
-	ITooltipRenderer getTooltipRenderer();
+import snownee.jade.api.ITooltip;
+import snownee.jade.impl.ui.StyledElement;
 
+public interface IBoxElement extends IElement, StyledElement {
+
+	ITooltip getTooltip();
+
+	void setBoxProgress(MessageType type, float progress);
+
+	void clearBoxProgress();
+
+	void setIcon(@Nullable IElement icon);
+
+	int padding(Direction2D direction);
+
+	void setPadding(Direction2D direction, int value);
+
+	@Override
+	BoxStyle getStyle();
 }

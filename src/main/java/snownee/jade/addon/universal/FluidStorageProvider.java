@@ -18,7 +18,7 @@ import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.IElementHelper;
-import snownee.jade.api.ui.IProgressStyle;
+import snownee.jade.api.ui.ProgressStyle;
 import snownee.jade.api.view.ClientViewGroup;
 import snownee.jade.api.view.FluidView;
 import snownee.jade.api.view.IClientExtensionProvider;
@@ -60,8 +60,8 @@ public enum FluidStorageProvider implements IBlockComponentProvider, IServerData
 						} else {
 							text = Component.translatable("jade.fluid", IDisplayHelper.get().stripColor(view.fluidName), view.current);
 						}
-						IProgressStyle progressStyle = helper.progressStyle().overlay(view.overlay);
-						theTooltip.add(helper.progress(view.ratio, text, progressStyle, BoxStyle.getDefault(), true));
+						ProgressStyle progressStyle = helper.progressStyle().overlay(view.overlay);
+						theTooltip.add(helper.progress(view.ratio, text, progressStyle, BoxStyle.getNestedBox(), true));
 					}
 				});
 			}

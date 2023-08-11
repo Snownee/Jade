@@ -1,10 +1,21 @@
-package snownee.jade.util;
+package snownee.jade.api.ui;
 
 import java.math.BigDecimal;
 import java.util.Objects;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+
 // Modified from: https://github.com/silentsoft/csscolor4j/blob/main/src/main/java/org/silentsoft/csscolor4j/Color.java
 public class Color {
+
+	public static final Codec<Integer> CODEC = Codec.STRING.comapFlatMap($ -> {
+		try {
+			return DataResult.success(Color.valueOf($).toInt());
+		} catch (IllegalArgumentException e) {
+			return DataResult.error(() -> "Invalid color: " + $);
+		}
+	}, $ -> Color.rgb($).getHex());
 
 	private int red;
 	private int green;
@@ -28,24 +39,24 @@ public class Color {
 	}
 
 	/**
-     * @param red 0 to 255.
-     * @param green 0 to 255.
-     * @param blue 0 to 255.
-     * @return a <code>Color</code> object that contains color information such as red, green, blue, cyan, magenta, yellow, black, hue, saturation, lightness, opacity, and hexadecimal numbers
-     * @see #valueOf(String)
-     */
+	 * @param red   0 to 255.
+	 * @param green 0 to 255.
+	 * @param blue  0 to 255.
+	 * @return a <code>Color</code> object that contains color information such as red, green, blue, cyan, magenta, yellow, black, hue, saturation, lightness, opacity, and hexadecimal numbers
+	 * @see #valueOf(String)
+	 */
 	public static Color rgb(int red, int green, int blue) {
 		return rgb(red, green, blue, 1.0);
 	}
 
 	/**
-     * @param red 0 to 255.
-     * @param green 0 to 255.
-     * @param blue 0 to 255.
-     * @param opacity 0.0 to 1.0.
-     * @return a <code>Color</code> object that contains color information such as red, green, blue, cyan, magenta, yellow, black, hue, saturation, lightness, opacity, and hexadecimal numbers
-     * @see #valueOf(String)
-     */
+	 * @param red     0 to 255.
+	 * @param green   0 to 255.
+	 * @param blue    0 to 255.
+	 * @param opacity 0.0 to 1.0.
+	 * @return a <code>Color</code> object that contains color information such as red, green, blue, cyan, magenta, yellow, black, hue, saturation, lightness, opacity, and hexadecimal numbers
+	 * @see #valueOf(String)
+	 */
 	public static Color rgb(int red, int green, int blue, double opacity) {
 		Color color = new Color();
 
@@ -134,41 +145,41 @@ public class Color {
 	//	}
 
 	/**
-     * @param hue 0 to 360.
-     * @param saturation 0.0 to 1.0.
-     * @param lightness 0.0 to 1.0.
-     * @return a <code>Color</code> object that contains color information such as red, green, blue, cyan, magenta, yellow, black, hue, saturation, lightness, opacity, and hexadecimal numbers
-     * @see #valueOf(String)
-     */
+	 * @param hue        0 to 360.
+	 * @param saturation 0.0 to 1.0.
+	 * @param lightness  0.0 to 1.0.
+	 * @return a <code>Color</code> object that contains color information such as red, green, blue, cyan, magenta, yellow, black, hue, saturation, lightness, opacity, and hexadecimal numbers
+	 * @see #valueOf(String)
+	 */
 	public static Color hsl(double hue, double saturation, double lightness) {
 		return hsl(hue, saturation, lightness, 1.0);
 	}
 
 	/**
-     * @param hue 0 to 360.
-     * @param saturation 0.0 to 1.0.
-     * @param lightness 0.0 to 1.0.
-     * @param opacity 0.0 to 1.0.
-     * @return a <code>Color</code> object that contains color information such as red, green, blue, cyan, magenta, yellow, black, hue, saturation, lightness, opacity, and hexadecimal numbers
-     * @see #valueOf(String)
-     */
+	 * @param hue        0 to 360.
+	 * @param saturation 0.0 to 1.0.
+	 * @param lightness  0.0 to 1.0.
+	 * @param opacity    0.0 to 1.0.
+	 * @return a <code>Color</code> object that contains color information such as red, green, blue, cyan, magenta, yellow, black, hue, saturation, lightness, opacity, and hexadecimal numbers
+	 * @see #valueOf(String)
+	 */
 	public static Color hsl(double hue, double saturation, double lightness, double opacity) {
 		double _c = (1 - Math.abs((2 * lightness) - 1)) * saturation;
 		double _h = hue / 60;
 		double _x = _c * (1 - Math.abs((_h % 2) - 1));
-		double[] _rgb = new double[] { 0, 0, 0 };
+		double[] _rgb = new double[]{0, 0, 0};
 		if (_h >= 0 && _h < 1) {
-			_rgb = new double[] { _c, _x, 0 };
+			_rgb = new double[]{_c, _x, 0};
 		} else if (_h >= 1 && _h < 2) {
-			_rgb = new double[] { _x, _c, 0 };
+			_rgb = new double[]{_x, _c, 0};
 		} else if (_h >= 2 && _h < 3) {
-			_rgb = new double[] { 0, _c, _x };
+			_rgb = new double[]{0, _c, _x};
 		} else if (_h >= 3 && _h < 4) {
-			_rgb = new double[] { 0, _x, _c };
+			_rgb = new double[]{0, _x, _c};
 		} else if (_h >= 4 && _h < 5) {
-			_rgb = new double[] { _x, 0, _c };
+			_rgb = new double[]{_x, 0, _c};
 		} else if (_h >= 5 && _h < 6) {
-			_rgb = new double[] { _c, 0, _x };
+			_rgb = new double[]{_c, 0, _x};
 		}
 		double _m = lightness - (_c / 2);
 
@@ -185,10 +196,10 @@ public class Color {
 	}
 
 	/**
-     * @param value the string to convert
-     * @return a <code>Color</code> object that contains color information such as red, green, blue, cyan, magenta, yellow, black, hue, saturation, lightness, opacity, and hexadecimal numbers
-     * @see #valueOf(String)
-     */
+	 * @param value the string to convert
+	 * @return a <code>Color</code> object that contains color information such as red, green, blue, cyan, magenta, yellow, black, hue, saturation, lightness, opacity, and hexadecimal numbers
+	 * @see #valueOf(String)
+	 */
 	public static Color hex(String value) {
 		value = value.trim();
 		String hex = value.startsWith("#") ? value.substring(1) : value;
@@ -210,58 +221,58 @@ public class Color {
 	}
 
 	/**
-     * Creates a color from a string representation.<br>
-     *
-     * Supported formats are:
-     * <ul>
-     *     <li><code>rgb[a](red, green, blue[, opacity])</code></li>
-     *     <li><code>cmyk[a](cyan, magenta, yellow, black[, opacity])</code></li>
-     *     <li><code>hsl[a](hue, saturation, lightness[, opacity])</code></li>
-     *     <li>{@link NamedColor named color}</li>
-     *     <li>hexadecimal numbers</li>
-     * </ul>
-     *
-     * Examples:
-     * <pre>
-     * Color.valueOf("rgb(255, 0, 153)");
-     * Color.valueOf("rgb(100%, 0%, 60%)");
-     * Color.valueOf("rgb(255 0 153)");
-     * Color.valueOf("rgb(255, 0, 153, 1)");
-     * Color.valueOf("rgb(255, 0, 153, 100%)");
-     * Color.valueOf("rgb(255 0 153 / 1)");
-     * Color.valueOf("rgb(255 0 153 / 100%)");
-     * Color.valueOf("rgb(1e2, .5e1, .5e0, +.25e2%)");
-     *
-     * Color.valueOf("rgba(51, 170, 51, .5)");
-     *
-     * Color.valueOf("cmyk(1, 0, 0, 0)");
-     *
-     * Color.valueOf("hsl(270, 60%, 70%)");
-     * Color.valueOf("hsl(270deg, 60%, 70%)");
-     * Color.valueOf("hsl(4.71239rad, 60%, 70%)");
-     * Color.valueOf("hsl(300grad, 60%, 70%)");
-     * Color.valueOf("hsl(.75turn, 60%, 70%)");
-     *
-     * Color.valueOf("black");
-     * Color.valueOf("rebeccapurple");
-     *
-     * Color.valueOf("#f09");
-     * Color.valueOf("#ff0099");
-     * Color.valueOf("#ff0099ff");
-     * </pre>
-     *
-     * @param value the string to convert
-     * @return a <code>Color</code> object that contains color information such as red, green, blue, cyan, magenta, yellow, black, hue, saturation, lightness, opacity, and hexadecimal numbers
-     * @throws IllegalArgumentException if the given string value cannot be recognized as <code>rgb</code>, <code>cmyk</code>, <code>hsl</code>, {@link NamedColor named color} or hexadecimal numbers
-     * @see #rgb(int, int, int)
-     * @see #rgb(int, int, int, double)
-     * @see #cmyk(double, double, double, double)
-     * @see #cmyk(double, double, double, double, double)
-     * @see #hsl(double, double, double)
-     * @see #hsl(double, double, double, double)
-     * @see org.silentsoft.csscolor4j.NamedColor
-     * @see #hex(String)
-     */
+	 * Creates a color from a string representation.<br>
+	 * <p>
+	 * Supported formats are:
+	 * <ul>
+	 *     <li><code>rgb[a](red, green, blue[, opacity])</code></li>
+	 *     <li><code>cmyk[a](cyan, magenta, yellow, black[, opacity])</code></li>
+	 *     <li><code>hsl[a](hue, saturation, lightness[, opacity])</code></li>
+	 *     <li>{@link NamedColor named color}</li>
+	 *     <li>hexadecimal numbers</li>
+	 * </ul>
+	 * <p>
+	 * Examples:
+	 * <pre>
+	 * Color.valueOf("rgb(255, 0, 153)");
+	 * Color.valueOf("rgb(100%, 0%, 60%)");
+	 * Color.valueOf("rgb(255 0 153)");
+	 * Color.valueOf("rgb(255, 0, 153, 1)");
+	 * Color.valueOf("rgb(255, 0, 153, 100%)");
+	 * Color.valueOf("rgb(255 0 153 / 1)");
+	 * Color.valueOf("rgb(255 0 153 / 100%)");
+	 * Color.valueOf("rgb(1e2, .5e1, .5e0, +.25e2%)");
+	 *
+	 * Color.valueOf("rgba(51, 170, 51, .5)");
+	 *
+	 * Color.valueOf("cmyk(1, 0, 0, 0)");
+	 *
+	 * Color.valueOf("hsl(270, 60%, 70%)");
+	 * Color.valueOf("hsl(270deg, 60%, 70%)");
+	 * Color.valueOf("hsl(4.71239rad, 60%, 70%)");
+	 * Color.valueOf("hsl(300grad, 60%, 70%)");
+	 * Color.valueOf("hsl(.75turn, 60%, 70%)");
+	 *
+	 * Color.valueOf("black");
+	 * Color.valueOf("rebeccapurple");
+	 *
+	 * Color.valueOf("#f09");
+	 * Color.valueOf("#ff0099");
+	 * Color.valueOf("#ff0099ff");
+	 * </pre>
+	 *
+	 * @param value the string to convert
+	 * @return a <code>Color</code> object that contains color information such as red, green, blue, cyan, magenta, yellow, black, hue, saturation, lightness, opacity, and hexadecimal numbers
+	 * @throws IllegalArgumentException if the given string value cannot be recognized as <code>rgb</code>, <code>cmyk</code>, <code>hsl</code>, {@link NamedColor named color} or hexadecimal numbers
+	 * @see #rgb(int, int, int)
+	 * @see #rgb(int, int, int, double)
+	 * @see #cmyk(double, double, double, double)
+	 * @see #cmyk(double, double, double, double, double)
+	 * @see #hsl(double, double, double)
+	 * @see #hsl(double, double, double, double)
+	 * @see org.silentsoft.csscolor4j.NamedColor
+	 * @see #hex(String)
+	 */
 	public static Color valueOf(String value) throws IllegalArgumentException {
 		value = value.trim().toLowerCase();
 
@@ -306,16 +317,28 @@ public class Color {
 		throw new IllegalArgumentException(value + " cannot be recognized.");
 	}
 
-	public int getRed() {
-		return red;
+	private static String fill(String hex) {
+		if (hex.length() == 3 || hex.length() == 4) {
+			String value = "";
+			for (char letter : hex.toCharArray()) {
+				value = value.concat(String.valueOf(new char[]{letter, letter}));
+			}
+			return value;
+		}
+		return hex;
 	}
 
-	public int getGreen() {
-		return green;
+	private static double parseDouble(String value, double limit) {
+		boolean hasPercent = value.contains("%");
+		value = value.replace("%", "").trim();
+		double number = Double.valueOf(value);
+		return hasPercent ? BigDecimal.valueOf(number).multiply(BigDecimal.valueOf((limit / 100.0))).doubleValue() : number;
 	}
 
-	public int getBlue() {
-		return blue;
+	private static int parseInt(String value, double limit) {
+		double number = parseDouble(value, limit);
+		int round = (int) Math.round(number);
+		return round > limit ? (int) limit : round;
 	}
 
 	//	public double getCyan() {
@@ -333,6 +356,49 @@ public class Color {
 	//	public double getBlack() {
 	//		return black;
 	//	}
+
+	private static String[] split(String value) {
+		value = value.replace("/", " ");
+		value = value.replaceAll("(\\s)+", " ");
+		value = value.substring(value.indexOf("(") + 1, value.indexOf(")"));
+		return value.contains(",") ? value.split(",") : value.split(" ");
+	}
+
+	private static double toDegrees(String value) {
+		value = value.toLowerCase().trim();
+		if (value.contains("deg")) {
+			return Double.valueOf(value.replace("deg", "").trim());
+		} else if (value.contains("grad")) {
+			return (Double.valueOf(value.replace("grad", "").trim()) / 400.0) * 360.0;
+		} else if (value.contains("rad")) {
+			return Double.valueOf(value.replace("rad", "").trim()) * (180.0 / Math.PI);
+		} else if (value.contains("turn")) {
+			return Double.valueOf(value.replace("turn", "").trim()) * 360.0;
+		}
+		return parseDouble(value, 360);
+	}
+
+	public static Color rgb(int color) {
+		double a = (color >> 24 & 255) / 255D;
+		if (a == 0)
+			a = 1;
+		int r = color >> 16 & 255;
+		int g = color >> 8 & 255;
+		int b = color & 255;
+		return rgb(r, g, b, a);
+	}
+
+	public int getRed() {
+		return red;
+	}
+
+	public int getGreen() {
+		return green;
+	}
+
+	public int getBlue() {
+		return blue;
+	}
 
 	public double getHue() {
 		return hue;
@@ -374,62 +440,7 @@ public class Color {
 		return "Color{" + "red=" + red + ", green=" + green + ", blue=" + blue + /*", cyan=" + cyan + ", magenta=" + magenta + ", yellow=" + yellow + ", black=" + black +*/ ", hue=" + hue + ", saturation=" + saturation + ", lightness=" + lightness + ", opacity=" + opacity + ", hex='" + hex + '\'' + '}';
 	}
 
-	private static String fill(String hex) {
-		if (hex.length() == 3 || hex.length() == 4) {
-			String value = "";
-			for (char letter : hex.toCharArray()) {
-				value = value.concat(String.valueOf(new char[] { letter, letter }));
-			}
-			return value;
-		}
-		return hex;
-	}
-
-	private static double parseDouble(String value, double limit) {
-		boolean hasPercent = value.contains("%");
-		value = value.replace("%", "").trim();
-		double number = Double.valueOf(value);
-		return hasPercent ? BigDecimal.valueOf(number).multiply(BigDecimal.valueOf((limit / 100.0))).doubleValue() : number;
-	}
-
-	private static int parseInt(String value, double limit) {
-		double number = parseDouble(value, limit);
-		int round = (int) Math.round(number);
-		return round > limit ? (int) limit : round;
-	}
-
-	private static String[] split(String value) {
-		value = value.replace("/", " ");
-		value = value.replaceAll("(\\s)+", " ");
-		value = value.substring(value.indexOf("(") + 1, value.indexOf(")"));
-		return value.contains(",") ? value.split(",") : value.split(" ");
-	}
-
-	private static double toDegrees(String value) {
-		value = value.toLowerCase().trim();
-		if (value.contains("deg")) {
-			return Double.valueOf(value.replace("deg", "").trim());
-		} else if (value.contains("grad")) {
-			return (Double.valueOf(value.replace("grad", "").trim()) / 400.0) * 360.0;
-		} else if (value.contains("rad")) {
-			return Double.valueOf(value.replace("rad", "").trim()) * (180.0 / Math.PI);
-		} else if (value.contains("turn")) {
-			return Double.valueOf(value.replace("turn", "").trim()) * 360.0;
-		}
-		return parseDouble(value, 360);
-	}
-
 	public int toInt() {
 		return (((int) (opacity * 255) & 0xff) << 24) + ((red & 0xff) << 16) + ((green & 0xff) << 8) + (blue & 0xff);
-	}
-
-	public static Color rgb(int color) {
-		double a = (color >> 24 & 255) / 255D;
-		if (a == 0)
-			a = 1;
-		int r = color >> 16 & 255;
-		int g = color >> 8 & 255;
-		int b = color & 255;
-		return rgb(r, g, b, a);
 	}
 }

@@ -1,10 +1,12 @@
 {
-  "version": 10,
-  "backgroundColor": "#000000",
-  "borderColor": [
-    "#2a2626",
-    "#2a2626",
-    "#1a1717",
-    "#1a1717"
-  ]
+  "version": 100,
+  "tooltipStyle": {
+    "backgroundColor": "#000000",
+    "borderColor": [
+      "#2a2626",
+      "#2a2626",
+      "#1a1717",
+      "#1a1717"
+    ]
+  }
 }

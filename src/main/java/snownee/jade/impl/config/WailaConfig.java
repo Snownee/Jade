@@ -8,6 +8,7 @@ import com.google.gson.annotations.Expose;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.HumanoidArm;
@@ -232,7 +233,7 @@ public class WailaConfig implements IWailaConfig {
 	}
 
 	public static class ConfigOverlay implements IConfigOverlay {
-		public ResourceLocation activeTheme = Theme.DARK.id;
+		public ResourceLocation activeTheme = Theme.DEFAULT_THEME_ID;
 		public int themesHash;
 		private float overlayPosX = 0.5F;
 		private float overlayPosY = 1.0F;
@@ -380,34 +381,28 @@ public class WailaConfig implements IWailaConfig {
 		}
 
 		@Override
-		public void setDisappearingDelay(float delay) {
-			disappearingDelay = delay;
+		public float getDisappearingDelay() {
+			return disappearingDelay;
 		}
 
 		@Override
-		public float getDisappearingDelay() {
-			return disappearingDelay;
+		public void setDisappearingDelay(float delay) {
+			disappearingDelay = delay;
 		}
 
 	}
 
 	public static class ConfigFormatting implements IConfigFormatting {
-		private String modName = "§9§o%s";
+		private Style itemModNameStyle = Style.EMPTY.applyFormats(ChatFormatting.BLUE, ChatFormatting.ITALIC);
 
 		@Override
-		public String getModName() {
-			return modName;
+		public Style getItemModNameStyle() {
+			return itemModNameStyle;
 		}
 
 		@Override
-		public void setModName(String modName) {
-			this.modName = modName;
-		}
-
-		@Override
-		@Deprecated
-		public Component title(Object title) {
-			return IThemeHelper.get().title(title);
+		public void setItemModNameStyle(Style itemModNameStyle) {
+			this.itemModNameStyle = itemModNameStyle;
 		}
 
 		@Override

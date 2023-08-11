@@ -8,6 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.animal.Sheep;
 import net.minecraft.world.level.Level;
 import snownee.jade.api.Accessor;
+import snownee.jade.api.ui.MessageType;
 import snownee.jade.api.view.ClientViewGroup;
 import snownee.jade.api.view.EnergyView;
 import snownee.jade.api.view.IClientExtensionProvider;
@@ -28,10 +29,9 @@ public enum ExampleEnergyStorageProvider
 		return ClientViewGroup.map(groups, tag -> EnergyView.read(tag, "RF"), (group, clientGroup) -> {
 			if (group.id != null) {
 				clientGroup.title = Component.literal(group.id);
-				clientGroup.bgColor = 0x5511AA11;
+				clientGroup.messageType = MessageType.DANGER;
 			} else {
-				clientGroup.progressColor = 0xFFCC1111;
-				clientGroup.bgColor = 0x55666666;
+				clientGroup.messageType = MessageType.INFO;
 			}
 		});
 	}

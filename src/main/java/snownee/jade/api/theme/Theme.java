@@ -1,39 +1,41 @@
 package snownee.jade.api.theme;
 
+import java.util.Optional;
+
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.api.Identifiers;
+import snownee.jade.api.ui.BoxStyle;
+import snownee.jade.api.ui.ColorPalette;
 
 public class Theme {
 
-	public static final Theme DARK = new Theme();
-
-	static {
-		DARK.id = Identifiers.JADE("dark");
-		DARK.backgroundColor = 0x131313;
-	}
-
+	public static final ResourceLocation DEFAULT_THEME_ID = Identifiers.JADE("dark");
+	public BoxStyle tooltipStyle;
+	public BoxStyle nestedBoxStyle;
+	public BoxStyle viewGroupStyle;
 	public ResourceLocation id;
-	public int backgroundColor = -1;
-	public final int[] borderColor = { 0xFF383838, 0xFF383838, 0xFF242424, 0xFF242424 };
-	public int titleColor = 0xFFFFFFFF;
-	public int normalColor = 0xFFA0A0A0;
-	public int infoColor = 0xFFFFFFFF;
-	public int successColor = 0xFF55FF55;
-	public int warningColor = 0xFFFFF3CD;
-	public int dangerColor = 0xFFFF5555;
-	public int failureColor = 0xFFAA0000;
-	public int boxBorderColor = 0xFF808080;
-	public int itemAmountColor = 0xFFFFFFFF;
-	public boolean textShadow = true;
-	public ResourceLocation backgroundTexture;
-	public ResourceLocation backgroundTexture_withIcon;
-	public final int[] padding = new int[] { 4, 3, 1, 4 };
-	public Boolean squareBorder;
-	public float opacity;
-	public int[] bottomProgressOffset;
-	public int bottomProgressNormalColor = 0xFFFFFFFF;
-	public int bottomProgressFailureColor = 0xFFFF4444;
+	public ColorPalette textColors;
+	public int itemAmountColor;
+	public boolean textShadow;
+	public Boolean changeRoundCorner;
+	public float changeOpacity;
 	public boolean lightColorScheme;
 	public boolean hidden;
+	public Style modNameStyle;
+
+	public Theme(BoxStyle tooltipStyle, BoxStyle nestedBoxStyle, BoxStyle viewGroupStyle, ColorPalette textColors, boolean textShadow, Optional<Boolean> changeRoundCorner, float changeOpacity, boolean lightColorScheme, boolean hidden, int itemAmountColor, Optional<Style> modNameStyle) {
+		this.tooltipStyle = tooltipStyle;
+		this.nestedBoxStyle = nestedBoxStyle;
+		this.viewGroupStyle = viewGroupStyle;
+		this.textColors = textColors;
+		this.textShadow = textShadow;
+		this.changeRoundCorner = changeRoundCorner.orElse(null);
+		this.changeOpacity = changeOpacity;
+		this.lightColorScheme = lightColorScheme;
+		this.hidden = hidden;
+		this.itemAmountColor = itemAmountColor;
+		this.modNameStyle = modNameStyle.orElse(null);
+	}
 
 }

@@ -8,6 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
 import snownee.jade.api.Accessor;
+import snownee.jade.api.ui.MessageType;
 import snownee.jade.api.view.ClientViewGroup;
 import snownee.jade.api.view.IClientExtensionProvider;
 import snownee.jade.api.view.IServerExtensionProvider;
@@ -27,7 +28,7 @@ public enum ExampleItemStorageProvider implements IServerExtensionProvider<Brewi
 	public List<ClientViewGroup<ItemView>> getClientGroups(Accessor<?> accessor, List<ViewGroup<ItemStack>> groups) {
 		return ClientViewGroup.map(groups, ItemView::new, (group, clientGroup) -> {
 			clientGroup.title = Component.literal(group.id);
-			clientGroup.bgColor = 0x55666666;
+			clientGroup.messageType = MessageType.WARNING;
 		});
 	}
 

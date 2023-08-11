@@ -5,7 +5,7 @@ import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.Element;
 import snownee.jade.overlay.DisplayHelper;
-import snownee.jade.util.Color;
+import snownee.jade.api.ui.Color;
 
 public class HorizontalLineElement extends Element {
 

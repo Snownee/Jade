@@ -15,6 +15,7 @@ import snownee.jade.api.Identifiers;
 import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.BoxStyle;
+import snownee.jade.api.ui.Direction2D;
 import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.api.view.ClientViewGroup;
 import snownee.jade.api.view.ViewGroup;
@@ -37,16 +38,18 @@ public enum ProgressProvider implements IBlockComponentProvider, IServerDataProv
 
 				IElementHelper helper = IElementHelper.get();
 				boolean renderGroup = groups.size() > 1 || groups.get(0).shouldRenderGroup();
-				var box = BoxStyle.createGradientBorder();
-				box.bgColor = 0x88000000;
+				BoxStyle.GradientBorder boxStyle = BoxStyle.getTransparent().clone();
+				boxStyle.bgColor = 0x44FFFFFF;
 				ClientViewGroup.tooltip(tooltip, groups, renderGroup, (theTooltip, group) -> {
 					if (renderGroup) {
 						group.renderHeader(theTooltip);
 					}
 					for (var view : group.views) {
-						if (view.text != null)
+						if (view.text != null) {
 							theTooltip.add(new ScaledTextElement(view.text, 0.75F));
-						theTooltip.add(helper.progress(view.progress, null, view.style, box, false).size(new Vec2(10, 4)));
+							theTooltip.setLineMargin(-1, Direction2D.DOWN, 0);
+						}
+						theTooltip.add(helper.progress(view.progress, null, view.style, boxStyle, false).size(new Vec2(10, 2)));
 					}
 				});
 			}

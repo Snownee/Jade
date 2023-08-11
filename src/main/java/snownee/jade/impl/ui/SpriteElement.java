@@ -25,7 +25,7 @@ public class SpriteElement extends Element {
 
 	@Override
 	public void render(GuiGraphics guiGraphics, float x, float y, float maxX, float maxY) {
-		IDisplayHelper.get().blitSprite(guiGraphics, sprite, (int) x, (int) y, width, height);
+		IDisplayHelper.get().blitSprite(guiGraphics, sprite, width, height, 0, 0, Math.round(x), Math.round(y), Math.round(getCachedSize().x), Math.round(getCachedSize().y));
 	}
 
 }

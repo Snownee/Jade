@@ -8,31 +8,27 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec2;
-import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.Element;
-import snownee.jade.api.ui.IProgressStyle;
+import snownee.jade.api.ui.IDisplayHelper;
+import snownee.jade.api.ui.IElement;
+import snownee.jade.api.ui.ProgressStyle;
 import snownee.jade.overlay.ProgressTracker.TrackInfo;
 import snownee.jade.overlay.WailaTickHandler;
 
-public class ProgressElement extends Element {
+public class ProgressElement extends Element implements StyledElement {
 	private final float progress;
 	@Nullable
 	private final Component text;
-	private final IProgressStyle style;
+	private final ProgressStyle style;
 	private final BoxStyle boxStyle;
 	private TrackInfo track;
 	private boolean canDecrease;
 
-	public ProgressElement(float progress, Component text, IProgressStyle style, BoxStyle boxStyle, boolean canDecrease) {
+	public ProgressElement(float progress, Component text, ProgressStyle style, BoxStyle boxStyle, boolean canDecrease) {
 		this.progress = Mth.clamp(progress, 0, 1);
 		this.text = text;
 		this.style = style;
-		if (boxStyle == BoxStyle.getDefault() && IThemeHelper.get().isLightColorScheme()) {
-			var newStyle = BoxStyle.createGradientBorder();
-			newStyle.bgColor = 0x44444444;
-			boxStyle = newStyle;
-		}
 		this.boxStyle = boxStyle;
 		this.canDecrease = canDecrease;
 	}
@@ -56,21 +52,34 @@ public class ProgressElement extends Element {
 
 	@Override
 	public void render(GuiGraphics guiGraphics, float x, float y, float maxX, float maxY) {
-		Vec2 size = getCachedSize();
-		float b = boxStyle.borderWidth();
-		boxStyle.render(guiGraphics, x, y, maxX - x, size.y - 2);
+		float width = style.direction().isHorizontal() && style.fitContentX() ? maxX - x : getCachedSize().x;
+		float height = style.direction().isVertical() && style.fitContentY() ? maxY - y : getCachedSize().y;
+		x = style.direction().isHorizontal() ? x : x + (maxX - x - width) / 2;
+		y = style.direction().isVertical() ? y : y + (maxY - y - height) / 2;
+		boxStyle.render(guiGraphics, this, x, y, width, height, IDisplayHelper.get().opacity());
 		float progress = this.progress;
 		if (track == null && getTag() != null) {
-			track = WailaTickHandler.instance().progressTracker.createInfo(getTag(), progress, canDecrease, getSize().y);
+			track = WailaTickHandler.instance().progressTracker.createInfo(getTag(), progress, canDecrease, width);
 		}
 		if (track != null) {
 			progress = track.tick(Minecraft.getInstance().getDeltaFrameTime());
 		}
-		style.render(guiGraphics, x + b, y + b, maxX - x - b * 2, size.y - b * 2 - 2, progress, text);
+		float b = boxStyle.borderWidth();
+		style.render(guiGraphics, x + b, y + b, width - b * 2, height - b * 2, progress, text);
 	}
 
 	@Override
 	public @Nullable String getMessage() {
 		return text == null ? null : text.getString();
+	}
+
+	@Override
+	public IElement getIcon() {
+		return null;
+	}
+
+	@Override
+	public BoxStyle getStyle() {
+		return boxStyle;
 	}
 }

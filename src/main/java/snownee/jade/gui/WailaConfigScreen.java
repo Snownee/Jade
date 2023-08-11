@@ -36,7 +36,7 @@ import snownee.jade.impl.config.WailaConfig.ConfigOverlay;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
 
-public class WailaConfigScreen extends BaseOptionsScreen {
+public class WailaConfigScreen extends PreviewOptionsScreen {
 
 	private OptionValue<Boolean> squareEntry;
 	private OptionValue<Float> opacityEntry;
@@ -112,12 +112,14 @@ public class WailaConfigScreen extends BaseOptionsScreen {
 		ConfigOverlay overlay = Jade.CONFIG.get().getOverlay();
 		options.title("overlay");
 		options.choices("overlay_theme", overlay.getTheme().id, IThemeHelper.get().getThemes().stream().filter($ -> !$.hidden).map($ -> $.id).toList(), id -> {
+			if (Objects.equals(id, overlay.getTheme().id))
+				return;
 			overlay.applyTheme(id);
 			Theme theme = overlay.getTheme();
-			if (theme.squareBorder != null)
-				squareEntry.setValue(theme.squareBorder);
-			if (theme.opacity != 0)
-				opacityEntry.setValue(theme.opacity);
+			if (theme.changeRoundCorner != null)
+				squareEntry.setValue(theme.changeRoundCorner);
+			if (theme.changeOpacity != 0)
+				opacityEntry.setValue(theme.changeOpacity);
 		}, id -> Component.translatable(Util.makeDescriptionId("jade.theme", id)));
 		squareEntry = options.choices("overlay_square", overlay.getSquare(), overlay::setSquare);
 		opacityEntry = options.slider("overlay_alpha", overlay.getAlpha(), overlay::setAlpha);

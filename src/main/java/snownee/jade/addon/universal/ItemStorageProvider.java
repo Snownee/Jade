@@ -26,6 +26,7 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.ui.Direction2D;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElementHelper;
@@ -47,89 +48,93 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 	INSTANCE;
 
 	public static void append(ITooltip tooltip, Accessor<?> accessor, IPluginConfig config) {
-		if (accessor.getServerData().contains("JadeItemStorage")) {
-			var provider = Optional.ofNullable(ResourceLocation.tryParse(accessor.getServerData().getString("JadeItemStorageUid"))).map(WailaClientRegistration.INSTANCE.itemStorageProviders::get);
-			if (provider.isPresent()) {
-				var groups = provider.get().getClientGroups(accessor, ViewGroup.readList(accessor.getServerData(), "JadeItemStorage", itemTag -> {
-					ItemStack item = ItemStack.of(itemTag);
-					if (!item.isEmpty() && itemTag.contains("NewCount"))
-						item.setCount(itemTag.getInt("NewCount"));
-					return item;
-				}));
-
-				if (groups.isEmpty()) {
-					return;
-				}
-
-				MutableBoolean showName = new MutableBoolean(true);
-				{
-					int totalSize = 0;
-					for (var group : groups) {
-						if (group.views.size() == 1 && "10k+".equals(group.views.get(0).text)) {
-							++totalSize;
-							continue;
-						}
-						for (var view : group.views) {
-							if (view.text != null) {
-								showName.setFalse();
-							}
-							if (!view.item.isEmpty()) {
-								++totalSize;
-							}
-						}
-					}
-					if (showName.isTrue())
-						showName.setValue(totalSize < PluginConfig.INSTANCE.getInt(Identifiers.MC_ITEM_STORAGE_SHOW_NAME_AMOUNT));
-				}
-
-				IElementHelper helper = IElementHelper.get();
-				boolean renderGroup = groups.size() > 1 || groups.get(0).shouldRenderGroup();
-				ClientViewGroup.tooltip(tooltip, groups, renderGroup, (theTooltip, group) -> {
-					if (renderGroup) {
-						theTooltip.add(new HorizontalLineElement());
-						if (group.title != null) {
-							theTooltip.append(new ScaledTextElement(group.title, 0.5F));
-							theTooltip.append(new HorizontalLineElement());
-						}
-					}
-					int drawnCount = 0;
-					int realSize = PluginConfig.INSTANCE.getInt(accessor.showDetails() ? Identifiers.MC_ITEM_STORAGE_DETAILED_AMOUNT : Identifiers.MC_ITEM_STORAGE_NORMAL_AMOUNT);
-					realSize = Math.min(group.views.size(), realSize);
-					List<IElement> elements = Lists.newArrayList();
-					for (int i = 0; i < realSize; i++) {
-						ItemView itemView = group.views.get(i);
-						ItemStack stack = itemView.item;
-						if (stack.isEmpty())
-							continue;
-						if (i > 0 && (showName.isTrue() || drawnCount >= PluginConfig.INSTANCE.getInt(Identifiers.MC_ITEM_STORAGE_ITEMS_PER_LINE))) {
-							theTooltip.add(elements);
-							elements.clear();
-							drawnCount = 0;
-						}
-
-						if (showName.isTrue()) {
-							ItemStack copy = stack.copy();
-							copy.setCount(1);
-							elements.add(helper.smallItem(copy).clearCachedMessage());
-							elements.add(helper.text(Component.literal(itemView.text != null ? itemView.text : IDisplayHelper.get().humanReadableNumber(stack.getCount(), "", false)).append("× ").append(IDisplayHelper.get().stripColor(stack.getHoverName()))).message(null));
-						} else if (itemView.text != null) {
-							elements.add(helper.item(stack, 1, itemView.text));
-						} else {
-							elements.add(helper.item(stack));
-						}
-						drawnCount += 1;
-					}
-
-					if (!elements.isEmpty()) {
-						theTooltip.add(elements);
-					}
-				});
+		if (!accessor.getServerData().contains("JadeItemStorage")) {
+			if (accessor.getServerData().getBoolean("Loot")) {
+				tooltip.add(Component.translatable("jade.not_generated"));
+			} else if (accessor.getServerData().getBoolean("Locked")) {
+				tooltip.add(Component.translatable("jade.locked"));
 			}
-		} else if (accessor.getServerData().getBoolean("Loot")) {
-			tooltip.add(Component.translatable("jade.not_generated"));
-		} else if (accessor.getServerData().getBoolean("Locked")) {
-			tooltip.add(Component.translatable("jade.locked"));
+			return;
 		}
+		var provider = Optional.ofNullable(ResourceLocation.tryParse(accessor.getServerData().getString("JadeItemStorageUid"))).map(WailaClientRegistration.INSTANCE.itemStorageProviders::get);
+		if (provider.isEmpty()) {
+			return;
+		}
+		var groups = provider.get().getClientGroups(accessor, ViewGroup.readList(accessor.getServerData(), "JadeItemStorage", itemTag -> {
+			ItemStack item = ItemStack.of(itemTag);
+			if (!item.isEmpty() && itemTag.contains("NewCount"))
+				item.setCount(itemTag.getInt("NewCount"));
+			return item;
+		}));
+
+		if (groups.isEmpty()) {
+			return;
+		}
+
+		MutableBoolean showName = new MutableBoolean(true);
+		{
+			int totalSize = 0;
+			for (var group : groups) {
+				if (group.views.size() == 1 && "10k+".equals(group.views.get(0).text)) {
+					++totalSize;
+					continue;
+				}
+				for (var view : group.views) {
+					if (view.text != null) {
+						showName.setFalse();
+					}
+					if (!view.item.isEmpty()) {
+						++totalSize;
+					}
+				}
+			}
+			if (showName.isTrue())
+				showName.setValue(totalSize < PluginConfig.INSTANCE.getInt(Identifiers.MC_ITEM_STORAGE_SHOW_NAME_AMOUNT));
+		}
+
+		IElementHelper helper = IElementHelper.get();
+		boolean renderGroup = groups.size() > 1 || groups.get(0).shouldRenderGroup();
+		ClientViewGroup.tooltip(tooltip, groups, renderGroup, (theTooltip, group) -> {
+			if (renderGroup) {
+				theTooltip.add(new HorizontalLineElement());
+				if (group.title != null) {
+					theTooltip.append(new ScaledTextElement(group.title, 0.5F));
+					theTooltip.append(new HorizontalLineElement());
+				}
+			}
+			int drawnCount = 0;
+			int realSize = PluginConfig.INSTANCE.getInt(accessor.showDetails() ? Identifiers.MC_ITEM_STORAGE_DETAILED_AMOUNT : Identifiers.MC_ITEM_STORAGE_NORMAL_AMOUNT);
+			realSize = Math.min(group.views.size(), realSize);
+			List<IElement> elements = Lists.newArrayList();
+			for (int i = 0; i < realSize; i++) {
+				ItemView itemView = group.views.get(i);
+				ItemStack stack = itemView.item;
+				if (stack.isEmpty())
+					continue;
+				if (i > 0 && (showName.isTrue() || drawnCount >= PluginConfig.INSTANCE.getInt(Identifiers.MC_ITEM_STORAGE_ITEMS_PER_LINE))) {
+					theTooltip.add(elements);
+					theTooltip.setLineMargin(-1, Direction2D.DOWN, -1);
+					elements.clear();
+					drawnCount = 0;
+				}
+
+				if (showName.isTrue()) {
+					ItemStack copy = stack.copy();
+					copy.setCount(1);
+					elements.add(helper.smallItem(copy).clearCachedMessage());
+					elements.add(helper.text(Component.literal(itemView.text != null ? itemView.text : IDisplayHelper.get().humanReadableNumber(stack.getCount(), "", false)).append("× ").append(IDisplayHelper.get().stripColor(stack.getHoverName()))).message(null));
+				} else if (itemView.text != null) {
+					elements.add(helper.item(stack, 1, itemView.text));
+				} else {
+					elements.add(helper.item(stack));
+				}
+				drawnCount += 1;
+			}
+
+			if (!elements.isEmpty()) {
+				theTooltip.add(elements);
+			}
+		});
 	}
 
 	public static void putData(Accessor<?> accessor) {
@@ -138,36 +143,30 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 		Player player = accessor.getPlayer();
 		for (var provider : WailaCommonRegistration.INSTANCE.itemStorageProviders.get(target)) {
 			var groups = provider.getGroups(accessor, target);
-			if (groups != null) {
-				if (ViewGroup.saveList(tag, "JadeItemStorage", groups, item -> {
-					CompoundTag itemTag = new CompoundTag();
-					int count = item.getCount();
-					if (count > 64)
-						item.setCount(1);
-					item.save(itemTag);
-					if (count > 64)
-						itemTag.putInt("NewCount", count);
-					return itemTag;
-				})) {
-					tag.putString("JadeItemStorageUid", provider.getUid().toString());
-				} else {
-					if (target instanceof RandomizableContainerBlockEntity te && te.lootTable != null) {
-						tag.putBoolean("Loot", true);
-						return;
-					}
-					if (target instanceof ContainerEntity containerEntity && containerEntity.getLootTable() != null) {
-						tag.putBoolean("Loot", true);
-						return;
-					}
-					if (!JadeCommonConfig.bypassLockedContainer && !player.isCreative() && !player.isSpectator() && target instanceof BaseContainerBlockEntity te) {
-						if (te.lockKey != LockCode.NO_LOCK) {
-							tag.putBoolean("Locked", true);
-							return;
-						}
-					}
-				}
-				return;
+			if (groups == null) {
+				continue;
 			}
+			if (ViewGroup.saveList(tag, "JadeItemStorage", groups, item -> {
+				CompoundTag itemTag = new CompoundTag();
+				int count = item.getCount();
+				if (count > 64)
+					item.setCount(1);
+				item.save(itemTag);
+				if (count > 64)
+					itemTag.putInt("NewCount", count);
+				return itemTag;
+			})) {
+				tag.putString("JadeItemStorageUid", provider.getUid().toString());
+			} else if (target instanceof RandomizableContainerBlockEntity te && te.lootTable != null) {
+				tag.putBoolean("Loot", true);
+			} else if (target instanceof ContainerEntity containerEntity && containerEntity.getLootTable() != null) {
+				tag.putBoolean("Loot", true);
+			} else if (!JadeCommonConfig.bypassLockedContainer && !player.isCreative() && !player.isSpectator() && target instanceof BaseContainerBlockEntity te) {
+				if (te.lockKey != LockCode.NO_LOCK) {
+					tag.putBoolean("Locked", true);
+				}
+			}
+			break;
 		}
 	}
 

@@ -37,9 +37,9 @@ import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
 import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.theme.IThemeHelper;
+import snownee.jade.api.ui.Color;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.util.ClientProxy;
-import snownee.jade.util.Color;
 
 public class DisplayHelper implements IDisplayHelper {
 
@@ -66,7 +66,7 @@ public class DisplayHelper implements IDisplayHelper {
 			String s = text == null ? INSTANCE.humanReadableNumber(stack.getCount(), "", false) : text;
 			guiGraphics.pose().pushPose();
 			guiGraphics.pose().translate(0.0f, 0.0f, 200.0f);
-			guiGraphics.pose().scale(.75f, .75f, .75f);
+			guiGraphics.pose().scale(.75f, .75f, 1f);
 			int color = IThemeHelper.get().theme().itemAmountColor;
 			guiGraphics.drawString(font, s, i + 22 - font.width(s), j + 13, color, true);
 			guiGraphics.pose().popPose();
@@ -151,6 +151,10 @@ public class DisplayHelper implements IDisplayHelper {
 		return betterTextShadow;
 	}
 
+	public static void setBetterTextShadow(boolean betterTextShadow) {
+		DisplayHelper.betterTextShadow = betterTextShadow;
+	}
+
 	@Override
 	public void drawItem(GuiGraphics guiGraphics, float x, float y, ItemStack stack, float scale, @Nullable String text) {
 		if (opacity() < 0.5F) {
@@ -170,6 +174,9 @@ public class DisplayHelper implements IDisplayHelper {
 	}
 
 	public void drawGradientRect(GuiGraphics guiGraphics, float left, float top, float width, float height, int startColor, int endColor, boolean horizontal) {
+		if (startColor == -1 && endColor == -1) {
+			return;
+		}
 		float zLevel = 0.0F;
 		Matrix4f matrix = guiGraphics.pose().last().pose();
 
