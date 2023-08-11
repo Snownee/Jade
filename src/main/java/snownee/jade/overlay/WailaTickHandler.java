@@ -110,7 +110,7 @@ public class WailaTickHandler {
 			BlockState state = world.getBlockState(blockTarget.getBlockPos());
 			BlockEntity tileEntity = world.getBlockEntity(blockTarget.getBlockPos());
 			/* off */
-			accessor = WailaClientRegistration.INSTANCE.blockAccessor()
+			accessor = WailaClientRegistration.instance().blockAccessor()
 					.blockState(state)
 					.blockEntity(tileEntity)
 					.hit(blockTarget)
@@ -118,14 +118,14 @@ public class WailaTickHandler {
 			/* on */
 		} else if (target instanceof EntityHitResult entityTarget) {
 			/* off */
-			accessor = WailaClientRegistration.INSTANCE.entityAccessor()
+			accessor = WailaClientRegistration.instance().entityAccessor()
 					.hit(entityTarget)
 					.entity(entityTarget.getEntity())
 					.build();
 			/* on */
 		} else if (client.screen instanceof BaseOptionsScreen) {
 			/* off */
-			accessor = WailaClientRegistration.INSTANCE.blockAccessor()
+			accessor = WailaClientRegistration.instance().blockAccessor()
 					.blockState(Blocks.GRASS_BLOCK.defaultBlockState())
 					.hit(new BlockHitResult(player.position(), Direction.UP, player.blockPosition(), false))
 					.build();
@@ -133,7 +133,7 @@ public class WailaTickHandler {
 		}
 
 		Accessor<?> originalAccessor = accessor;
-		for (JadeRayTraceCallback callback : WailaClientRegistration.INSTANCE.rayTraceCallback.callbacks()) {
+		for (JadeRayTraceCallback callback : WailaClientRegistration.instance().rayTraceCallback.callbacks()) {
 			accessor = callback.onRayTrace(target, accessor, originalAccessor);
 		}
 		ObjectDataCenter.set(accessor);
@@ -142,7 +142,7 @@ public class WailaTickHandler {
 			return;
 		}
 
-		var handler = WailaClientRegistration.INSTANCE.getAccessorHandler(accessor.getAccessorType());
+		var handler = WailaClientRegistration.instance().getAccessorHandler(accessor.getAccessorType());
 		if (!handler.shouldDisplay(accessor)) {
 			rootElement = null;
 			return;
@@ -161,7 +161,7 @@ public class WailaTickHandler {
 
 		OverlayRenderer.theme.setValue(IWailaConfig.get().getOverlay().getTheme());
 		Accessor<?> accessor0 = accessor;
-		WailaClientRegistration.INSTANCE.beforeTooltipCollectCallback.call(callback -> {
+		WailaClientRegistration.instance().beforeTooltipCollectCallback.call(callback -> {
 			callback.beforeCollecting(OverlayRenderer.theme, accessor0);
 		});
 		Preconditions.checkNotNull(OverlayRenderer.theme.getValue(), "Theme cannot be null");
@@ -169,7 +169,7 @@ public class WailaTickHandler {
 		if (config.getDisplayMode() == DisplayMode.LITE && !ClientProxy.isShowDetailsPressed()) {
 			Tooltip dummyTooltip = new Tooltip();
 			handler.gatherComponents(accessor, $ -> {
-				if (Math.abs(WailaCommonRegistration.INSTANCE.priorities.byValue($)) > 5000) {
+				if (Math.abs(WailaCommonRegistration.instance().priorities.byValue($)) > 5000) {
 					return tooltip;
 				} else {
 					return dummyTooltip;
@@ -184,7 +184,7 @@ public class WailaTickHandler {
 
 		rootElement = new BoxElement(tooltip, IThemeHelper.get().theme().tooltipStyle);
 		rootElement.tag(Identifiers.ROOT);
-		for (JadeTooltipCollectedCallback callback : WailaClientRegistration.INSTANCE.tooltipCollectedCallback.callbacks()) {
+		for (JadeTooltipCollectedCallback callback : WailaClientRegistration.instance().tooltipCollectedCallback.callbacks()) {
 			callback.onTooltipCollected(rootElement, accessor);
 		}
 		if (IWailaConfig.get().getOverlay().shouldShowIcon()) {

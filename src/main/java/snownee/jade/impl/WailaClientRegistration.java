@@ -56,7 +56,7 @@ import snownee.jade.util.ClientProxy;
 
 public class WailaClientRegistration implements IWailaClientRegistration {
 
-	public static final WailaClientRegistration INSTANCE = new WailaClientRegistration();
+	private static final WailaClientRegistration INSTANCE = new WailaClientRegistration();
 
 	public final HierarchyLookup<IBlockComponentProvider> blockIconProviders;
 	public final HierarchyLookup<IBlockComponentProvider> blockComponentProviders;
@@ -92,6 +92,10 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 
 		entityIconProviders = new HierarchyLookup<>(Entity.class);
 		entityComponentProviders = new HierarchyLookup<>(Entity.class);
+	}
+
+	public static WailaClientRegistration instance() {
+		return INSTANCE;
 	}
 
 	@Override
@@ -219,7 +223,7 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	}
 
 	public void loadComplete() {
-		var priorities = WailaCommonRegistration.INSTANCE.priorities;
+		var priorities = WailaCommonRegistration.instance().priorities;
 		blockComponentProviders.loadComplete(priorities);
 		blockIconProviders.loadComplete(priorities);
 		entityComponentProviders.loadComplete(priorities);

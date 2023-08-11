@@ -56,7 +56,7 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 			}
 			return;
 		}
-		var provider = Optional.ofNullable(ResourceLocation.tryParse(accessor.getServerData().getString("JadeItemStorageUid"))).map(WailaClientRegistration.INSTANCE.itemStorageProviders::get);
+		var provider = Optional.ofNullable(ResourceLocation.tryParse(accessor.getServerData().getString("JadeItemStorageUid"))).map(WailaClientRegistration.instance().itemStorageProviders::get);
 		if (provider.isEmpty()) {
 			return;
 		}
@@ -141,7 +141,7 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 		CompoundTag tag = accessor.getServerData();
 		Object target = accessor.getTarget();
 		Player player = accessor.getPlayer();
-		for (var provider : WailaCommonRegistration.INSTANCE.itemStorageProviders.get(target)) {
+		for (var provider : WailaCommonRegistration.instance().itemStorageProviders.get(target)) {
 			var groups = provider.getGroups(accessor, target);
 			if (groups == null) {
 				continue;

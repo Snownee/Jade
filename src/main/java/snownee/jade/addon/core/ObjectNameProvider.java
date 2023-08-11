@@ -33,7 +33,7 @@ public enum ObjectNameProvider
 
 	public static Component getEntityName(Entity entity) {
 		if (!entity.hasCustomName()) {
-			if (WailaClientRegistration.INSTANCE.shouldPick(entity)) {
+			if (WailaClientRegistration.instance().shouldPick(entity)) {
 				ItemStack stack = entity.getPickResult();
 				if (stack != null && !stack.isEmpty()) {
 					return stack.getHoverName();
@@ -64,7 +64,7 @@ public enum ObjectNameProvider
 		if (name == null && accessor.isFakeBlock()) {
 			name = accessor.getFakeBlock().getHoverName();
 		}
-		if (name == null && WailaClientRegistration.INSTANCE.shouldPick(accessor.getBlockState())) {
+		if (name == null && WailaClientRegistration.instance().shouldPick(accessor.getBlockState())) {
 			ItemStack pick = accessor.getPickedResult();
 			if (pick != null && !pick.isEmpty())
 				name = pick.getHoverName();

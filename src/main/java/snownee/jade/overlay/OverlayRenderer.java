@@ -145,7 +145,7 @@ public class OverlayRenderer {
 	public static void renderOverlay(BoxElement root, GuiGraphics guiGraphics) {
 		root.updateRect(rect);
 
-		for (JadeBeforeRenderCallback callback : WailaClientRegistration.INSTANCE.beforeRenderCallback.callbacks()) {
+		for (JadeBeforeRenderCallback callback : WailaClientRegistration.instance().beforeRenderCallback.callbacks()) {
 			if (callback.beforeRender(root, rect, guiGraphics, ObjectDataCenter.get())) {
 				return;
 			}
@@ -175,7 +175,7 @@ public class OverlayRenderer {
 			root.render(guiGraphics, 0, 0, maxWidth, maxHeight);
 		}
 
-		WailaClientRegistration.INSTANCE.afterRenderCallback.call(callback -> {
+		WailaClientRegistration.instance().afterRenderCallback.call(callback -> {
 			callback.afterRender(root, rect, guiGraphics, ObjectDataCenter.get());
 		});
 

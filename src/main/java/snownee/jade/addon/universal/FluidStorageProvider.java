@@ -38,7 +38,7 @@ public enum FluidStorageProvider implements IBlockComponentProvider, IServerData
 			return;
 		}
 		if (accessor.getServerData().contains("JadeFluidStorage")) {
-			var provider = Optional.ofNullable(ResourceLocation.tryParse(accessor.getServerData().getString("JadeFluidStorageUid"))).map(WailaClientRegistration.INSTANCE.fluidStorageProviders::get);
+			var provider = Optional.ofNullable(ResourceLocation.tryParse(accessor.getServerData().getString("JadeFluidStorageUid"))).map(WailaClientRegistration.instance().fluidStorageProviders::get);
 			if (provider.isPresent()) {
 				var groups = provider.get().getClientGroups(accessor, ViewGroup.readList(accessor.getServerData(), "JadeFluidStorage", Function.identity()));
 				if (groups.isEmpty()) {
@@ -71,7 +71,7 @@ public enum FluidStorageProvider implements IBlockComponentProvider, IServerData
 	public static void putData(Accessor<?> accessor) {
 		CompoundTag tag = accessor.getServerData();
 		Object target = accessor.getTarget();
-		for (var provider : WailaCommonRegistration.INSTANCE.fluidStorageProviders.get(target)) {
+		for (var provider : WailaCommonRegistration.instance().fluidStorageProviders.get(target)) {
 			var groups = provider.getGroups(accessor, target);
 			if (groups != null) {
 				if (ViewGroup.saveList(tag, "JadeFluidStorage", groups, Function.identity()))

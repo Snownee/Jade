@@ -101,7 +101,7 @@ public class RayTracing {
 		}
 		if (blockResult != null && blockResult.getType() == Type.BLOCK) {
 			BlockState state = world.getBlockState(blockResult.getBlockPos());
-			if (WailaClientRegistration.INSTANCE.shouldHide(state)) {
+			if (WailaClientRegistration.instance().shouldHide(state)) {
 				return null;
 			}
 		}
@@ -122,7 +122,7 @@ public class RayTracing {
 			if (target.isInvisible())
 				return false;
 		}
-		return !WailaClientRegistration.INSTANCE.shouldHide(target) && ENTITY_FILTER.test(target);
+		return !WailaClientRegistration.instance().shouldHide(target) && ENTITY_FILTER.test(target);
 	}
 
 	// from ProjectileUtil

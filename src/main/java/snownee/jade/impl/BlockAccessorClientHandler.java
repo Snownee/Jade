@@ -35,7 +35,7 @@ public class BlockAccessorClientHandler implements Accessor.ClientHandler<BlockA
 	public boolean shouldRequestData(BlockAccessor accessor) {
 		if (accessor.getBlockEntity() == null)
 			return false;
-		return !WailaCommonRegistration.INSTANCE.getBlockNBTProviders(accessor.getBlockEntity()).isEmpty();
+		return !WailaCommonRegistration.instance().getBlockNBTProviders(accessor.getBlockEntity()).isEmpty();
 	}
 
 	@Override
@@ -77,7 +77,7 @@ public class BlockAccessorClientHandler implements Accessor.ClientHandler<BlockA
 			icon = ClientProxy.elementFromLiquid((LiquidBlock) block);
 		}
 
-		for (IBlockComponentProvider provider : WailaClientRegistration.INSTANCE.getBlockIconProviders(block, PluginConfig.INSTANCE::get)) {
+		for (IBlockComponentProvider provider : WailaClientRegistration.instance().getBlockIconProviders(block, PluginConfig.INSTANCE::get)) {
 			try {
 				IElement element = provider.getIcon(accessor, PluginConfig.INSTANCE, icon);
 				if (!RayTracing.isEmptyElement(element))
@@ -91,7 +91,7 @@ public class BlockAccessorClientHandler implements Accessor.ClientHandler<BlockA
 
 	@Override
 	public void gatherComponents(BlockAccessor accessor, Function<IJadeProvider, ITooltip> tooltipProvider) {
-		List<IBlockComponentProvider> providers = WailaClientRegistration.INSTANCE.getBlockProviders(accessor.getBlock(), PluginConfig.INSTANCE::get);
+		List<IBlockComponentProvider> providers = WailaClientRegistration.instance().getBlockProviders(accessor.getBlock(), PluginConfig.INSTANCE::get);
 		for (IBlockComponentProvider provider : providers) {
 			ITooltip tooltip = tooltipProvider.apply(provider);
 			try {

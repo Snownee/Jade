@@ -20,7 +20,7 @@ import snownee.jade.api.view.IServerExtensionProvider;
 
 public class WailaCommonRegistration implements IWailaCommonRegistration {
 
-	public static final WailaCommonRegistration INSTANCE = new WailaCommonRegistration();
+	private static final WailaCommonRegistration INSTANCE = new WailaCommonRegistration();
 
 	public final HierarchyLookup<IServerDataProvider<BlockAccessor>> blockDataProviders;
 	public final HierarchyLookup<IServerDataProvider<EntityAccessor>> entityDataProviders;
@@ -50,6 +50,10 @@ public class WailaCommonRegistration implements IWailaCommonRegistration {
 		fluidStorageProviders = new HierarchyLookup<>(Object.class, true);
 		energyStorageProviders = new HierarchyLookup<>(Object.class, true);
 		progressProviders = new HierarchyLookup<>(Object.class, true);
+	}
+
+	public static WailaCommonRegistration instance() {
+		return INSTANCE;
 	}
 
 	@Override

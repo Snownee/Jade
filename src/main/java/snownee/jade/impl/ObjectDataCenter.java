@@ -29,7 +29,7 @@ public final class ObjectDataCenter {
 			return;
 		}
 
-		clientHandler = WailaClientRegistration.INSTANCE.getAccessorHandler(accessor.getAccessorType());
+		clientHandler = WailaClientRegistration.instance().getAccessorHandler(accessor.getAccessorType());
 		Object object = accessor.getTarget();
 
 		if (object != lastObject) {

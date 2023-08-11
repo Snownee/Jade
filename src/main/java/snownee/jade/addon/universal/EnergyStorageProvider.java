@@ -39,7 +39,7 @@ public enum EnergyStorageProvider implements IBlockComponentProvider, IServerDat
 			return;
 		}
 		if (accessor.getServerData().contains("JadeEnergyStorage")) {
-			var provider = Optional.ofNullable(ResourceLocation.tryParse(accessor.getServerData().getString("JadeEnergyStorageUid"))).map(WailaClientRegistration.INSTANCE.energyStorageProviders::get);
+			var provider = Optional.ofNullable(ResourceLocation.tryParse(accessor.getServerData().getString("JadeEnergyStorageUid"))).map(WailaClientRegistration.instance().energyStorageProviders::get);
 			if (provider.isPresent()) {
 				var groups = provider.get().getClientGroups(accessor, ViewGroup.readList(accessor.getServerData(), "JadeEnergyStorage", Function.identity()));
 				if (groups.isEmpty()) {
@@ -70,7 +70,7 @@ public enum EnergyStorageProvider implements IBlockComponentProvider, IServerDat
 	public static void putData(Accessor<?> accessor) {
 		CompoundTag tag = accessor.getServerData();
 		Object target = accessor.getTarget();
-		for (var provider : WailaCommonRegistration.INSTANCE.energyStorageProviders.get(target)) {
+		for (var provider : WailaCommonRegistration.instance().energyStorageProviders.get(target)) {
 			var groups = provider.getGroups(accessor, target);
 			if (groups != null) {
 				if (ViewGroup.saveList(tag, "JadeEnergyStorage", groups, Function.identity()))

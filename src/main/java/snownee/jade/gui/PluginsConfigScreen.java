@@ -60,13 +60,13 @@ public class PluginsConfigScreen extends PreviewOptionsScreen {
 			}
 			Set<ResourceLocation> keys = PluginConfig.INSTANCE.getKeys(namespace);
 			MutableObject<OptionValue<?>> lastPrimary = new MutableObject<>();
-			keys.stream().sorted(Comparator.comparingInt(WailaCommonRegistration.INSTANCE.priorities.getSortedList()::indexOf)).forEach(i -> {
+			keys.stream().sorted(Comparator.comparingInt(WailaCommonRegistration.instance().priorities.getSortedList()::indexOf)).forEach(i -> {
 				ConfigEntry<?> configEntry = PluginConfig.INSTANCE.getEntry(i);
 				OptionValue<?> entry = configEntry.createUI(options, translationKey + "." + i.getPath());
 				if (configEntry.isSynced()) {
 					entry.setDisabled(true);
 					entry.appendDescription(ChatFormatting.DARK_RED + I18n.get("gui.jade.forced_plugin_config"));
-				} else if (noteServerFeature && !WailaClientRegistration.INSTANCE.isClientFeature(i)) {
+				} else if (noteServerFeature && !WailaClientRegistration.instance().isClientFeature(i)) {
 					entry.serverFeature = true;
 				}
 				if (i.getPath().contains(".")) {

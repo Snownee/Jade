@@ -188,8 +188,8 @@ public final class CommonProxy implements ModInitializer {
 	}
 
 	public static float getEnchantPowerBonus(BlockState state, Level world, BlockPos pos) {
-		if (WailaClientRegistration.INSTANCE.customEnchantPowers.containsKey(state.getBlock())) {
-			return WailaClientRegistration.INSTANCE.customEnchantPowers.get(state.getBlock()).getEnchantPowerBonus(state, world, pos);
+		if (WailaClientRegistration.instance().customEnchantPowers.containsKey(state.getBlock())) {
+			return WailaClientRegistration.instance().customEnchantPowers.get(state.getBlock()).getEnchantPowerBonus(state, world, pos);
 		}
 		return state.is(Blocks.BOOKSHELF) ? 1 : 0;
 	}
@@ -261,9 +261,9 @@ public final class CommonProxy implements ModInitializer {
 				if (a != null && !Strings.isNullOrEmpty(a.value()) && !isModLoaded(a.value()))
 					return;
 				className = plugin.getClass().getName();
-				plugin.register(WailaCommonRegistration.INSTANCE);
+				plugin.register(WailaCommonRegistration.instance());
 				if (isPhysicallyClient()) {
-					plugin.registerClient(WailaClientRegistration.INSTANCE);
+					plugin.registerClient(WailaClientRegistration.instance());
 				}
 			} catch (Throwable e) {
 				Jade.LOGGER.error("Error loading plugin at {}", className, e);

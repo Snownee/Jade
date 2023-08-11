@@ -53,7 +53,7 @@ public class ModIdentification implements ResourceManagerReloadListener {
 	}
 
 	public static String getModName(ItemStack stack) {
-		for (JadeItemModNameCallback callback : WailaClientRegistration.INSTANCE.itemModNameCallback.callbacks()) {
+		for (JadeItemModNameCallback callback : WailaClientRegistration.instance().itemModNameCallback.callbacks()) {
 			String s = callback.gatherItemModName(stack);
 			if (!Strings.isNullOrEmpty(s)) {
 				return s;

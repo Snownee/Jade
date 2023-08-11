@@ -29,7 +29,7 @@ public enum ProgressProvider implements IBlockComponentProvider, IServerDataProv
 
 	public static void append(ITooltip tooltip, Accessor<?> accessor, IPluginConfig config) {
 		if (accessor.getServerData().contains("JadeProgress")) {
-			var provider = Optional.ofNullable(ResourceLocation.tryParse(accessor.getServerData().getString("JadeProgressUid"))).map(WailaClientRegistration.INSTANCE.progressProviders::get);
+			var provider = Optional.ofNullable(ResourceLocation.tryParse(accessor.getServerData().getString("JadeProgressUid"))).map(WailaClientRegistration.instance().progressProviders::get);
 			if (provider.isPresent()) {
 				var groups = provider.get().getClientGroups(accessor, ViewGroup.readList(accessor.getServerData(), "JadeProgress", Function.identity()));
 				if (groups.isEmpty()) {
@@ -59,7 +59,7 @@ public enum ProgressProvider implements IBlockComponentProvider, IServerDataProv
 	public static void putData(Accessor<?> accessor) {
 		CompoundTag tag = accessor.getServerData();
 		Object target = accessor.getTarget();
-		for (var provider : WailaCommonRegistration.INSTANCE.progressProviders.get(target)) {
+		for (var provider : WailaCommonRegistration.instance().progressProviders.get(target)) {
 			var groups = provider.getGroups(accessor, target);
 			if (groups != null) {
 				if (ViewGroup.saveList(tag, "JadeProgress", groups, Function.identity()))

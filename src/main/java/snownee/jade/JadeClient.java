@@ -156,7 +156,7 @@ public final class JadeClient {
 
 	@Nullable
 	public static Accessor<?> builtInOverrides(HitResult hitResult, @Nullable Accessor<?> accessor, @Nullable Accessor<?> originalAccessor) {
-		if (WailaClientRegistration.INSTANCE.maybeLowVisionUser()) {
+		if (WailaClientRegistration.instance().maybeLowVisionUser()) {
 			return accessor;
 		}
 		if (accessor instanceof BlockAccessor target) {

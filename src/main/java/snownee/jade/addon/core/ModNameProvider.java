@@ -26,7 +26,7 @@ public enum ModNameProvider implements IBlockComponentProvider, IEntityComponent
 		if (accessor.isFakeBlock()) {
 			modName = ModIdentification.getModName(accessor.getFakeBlock());
 		}
-		if (modName == null && WailaClientRegistration.INSTANCE.shouldPick(accessor.getBlockState())) {
+		if (modName == null && WailaClientRegistration.instance().shouldPick(accessor.getBlockState())) {
 			ItemStack pick = accessor.getPickedResult();
 			if (!pick.isEmpty())
 				modName = ModIdentification.getModName(pick);
