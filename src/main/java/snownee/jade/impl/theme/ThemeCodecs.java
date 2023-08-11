@@ -11,6 +11,8 @@ import it.unimi.dsi.fastutil.floats.FloatList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.network.chat.Style;
+import net.minecraft.resources.ResourceLocation;
+import snownee.jade.api.theme.TextSetting;
 import snownee.jade.api.theme.Theme;
 import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.Color;
@@ -18,18 +20,24 @@ import snownee.jade.api.ui.ColorPalette;
 
 public class ThemeCodecs {
 
+	public static final Codec<TextSetting> TEXT_SETTING_CODEC = RecordCodecBuilder.create(i -> i.group(
+			ColorPalette.CODEC.optionalFieldOf("colors", ColorPalette.DEFAULT).forGetter(TextSetting::colors),
+			Codec.BOOL.optionalFieldOf("shadow", true).forGetter(TextSetting::shadow),
+			Style.FORMATTING_CODEC.optionalFieldOf("modNameStyle").forGetter($ -> Optional.ofNullable($.modNameStyle())),
+			Color.CODEC.optionalFieldOf("itemAmountColor", 0xFFFFFFFF).forGetter(TextSetting::itemAmountColor)
+	).apply(i, TextSetting::new));
+
 	public static final Codec<Theme> CODEC = RecordCodecBuilder.create(i -> i.group(
 			BoxStyle.CODEC.fieldOf("tooltipStyle").forGetter($ -> $.tooltipStyle),
 			BoxStyle.CODEC.optionalFieldOf("nestedBoxStyle", BoxStyle.GradientBorder.DEFAULT_NESTED_BOX).forGetter($ -> $.nestedBoxStyle),
 			BoxStyle.CODEC.optionalFieldOf("viewGroupStyle", BoxStyle.GradientBorder.DEFAULT_VIEW_GROUP).forGetter($ -> $.viewGroupStyle),
-			ColorPalette.CODEC.optionalFieldOf("textColors", ColorPalette.DEFAULT).forGetter($ -> $.textColors),
-			Codec.BOOL.optionalFieldOf("textShadow", true).forGetter($ -> $.textShadow),
+			TEXT_SETTING_CODEC.optionalFieldOf("text", TextSetting.DEFAULT).forGetter($ -> $.text),
 			Codec.BOOL.optionalFieldOf("changeRoundCorner").forGetter($ -> Optional.ofNullable($.changeRoundCorner)),
 			Codec.floatRange(0, 1).optionalFieldOf("changeOpacity", 0F).forGetter($ -> $.changeOpacity),
 			Codec.BOOL.optionalFieldOf("lightColorScheme", false).forGetter($ -> $.lightColorScheme),
 			Codec.BOOL.optionalFieldOf("hidden", false).forGetter($ -> $.hidden),
-			Color.CODEC.optionalFieldOf("itemAmountColor", 0xFFFFFFFF).forGetter($ -> $.itemAmountColor),
-			Style.FORMATTING_CODEC.optionalFieldOf("modNameStyle").forGetter($ -> Optional.ofNullable($.modNameStyle))
+			ResourceLocation.CODEC.optionalFieldOf("iconSlotSprite").forGetter($ -> Optional.ofNullable($.iconSlotSprite)),
+			Codec.INT.optionalFieldOf("iconSlotInflation", 0).forGetter($ -> $.iconSlotInflation)
 	).apply(i, Theme::new));
 
 /*	@SuppressWarnings("unchecked")

@@ -73,27 +73,27 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener implements ITh
 
 	@Override
 	public MutableComponent info(Object componentOrString) {
-		return color(componentOrString, theme().textColors.info());
+		return color(componentOrString, theme().text.colors().info());
 	}
 
 	@Override
 	public MutableComponent success(Object componentOrString) {
-		return color(componentOrString, theme().textColors.success());
+		return color(componentOrString, theme().text.colors().success());
 	}
 
 	@Override
 	public MutableComponent warning(Object componentOrString) {
-		return color(componentOrString, theme().textColors.warning());
+		return color(componentOrString, theme().text.colors().warning());
 	}
 
 	@Override
 	public MutableComponent danger(Object componentOrString) {
-		return color(componentOrString, theme().textColors.danger());
+		return color(componentOrString, theme().text.colors().danger());
 	}
 
 	@Override
 	public MutableComponent failure(Object componentOrString) {
-		return color(componentOrString, theme().textColors.failure());
+		return color(componentOrString, theme().text.colors().failure());
 	}
 
 	@Override
@@ -104,7 +104,7 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener implements ITh
 		} else {
 			component = Component.literal(Objects.toString(componentOrString));
 		}
-		return color(DisplayHelper.INSTANCE.stripColor(component), theme().textColors.title());
+		return color(DisplayHelper.INSTANCE.stripColor(component), theme().text.colors().title());
 	}
 
 	@Override
@@ -116,7 +116,7 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener implements ITh
 			component = Component.literal(Objects.toString(componentOrString));
 		}
 		Style itemStyle = IWailaConfig.get().getFormatting().getItemModNameStyle();
-		Style themeStyle = theme().modNameStyle;
+		Style themeStyle = theme().text.modNameStyle();
 		if (modNameStyleCache[0] != itemStyle || modNameStyleCache[1] != themeStyle) {
 			Style style = itemStyle;
 			if (themeStyle != null) {

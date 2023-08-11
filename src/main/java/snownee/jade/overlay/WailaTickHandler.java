@@ -1,5 +1,6 @@
 package snownee.jade.overlay;
 
+import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
@@ -8,6 +9,9 @@ import com.google.common.base.Suppliers;
 import com.mojang.text2speech.Narrator;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiSpriteManager;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.metadata.gui.GuiSpriteScaling;
 import net.minecraft.core.Direction;
 import net.minecraft.util.StringUtil;
 import net.minecraft.world.entity.player.Player;
@@ -28,6 +32,9 @@ import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.IWailaConfig.DisplayMode;
 import snownee.jade.api.config.IWailaConfig.IConfigGeneral;
 import snownee.jade.api.theme.IThemeHelper;
+import snownee.jade.api.theme.Theme;
+import snownee.jade.api.ui.BoxStyle;
+import snownee.jade.api.ui.IElement;
 import snownee.jade.gui.BaseOptionsScreen;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.Tooltip;
@@ -164,7 +171,8 @@ public class WailaTickHandler {
 		WailaClientRegistration.instance().beforeTooltipCollectCallback.call(callback -> {
 			callback.beforeCollecting(OverlayRenderer.theme, accessor0);
 		});
-		Preconditions.checkNotNull(OverlayRenderer.theme.getValue(), "Theme cannot be null");
+		Theme theme = OverlayRenderer.theme.getValue();
+		Preconditions.checkNotNull(theme, "Theme cannot be null");
 
 		if (config.getDisplayMode() == DisplayMode.LITE && !ClientProxy.isShowDetailsPressed()) {
 			Tooltip dummyTooltip = new Tooltip();
@@ -184,11 +192,33 @@ public class WailaTickHandler {
 
 		rootElement = new BoxElement(tooltip, IThemeHelper.get().theme().tooltipStyle);
 		rootElement.tag(Identifiers.ROOT);
+		if (IWailaConfig.get().getOverlay().shouldShowIcon()) {
+			IElement icon = RayTracing.INSTANCE.getIcon();
+			if (icon != null && theme.iconSlotSprite != null) {
+				if (theme.iconSlotSpriteCache == null) {
+					GuiSpriteManager guiSprites = Minecraft.getInstance().getGuiSprites();
+					TextureAtlasSprite textureAtlasSprite = guiSprites.getSprite(theme.iconSlotSprite);
+					GuiSpriteScaling scaling = guiSprites.getSpriteScaling(textureAtlasSprite);
+					int[] padding = new int[4];
+					Arrays.fill(padding, theme.iconSlotInflation);
+					if (scaling instanceof GuiSpriteScaling.NineSlice nineSlice) {
+						GuiSpriteScaling.NineSlice.Border border = nineSlice.border();
+						padding[0] += border.top();
+						padding[1] += border.right();
+						padding[2] += border.bottom();
+						padding[3] += border.left();
+					}
+					theme.iconSlotSpriteCache = new BoxElement(new Tooltip(), BoxStyle.getSprite(theme.iconSlotSprite, padding));
+				}
+				ITooltip tooltip1 = theme.iconSlotSpriteCache.getTooltip();
+				tooltip1.clear();
+				tooltip1.add(icon);
+				icon = theme.iconSlotSpriteCache.size(null);
+			}
+			rootElement.setIcon(icon);
+		}
 		for (JadeTooltipCollectedCallback callback : WailaClientRegistration.instance().tooltipCollectedCallback.callbacks()) {
 			callback.onTooltipCollected(rootElement, accessor);
-		}
-		if (IWailaConfig.get().getOverlay().shouldShowIcon()) {
-			rootElement.setIcon(RayTracing.INSTANCE.getIcon());
 		}
 	}
 }

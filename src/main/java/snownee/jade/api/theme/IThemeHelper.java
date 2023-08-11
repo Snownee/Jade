@@ -16,7 +16,7 @@ public interface IThemeHelper {
 	Theme theme();
 
 	default int getNormalColor() {
-		return theme().textColors.normal();
+		return theme().text.colors().normal();
 	}
 
 	Collection<Theme> getThemes();

@@ -20,7 +20,7 @@ public class HorizontalLineElement extends Element {
 	public void render(GuiGraphics guiGraphics, float x, float y, float maxX, float maxY) {
 		y = (y + maxY - 0.5F) / 2;
 		DisplayHelper.fill(guiGraphics, x + 2, y, maxX - 2, y + 0.5F, color);
-		if (IThemeHelper.get().theme().textShadow) {
+		if (IThemeHelper.get().theme().text.shadow()) {
 			x += 0.5F;
 			y += 0.5F;
 			maxX += 0.5F;

@@ -67,7 +67,7 @@ public class DisplayHelper implements IDisplayHelper {
 			guiGraphics.pose().pushPose();
 			guiGraphics.pose().translate(0.0f, 0.0f, 200.0f);
 			guiGraphics.pose().scale(.75f, .75f, 1f);
-			int color = IThemeHelper.get().theme().itemAmountColor;
+			int color = IThemeHelper.get().theme().text.itemAmountColor();
 			guiGraphics.drawString(font, s, i + 22 - font.width(s), j + 13, color, true);
 			guiGraphics.pose().popPose();
 		}
@@ -331,7 +331,7 @@ public class DisplayHelper implements IDisplayHelper {
 
 	@Override
 	public void drawText(GuiGraphics guiGraphics, FormattedCharSequence text, float x, float y, int color) {
-		boolean shadow = Jade.CONFIG.get().getOverlay().getTheme().textShadow;
+		boolean shadow = Jade.CONFIG.get().getOverlay().getTheme().text.shadow();
 		if (opacity() != 1) {
 			color = IConfigOverlay.applyAlpha(color, opacity());
 		}

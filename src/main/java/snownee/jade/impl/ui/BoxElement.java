@@ -105,6 +105,9 @@ public class BoxElement extends Element implements IBoxElement {
 		}
 		width += padding(Direction2D.LEFT) + padding(Direction2D.RIGHT);
 		height += padding(Direction2D.UP) + padding(Direction2D.DOWN);
+		// our limited negative-padding support:
+		width = Math.max(width, 0);
+		height = Math.max(height, 0);
 
 		if (icon != null && icon.getCachedSize().y > contentSize.y) {
 			setPadding(Direction2D.UP, padding(Direction2D.UP) + (int) (icon.getCachedSize().y - contentSize.y) / 2);
@@ -123,7 +126,6 @@ public class BoxElement extends Element implements IBoxElement {
 		guiGraphics.pose().translate(x, y, 0);
 
 		// render background
-		Vec2 size = getCachedSize();
 		float alpha = IDisplayHelper.get().opacity();
 		if (Identifiers.ROOT.equals(getTag())) {
 			alpha *= IWailaConfig.get().getOverlay().getAlpha();
@@ -194,7 +196,7 @@ public class BoxElement extends Element implements IBoxElement {
 					Minecraft mc = Minecraft.getInstance();
 					float arrowLeft = contentLeft + (contentSize.x - mc.font.width("▾") + 1) / 2f;
 					guiGraphics.pose().translate(arrowLeft, arrowTop, 0);
-					int color = IConfigOverlay.applyAlpha(IThemeHelper.get().theme().textColors.info(), alpha);
+					int color = IConfigOverlay.applyAlpha(IThemeHelper.get().theme().text.colors().info(), alpha);
 					DisplayHelper.INSTANCE.drawText(guiGraphics, "▾", 0, 0, color);
 					guiGraphics.pose().popPose();
 				}
