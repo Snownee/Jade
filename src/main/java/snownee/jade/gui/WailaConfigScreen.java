@@ -43,7 +43,7 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 
 	public WailaConfigScreen(Screen parent) {
 		super(parent, Component.translatable("gui.jade.jade_settings"));
-		this.saver = Jade.CONFIG::save;
+		saver = Jade.CONFIG::save;
 		ImmutableMap.Builder<KeyMapping, InputConstants.Key> keyMapBuilder = ImmutableMap.builder();
 		for (KeyMapping keyMapping : Minecraft.getInstance().options.keyMappings) {
 			if (JadeClient.openConfig.getCategory().equals(keyMapping.getCategory())) {
@@ -51,7 +51,7 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 			}
 		}
 		var keyMap = keyMapBuilder.build();
-		this.canceller = () -> {
+		canceller = () -> {
 			Jade.CONFIG.invalidate();
 			keyMap.forEach(KeyMapping::setKey);
 			Minecraft.getInstance().options.save();

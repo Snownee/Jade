@@ -190,6 +190,10 @@ public final class JadeClient {
 			progressAlpha = 0;
 			return;
 		}
+		if (!Float.isNaN(rootElement.getBoxProgress())) {
+			progressAlpha = 0;
+			return;
+		}
 		Minecraft mc = Minecraft.getInstance();
 		MultiPlayerGameMode playerController = mc.gameMode;
 		if (playerController == null || mc.level == null || mc.player == null) {

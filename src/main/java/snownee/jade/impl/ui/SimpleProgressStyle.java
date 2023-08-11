@@ -68,7 +68,7 @@ public class SimpleProgressStyle extends ProgressStyle {
 	public ProgressStyle direction(Direction2D direction) {
 		Preconditions.checkArgument(direction == Direction2D.UP || direction == Direction2D.RIGHT, "Only UP and RIGHT are supported");
 		super.direction(direction);
-		this.vertical = direction == Direction2D.UP;
+		vertical = direction == Direction2D.UP;
 		return this;
 	}
 

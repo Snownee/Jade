@@ -11,6 +11,8 @@ public interface IBoxElement extends IElement, StyledElement {
 
 	void setBoxProgress(MessageType type, float progress);
 
+	float getBoxProgress();
+
 	void clearBoxProgress();
 
 	void setIcon(@Nullable IElement icon);

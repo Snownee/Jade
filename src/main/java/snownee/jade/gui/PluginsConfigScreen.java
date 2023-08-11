@@ -31,8 +31,8 @@ public class PluginsConfigScreen extends PreviewOptionsScreen {
 
 	public PluginsConfigScreen(Screen parent) {
 		super(parent, Component.translatable("gui.jade.plugin_settings"));
-		this.saver = PluginConfig.INSTANCE::save;
-		this.canceller = PluginConfig.INSTANCE::reload;
+		saver = PluginConfig.INSTANCE::save;
+		canceller = PluginConfig.INSTANCE::reload;
 	}
 
 	public static Screen createPluginConfigScreen(@Nullable Screen parent, @Nullable String namespace, boolean dontSave) {

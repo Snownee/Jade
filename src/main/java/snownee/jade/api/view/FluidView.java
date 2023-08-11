@@ -49,7 +49,7 @@ public class FluidView {
 		fluidView.current = FluidTextHelper.getUnicodeMillibuckets(amount, true);
 		fluidView.max = FluidTextHelper.getUnicodeMillibuckets(capacity, true);
 		fluidView.ratio = (float) ((double) amount / capacity);
-		if (amount <= 0){
+		if (amount <= 0) {
 			fluidView.overrideText = Component.translatable("jade.fluid", EMPTY_FLUID, Component.literal(fluidView.max).withStyle(ChatFormatting.GRAY));
 		}
 		return fluidView;

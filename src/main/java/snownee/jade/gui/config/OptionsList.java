@@ -105,7 +105,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 	@Override
 	public boolean mouseScrolled(double mouseX, double mouseY, double deltaX, double deltaY) {
 		double speed = !ClientProxy.hasFastScroll && Screen.hasControlDown() ? 4.5 : 1.5;
-		targetScroll = this.getScrollAmount() - deltaY * (double) this.itemHeight * speed;
+		targetScroll = getScrollAmount() - deltaY * itemHeight * speed;
 		return true;
 	}
 
@@ -116,7 +116,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 
 	@Override
 	protected boolean isSelectedItem(int i) {
-		return Objects.equals(this.getSelected(), this.children().get(i));
+		return Objects.equals(getSelected(), children().get(i));
 	}
 
 	@Override

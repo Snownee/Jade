@@ -35,7 +35,7 @@ public enum EnergyStorageProvider implements IBlockComponentProvider, IServerDat
 	INSTANCE;
 
 	public static void append(ITooltip tooltip, Accessor<?> accessor, IPluginConfig config) {
-		if (!(accessor.showDetails() || !config.get(Identifiers.UNIVERSAL_ENERGY_STORAGE_DETAILED))) {
+		if ((!accessor.showDetails() && config.get(Identifiers.UNIVERSAL_ENERGY_STORAGE_DETAILED))) {
 			return;
 		}
 		if (accessor.getServerData().contains("JadeEnergyStorage")) {

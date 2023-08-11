@@ -34,7 +34,7 @@ public enum FluidStorageProvider implements IBlockComponentProvider, IServerData
 	INSTANCE;
 
 	public static void append(ITooltip tooltip, Accessor<?> accessor, IPluginConfig config) {
-		if (!(accessor.showDetails() || !config.get(Identifiers.UNIVERSAL_FLUID_STORAGE_DETAILED))) {
+		if ((!accessor.showDetails() && config.get(Identifiers.UNIVERSAL_FLUID_STORAGE_DETAILED))) {
 			return;
 		}
 		if (accessor.getServerData().contains("JadeFluidStorage")) {

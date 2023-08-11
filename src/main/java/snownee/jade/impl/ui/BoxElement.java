@@ -139,7 +139,7 @@ public class BoxElement extends Element implements IBoxElement {
 			float width = maxWidth - left + style.boxProgressOffset(Direction2D.RIGHT);
 			float top = maxY - y - 1 + style.boxProgressOffset(Direction2D.UP) + style.borderWidth();
 			float height = 1 + style.boxProgressOffset(Direction2D.DOWN);
-			float progress = this.boxProgress;
+			float progress = boxProgress;
 			if (track == null && tag != null) {
 				track = WailaTickHandler.instance().progressTracker.createInfo(tag, progress, false, 0);
 			}
@@ -221,6 +221,11 @@ public class BoxElement extends Element implements IBoxElement {
 	public void setBoxProgress(MessageType type, float progress) {
 		boxProgress = progress;
 		boxProgressType = type;
+	}
+
+	@Override
+	public float getBoxProgress() {
+		return boxProgressType == null ? Float.NaN : boxProgress;
 	}
 
 	@Override

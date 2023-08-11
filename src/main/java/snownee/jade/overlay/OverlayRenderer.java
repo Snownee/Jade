@@ -171,7 +171,6 @@ public class OverlayRenderer {
 			}
 			maxWidth = maxWidth / scale;
 			maxHeight = maxHeight / scale;
-//			Jade.LOGGER.info("maxWidth: " + maxWidth + ", expectedWidth: " + root.getCachedSize().x * scale);
 			root.render(guiGraphics, 0, 0, maxWidth, maxHeight);
 		}
 

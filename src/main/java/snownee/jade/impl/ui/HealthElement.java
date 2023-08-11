@@ -75,7 +75,6 @@ public class HealthElement extends Element {
 				helper.blitSprite(guiGraphics, HALF_HEART, (int) (x + xOffset), (int) y, 9, 9);
 			}
 
-
 			xOffset += 9;
 			if (!showNumbers && i % heartsPerLine == 0) {
 				y += 10;

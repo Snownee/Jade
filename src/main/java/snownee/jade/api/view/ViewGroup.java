@@ -57,8 +57,7 @@ public class ViewGroup<T> {
 		if (groups == null || groups.isEmpty())
 			return false;
 		ListTag groupList = new ListTag();
-		for (int i = 0; i < groups.size(); i++) {
-			ViewGroup<T> group = groups.get(i);
+		for (ViewGroup<T> group : groups) {
 			if (group.views.isEmpty()) {
 				continue;
 			}
