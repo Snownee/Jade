@@ -112,6 +112,8 @@ public class WailaConfigScreen extends BaseOptionsScreen {
 		ConfigOverlay overlay = Jade.CONFIG.get().getOverlay();
 		options.title("overlay");
 		options.choices("overlay_theme", overlay.getTheme().id, IThemeHelper.get().getThemes().stream().filter($ -> !$.hidden).map($ -> $.id).toList(), id -> {
+			if (Objects.equals(id, overlay.getTheme().id))
+				return;
 			overlay.applyTheme(id);
 			Theme theme = overlay.getTheme();
 			if (theme.squareBorder != null)

@@ -69,7 +69,7 @@ public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
 
 		@Override
 		public void render(GuiGraphics guiGraphics, int index, int rowTop, int rowLeft, int width, int height, int mouseX, int mouseY, boolean hovered, float deltaTime) {
-			guiGraphics.drawString(title.client.font, title.getTitle().getString(), rowLeft + 12, rowTop + (height / 2) - (title.client.font.lineHeight / 2), 0xFFFFFF);
+			guiGraphics.drawString(title.client.font, title.getTitle().getString(), rowLeft + 10, rowTop + (height / 2) - (title.client.font.lineHeight / 2), 0xFFFFFF);
 			if (parent.options.currentTitle == title) {
 				if (!parent.isMouseOver(mouseX, mouseY)) {
 					parent.ensureVisible(this);

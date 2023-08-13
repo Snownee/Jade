@@ -22,8 +22,13 @@ public class Jade {
 	 */
 	public static final JsonConfig<WailaConfig> CONFIG = new JsonConfig<>(Jade.MODID + "/" + Jade.MODID, WailaConfig.class, null);
 	public static int MAX_DISTANCE_SQR = 900;
+	public static boolean FROZEN;
 
 	public static void loadComplete() {
+		if (FROZEN) {
+			return;
+		}
+		FROZEN = true;
 		if (CommonProxy.isDevEnv()) {
 			try {
 				IWailaPlugin plugin = new ExamplePlugin();

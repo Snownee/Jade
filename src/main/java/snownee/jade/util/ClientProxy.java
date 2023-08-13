@@ -263,7 +263,11 @@ public final class ClientProxy implements ClientModInitializer {
 		ClientTickEvents.END_CLIENT_TICK.register(ClientProxy::onKeyPressed);
 		ScreenEvents.AFTER_INIT.register((Minecraft client, Screen screen, int scaledWidth, int scaledHeight) -> onGui(screen));
 		ClientCommandRegistrationCallback.EVENT.register(ClientProxy::registerClientCommand);
-		HudRenderCallback.EVENT.register(ClientProxy::onRenderTick);
+		HudRenderCallback.EVENT.register((guiGraphics, tickDelta) -> {
+			if (Minecraft.getInstance().screen == null) {
+				onRenderTick(guiGraphics, tickDelta);
+			}
+		});
 		ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
 			if (shouldShowWithOverlay(client, screen)) {
 				ScreenEvents.afterRender(screen).register((screen1, guiGraphics, mouseX, mouseY, tickDelta) -> {

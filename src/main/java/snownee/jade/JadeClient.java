@@ -111,9 +111,9 @@ public final class JadeClient {
 		while (narrate.consumeClick()) {
 			if (general.getTTSMode() == TTSMode.TOGGLE) {
 				general.toggleTTS();
-				if (general.shouldEnableTextToSpeech() && general.hintOverlayToggle) {
+				if (general.shouldEnableTextToSpeech() && general.hintNarratorToggle) {
 					SystemToast.add(Minecraft.getInstance().getToasts(), SystemToastIds.TUTORIAL_HINT, Component.translatable("toast.jade.tts_hint.1"), Component.translatable("toast.jade.tts_hint.2", narrate.getTranslatedKeyMessage()));
-					general.hintOverlayToggle = false;
+					general.hintNarratorToggle = false;
 				}
 				Jade.CONFIG.save();
 			} else if (WailaTickHandler.instance().tooltipRenderer != null) {
