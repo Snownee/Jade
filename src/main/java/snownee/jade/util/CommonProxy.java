@@ -4,10 +4,12 @@ import java.io.File;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Strings;
+import com.google.common.cache.Cache;
 import com.mojang.brigadier.CommandDispatcher;
 
 import net.fabricmc.api.EnvType;
@@ -24,6 +26,8 @@ import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
+import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.minecraft.commands.CommandBuildContext;
@@ -56,17 +60,19 @@ import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
-import net.minecraft.world.level.block.entity.EnderChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.BlockHitResult;
 import snownee.jade.Jade;
+import snownee.jade.addon.universal.ItemIterator;
+import snownee.jade.addon.universal.ItemStorageCache;
+import snownee.jade.addon.universal.ItemStorageProvider;
+import snownee.jade.api.Accessor;
 import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.WailaPlugin;
 import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.view.EnergyView;
-import snownee.jade.api.view.ItemView;
 import snownee.jade.api.view.ViewGroup;
 import snownee.jade.command.JadeServerCommand;
 import snownee.jade.impl.BlockAccessorImpl;
@@ -120,40 +126,66 @@ public final class CommonProxy implements ModInitializer {
 	}
 
 	@SuppressWarnings("UnstableApiUsage")
-	public static List<ViewGroup<ItemStack>> wrapItemStorage(Object target, Player player) {
-		int size = 54;
-		if (target instanceof AbstractHorseAccess horse) {
-			return List.of(ItemView.fromContainer(horse.getInventory(), size, 2));
-		}
-		if (target instanceof Container container) {
-			if (target instanceof ChestBlockEntity be) {
-				if (be.getBlockState().getBlock() instanceof ChestBlock chestBlock) {
-					Container compound = ChestBlock.getContainer(chestBlock, be.getBlockState(), be.getLevel(), be.getBlockPos(), false);
-					if (compound != null) {
-						container = compound;
-					}
+	public static ItemStorageCache<?> createItemStorageCache(Object target, Cache<Object, ItemStorageCache<?>> containerCache) {
+		if (target instanceof AbstractHorseAccess) {
+			return new ItemStorageCache<>(new ItemIterator.ContainerItemIterator(o -> {
+				if (o instanceof AbstractHorseAccess horse) {
+					return horse.getInventory();
 				}
-			}
-			return List.of(ItemView.fromContainer(container, size, 0));
-		}
-		if (player != null && target instanceof EnderChestBlockEntity) {
-			return List.of(ItemView.fromContainer(player.getEnderChestInventory(), size, 0));
+				return null;
+			}, 2));
 		}
 		if (target instanceof BlockEntity be) {
 			try {
 				var storage = ItemStorage.SIDED.find(be.getLevel(), be.getBlockPos(), be.getBlockState(), be, null);
 				if (storage != null) {
-					return List.of(JadeFabricUtils.fromItemStorage(storage, size, 0));
+					containerCache.get(storage, () -> new ItemStorageCache<>(JadeFabricUtils.fromItemStorage(storage, 0)));
 				}
 			} catch (Throwable e) {
 				WailaExceptionHandler.handleErr(e, null, null);
 			}
 		}
-		return null;
+		if (target instanceof Container) {
+			if (target instanceof ChestBlockEntity) {
+				return new ItemStorageCache<>(new ItemIterator.ContainerItemIterator(o -> {
+					if (o instanceof ChestBlockEntity be) {
+						if (be.getBlockState().getBlock() instanceof ChestBlock chestBlock) {
+							Container compound = ChestBlock.getContainer(chestBlock, be.getBlockState(), be.getLevel(), be.getBlockPos(), false);
+							if (compound != null) {
+								return compound;
+							}
+						}
+						return be;
+					}
+					return null;
+				}, 0));
+			}
+			return new ItemStorageCache<>(new ItemIterator.ContainerItemIterator(0));
+		}
+		return ItemStorageCache.EMPTY;
+	}
+
+	@Nullable
+	public static List<ViewGroup<ItemStack>> containerGroup(Container container, Accessor<?> accessor) {
+		try {
+			return ItemStorageProvider.INSTANCE.containerCache.get(container, () -> new ItemStorageCache<>(new ItemIterator.ContainerItemIterator(0))).update(container, accessor.getLevel().getGameTime());
+		} catch (ExecutionException e) {
+			return null;
+		}
+	}
+
+	@Nullable
+	@SuppressWarnings("UnstableApiUsage")
+	public static List<ViewGroup<ItemStack>> storageGroup(Object storage, Accessor<?> accessor) {
+		try {
+			return ItemStorageProvider.INSTANCE.containerCache.get(storage, () -> new ItemStorageCache<>(JadeFabricUtils.fromItemStorage((Storage<ItemVariant>) storage, 0))).update(storage, accessor.getLevel().getGameTime());
+		} catch (ExecutionException e) {
+			return null;
+		}
 	}
 
 	@SuppressWarnings("UnstableApiUsage")
-	public static List<ViewGroup<CompoundTag>> wrapFluidStorage(Object target, Player player) {
+	public static List<ViewGroup<CompoundTag>> wrapFluidStorage(Accessor<?> accessor, Object target) {
 		if (target instanceof BlockEntity be) {
 			try {
 				var storage = FluidStorage.SIDED.find(be.getLevel(), be.getBlockPos(), be.getBlockState(), be, null);
@@ -167,7 +199,7 @@ public final class CommonProxy implements ModInitializer {
 		return null;
 	}
 
-	public static List<ViewGroup<CompoundTag>> wrapEnergyStorage(Object target, Player player) {
+	public static List<ViewGroup<CompoundTag>> wrapEnergyStorage(Accessor<?> accessor, Object target) {
 		if (hasTechRebornEnergy && target instanceof BlockEntity be) {
 			try {
 				var storage = TechRebornEnergyCompat.getSided().find(be.getLevel(), be.getBlockPos(), be.getBlockState(), be, null);

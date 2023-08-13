@@ -110,7 +110,7 @@ public enum EnergyStorageProvider implements IBlockComponentProvider, IServerDat
 
 	@Override
 	public List<ViewGroup<CompoundTag>> getGroups(Accessor<?> accessor, Object target) {
-		return CommonProxy.wrapEnergyStorage(target, accessor.getPlayer());
+		return CommonProxy.wrapEnergyStorage(accessor, target);
 	}
 
 }

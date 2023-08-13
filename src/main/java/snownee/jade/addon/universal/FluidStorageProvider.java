@@ -108,7 +108,7 @@ public enum FluidStorageProvider implements IBlockComponentProvider, IServerData
 
 	@Override
 	public List<ViewGroup<CompoundTag>> getGroups(Accessor<?> accessor, Object target) {
-		return CommonProxy.wrapFluidStorage(target, accessor.getPlayer());
+		return CommonProxy.wrapFluidStorage(accessor, target);
 	}
 
 }

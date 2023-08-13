@@ -2,9 +2,13 @@ package snownee.jade.addon.universal;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 
 import net.minecraft.nbt.CompoundTag;
@@ -13,9 +17,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.LockCode;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.ContainerEntity;
+import net.minecraft.world.inventory.PlayerEnderChestContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
+import net.minecraft.world.level.block.entity.EnderChestBlockEntity;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import snownee.jade.JadeCommonConfig;
 import snownee.jade.api.Accessor;
@@ -41,11 +47,15 @@ import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.impl.ui.HorizontalLineElement;
 import snownee.jade.impl.ui.ScaledTextElement;
 import snownee.jade.util.CommonProxy;
+import snownee.jade.util.WailaExceptionHandler;
 
 public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor>,
 		IServerExtensionProvider<Object, ItemStack>, IClientExtensionProvider<ItemStack, ItemView> {
 
 	INSTANCE;
+
+	public final Cache<Object, ItemStorageCache<?>> targetCache = CacheBuilder.newBuilder().weakKeys().expireAfterAccess(60, TimeUnit.SECONDS).build();
+	public final Cache<Object, ItemStorageCache<?>> containerCache = CacheBuilder.newBuilder().weakKeys().expireAfterAccess(120, TimeUnit.SECONDS).build();
 
 	public static void append(ITooltip tooltip, Accessor<?> accessor, IPluginConfig config) {
 		if (!accessor.getServerData().contains("JadeItemStorage")) {
@@ -75,10 +85,6 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 		{
 			int totalSize = 0;
 			for (var group : groups) {
-				if (group.views.size() == 1 && "10k+".equals(group.views.get(0).text)) {
-					++totalSize;
-					continue;
-				}
 				for (var view : group.views) {
 					if (view.text != null) {
 						showName.setFalse();
@@ -149,11 +155,14 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 			if (ViewGroup.saveList(tag, "JadeItemStorage", groups, item -> {
 				CompoundTag itemTag = new CompoundTag();
 				int count = item.getCount();
-				if (count > 64)
+				if (count > 64) {
 					item.setCount(1);
+				}
 				item.save(itemTag);
-				if (count > 64)
+				if (count > 64) {
 					itemTag.putInt("NewCount", count);
+					item.setCount(count);
+				}
 				return itemTag;
 			})) {
 				tag.putString("JadeItemStorageUid", provider.getUid().toString());
@@ -209,20 +218,26 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 				return List.of();
 			}
 		}
-
-		return CommonProxy.wrapItemStorage(target, player);
+		if (player != null && target instanceof EnderChestBlockEntity) {
+			PlayerEnderChestContainer inventory = player.getEnderChestInventory();
+			return new ItemStorageCache<>(new ItemIterator.ContainerItemIterator(0)).update(inventory, accessor.getLevel().getGameTime());
+		}
+		ItemStorageCache<?> itemStorageCache;
+		try {
+			itemStorageCache = targetCache.get(target, () -> CommonProxy.createItemStorageCache(target, containerCache));
+		} catch (ExecutionException e) {
+			WailaExceptionHandler.handleErr(e, null, null);
+			return null;
+		}
+		if (itemStorageCache == ItemStorageCache.EMPTY) {
+			return null;
+		}
+		return itemStorageCache.update(target, accessor.getLevel().getGameTime());
 	}
 
 	@Override
 	public List<ClientViewGroup<ItemView>> getClientGroups(Accessor<?> accessor, List<ViewGroup<ItemStack>> groups) {
-		var clientGroups = ClientViewGroup.map(groups, ItemView::new, null);
-		for (var clientGroup : clientGroups) {
-			var views = clientGroup.views;
-			if (views.size() == 1 && views.get(0).item.getCount() > 10000) {
-				views.get(0).text = "10k+";
-			}
-		}
-		return clientGroups;
+		return ClientViewGroup.map(groups, ItemView::new, null);
 	}
 
 }

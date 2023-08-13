@@ -122,6 +122,7 @@ public interface ITooltip {
 	 */
 	void remove(ResourceLocation tag);
 
+	@Deprecated
 	IElementHelper getElementHelper();
 
 	/**
