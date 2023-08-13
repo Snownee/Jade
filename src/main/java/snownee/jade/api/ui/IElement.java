@@ -16,7 +16,7 @@ public interface IElement {
 	/**
 	 * Force a size that this element reserve
 	 */
-	IElement size(Vec2 size);
+	IElement size(@Nullable Vec2 size);
 
 	/**
 	 * Calculate the default reserved area of this element.

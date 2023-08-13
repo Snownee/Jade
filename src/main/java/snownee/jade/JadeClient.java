@@ -33,6 +33,7 @@ import net.minecraft.world.level.block.InfestedBlock;
 import net.minecraft.world.level.block.TrappedChestBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.HitResult;
+import snownee.jade.addon.universal.ItemStorageProvider;
 import snownee.jade.addon.vanilla.VanillaPlugin;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.BlockAccessor;
@@ -87,6 +88,8 @@ public final class JadeClient {
 	public static void onKeyPressed(int action) {
 		while (openConfig.consumeClick()) {
 			Jade.CONFIG.invalidate();
+			ItemStorageProvider.INSTANCE.targetCache.invalidateAll();
+			ItemStorageProvider.INSTANCE.containerCache.invalidateAll();
 			Minecraft.getInstance().setScreen(new HomeConfigScreen(null));
 		}
 
