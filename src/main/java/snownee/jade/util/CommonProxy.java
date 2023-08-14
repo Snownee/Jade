@@ -16,6 +16,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.block.BlockPickInteractionAware;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.entity.FakePlayer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.mininglevel.v1.FabricMineableTags;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
@@ -274,8 +275,9 @@ public final class CommonProxy implements ModInitializer {
 		buf.writeUtf(Strings.nullToEmpty(PluginConfig.INSTANCE.getServerConfigs()));
 		ServerPlayNetworking.send(player, Identifiers.PACKET_SERVER_PING, buf);
 
-		if (server.isDedicatedServer())
+		if (server.isDedicatedServer() && !(player instanceof FakePlayer)) {
 			UsernameCache.setUsername(player.getUUID(), player.getGameProfile().getName());
+		}
 	}
 
 	public static boolean isModLoaded(String modid) {

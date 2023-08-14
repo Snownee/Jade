@@ -21,7 +21,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonSyntaxException;
 import com.mojang.authlib.GameProfile;
 
 import net.minecraft.client.Minecraft;
@@ -31,41 +30,45 @@ import snownee.jade.impl.config.PluginConfig;
 
 public final class UsernameCache {
 
-	private static Map<UUID, String> map = new HashMap<>();
-	private static Set<UUID> downloadingList = Collections.synchronizedSet(new HashSet<>());
+	private static final HashMap<UUID, String> map = new HashMap<>();
+	private static final Set<UUID> downloadingList = Collections.synchronizedSet(new HashSet<>());
 
 	private static final Path saveFile = CommonProxy.getConfigDirectory().toPath().resolve(Jade.MODID + "/usernamecache.json");
 	private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+	private static boolean loading = false;
 
 	private UsernameCache() {
 	}
 
 	/**
-	 * Set a player's current usernamee
+	 * Set a player's current username
 	 *
-	 * @param uuid
-	 *            the player's {@link java.util.UUID UUID}
-	 * @param username
-	 *            the player's username
+	 * @param uuid     the player's {@link java.util.UUID UUID}
+	 * @param username the player's username
 	 */
 	public static void setUsername(UUID uuid, String username) {
 		Objects.requireNonNull(uuid);
 		Objects.requireNonNull(username);
 
-		if (username.equals(map.get(uuid)))
+		if (!isValidName(username))
 			return;
 
-		map.put(uuid, username);
-		save();
+		String prev = map.put(uuid, username);
+		if (!loading && !Objects.equals(prev, username)) {
+			save();
+		}
+	}
+
+	public static boolean isValidName(String name) {
+		return !name.isEmpty() && !name.contains("§");
 	}
 
 	/**
-     * Remove a player's username from the cache
-     *
-     * @param uuid
-     *            the player's {@link java.util.UUID UUID}
-     * @return if the cache contained the user
-     */
+	 * Remove a player's username from the cache
+	 *
+	 * @param uuid the player's {@link java.util.UUID UUID}
+	 * @return if the cache contained the user
+	 */
 	public static boolean removeUsername(UUID uuid) {
 		Objects.requireNonNull(uuid);
 
@@ -82,10 +85,9 @@ public final class UsernameCache {
 	 * <p>
 	 * <b>May be <code>null</code></b>
 	 *
-	 * @param uuid
-	 *            the player's {@link java.util.UUID UUID}
+	 * @param uuid the player's {@link java.util.UUID UUID}
 	 * @return the player's last known username, or <code>null</code> if the
-	 *         cache doesn't have a record of the last username
+	 * cache doesn't have a record of the last username
 	 */
 	@Nullable
 	public static String getLastKnownUsername(UUID uuid) {
@@ -98,12 +100,11 @@ public final class UsernameCache {
 	}
 
 	/**
-     * Check if the cache contains the given player's username
-     *
-     * @param uuid
-     *            the player's {@link java.util.UUID UUID}
-     * @return if the cache contains a username for the given player
-     */
+	 * Check if the cache contains the given player's username
+	 *
+	 * @param uuid the player's {@link java.util.UUID UUID}
+	 * @return if the cache contains a username for the given player
+	 */
 	public static boolean containsUUID(UUID uuid) {
 		Objects.requireNonNull(uuid);
 		return map.containsKey(uuid);
@@ -132,12 +133,17 @@ public final class UsernameCache {
 		if (!Files.exists(saveFile))
 			return;
 
+		loading = true;
 		try (final BufferedReader reader = Files.newBufferedReader(saveFile, Charsets.UTF_8)) {
 			@SuppressWarnings("serial")
 			Type type = new TypeToken<Map<UUID, String>>() {
 			}.getType();
-			map = gson.fromJson(reader, type);
-		} catch (JsonSyntaxException | IOException e) {
+			Map<UUID, String> tempMap = gson.fromJson(reader, type);
+			if (tempMap != null) {
+				map.clear();
+				tempMap.forEach(UsernameCache::setUsername);
+			}
+		} catch (Exception e) {
 			Jade.LOGGER.error("Could not parse username cache file as valid json, deleting file {}", saveFile, e);
 			WailaExceptionHandler.handleErr(e, null, null);
 			try {
@@ -146,10 +152,7 @@ public final class UsernameCache {
 				Jade.LOGGER.error("Could not delete file {}", saveFile.toString());
 			}
 		} finally {
-			// Can sometimes occur when the json file is malformed
-			if (map == null) {
-				map = new HashMap<>();
-			}
+			loading = false;
 		}
 	}
 
@@ -195,12 +198,14 @@ public final class UsernameCache {
 	}
 
 	/**
-     * Used for saving the {@link com.google.gson.Gson#toJson(Object) Gson}
-     * representation of the cache to disk
-     */
+	 * Used for saving the {@link com.google.gson.Gson#toJson(Object) Gson}
+	 * representation of the cache to disk
+	 */
 	private static class SaveThread extends Thread {
 
-		/** The data that will be saved to disk */
+		/**
+		 * The data that will be saved to disk
+		 */
 		private final String data;
 
 		public SaveThread(String data) {
