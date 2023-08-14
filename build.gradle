@@ -58,7 +58,7 @@ dependencies {
     modCompileOnlyApi "mezz.jei:jei-1.19-common-api:${jei_version}"
     modCompileOnlyApi "mezz.jei:jei-1.19-fabric-api:${jei_version}"
     //modImplementation "mezz.jei:jei-1.19-fabric:${jei_version}"
-    
+
     modApi("teamreborn:energy:${project.tr_energy_version}") {
         exclude(group: "net.fabricmc.fabric-api")
     }
@@ -147,7 +147,7 @@ unifiedPublishing {
         version = project.mod_version // Optional, Inferred from project by default
         changelog = file("CHANGELOG.md").exists() ? file("CHANGELOG.md").text : "" // Optional, in markdown format
         releaseType = "release" // Optional, use "release", "beta" or "alpha"
-        gameVersions = ["1.20", "1.20.1"]
+        gameVersions = ["1.20.2"]
         gameLoaders = ["fabric", "quilt"]
 
         mainPublication tasks.remapJar // Declares the publicated jar

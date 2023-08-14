@@ -2,6 +2,7 @@ package snownee.jade.addon.universal;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 
 import org.jetbrains.annotations.Nullable;
@@ -12,9 +13,9 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import snownee.jade.api.view.ViewGroup;
 
-public class ItemStorageCache<T> {
+public class ItemCollector<T> {
 	public static final int MAX_SIZE = 54;
-	public static final ItemStorageCache<?> EMPTY = new ItemStorageCache<>(null);
+	public static final ItemCollector<?> EMPTY = new ItemCollector<>(null);
 	private static final Predicate<ItemStack> NON_EMPTY = stack -> {
 		if (stack.isEmpty()) {
 			return false;
@@ -35,7 +36,7 @@ public class ItemStorageCache<T> {
 	public long lastTimeFinished;
 	public List<ViewGroup<ItemStack>> mergedResult;
 
-	public ItemStorageCache(ItemIterator<T> iterator) {
+	public ItemCollector(ItemIterator<T> iterator) {
 		this.iterator = iterator;
 	}
 
@@ -52,22 +53,26 @@ public class ItemStorageCache<T> {
 			if (version == currentVersion) {
 				return mergedResult; // content not changed
 			}
-			if (gameTime == lastTimeFinished) {
-				return mergedResult; // only update once per tick
+			if (lastTimeFinished + 5 > gameTime) {
+				return mergedResult; // avoid update too frequently
 			}
 			iterator.reset();
 		}
-		iterator.populate(container).filter(NON_EMPTY).forEach(stack -> {
-			ItemDefinition def = new ItemDefinition(stack);
-			items.addTo(def, stack.getCount());
+		AtomicInteger count = new AtomicInteger();
+		iterator.populate(container).forEach(stack -> {
+			count.incrementAndGet();
+			if (NON_EMPTY.test(stack)) {
+				ItemDefinition def = new ItemDefinition(stack);
+				items.addTo(def, stack.getCount());
+			}
 		});
+		iterator.afterPopulate(count.get());
 		if (mergedResult != null && !iterator.isFinished()) {
 			return mergedResult;
 		}
 		List<ItemStack> partialResult = items.object2IntEntrySet().stream().limit(54).map(entry -> {
 			ItemDefinition def = entry.getKey();
-			int count = entry.getIntValue();
-			return def.toStack(count);
+			return def.toStack(entry.getIntValue());
 		}).toList();
 		List<ViewGroup<ItemStack>> groups = List.of(new ViewGroup<>(partialResult));
 		if (iterator.isFinished()) {

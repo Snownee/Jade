@@ -54,8 +54,8 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 
 	INSTANCE;
 
-	public final Cache<Object, ItemStorageCache<?>> targetCache = CacheBuilder.newBuilder().weakKeys().expireAfterAccess(60, TimeUnit.SECONDS).build();
-	public final Cache<Object, ItemStorageCache<?>> containerCache = CacheBuilder.newBuilder().weakKeys().expireAfterAccess(120, TimeUnit.SECONDS).build();
+	public final Cache<Object, ItemCollector<?>> targetCache = CacheBuilder.newBuilder().weakKeys().expireAfterAccess(60, TimeUnit.SECONDS).build();
+	public final Cache<Object, ItemCollector<?>> containerCache = CacheBuilder.newBuilder().weakKeys().expireAfterAccess(120, TimeUnit.SECONDS).build();
 
 	public static void append(ITooltip tooltip, Accessor<?> accessor, IPluginConfig config) {
 		if (!accessor.getServerData().contains("JadeItemStorage")) {
@@ -220,19 +220,19 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 		}
 		if (player != null && target instanceof EnderChestBlockEntity) {
 			PlayerEnderChestContainer inventory = player.getEnderChestInventory();
-			return new ItemStorageCache<>(new ItemIterator.ContainerItemIterator(0)).update(inventory, accessor.getLevel().getGameTime());
+			return new ItemCollector<>(new ItemIterator.ContainerItemIterator(0)).update(inventory, accessor.getLevel().getGameTime());
 		}
-		ItemStorageCache<?> itemStorageCache;
+		ItemCollector<?> itemCollector;
 		try {
-			itemStorageCache = targetCache.get(target, () -> CommonProxy.createItemStorageCache(target, containerCache));
+			itemCollector = targetCache.get(target, () -> CommonProxy.createItemCollector(target, containerCache));
 		} catch (ExecutionException e) {
 			WailaExceptionHandler.handleErr(e, null, null);
 			return null;
 		}
-		if (itemStorageCache == ItemStorageCache.EMPTY) {
+		if (itemCollector == ItemCollector.EMPTY) {
 			return null;
 		}
-		return itemStorageCache.update(target, accessor.getLevel().getGameTime());
+		return itemCollector.update(target, accessor.getLevel().getGameTime());
 	}
 
 	@Override
