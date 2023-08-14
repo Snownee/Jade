@@ -64,8 +64,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.BlockHitResult;
 import snownee.jade.Jade;
+import snownee.jade.addon.universal.ItemCollector;
 import snownee.jade.addon.universal.ItemIterator;
-import snownee.jade.addon.universal.ItemStorageCache;
 import snownee.jade.addon.universal.ItemStorageProvider;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.IWailaPlugin;
@@ -126,9 +126,9 @@ public final class CommonProxy implements ModInitializer {
 	}
 
 	@SuppressWarnings("UnstableApiUsage")
-	public static ItemStorageCache<?> createItemStorageCache(Object target, Cache<Object, ItemStorageCache<?>> containerCache) {
+	public static ItemCollector<?> createItemStorageCache(Object target, Cache<Object, ItemCollector<?>> containerCache) {
 		if (target instanceof AbstractHorseAccess) {
-			return new ItemStorageCache<>(new ItemIterator.ContainerItemIterator(o -> {
+			return new ItemCollector<>(new ItemIterator.ContainerItemIterator(o -> {
 				if (o instanceof AbstractHorseAccess horse) {
 					return horse.getInventory();
 				}
@@ -139,7 +139,7 @@ public final class CommonProxy implements ModInitializer {
 			try {
 				var storage = ItemStorage.SIDED.find(be.getLevel(), be.getBlockPos(), be.getBlockState(), be, null);
 				if (storage != null) {
-					containerCache.get(storage, () -> new ItemStorageCache<>(JadeFabricUtils.fromItemStorage(storage, 0)));
+					return containerCache.get(storage, () -> new ItemCollector<>(JadeFabricUtils.fromItemStorage(storage, 0)));
 				}
 			} catch (Throwable e) {
 				WailaExceptionHandler.handleErr(e, null, null);
@@ -147,7 +147,7 @@ public final class CommonProxy implements ModInitializer {
 		}
 		if (target instanceof Container) {
 			if (target instanceof ChestBlockEntity) {
-				return new ItemStorageCache<>(new ItemIterator.ContainerItemIterator(o -> {
+				return new ItemCollector<>(new ItemIterator.ContainerItemIterator(o -> {
 					if (o instanceof ChestBlockEntity be) {
 						if (be.getBlockState().getBlock() instanceof ChestBlock chestBlock) {
 							Container compound = ChestBlock.getContainer(chestBlock, be.getBlockState(), be.getLevel(), be.getBlockPos(), false);
@@ -160,15 +160,15 @@ public final class CommonProxy implements ModInitializer {
 					return null;
 				}, 0));
 			}
-			return new ItemStorageCache<>(new ItemIterator.ContainerItemIterator(0));
+			return new ItemCollector<>(new ItemIterator.ContainerItemIterator(0));
 		}
-		return ItemStorageCache.EMPTY;
+		return ItemCollector.EMPTY;
 	}
 
 	@Nullable
 	public static List<ViewGroup<ItemStack>> containerGroup(Container container, Accessor<?> accessor) {
 		try {
-			return ItemStorageProvider.INSTANCE.containerCache.get(container, () -> new ItemStorageCache<>(new ItemIterator.ContainerItemIterator(0))).update(container, accessor.getLevel().getGameTime());
+			return ItemStorageProvider.INSTANCE.containerCache.get(container, () -> new ItemCollector<>(new ItemIterator.ContainerItemIterator(0))).update(container, accessor.getLevel().getGameTime());
 		} catch (ExecutionException e) {
 			return null;
 		}
@@ -178,7 +178,7 @@ public final class CommonProxy implements ModInitializer {
 	@SuppressWarnings("UnstableApiUsage")
 	public static List<ViewGroup<ItemStack>> storageGroup(Object storage, Accessor<?> accessor) {
 		try {
-			return ItemStorageProvider.INSTANCE.containerCache.get(storage, () -> new ItemStorageCache<>(JadeFabricUtils.fromItemStorage((Storage<ItemVariant>) storage, 0))).update(storage, accessor.getLevel().getGameTime());
+			return ItemStorageProvider.INSTANCE.containerCache.get(storage, () -> new ItemCollector<>(JadeFabricUtils.fromItemStorage((Storage<ItemVariant>) storage, 0))).update(storage, accessor.getLevel().getGameTime());
 		} catch (ExecutionException e) {
 			return null;
 		}

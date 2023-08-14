@@ -11,11 +11,15 @@ import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 
 public abstract class ItemIterator<T> {
+	public static final AtomicLong version = new AtomicLong();
 	protected final Function<Object, @Nullable T> containerFinder;
+	protected final int fromIndex;
 	protected boolean finished;
+	protected int currentIndex;
 
-	protected ItemIterator(Function<Object, @Nullable T> containerFinder) {
+	protected ItemIterator(Function<Object, @Nullable T> containerFinder, int fromIndex) {
 		this.containerFinder = containerFinder;
+		this.currentIndex = this.fromIndex = fromIndex;
 	}
 
 	public @Nullable T find(Object target) {
@@ -26,20 +30,27 @@ public abstract class ItemIterator<T> {
 		return finished;
 	}
 
-	public abstract long getVersion(T container);
+	public long getVersion(T container) {
+		return version.getAndIncrement();
+	}
 
 	public abstract Stream<ItemStack> populate(T container);
 
-	public abstract void reset();
+	public void reset() {
+		currentIndex = fromIndex;
+		finished = false;
+	}
+
+	public void afterPopulate(int count) {
+		currentIndex += count;
+		if (count == 0 || currentIndex >= 10000) {
+			finished = true;
+		}
+	}
 
 	public static abstract class SlottedItemIterator<T> extends ItemIterator<T> {
-		public static final AtomicLong version = new AtomicLong();
-		private final int fromIndex;
-		private int currentIndex;
-
 		public SlottedItemIterator(Function<Object, @Nullable T> containerFinder, int fromIndex) {
-			super(containerFinder);
-			this.currentIndex = this.fromIndex = fromIndex;
+			super(containerFinder, fromIndex);
 		}
 
 		protected abstract int getSlotCount(T container);
@@ -47,27 +58,14 @@ public abstract class ItemIterator<T> {
 		protected abstract ItemStack getItemInSlot(T container, int slot);
 
 		@Override
-		public void reset() {
-			currentIndex = fromIndex;
-			finished = false;
-		}
-
-		@Override
 		public Stream<ItemStack> populate(T container) {
 			int slotCount = getSlotCount(container);
-			int toIndex = currentIndex + ItemStorageCache.MAX_SIZE;
+			int toIndex = currentIndex + ItemCollector.MAX_SIZE * 2;
 			if (toIndex >= slotCount) {
 				toIndex = slotCount;
 				finished = true;
 			}
-			int fromIndex = currentIndex;
-			currentIndex = toIndex;
-			return IntStream.range(fromIndex, toIndex).mapToObj(slot -> getItemInSlot(container, slot));
-		}
-
-		@Override
-		public long getVersion(T container) {
-			return version.getAndIncrement();
+			return IntStream.range(currentIndex, toIndex).mapToObj(slot -> getItemInSlot(container, slot));
 		}
 	}
 
@@ -92,23 +90,16 @@ public abstract class ItemIterator<T> {
 	}
 
 	public static abstract class SlotlessItemIterator<T> extends ItemIterator<T> {
-		private final int fromIndex;
 
 		protected SlotlessItemIterator(Function<Object, @Nullable T> containerFinder, int fromIndex) {
-			super(containerFinder);
-			this.fromIndex = fromIndex;
+			super(containerFinder, fromIndex);
 		}
 
 		@Override
 		public Stream<ItemStack> populate(T container) {
-			return populateRaw(container).skip(fromIndex).limit(ItemStorageCache.MAX_SIZE * 3L);
+			return populateRaw(container).skip(currentIndex).limit(ItemCollector.MAX_SIZE * 2L);
 		}
 
 		protected abstract Stream<ItemStack> populateRaw(T container);
-
-		@Override
-		public void reset() {
-			finished = false;
-		}
 	}
 }

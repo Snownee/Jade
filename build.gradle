@@ -62,6 +62,9 @@ dependencies {
     modApi("teamreborn:energy:${project.tr_energy_version}") {
         exclude(group: "net.fabricmc.fabric-api")
     }
+    
+    modImplementation "curse.maven:toms-storage-fabric-396826:4649854"
+    modImplementation "curse.maven:cloth-config-348521:4633442"
 }
 
 loom {
