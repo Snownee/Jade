@@ -146,7 +146,7 @@ unifiedPublishing {
         displayName = project.version
         version = project.mod_version // Optional, Inferred from project by default
         changelog = file("CHANGELOG.md").exists() ? file("CHANGELOG.md").text : "" // Optional, in markdown format
-        releaseType = "release" // Optional, use "release", "beta" or "alpha"
+        releaseType = project.release_type // Optional, use "release", "beta" or "alpha"
         gameVersions = ["1.20.2"]
         gameLoaders = ["fabric", "quilt"]
 
