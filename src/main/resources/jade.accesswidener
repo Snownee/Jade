@@ -34,3 +34,5 @@ accessible field net/minecraft/world/entity/animal/horse/AbstractHorse MAX_MOVEM
 accessible field net/minecraft/world/entity/animal/horse/AbstractHorse MAX_JUMP_STRENGTH F
 
 accessible class net/minecraft/client/gui/Font$StringRenderOutput
+
+accessible field net/minecraft/client/gui/components/CycleButton onValueChange Lnet/minecraft/client/gui/components/CycleButton$OnValueChange;

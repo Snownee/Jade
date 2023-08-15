@@ -21,5 +21,6 @@ public class CycleOptionValue<T> extends OptionValue<T> {
 	@Override
 	public void setValue(T value) {
 		button.setValue(value);
+		button.onValueChange.onValueChange(button, value);
 	}
 }
