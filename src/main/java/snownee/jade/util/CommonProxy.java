@@ -35,12 +35,15 @@ import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -49,11 +52,19 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.decoration.Painting;
 import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.PotionItem;
 import net.minecraft.world.item.ShearsItem;
+import net.minecraft.world.item.TippedArrowItem;
+import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -117,6 +128,40 @@ public final class CommonProxy implements ModInitializer {
 				if (id != null) {
 					return id.getNamespace();
 				}
+			}
+		}
+		if (stack.getItem() instanceof EnchantedBookItem) {
+			ListTag listTag = EnchantedBookItem.getEnchantments(stack);
+			String modid = null;
+			for (int i = 0; i < listTag.size(); i++) {
+				ResourceLocation enchantmentId = EnchantmentHelper.getEnchantmentId(listTag.getCompound(i));
+				if (enchantmentId != null) {
+					String namespace = enchantmentId.getNamespace();
+					if (modid == null) {
+						modid = namespace;
+					} else if (!modid.equals(namespace)) {
+						modid = null;
+						break;
+					}
+				}
+			}
+			if (modid != null) {
+				return modid;
+			}
+		}
+		if (stack.getItem() instanceof PotionItem || stack.getItem() instanceof TippedArrowItem) {
+			Potion potion = PotionUtils.getPotion(stack);
+			return BuiltInRegistries.POTION.getKey(potion).getNamespace();
+		}
+		if (stack.is(Items.PAINTING)) {
+			CompoundTag compoundTag = stack.getTag();
+			if (compoundTag != null && compoundTag.contains("EntityTag", 10)) {
+				CompoundTag compoundTag2 = compoundTag.getCompound("EntityTag");
+				return Painting.loadVariant(compoundTag2)
+						.flatMap(Holder::unwrapKey)
+						.map(ResourceKey::location)
+						.map(ResourceLocation::getNamespace)
+						.orElse(ResourceLocation.DEFAULT_NAMESPACE);
 			}
 		}
 		return BuiltInRegistries.ITEM.getKey(stack.getItem()).getNamespace();
