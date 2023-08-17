@@ -123,7 +123,7 @@ public final class ClientProxy implements ClientModInitializer {
 	}
 
 	private static void onTooltip(ItemStack stack, TooltipFlag context, List<Component> lines) {
-		JadeClient.onTooltip(lines, stack);
+		JadeClient.onTooltip(lines, stack, context);
 	}
 
 	public static void onRenderTick(GuiGraphics guiGraphics, float tickDelta) {
