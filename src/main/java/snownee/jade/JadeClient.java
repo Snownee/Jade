@@ -2,6 +2,7 @@ package snownee.jade;
 
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Objects;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -16,6 +17,7 @@ import net.minecraft.client.gui.components.toasts.SystemToast;
 import net.minecraft.client.gui.components.toasts.SystemToast.SystemToastIds;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.resources.language.I18n;
@@ -25,7 +27,9 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BrushableBlock;
@@ -141,18 +145,30 @@ public final class JadeClient {
 		}
 	}
 
-	public static void onTooltip(List<Component> tooltip, ItemStack stack) {
-		appendModName(tooltip, stack);
+	public static void onTooltip(List<Component> tooltip, ItemStack stack, TooltipFlag context) {
+		appendModName(tooltip, stack, context);
 		if (Jade.CONFIG.get().getGeneral().isDebug() && stack.hasTag()) {
 			tooltip.add(NbtUtils.toPrettyComponent(stack.getTag()));
 		}
 	}
 
-	private static void appendModName(List<Component> tooltip, ItemStack stack) {
+	private static void appendModName(List<Component> tooltip, ItemStack stack, TooltipFlag context) {
 		if (hideModName || !Jade.CONFIG.get().getGeneral().showItemModNameTooltip())
 			return;
-		String name = String.format(Jade.CONFIG.get().getFormatting().getModName(), ModIdentification.getModName(stack));
-		tooltip.add(Component.literal(name));
+		if (Minecraft.getInstance().screen instanceof CreativeModeInventoryScreen) {
+			if (CreativeModeInventoryScreen.selectedTab.getType() != CreativeModeTab.Type.CATEGORY || !context.isCreative()) {
+				return;
+			}
+		}
+		int i = 1;
+		String name = ModIdentification.getModName(stack);
+		for (; i < tooltip.size(); i++) {
+			if (Objects.equals(tooltip.get(i).getString(), name)) {
+				break;
+			}
+		}
+		name = String.format(Jade.CONFIG.get().getFormatting().getModName(), name);
+		tooltip.add(i, Component.literal(name));
 	}
 
 	@Nullable
