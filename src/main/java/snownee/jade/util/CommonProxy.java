@@ -5,9 +5,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
+
+import com.google.common.cache.Cache;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -26,8 +29,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.entity.EnderChestBlockEntity;
+import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.ForgeHooks;
@@ -37,7 +41,6 @@ import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.UsernameCache;
 import net.minecraftforge.common.capabilities.CapabilityProvider;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -61,11 +64,14 @@ import net.minecraftforge.network.simple.SimpleChannel;
 import net.minecraftforge.registries.ForgeRegistries;
 import snownee.jade.Jade;
 import snownee.jade.JadeCommonConfig;
+import snownee.jade.addon.universal.ItemIterator;
+import snownee.jade.addon.universal.ItemStorageCache;
+import snownee.jade.addon.universal.ItemStorageProvider;
+import snownee.jade.api.Accessor;
 import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.WailaPlugin;
 import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.view.EnergyView;
-import snownee.jade.api.view.ItemView;
 import snownee.jade.api.view.ViewGroup;
 import snownee.jade.command.JadeServerCommand;
 import snownee.jade.impl.WailaClientRegistration;
@@ -190,23 +196,57 @@ public final class CommonProxy {
 		JadeServerCommand.register(event.getDispatcher());
 	}
 
-	public static List<ViewGroup<ItemStack>> wrapItemStorage(Object target, @Nullable Player player) {
-		int size = 54;
+	@SuppressWarnings("UnstableApiUsage")
+	public static ItemStorageCache<?> createItemStorageCache(Object target, Cache<Object, ItemStorageCache<?>> containerCache) {
 		if (target instanceof CapabilityProvider<?> capProvider) {
 			if (!(target instanceof Entity) || target instanceof AbstractChestedHorse) {
-				LazyOptional<IItemHandler> optional = capProvider.getCapability(ForgeCapabilities.ITEM_HANDLER);
-				if (optional.isPresent()) {
-					return List.of(optional.map($ -> JadeForgeUtils.fromItemHandler($, size, target instanceof AbstractChestedHorse ? 2 : 0)).get());
+				try {
+					IItemHandler itemHandler = capProvider.getCapability(ForgeCapabilities.ITEM_HANDLER).orElse(null);
+					if (itemHandler != null) {
+						return containerCache.get(itemHandler, () -> new ItemStorageCache<>(JadeForgeUtils.fromItemHandler(itemHandler, target instanceof AbstractChestedHorse ? 2 : 0)));
+					}
+				} catch (Throwable e) {
+					WailaExceptionHandler.handleErr(e, null, null);
 				}
 			}
 		}
-		if (target instanceof Container container) {
-			return List.of(ItemView.fromContainer(container, size, 0));
+		if (target instanceof Container) {
+			if (target instanceof ChestBlockEntity) {
+				return new ItemStorageCache<>(new ItemIterator.ContainerItemIterator(o -> {
+					if (o instanceof ChestBlockEntity be) {
+						if (be.getBlockState().getBlock() instanceof ChestBlock chestBlock) {
+							Container compound = ChestBlock.getContainer(chestBlock, be.getBlockState(), be.getLevel(), be.getBlockPos(), false);
+							if (compound != null) {
+								return compound;
+							}
+						}
+						return be;
+					}
+					return null;
+				}, 0));
+			}
+			return new ItemStorageCache<>(new ItemIterator.ContainerItemIterator(0));
 		}
-		if (player != null && target instanceof EnderChestBlockEntity) {
-			return List.of(ItemView.fromContainer(player.getEnderChestInventory(), size, 0));
+		return ItemStorageCache.EMPTY;
+	}
+
+	@Nullable
+	public static List<ViewGroup<ItemStack>> containerGroup(Container container, Accessor<?> accessor) {
+		try {
+			return ItemStorageProvider.INSTANCE.containerCache.get(container, () -> new ItemStorageCache<>(new ItemIterator.ContainerItemIterator(0))).update(container, accessor.getLevel().getGameTime());
+		} catch (ExecutionException e) {
+			return null;
 		}
-		return null;
+	}
+
+	@Nullable
+	@SuppressWarnings("UnstableApiUsage")
+	public static List<ViewGroup<ItemStack>> storageGroup(Object storage, Accessor<?> accessor) {
+		try {
+			return ItemStorageProvider.INSTANCE.containerCache.get(storage, () -> new ItemStorageCache<>(JadeForgeUtils.fromItemHandler((IItemHandler) storage, 0))).update(storage, accessor.getLevel().getGameTime());
+		} catch (ExecutionException e) {
+			return null;
+		}
 	}
 
 	public static List<ViewGroup<CompoundTag>> wrapFluidStorage(Object target, @Nullable Player player) {

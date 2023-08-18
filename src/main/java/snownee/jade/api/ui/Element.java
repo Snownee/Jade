@@ -20,7 +20,7 @@ public abstract class Element implements IElement {
 	protected String message = DEFAULT_MESSAGE;
 
 	@Override
-	public IElement size(Vec2 size) {
+	public IElement size(@Nullable Vec2 size) {
 		this.size = size;
 		return this;
 	}
