@@ -212,7 +212,9 @@ public final class ClientProxy implements ClientModInitializer {
 		}
 		int i = mc.getWindow().getGuiScaledWidth();
 		int k = i / 2 - 91;
-		return new Rect2i(k, 12, 182, (10 + mc.font.lineHeight) * size);
+		int height = 10 + mc.font.lineHeight;
+		size = Math.min(size, (mc.getWindow().getGuiScaledHeight() / 3 - 12) / height + 1);
+		return new Rect2i(k, 12, 182, height * size);
 	}
 
 	public static boolean isShowDetailsPressed() {
