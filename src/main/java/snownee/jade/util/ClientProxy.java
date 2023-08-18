@@ -158,7 +158,7 @@ public final class ClientProxy {
 	}
 
 	private static void onTooltip(ItemTooltipEvent event) {
-		JadeClient.onTooltip(event.getToolTip(), event.getItemStack());
+		JadeClient.onTooltip(event.getToolTip(), event.getItemStack(), event.getFlags());
 	}
 
 	public static void onRenderTick(GuiGraphics guiGraphics) {
