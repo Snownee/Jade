@@ -121,7 +121,6 @@ public class ProgressStyle implements IProgressStyle {
 				autoTextColor = false;
 				if (overlay == null && RGBtoHSV(color2).z() > 0.75f) {
 					textColor = 0xFF000000;
-					shadow = false;
 				} else {
 					textColor = 0xFFFFFFFF;
 				}
@@ -138,7 +137,9 @@ public class ProgressStyle implements IProgressStyle {
 				font.drawInBatch8xOutline(text.getVisualOrderText(), x + 1, y, 0xFFFFFFFF, 0xFF333333, guiGraphics.pose().last().pose(), multibuffersource$buffersource, 15728880);
 				multibuffersource$buffersource.endBatch();
 			} else {
+				DisplayHelper.setBetterTextShadow(true);
 				guiGraphics.drawString(font, text, (int) x + 1, (int) y, color, shadow);
+				DisplayHelper.setBetterTextShadow(false);
 			}
 		}
 	}

@@ -52,6 +52,7 @@ public class DisplayHelper implements IDisplayHelper {
 	private static final int MIN_FLUID_HEIGHT = 1; // ensure tiny amounts of fluid are still visible
 	private static final Pattern STRIP_COLOR = Pattern.compile("(?i)\u00a7[0-9A-F]");
 	public static DecimalFormat dfCommas = new DecimalFormat("##.##");
+	private static boolean betterTextShadow;
 
 	static {
 		dfCommas.setRoundingMode(RoundingMode.DOWN);
@@ -66,9 +67,9 @@ public class DisplayHelper implements IDisplayHelper {
 			String s = text == null ? INSTANCE.humanReadableNumber(stack.getCount(), "", false) : text;
 			guiGraphics.pose().pushPose();
 			guiGraphics.pose().translate(0.0f, 0.0f, 200.0f);
-			guiGraphics.pose().scale(.75f, .75f, .75f);
+			guiGraphics.pose().scale(.75f, .75f, 1f);
 			int color = IThemeHelper.get().theme().itemAmountColor;
-			guiGraphics.drawString(font, s, i + 22 - font.width(s), j + 13, color, color != 0xFF000000);
+			guiGraphics.drawString(font, s, i + 22 - font.width(s), j + 13, color, true);
 			guiGraphics.pose().popPose();
 		}
 
@@ -178,6 +179,14 @@ public class DisplayHelper implements IDisplayHelper {
 		RenderSystem.disableBlend();
 	}
 
+	public static boolean enableBetterTextShadow() {
+		return betterTextShadow;
+	}
+
+	public static void setBetterTextShadow(boolean betterTextShadow) {
+		DisplayHelper.betterTextShadow = betterTextShadow;
+	}
+
 	@Override
 	public void drawItem(GuiGraphics guiGraphics, float x, float y, ItemStack stack, float scale, @Nullable String text) {
 		if (OverlayRenderer.alpha < 0.5F) {
@@ -197,6 +206,9 @@ public class DisplayHelper implements IDisplayHelper {
 	}
 
 	public void drawGradientRect(GuiGraphics guiGraphics, float left, float top, float width, float height, int startColor, int endColor, boolean horizontal) {
+		if (startColor == -1 && endColor == -1) {
+			return;
+		}
 		float zLevel = 0.0F;
 		Matrix4f matrix = guiGraphics.pose().last().pose();
 
@@ -355,7 +367,9 @@ public class DisplayHelper implements IDisplayHelper {
 		if (OverlayRenderer.alpha != 1) {
 			color = IConfigOverlay.applyAlpha(color, OverlayRenderer.alpha);
 		}
+		betterTextShadow = true;
 		guiGraphics.drawString(CLIENT.font, text, (int) x, (int) y, color, shadow);
+		betterTextShadow = false;
 	}
 
 	public void drawGradientProgress(GuiGraphics guiGraphics, float left, float top, float width, float height, float progress, int progressColor) {
