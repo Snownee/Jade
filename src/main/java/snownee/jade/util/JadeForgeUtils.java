@@ -9,6 +9,8 @@ import com.google.common.math.IntMath;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.common.capabilities.CapabilityProvider;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.IItemHandler;
@@ -21,13 +23,29 @@ public class JadeForgeUtils {
 	private JadeForgeUtils() {
 	}
 
+	@Deprecated
 	public static ViewGroup<ItemStack> fromItemHandler(IItemHandler itemHandler, int maxSize, int startIndex) {
 		return ItemView.compacted(IntStream.range(startIndex, itemHandler.getSlots()).limit(maxSize * 3).mapToObj(itemHandler::getStackInSlot), maxSize);
 	}
 
 	public static ItemIterator<? extends IItemHandler> fromItemHandler(IItemHandler storage, int fromIndex) {
-		// TODO Auto-generated method stub
-		return null;
+		return new ItemIterator.SlottedItemIterator<>(target -> {
+			if (target instanceof CapabilityProvider<?> capProvider) {
+				return capProvider.getCapability(ForgeCapabilities.ITEM_HANDLER).orElse(null);
+			}
+			return null;
+		}, fromIndex) {
+
+			@Override
+			protected int getSlotCount(IItemHandler container) {
+				return container.getSlots();
+			}
+
+			@Override
+			protected ItemStack getItemInSlot(IItemHandler container, int slot) {
+				return container.getStackInSlot(slot);
+			}
+		};
 	}
 
 	public static CompoundTag fromFluidStack(FluidStack fluidStack, long capacity) {

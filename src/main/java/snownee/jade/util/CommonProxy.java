@@ -65,7 +65,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import snownee.jade.Jade;
 import snownee.jade.JadeCommonConfig;
 import snownee.jade.addon.universal.ItemIterator;
-import snownee.jade.addon.universal.ItemStorageCache;
+import snownee.jade.addon.universal.ItemCollector;
 import snownee.jade.addon.universal.ItemStorageProvider;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.IWailaPlugin;
@@ -197,13 +197,13 @@ public final class CommonProxy {
 	}
 
 	@SuppressWarnings("UnstableApiUsage")
-	public static ItemStorageCache<?> createItemStorageCache(Object target, Cache<Object, ItemStorageCache<?>> containerCache) {
+	public static ItemCollector<?> createItemCollector(Object target, Cache<Object, ItemCollector<?>> containerCache) {
 		if (target instanceof CapabilityProvider<?> capProvider) {
 			if (!(target instanceof Entity) || target instanceof AbstractChestedHorse) {
 				try {
 					IItemHandler itemHandler = capProvider.getCapability(ForgeCapabilities.ITEM_HANDLER).orElse(null);
 					if (itemHandler != null) {
-						return containerCache.get(itemHandler, () -> new ItemStorageCache<>(JadeForgeUtils.fromItemHandler(itemHandler, target instanceof AbstractChestedHorse ? 2 : 0)));
+						return containerCache.get(itemHandler, () -> new ItemCollector<>(JadeForgeUtils.fromItemHandler(itemHandler, target instanceof AbstractChestedHorse ? 2 : 0)));
 					}
 				} catch (Throwable e) {
 					WailaExceptionHandler.handleErr(e, null, null);
@@ -212,7 +212,7 @@ public final class CommonProxy {
 		}
 		if (target instanceof Container) {
 			if (target instanceof ChestBlockEntity) {
-				return new ItemStorageCache<>(new ItemIterator.ContainerItemIterator(o -> {
+				return new ItemCollector<>(new ItemIterator.ContainerItemIterator(o -> {
 					if (o instanceof ChestBlockEntity be) {
 						if (be.getBlockState().getBlock() instanceof ChestBlock chestBlock) {
 							Container compound = ChestBlock.getContainer(chestBlock, be.getBlockState(), be.getLevel(), be.getBlockPos(), false);
@@ -225,15 +225,15 @@ public final class CommonProxy {
 					return null;
 				}, 0));
 			}
-			return new ItemStorageCache<>(new ItemIterator.ContainerItemIterator(0));
+			return new ItemCollector<>(new ItemIterator.ContainerItemIterator(0));
 		}
-		return ItemStorageCache.EMPTY;
+		return ItemCollector.EMPTY;
 	}
 
 	@Nullable
 	public static List<ViewGroup<ItemStack>> containerGroup(Container container, Accessor<?> accessor) {
 		try {
-			return ItemStorageProvider.INSTANCE.containerCache.get(container, () -> new ItemStorageCache<>(new ItemIterator.ContainerItemIterator(0))).update(container, accessor.getLevel().getGameTime());
+			return ItemStorageProvider.INSTANCE.containerCache.get(container, () -> new ItemCollector<>(new ItemIterator.ContainerItemIterator(0))).update(container, accessor.getLevel().getGameTime());
 		} catch (ExecutionException e) {
 			return null;
 		}
@@ -243,7 +243,7 @@ public final class CommonProxy {
 	@SuppressWarnings("UnstableApiUsage")
 	public static List<ViewGroup<ItemStack>> storageGroup(Object storage, Accessor<?> accessor) {
 		try {
-			return ItemStorageProvider.INSTANCE.containerCache.get(storage, () -> new ItemStorageCache<>(JadeForgeUtils.fromItemHandler((IItemHandler) storage, 0))).update(storage, accessor.getLevel().getGameTime());
+			return ItemStorageProvider.INSTANCE.containerCache.get(storage, () -> new ItemCollector<>(JadeForgeUtils.fromItemHandler((IItemHandler) storage, 0))).update(storage, accessor.getLevel().getGameTime());
 		} catch (ExecutionException e) {
 			return null;
 		}
