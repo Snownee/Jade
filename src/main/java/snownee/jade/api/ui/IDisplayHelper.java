@@ -1,5 +1,7 @@
 package snownee.jade.api.ui;
 
+import java.text.Format;
+
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.client.gui.GuiGraphics;
@@ -24,6 +26,8 @@ public interface IDisplayHelper {
 	void drawBorder(GuiGraphics guiGraphics, float minX, float minY, float maxX, float maxY, float width, int color, boolean corner);
 
 	String humanReadableNumber(double number, String unit, boolean milli);
+
+	String humanReadableNumber(double number, String unit, boolean milli, @Nullable Format formatter);
 
 	void drawText(GuiGraphics guiGraphics, String text, float x, float y, int color);
 
