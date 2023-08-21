@@ -2,6 +2,8 @@ package snownee.jade.overlay;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.text.Format;
+import java.text.NumberFormat;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -51,11 +53,14 @@ public class DisplayHelper implements IDisplayHelper {
 	private static final int TEX_HEIGHT = 16;
 	private static final int MIN_FLUID_HEIGHT = 1; // ensure tiny amounts of fluid are still visible
 	private static final Pattern STRIP_COLOR = Pattern.compile("(?i)\u00a7[0-9A-F]");
-	public static DecimalFormat dfCommas = new DecimalFormat("##.##");
+	public static DecimalFormat dfCommas = new DecimalFormat("0.##");
+	public static final DecimalFormat[] dfCommasArray = new DecimalFormat[]{dfCommas, new DecimalFormat("0.#"), new DecimalFormat("0")};
 	private static boolean betterTextShadow;
 
 	static {
-		dfCommas.setRoundingMode(RoundingMode.DOWN);
+		for (DecimalFormat format : dfCommasArray) {
+			format.setRoundingMode(RoundingMode.DOWN);
+		}
 	}
 
 	private static void renderGuiItemDecorations(GuiGraphics guiGraphics, Font font, ItemStack stack, int i, int j, @Nullable String text) {
@@ -64,12 +69,16 @@ public class DisplayHelper implements IDisplayHelper {
 		}
 		guiGraphics.pose().pushPose();
 		if (stack.getCount() != 1 || text != null) {
-			String s = text == null ? INSTANCE.humanReadableNumber(stack.getCount(), "", false) : text;
+			String s = text == null ? INSTANCE.humanReadableNumber(stack.getCount(), "", false, null) : text;
+			boolean smaller = s.length() > 3;
+			float scale = smaller ? 0.5F : 0.75F;
+			int x = smaller ? 32 : 22;
+			int y = smaller ? 23 : 13;
 			guiGraphics.pose().pushPose();
 			guiGraphics.pose().translate(0.0f, 0.0f, 200.0f);
-			guiGraphics.pose().scale(.75f, .75f, 1f);
+			guiGraphics.pose().scale(scale, scale, 1f);
 			int color = IThemeHelper.get().theme().itemAmountColor;
-			guiGraphics.drawString(font, s, i + 22 - font.width(s), j + 13, color, true);
+			guiGraphics.drawString(font, s, i + x - font.width(s), j + y, color, true);
 			guiGraphics.pose().popPose();
 		}
 
@@ -315,9 +324,14 @@ public class DisplayHelper implements IDisplayHelper {
 		RenderSystem.disableBlend();
 	}
 
-	// https://programming.guide/worlds-most-copied-so-snippet.html
 	@Override
 	public String humanReadableNumber(double number, String unit, boolean milli) {
+		return humanReadableNumber(number, unit, milli, dfCommas);
+	}
+
+	// https://programming.guide/worlds-most-copied-so-snippet.html
+	@Override
+	public String humanReadableNumber(double number, String unit, boolean milli, @Nullable Format formatter) {
 		StringBuilder sb = new StringBuilder();
 		boolean n = number < 0;
 		if (n) {
@@ -328,17 +342,36 @@ public class DisplayHelper implements IDisplayHelper {
 			number /= 1000;
 			milli = false;
 		}
-		if (number < 1000) {
-			sb.append(dfCommas.format(number));
+		int exp = 0;
+		if (number < 1000 || formatter == null && number < 10000) {
+			formatter = dfCommasArray[2];
+		} else {
+			exp = (int) Math.log10(number) / 3;
+			if (exp > 7)
+				exp = 7;
+			if (exp > 0)
+				number /= Math.pow(1000, exp);
+			if (formatter == null) {
+				if (number < 10) {
+					formatter = dfCommasArray[0];
+				} else if (number < 100) {
+					formatter = dfCommasArray[1];
+				} else {
+					formatter = dfCommasArray[2];
+				}
+			}
+		}
+		if (formatter instanceof NumberFormat numberFormat) {
+			sb.append(numberFormat.format(number));
+		} else {
+			sb.append(formatter.format(new Object[]{number}));
+		}
+		if (exp == 0) {
 			if (milli && number != 0) {
 				sb.append('m');
 			}
 		} else {
-			int exp = (int) (Math.log10(number) / 3);
-			if (exp > 7)
-				exp = 7;
 			char pre = "kMGTPEZ".charAt(exp - 1);
-			sb.append(dfCommas.format(number / Math.pow(1000, exp)));
 			sb.append(pre);
 		}
 		sb.append(unit);
