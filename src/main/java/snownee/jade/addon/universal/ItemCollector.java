@@ -68,13 +68,14 @@ public class ItemCollector<T> {
 		});
 		iterator.afterPopulate(count.get());
 		if (mergedResult != null && !iterator.isFinished()) {
+			updateCollectingProgress(mergedResult.get(0));
 			return mergedResult;
 		}
 		List<ItemStack> partialResult = items.object2IntEntrySet().stream().limit(54).map(entry -> {
 			ItemDefinition def = entry.getKey();
 			return def.toStack(entry.getIntValue());
 		}).toList();
-		List<ViewGroup<ItemStack>> groups = List.of(new ViewGroup<>(partialResult));
+		List<ViewGroup<ItemStack>> groups = List.of(updateCollectingProgress(new ViewGroup<>(partialResult)));
 		if (iterator.isFinished()) {
 			mergedResult = groups;
 			version = currentVersion;
@@ -82,6 +83,20 @@ public class ItemCollector<T> {
 			items.clear();
 		}
 		return groups;
+	}
+
+	protected ViewGroup<ItemStack> updateCollectingProgress(ViewGroup<ItemStack> group) {
+		float progress = iterator.getCollectingProgress();
+		CompoundTag data = group.getExtraData();
+		if (Float.isNaN(progress)) {
+			progress = 0;
+		}
+		if (progress >= 1) {
+			data.remove("Collecting");
+		} else {
+			data.putFloat("Collecting", progress);
+		}
+		return group;
 	}
 
 	public record ItemDefinition(Item item, @Nullable CompoundTag tag) {
