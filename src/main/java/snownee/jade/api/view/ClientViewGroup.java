@@ -7,6 +7,7 @@ import java.util.function.Function;
 
 import org.jetbrains.annotations.Nullable;
 
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IWailaConfig;
@@ -25,6 +26,8 @@ public class ClientViewGroup<T> {
 	public int bgColor;
 	public int progressColor;
 	public float progress;
+	@Nullable
+	public CompoundTag extraData;
 
 	public ClientViewGroup(List<T> views) {
 		this.views = views;
@@ -44,6 +47,7 @@ public class ClientViewGroup<T> {
 			if (clientGroupDecorator != null) {
 				clientGroupDecorator.accept($, group);
 			}
+			group.extraData = $.extraData;
 			return group;
 		}).toList();
 	}

@@ -12,7 +12,9 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -106,6 +108,19 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 				if (group.title != null) {
 					theTooltip.append(new ScaledTextElement(group.title, 0.5F));
 					theTooltip.append(new HorizontalLineElement());
+				}
+			}
+			if (group.views.isEmpty()) {
+				CompoundTag data = group.extraData;
+				if (data != null && data.contains("Collecting", Tag.TAG_ANY_NUMERIC)) {
+					float progress = data.getFloat("Collecting");
+					if (progress < 1) {
+						MutableComponent component = Component.translatable("jade.collectingItems");
+						if (progress > 0) {
+							component.append(" %s%%".formatted((int) (progress * 100)));
+						}
+						theTooltip.add(component);
+					}
 				}
 			}
 			int drawnCount = 0;

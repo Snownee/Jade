@@ -269,6 +269,7 @@
   "jade.theme.jade.dark": "Dark",
   "jade.theme.jade.top": "One Probe",
   "jade.theme.jade.create": "Create",
+  "jade.collectingItems": "Collecting items...",
   "__comment": "Only for testing:",
   "jade.modName.cpp": "Crafting++",
   "mymod.fuel": "Fuel: %d ticks",

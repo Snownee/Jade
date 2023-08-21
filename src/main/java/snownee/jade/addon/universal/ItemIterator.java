@@ -48,7 +48,13 @@ public abstract class ItemIterator<T> {
 		}
 	}
 
+	public float getCollectingProgress() {
+		return Float.NaN;
+	}
+
 	public static abstract class SlottedItemIterator<T> extends ItemIterator<T> {
+		protected float progress;
+
 		public SlottedItemIterator(Function<Object, @Nullable T> containerFinder, int fromIndex) {
 			super(containerFinder, fromIndex);
 		}
@@ -65,7 +71,13 @@ public abstract class ItemIterator<T> {
 				toIndex = slotCount;
 				finished = true;
 			}
+			progress = (float) (currentIndex - fromIndex) / (slotCount - fromIndex);
 			return IntStream.range(currentIndex, toIndex).mapToObj(slot -> getItemInSlot(container, slot));
+		}
+
+		@Override
+		public float getCollectingProgress() {
+			return progress;
 		}
 	}
 
