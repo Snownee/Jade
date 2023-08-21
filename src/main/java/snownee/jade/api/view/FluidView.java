@@ -10,6 +10,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElementHelper;
@@ -49,7 +50,7 @@ public class FluidView {
 		fluidView.current = FluidTextHelper.getUnicodeMillibuckets(amount, true);
 		fluidView.max = FluidTextHelper.getUnicodeMillibuckets(capacity, true);
 		fluidView.ratio = (float) ((double) amount / capacity);
-		if (amount <= 0){
+		if (fluidObject.getType().isSame(Fluids.EMPTY)) {
 			fluidView.overrideText = Component.translatable("jade.fluid", EMPTY_FLUID, Component.literal(fluidView.max).withStyle(ChatFormatting.GRAY));
 		}
 		return fluidView;

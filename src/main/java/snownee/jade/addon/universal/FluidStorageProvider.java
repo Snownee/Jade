@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -59,6 +60,8 @@ public enum FluidStorageProvider implements IBlockComponentProvider, IServerData
 							text = view.overrideText;
 						} else if (view.fluidName == null) {
 							text = Component.literal(view.current);
+						} else if (accessor.showDetails()) {
+							text = Component.translatable("jade.fluid2", IDisplayHelper.get().stripColor(view.fluidName).withStyle(ChatFormatting.WHITE), Component.literal(view.current).withStyle(ChatFormatting.WHITE), view.max).withStyle(ChatFormatting.GRAY);
 						} else {
 							text = Component.translatable("jade.fluid", IDisplayHelper.get().stripColor(view.fluidName), view.current);
 						}

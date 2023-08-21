@@ -231,6 +231,7 @@
   "config.jade.plugin_minecraft.fluid_storage.detailed": "Detailed-Only",
   "config.jade.plugin_minecraft.fluid_storage.detailed_desc": "Only show fluid info when [Show Details] key is pressed.",
   "jade.fluid": "%s %s",
+  "jade.fluid2": "%s %s / %s",
   "jade.fluid.empty": "Empty",
   "config.jade.plugin_minecraft.lectern": "Lectern",
   "config.jade.plugin_minecraft.animal_owner": "Animal Owner",
