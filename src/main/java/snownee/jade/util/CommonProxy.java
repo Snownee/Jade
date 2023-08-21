@@ -185,7 +185,7 @@ public final class CommonProxy implements ModInitializer {
 			try {
 				var storage = ItemStorage.SIDED.find(be.getLevel(), be.getBlockPos(), be.getBlockState(), be, null);
 				if (storage != null) {
-					containerCache.get(storage, () -> new ItemCollector<>(JadeFabricUtils.fromItemStorage(storage, 0)));
+					return containerCache.get(storage, () -> new ItemCollector<>(JadeFabricUtils.fromItemStorage(storage, 0)));
 				}
 			} catch (Throwable e) {
 				WailaExceptionHandler.handleErr(e, null, null);

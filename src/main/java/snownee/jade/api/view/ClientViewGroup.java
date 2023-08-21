@@ -25,6 +25,8 @@ public class ClientViewGroup<T> {
 	public Component title;
 	public MessageType messageType = MessageType.NORMAL;
 	public float boxProgress;
+	@Nullable
+	public CompoundTag extraData;
 
 	public ClientViewGroup(List<T> views) {
 		this.views = views;
@@ -45,6 +47,7 @@ public class ClientViewGroup<T> {
 			if (clientGroupDecorator != null) {
 				clientGroupDecorator.accept($, group);
 			}
+			group.extraData = data;
 			return group;
 		}).toList();
 	}
