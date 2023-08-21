@@ -72,7 +72,6 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		super(client, width, height, y0, y1, entryHeight);
 		this.owner = owner;
 		this.diskWriter = diskWriter;
-		setRenderSelection(false);
 	}
 
 	public OptionsList(BaseOptionsScreen owner, Minecraft client, int width, int height, int y0, int y1, int entryHeight) {

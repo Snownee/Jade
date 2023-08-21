@@ -16,7 +16,6 @@ public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
 		super(Minecraft.getInstance(), width, height, top, bottom, itemHeight);
 		this.options = options;
 		this.anchor = new SmoothChasingValue();
-		setRenderSelection(false);
 		setRenderBackground(false);
 	}
 
@@ -38,6 +37,10 @@ public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
         guiGraphics.blit(Screen.BACKGROUND_LOCATION, this.x0, this.y0, this.x1, this.y1 + (int)this.getScrollAmount(), this.x1 - this.x0, this.y1 - this.y0, 32, 32);
         guiGraphics.setColor(1.0f, 1.0f, 1.0f, 1.0f);
 		super.render(guiGraphics, i, j, f);
+	}
+
+	@Override
+	protected void renderSelection(GuiGraphics guiGraphics, int i, int j, int k, int l, int m) {
 	}
  
 	public void addEntry(OptionsList.Title entry) {

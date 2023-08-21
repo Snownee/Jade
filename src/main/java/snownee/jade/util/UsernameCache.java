@@ -22,6 +22,7 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.yggdrasil.ProfileResult;
 
 import net.minecraft.client.Minecraft;
 import snownee.jade.Jade;
@@ -184,13 +185,18 @@ public final class UsernameCache {
 		public void run() {
 			try {
 				//if the downloading fails for some reason and throws an error,
-				GameProfile profile = Minecraft.getInstance().getMinecraftSessionService().fetchProfile(uuid, true);
-				if (!(profile.getName() == null || profile.getName().equals("???"))) {
-					//only remove from list if it was successfull
-					//if it failed for some reason leave it in the channel so no repeated tries are made
-					UsernameCache.setUsername(profile.getId(), profile.getName());
-					downloadingList.remove(uuid);
+				ProfileResult profileResult = Minecraft.getInstance().getMinecraftSessionService().fetchProfile(uuid, true);
+				if (profileResult == null) {
+					return;
 				}
+				GameProfile profile = profileResult.profile();
+				if (profile.getName() == null || profile.getName().equals("???")) {
+					return;
+				}
+				//only remove from list if it was successfull
+				//if it failed for some reason leave it in the channel so no repeated tries are made
+				UsernameCache.setUsername(profile.getId(), profile.getName());
+				downloadingList.remove(uuid);
 			} catch (Exception e) {
 			}
 		}

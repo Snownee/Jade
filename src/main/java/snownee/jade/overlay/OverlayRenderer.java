@@ -78,7 +78,7 @@ public class OverlayRenderer {
 			}
 		}
 
-		if (mc.options.renderDebug && general.shouldHideFromDebug())
+		if (mc.gui.getDebugOverlay().showDebugScreen() && general.shouldHideFromDebug())
 			return false;
 
 		if (mc.getOverlay() != null || mc.options.hideGui)
