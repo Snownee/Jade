@@ -1,7 +1,5 @@
 package snownee.jade.impl.ui;
 
-import org.jetbrains.annotations.Nullable;
-
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.Minecraft;
@@ -23,7 +21,7 @@ public class ScaledTextElement extends TextElement {
 	@Override
 	public Vec2 getSize() {
 		Font font = Minecraft.getInstance().font;
-		return new Vec2(font.width(component) * scale, font.lineHeight * scale + 1);
+		return new Vec2(font.width(text) * scale, font.lineHeight * scale + 1);
 	}
 
 	@Override
@@ -31,13 +29,8 @@ public class ScaledTextElement extends TextElement {
 		matrixStack.pushPose();
 		matrixStack.translate(x, y + scale, 0);
 		matrixStack.scale(scale, scale, 1);
-		DisplayHelper.INSTANCE.drawText(matrixStack, component, 0, 0, OverlayRenderer.normalTextColorRaw);
+		DisplayHelper.INSTANCE.drawText(matrixStack, text, 0, 0, OverlayRenderer.normalTextColorRaw);
 		matrixStack.popPose();
-	}
-
-	@Override
-	public @Nullable Component getMessage() {
-		return component;
 	}
 
 }

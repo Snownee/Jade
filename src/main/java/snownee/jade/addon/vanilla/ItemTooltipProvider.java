@@ -1,13 +1,22 @@
 package snownee.jade.addon.vanilla;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+import com.google.common.collect.Lists;
+import com.mojang.datafixers.util.Either;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import snownee.jade.JadeClient;
@@ -16,6 +25,7 @@ import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.impl.ui.TextElement;
 import snownee.jade.util.ModIdentification;
 
 public enum ItemTooltipProvider implements IEntityComponentProvider {
@@ -26,21 +36,33 @@ public enum ItemTooltipProvider implements IEntityComponentProvider {
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		ItemStack stack = ((ItemEntity) accessor.getEntity()).getItem();
 		JadeClient.hideModName = true;
-		List<Component> itemTooltip = stack.getTooltipLines(null, TooltipFlag.Default.NORMAL);
+		List<Either<FormattedText, TooltipComponent>> lines = Lists.newArrayList();
+		stack.getTooltipLines(null, TooltipFlag.Default.NORMAL)
+				.stream()
+				.peek(component -> {
+					if (component instanceof MutableComponent mutable && mutable.getStyle().getColor() != null) {
+						mutable.setStyle(mutable.getStyle().withColor((TextColor) null));
+					}
+				})
+				.map(Either::<FormattedText, TooltipComponent>left)
+				.forEach(lines::add);
 		JadeClient.hideModName = false;
-		if (!itemTooltip.isEmpty()) {
-			itemTooltip.remove(0);
+		if (lines.isEmpty()) {
+			return;
 		}
+		List<FormattedText> realLines = lines.stream().map($ -> $.left()).filter(Optional::isPresent).map(Optional::get).skip(1).toList();
 		String modName = ModIdentification.getModName(stack);
-		itemTooltip.removeIf($ -> ChatFormatting.stripFormatting($.getString()).equals(modName));
 		Font font = Minecraft.getInstance().font;
 		int maxWidth = 250;
-		for (Component component : itemTooltip) {
-			int width = font.width(component);
+		for (FormattedText text : realLines) {
+			if (Objects.equals(ChatFormatting.stripFormatting(text.getString()), modName)) {
+				continue;
+			}
+			int width = font.width(text);
 			if (width > maxWidth) {
-				tooltip.add(Component.literal(font.substrByWidth(component, maxWidth - 5).getString() + ".."));
+				tooltip.add(Component.literal(font.substrByWidth(text, maxWidth - 5).getString() + ".."));
 			} else {
-				tooltip.add(component);
+				tooltip.add(new TextElement(text));
 			}
 		}
 	}

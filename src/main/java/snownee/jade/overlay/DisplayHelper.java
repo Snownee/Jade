@@ -25,7 +25,9 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
@@ -450,6 +452,16 @@ public class DisplayHelper implements IDisplayHelper {
 		} else {
 			CLIENT.font.draw(poseStack, text, x, y, color);
 		}
+	}
+
+	public void drawText(PoseStack poseStack, FormattedText text, float x, float y, int color) {
+		FormattedCharSequence sequence;
+		if (text instanceof Component component) {
+			sequence = component.getVisualOrderText();
+		} else {
+			sequence = Language.getInstance().getVisualOrder(text);
+		}
+		drawText(poseStack, sequence, x, y, color);
 	}
 
 	public void drawGradientProgress(PoseStack matrixStack, float left, float top, float width, float height, float progress, int progressColor) {
