@@ -92,6 +92,7 @@ artifacts {
 }
 
 repositories {
+    maven { url "https://maven.blamejared.com/" }
     maven {
         name = "jei"
         url = "https://dvs1.progwml6.com/files/maven"
