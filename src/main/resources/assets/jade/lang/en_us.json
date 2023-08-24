@@ -176,6 +176,7 @@
   "config.jade.plugin_minecraft.fluid": "Fluid Storage",
   "config.jade.plugin_minecraft.fluid.detailed": "Detailed-Only",
   "jade.fluid": "%s %s",
+  "jade.fluid2": "%s %s / %s",
   "jade.fluid.empty": "Empty",
   "config.jade.plugin_minecraft.lectern": "Lectern",
   "config.jade.plugin_minecraft.animal_owner": "Animal Owner",
