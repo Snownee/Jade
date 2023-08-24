@@ -97,7 +97,7 @@ public final class JadeClient {
 			if (mode == IWailaConfig.DisplayMode.TOGGLE) {
 				general.setDisplayTooltip(!general.shouldDisplayTooltip());
 				if (!general.shouldDisplayTooltip() && general.hintOverlayToggle) {
-					SystemToast.add(Minecraft.getInstance().getToasts(), SystemToastIds.TUTORIAL_HINT, Component.translatable("toast.jade.toggle_hint.1"), Component.translatable("toast.jade.toggle_hint.2", showOverlay.getTranslatedKeyMessage()));
+					SystemToast.add(Minecraft.getInstance().getToasts(), SystemToastIds.UNSECURE_SERVER_WARNING, Component.translatable("toast.jade.toggle_hint.1"), Component.translatable("toast.jade.toggle_hint.2", showOverlay.getTranslatedKeyMessage()));
 					general.hintOverlayToggle = false;
 				}
 				Jade.CONFIG.save();
