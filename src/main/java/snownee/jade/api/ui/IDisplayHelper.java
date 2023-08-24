@@ -1,5 +1,7 @@
 package snownee.jade.api.ui;
 
+import java.text.Format;
+
 import org.jetbrains.annotations.ApiStatus.ScheduledForRemoval;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,6 +29,8 @@ public interface IDisplayHelper {
 	void drawBorder(PoseStack poseStack, float minX, float minY, float maxX, float maxY, float width, int color, boolean corner);
 
 	String humanReadableNumber(double number, String unit, boolean milli);
+
+	String humanReadableNumber(double number, String unit, boolean milli, @Nullable Format formatter);
 
 	void drawText(PoseStack poseStack, String text, float x, float y, int color);
 

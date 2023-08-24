@@ -117,7 +117,7 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 							ItemStack copy = stack.copy();
 							copy.setCount(1);
 							elements.add(helper.smallItem(copy).clearCachedMessage());
-							elements.add(helper.text(Component.literal(IDisplayHelper.get().humanReadableNumber(stack.getCount(), "", false)).append("× ").append(IDisplayHelper.get().stripColor(stack.getHoverName()))).message(null));
+							elements.add(helper.text(Component.literal(IDisplayHelper.get().humanReadableNumber(stack.getCount(), "", false, null)).append("× ").append(IDisplayHelper.get().stripColor(stack.getHoverName()))).message(null));
 						} else if (itemView.text != null) {
 							elements.add(helper.item(stack, 1, itemView.text));
 						} else {

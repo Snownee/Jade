@@ -2,6 +2,8 @@ package snownee.jade.overlay;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.text.Format;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -82,12 +84,16 @@ public class DisplayHelper implements IDisplayHelper {
 		}
 		PoseStack posestack = new PoseStack();
 		if (stack.getCount() != 1 || p_115179_ != null) {
-			String s = p_115179_ == null ? INSTANCE.humanReadableNumber(stack.getCount(), "", false) : p_115179_;
+			String s = p_115179_ == null ? INSTANCE.humanReadableNumber(stack.getCount(), "", false, null) : p_115179_;
+			boolean smaller = s.length() > 3;
+			float scale = smaller ? 0.5F : 0.75F;
+			int x = smaller ? 32 : 22;
+			int y = smaller ? 23 : 13;
 			posestack.pushPose();
 			posestack.translate(0.0D, 0.0D, CLIENT.getItemRenderer().blitOffset + 200.0F);
-			posestack.scale(.75f, .75f, .75f);
+			posestack.scale(scale, scale, 1f);
 			MultiBufferSource.BufferSource multibuffersource$buffersource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-			font.drawInBatch(s, 22 - font.width(s), 13, 16777215, true, posestack.last().pose(), multibuffersource$buffersource, false, 0, 15728880);
+			font.drawInBatch(s, x - font.width(s), y, 16777215, true, posestack.last().pose(), multibuffersource$buffersource, false, 0, 15728880);
 			multibuffersource$buffersource.endBatch();
 			posestack.popPose();
 		}
@@ -395,15 +401,23 @@ public class DisplayHelper implements IDisplayHelper {
 		RenderSystem.disableBlend();
 	}
 
-	public static DecimalFormat dfCommas = new DecimalFormat("##.##");
+	public static DecimalFormat dfCommas = new DecimalFormat("0.##");
+	public static final DecimalFormat[] dfCommasArray = new DecimalFormat[]{dfCommas, new DecimalFormat("0.#"), new DecimalFormat("0")};
 
 	static {
-		dfCommas.setRoundingMode(RoundingMode.DOWN);
+		for (DecimalFormat format : dfCommasArray) {
+			format.setRoundingMode(RoundingMode.DOWN);
+		}
+	}
+
+	@Override
+	public String humanReadableNumber(double number, String unit, boolean milli) {
+		return humanReadableNumber(number, unit, milli, dfCommas);
 	}
 
 	// https://programming.guide/worlds-most-copied-so-snippet.html
 	@Override
-	public String humanReadableNumber(double number, String unit, boolean milli) {
+	public String humanReadableNumber(double number, String unit, boolean milli, @Nullable Format formatter) {
 		StringBuilder sb = new StringBuilder();
 		boolean n = number < 0;
 		if (n) {
@@ -414,17 +428,36 @@ public class DisplayHelper implements IDisplayHelper {
 			number /= 1000;
 			milli = false;
 		}
-		if (number < 1000) {
-			sb.append(dfCommas.format(number));
+		int exp = 0;
+		if (number < 1000 || formatter == null && number < 10000) {
+			formatter = dfCommasArray[2];
+		} else {
+			exp = (int) Math.log10(number) / 3;
+			if (exp > 7)
+				exp = 7;
+			if (exp > 0)
+				number /= Math.pow(1000, exp);
+			if (formatter == null) {
+				if (number < 10) {
+					formatter = dfCommasArray[0];
+				} else if (number < 100) {
+					formatter = dfCommasArray[1];
+				} else {
+					formatter = dfCommasArray[2];
+				}
+			}
+		}
+		if (formatter instanceof NumberFormat numberFormat) {
+			sb.append(numberFormat.format(number));
+		} else {
+			sb.append(formatter.format(new Object[]{number}));
+		}
+		if (exp == 0) {
 			if (milli && number != 0) {
 				sb.append('m');
 			}
 		} else {
-			int exp = (int) (Math.log10(number) / 3);
-			if (exp > 7)
-				exp = 7;
 			char pre = "kMGTPEZ".charAt(exp - 1);
-			sb.append(dfCommas.format(number / Math.pow(1000, exp)));
 			sb.append(pre);
 		}
 		sb.append(unit);
