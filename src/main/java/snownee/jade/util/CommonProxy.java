@@ -262,7 +262,7 @@ public final class CommonProxy {
 	public static List<ViewGroup<CompoundTag>> wrapEnergyStorage(Object target, @Nullable Player player) {
 		if (target instanceof CapabilityProvider<?> capProvider) {
 			IEnergyStorage storage = capProvider.getCapability(ForgeCapabilities.ENERGY).orElse(null);
-			if (storage != null) {
+			if (storage != null && storage.getMaxEnergyStored() > 0) {
 				var group = new ViewGroup<>(List.of(EnergyView.of(storage.getEnergyStored(), storage.getMaxEnergyStored())));
 				group.getExtraData().putString("Unit", "FE");
 				return List.of(group);
