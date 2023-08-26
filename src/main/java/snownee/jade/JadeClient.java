@@ -55,6 +55,7 @@ import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.impl.config.WailaConfig.ConfigGeneral;
 import snownee.jade.overlay.DisplayHelper;
+import snownee.jade.overlay.TooltipRenderer;
 import snownee.jade.overlay.WailaTickHandler;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
@@ -207,25 +208,32 @@ public final class JadeClient {
 			progressAlpha = 0;
 			return;
 		}
+		TooltipRenderer tooltipRenderer = WailaTickHandler.instance().tooltipRenderer;
+		if (tooltipRenderer == null) {
+			progressAlpha = 0;
+			return;
+		}
 		Minecraft mc = Minecraft.getInstance();
 		MultiPlayerGameMode playerController = mc.gameMode;
 		if (playerController == null || mc.level == null || mc.player == null) {
 			return;
 		}
 		BlockState state = mc.level.getBlockState(playerController.destroyBlockPos);
-		if (playerController.isDestroying())
+		if (playerController.isDestroying()) {
 			canHarvest = CommonProxy.isCorrectToolForDrops(state, mc.player);
+		} else if (progressAlpha == 0) {
+			return;
+		}
 		Theme theme = IThemeHelper.get().theme();
 		int color = canHarvest ? theme.bottomProgressNormalColor : theme.bottomProgressFailureColor;
-		int height = rect.getHeight();
-		int width = rect.getWidth();
+		int width = (int) tooltipRenderer.getSize().x;
+		int height = (int) tooltipRenderer.getSize().y;
 		if (!IWailaConfig.get().getOverlay().getSquare() && theme.backgroundTexture == null) {
-			height -= 1;
-			width -= 2;
+			height += 1;
 		}
 		progressAlpha += mc.getDeltaFrameTime() * (playerController.isDestroying() ? 0.1F : -0.1F);
 		if (playerController.isDestroying()) {
-			progressAlpha = Math.min(progressAlpha, 0.53F); //0x88 = 0.53 * 255
+			progressAlpha = Math.min(progressAlpha, 0.6F);
 			float progress = state.getDestroyProgress(mc.player, mc.player.level(), playerController.destroyBlockPos);
 			if (playerController.destroyProgress + progress >= 1) {
 				progressAlpha = savedProgress = 1;
@@ -236,13 +244,20 @@ public final class JadeClient {
 		} else {
 			progressAlpha = Math.max(progressAlpha, 0);
 		}
+		if (progressAlpha == 0) {
+			return;
+		}
 		color = IConfigOverlay.applyAlpha(color, progressAlpha);
 		if (theme.bottomProgressOffset == null) {
 			DisplayHelper.fill(guiGraphics, 0, height - 1, width * savedProgress, height, color);
 		} else {
 			int[] offset = theme.bottomProgressOffset;
-			width += offset[1] - offset[3];
-			DisplayHelper.fill(guiGraphics, offset[3], height - 1 + offset[0], offset[3] + width * savedProgress, height + offset[2], color);
+			int offset0 = offset[0] + 2;
+			int offset1 = offset[1] + 2;
+			int offset2 = offset[2] + 2;
+			int offset3 = offset[3];
+			width += offset1 - offset3;
+			DisplayHelper.fill(guiGraphics, offset3, height - 1 + offset0, offset3 + width * savedProgress, height + offset2, color);
 		}
 	}
 
