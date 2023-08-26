@@ -249,7 +249,7 @@ public final class CommonProxy implements ModInitializer {
 		if (hasTechRebornEnergy && target instanceof BlockEntity be) {
 			try {
 				var storage = TechRebornEnergyCompat.getSided().find(be.getLevel(), be.getBlockPos(), be.getBlockState(), be, null);
-				if (storage != null) {
+				if (storage != null && storage.getCapacity() > 0) {
 					var group = new ViewGroup<>(List.of(EnergyView.of(storage.getAmount(), storage.getCapacity())));
 					group.getExtraData().putString("Unit", "E");
 					return List.of(group);
