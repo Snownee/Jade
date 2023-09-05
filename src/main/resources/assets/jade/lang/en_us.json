@@ -203,6 +203,8 @@
   "config.jade.plugin_minecraft.harvest_tool.new_line": "Start in New Line",
   "config.jade.plugin_minecraft.harvest_tool.effective_tool": "Effective Tool",
   "config.jade.plugin_minecraft.harvest_tool.show_unbreakable": "Show \"Unbreakable\"",
+  "config.jade.plugin_minecraft.harvest_tool.creative": "Show in Creative Mode",
+  "config.jade.plugin_minecraft.harvest_tool.creative_desc": "Show harvest information in creative or spectator mode as well",
   "jade.harvest_tool.unbreakable": "Unbreakable",
   "config.jade.plugin_minecraft.enchantment_power": "Enchantment Power",
   "config.jade.plugin_minecraft.enchantment_power_desc": "Show the enchantment power of the block.",

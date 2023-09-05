@@ -76,7 +76,7 @@ public enum HarvestToolProvider implements IBlockComponentProvider, ResourceMana
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		Player player = accessor.getPlayer();
-		if (player.isCreative() || player.isSpectator()) {
+		if (!config.get(Identifiers.MC_HARVEST_TOOL_CREATIVE) && (player.isCreative() || player.isSpectator())) {
 			return;
 		}
 		BlockState state = accessor.getBlockState();
