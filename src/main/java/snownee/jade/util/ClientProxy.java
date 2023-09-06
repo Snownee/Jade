@@ -25,8 +25,8 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
-import net.fabricmc.fabric.api.entity.EntityPickInteractionAware;
 import net.fabricmc.fabric.api.event.Event;
+import net.fabricmc.fabric.api.event.client.player.ClientPickBlockGatherCallback;
 import net.fabricmc.fabric.api.mininglevel.v1.FabricMineableTags;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
@@ -64,7 +64,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
 import snownee.jade.addon.harvest.SimpleToolHandler;
@@ -182,12 +182,8 @@ public final class ClientProxy implements ClientModInitializer {
 		ClientPlayNetworking.send(Identifiers.PACKET_REQUEST_ENTITY, buf);
 	}
 
-	public static ItemStack getEntityPickedResult(Entity entity, Player player, EntityHitResult hitResult) {
-		if (entity instanceof EntityPickInteractionAware) {
-			return ((EntityPickInteractionAware) entity).getPickedStack(player, hitResult);
-		}
-		ItemStack stack = entity.getPickResult();
-		return stack == null ? ItemStack.EMPTY : stack;
+	static ItemStack invokePickEvent(Player player, HitResult hitResult) {
+		return ClientPickBlockGatherCallback.EVENT.invoker().pick(player, hitResult);
 	}
 
 	public static IElement elementFromLiquid(LiquidBlock block) {

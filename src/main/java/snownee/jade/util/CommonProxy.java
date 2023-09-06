@@ -16,6 +16,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.block.BlockPickInteractionAware;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.entity.EntityPickInteractionAware;
 import net.fabricmc.fabric.api.entity.FakePlayer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.mininglevel.v1.FabricMineableTags;
@@ -75,6 +76,7 @@ import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
 import snownee.jade.Jade;
 import snownee.jade.addon.universal.ItemCollector;
 import snownee.jade.addon.universal.ItemIterator;
@@ -307,10 +309,28 @@ public final class CommonProxy implements ModInitializer {
 
 	public static ItemStack getBlockPickedResult(BlockState state, Player player, BlockHitResult hitResult) {
 		Block block = state.getBlock();
-		if (block instanceof BlockPickInteractionAware) {
+		if (isPhysicallyClient()) {
+			ItemStack result = ClientProxy.invokePickEvent(player, hitResult);
+			if (!result.isEmpty()) {
+				return result;
+			}
+		} else if (block instanceof BlockPickInteractionAware) {
 			return ((BlockPickInteractionAware) block).getPickedStack(state, player.level(), hitResult.getBlockPos(), player, hitResult);
 		}
 		return block.getCloneItemStack(player.level(), hitResult.getBlockPos(), state);
+	}
+
+	public static ItemStack getEntityPickedResult(Entity entity, Player player, EntityHitResult hitResult) {
+		if (isPhysicallyClient()) {
+			ItemStack result = ClientProxy.invokePickEvent(player, hitResult);
+			if (!result.isEmpty()) {
+				return result;
+			}
+		} else if (entity instanceof EntityPickInteractionAware) {
+			return ((EntityPickInteractionAware) entity).getPickedStack(player, hitResult);
+		}
+		ItemStack stack = entity.getPickResult();
+		return stack == null ? ItemStack.EMPTY : stack;
 	}
 
 	private static void playerJoin(ServerGamePacketListenerImpl handler, PacketSender sender, MinecraftServer server) {
