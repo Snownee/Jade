@@ -19,7 +19,7 @@ import snownee.jade.Jade;
 import snownee.jade.api.AccessorImpl;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IServerDataProvider;
-import snownee.jade.util.ClientProxy;
+import snownee.jade.util.CommonProxy;
 import snownee.jade.util.WailaExceptionHandler;
 
 /**
@@ -97,7 +97,7 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 
 	@Override
 	public ItemStack getPickedResult() {
-		return ClientProxy.getEntityPickedResult(entity.get(), getPlayer(), getHitResult());
+		return CommonProxy.getEntityPickedResult(entity.get(), getPlayer(), getHitResult());
 	}
 
 	@Override

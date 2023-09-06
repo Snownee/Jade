@@ -34,6 +34,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.IForgeShearable;
 import net.minecraftforge.common.MinecraftForge;
@@ -323,6 +324,10 @@ public final class CommonProxy {
 
 	public static ItemStack getBlockPickedResult(BlockState state, Player player, BlockHitResult hitResult) {
 		return state.getCloneItemStack(hitResult, player.level(), hitResult.getBlockPos(), player);
+	}
+
+	public static ItemStack getEntityPickedResult(Entity entity, Player player, EntityHitResult hitResult) {
+		return entity.getPickedResult(hitResult);
 	}
 
 	public static Component getFluidName(JadeFluidObject fluid) {

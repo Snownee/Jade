@@ -221,10 +221,6 @@ public final class ClientProxy {
 		CommonProxy.NETWORK.sendToServer(new RequestEntityPacket(accessor));
 	}
 
-	public static ItemStack getEntityPickedResult(Entity entity, Player player, EntityHitResult hitResult) {
-		return entity.getPickedResult(hitResult);
-	}
-
 	public static IElement elementFromLiquid(LiquidBlock block) {
 		Fluid fluid = block.getFluid();
 		return new FluidStackElement(JadeFluidObject.of(fluid));//.size(new Size(18, 18));
