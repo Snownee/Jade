@@ -41,19 +41,6 @@ public interface Accessor<T extends HitResult> {
 
 	void toNetwork(FriendlyByteBuf buf);
 
-	interface ClientHandler<T extends Accessor<?>> {
-
-		boolean shouldDisplay(T accessor);
-
-		boolean shouldRequestData(T accessor);
-
-		void requestData(T accessor);
-
-		boolean verifyData(T accessor);
-
-		IElement getIcon(T accessor);
-
-		void gatherComponents(T accessor, Function<IJadeProvider, ITooltip> tooltipProvider);
-	}
+	boolean verifyData(CompoundTag data);
 
 }

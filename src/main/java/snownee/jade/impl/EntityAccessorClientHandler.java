@@ -8,7 +8,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SpawnEggItem;
-import snownee.jade.api.Accessor;
+import snownee.jade.api.AccessorClientHandler;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.IJadeProvider;
@@ -23,7 +23,7 @@ import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
 import snownee.jade.util.WailaExceptionHandler;
 
-public class EntityAccessorClientHandler implements Accessor.ClientHandler<EntityAccessor> {
+public class EntityAccessorClientHandler implements AccessorClientHandler<EntityAccessor> {
 
 	@Override
 	public boolean shouldDisplay(EntityAccessor accessor) {
@@ -45,13 +45,6 @@ public class EntityAccessorClientHandler implements Accessor.ClientHandler<Entit
 	@Override
 	public void requestData(EntityAccessor accessor) {
 		ClientProxy.requestEntityData(accessor);
-	}
-
-	@Override
-	public boolean verifyData(EntityAccessor accessor) {
-		if (!accessor.getServerData().contains("WailaEntityID"))
-			return false;
-		return accessor.getServerData().getInt("WailaEntityID") == accessor.getEntity().getId();
 	}
 
 	@Override

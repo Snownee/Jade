@@ -3,14 +3,12 @@ package snownee.jade.impl;
 import java.util.List;
 import java.util.function.Function;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import snownee.jade.api.Accessor;
+import snownee.jade.api.AccessorClientHandler;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.IJadeProvider;
@@ -24,7 +22,7 @@ import snownee.jade.overlay.RayTracing;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.WailaExceptionHandler;
 
-public class BlockAccessorClientHandler implements Accessor.ClientHandler<BlockAccessor> {
+public class BlockAccessorClientHandler implements AccessorClientHandler<BlockAccessor> {
 
 	@Override
 	public boolean shouldDisplay(BlockAccessor accessor) {
@@ -41,16 +39,6 @@ public class BlockAccessorClientHandler implements Accessor.ClientHandler<BlockA
 	@Override
 	public void requestData(BlockAccessor accessor) {
 		ClientProxy.requestBlockData(accessor);
-	}
-
-	@Override
-	public boolean verifyData(BlockAccessor accessor) {
-		CompoundTag serverData = accessor.getServerData();
-		int x = serverData.getInt("x");
-		int y = serverData.getInt("y");
-		int z = serverData.getInt("z");
-		BlockPos hitPos = accessor.getPosition();
-		return x == hitPos.getX() && y == hitPos.getY() && z == hitPos.getZ();
 	}
 
 	@Override

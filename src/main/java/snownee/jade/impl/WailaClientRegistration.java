@@ -25,6 +25,7 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import snownee.jade.api.Accessor;
+import snownee.jade.api.AccessorClientHandler;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IBlockComponentProvider;
@@ -84,7 +85,7 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 
 	public final Set<ResourceLocation> clientFeatures = Sets.newHashSet();
 
-	public final Map<Class<Accessor<?>>, Accessor.ClientHandler<Accessor<?>>> accessorHandlers = Maps.newIdentityHashMap();
+	public final Map<Class<Accessor<?>>, AccessorClientHandler<Accessor<?>>> accessorHandlers = Maps.newIdentityHashMap();
 
 	WailaClientRegistration() {
 		blockIconProviders = new HierarchyLookup<>(Block.class);
@@ -363,12 +364,12 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T extends Accessor<?>> void registerAccessorHandler(Class<T> clazz, Accessor.ClientHandler<T> handler) {
-		accessorHandlers.put((Class<Accessor<?>>) clazz, (Accessor.ClientHandler<Accessor<?>>) handler);
+	public <T extends Accessor<?>> void registerAccessorHandler(Class<T> clazz, AccessorClientHandler<T> handler) {
+		accessorHandlers.put((Class<Accessor<?>>) clazz, (AccessorClientHandler<Accessor<?>>) handler);
 	}
 
 	@Override
-	public Accessor.ClientHandler<Accessor<?>> getAccessorHandler(Class<? extends Accessor<?>> clazz) {
+	public AccessorClientHandler<Accessor<?>> getAccessorHandler(Class<? extends Accessor<?>> clazz) {
 		return Objects.requireNonNull(accessorHandlers.get(clazz), () -> "No accessor handler for " + clazz);
 	}
 

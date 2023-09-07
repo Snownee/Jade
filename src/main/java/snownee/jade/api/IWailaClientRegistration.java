@@ -185,8 +185,8 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 
 	boolean isClientFeature(ResourceLocation uid);
 
-	<T extends Accessor<?>> void registerAccessorHandler(Class<T> clazz, Accessor.ClientHandler<T> handler);
+	<T extends Accessor<?>> void registerAccessorHandler(Class<T> clazz, AccessorClientHandler<T> handler);
 
-	Accessor.ClientHandler<Accessor<?>> getAccessorHandler(Class<? extends Accessor<?>> clazz);
+	AccessorClientHandler<Accessor<?>> getAccessorHandler(Class<? extends Accessor<?>> clazz);
 
 }
