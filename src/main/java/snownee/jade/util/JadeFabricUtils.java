@@ -1,7 +1,10 @@
 package snownee.jade.util;
 
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Stream;
+
+import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Streams;
@@ -59,12 +62,19 @@ public final class JadeFabricUtils {
 	}
 
 	public static ItemIterator<? extends Storage<ItemVariant>> fromItemStorage(Storage<ItemVariant> storage, int fromIndex) {
+		return fromItemStorage(storage, fromIndex, target -> {
+			if (target instanceof BlockEntity be) {
+				return ItemStorage.SIDED.find(be.getLevel(), be.getBlockPos(), be.getBlockState(), be, null);
+			}
+			return null;
+		});
+	}
+
+	public static ItemIterator<? extends Storage<ItemVariant>> fromItemStorage(Storage<ItemVariant> storage, int fromIndex, Function<Object, @Nullable Storage<ItemVariant>> containerFinder) {
 		if (storage instanceof SlottedStorage) {
 			return new ItemIterator.SlottedItemIterator<>(target -> {
-				if (target instanceof BlockEntity be) {
-					if (ItemStorage.SIDED.find(be.getLevel(), be.getBlockPos(), be.getBlockState(), be, null) instanceof SlottedStorage<ItemVariant> s) {
-						return s;
-					}
+				if (containerFinder.apply(target) instanceof SlottedStorage<ItemVariant> slotted) {
+					return slotted;
 				}
 				return null;
 			}, fromIndex) {
@@ -85,12 +95,7 @@ public final class JadeFabricUtils {
 				}
 			};
 		} else {
-			return new ItemIterator.SlotlessItemIterator<>(target -> {
-				if (target instanceof BlockEntity be) {
-					return ItemStorage.SIDED.find(be.getLevel(), be.getBlockPos(), be.getBlockState(), be, null);
-				}
-				return null;
-			}, fromIndex) {
+			return new ItemIterator.SlotlessItemIterator<>(containerFinder, fromIndex) {
 				@Override
 				protected Stream<ItemStack> populateRaw(Storage<ItemVariant> container) {
 					return Streams.stream(container.nonEmptyIterator()).map($ -> $.getResource().toStack((int) Mth.clamp($.getAmount(), 0, Integer.MAX_VALUE)));
