@@ -48,13 +48,6 @@ public class EntityAccessorClientHandler implements Accessor.ClientHandler<Entit
 	}
 
 	@Override
-	public boolean verifyData(EntityAccessor accessor) {
-		if (!accessor.getServerData().contains("WailaEntityID"))
-			return false;
-		return accessor.getServerData().getInt("WailaEntityID") == accessor.getEntity().getId();
-	}
-
-	@Override
 	public IElement getIcon(EntityAccessor accessor) {
 		IElement icon = null;
 		Entity entity = accessor.getEntity();

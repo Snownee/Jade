@@ -105,6 +105,13 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 		return getEntity();
 	}
 
+	@Override
+	public boolean verifyData(CompoundTag data) {
+		if (!data.contains("WailaEntityID"))
+			return false;
+		return data.getInt("WailaEntityID") == getEntity().getId();
+	}
+
 	public static class Builder implements EntityAccessor.Builder {
 
 		public boolean showDetails;

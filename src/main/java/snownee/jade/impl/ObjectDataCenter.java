@@ -48,7 +48,7 @@ public final class ObjectDataCenter {
 	public static CompoundTag getServerData() {
 		if (accessor == null || clientHandler == null || serverData == null)
 			return null;
-		if (clientHandler.verifyData(accessor))
+		if (accessor.verifyData(serverData))
 			return serverData;
 		requestServerData();
 		return null;
@@ -56,7 +56,7 @@ public final class ObjectDataCenter {
 
 	public static void setServerData(CompoundTag tag) {
 		serverData = tag;
-		if (accessor != null) {
+		if (accessor != null && accessor.verifyData(serverData)) {
 			accessor.getServerData().getAllKeys().clear();
 			accessor.getServerData().merge(tag);
 		}
