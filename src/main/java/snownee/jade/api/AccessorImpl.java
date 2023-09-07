@@ -28,7 +28,7 @@ public abstract class AccessorImpl<T extends HitResult> implements Accessor<T> {
 		this.hit = hit;
 		this.serverConnected = serverConnected;
 		this.showDetails = showDetails;
-		this.serverData = serverData == null || !verifyData(serverData) ? new CompoundTag() : serverData;
+		this.serverData = serverData == null ? new CompoundTag() : serverData;
 	}
 
 	@Override
@@ -42,7 +42,10 @@ public abstract class AccessorImpl<T extends HitResult> implements Accessor<T> {
 	}
 
 	@Override
-	public @NotNull CompoundTag getServerData() {
+	public final @NotNull CompoundTag getServerData() {
+		if (level.isClientSide && !serverData.isEmpty() && !verifyData(serverData)) {
+			serverData.getAllKeys().clear();
+		}
 		return serverData;
 	}
 
