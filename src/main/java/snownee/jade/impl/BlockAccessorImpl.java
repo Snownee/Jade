@@ -157,6 +157,15 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 		this.fakeBlock = fakeBlock;
 	}
 
+	@Override
+	public boolean verifyData(CompoundTag data) {
+		int x = data.getInt("x");
+		int y = data.getInt("y");
+		int z = data.getInt("z");
+		BlockPos hitPos = getPosition();
+		return x == hitPos.getX() && y == hitPos.getY() && z == hitPos.getZ();
+	}
+
 	public static class Builder implements BlockAccessor.Builder {
 
 		private Level level;

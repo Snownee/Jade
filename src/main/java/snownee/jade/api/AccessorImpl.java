@@ -25,10 +25,10 @@ public abstract class AccessorImpl<T extends HitResult> implements Accessor<T> {
 	public AccessorImpl(Level level, Player player, CompoundTag serverData, Supplier<T> hit, boolean serverConnected, boolean showDetails) {
 		this.level = level;
 		this.player = player;
-		this.serverData = serverData == null ? new CompoundTag() : serverData;
 		this.hit = hit;
 		this.serverConnected = serverConnected;
 		this.showDetails = showDetails;
+		this.serverData = serverData == null || !verifyData(serverData) ? new CompoundTag() : serverData;
 	}
 
 	@Override

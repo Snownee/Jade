@@ -41,6 +41,8 @@ public interface Accessor<T extends HitResult> {
 
 	void toNetwork(FriendlyByteBuf buf);
 
+	boolean verifyData(CompoundTag data);
+
 	interface ClientHandler<T extends Accessor<?>> {
 
 		boolean shouldDisplay(T accessor);
@@ -48,8 +50,6 @@ public interface Accessor<T extends HitResult> {
 		boolean shouldRequestData(T accessor);
 
 		void requestData(T accessor);
-
-		boolean verifyData(T accessor);
 
 		IElement getIcon(T accessor);
 
