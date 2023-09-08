@@ -48,6 +48,8 @@ public interface EntityAccessor extends Accessor<EntityHitResult> {
 
 		Builder from(EntityAccessor accessor);
 
+		Builder requireVerification();
+
 		EntityAccessor build();
 	}
 }

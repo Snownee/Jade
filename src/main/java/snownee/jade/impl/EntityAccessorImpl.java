@@ -121,6 +121,7 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 		private boolean connected;
 		private Supplier<EntityHitResult> hit;
 		private Supplier<Entity> entity;
+		private boolean verify;
 
 		@Override
 		public Builder level(Level level) {
@@ -177,8 +178,18 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 		}
 
 		@Override
+		public EntityAccessor.Builder requireVerification() {
+			verify = true;
+			return this;
+		}
+
+		@Override
 		public EntityAccessor build() {
-			return new EntityAccessorImpl(this);
+			EntityAccessorImpl accessor = new EntityAccessorImpl(this);
+			if (verify) {
+				accessor.requireVerification();
+			}
+			return accessor;
 		}
 
 	}

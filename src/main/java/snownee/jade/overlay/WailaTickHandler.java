@@ -110,6 +110,7 @@ public class WailaTickHandler {
 					.blockState(state)
 					.blockEntity(tileEntity)
 					.hit(blockTarget)
+					.requireVerification()
 					.build();
 			/* on */
 		} else if (target instanceof EntityHitResult entityTarget) {
@@ -117,6 +118,7 @@ public class WailaTickHandler {
 			accessor = WailaClientRegistration.INSTANCE.entityAccessor()
 					.hit(entityTarget)
 					.entity(entityTarget.getEntity())
+					.requireVerification()
 					.build();
 			/* on */
 		} else if (client.screen instanceof BaseOptionsScreen) {

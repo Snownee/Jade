@@ -177,6 +177,7 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 		private BlockState blockState = Blocks.AIR.defaultBlockState();
 		private Supplier<BlockEntity> blockEntity;
 		private ItemStack fakeBlock = ItemStack.EMPTY;
+		private boolean verify;
 
 		@Override
 		public Builder level(Level level) {
@@ -247,8 +248,18 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 		}
 
 		@Override
+		public BlockAccessor.Builder requireVerification() {
+			verify = true;
+			return this;
+		}
+
+		@Override
 		public BlockAccessor build() {
-			return new BlockAccessorImpl(this);
+			BlockAccessorImpl accessor = new BlockAccessorImpl(this);
+			if (verify) {
+				accessor.requireVerification();
+			}
+			return accessor;
 		}
 
 	}
