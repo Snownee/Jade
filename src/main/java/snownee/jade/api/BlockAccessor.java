@@ -68,6 +68,8 @@ public interface BlockAccessor extends Accessor<BlockHitResult> {
 
 		Builder from(BlockAccessor accessor);
 
+		Builder requireVerification();
+
 		BlockAccessor build();
 	}
 
