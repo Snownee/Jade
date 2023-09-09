@@ -2,7 +2,10 @@ package snownee.jade.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.IntStream;
+
+import org.jetbrains.annotations.Nullable;
 
 import com.google.common.math.IntMath;
 
@@ -29,12 +32,16 @@ public class JadeForgeUtils {
 	}
 
 	public static ItemIterator<? extends IItemHandler> fromItemHandler(IItemHandler storage, int fromIndex) {
-		return new ItemIterator.SlottedItemIterator<>(target -> {
+		return fromItemHandler(storage, fromIndex, target -> {
 			if (target instanceof CapabilityProvider<?> capProvider) {
 				return capProvider.getCapability(ForgeCapabilities.ITEM_HANDLER).orElse(null);
 			}
 			return null;
-		}, fromIndex) {
+		});
+	}
+
+	public static ItemIterator<? extends IItemHandler> fromItemHandler(IItemHandler storage, int fromIndex, Function<Object, @Nullable IItemHandler> containerFinder) {
+		return new ItemIterator.SlottedItemIterator<>(containerFinder, fromIndex) {
 
 			@Override
 			protected int getSlotCount(IItemHandler container) {
