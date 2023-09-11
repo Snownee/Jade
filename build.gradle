@@ -55,9 +55,9 @@ dependencies {
     //modCompileOnly "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
     //modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
 
-    modCompileOnlyApi "mezz.jei:jei-1.19-common-api:${jei_version}"
-    modCompileOnlyApi "mezz.jei:jei-1.19-fabric-api:${jei_version}"
-    //modImplementation "mezz.jei:jei-1.19-fabric:${jei_version}"
+    modCompileOnlyApi "mezz.jei:jei-1.20.1-common-api:${jei_version}"
+    modCompileOnlyApi "mezz.jei:jei-1.20.1-fabric-api:${jei_version}"
+    modRuntimeOnly "mezz.jei:jei-1.20.1-fabric:${jei_version}"
 
     modApi("teamreborn:energy:${project.tr_energy_version}") {
         exclude(group: "net.fabricmc.fabric-api")

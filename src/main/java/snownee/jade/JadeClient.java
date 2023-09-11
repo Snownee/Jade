@@ -156,7 +156,7 @@ public final class JadeClient {
 	private static void appendModName(List<Component> tooltip, ItemStack stack, TooltipFlag context) {
 		if (hideModName || !Jade.CONFIG.get().getGeneral().showItemModNameTooltip())
 			return;
-		if (Minecraft.getInstance().screen instanceof CreativeModeInventoryScreen) {
+		if (Minecraft.getInstance().screen instanceof CreativeModeInventoryScreen screen && screen.hoveredSlot != null && screen.hoveredSlot.getItem() == stack) {
 			if (CreativeModeInventoryScreen.selectedTab.getType() != CreativeModeTab.Type.CATEGORY || !context.isCreative()) {
 				return;
 			}
