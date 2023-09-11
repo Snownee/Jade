@@ -188,9 +188,9 @@ dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
     annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
 
-    compileOnly fg.deobf("mezz.jei:jei-1.19.2-common-api:${jei_version}")
-    compileOnly fg.deobf("mezz.jei:jei-1.19.2-forge-api:${jei_version}")
-    //runtimeOnly fg.deobf("mezz.jei:jei-1.17.1:8.0.0.14")
+    compileOnly fg.deobf("mezz.jei:jei-1.20.1-common-api:${jei_version}")
+    compileOnly fg.deobf("mezz.jei:jei-1.20.1-forge-api:${jei_version}")
+    runtimeOnly fg.deobf("mezz.jei:jei-1.20.1-forge:${jei_version}")
     //implementation fg.deobf("curse.maven:jei-238222:3834070")
 }
 
