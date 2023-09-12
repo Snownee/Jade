@@ -65,7 +65,7 @@
   "jade.horseStat.jump": "Sprunghöhe: %s",
   "jade.horseStat.speed": "Geschwindigkeit: %s",
   "config.jade.plugin_minecraft.potion_effects": "Entitätseffekte",
-  "jade.potion": "%s %s (%s)",
+  "jade.potion": "%s (%s)",
   "config.jade.plugin_minecraft.item_frame": "Item-Rahmen",
   "jade.llamaStrength": "Stärke: %s",
   "config.jade.plugin_minecraft.mob_growth": "Mobwachstum",

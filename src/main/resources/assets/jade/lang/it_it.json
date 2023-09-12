@@ -60,7 +60,7 @@
   "jade.horseStat.jump": "Altezza del salto: %s",
   "jade.horseStat.speed": "Velocità: %s",
   "config.jade.plugin_minecraft.potion_effects": "Effetti di stato dell'entità",
-  "jade.potion": "%s %s (%s)",
+  "jade.potion": "%s (%s)",
   "config.jade.plugin_minecraft.item_frame": "Cornice",
   "jade.llamaStrength": "Forza: %s",
   "config.jade.plugin_minecraft.mob_growth": "Crescità mob",
