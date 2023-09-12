@@ -11,6 +11,6 @@ public record TextSetting(ColorPalette colors, boolean shadow, @Nullable Style m
 	public static final TextSetting DEFAULT = new TextSetting(ColorPalette.DEFAULT, true, Optional.empty(), 0);
 
 	public TextSetting(ColorPalette colors, boolean shadow, Optional<Style> modNameStyle, int itemAmountColor) {
-		this(colors, shadow, modNameStyle.orElse(null), 0xFFFFFFFF);
+		this(colors, shadow, modNameStyle.orElse(null), itemAmountColor);
 	}
 }
