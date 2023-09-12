@@ -149,7 +149,7 @@
   "jade.horseStat.speed": "Velocidade: %s",
   "config.jade.plugin_minecraft.potion_effects": "Efeitos de Entidade",
   "config.jade.plugin_minecraft.potion_effects_extra_msg": "poção,estado",
-  "jade.potion": "%s %s (%s)",
+  "jade.potion": "%s (%s)",
   "config.jade.plugin_minecraft.item_frame": "Moldura",
   "config.jade.plugin_minecraft.container_entity": "Entidade de Contêiner",
   "jade.llamaStrength": "Força: %s",
