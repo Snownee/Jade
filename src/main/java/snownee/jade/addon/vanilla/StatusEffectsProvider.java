@@ -6,10 +6,11 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
+import net.minecraft.util.StringUtil;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
@@ -23,47 +24,40 @@ import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.IElementHelper;
 
-public enum PotionEffectsProvider implements IEntityComponentProvider, IServerDataProvider<EntityAccessor> {
+public enum StatusEffectsProvider implements IEntityComponentProvider, IServerDataProvider<EntityAccessor> {
 
 	INSTANCE;
 
-	public static String getPotionDurationString(int duration) {
-		if (duration >= 32767) {
-			return "**:**";
-		} else {
-			int i = Mth.floor(duration);
-			return ticksToElapsedTime(i);
+	public static Component getEffectName(MobEffectInstance mobEffectInstance) {
+		MutableComponent mutableComponent = mobEffectInstance.getEffect().getDisplayName().copy();
+		if (mobEffectInstance.getAmplifier() >= 1 && mobEffectInstance.getAmplifier() <= 9) {
+			mutableComponent.append(CommonComponents.SPACE).append(Component.translatable("enchantment.level." + (mobEffectInstance.getAmplifier() + 1)));
 		}
-	}
-
-	public static String ticksToElapsedTime(int ticks) {
-		int i = ticks / 20;
-		int j = i / 60;
-		i = i % 60;
-		return i < 10 ? j + ":0" + i : j + ":" + i;
+		return mutableComponent;
 	}
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
-		if (!accessor.getServerData().contains("Potions")) {
+		if (!accessor.getServerData().contains("StatusEffects")) {
 			return;
 		}
 		IElementHelper helper = IElementHelper.get();
 		ITooltip box = helper.tooltip();
-		ListTag list = accessor.getServerData().getList("Potions", Tag.TAG_COMPOUND);
+		ListTag list = accessor.getServerData().getList("StatusEffects", Tag.TAG_COMPOUND);
 		Component[] lines = new Component[list.size()];
 		for (int i = 0; i < lines.length; i++) {
 			CompoundTag compound = list.getCompound(i);
-			int duration = compound.getInt("Duration");
-			MutableComponent name = Component.translatable(compound.getString("Name"));
-			String amplifierKey = "potion.potency." + compound.getInt("Amplifier");
-			Component amplifier;
-			if (I18n.exists(amplifierKey)) {
-				amplifier = Component.translatable(amplifierKey);
-			} else {
-				amplifier = Component.literal(Integer.toString(compound.getInt("Amplifier")));
+			MutableComponent name = Component.Serializer.fromJsonLenient(compound.getString("Name"));
+			if (name == null) {
+				continue;
 			}
-			MutableComponent s = Component.translatable("jade.potion", name, amplifier, getPotionDurationString(duration));
+			String duration;
+			if (compound.getBoolean("Infinite")) {
+				duration = I18n.get("effect.duration.infinite");
+			} else {
+				duration = StringUtil.formatTickDuration(compound.getInt("Duration"));
+			}
+			MutableComponent s = Component.translatable("jade.potion", name, duration);
 			IThemeHelper t = IThemeHelper.get();
 			box.add(compound.getBoolean("Bad") ? t.danger(s) : t.success(s));
 		}
@@ -80,14 +74,16 @@ public enum PotionEffectsProvider implements IEntityComponentProvider, IServerDa
 		ListTag list = new ListTag();
 		for (MobEffectInstance effect : effects) {
 			CompoundTag compound = new CompoundTag();
-			compound.putString("Name", effect.getDescriptionId());
-			compound.putInt("Amplifier", effect.getAmplifier());
-			int duration = Math.min(32767, effect.getDuration());
-			compound.putInt("Duration", duration);
+			compound.putString("Name", Component.Serializer.toJson(getEffectName(effect)));
+			if (effect.isInfiniteDuration()) {
+				compound.putBoolean("Infinite", true);
+			} else {
+				compound.putInt("Duration", effect.getDuration());
+			}
 			compound.putBoolean("Bad", effect.getEffect().getCategory() == MobEffectCategory.HARMFUL);
 			list.add(compound);
 		}
-		tag.put("Potions", list);
+		tag.put("StatusEffects", list);
 	}
 
 	@Override

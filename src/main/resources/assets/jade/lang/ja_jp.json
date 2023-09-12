@@ -136,7 +136,7 @@
   "jade.horseStat.speed": "速度: %s",
   "config.jade.plugin_minecraft.potion_effects": "エンティティのエフェクト",
   "config.jade.plugin_minecraft.potion_effects_extra_msg": "ポーション、ステータス",
-  "jade.potion": "%s %s (%s)",
+  "jade.potion": "%s (%s)",
   "config.jade.plugin_minecraft.item_frame": "アイテムのフレーム",
   "config.jade.plugin_minecraft.container_entity": "コンテナ―エンティティ",
   "jade.llamaStrength": "強さ: %s",

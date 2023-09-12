@@ -103,7 +103,7 @@
   "jade.horseStat.jump": "Высота прыжка: %s",
   "jade.horseStat.speed": "Скорость: %s",
   "config.jade.plugin_minecraft.potion_effects": "Эффекты существа",
-  "jade.potion": "%s %s (%s)",
+  "jade.potion": "%s (%s)",
   "config.jade.plugin_minecraft.item_frame": "Рамка",
   "config.jade.plugin_minecraft.container_entity": "Контейнер-сущность",
   "jade.llamaStrength": "Сила: %s",

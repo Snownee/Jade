@@ -83,7 +83,7 @@
   "jade.horseStat.jump": "跳跃高度：%s",
   "jade.horseStat.speed": "速度：%s",
   "config.jade.plugin_minecraft.potion_effects": "生物效果",
-  "jade.potion": "%s %s（%s）",
+  "jade.potion": "%s（%s）",
   "config.jade.plugin_minecraft.item_frame": "物品展示框",
   "config.jade.plugin_minecraft.container_entity": "实体物品栏",
   "jade.llamaStrength": "力量：%d",

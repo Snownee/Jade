@@ -99,7 +99,7 @@
   "jade.horseStat.jump": "Висота стрибка: %s",
   "jade.horseStat.speed": "Швидкість: %s",
   "config.jade.plugin_minecraft.potion_effects": "Ефекти сутності",
-  "jade.potion": "%s %s (%s)",
+  "jade.potion": "%s (%s)",
   "config.jade.plugin_minecraft.item_frame": "Рамка",
   "config.jade.plugin_minecraft.container_entity": "Сутність-контейнер",
   "jade.llamaStrength": "Сила: %s",

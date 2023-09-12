@@ -66,7 +66,7 @@
   "jade.horseStat.jump": "점프 높이: %s",
   "jade.horseStat.speed": "속도: %s",
   "config.jade.plugin_minecraft.potion_effects": "엔티티 효과",
-  "jade.potion": "%s %s (%s)",
+  "jade.potion": "%s (%s)",
   "config.jade.plugin_minecraft.item_frame": "아이템 액자",
   "jade.llamaStrength": "힘: %s",
   "config.jade.plugin_minecraft.mob_growth": "몹 성장",
