@@ -17,10 +17,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat.Mode;
 
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import it.unimi.dsi.fastutil.floats.FloatUnaryOperator;
@@ -38,7 +34,6 @@ import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -163,43 +158,19 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		}
 
 		enableScissor(guiGraphics);
-		int scrollPosX = getScrollbarPosition();
-		int j = scrollPosX + 6;
-		RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-		Tesselator tessellator = Tesselator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBuilder();
-		RenderSystem.setShaderTexture(0, Screen.BACKGROUND_LOCATION);
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-		//		int rowLeft = getRowLeft();
-		//		int scrollJump = y0 + 4 - (int) getScrollAmount();
-
 		renderList(guiGraphics, mouseX, mouseY, delta);
-
-		int int_8 = Math.max(0, getMaxPosition() - (y1 - y0 - 4));
-		if (int_8 > 0) {
-			RenderSystem.setShader(GameRenderer::getPositionColorShader);
-			int int_9 = (int) ((float) ((y1 - y0) * (y1 - y0)) / (float) getMaxPosition());
-			int_9 = Mth.clamp(int_9, 32, y1 - y0 - 8);
-			int int_10 = (int) getScrollAmount() * (y1 - y0 - int_9) / int_8 + y0;
-			if (int_10 < y0) {
-				int_10 = y0;
-			}
-
-			bufferBuilder.begin(Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
-			bufferBuilder.vertex(scrollPosX, y1, 0.0D).color(0, 0, 0, 255).uv(0.0f, 1.0f).endVertex();
-			bufferBuilder.vertex(j, y1, 0.0D).color(0, 0, 0, 255).uv(1.0f, 1.0f).endVertex();
-			bufferBuilder.vertex(j, y0, 0.0D).color(0, 0, 0, 255).uv(1.0f, 0.0f).endVertex();
-			bufferBuilder.vertex(scrollPosX, y0, 0.0D).color(0, 0, 0, 255).uv(0.0f, 0.0f).endVertex();
-			bufferBuilder.vertex(scrollPosX, (int_10 + int_9), 0.0D).color(128, 128, 128, 255).uv(0.0f, 1.0f).endVertex();
-			bufferBuilder.vertex(j, (int_10 + int_9), 0.0D).color(128, 128, 128, 255).uv(1.0f, 1.0f).endVertex();
-			bufferBuilder.vertex(j, int_10, 0.0D).color(128, 128, 128, 255).uv(1.0f, 0.0f).endVertex();
-			bufferBuilder.vertex(scrollPosX, int_10, 0.0D).color(128, 128, 128, 255).uv(0.0f, 0.0f).endVertex();
-			bufferBuilder.vertex(scrollPosX, (int_10 + int_9 - 1), 0.0D).color(192, 192, 192, 255).uv(0.0f, 1.0f).endVertex();
-			bufferBuilder.vertex(j - 1, int_10 + int_9 - 1, 0.0D).color(192, 192, 192, 255).uv(1.0f, 1.0f).endVertex();
-			bufferBuilder.vertex(j - 1, int_10, 0.0D).color(192, 192, 192, 255).uv(1.0f, 0.0f).endVertex();
-			bufferBuilder.vertex(scrollPosX, int_10, 0.0D).color(192, 192, 192, 255).uv(0.0f, 0.0f).endVertex();
-			tessellator.end();
-		}
+		int k = this.getMaxScroll();
+        if (k > 0) {
+            int l = this.getScrollbarPosition();
+            int m = (int)((float)((this.y1 - this.y0) * (this.y1 - this.y0)) / (float)this.getMaxPosition());
+            m = Mth.clamp(m, 32, this.y1 - this.y0 - 8);
+            int n = (int)this.getScrollAmount() * (this.y1 - this.y0 - m) / k + this.y0;
+            if (n < this.y0) {
+                n = this.y0;
+            }
+            guiGraphics.fill(l, this.y0, l + 6, this.y1, -16777216);
+            guiGraphics.blitSprite(SCROLLER_SPRITE, l, n, 6, m);
+        }
 
 		renderDecorations(guiGraphics, mouseX, mouseY);
 		RenderSystem.disableBlend();

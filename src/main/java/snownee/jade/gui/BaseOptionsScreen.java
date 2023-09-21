@@ -49,6 +49,7 @@ public abstract class BaseOptionsScreen extends Screen {
 		options.setLeftPos(120);
 		optionsNav = new OptionsNav(options, 120, height, 18, height - 32, 18);
 		searchBox = new NotUglyEditBox(font, 0, 0, 120, 18, searchBox, Component.translatable("gui.jade.search"));
+		searchBox.setBordered(false);
 		searchBox.setHint(Component.translatable("gui.jade.search.hint"));
 		searchBox.responder = s -> {
 			options.updateSearch(s);
@@ -98,13 +99,6 @@ public abstract class BaseOptionsScreen extends Screen {
 					setTooltipForNextRenderPass(Tooltip.create(Component.translatable("gui.jade.server_feature")), new BelowOrAboveListEntryTooltipPositioner(options, entry), false);
 				}
 			}
-		}
-	}
-
-	@Override
-	public void tick() {
-		if (searchBox != null) {
-			searchBox.tick();
 		}
 	}
 
