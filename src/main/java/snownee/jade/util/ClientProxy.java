@@ -267,11 +267,9 @@ public final class ClientProxy implements ClientModInitializer {
 			}
 		});
 		ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
-			if (shouldShowWithOverlay(client, screen)) {
-				ScreenEvents.afterRender(screen).register((screen1, guiGraphics, mouseX, mouseY, tickDelta) -> {
-					onRenderTick(guiGraphics, tickDelta);
-				});
-			}
+			ScreenEvents.afterRender(screen).register((screen1, guiGraphics, mouseX, mouseY, tickDelta) -> {
+				onRenderTick(guiGraphics, tickDelta);
+			});
 		});
 
 		ClientPlayNetworking.registerGlobalReceiver(Identifiers.PACKET_RECEIVE_DATA, (client, handler, buf, responseSender) -> {
