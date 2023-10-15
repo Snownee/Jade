@@ -13,6 +13,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import mcp.mobius.waila.Waila;
 import mcp.mobius.waila.api.ITooltip;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 
 public class WailaExceptionHandler {
 
@@ -21,6 +22,10 @@ public class WailaExceptionHandler {
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy - HH:mm:ss");
 
 	public static void handleErr(Throwable e, String className, ITooltip tooltip) {
+		if (!FMLEnvironment.production) {
+			ExceptionUtils.rethrow(e);
+			return;
+		}
 		if (!ERRORS.contains(className)) {
 			ERRORS.add(className);
 
