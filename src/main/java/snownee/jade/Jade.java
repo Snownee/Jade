@@ -58,7 +58,7 @@ public class Jade {
 	@ScheduledForRemoval(inVersion = "1.20")
 	public static final Vec2 SMALL_ITEM_SIZE = new Vec2(10, 10);
 	@ScheduledForRemoval(inVersion = "1.20")
-	public static final Vec2 SMALL_ITEM_OFFSET = Vec2.NEG_UNIT_Y;
+	public static final Vec2 SMALL_ITEM_OFFSET = new Vec2(0, -1); //Vec2.NEG_UNIT_Y nullified by Saturn mod
 
 	/**
 	 * addons: Use {@link snownee.jade.api.IWailaClientRegistration#getConfig}
