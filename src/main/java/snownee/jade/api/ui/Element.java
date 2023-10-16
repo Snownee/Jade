@@ -1,5 +1,7 @@
 package snownee.jade.api.ui;
 
+import java.util.Objects;
+
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.resources.ResourceLocation;
@@ -34,6 +36,7 @@ public abstract class Element implements IElement {
 
 	@Override
 	public IElement align(Align align) {
+		Objects.requireNonNull(align);
 		this.align = align;
 		return this;
 	}
@@ -45,6 +48,7 @@ public abstract class Element implements IElement {
 
 	@Override
 	public IElement translate(Vec2 translation) {
+		Objects.requireNonNull(translation);
 		this.translation = translation;
 		return this;
 	}

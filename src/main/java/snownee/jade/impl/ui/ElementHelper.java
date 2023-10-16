@@ -23,7 +23,7 @@ public class ElementHelper implements IElementHelper {
 	public static final ResourceLocation DEFAULT_PROGRESS = Identifiers.JADE("progress");
 	public static final ResourceLocation DEFAULT_PROGRESS_BASE = Identifiers.JADE("progress_base");
 	public static final Vec2 SMALL_ITEM_SIZE = new Vec2(10, 10);
-	public static final Vec2 SMALL_ITEM_OFFSET = Vec2.NEG_UNIT_Y;
+	public static final Vec2 SMALL_ITEM_OFFSET = new Vec2(0, -1); //Vec2.NEG_UNIT_Y nullified by Saturn mod
 	private ResourceLocation uid;
 
 	@Override
