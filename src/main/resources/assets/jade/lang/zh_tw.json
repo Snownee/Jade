@@ -181,7 +181,7 @@
   "config.jade.plugin_minecraft.animal_owner.fetch_names": "擷取名字",
   "jade.owner": "主人：%s",
   "jade.infinity": "+∞",
-  "jade.seconds": "%d 秒",
+  "jade.seconds": "{0}秒",
   "jade.error": "<發生錯誤，請向%s報告>",
   "jade.hopper.locked": "漏斗已鎖定",
   "jade.blockpos": "%s %s %s",

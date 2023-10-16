@@ -241,7 +241,7 @@
   "config.jade.plugin_minecraft.animal_owner.fetch_names": "Fetch Names",
   "jade.owner": "Owner: %s",
   "jade.infinity": "+∞",
-  "jade.seconds": "%ds",
+  "jade.seconds": "{0}s",
   "jade.error": "<Error occurred, plz report to %s>",
   "jade.hopper.locked": "Hopper is locked",
   "jade.blockpos": "%s %s %s",
