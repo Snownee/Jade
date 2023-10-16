@@ -20,7 +20,7 @@ import snownee.jade.impl.Tooltip;
 public class ElementHelper implements IElementHelper {
 	public static final ElementHelper INSTANCE = new ElementHelper();
 	public static final Vec2 SMALL_ITEM_SIZE = new Vec2(10, 10);
-	public static final Vec2 SMALL_ITEM_OFFSET = Vec2.NEG_UNIT_Y;
+	public static final Vec2 SMALL_ITEM_OFFSET = new Vec2(0, -1); //Vec2.NEG_UNIT_Y nullified by Saturn mod
 	private ResourceLocation uid;
 
 	@Override
