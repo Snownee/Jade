@@ -5,8 +5,7 @@ import java.util.List;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.view.ClientViewGroup;
@@ -38,7 +37,8 @@ public enum ExampleProgressProvider implements IServerExtensionProvider<Abstract
 	}
 
 	@Override
-	public List<ViewGroup<CompoundTag>> getGroups(ServerPlayer player, ServerLevel world, AbstractFurnaceBlockEntity target, boolean showDetails) {
+	public List<ViewGroup<CompoundTag>> getGroups(Accessor<?> accessor, AbstractFurnaceBlockEntity target) {
+		Level world = accessor.getLevel();
 		float period = 40;
 		var progress1 = ProgressView.create(((world.getGameTime() % period) + 1) / period);
 		period = 200;

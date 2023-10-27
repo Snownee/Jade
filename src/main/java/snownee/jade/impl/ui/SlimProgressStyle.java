@@ -1,22 +1,18 @@
 package snownee.jade.impl.ui;
 
-import org.jetbrains.annotations.Nullable;
-
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec2;
-import snownee.jade.api.ui.IElement;
-import snownee.jade.api.ui.IProgressStyle;
+import snownee.jade.api.ui.Direction2D;
+import snownee.jade.api.ui.ProgressStyle;
 import snownee.jade.overlay.DisplayHelper;
 
-public class SlimProgressStyle implements IProgressStyle {
+public class SlimProgressStyle extends ProgressStyle {
 
 	public int color;
-	@Nullable
-	public IElement overlay;
 
 	@Override
-	public IProgressStyle color(int color, int color2) {
+	public ProgressStyle color(int color, int color2) {
 		if (color != color2) {
 			throw new UnsupportedOperationException();
 		}
@@ -25,19 +21,13 @@ public class SlimProgressStyle implements IProgressStyle {
 	}
 
 	@Override
-	public IProgressStyle textColor(int color) {
+	public ProgressStyle textColor(int color) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public IProgressStyle vertical(boolean vertical) {
+	public ProgressStyle direction(Direction2D direction) {
 		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public IProgressStyle overlay(IElement overlay) {
-		this.overlay = overlay;
-		return this;
 	}
 
 	@Override
@@ -45,9 +35,9 @@ public class SlimProgressStyle implements IProgressStyle {
 		if (overlay != null) {
 			Vec2 size = new Vec2(w * progress, h);
 			overlay.size(size);
-			overlay.render(guiGraphics, x, y - 1, size.x, size.y);
+			overlay.render(guiGraphics, x, y, size.x, size.y);
 		} else {
-			DisplayHelper.INSTANCE.drawGradientProgress(guiGraphics, x, y - 1, w, h, progress, color);
+			DisplayHelper.INSTANCE.drawGradientProgress(guiGraphics, x, y, w, h, progress, color);
 		}
 	}
 

@@ -8,7 +8,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SpawnEggItem;
-import snownee.jade.api.Accessor;
+import snownee.jade.api.AccessorClientHandler;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.IJadeProvider;
@@ -23,7 +23,7 @@ import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
 import snownee.jade.util.WailaExceptionHandler;
 
-public class EntityAccessorClientHandler implements Accessor.ClientHandler<EntityAccessor> {
+public class EntityAccessorClientHandler implements AccessorClientHandler<EntityAccessor> {
 
 	@Override
 	public boolean shouldDisplay(EntityAccessor accessor) {
@@ -39,7 +39,7 @@ public class EntityAccessorClientHandler implements Accessor.ClientHandler<Entit
 
 	@Override
 	public boolean shouldRequestData(EntityAccessor accessor) {
-		return !WailaCommonRegistration.INSTANCE.getEntityNBTProviders(accessor.getEntity()).isEmpty();
+		return !WailaCommonRegistration.instance().getEntityNBTProviders(accessor.getEntity()).isEmpty();
 	}
 
 	@Override
@@ -59,7 +59,7 @@ public class EntityAccessorClientHandler implements Accessor.ClientHandler<Entit
 				icon = ItemStackElement.of(stack);
 		}
 
-		for (IEntityComponentProvider provider : WailaClientRegistration.INSTANCE.getEntityIconProviders(entity, PluginConfig.INSTANCE::get)) {
+		for (IEntityComponentProvider provider : WailaClientRegistration.instance().getEntityIconProviders(entity, PluginConfig.INSTANCE::get)) {
 			try {
 				IElement element = provider.getIcon(accessor, PluginConfig.INSTANCE, icon);
 				if (!RayTracing.isEmptyElement(element))
@@ -73,7 +73,7 @@ public class EntityAccessorClientHandler implements Accessor.ClientHandler<Entit
 
 	@Override
 	public void gatherComponents(EntityAccessor accessor, Function<IJadeProvider, ITooltip> tooltipProvider) {
-		List<IEntityComponentProvider> providers = WailaClientRegistration.INSTANCE.getEntityProviders(accessor.getEntity(), PluginConfig.INSTANCE::get);
+		List<IEntityComponentProvider> providers = WailaClientRegistration.instance().getEntityProviders(accessor.getEntity(), PluginConfig.INSTANCE::get);
 		for (IEntityComponentProvider provider : providers) {
 			ITooltip tooltip = tooltipProvider.apply(provider);
 			try {

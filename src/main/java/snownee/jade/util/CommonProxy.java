@@ -3,7 +3,6 @@ package snownee.jade.util;
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -48,6 +47,7 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fml.IExtensionPoint;
+import net.minecraftforge.fml.IExtensionPoint.DisplayTest;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -58,15 +58,14 @@ import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.forgespi.language.ModFileScanData.AnnotationData;
 import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.network.NetworkConstants;
+import net.minecraftforge.network.ChannelBuilder;
 import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.minecraftforge.network.SimpleChannel;
 import net.minecraftforge.registries.ForgeRegistries;
 import snownee.jade.Jade;
 import snownee.jade.JadeCommonConfig;
-import snownee.jade.addon.universal.ItemIterator;
 import snownee.jade.addon.universal.ItemCollector;
+import snownee.jade.addon.universal.ItemIterator;
 import snownee.jade.addon.universal.ItemStorageProvider;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.IWailaPlugin;
@@ -86,10 +85,13 @@ import snownee.jade.network.ShowOverlayPacket;
 
 @Mod(Jade.MODID)
 public final class CommonProxy {
-	public static final SimpleChannel NETWORK = NetworkRegistry.ChannelBuilder.named(new ResourceLocation(Jade.MODID, "networking")).clientAcceptedVersions(s -> true).serverAcceptedVersions(s -> true).networkProtocolVersion(() -> "1").simpleChannel();
+	public static final SimpleChannel NETWORK = ChannelBuilder.named(new ResourceLocation(Jade.MODID, "networking"))
+			.acceptedVersions((s, v) -> true)
+			.networkProtocolVersion(1)
+			.simpleChannel();
 
 	public CommonProxy() {
-		ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (a, b) -> true));
+		ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> DisplayTest.IGNORESERVERONLY, (a, b) -> true));
 		FMLJavaModLoadingContext.get().getModEventBus().register(JadeCommonConfig.class);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::loadComplete);
@@ -103,56 +105,14 @@ public final class CommonProxy {
 	public static int showOrHideFromServer(Collection<ServerPlayer> players, boolean show) {
 		ShowOverlayPacket msg = new ShowOverlayPacket(show);
 		for (ServerPlayer player : players) {
-			CommonProxy.NETWORK.sendTo(msg, player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+			CommonProxy.NETWORK.send(msg, player.connection.getConnection());
 		}
 		return players.size();
 	}
 
-	private void setup(FMLCommonSetupEvent event) {
-		NETWORK.registerMessage(0, ReceiveDataPacket.class, ReceiveDataPacket::write, ReceiveDataPacket::read, ReceiveDataPacket.Handler::onMessage, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-		NETWORK.registerMessage(1, ServerPingPacket.class, ServerPingPacket::write, ServerPingPacket::read, ServerPingPacket.Handler::onMessage, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-		NETWORK.registerMessage(2, RequestEntityPacket.class, RequestEntityPacket::write, RequestEntityPacket::read, RequestEntityPacket.Handler::onMessage, Optional.of(NetworkDirection.PLAY_TO_SERVER));
-		NETWORK.registerMessage(3, RequestTilePacket.class, RequestTilePacket::write, RequestTilePacket::read, RequestTilePacket.Handler::onMessage, Optional.of(NetworkDirection.PLAY_TO_SERVER));
-		NETWORK.registerMessage(4, ShowOverlayPacket.class, ShowOverlayPacket::write, ShowOverlayPacket::read, ShowOverlayPacket.Handler::onMessage, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-	}
-
-	private void loadComplete(FMLLoadCompleteEvent event) {
-		/* off */
-		List<String> classNames = ModList.get().getAllScanData()
-				.stream()
-				.flatMap($ -> $.getAnnotations().stream())
-				.filter($ -> {
-					if ($.annotationType().getClassName().equals(WailaPlugin.class.getName())) {
-						String required = (String) $.annotationData().getOrDefault("value", "");
-						return required.isEmpty() || ModList.get().isLoaded(required);
-					}
-					return false;
-				})
-				.map(AnnotationData::memberName)
-				.collect(Collectors.toList());
-		/* on */
-
-		for (String className : classNames) {
-			Jade.LOGGER.info("Start loading plugin at {}", className);
-			try {
-				Class<?> clazz = Class.forName(className);
-				if (IWailaPlugin.class.isAssignableFrom(clazz)) {
-					IWailaPlugin plugin = (IWailaPlugin) clazz.getDeclaredConstructor().newInstance();
-					plugin.register(WailaCommonRegistration.INSTANCE);
-					if (CommonProxy.isPhysicallyClient()) {
-						plugin.registerClient(WailaClientRegistration.INSTANCE);
-					}
-				}
-			} catch (Throwable e) {
-				Jade.LOGGER.error("Error loading plugin at {}", className, e);
-			}
-		}
-		Jade.loadComplete();
-	}
-
 	private static void playerJoin(PlayerEvent.PlayerLoggedInEvent event) {
 		Jade.LOGGER.info("Syncing config to {} ({})", event.getEntity().getGameProfile().getName(), event.getEntity().getGameProfile().getId());
-		NETWORK.sendTo(new ServerPingPacket(PluginConfig.INSTANCE), ((ServerPlayer) event.getEntity()).connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+		NETWORK.send(new ServerPingPacket(PluginConfig.INSTANCE), ((ServerPlayer) event.getEntity()).connection.getConnection());
 	}
 
 	@Nullable
@@ -250,7 +210,7 @@ public final class CommonProxy {
 		}
 	}
 
-	public static List<ViewGroup<CompoundTag>> wrapFluidStorage(Object target, @Nullable Player player) {
+	public static List<ViewGroup<CompoundTag>> wrapFluidStorage(Accessor<?> accessor, Object target) {
 		if (target instanceof CapabilityProvider<?> capProvider) {
 			IFluidHandler fluidHandler = capProvider.getCapability(ForgeCapabilities.FLUID_HANDLER).orElse(null);
 			if (fluidHandler != null) {
@@ -260,7 +220,7 @@ public final class CommonProxy {
 		return null;
 	}
 
-	public static List<ViewGroup<CompoundTag>> wrapEnergyStorage(Object target, @Nullable Player player) {
+	public static List<ViewGroup<CompoundTag>> wrapEnergyStorage(Accessor<?> accessor, Object target) {
 		if (target instanceof CapabilityProvider<?> capProvider) {
 			IEnergyStorage storage = capProvider.getCapability(ForgeCapabilities.ENERGY).orElse(null);
 			if (storage != null && storage.getMaxEnergyStored() > 0) {
@@ -336,5 +296,67 @@ public final class CommonProxy {
 
 	public static FluidStack toFluidStack(JadeFluidObject fluid) {
 		return new FluidStack(fluid.getType(), (int) fluid.getAmount(), fluid.getTag());
+	}
+
+	private void setup(FMLCommonSetupEvent event) {
+		NETWORK.messageBuilder(ReceiveDataPacket.class, NetworkDirection.PLAY_TO_CLIENT)
+				.encoder(ReceiveDataPacket::write)
+				.decoder(ReceiveDataPacket::read)
+				.consumerNetworkThread(ReceiveDataPacket::handle)
+				.add();
+		NETWORK.messageBuilder(ServerPingPacket.class, NetworkDirection.PLAY_TO_CLIENT)
+				.encoder(ServerPingPacket::write)
+				.decoder(ServerPingPacket::read)
+				.consumerNetworkThread(ServerPingPacket::handle)
+				.add();
+		NETWORK.messageBuilder(RequestEntityPacket.class, NetworkDirection.PLAY_TO_SERVER)
+				.encoder(RequestEntityPacket::write)
+				.decoder(RequestEntityPacket::read)
+				.consumerNetworkThread(RequestEntityPacket::handle)
+				.add();
+		NETWORK.messageBuilder(RequestTilePacket.class, NetworkDirection.PLAY_TO_SERVER)
+				.encoder(RequestTilePacket::write)
+				.decoder(RequestTilePacket::read)
+				.consumerNetworkThread(RequestTilePacket::handle)
+				.add();
+		NETWORK.messageBuilder(ShowOverlayPacket.class, NetworkDirection.PLAY_TO_CLIENT)
+				.encoder(ShowOverlayPacket::write)
+				.decoder(ShowOverlayPacket::read)
+				.consumerNetworkThread(ShowOverlayPacket::handle)
+				.add();
+	}
+
+	private void loadComplete(FMLLoadCompleteEvent event) {
+		/* off */
+		List<String> classNames = ModList.get().getAllScanData()
+				.stream()
+				.flatMap($ -> $.getAnnotations().stream())
+				.filter($ -> {
+					if ($.annotationType().getClassName().equals(WailaPlugin.class.getName())) {
+						String required = (String) $.annotationData().getOrDefault("value", "");
+						return required.isEmpty() || ModList.get().isLoaded(required);
+					}
+					return false;
+				})
+				.map(AnnotationData::memberName)
+				.collect(Collectors.toList());
+		/* on */
+
+		for (String className : classNames) {
+			Jade.LOGGER.info("Start loading plugin at {}", className);
+			try {
+				Class<?> clazz = Class.forName(className);
+				if (IWailaPlugin.class.isAssignableFrom(clazz)) {
+					IWailaPlugin plugin = (IWailaPlugin) clazz.getDeclaredConstructor().newInstance();
+					plugin.register(WailaCommonRegistration.instance());
+					if (CommonProxy.isPhysicallyClient()) {
+						plugin.registerClient(WailaClientRegistration.instance());
+					}
+				}
+			} catch (Throwable e) {
+				Jade.LOGGER.error("Error loading plugin at {}", className, e);
+			}
+		}
+		Jade.loadComplete();
 	}
 }

@@ -1,7 +1,5 @@
 package snownee.jade.api;
 
-import java.util.function.Function;
-
 import org.jetbrains.annotations.NotNull;
 
 import net.minecraft.nbt.CompoundTag;
@@ -10,7 +8,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.HitResult;
-import snownee.jade.api.ui.IElement;
 
 /**
  * A generic class to get basic information of target and context.
@@ -42,18 +39,5 @@ public interface Accessor<T extends HitResult> {
 	void toNetwork(FriendlyByteBuf buf);
 
 	boolean verifyData(CompoundTag data);
-
-	interface ClientHandler<T extends Accessor<?>> {
-
-		boolean shouldDisplay(T accessor);
-
-		boolean shouldRequestData(T accessor);
-
-		void requestData(T accessor);
-
-		IElement getIcon(T accessor);
-
-		void gatherComponents(T accessor, Function<IJadeProvider, ITooltip> tooltipProvider);
-	}
 
 }

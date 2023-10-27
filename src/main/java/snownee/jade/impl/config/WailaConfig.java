@@ -1,6 +1,5 @@
 package snownee.jade.impl.config;
 
-import java.util.Collection;
 import java.util.List;
 
 import com.google.common.collect.Lists;
@@ -9,6 +8,7 @@ import com.google.gson.annotations.Expose;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.HumanoidArm;
@@ -16,7 +16,6 @@ import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
-import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.util.CommonProxy;
 import snownee.jade.util.ModIdentification;
 
@@ -234,7 +233,7 @@ public class WailaConfig implements IWailaConfig {
 	}
 
 	public static class ConfigOverlay implements IConfigOverlay {
-		public ResourceLocation activeTheme = Theme.DARK.id;
+		public ResourceLocation activeTheme = Theme.DEFAULT_THEME_ID;
 		public int themesHash;
 		private float overlayPosX = 0.5F;
 		private float overlayPosY = 1.0F;
@@ -351,16 +350,9 @@ public class WailaConfig implements IWailaConfig {
 		}
 
 		@Override
-		@Deprecated
-		public Collection<Theme> getThemes() {
-			return IThemeHelper.get().getThemes();
-		}
-
-		@Override
 		public void applyTheme(ResourceLocation id) {
 			activeThemeInstance = IThemeHelper.get().getTheme(id);
 			activeTheme = activeThemeInstance.id;
-			BoxStyle.DEFAULT.borderColor = activeThemeInstance.boxBorderColor;
 		}
 
 		@Override
@@ -389,34 +381,28 @@ public class WailaConfig implements IWailaConfig {
 		}
 
 		@Override
-		public void setDisappearingDelay(float delay) {
-			disappearingDelay = delay;
+		public float getDisappearingDelay() {
+			return disappearingDelay;
 		}
 
 		@Override
-		public float getDisappearingDelay() {
-			return disappearingDelay;
+		public void setDisappearingDelay(float delay) {
+			disappearingDelay = delay;
 		}
 
 	}
 
 	public static class ConfigFormatting implements IConfigFormatting {
-		private String modName = "§9§o%s";
+		private Style itemModNameStyle = Style.EMPTY.applyFormats(ChatFormatting.BLUE, ChatFormatting.ITALIC);
 
 		@Override
-		public String getModName() {
-			return modName;
+		public Style getItemModNameStyle() {
+			return itemModNameStyle;
 		}
 
 		@Override
-		public void setModName(String modName) {
-			this.modName = modName;
-		}
-
-		@Override
-		@Deprecated
-		public Component title(Object title) {
-			return IThemeHelper.get().title(title);
+		public void setItemModNameStyle(Style itemModNameStyle) {
+			this.itemModNameStyle = itemModNameStyle;
 		}
 
 		@Override

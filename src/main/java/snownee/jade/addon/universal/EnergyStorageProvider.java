@@ -9,8 +9,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
@@ -21,7 +19,7 @@ import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.IElementHelper;
-import snownee.jade.api.ui.IProgressStyle;
+import snownee.jade.api.ui.ProgressStyle;
 import snownee.jade.api.view.ClientViewGroup;
 import snownee.jade.api.view.EnergyView;
 import snownee.jade.api.view.IClientExtensionProvider;
@@ -37,11 +35,11 @@ public enum EnergyStorageProvider implements IBlockComponentProvider, IServerDat
 	INSTANCE;
 
 	public static void append(ITooltip tooltip, Accessor<?> accessor, IPluginConfig config) {
-		if (!(accessor.showDetails() || !config.get(Identifiers.UNIVERSAL_ENERGY_STORAGE_DETAILED))) {
+		if ((!accessor.showDetails() && config.get(Identifiers.UNIVERSAL_ENERGY_STORAGE_DETAILED))) {
 			return;
 		}
 		if (accessor.getServerData().contains("JadeEnergyStorage")) {
-			var provider = Optional.ofNullable(ResourceLocation.tryParse(accessor.getServerData().getString("JadeEnergyStorageUid"))).map(WailaClientRegistration.INSTANCE.energyStorageProviders::get);
+			var provider = Optional.ofNullable(ResourceLocation.tryParse(accessor.getServerData().getString("JadeEnergyStorageUid"))).map(WailaClientRegistration.instance().energyStorageProviders::get);
 			if (provider.isPresent()) {
 				var groups = provider.get().getClientGroups(accessor, ViewGroup.readList(accessor.getServerData(), "JadeEnergyStorage", Function.identity()));
 				if (groups.isEmpty()) {
@@ -61,8 +59,8 @@ public enum EnergyStorageProvider implements IBlockComponentProvider, IServerDat
 						} else {
 							text = Component.translatable("jade.fe", ChatFormatting.WHITE + view.current, view.max).withStyle(ChatFormatting.GRAY);
 						}
-						IProgressStyle progressStyle = helper.progressStyle().color(0xFFAA0000, 0xFF660000);
-						theTooltip.add(helper.progress(view.ratio, text, progressStyle, BoxStyle.DEFAULT, true));
+						ProgressStyle progressStyle = helper.progressStyle().color(0xFFAA0000, 0xFF660000);
+						theTooltip.add(helper.progress(view.ratio, text, progressStyle, BoxStyle.getNestedBox(), true));
 					}
 				});
 			}
@@ -72,10 +70,8 @@ public enum EnergyStorageProvider implements IBlockComponentProvider, IServerDat
 	public static void putData(Accessor<?> accessor) {
 		CompoundTag tag = accessor.getServerData();
 		Object target = accessor.getTarget();
-		ServerPlayer player = (ServerPlayer) accessor.getPlayer();
-		boolean showDetails = accessor.showDetails();
-		for (var provider : WailaCommonRegistration.INSTANCE.energyStorageProviders.get(target)) {
-			var groups = provider.getGroups(player, player.serverLevel(), target, showDetails);
+		for (var provider : WailaCommonRegistration.instance().energyStorageProviders.get(target)) {
+			var groups = provider.getGroups(accessor, target);
 			if (groups != null) {
 				if (ViewGroup.saveList(tag, "JadeEnergyStorage", groups, Function.identity()))
 					tag.putString("JadeEnergyStorageUid", provider.getUid().toString());
@@ -113,8 +109,8 @@ public enum EnergyStorageProvider implements IBlockComponentProvider, IServerDat
 	}
 
 	@Override
-	public List<ViewGroup<CompoundTag>> getGroups(ServerPlayer player, ServerLevel world, Object target, boolean showDetails) {
-		return CommonProxy.wrapEnergyStorage(target, player);
+	public List<ViewGroup<CompoundTag>> getGroups(Accessor<?> accessor, Object target) {
+		return CommonProxy.wrapEnergyStorage(accessor, target);
 	}
 
 }

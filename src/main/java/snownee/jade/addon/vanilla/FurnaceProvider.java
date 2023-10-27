@@ -7,6 +7,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
+import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.IServerDataProvider;
@@ -14,9 +15,7 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.IElementHelper;
-import snownee.jade.impl.ui.ProgressArrowElement;
 
-// TODO: images for light themes
 public enum FurnaceProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
 
 	INSTANCE;
@@ -39,7 +38,8 @@ public enum FurnaceProvider implements IBlockComponentProvider, IServerDataProvi
 
 		tooltip.add(helper.item(inventory.get(0)));
 		tooltip.append(helper.item(inventory.get(1)));
-		tooltip.append(new ProgressArrowElement((float) progress / total));
+		tooltip.append(helper.spacer(4, 0));
+		tooltip.append(helper.progress((float) progress / total).translate(new Vec2(-2, 0)));
 		tooltip.append(helper.item(inventory.get(2)));
 	}
 

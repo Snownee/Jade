@@ -15,6 +15,6 @@ credits = "TehNut, ProfMobius, kalkafox"
 [[dependencies.jade]]
 modId = "forge"
 mandatory = true
-versionRange = "[46, )"
+versionRange = "[48, )"
 ordering = "NONE"
 side = "BOTH"

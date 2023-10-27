@@ -1,10 +1,8 @@
 package snownee.jade.network;
 
-import java.util.function.Supplier;
-
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import snownee.jade.impl.ObjectDataCenter;
 
 public class ReceiveDataPacket {
@@ -23,13 +21,10 @@ public class ReceiveDataPacket {
 		buffer.writeNbt(message.tag);
 	}
 
-	public static class Handler {
-
-		public static void onMessage(ReceiveDataPacket message, Supplier<NetworkEvent.Context> context) {
-			context.get().enqueueWork(() -> {
-				ObjectDataCenter.setServerData(message.tag);
-			});
-			context.get().setPacketHandled(true);
-		}
+	public static void handle(ReceiveDataPacket message, CustomPayloadEvent.Context context) {
+		context.enqueueWork(() -> {
+			ObjectDataCenter.setServerData(message.tag);
+		});
+		context.setPacketHandled(true);
 	}
 }

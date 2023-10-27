@@ -1,12 +1,17 @@
 package snownee.jade.overlay;
 
+import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Suppliers;
 import com.mojang.text2speech.Narrator;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiSpriteManager;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.metadata.gui.GuiSpriteScaling;
 import net.minecraft.core.Direction;
 import net.minecraft.util.StringUtil;
 import net.minecraft.world.entity.player.Player;
@@ -20,25 +25,31 @@ import net.minecraft.world.phys.HitResult;
 import snownee.jade.Jade;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.ITooltip;
+import snownee.jade.api.Identifiers;
 import snownee.jade.api.callback.JadeRayTraceCallback;
 import snownee.jade.api.callback.JadeTooltipCollectedCallback;
+import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.IWailaConfig.DisplayMode;
 import snownee.jade.api.config.IWailaConfig.IConfigGeneral;
 import snownee.jade.api.theme.IThemeHelper;
+import snownee.jade.api.theme.Theme;
+import snownee.jade.api.ui.BoxStyle;
+import snownee.jade.api.ui.IElement;
 import snownee.jade.gui.BaseOptionsScreen;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.Tooltip;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
+import snownee.jade.impl.ui.BoxElement;
 import snownee.jade.util.ClientProxy;
 
 public class WailaTickHandler {
 
-	private static WailaTickHandler INSTANCE = new WailaTickHandler();
 	private static final Supplier<Narrator> NARRATOR = Suppliers.memoize(Narrator::getNarrator);
+	private static WailaTickHandler INSTANCE = new WailaTickHandler();
 	private static String lastNarration = "";
 	private static long lastNarrationTime = 0;
-	public TooltipRenderer tooltipRenderer = null;
+	public BoxElement rootElement;
 	public ProgressTracker progressTracker = new ProgressTracker();
 
 	public static WailaTickHandler instance() {
@@ -75,7 +86,7 @@ public class WailaTickHandler {
 
 		IConfigGeneral config = Jade.CONFIG.get().getGeneral();
 		if (!config.shouldDisplayTooltip()) {
-			tooltipRenderer = null;
+			rootElement = null;
 			return;
 		}
 
@@ -87,7 +98,7 @@ public class WailaTickHandler {
 		Level world = client.level;
 		Player player = client.player;
 		if (world == null || player == null) {
-			tooltipRenderer = null;
+			rootElement = null;
 			return;
 		}
 
@@ -97,7 +108,7 @@ public class WailaTickHandler {
 		Tooltip tooltip = new Tooltip();
 
 		if (target == null) {
-			tooltipRenderer = null;
+			rootElement = null;
 			return;
 		}
 
@@ -106,7 +117,7 @@ public class WailaTickHandler {
 			BlockState state = world.getBlockState(blockTarget.getBlockPos());
 			BlockEntity tileEntity = world.getBlockEntity(blockTarget.getBlockPos());
 			/* off */
-			accessor = WailaClientRegistration.INSTANCE.blockAccessor()
+			accessor = WailaClientRegistration.instance().blockAccessor()
 					.blockState(state)
 					.blockEntity(tileEntity)
 					.hit(blockTarget)
@@ -115,7 +126,7 @@ public class WailaTickHandler {
 			/* on */
 		} else if (target instanceof EntityHitResult entityTarget) {
 			/* off */
-			accessor = WailaClientRegistration.INSTANCE.entityAccessor()
+			accessor = WailaClientRegistration.instance().entityAccessor()
 					.hit(entityTarget)
 					.entity(entityTarget.getEntity())
 					.requireVerification()
@@ -123,7 +134,7 @@ public class WailaTickHandler {
 			/* on */
 		} else if (client.screen instanceof BaseOptionsScreen) {
 			/* off */
-			accessor = WailaClientRegistration.INSTANCE.blockAccessor()
+			accessor = WailaClientRegistration.instance().blockAccessor()
 					.blockState(Blocks.GRASS_BLOCK.defaultBlockState())
 					.hit(new BlockHitResult(player.position(), Direction.UP, player.blockPosition(), false))
 					.build();
@@ -131,18 +142,18 @@ public class WailaTickHandler {
 		}
 
 		Accessor<?> originalAccessor = accessor;
-		for (JadeRayTraceCallback callback : WailaClientRegistration.INSTANCE.rayTraceCallback.callbacks()) {
+		for (JadeRayTraceCallback callback : WailaClientRegistration.instance().rayTraceCallback.callbacks()) {
 			accessor = callback.onRayTrace(target, accessor, originalAccessor);
 		}
 		ObjectDataCenter.set(accessor);
 		if (accessor == null || accessor.getHitResult() == null) {
-			tooltipRenderer = null;
+			rootElement = null;
 			return;
 		}
 
-		var handler = WailaClientRegistration.INSTANCE.getAccessorHandler(accessor.getAccessorType());
+		var handler = WailaClientRegistration.instance().getAccessorHandler(accessor.getAccessorType());
 		if (!handler.shouldDisplay(accessor)) {
-			tooltipRenderer = null;
+			rootElement = null;
 			return;
 		}
 		if (accessor.isServerConnected()) {
@@ -157,10 +168,18 @@ public class WailaTickHandler {
 			}
 		}
 
+		OverlayRenderer.theme.setValue(IWailaConfig.get().getOverlay().getTheme());
+		Accessor<?> accessor0 = accessor;
+		WailaClientRegistration.instance().beforeTooltipCollectCallback.call(callback -> {
+			callback.beforeCollecting(OverlayRenderer.theme, accessor0);
+		});
+		Theme theme = OverlayRenderer.theme.getValue();
+		Preconditions.checkNotNull(theme, "Theme cannot be null");
+
 		if (config.getDisplayMode() == DisplayMode.LITE && !ClientProxy.isShowDetailsPressed()) {
 			Tooltip dummyTooltip = new Tooltip();
 			handler.gatherComponents(accessor, $ -> {
-				if (Math.abs(WailaCommonRegistration.INSTANCE.priorities.byValue($)) > 5000) {
+				if (Math.abs(WailaCommonRegistration.instance().priorities.byValue($)) > 5000) {
 					return tooltip;
 				} else {
 					return dummyTooltip;
@@ -173,10 +192,35 @@ public class WailaTickHandler {
 			handler.gatherComponents(accessor, $ -> tooltip);
 		}
 
-		for (JadeTooltipCollectedCallback callback : WailaClientRegistration.INSTANCE.tooltipCollectedCallback.callbacks()) {
-			callback.onTooltipCollected(tooltip, accessor);
+		rootElement = new BoxElement(tooltip, IThemeHelper.get().theme().tooltipStyle);
+		rootElement.tag(Identifiers.ROOT);
+		if (IWailaConfig.get().getOverlay().shouldShowIcon()) {
+			IElement icon = RayTracing.INSTANCE.getIcon();
+			if (icon != null && theme.iconSlotSprite != null) {
+				if (theme.iconSlotSpriteCache == null) {
+					GuiSpriteManager guiSprites = Minecraft.getInstance().getGuiSprites();
+					TextureAtlasSprite textureAtlasSprite = guiSprites.getSprite(theme.iconSlotSprite);
+					GuiSpriteScaling scaling = guiSprites.getSpriteScaling(textureAtlasSprite);
+					int[] padding = new int[4];
+					Arrays.fill(padding, theme.iconSlotInflation);
+					if (scaling instanceof GuiSpriteScaling.NineSlice nineSlice) {
+						GuiSpriteScaling.NineSlice.Border border = nineSlice.border();
+						padding[0] += border.top();
+						padding[1] += border.right();
+						padding[2] += border.bottom();
+						padding[3] += border.left();
+					}
+					theme.iconSlotSpriteCache = new BoxElement(new Tooltip(), BoxStyle.getSprite(theme.iconSlotSprite, padding));
+				}
+				ITooltip tooltip1 = theme.iconSlotSpriteCache.getTooltip();
+				tooltip1.clear();
+				tooltip1.add(icon);
+				icon = theme.iconSlotSpriteCache.size(null);
+			}
+			rootElement.setIcon(icon);
 		}
-		tooltipRenderer = new TooltipRenderer(tooltip, true);
-		tooltipRenderer.setPaddingFromTheme(IThemeHelper.get().theme());
+		for (JadeTooltipCollectedCallback callback : WailaClientRegistration.instance().tooltipCollectedCallback.callbacks()) {
+			callback.onTooltipCollected(rootElement, accessor);
+		}
 	}
 }

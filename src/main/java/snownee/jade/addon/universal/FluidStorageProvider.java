@@ -8,8 +8,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
@@ -21,7 +19,7 @@ import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.IElementHelper;
-import snownee.jade.api.ui.IProgressStyle;
+import snownee.jade.api.ui.ProgressStyle;
 import snownee.jade.api.view.ClientViewGroup;
 import snownee.jade.api.view.FluidView;
 import snownee.jade.api.view.IClientExtensionProvider;
@@ -37,11 +35,11 @@ public enum FluidStorageProvider implements IBlockComponentProvider, IServerData
 	INSTANCE;
 
 	public static void append(ITooltip tooltip, Accessor<?> accessor, IPluginConfig config) {
-		if (!(accessor.showDetails() || !config.get(Identifiers.UNIVERSAL_FLUID_STORAGE_DETAILED))) {
+		if ((!accessor.showDetails() && config.get(Identifiers.UNIVERSAL_FLUID_STORAGE_DETAILED))) {
 			return;
 		}
 		if (accessor.getServerData().contains("JadeFluidStorage")) {
-			var provider = Optional.ofNullable(ResourceLocation.tryParse(accessor.getServerData().getString("JadeFluidStorageUid"))).map(WailaClientRegistration.INSTANCE.fluidStorageProviders::get);
+			var provider = Optional.ofNullable(ResourceLocation.tryParse(accessor.getServerData().getString("JadeFluidStorageUid"))).map(WailaClientRegistration.instance().fluidStorageProviders::get);
 			if (provider.isPresent()) {
 				var groups = provider.get().getClientGroups(accessor, ViewGroup.readList(accessor.getServerData(), "JadeFluidStorage", Function.identity()));
 				if (groups.isEmpty()) {
@@ -65,8 +63,8 @@ public enum FluidStorageProvider implements IBlockComponentProvider, IServerData
 						} else {
 							text = Component.translatable("jade.fluid", IDisplayHelper.get().stripColor(view.fluidName), view.current);
 						}
-						IProgressStyle progressStyle = helper.progressStyle().overlay(view.overlay);
-						theTooltip.add(helper.progress(view.ratio, text, progressStyle, BoxStyle.DEFAULT, true));
+						ProgressStyle progressStyle = helper.progressStyle().overlay(view.overlay);
+						theTooltip.add(helper.progress(view.ratio, text, progressStyle, BoxStyle.getNestedBox(), true));
 					}
 				});
 			}
@@ -76,10 +74,8 @@ public enum FluidStorageProvider implements IBlockComponentProvider, IServerData
 	public static void putData(Accessor<?> accessor) {
 		CompoundTag tag = accessor.getServerData();
 		Object target = accessor.getTarget();
-		ServerPlayer player = (ServerPlayer) accessor.getPlayer();
-		boolean showDetails = accessor.showDetails();
-		for (var provider : WailaCommonRegistration.INSTANCE.fluidStorageProviders.get(target)) {
-			var groups = provider.getGroups(player, player.serverLevel(), target, showDetails);
+		for (var provider : WailaCommonRegistration.instance().fluidStorageProviders.get(target)) {
+			var groups = provider.getGroups(accessor, target);
 			if (groups != null) {
 				if (ViewGroup.saveList(tag, "JadeFluidStorage", groups, Function.identity()))
 					tag.putString("JadeFluidStorageUid", provider.getUid().toString());
@@ -114,8 +110,8 @@ public enum FluidStorageProvider implements IBlockComponentProvider, IServerData
 	}
 
 	@Override
-	public List<ViewGroup<CompoundTag>> getGroups(ServerPlayer player, ServerLevel world, Object target, boolean showDetails) {
-		return CommonProxy.wrapFluidStorage(target, player);
+	public List<ViewGroup<CompoundTag>> getGroups(Accessor<?> accessor, Object target) {
+		return CommonProxy.wrapFluidStorage(accessor, target);
 	}
 
 }

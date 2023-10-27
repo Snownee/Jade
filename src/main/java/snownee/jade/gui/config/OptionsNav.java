@@ -3,6 +3,7 @@ package snownee.jade.gui.config;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ObjectSelectionList;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import snownee.jade.util.SmoothChasingValue;
 
@@ -15,8 +16,7 @@ public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
 		super(Minecraft.getInstance(), width, height, top, bottom, itemHeight);
 		this.options = options;
 		this.anchor = new SmoothChasingValue();
-		setRenderSelection(false);
-		setRenderTopAndBottom(false);
+		setRenderBackground(false);
 	}
 
 	@Override
@@ -31,6 +31,18 @@ public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
 		guiGraphics.fill(left, top, left + 2, top + itemHeight - 4, 0xFFFFFFFF);
 	}
 
+	@Override
+	public void render(GuiGraphics guiGraphics, int i, int j, float f) {
+        guiGraphics.setColor(0.125f, 0.125f, 0.125f, 1.0f);
+        guiGraphics.blit(Screen.BACKGROUND_LOCATION, this.x0, this.y0, this.x1, this.y1 + (int)this.getScrollAmount(), this.x1 - this.x0, this.y1 - this.y0, 32, 32);
+        guiGraphics.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+		super.render(guiGraphics, i, j, f);
+	}
+
+	@Override
+	protected void renderSelection(GuiGraphics guiGraphics, int i, int j, int k, int l, int m) {
+	}
+ 
 	public void addEntry(OptionsList.Title entry) {
 		super.addEntry(new Entry(this, entry));
 	}

@@ -1,10 +1,9 @@
 package snownee.jade.api.config;
 
-import java.util.Collection;
-
 import org.jetbrains.annotations.ApiStatus.NonExtendable;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.ClipContext;
@@ -25,151 +24,6 @@ public interface IWailaConfig {
 	IConfigFormatting getFormatting();
 
 	IPluginConfig getPlugin();
-
-	@NonExtendable
-	interface IConfigGeneral {
-
-		void setDisplayTooltip(boolean displayTooltip);
-
-		boolean getDisplayEntities();
-
-		boolean getDisplayBosses();
-
-		boolean getDisplayBlocks();
-
-		void setDisplayBlocks(boolean displayBlocks);
-
-		void setDisplayEntities(boolean displayEntities);
-
-		void setDisplayBosses(boolean displayBosses);
-
-		void setDisplayMode(DisplayMode displayMode);
-
-		void setHideFromDebug(boolean hideFromDebug);
-
-		void setHideFromTabList(boolean hideFromTabList);
-
-		void toggleTTS();
-
-		void setTTSMode(TTSMode ttsMode);
-
-		void setDisplayFluids(boolean displayFluids);
-
-		void setDisplayFluids(FluidMode displayFluids);
-
-		void setItemModNameTooltip(boolean itemModNameTooltip);
-
-		boolean shouldDisplayTooltip();
-
-		DisplayMode getDisplayMode();
-
-		boolean shouldHideFromDebug();
-
-		boolean shouldHideFromTabList();
-
-		boolean shouldEnableTextToSpeech();
-
-		TTSMode getTTSMode();
-
-		boolean shouldDisplayFluids();
-
-		FluidMode getDisplayFluids();
-
-		boolean showItemModNameTooltip();
-
-		float getReachDistance();
-
-		void setReachDistance(float reachDistance);
-
-		BossBarOverlapMode getBossBarOverlapMode();
-
-		void setBossBarOverlapMode(BossBarOverlapMode mode);
-
-		void setDebug(boolean debug);
-
-		boolean isDebug();
-	}
-
-	@NonExtendable
-	interface IConfigOverlay {
-
-		void setOverlayPosX(float overlayPosX);
-
-		void setOverlayPosY(float overlayPosY);
-
-		void setOverlayScale(float overlayScale);
-
-		void setAnchorX(float overlayAnchorX);
-
-		void setAnchorY(float overlayAnchorY);
-
-		float getOverlayPosX();
-
-		float getOverlayPosY();
-
-		float getOverlayScale();
-
-		float getAnchorX();
-
-		float getAnchorY();
-
-		void setFlipMainHand(boolean overlaySquare);
-
-		boolean getFlipMainHand();
-
-		float tryFlip(float f);
-
-		void setSquare(boolean overlaySquare);
-
-		boolean getSquare();
-
-		float getAutoScaleThreshold();
-
-		float getAlpha();
-
-		Theme getTheme();
-
-		Collection<Theme> getThemes();
-
-		void setAlpha(float alpha);
-
-		void applyTheme(ResourceLocation id);
-
-		static int applyAlpha(int color, float alpha) {
-			int prevAlphaChannel = (color >> 24) & 0xFF;
-			if (prevAlphaChannel > 0)
-				alpha *= prevAlphaChannel / 256f;
-			int alphaChannel = (int) (0xFF * Mth.clamp(alpha, 0, 1));
-			return (color & 0xFFFFFF) | alphaChannel << 24;
-		}
-
-		boolean shouldShowIcon();
-
-		void setIconMode(IconMode iconMode);
-
-		IconMode getIconMode();
-
-		void setAnimation(boolean animation);
-
-		boolean getAnimation();
-
-		void setDisappearingDelay(float delay);
-
-		float getDisappearingDelay();
-	}
-
-	@NonExtendable
-	interface IConfigFormatting {
-
-		void setModName(String modName);
-
-		String getModName();
-
-		Component registryName(String name);
-
-		@Deprecated
-		Component title(Object title);
-	}
 
 	enum IconMode {
 		TOP, CENTERED, HIDE
@@ -195,5 +49,145 @@ public interface IWailaConfig {
 
 	enum BossBarOverlapMode {
 		NO_OPERATION, HIDE_BOSS_BAR, HIDE_TOOLTIP, PUSH_DOWN
+	}
+
+	@NonExtendable
+	interface IConfigGeneral {
+
+		void setDisplayTooltip(boolean displayTooltip);
+
+		boolean getDisplayEntities();
+
+		void setDisplayEntities(boolean displayEntities);
+
+		boolean getDisplayBosses();
+
+		void setDisplayBosses(boolean displayBosses);
+
+		boolean getDisplayBlocks();
+
+		void setDisplayBlocks(boolean displayBlocks);
+
+		void setHideFromDebug(boolean hideFromDebug);
+
+		void setHideFromTabList(boolean hideFromTabList);
+
+		void toggleTTS();
+
+		void setItemModNameTooltip(boolean itemModNameTooltip);
+
+		boolean shouldDisplayTooltip();
+
+		DisplayMode getDisplayMode();
+
+		void setDisplayMode(DisplayMode displayMode);
+
+		boolean shouldHideFromDebug();
+
+		boolean shouldHideFromTabList();
+
+		boolean shouldEnableTextToSpeech();
+
+		TTSMode getTTSMode();
+
+		void setTTSMode(TTSMode ttsMode);
+
+		boolean shouldDisplayFluids();
+
+		FluidMode getDisplayFluids();
+
+		void setDisplayFluids(boolean displayFluids);
+
+		void setDisplayFluids(FluidMode displayFluids);
+
+		boolean showItemModNameTooltip();
+
+		float getReachDistance();
+
+		void setReachDistance(float reachDistance);
+
+		BossBarOverlapMode getBossBarOverlapMode();
+
+		void setBossBarOverlapMode(BossBarOverlapMode mode);
+
+		boolean isDebug();
+
+		void setDebug(boolean debug);
+	}
+
+	@NonExtendable
+	interface IConfigOverlay {
+
+		static int applyAlpha(int color, float alpha) {
+			int prevAlphaChannel = (color >> 24) & 0xFF;
+			if (prevAlphaChannel > 0)
+				alpha *= prevAlphaChannel / 256f;
+			int alphaChannel = Mth.clamp((int) (0xFF * alpha), 4, 255);
+			return (color & 0xFFFFFF) | alphaChannel << 24;
+		}
+
+		float getOverlayPosX();
+
+		void setOverlayPosX(float overlayPosX);
+
+		float getOverlayPosY();
+
+		void setOverlayPosY(float overlayPosY);
+
+		float getOverlayScale();
+
+		void setOverlayScale(float overlayScale);
+
+		float getAnchorX();
+
+		void setAnchorX(float overlayAnchorX);
+
+		float getAnchorY();
+
+		void setAnchorY(float overlayAnchorY);
+
+		boolean getFlipMainHand();
+
+		void setFlipMainHand(boolean overlaySquare);
+
+		float tryFlip(float f);
+
+		boolean getSquare();
+
+		void setSquare(boolean overlaySquare);
+
+		float getAutoScaleThreshold();
+
+		float getAlpha();
+
+		void setAlpha(float alpha);
+
+		Theme getTheme();
+
+		void applyTheme(ResourceLocation id);
+
+		boolean shouldShowIcon();
+
+		IconMode getIconMode();
+
+		void setIconMode(IconMode iconMode);
+
+		boolean getAnimation();
+
+		void setAnimation(boolean animation);
+
+		float getDisappearingDelay();
+
+		void setDisappearingDelay(float delay);
+	}
+
+	@NonExtendable
+	interface IConfigFormatting {
+
+		Style getItemModNameStyle();
+
+		void setItemModNameStyle(Style itemModNameStyle);
+
+		Component registryName(String name);
 	}
 }

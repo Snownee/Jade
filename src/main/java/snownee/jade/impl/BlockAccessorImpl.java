@@ -64,7 +64,7 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 			if (tile == null)
 				return;
 
-			List<IServerDataProvider<BlockAccessor>> providers = WailaCommonRegistration.INSTANCE.getBlockNBTProviders(tile);
+			List<IServerDataProvider<BlockAccessor>> providers = WailaCommonRegistration.instance().getBlockNBTProviders(tile);
 			if (providers.isEmpty())
 				return;
 

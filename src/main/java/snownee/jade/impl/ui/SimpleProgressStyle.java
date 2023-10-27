@@ -2,34 +2,29 @@ package snownee.jade.impl.ui;
 
 import org.joml.Vector3f;
 
-import com.mojang.blaze3d.vertex.Tesselator;
+import com.google.common.base.Preconditions;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
-import snownee.jade.api.ui.IElement;
-import snownee.jade.api.ui.IProgressStyle;
+import snownee.jade.api.ui.Color;
+import snownee.jade.api.ui.Direction2D;
+import snownee.jade.api.ui.ProgressStyle;
 import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.overlay.OverlayRenderer;
-import snownee.jade.util.Color;
 
-public class ProgressStyle implements IProgressStyle {
+public class SimpleProgressStyle extends ProgressStyle {
 
-	public boolean autoTextColor = true;
+	public boolean autoTextColor = true; // TODO
 	public int color;
 	public int color2;
 	public int textColor;
 	public boolean vertical;
-	public IElement overlay;
-	@Deprecated
-	public boolean glowText;
-	public boolean shadow = true;
 
-	public ProgressStyle() {
+	public SimpleProgressStyle() {
 		color(0xFFFFFFFF);
 	}
 
@@ -63,21 +58,17 @@ public class ProgressStyle implements IProgressStyle {
 	}
 
 	@Override
-	public IProgressStyle color(int color, int color2) {
+	public ProgressStyle color(int color, int color2) {
 		this.color = color;
 		this.color2 = color2;
 		return this;
 	}
 
 	@Override
-	public IProgressStyle vertical(boolean vertical) {
-		this.vertical = vertical;
-		return this;
-	}
-
-	@Override
-	public IProgressStyle overlay(IElement overlay) {
-		this.overlay = overlay;
+	public ProgressStyle direction(Direction2D direction) {
+		Preconditions.checkArgument(direction == Direction2D.UP || direction == Direction2D.RIGHT, "Only UP and RIGHT are supported");
+		super.direction(direction);
+		vertical = direction == Direction2D.UP;
 		return this;
 	}
 
@@ -131,16 +122,9 @@ public class ProgressStyle implements IProgressStyle {
 				y += font.lineHeight + 2;
 			}
 			int color = IConfigOverlay.applyAlpha(textColor, OverlayRenderer.alpha);
-			if (glowText) {
-				MultiBufferSource.BufferSource multibuffersource$buffersource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-				//TODO alpha
-				font.drawInBatch8xOutline(text.getVisualOrderText(), x + 1, y, 0xFFFFFFFF, 0xFF333333, guiGraphics.pose().last().pose(), multibuffersource$buffersource, 15728880);
-				multibuffersource$buffersource.endBatch();
-			} else {
-				DisplayHelper.setBetterTextShadow(true);
-				guiGraphics.drawString(font, text, (int) x + 1, (int) y, color, shadow);
-				DisplayHelper.setBetterTextShadow(false);
-			}
+			DisplayHelper.setBetterTextShadow(true);
+			guiGraphics.drawString(font, text, (int) x + 1, (int) y, color);
+			DisplayHelper.setBetterTextShadow(false);
 		}
 	}
 
@@ -149,14 +133,9 @@ public class ProgressStyle implements IProgressStyle {
 	}
 
 	@Override
-	public IProgressStyle textColor(int color) {
+	public ProgressStyle textColor(int color) {
 		textColor = color;
 		autoTextColor = false;
-		return this;
-	}
-
-	public IProgressStyle glowText(boolean glowText) {
-		this.glowText = glowText;
 		return this;
 	}
 

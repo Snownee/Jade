@@ -21,6 +21,7 @@ public enum ExampleComponentProvider implements IBlockComponentProvider, IServer
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
+		System.out.println(accessor.getLevel().getGameTime());
 		if (accessor.getServerData().contains("Fuel")) {
 			IElement icon = IElementHelper.get().item(new ItemStack(Items.CLOCK), 0.5f).size(new Vec2(10, 10)).translate(new Vec2(0, -1));
 			icon.message(null);

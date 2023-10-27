@@ -9,14 +9,12 @@ import com.google.common.collect.Sets;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import snownee.jade.Jade;
 import snownee.jade.gui.config.BelowOrAboveListEntryTooltipPositioner;
 import snownee.jade.gui.config.NotUglyEditBox;
 import snownee.jade.gui.config.OptionsList;
@@ -36,12 +34,7 @@ public abstract class BaseOptionsScreen extends Screen {
 
 	public BaseOptionsScreen(Screen parent, Component title) {
 		super(title);
-
 		this.parent = parent;
-	}
-
-	public BaseOptionsScreen(Screen parent, String title) {
-		this(parent, OptionsList.Entry.makeTitle(title));
 	}
 
 	@Override
@@ -56,6 +49,7 @@ public abstract class BaseOptionsScreen extends Screen {
 		options.setLeftPos(120);
 		optionsNav = new OptionsNav(options, 120, height, 18, height - 32, 18);
 		searchBox = new NotUglyEditBox(font, 0, 0, 120, 18, searchBox, Component.translatable("gui.jade.search"));
+		searchBox.setBordered(false);
 		searchBox.setHint(Component.translatable("gui.jade.search.hint"));
 		searchBox.responder = s -> {
 			options.updateSearch(s);
@@ -83,20 +77,11 @@ public abstract class BaseOptionsScreen extends Screen {
 		}
 
 		options.updateSaveState();
-
-		if (minecraft.level != null) {
-			CycleButton<Boolean> previewButton = CycleButton.booleanBuilder(OptionsList.OPTION_ON, OptionsList.OPTION_OFF).create(10, saveButton.getY(), 85, 20, Component.translatable("gui.jade.preview"), (button, value) -> {
-				Jade.CONFIG.get().getGeneral().previewOverlay = value;
-				saver.run();
-			});
-			previewButton.setValue(Jade.CONFIG.get().getGeneral().previewOverlay);
-			addRenderableWidget(previewButton);
-		}
 	}
 
 	@Override
 	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-		renderBackground(guiGraphics);
+		renderBackground(guiGraphics, mouseX, mouseY, partialTicks);
 		super.render(guiGraphics, mouseX, mouseY, partialTicks);
 
 		OptionsList.Entry entry = options.isMouseOver(mouseX, mouseY) ? options.getEntryAt(mouseX, mouseY) : null;
@@ -117,20 +102,13 @@ public abstract class BaseOptionsScreen extends Screen {
 		}
 	}
 
-	@Override
-	public void tick() {
-		if (searchBox != null) {
-			searchBox.tick();
-		}
-	}
-
 	public abstract OptionsList createOptions();
 
 	@Override
-	public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+	public boolean mouseScrolled(double mouseX, double mouseY, double deltaX, double deltaY) {
 		if (optionsNav.isMouseOver(mouseX, mouseY))
-			return optionsNav.mouseScrolled(mouseX, mouseY, delta);
-		return options.mouseScrolled(mouseX, mouseY, delta);
+			return optionsNav.mouseScrolled(mouseX, mouseY, deltaX, deltaY);
+		return options.mouseScrolled(mouseX, mouseY, deltaX, deltaY);
 	}
 
 	@Override
@@ -187,15 +165,5 @@ public abstract class BaseOptionsScreen extends Screen {
 		}
 
 		return Optional.empty();
-	}
-
-	public boolean forcePreviewOverlay() {
-		Objects.requireNonNull(minecraft);
-		if (!isDragging() || options == null)
-			return false;
-		OptionsList.Entry entry = options.getSelected();
-		if (entry == null || entry.getFirstWidget() == null)
-			return false;
-		return options.forcePreview.contains(entry);
 	}
 }

@@ -19,7 +19,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
-import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
@@ -41,7 +40,6 @@ import snownee.jade.addon.universal.ItemStorageProvider;
 import snownee.jade.addon.vanilla.VanillaPlugin;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.BlockAccessor;
-import snownee.jade.api.ITooltip;
 import snownee.jade.api.IWailaClientRegistration;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IWailaConfig;
@@ -50,12 +48,16 @@ import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
 import snownee.jade.api.config.IWailaConfig.TTSMode;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
+import snownee.jade.api.ui.BoxStyle;
+import snownee.jade.api.ui.ColorPalette;
+import snownee.jade.api.ui.Direction2D;
+import snownee.jade.api.ui.IBoxElement;
+import snownee.jade.api.ui.TooltipRect;
 import snownee.jade.gui.HomeConfigScreen;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.impl.config.WailaConfig.ConfigGeneral;
 import snownee.jade.overlay.DisplayHelper;
-import snownee.jade.overlay.TooltipRenderer;
 import snownee.jade.overlay.WailaTickHandler;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
@@ -124,8 +126,8 @@ public final class JadeClient {
 					general.hintNarratorToggle = false;
 				}
 				Jade.CONFIG.save();
-			} else if (WailaTickHandler.instance().tooltipRenderer != null) {
-				WailaTickHandler.narrate(WailaTickHandler.instance().tooltipRenderer.getTooltip(), false);
+			} else if (WailaTickHandler.instance().rootElement != null) {
+				WailaTickHandler.narrate(WailaTickHandler.instance().rootElement.getTooltip(), false);
 			}
 		}
 	}
@@ -168,13 +170,12 @@ public final class JadeClient {
 				break;
 			}
 		}
-		name = String.format(Jade.CONFIG.get().getFormatting().getModName(), name);
-		tooltip.add(i, Component.literal(name));
+		tooltip.add(i, Component.literal(name).withStyle(Jade.CONFIG.get().getFormatting().getItemModNameStyle()));
 	}
 
 	@Nullable
 	public static Accessor<?> builtInOverrides(HitResult hitResult, @Nullable Accessor<?> accessor, @Nullable Accessor<?> originalAccessor) {
-		if (WailaClientRegistration.INSTANCE.maybeLowVisionUser()) {
+		if (WailaClientRegistration.instance().maybeLowVisionUser()) {
 			return accessor;
 		}
 		if (accessor instanceof BlockAccessor target) {
@@ -203,13 +204,12 @@ public final class JadeClient {
 		return accessor;
 	}
 
-	public static void drawBreakingProgress(ITooltip tooltip, Rect2i rect, GuiGraphics guiGraphics, Accessor<?> accessor) {
+	public static void drawBreakingProgress(IBoxElement rootElement, TooltipRect rect, GuiGraphics guiGraphics, Accessor<?> accessor) {
 		if (!PluginConfig.INSTANCE.get(Identifiers.MC_BREAKING_PROGRESS)) {
 			progressAlpha = 0;
 			return;
 		}
-		TooltipRenderer tooltipRenderer = WailaTickHandler.instance().tooltipRenderer;
-		if (tooltipRenderer == null) {
+		if (!Float.isNaN(rootElement.getBoxProgress())) {
 			progressAlpha = 0;
 			return;
 		}
@@ -225,11 +225,13 @@ public final class JadeClient {
 			return;
 		}
 		Theme theme = IThemeHelper.get().theme();
-		int color = canHarvest ? theme.bottomProgressNormalColor : theme.bottomProgressFailureColor;
-		int width = (int) tooltipRenderer.getSize().x;
-		int height = (int) tooltipRenderer.getSize().y;
-		if (!IWailaConfig.get().getOverlay().getSquare() && theme.backgroundTexture == null) {
-			height += 1;
+		ColorPalette colors = theme.tooltipStyle.boxProgressColors;
+		int color = canHarvest ? colors.normal() : colors.failure();
+		float top = rootElement.getCachedSize().y;
+		float width = rootElement.getCachedSize().x;
+		boolean roundCorner = !IWailaConfig.get().getOverlay().getSquare();
+		if (roundCorner && theme.tooltipStyle instanceof BoxStyle.GradientBorder) {
+			top += 1;
 		}
 		progressAlpha += mc.getDeltaFrameTime() * (playerController.isDestroying() ? 0.1F : -0.1F);
 		if (playerController.isDestroying()) {
@@ -248,17 +250,12 @@ public final class JadeClient {
 			return;
 		}
 		color = IConfigOverlay.applyAlpha(color, progressAlpha);
-		if (theme.bottomProgressOffset == null) {
-			DisplayHelper.fill(guiGraphics, 0, height - 1, width * savedProgress, height, color);
-		} else {
-			int[] offset = theme.bottomProgressOffset;
-			int offset0 = offset[0] + 2;
-			int offset1 = offset[1] + 2;
-			int offset2 = offset[2] + 2;
-			int offset3 = offset[3];
-			width += offset1 - offset3;
-			DisplayHelper.fill(guiGraphics, offset3, height - 1 + offset0, offset3 + width * savedProgress, height + offset2, color);
-		}
+		float offset0 = theme.tooltipStyle.boxProgressOffset(Direction2D.UP);
+		float offset1 = theme.tooltipStyle.boxProgressOffset(Direction2D.RIGHT);
+		float offset2 = theme.tooltipStyle.boxProgressOffset(Direction2D.DOWN);
+		float offset3 = theme.tooltipStyle.boxProgressOffset(Direction2D.LEFT);
+		width += offset1 - offset3;
+		DisplayHelper.fill(guiGraphics, offset3, top - 1 + offset0, offset3 + width * savedProgress, top + offset2, color);
 	}
 
 	public static MutableComponent format(String s, Object... objects) {

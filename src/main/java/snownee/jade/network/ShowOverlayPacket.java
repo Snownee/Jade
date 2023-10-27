@@ -1,9 +1,7 @@
 package snownee.jade.network;
 
-import java.util.function.Supplier;
-
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import snownee.jade.Jade;
 
 public class ShowOverlayPacket {
@@ -22,16 +20,13 @@ public class ShowOverlayPacket {
 		buffer.writeBoolean(message.show);
 	}
 
-	public static class Handler {
-
-		public static void onMessage(ShowOverlayPacket message, Supplier<NetworkEvent.Context> context) {
-			boolean show = message.show;
-			Jade.LOGGER.info("Received request from the server to {} overlay", show ? "show" : "hide");
-			context.get().enqueueWork(() -> {
-				Jade.CONFIG.get().getGeneral().setDisplayTooltip(show);
-				Jade.CONFIG.save();
-			});
-			context.get().setPacketHandled(true);
-		}
+	public static void handle(ShowOverlayPacket message, CustomPayloadEvent.Context context) {
+		boolean show = message.show;
+		Jade.LOGGER.info("Received request from the server to {} overlay", show ? "show" : "hide");
+		context.enqueueWork(() -> {
+			Jade.CONFIG.get().getGeneral().setDisplayTooltip(show);
+			Jade.CONFIG.save();
+		});
+		context.setPacketHandled(true);
 	}
 }

@@ -16,9 +16,8 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.LockCode;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.ContainerEntity;
 import net.minecraft.world.inventory.PlayerEnderChestContainer;
 import net.minecraft.world.item.ItemStack;
@@ -35,6 +34,7 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.ui.Direction2D;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElementHelper;
@@ -68,7 +68,7 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 			}
 			return;
 		}
-		var provider = Optional.ofNullable(ResourceLocation.tryParse(accessor.getServerData().getString("JadeItemStorageUid"))).map(WailaClientRegistration.INSTANCE.itemStorageProviders::get);
+		var provider = Optional.ofNullable(ResourceLocation.tryParse(accessor.getServerData().getString("JadeItemStorageUid"))).map(WailaClientRegistration.instance().itemStorageProviders::get);
 		if (provider.isEmpty()) {
 			return;
 		}
@@ -134,6 +134,7 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 					continue;
 				if (i > 0 && (showName.isTrue() || drawnCount >= PluginConfig.INSTANCE.getInt(Identifiers.MC_ITEM_STORAGE_ITEMS_PER_LINE))) {
 					theTooltip.add(elements);
+					theTooltip.setLineMargin(-1, Direction2D.DOWN, -1);
 					elements.clear();
 					drawnCount = 0;
 				}
@@ -160,10 +161,9 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 	public static void putData(Accessor<?> accessor) {
 		CompoundTag tag = accessor.getServerData();
 		Object target = accessor.getTarget();
-		ServerPlayer player = (ServerPlayer) accessor.getPlayer();
-		boolean showDetails = accessor.showDetails();
-		for (var provider : WailaCommonRegistration.INSTANCE.itemStorageProviders.get(target)) {
-			var groups = provider.getGroups(player, player.serverLevel(), target, showDetails);
+		Player player = accessor.getPlayer();
+		for (var provider : WailaCommonRegistration.instance().itemStorageProviders.get(target)) {
+			var groups = provider.getGroups(accessor, target);
 			if (groups == null) {
 				continue;
 			}
@@ -220,13 +220,14 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 	}
 
 	@Override
-	public List<ViewGroup<ItemStack>> getGroups(ServerPlayer player, ServerLevel world, Object target, boolean showDetails) {
+	public List<ViewGroup<ItemStack>> getGroups(Accessor<?> accessor, Object target) {
 		if (target instanceof RandomizableContainerBlockEntity te && te.lootTable != null) {
 			return List.of();
 		}
 		if (target instanceof ContainerEntity containerEntity && containerEntity.getLootTable() != null) {
 			return List.of();
 		}
+		Player player = accessor.getPlayer();
 		if (!JadeCommonConfig.bypassLockedContainer && !player.isCreative() && !player.isSpectator() && target instanceof BaseContainerBlockEntity te) {
 			if (te.lockKey != LockCode.NO_LOCK) {
 				return List.of();
@@ -234,7 +235,7 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 		}
 		if (player != null && target instanceof EnderChestBlockEntity) {
 			PlayerEnderChestContainer inventory = player.getEnderChestInventory();
-			return new ItemCollector<>(new ItemIterator.ContainerItemIterator(0)).update(inventory, world.getGameTime());
+			return new ItemCollector<>(new ItemIterator.ContainerItemIterator(0)).update(inventory, accessor.getLevel().getGameTime());
 		}
 		ItemCollector<?> itemCollector;
 		try {
@@ -246,7 +247,7 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 		if (itemCollector == ItemCollector.EMPTY) {
 			return null;
 		}
-		return itemCollector.update(target, world.getGameTime());
+		return itemCollector.update(target, accessor.getLevel().getGameTime());
 	}
 
 	@Override

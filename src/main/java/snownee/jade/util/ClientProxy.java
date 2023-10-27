@@ -57,6 +57,7 @@ import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.forgespi.language.IModInfo;
+import net.minecraftforge.network.PacketDistributor;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
 import snownee.jade.addon.harvest.SpecialToolHandler;
@@ -211,11 +212,11 @@ public final class ClientProxy {
 	}
 
 	public static void requestBlockData(BlockAccessor accessor) {
-		CommonProxy.NETWORK.sendToServer(new RequestTilePacket(accessor));
+		CommonProxy.NETWORK.send(new RequestTilePacket(accessor), PacketDistributor.SERVER.noArg());
 	}
 
 	public static void requestEntityData(EntityAccessor accessor) {
-		CommonProxy.NETWORK.sendToServer(new RequestEntityPacket(accessor));
+		CommonProxy.NETWORK.send(new RequestEntityPacket(accessor), PacketDistributor.SERVER.noArg());
 	}
 
 	public static IElement elementFromLiquid(LiquidBlock block) {

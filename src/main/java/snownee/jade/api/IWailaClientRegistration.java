@@ -18,9 +18,9 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import snownee.jade.api.callback.JadeAfterRenderCallback;
 import snownee.jade.api.callback.JadeBeforeRenderCallback;
+import snownee.jade.api.callback.JadeBeforeTooltipCollectCallback;
 import snownee.jade.api.callback.JadeItemModNameCallback;
 import snownee.jade.api.callback.JadeRayTraceCallback;
-import snownee.jade.api.callback.JadeRenderBackgroundCallback;
 import snownee.jade.api.callback.JadeTooltipCollectedCallback;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.platform.PlatformWailaClientRegistration;
@@ -151,11 +151,11 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 
 	void addItemModNameCallback(int priority, JadeItemModNameCallback callback);
 
-	default void addRenderBackgroundCallback(JadeRenderBackgroundCallback callback) {
-		addRenderBackgroundCallback(0, callback);
+	default void addBeforeTooltipCollectCallback(JadeBeforeTooltipCollectCallback callback) {
+		addBeforeTooltipCollectCallback(0, callback);
 	}
 
-	void addRenderBackgroundCallback(int priority, JadeRenderBackgroundCallback callback);
+	void addBeforeTooltipCollectCallback(int priority, JadeBeforeTooltipCollectCallback callback);
 
 	Screen createPluginConfigScreen(@Nullable Screen parent, @Nullable String namespace);
 
@@ -185,8 +185,8 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 
 	boolean isClientFeature(ResourceLocation uid);
 
-	<T extends Accessor<?>> void registerAccessorHandler(Class<T> clazz, Accessor.ClientHandler<T> handler);
+	<T extends Accessor<?>> void registerAccessorHandler(Class<T> clazz, AccessorClientHandler<T> handler);
 
-	Accessor.ClientHandler<Accessor<?>> getAccessorHandler(Class<? extends Accessor<?>> clazz);
+	AccessorClientHandler<Accessor<?>> getAccessorHandler(Class<? extends Accessor<?>> clazz);
 
 }

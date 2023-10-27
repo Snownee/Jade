@@ -9,16 +9,19 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.ITooltip;
+import snownee.jade.api.Identifiers;
 import snownee.jade.api.fluid.JadeFluidObject;
+import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.IBoxElement;
-import snownee.jade.api.ui.IBoxStyle;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElementHelper;
-import snownee.jade.api.ui.IProgressStyle;
+import snownee.jade.api.ui.ProgressStyle;
 import snownee.jade.impl.Tooltip;
 
 public class ElementHelper implements IElementHelper {
 	public static final ElementHelper INSTANCE = new ElementHelper();
+	public static final ResourceLocation DEFAULT_PROGRESS = Identifiers.JADE("progress");
+	public static final ResourceLocation DEFAULT_PROGRESS_BASE = Identifiers.JADE("progress_base");
 	public static final Vec2 SMALL_ITEM_SIZE = new Vec2(10, 10);
 	public static final Vec2 SMALL_ITEM_OFFSET = new Vec2(0, -1); //Vec2.NEG_UNIT_Y nullified by Saturn mod
 	private ResourceLocation uid;
@@ -59,15 +62,26 @@ public class ElementHelper implements IElementHelper {
 	}
 
 	@Override
-	public IElement progress(float progress, @Nullable Component text, IProgressStyle style, IBoxStyle boxStyle, boolean canDecrease) {
+	public IElement progress(float progress, @Nullable Component text, ProgressStyle style, BoxStyle boxStyle, boolean canDecrease) {
 		Objects.requireNonNull(style);
 		Objects.requireNonNull(boxStyle);
 		return new ProgressElement(progress, text, style, boxStyle, canDecrease);
 	}
 
 	@Override
-	public IBoxElement box(ITooltip tooltip, IBoxStyle boxStyle) {
-		Objects.requireNonNull(boxStyle);
+	public IElement progress(float progress) {
+		return progress(progress, DEFAULT_PROGRESS_BASE, DEFAULT_PROGRESS, 22, 16, false);
+	}
+
+	@Override
+	public IElement progress(float progress, ResourceLocation baseSprite, ResourceLocation progressSprite, int width, int height, boolean canDecrease) {
+		ProgressStyle style = progressStyle().fitContentX(false).overlay(sprite(progressSprite, width, height));
+		BoxStyle boxStyle = BoxStyle.getSprite(baseSprite, null);
+		return progress(progress, null, style, boxStyle, canDecrease).size(new Vec2(width, height));
+	}
+
+	@Override
+	public IBoxElement box(ITooltip tooltip, BoxStyle boxStyle) {
 		return new BoxElement((Tooltip) tooltip, boxStyle);
 	}
 
@@ -77,8 +91,13 @@ public class ElementHelper implements IElementHelper {
 	}
 
 	@Override
-	public IProgressStyle progressStyle() {
-		return new ProgressStyle();
+	public ProgressStyle progressStyle() {
+		return new SimpleProgressStyle();
+	}
+
+	@Override
+	public IElement sprite(ResourceLocation sprite, int width, int height) {
+		return new SpriteElement(sprite, width, height);
 	}
 
 	@Nullable
@@ -90,7 +109,6 @@ public class ElementHelper implements IElementHelper {
 		this.uid = uid;
 	}
 
-	//
 	//    public static IElement sub(String text) {
 	//        CompoundTag tag = new CompoundTag();
 	//        tag.putString("text", text);

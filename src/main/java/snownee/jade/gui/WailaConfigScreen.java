@@ -36,14 +36,14 @@ import snownee.jade.impl.config.WailaConfig.ConfigOverlay;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
 
-public class WailaConfigScreen extends BaseOptionsScreen {
+public class WailaConfigScreen extends PreviewOptionsScreen {
 
 	private OptionValue<Boolean> squareEntry;
 	private OptionValue<Float> opacityEntry;
 
 	public WailaConfigScreen(Screen parent) {
 		super(parent, Component.translatable("gui.jade.jade_settings"));
-		this.saver = Jade.CONFIG::save;
+		saver = Jade.CONFIG::save;
 		ImmutableMap.Builder<KeyMapping, InputConstants.Key> keyMapBuilder = ImmutableMap.builder();
 		for (KeyMapping keyMapping : Minecraft.getInstance().options.keyMappings) {
 			if (JadeClient.openConfig.getCategory().equals(keyMapping.getCategory())) {
@@ -51,7 +51,7 @@ public class WailaConfigScreen extends BaseOptionsScreen {
 			}
 		}
 		var keyMap = keyMapBuilder.build();
-		this.canceller = () -> {
+		canceller = () -> {
 			Jade.CONFIG.invalidate();
 			keyMap.forEach(KeyMapping::setKey);
 			Minecraft.getInstance().options.save();
@@ -116,10 +116,10 @@ public class WailaConfigScreen extends BaseOptionsScreen {
 				return;
 			overlay.applyTheme(id);
 			Theme theme = overlay.getTheme();
-			if (theme.squareBorder != null)
-				squareEntry.setValue(theme.squareBorder);
-			if (theme.opacity != 0)
-				opacityEntry.setValue(theme.opacity);
+			if (theme.changeRoundCorner != null)
+				squareEntry.setValue(theme.changeRoundCorner);
+			if (theme.changeOpacity != 0)
+				opacityEntry.setValue(theme.changeOpacity);
 		}, id -> Component.translatable(Util.makeDescriptionId("jade.theme", id)));
 		squareEntry = options.choices("overlay_square", overlay.getSquare(), overlay::setSquare);
 		opacityEntry = options.slider("overlay_alpha", overlay.getAlpha(), overlay::setAlpha);

@@ -5,12 +5,11 @@ import java.util.List;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.monster.Slime;
 import net.minecraft.world.level.material.Fluids;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.fluid.JadeFluidObject;
+import snownee.jade.api.ui.MessageType;
 import snownee.jade.api.view.ClientViewGroup;
 import snownee.jade.api.view.FluidView;
 import snownee.jade.api.view.IClientExtensionProvider;
@@ -31,12 +30,12 @@ public enum ExampleFluidStorageProvider
 		return ClientViewGroup.map(groups, FluidView::readDefault, (group, clientGroup) -> {
 			if (group.id != null)
 				clientGroup.title = Component.literal(group.id);
-			clientGroup.bgColor = 0x55666666;
+			clientGroup.messageType = MessageType.SUCCESS;
 		});
 	}
 
 	@Override
-	public List<ViewGroup<CompoundTag>> getGroups(ServerPlayer player, ServerLevel world, Slime target, boolean showDetails) {
+	public List<ViewGroup<CompoundTag>> getGroups(Accessor<?> accessor, Slime target) {
 		var tank1 = new ViewGroup<>(List.of(FluidView.writeDefault(JadeFluidObject.of(Fluids.LAVA, 1000), 2000)));
 		tank1.id = "1";
 		var tank2 = new ViewGroup<>(List.of(FluidView.writeDefault(JadeFluidObject.of(Fluids.WATER, 500), 2000), FluidView.writeDefault(JadeFluidObject.empty(), 2000)));

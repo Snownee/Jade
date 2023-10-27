@@ -14,9 +14,8 @@ import org.jetbrains.annotations.Nullable;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
-import snownee.jade.api.theme.Theme;
-import snownee.jade.impl.theme.ThemeSerializer;
 
 public class JsonConfig<T> {
 
@@ -26,7 +25,7 @@ public class JsonConfig<T> {
 			.serializeNulls()
 			.enableComplexMapKeySerialization()
 			.registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
-			.registerTypeAdapter(Theme.class, new ThemeSerializer())
+			.registerTypeAdapter(Style.class, new Style.Serializer())
 			.setLenient()
 			.create();
 	/* on */

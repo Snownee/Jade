@@ -69,7 +69,7 @@ public interface IElement {
 
 	IElement message(@Nullable String message);
 
-	public enum Align {
+	enum Align {
 		LEFT, RIGHT
 	}
 }

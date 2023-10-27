@@ -32,19 +32,19 @@ public class Jade {
 		if (CommonProxy.isDevEnv()) {
 			try {
 				IWailaPlugin plugin = new ExamplePlugin();
-				plugin.register(WailaCommonRegistration.INSTANCE);
+				plugin.register(WailaCommonRegistration.instance());
 				if (CommonProxy.isPhysicallyClient()) {
-					plugin.registerClient(WailaClientRegistration.INSTANCE);
+					plugin.registerClient(WailaClientRegistration.instance());
 				}
 			} catch (Throwable e) {
 				// NO-OP
 			}
 		}
 
-		WailaCommonRegistration.INSTANCE.priorities.sort(PluginConfig.INSTANCE.getKeys());
-		WailaCommonRegistration.INSTANCE.loadComplete();
+		WailaCommonRegistration.instance().priorities.sort(PluginConfig.INSTANCE.getKeys());
+		WailaCommonRegistration.instance().loadComplete();
 		if (CommonProxy.isPhysicallyClient()) {
-			WailaClientRegistration.INSTANCE.loadComplete();
+			WailaClientRegistration.instance().loadComplete();
 			ConfigGeneral.init();
 		}
 		PluginConfig.INSTANCE.reload();

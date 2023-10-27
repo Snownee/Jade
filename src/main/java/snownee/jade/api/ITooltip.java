@@ -6,6 +6,7 @@ import org.jetbrains.annotations.ApiStatus.NonExtendable;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import snownee.jade.api.ui.Direction2D;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElement.Align;
 import snownee.jade.api.ui.IElementHelper;
@@ -121,6 +122,7 @@ public interface ITooltip {
 	 */
 	void remove(ResourceLocation tag);
 
+	@Deprecated
 	IElementHelper getElementHelper();
 
 	/**
@@ -131,4 +133,6 @@ public interface ITooltip {
 	List<IElement> get(int index, Align align);
 
 	String getMessage();
+
+	void setLineMargin(int index, Direction2D side, int margin);
 }

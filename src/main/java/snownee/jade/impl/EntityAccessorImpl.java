@@ -46,7 +46,7 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 			Entity entity = accessor.getEntity();
 			if (entity == null || player.distanceToSqr(entity) > Jade.MAX_DISTANCE_SQR)
 				return;
-			List<IServerDataProvider<EntityAccessor>> providers = WailaCommonRegistration.INSTANCE.getEntityNBTProviders(entity);
+			List<IServerDataProvider<EntityAccessor>> providers = WailaCommonRegistration.instance().getEntityNBTProviders(entity);
 			if (providers.isEmpty())
 				return;
 

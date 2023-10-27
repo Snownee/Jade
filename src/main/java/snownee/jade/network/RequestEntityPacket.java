@@ -1,10 +1,7 @@
 package snownee.jade.network;
 
-import java.util.function.Supplier;
-
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.impl.EntityAccessorImpl;
 import snownee.jade.util.CommonProxy;
@@ -30,13 +27,10 @@ public class RequestEntityPacket {
 		message.accessor.toNetwork(buffer);
 	}
 
-	public static class Handler {
-
-		public static void onMessage(final RequestEntityPacket message, Supplier<NetworkEvent.Context> context) {
-			EntityAccessorImpl.handleRequest(message.buffer, context.get().getSender(), context.get()::enqueueWork, tag -> {
-				CommonProxy.NETWORK.sendTo(new ReceiveDataPacket(tag), context.get().getNetworkManager(), NetworkDirection.PLAY_TO_CLIENT);
-			});
-			context.get().setPacketHandled(true);
-		}
+	public static void handle(final RequestEntityPacket message, CustomPayloadEvent.Context context) {
+		EntityAccessorImpl.handleRequest(message.buffer, context.getSender(), context::enqueueWork, tag -> {
+			CommonProxy.NETWORK.send(new ReceiveDataPacket(tag), context.getConnection());
+		});
+		context.setPacketHandled(true);
 	}
 }

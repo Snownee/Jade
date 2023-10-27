@@ -3,7 +3,6 @@ package snownee.jade.util;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.IntStream;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -18,17 +17,11 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.IItemHandler;
 import snownee.jade.addon.universal.ItemIterator;
-import snownee.jade.api.view.ItemView;
 import snownee.jade.api.view.ViewGroup;
 
 public class JadeForgeUtils {
 
 	private JadeForgeUtils() {
-	}
-
-	@Deprecated
-	public static ViewGroup<ItemStack> fromItemHandler(IItemHandler itemHandler, int maxSize, int startIndex) {
-		return ItemView.compacted(IntStream.range(startIndex, itemHandler.getSlots()).limit(maxSize * 3).mapToObj(itemHandler::getStackInSlot), maxSize);
 	}
 
 	public static ItemIterator<? extends IItemHandler> fromItemHandler(IItemHandler storage, int fromIndex) {

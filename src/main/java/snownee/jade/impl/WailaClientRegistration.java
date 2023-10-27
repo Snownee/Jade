@@ -25,6 +25,7 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import snownee.jade.api.Accessor;
+import snownee.jade.api.AccessorClientHandler;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IBlockComponentProvider;
@@ -33,9 +34,9 @@ import snownee.jade.api.IToggleableProvider;
 import snownee.jade.api.IWailaClientRegistration;
 import snownee.jade.api.callback.JadeAfterRenderCallback;
 import snownee.jade.api.callback.JadeBeforeRenderCallback;
+import snownee.jade.api.callback.JadeBeforeTooltipCollectCallback;
 import snownee.jade.api.callback.JadeItemModNameCallback;
 import snownee.jade.api.callback.JadeRayTraceCallback;
-import snownee.jade.api.callback.JadeRenderBackgroundCallback;
 import snownee.jade.api.callback.JadeTooltipCollectedCallback;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.platform.CustomEnchantPower;
@@ -56,7 +57,7 @@ import snownee.jade.util.ClientProxy;
 
 public class WailaClientRegistration implements IWailaClientRegistration {
 
-	public static final WailaClientRegistration INSTANCE = new WailaClientRegistration();
+	private static final WailaClientRegistration INSTANCE = new WailaClientRegistration();
 
 	public final HierarchyLookup<IBlockComponentProvider> blockIconProviders;
 	public final HierarchyLookup<IBlockComponentProvider> blockComponentProviders;
@@ -74,7 +75,7 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	public final CallbackContainer<JadeRayTraceCallback> rayTraceCallback = new CallbackContainer<>();
 	public final CallbackContainer<JadeTooltipCollectedCallback> tooltipCollectedCallback = new CallbackContainer<>();
 	public final CallbackContainer<JadeItemModNameCallback> itemModNameCallback = new CallbackContainer<>();
-	public final CallbackContainer<JadeRenderBackgroundCallback> renderBackgroundCallback = new CallbackContainer<>();
+	public final CallbackContainer<JadeBeforeTooltipCollectCallback> beforeTooltipCollectCallback = new CallbackContainer<>();
 
 	public final Map<Block, CustomEnchantPower> customEnchantPowers = Maps.newHashMap();
 	public final Map<ResourceLocation, IClientExtensionProvider<ItemStack, ItemView>> itemStorageProviders = Maps.newHashMap();
@@ -84,7 +85,7 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 
 	public final Set<ResourceLocation> clientFeatures = Sets.newHashSet();
 
-	public final Map<Class<Accessor<?>>, Accessor.ClientHandler<Accessor<?>>> accessorHandlers = Maps.newIdentityHashMap();
+	public final Map<Class<Accessor<?>>, AccessorClientHandler<Accessor<?>>> accessorHandlers = Maps.newIdentityHashMap();
 
 	WailaClientRegistration() {
 		blockIconProviders = new HierarchyLookup<>(Block.class);
@@ -92,6 +93,10 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 
 		entityIconProviders = new HierarchyLookup<>(Entity.class);
 		entityComponentProviders = new HierarchyLookup<>(Entity.class);
+	}
+
+	public static WailaClientRegistration instance() {
+		return INSTANCE;
 	}
 
 	@Override
@@ -219,12 +224,12 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	}
 
 	public void loadComplete() {
-		var priorities = WailaCommonRegistration.INSTANCE.priorities;
+		var priorities = WailaCommonRegistration.instance().priorities;
 		blockComponentProviders.loadComplete(priorities);
 		blockIconProviders.loadComplete(priorities);
 		entityComponentProviders.loadComplete(priorities);
 		entityIconProviders.loadComplete(priorities);
-		Stream.of(afterRenderCallback, beforeRenderCallback, rayTraceCallback, tooltipCollectedCallback, itemModNameCallback, renderBackgroundCallback).forEach(CallbackContainer::sort);
+		Stream.of(afterRenderCallback, beforeRenderCallback, rayTraceCallback, tooltipCollectedCallback, itemModNameCallback, beforeTooltipCollectCallback).forEach(CallbackContainer::sort);
 	}
 
 	@Override
@@ -253,8 +258,8 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	}
 
 	@Override
-	public void addRenderBackgroundCallback(int priority, JadeRenderBackgroundCallback callback) {
-		renderBackgroundCallback.add(priority, callback);
+	public void addBeforeTooltipCollectCallback(int priority, JadeBeforeTooltipCollectCallback callback) {
+		beforeTooltipCollectCallback.add(priority, callback);
 	}
 
 	@Override
@@ -359,12 +364,12 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T extends Accessor<?>> void registerAccessorHandler(Class<T> clazz, Accessor.ClientHandler<T> handler) {
-		accessorHandlers.put((Class<Accessor<?>>) clazz, (Accessor.ClientHandler<Accessor<?>>) handler);
+	public <T extends Accessor<?>> void registerAccessorHandler(Class<T> clazz, AccessorClientHandler<T> handler) {
+		accessorHandlers.put((Class<Accessor<?>>) clazz, (AccessorClientHandler<Accessor<?>>) handler);
 	}
 
 	@Override
-	public Accessor.ClientHandler<Accessor<?>> getAccessorHandler(Class<? extends Accessor<?>> clazz) {
+	public AccessorClientHandler<Accessor<?>> getAccessorHandler(Class<? extends Accessor<?>> clazz) {
 		return Objects.requireNonNull(accessorHandlers.get(clazz), () -> "No accessor handler for " + clazz);
 	}
 

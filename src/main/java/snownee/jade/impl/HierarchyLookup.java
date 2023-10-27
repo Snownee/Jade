@@ -37,7 +37,7 @@ public class HierarchyLookup<T extends IJadeProvider> {
 	public void register(Class<?> clazz, T provider) {
 		Objects.requireNonNull(clazz);
 		Objects.requireNonNull(provider.getUid());
-		WailaCommonRegistration.INSTANCE.priorities.put(provider);
+		WailaCommonRegistration.instance().priorities.put(provider);
 		objects.put(clazz, provider);
 	}
 
@@ -53,7 +53,7 @@ public class HierarchyLookup<T extends IJadeProvider> {
 			return resultCache.get(clazz, () -> {
 				List<T> list = Lists.newArrayList();
 				getInternal(clazz, list);
-				list = ImmutableList.sortedCopyOf(Comparator.comparingInt(WailaCommonRegistration.INSTANCE.priorities::byValue), list);
+				list = ImmutableList.sortedCopyOf(Comparator.comparingInt(WailaCommonRegistration.instance().priorities::byValue), list);
 				if (singleton && !list.isEmpty())
 					return ImmutableList.of(list.get(0));
 				return list;

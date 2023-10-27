@@ -16,7 +16,7 @@ public interface IThemeHelper {
 	Theme theme();
 
 	default int getNormalColor() {
-		return theme().normalColor;
+		return theme().text.colors().normal();
 	}
 
 	Collection<Theme> getThemes();
@@ -35,6 +35,8 @@ public interface IThemeHelper {
 	MutableComponent failure(Object componentOrString);
 
 	MutableComponent title(Object componentOrString);
+
+	MutableComponent modName(Object componentOrString);
 
 	MutableComponent seconds(int ticks);
 

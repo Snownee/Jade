@@ -61,7 +61,7 @@ public enum StatusEffectsProvider implements IEntityComponentProvider, IServerDa
 			IThemeHelper t = IThemeHelper.get();
 			box.add(compound.getBoolean("Bad") ? t.danger(s) : t.success(s));
 		}
-		tooltip.add(helper.box(box, BoxStyle.DEFAULT));
+		tooltip.add(helper.box(box, BoxStyle.getNestedBox()));
 	}
 
 	@Override

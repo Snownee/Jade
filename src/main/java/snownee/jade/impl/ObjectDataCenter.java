@@ -4,6 +4,7 @@ import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.nbt.CompoundTag;
 import snownee.jade.api.Accessor;
+import snownee.jade.api.AccessorClientHandler;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.overlay.WailaTickHandler;
 
@@ -13,7 +14,7 @@ public final class ObjectDataCenter {
 	public static long timeLastUpdate = System.currentTimeMillis();
 	public static boolean serverConnected;
 	private static Accessor<?> accessor;
-	private static Accessor.ClientHandler<Accessor<?>> clientHandler;
+	private static AccessorClientHandler<Accessor<?>> clientHandler;
 	private static CompoundTag serverData;
 	private static Object lastObject;
 
@@ -29,7 +30,7 @@ public final class ObjectDataCenter {
 			return;
 		}
 
-		clientHandler = WailaClientRegistration.INSTANCE.getAccessorHandler(accessor.getAccessorType());
+		clientHandler = WailaClientRegistration.instance().getAccessorHandler(accessor.getAccessorType());
 		Object object = accessor.getTarget();
 
 		if (object != lastObject) {

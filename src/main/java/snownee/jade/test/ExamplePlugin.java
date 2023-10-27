@@ -12,11 +12,9 @@ import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IWailaClientRegistration;
 import snownee.jade.api.IWailaCommonRegistration;
 import snownee.jade.api.IWailaPlugin;
-import snownee.jade.api.WailaPlugin;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.impl.config.PluginConfig;
 
-@WailaPlugin
 public class ExamplePlugin implements IWailaPlugin {
 
 	public static final ResourceLocation UID_TEST_FUEL = new ResourceLocation("debug:furnace_fuel");
