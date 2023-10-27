@@ -1,9 +1,9 @@
 package snownee.jade.impl;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import com.google.common.cache.Cache;
@@ -14,16 +14,18 @@ import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 
 import net.minecraft.resources.ResourceLocation;
+import snownee.jade.Jade;
 import snownee.jade.api.IJadeProvider;
 
 public class HierarchyLookup<T extends IJadeProvider> {
 
 	private final Class<?> baseClass;
-	private ListMultimap<Class<?>, T> objects = ArrayListMultimap.create();
 	private final Cache<Class<?>, List<T>> resultCache = CacheBuilder.newBuilder().build();
 	private final boolean singleton;
+	private ListMultimap<Class<?>, T> objects = ArrayListMultimap.create();
 
 	public HierarchyLookup(Class<?> baseClass) {
 		this(baseClass, false);
@@ -43,7 +45,7 @@ public class HierarchyLookup<T extends IJadeProvider> {
 
 	public List<T> get(Object obj) {
 		if (obj == null) {
-			return Collections.EMPTY_LIST;
+			return List.of();
 		}
 		return get(obj.getClass());
 	}
@@ -59,9 +61,9 @@ public class HierarchyLookup<T extends IJadeProvider> {
 				return list;
 			});
 		} catch (ExecutionException e) {
-			e.printStackTrace();
+			Jade.LOGGER.catching(e);
 		}
-		return Collections.EMPTY_LIST;
+		return List.of();
 	}
 
 	private void getInternal(Class<?> clazz, List<T> list) {
@@ -80,6 +82,20 @@ public class HierarchyLookup<T extends IJadeProvider> {
 	}
 
 	public void loadComplete(PriorityStore<ResourceLocation, IJadeProvider> priorityStore) {
+		objects.asMap().forEach((clazz, list) -> {
+			Set<ResourceLocation> set = Sets.newHashSetWithExpectedSize(list.size());
+			for (T provider : list) {
+				if (set.contains(provider.getUid())) {
+					throw new IllegalStateException("Duplicate UID: %s for %s".formatted(provider.getUid(), list.stream()
+							.filter(p -> p.getUid().equals(provider.getUid()))
+							.map(p -> p.getClass().getName())
+							.toList()
+					));
+				}
+				set.add(provider.getUid());
+			}
+		});
+
 		objects = ImmutableListMultimap.<Class<?>, T>builder().orderValuesBy(Comparator.comparingInt(priorityStore::byValue)).putAll(objects).build();
 	}
 
