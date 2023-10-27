@@ -83,6 +83,9 @@ public class HierarchyLookup<T extends IJadeProvider> {
 
 	public void loadComplete(PriorityStore<ResourceLocation, IJadeProvider> priorityStore) {
 		objects.asMap().forEach((clazz, list) -> {
+			if (list.size() < 2) {
+				return;
+			}
 			Set<ResourceLocation> set = Sets.newHashSetWithExpectedSize(list.size());
 			for (T provider : list) {
 				if (set.contains(provider.getUid())) {
