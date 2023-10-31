@@ -344,6 +344,8 @@ public class NotUglyEditBox extends AbstractWidget implements Renderable {
 		if (this.isBordered()) {
 			ResourceLocation resourceLocation = EditBox.SPRITES.get(this.isActive(), this.isFocused());
 			guiGraphics.blitSprite(resourceLocation, this.getX(), this.getY(), this.getWidth(), this.getHeight());
+		} else {
+			guiGraphics.fill(this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), 0xC0000000);
 		}
 		if (isEditable && !value.isEmpty()) {
 			isMouseOverCross = isHovered && i > width - paddingRight + 4;
