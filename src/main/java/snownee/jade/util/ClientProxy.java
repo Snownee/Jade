@@ -197,7 +197,7 @@ public final class ClientProxy {
 		}
 	}
 
-	private static void onGui(ScreenEvent.Init event) {
+	private static void onGui(ScreenEvent.Init.Pre event) {
 		JadeClient.onGui(event.getScreen());
 	}
 

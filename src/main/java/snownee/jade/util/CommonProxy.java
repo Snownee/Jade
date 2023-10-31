@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -56,14 +55,13 @@ import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.fml.loading.FMLPaths;
-import net.minecraftforge.forgespi.language.ModFileScanData.AnnotationData;
+import net.minecraftforge.forgespi.language.ModFileScanData;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.network.ChannelBuilder;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.SimpleChannel;
 import net.minecraftforge.registries.ForgeRegistries;
 import snownee.jade.Jade;
-import snownee.jade.JadeCommonConfig;
 import snownee.jade.addon.universal.ItemCollector;
 import snownee.jade.addon.universal.ItemIterator;
 import snownee.jade.addon.universal.ItemStorageProvider;
@@ -92,7 +90,6 @@ public final class CommonProxy {
 
 	public CommonProxy() {
 		ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> DisplayTest.IGNORESERVERONLY, (a, b) -> true));
-		FMLJavaModLoadingContext.get().getModEventBus().register(JadeCommonConfig.class);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::loadComplete);
 		MinecraftForge.EVENT_BUS.addListener(CommonProxy::playerJoin);
@@ -338,8 +335,8 @@ public final class CommonProxy {
 					}
 					return false;
 				})
-				.map(AnnotationData::memberName)
-				.collect(Collectors.toList());
+				.map(ModFileScanData.AnnotationData::memberName)
+				.toList();
 		/* on */
 
 		for (String className : classNames) {
