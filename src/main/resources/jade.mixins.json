@@ -2,7 +2,6 @@
   "required": true,
   "package": "snownee.jade.mixin",
   "compatibilityLevel": "JAVA_16",
-  "refmap": "jade.refmap.json",
   "mixins": [
   ],
   "client": [
