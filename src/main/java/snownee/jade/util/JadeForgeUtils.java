@@ -11,11 +11,11 @@ import com.google.common.math.IntMath;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.CapabilityProvider;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.common.capabilities.Capabilities;
+import net.neoforged.neoforge.common.capabilities.CapabilityProvider;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 import snownee.jade.addon.universal.ItemIterator;
 import snownee.jade.api.view.ViewGroup;
 
@@ -27,7 +27,7 @@ public class JadeForgeUtils {
 	public static ItemIterator<? extends IItemHandler> fromItemHandler(IItemHandler storage, int fromIndex) {
 		return fromItemHandler(storage, fromIndex, target -> {
 			if (target instanceof CapabilityProvider<?> capProvider) {
-				return capProvider.getCapability(ForgeCapabilities.ITEM_HANDLER).orElse(null);
+				return capProvider.getCapability(Capabilities.ITEM_HANDLER).orElse(null);
 			}
 			return null;
 		});

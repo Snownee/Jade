@@ -4,7 +4,7 @@ import com.google.common.base.Strings;
 import com.google.gson.JsonObject;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.neoforged.neoforge.network.NetworkEvent;
 import snownee.jade.Jade;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.config.PluginConfig;
@@ -30,7 +30,7 @@ public class ServerPingPacket {
 		buffer.writeUtf(message.serverConfig);
 	}
 
-	public static void handle(ServerPingPacket message, CustomPayloadEvent.Context context) {
+	public static void handle(ServerPingPacket message, NetworkEvent.Context context) {
 		String s = message.serverConfig;
 		JsonObject json;
 		try {

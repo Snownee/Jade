@@ -32,32 +32,31 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.client.ConfigScreenHandler.ConfigScreenFactory;
-import net.minecraftforge.client.ItemDecoratorHandler;
-import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
-import net.minecraftforge.client.event.CustomizeGuiOverlayEvent;
-import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.client.event.RegisterClientCommandsEvent;
-import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
-import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
-import net.minecraftforge.client.event.RenderGuiEvent;
-import net.minecraftforge.client.event.ScreenEvent;
-import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.minecraftforge.client.settings.KeyConflictContext;
-import net.minecraftforge.client.settings.KeyModifier;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.event.entity.EntityLeaveLevelEvent;
-import net.minecraftforge.event.entity.player.ItemTooltipEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.forgespi.language.IModInfo;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.neoforge.client.ConfigScreenHandler;
+import net.neoforged.neoforge.client.ItemDecoratorHandler;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent;
+import net.neoforged.neoforge.client.event.InputEvent;
+import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
+import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
+import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.event.RenderGuiEvent;
+import net.neoforged.neoforge.client.event.ScreenEvent;
+import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.client.settings.KeyConflictContext;
+import net.neoforged.neoforge.client.settings.KeyModifier;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
+import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforgespi.language.IModInfo;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
 import snownee.jade.addon.harvest.SpecialToolHandler;
@@ -110,21 +109,21 @@ public final class ClientProxy {
 	}
 
 	public static void init() {
-		MinecraftForge.EVENT_BUS.addListener(ClientProxy::onEntityJoin);
-		MinecraftForge.EVENT_BUS.addListener(ClientProxy::onEntityLeave);
-		MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, ClientProxy::onTooltip);
-		MinecraftForge.EVENT_BUS.addListener(ClientProxy::onClientTick);
-		MinecraftForge.EVENT_BUS.addListener(ClientProxy::onPlayerLeave);
-		MinecraftForge.EVENT_BUS.addListener(ClientProxy::registerCommands);
-		MinecraftForge.EVENT_BUS.addListener(ClientProxy::onKeyPressed);
-		MinecraftForge.EVENT_BUS.addListener(ClientProxy::onGui);
-		MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, true, ClientProxy::onDrawBossBar);
-		MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, RenderGuiEvent.Post.class, event -> {
+		NeoForge.EVENT_BUS.addListener(ClientProxy::onEntityJoin);
+		NeoForge.EVENT_BUS.addListener(ClientProxy::onEntityLeave);
+		NeoForge.EVENT_BUS.addListener(EventPriority.LOWEST, ClientProxy::onTooltip);
+		NeoForge.EVENT_BUS.addListener(ClientProxy::onClientTick);
+		NeoForge.EVENT_BUS.addListener(ClientProxy::onPlayerLeave);
+		NeoForge.EVENT_BUS.addListener(ClientProxy::registerCommands);
+		NeoForge.EVENT_BUS.addListener(ClientProxy::onKeyPressed);
+		NeoForge.EVENT_BUS.addListener(ClientProxy::onGui);
+		NeoForge.EVENT_BUS.addListener(EventPriority.LOWEST, true, ClientProxy::onDrawBossBar);
+		NeoForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, RenderGuiEvent.Post.class, event -> {
 			if (Minecraft.getInstance().screen == null) {
 				onRenderTick(event.getGuiGraphics());
 			}
 		});
-		MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, ScreenEvent.Render.Post.class, event -> {
+		NeoForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, ScreenEvent.Render.Post.class, event -> {
 			onRenderTick(event.getGuiGraphics());
 		});
 		IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -137,7 +136,7 @@ public final class ClientProxy {
 			keys.forEach(event::register);
 			keys.clear();
 		});
-		ModLoadingContext.get().registerExtensionPoint(ConfigScreenFactory.class, () -> new ConfigScreenFactory((minecraft, screen) -> new HomeConfigScreen(screen)));
+		ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class, () -> new ConfigScreenHandler.ConfigScreenFactory((minecraft, screen) -> new HomeConfigScreen(screen)));
 
 		for (int i = 320; i < 330; i++) {
 			InputConstants.Key key = InputConstants.Type.KEYSYM.getOrCreate(i);
@@ -197,7 +196,7 @@ public final class ClientProxy {
 		}
 	}
 
-	private static void onGui(ScreenEvent.Init event) {
+	private static void onGui(ScreenEvent.Init.Pre event) {
 		JadeClient.onGui(event.getScreen());
 	}
 
@@ -212,11 +211,11 @@ public final class ClientProxy {
 	}
 
 	public static void requestBlockData(BlockAccessor accessor) {
-		CommonProxy.NETWORK.send(new RequestTilePacket(accessor), PacketDistributor.SERVER.noArg());
+		CommonProxy.NETWORK.sendToServer(new RequestTilePacket(accessor));
 	}
 
 	public static void requestEntityData(EntityAccessor accessor) {
-		CommonProxy.NETWORK.send(new RequestEntityPacket(accessor), PacketDistributor.SERVER.noArg());
+		CommonProxy.NETWORK.sendToServer(new RequestEntityPacket(accessor));
 	}
 
 	public static IElement elementFromLiquid(LiquidBlock block) {

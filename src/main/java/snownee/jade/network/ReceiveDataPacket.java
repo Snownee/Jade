@@ -2,7 +2,7 @@ package snownee.jade.network;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.neoforged.neoforge.network.NetworkEvent;
 import snownee.jade.impl.ObjectDataCenter;
 
 public class ReceiveDataPacket {
@@ -21,7 +21,7 @@ public class ReceiveDataPacket {
 		buffer.writeNbt(message.tag);
 	}
 
-	public static void handle(ReceiveDataPacket message, CustomPayloadEvent.Context context) {
+	public static void handle(ReceiveDataPacket message, NetworkEvent.Context context) {
 		context.enqueueWork(() -> {
 			ObjectDataCenter.setServerData(message.tag);
 		});

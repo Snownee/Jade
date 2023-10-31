@@ -3,14 +3,20 @@ plugins {
     id 'idea'
     id 'maven-publish'
     id "me.shedaniel.unified-publishing" version "0.1.+"
-    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
-    id 'org.parchmentmc.librarian.forgegradle' version '1.+'
-    id 'org.spongepowered.mixin' version '0.7.+'
+    id 'net.neoforged.gradle.userdev' version '7.0.5'
+    id 'net.neoforged.gradle.mixin' version '7.0.5'
 }
 
-version = "${minecraft_version}-forge-${mod_version}"
+version = "${minecraft_version}-neoforge-${mod_version}"
 group = "snownee.jade" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "Jade"
+
+repositories {
+    mavenLocal()
+}
+
+base {
+    archivesName = "Jade"
+}
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
@@ -20,124 +26,70 @@ if (System.getenv().BUILD_NUMBER != null) {
     version += ".${System.getenv().BUILD_NUMBER}"
 }
 
-minecraft {
-    //mappings channel: 'parchment', version: '2023.07.30-1.20.1'
-    mappings channel: 'official', version: minecraft_version
+minecraft.accessTransformers.file rootProject.file('src/main/resources/META-INF/accesstransformer.cfg')
 
-    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+// Default run configurations.
+// These can be tweaked, removed, or duplicated as needed.
+runs {
+    configureEach {
+        // Recommended logging data for a userdev environment
+        // The markers can be added/remove as needed separated by commas.
+        // "SCAN": For mods scan.
+        // "REGISTRIES": For firing of registry events.
+        // "REGISTRYDUMP": For getting the contents of all registries.
+        systemProperty 'forge.logging.markers', 'REGISTRIES'
 
-    // Default run configurations.
-    // These can be tweaked, removed, or duplicated as needed.
-    runs {
-        client {
-            workingDirectory project.file('run')
+        // Recommended logging level for the console
+        // You can set various levels here.
+        // Please read: https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels
+        systemProperty 'forge.logging.console.level', 'debug'
 
-            // Recommended logging data for a userdev environment
-            // The markers can be added/remove as needed separated by commas.
-            // "SCAN": For mods scan.
-            // "REGISTRIES": For firing of registry events.
-            // "REGISTRYDUMP": For getting the contents of all registries.
-            //property 'forge.logging.markers', 'REGISTRIES'
+        modSource project.sourceSets.main
 
-            // Recommended logging level for the console
-            // You can set various levels here.
-            // Please read: https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels
-            property 'forge.logging.console.level', 'debug'
+		// Export mixin-changed classes
+		systemProperty 'mixin.debug.export', 'true'
+		systemProperty 'mixin.env.remapRefMap', 'true'
+		systemProperty 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
 
-            // Export mixin-changed classes
-            property 'mixin.debug.export', 'true'
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+		// Add mixin config to runtime
+		programArguments.addAll '-mixin.config=' + project.getProperty('mod_id') + '.mixins.json'
+    }
+	
+	client {
+        // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
+        systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
 
-            // These arguments allow for optional authentication with Mojang servers.
-            // If you want to authenticate, put these properties in GRADLE_HOME/gradle.properties.
-            // By default, this is C:\Users\<your username>\.gradle\gradle.properties on Windows or ~/.gradle/gradle.properties on Linux/MacOS.
-            if (project.hasProperty('mc_uuid')) {
-                // Your UUID, trimmed / without the dashes
-                args '--uuid', project.getProperty('mc_uuid')
-            }
-            if (project.hasProperty('mc_username')) {
-                // Your Minecraft in-game username, not email
-                args '--username', project.getProperty('mc_username')
-            }
-            if (project.hasProperty('mc_accessToken')) {
-                // Your current access token. When it expires, you need to retrieve a new one and regenerate your run configurations.
-                // You may be able to find it in your .minecraft folder in launcher_accounts.json or launcher_profiles.json.
-                args '--accessToken', project.getProperty('mc_accessToken')
-            }
+		// These arguments allow for optional authentication with Mojang servers.
+		// If you want to authenticate, put these properties in GRADLE_HOME/gradle.properties.
+		// By default, this is C:\Users\<your username>\.gradle\gradle.properties on Windows or ~/.gradle/gradle.properties on Linux/MacOS.
+		if (project.hasProperty('mc_uuid')) {
+			// Your UUID, trimmed / without the dashes
+			programArguments.addAll '--uuid', project.getProperty('mc_uuid')
+		}
+		if (project.hasProperty('mc_username')) {
+			// Your Minecraft in-game username, not email
+			programArguments.addAll '--username', project.getProperty('mc_username')
+		}
+		if (project.hasProperty('mc_accessToken')) {
+			// Your current access token. When it expires, you need to retrieve a new one and regenerate your run configurations.
+			// You may be able to find it in your .minecraft folder in launcher_accounts.json or launcher_profiles.json.
+			programArguments.addAll '--accessToken', project.getProperty('mc_accessToken')
+		}
+	}
 
-            // Add mixin config to runtime
-            args '-mixin.config=' + project.getProperty('mod_id') + '.mixins.json'
+    // This run config launches GameTestServer and runs all registered gametests, then exits.
+    // By default, the server will crash when no gametests are provided.
+    // The gametest system is also enabled by default for other run configs under the /test command.
+    gameTestServer {
+        systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
+    }
 
-            mods {
-                "${mod_id}" {
-                    source sourceSets.main
-                }
-            }
-        }
+    data {
+        // example of overriding the workingDirectory set in configureEach above, uncomment if you want to use it
+        // workingDirectory project.file('run-data')
 
-        server {
-            workingDirectory project.file('run')
-
-            // Recommended logging data for a userdev environment
-            // The markers can be added/remove as needed separated by commas.
-            // "SCAN": For mods scan.
-            // "REGISTRIES": For firing of registry events.
-            // "REGISTRYDUMP": For getting the contents of all registries.
-            //property 'forge.logging.markers', 'REGISTRIES'
-
-            // Recommended logging level for the console
-            // You can set various levels here.
-            // Please read: https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels
-            property 'forge.logging.console.level', 'debug'
-
-            // Export mixin-changed classes
-            property 'mixin.debug.export', 'true'
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-
-            // Add mixin config to runtime
-            args '-mixin.config=' + project.getProperty('mod_id') + '.mixins.json'
-
-            mods {
-                "${mod_id}" {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        data {
-            workingDirectory project.file('run')
-
-            // Recommended logging data for a userdev environment
-            // The markers can be added/remove as needed separated by commas.
-            // "SCAN": For mods scan.
-            // "REGISTRIES": For firing of registry events.
-            // "REGISTRYDUMP": For getting the contents of all registries.
-            //property 'forge.logging.markers', 'REGISTRIES'
-
-            // Recommended logging level for the console
-            // You can set various levels here.
-            // Please read: https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels
-            property 'forge.logging.console.level', 'debug'
-
-            // Export mixin-changed classes
-            property 'mixin.debug.export', 'true'
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-
-            // Add mixin config to runtime
-            args '-mixin.config=' + project.getProperty('mod_id') + '.mixins.json'
-
-            // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
-            args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
-
-            mods {
-                "${mod_id}" {
-                    source sourceSets.main
-                }
-            }
-        }
+        // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
+        programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
     }
 }
 
@@ -173,25 +125,25 @@ repositories {
 }
 
 mixin {
-    add sourceSets.main, "${mod_id}.refmap.json"
+    // add sourceSets.main, "${mod_id}.refmap.json"
     // Sets up the mixin config; this gets added to run configurations and the manifest in the final jar
     config "${mod_id}.mixins.json"
 
     // Enables exporting mixin-changed classes to .mixin.out in the run folder
-    debug.export = true
+    // debug.export = true
 }
 
 dependencies {
     // Specify the version of Minecraft to use, If this is any group other then 'net.minecraft' it is assumed
     // that the dep is a ForgeGradle 'patcher' dependency. And it's patches will be applied.
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
-    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
+    implementation "net.neoforged:neoforge:${neo_version}"
+    // annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
 
-    compileOnly fg.deobf("mezz.jei:jei-1.20.2-common-api:${jei_version}")
-    compileOnly fg.deobf("mezz.jei:jei-1.20.2-forge-api:${jei_version}")
-    runtimeOnly fg.deobf("mezz.jei:jei-1.20.2-forge:${jei_version}")
-    //implementation fg.deobf("curse.maven:jei-238222:3834070")
+    compileOnly "mezz.jei:jei-1.20.2-common-api:${jei_version}"
+    compileOnly "mezz.jei:jei-1.20.2-forge-api:${jei_version}"
+    //runtimeOnly "mezz.jei:jei-1.20.2-forge:${jei_version}"
+    //implementation "curse.maven:jei-238222:3834070"
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
@@ -207,12 +159,6 @@ jar {
     }
 }
 
-// Example configuration to allow publishing using the maven-publish plugin
-// This is the preferred method to reobfuscate your jar file
-jar.finalizedBy('reobfJar')
-// However if you are in a multi-project build, dev time needs unobfed jar files, so you can delay the obfuscation until publishing by doing
-// publish.dependsOn('reobfJar')
-
 publishing {
     publications {
         mavenJava(MavenPublication) {
@@ -226,6 +172,7 @@ publishing {
     }
 }
 
+/*
 unifiedPublishing {
     project {
         displayName = project.version
@@ -233,7 +180,7 @@ unifiedPublishing {
         changelog = file("CHANGELOG.md").exists() ? file("CHANGELOG.md").text : "" // Optional, in markdown format
         releaseType = project.release_type // Optional, use "release", "beta" or "alpha"
         gameVersions = ["1.20.2"]
-        gameLoaders = ["forge"]
+        gameLoaders = ["neoforge"]
 
         mainPublication tasks.jar // Declares the publicated jar
         secondaryPublications.builtBy(tasks.apiJar)
@@ -258,3 +205,4 @@ unifiedPublishing {
         }
     }
 }
+*/

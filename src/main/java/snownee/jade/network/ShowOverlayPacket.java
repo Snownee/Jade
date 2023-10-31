@@ -1,7 +1,7 @@
 package snownee.jade.network;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.neoforged.neoforge.network.NetworkEvent;
 import snownee.jade.Jade;
 
 public class ShowOverlayPacket {
@@ -20,7 +20,7 @@ public class ShowOverlayPacket {
 		buffer.writeBoolean(message.show);
 	}
 
-	public static void handle(ShowOverlayPacket message, CustomPayloadEvent.Context context) {
+	public static void handle(ShowOverlayPacket message, NetworkEvent.Context context) {
 		boolean show = message.show;
 		Jade.LOGGER.info("Received request from the server to {} overlay", show ? "show" : "hide");
 		context.enqueueWork(() -> {

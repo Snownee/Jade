@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[46,)"
+loaderVersion = "[1,)"
 license = "CC BY-NC-SA 4.0"
 
 [[mods]]
@@ -13,8 +13,8 @@ logoFile = "icon.png"
 credits = "TehNut, ProfMobius, kalkafox"
 
 [[dependencies.jade]]
-modId = "forge"
+modId = "neoforge"
 mandatory = true
-versionRange = "[48, )"
+versionRange = "[20.2, )"
 ordering = "NONE"
 side = "BOTH"

@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -34,36 +33,34 @@ import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
-import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.common.IForgeShearable;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.UsernameCache;
-import net.minecraftforge.common.capabilities.CapabilityProvider;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fml.IExtensionPoint;
-import net.minecraftforge.fml.IExtensionPoint.DisplayTest;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.loading.FMLEnvironment;
-import net.minecraftforge.fml.loading.FMLPaths;
-import net.minecraftforge.forgespi.language.ModFileScanData.AnnotationData;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.network.ChannelBuilder;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.SimpleChannel;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.fml.IExtensionPoint;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
+import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.common.CommonHooks;
+import net.neoforged.neoforge.common.IShearable;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.UsernameCache;
+import net.neoforged.neoforge.common.capabilities.Capabilities;
+import net.neoforged.neoforge.common.capabilities.CapabilityProvider;
+import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.network.NetworkRegistry;
+import net.neoforged.neoforge.network.PlayNetworkDirection;
+import net.neoforged.neoforge.network.simple.SimpleChannel;
+import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.neoforged.neoforgespi.language.ModFileScanData;
 import snownee.jade.Jade;
-import snownee.jade.JadeCommonConfig;
 import snownee.jade.addon.universal.ItemCollector;
 import snownee.jade.addon.universal.ItemIterator;
 import snownee.jade.addon.universal.ItemStorageProvider;
@@ -85,18 +82,18 @@ import snownee.jade.network.ShowOverlayPacket;
 
 @Mod(Jade.MODID)
 public final class CommonProxy {
-	public static final SimpleChannel NETWORK = ChannelBuilder.named(new ResourceLocation(Jade.MODID, "networking"))
-			.acceptedVersions((s, v) -> true)
-			.networkProtocolVersion(1)
+	public static final SimpleChannel NETWORK = NetworkRegistry.ChannelBuilder.named(new ResourceLocation(Jade.MODID, "networking"))
+			.clientAcceptedVersions(s -> true)
+			.serverAcceptedVersions(s -> true)
+			.networkProtocolVersion(() -> "1")
 			.simpleChannel();
 
 	public CommonProxy() {
-		ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> DisplayTest.IGNORESERVERONLY, (a, b) -> true));
-		FMLJavaModLoadingContext.get().getModEventBus().register(JadeCommonConfig.class);
+		ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> IExtensionPoint.DisplayTest.IGNORESERVERONLY, (a, b) -> true));
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::loadComplete);
-		MinecraftForge.EVENT_BUS.addListener(CommonProxy::playerJoin);
-		MinecraftForge.EVENT_BUS.addListener(CommonProxy::registerServerCommand);
+		NeoForge.EVENT_BUS.addListener(CommonProxy::playerJoin);
+		NeoForge.EVENT_BUS.addListener(CommonProxy::registerServerCommand);
 		if (isPhysicallyClient()) {
 			ClientProxy.init();
 		}
@@ -105,14 +102,14 @@ public final class CommonProxy {
 	public static int showOrHideFromServer(Collection<ServerPlayer> players, boolean show) {
 		ShowOverlayPacket msg = new ShowOverlayPacket(show);
 		for (ServerPlayer player : players) {
-			CommonProxy.NETWORK.send(msg, player.connection.getConnection());
+			CommonProxy.NETWORK.sendTo(msg, player.connection.connection, PlayNetworkDirection.PLAY_TO_CLIENT);
 		}
 		return players.size();
 	}
 
 	private static void playerJoin(PlayerEvent.PlayerLoggedInEvent event) {
 		Jade.LOGGER.info("Syncing config to {} ({})", event.getEntity().getGameProfile().getName(), event.getEntity().getGameProfile().getId());
-		NETWORK.send(new ServerPingPacket(PluginConfig.INSTANCE), ((ServerPlayer) event.getEntity()).connection.getConnection());
+		NETWORK.sendTo(new ServerPingPacket(PluginConfig.INSTANCE), ((ServerPlayer) event.getEntity()).connection.connection, PlayNetworkDirection.PLAY_TO_CLIENT);
 	}
 
 	@Nullable
@@ -129,11 +126,11 @@ public final class CommonProxy {
 	}
 
 	public static boolean isShearable(BlockState state) {
-		return state.getBlock() instanceof IForgeShearable;
+		return state.getBlock() instanceof IShearable;
 	}
 
 	public static boolean isCorrectToolForDrops(BlockState state, Player player) {
-		return ForgeHooks.isCorrectToolForDrops(state, player);
+		return CommonHooks.isCorrectToolForDrops(state, player);
 	}
 
 	public static String getModIdFromItem(ItemStack stack) {
@@ -162,7 +159,7 @@ public final class CommonProxy {
 		if (target instanceof CapabilityProvider<?> capProvider) {
 			if (!(target instanceof Entity) || target instanceof AbstractChestedHorse) {
 				try {
-					IItemHandler itemHandler = capProvider.getCapability(ForgeCapabilities.ITEM_HANDLER).orElse(null);
+					IItemHandler itemHandler = capProvider.getCapability(Capabilities.ITEM_HANDLER).orElse(null);
 					if (itemHandler != null) {
 						return containerCache.get(itemHandler, () -> new ItemCollector<>(JadeForgeUtils.fromItemHandler(itemHandler, target instanceof AbstractChestedHorse ? 2 : 0)));
 					}
@@ -212,7 +209,7 @@ public final class CommonProxy {
 
 	public static List<ViewGroup<CompoundTag>> wrapFluidStorage(Accessor<?> accessor, Object target) {
 		if (target instanceof CapabilityProvider<?> capProvider) {
-			IFluidHandler fluidHandler = capProvider.getCapability(ForgeCapabilities.FLUID_HANDLER).orElse(null);
+			IFluidHandler fluidHandler = capProvider.getCapability(Capabilities.FLUID_HANDLER).orElse(null);
 			if (fluidHandler != null) {
 				return JadeForgeUtils.fromFluidHandler(fluidHandler);
 			}
@@ -222,7 +219,7 @@ public final class CommonProxy {
 
 	public static List<ViewGroup<CompoundTag>> wrapEnergyStorage(Accessor<?> accessor, Object target) {
 		if (target instanceof CapabilityProvider<?> capProvider) {
-			IEnergyStorage storage = capProvider.getCapability(ForgeCapabilities.ENERGY).orElse(null);
+			IEnergyStorage storage = capProvider.getCapability(Capabilities.ENERGY).orElse(null);
 			if (storage != null && storage.getMaxEnergyStored() > 0) {
 				var group = new ViewGroup<>(List.of(EnergyView.of(storage.getEnergyStored(), storage.getMaxEnergyStored())));
 				group.getExtraData().putString("Unit", "FE");
@@ -261,7 +258,7 @@ public final class CommonProxy {
 	}
 
 	public static String getPlatformIdentifier() {
-		return "forge";
+		return "neoforge";
 	}
 
 	public static MutableComponent getProfressionName(VillagerProfession profession) {
@@ -299,27 +296,27 @@ public final class CommonProxy {
 	}
 
 	private void setup(FMLCommonSetupEvent event) {
-		NETWORK.messageBuilder(ReceiveDataPacket.class, NetworkDirection.PLAY_TO_CLIENT)
+		NETWORK.messageBuilder(ReceiveDataPacket.class, 1, PlayNetworkDirection.PLAY_TO_CLIENT)
 				.encoder(ReceiveDataPacket::write)
 				.decoder(ReceiveDataPacket::read)
 				.consumerNetworkThread(ReceiveDataPacket::handle)
 				.add();
-		NETWORK.messageBuilder(ServerPingPacket.class, NetworkDirection.PLAY_TO_CLIENT)
+		NETWORK.messageBuilder(ServerPingPacket.class, 2, PlayNetworkDirection.PLAY_TO_CLIENT)
 				.encoder(ServerPingPacket::write)
 				.decoder(ServerPingPacket::read)
 				.consumerNetworkThread(ServerPingPacket::handle)
 				.add();
-		NETWORK.messageBuilder(RequestEntityPacket.class, NetworkDirection.PLAY_TO_SERVER)
+		NETWORK.messageBuilder(RequestEntityPacket.class, 3, PlayNetworkDirection.PLAY_TO_SERVER)
 				.encoder(RequestEntityPacket::write)
 				.decoder(RequestEntityPacket::read)
 				.consumerNetworkThread(RequestEntityPacket::handle)
 				.add();
-		NETWORK.messageBuilder(RequestTilePacket.class, NetworkDirection.PLAY_TO_SERVER)
+		NETWORK.messageBuilder(RequestTilePacket.class, 4, PlayNetworkDirection.PLAY_TO_SERVER)
 				.encoder(RequestTilePacket::write)
 				.decoder(RequestTilePacket::read)
 				.consumerNetworkThread(RequestTilePacket::handle)
 				.add();
-		NETWORK.messageBuilder(ShowOverlayPacket.class, NetworkDirection.PLAY_TO_CLIENT)
+		NETWORK.messageBuilder(ShowOverlayPacket.class, 5, PlayNetworkDirection.PLAY_TO_CLIENT)
 				.encoder(ShowOverlayPacket::write)
 				.decoder(ShowOverlayPacket::read)
 				.consumerNetworkThread(ShowOverlayPacket::handle)
@@ -338,8 +335,8 @@ public final class CommonProxy {
 					}
 					return false;
 				})
-				.map(AnnotationData::memberName)
-				.collect(Collectors.toList());
+				.map(ModFileScanData.AnnotationData::memberName)
+				.toList();
 		/* on */
 
 		for (String className : classNames) {
