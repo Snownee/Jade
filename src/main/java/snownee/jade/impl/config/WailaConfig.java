@@ -312,7 +312,7 @@ public class WailaConfig implements IWailaConfig {
 
 		@Override
 		public float tryFlip(float f) {
-			if (Minecraft.getInstance().options.mainHand().get() == HumanoidArm.LEFT)
+			if (flipMainHand && Minecraft.getInstance().options.mainHand().get() == HumanoidArm.LEFT)
 				f = 1 - f;
 			return f;
 		}
