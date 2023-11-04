@@ -21,7 +21,6 @@ import snownee.jade.api.view.ClientViewGroup;
 import snownee.jade.api.view.ViewGroup;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
-import snownee.jade.impl.ui.ScaledTextElement;
 
 public enum ProgressProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
 
@@ -46,7 +45,7 @@ public enum ProgressProvider implements IBlockComponentProvider, IServerDataProv
 					}
 					for (var view : group.views) {
 						if (view.text != null) {
-							theTooltip.add(new ScaledTextElement(view.text, 0.75F));
+							theTooltip.add(helper.textElement(view.text).scale(0.75F));
 							theTooltip.setLineMargin(-1, Direction2D.DOWN, 0);
 						}
 						theTooltip.add(helper.progress(view.progress, null, view.style, boxStyle, false).size(new Vec2(10, 2)));

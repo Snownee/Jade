@@ -1,24 +1,24 @@
 package snownee.jade.impl.ui;
 
-import org.jetbrains.annotations.Nullable;
-
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.theme.IThemeHelper;
+import snownee.jade.api.ui.ITextElement;
 import snownee.jade.overlay.DisplayHelper;
 
-public class ScaledTextElement extends TextElement {
+public class SpecialTextElement extends TextElement {
 
-	public final float scale;
+	private float scale = 1;
+	private int zOffset;
+	private boolean centered;
 
-	public ScaledTextElement(Component component, float scale) {
-		super(component);
-		this.scale = scale;
+	public SpecialTextElement(FormattedText text) {
+		super(text);
 	}
 
 	@Override
@@ -31,15 +31,36 @@ public class ScaledTextElement extends TextElement {
 	public void render(GuiGraphics guiGraphics, float x, float y, float maxX, float maxY) {
 		PoseStack matrixStack = guiGraphics.pose();
 		matrixStack.pushPose();
-		matrixStack.translate(x, y + scale, 0);
+		Font font = Minecraft.getInstance().font;
+		if (centered) {
+			x += (maxX - x - font.width(text) * scale) / 2;
+		}
+		matrixStack.translate(x, y + scale, zOffset);
 		matrixStack.scale(scale, scale, 1);
 		DisplayHelper.INSTANCE.drawText(guiGraphics, text, 0, 0, IThemeHelper.get().getNormalColor());
 		matrixStack.popPose();
 	}
 
 	@Override
-	public @Nullable String getMessage() {
-		return text.getString();
+	public SpecialTextElement toSpecial() {
+		return this;
 	}
 
+	@Override
+	public ITextElement scale(float scale) {
+		this.scale = scale;
+		return this;
+	}
+
+	@Override
+	public ITextElement zOffset(int zOffset) {
+		this.zOffset = zOffset;
+		return this;
+	}
+
+	@Override
+	public ITextElement centered() {
+		this.centered = true;
+		return this;
+	}
 }

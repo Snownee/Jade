@@ -10,9 +10,10 @@ import net.minecraft.network.chat.FormattedText;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.Element;
+import snownee.jade.api.ui.ITextElement;
 import snownee.jade.overlay.DisplayHelper;
 
-public class TextElement extends Element {
+public class TextElement extends Element implements ITextElement {
 
 	public final FormattedText text;
 
@@ -40,4 +41,22 @@ public class TextElement extends Element {
 		return text.getString();
 	}
 
+	public SpecialTextElement toSpecial() {
+		return new SpecialTextElement(text);
+	}
+
+	@Override
+	public ITextElement scale(float scale) {
+		return toSpecial().scale(scale);
+	}
+
+	@Override
+	public ITextElement zOffset(int zOffset) {
+		return toSpecial().zOffset(zOffset);
+	}
+
+	@Override
+	public ITextElement centered() {
+		return toSpecial().centered();
+	}
 }

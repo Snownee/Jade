@@ -17,6 +17,9 @@ public interface IElementHelper {
 
 	IElement text(Component component);
 
+	//TODO (1.21): Remove this and make text() return ITextElement
+	ITextElement textElement(Component component);
+
 	IElement spacer(int x, int y);
 
 	IElement item(ItemStack itemStack);
