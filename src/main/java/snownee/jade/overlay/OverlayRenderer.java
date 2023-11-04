@@ -9,25 +9,32 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.util.Mth;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Blocks;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
+import snownee.jade.api.Identifiers;
 import snownee.jade.api.callback.JadeBeforeRenderCallback;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.IWailaConfig.BossBarOverlapMode;
+import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
 import snownee.jade.api.ui.TooltipRect;
 import snownee.jade.gui.PreviewOptionsScreen;
 import snownee.jade.impl.ObjectDataCenter;
+import snownee.jade.impl.Tooltip;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.config.WailaConfig.ConfigGeneral;
 import snownee.jade.impl.config.WailaConfig.ConfigOverlay;
 import snownee.jade.impl.ui.BoxElement;
+import snownee.jade.impl.ui.ItemStackElement;
 import snownee.jade.util.ClientProxy;
+import snownee.jade.util.ModIdentification;
 
 public class OverlayRenderer {
 
 	public static final MutableObject<Theme> theme = new MutableObject<>(IWailaConfig.get().getOverlay().getTheme());
-	private static final TooltipRect rect = new TooltipRect();
+	public static final TooltipRect rect = new TooltipRect();
 	public static float ticks;
 	public static boolean shown;
 	public static float alpha;
@@ -67,7 +74,10 @@ public class OverlayRenderer {
 		box.updateExpectedRect(rect);
 		ConfigGeneral general = Jade.CONFIG.get().getGeneral();
 		if (mc.screen instanceof PreviewOptionsScreen optionsScreen) {
-			if (!general.previewOverlay && !optionsScreen.forcePreviewOverlay()) {
+			if (optionsScreen.forcePreviewOverlay()) {
+				return true;
+			}
+			if (!general.previewOverlay) {
 				return false;
 			}
 			Window window = mc.getWindow();
@@ -102,10 +112,23 @@ public class OverlayRenderer {
 	 * I don't think it is compatible with some open-source licenses.
 	 */
 	public static void renderOverlay478757(GuiGraphics guiGraphics) {
-		shown = false;
-		boolean show = shouldShow();
-		BoxElement root = WailaTickHandler.instance().rootElement;
 		float delta = Minecraft.getInstance().getDeltaFrameTime();
+		ticks += delta;
+		shown = false;
+		BoxElement root = WailaTickHandler.instance().rootElement;
+		boolean show;
+		if (root == null && PreviewOptionsScreen.isAdjustingPosition()) {
+			Tooltip tooltip = new Tooltip();
+			tooltip.add(IThemeHelper.get().title(Blocks.GRASS_BLOCK.getName()));
+			tooltip.add(IThemeHelper.get().modName(ModIdentification.getModName(Blocks.GRASS_BLOCK)));
+			root = new BoxElement(tooltip, IThemeHelper.get().theme().tooltipStyle);
+			root.tag(Identifiers.ROOT);
+			root.setThemeIcon(ItemStackElement.of(new ItemStack(Blocks.GRASS_BLOCK)), IThemeHelper.get().theme());
+			root.updateExpectedRect(rect);
+			show = true;
+		} else {
+			show = shouldShow();
+		}
 		ConfigOverlay overlay = Jade.CONFIG.get().getOverlay();
 		ConfigGeneral general = Jade.CONFIG.get().getGeneral();
 		if (root != null) {
@@ -130,13 +153,14 @@ public class OverlayRenderer {
 		}
 
 		if (alpha < 0.1F || root == null || !shouldShowImmediately(root)) {
-			lingerTooltip = null;
-			rect.rect.setWidth(0); // mark dirty
-			WailaTickHandler.clearLastNarration();
-			return;
+			if (!PreviewOptionsScreen.isAdjustingPosition()) {
+				lingerTooltip = null;
+				rect.rect.setWidth(0); // mark dirty
+				WailaTickHandler.clearLastNarration();
+				return;
+			}
 		}
 
-		ticks += delta;
 		Minecraft.getInstance().getProfiler().push("Jade Overlay");
 		renderOverlay(root, guiGraphics);
 		Minecraft.getInstance().getProfiler().pop();

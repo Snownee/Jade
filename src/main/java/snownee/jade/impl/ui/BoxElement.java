@@ -1,5 +1,6 @@
 package snownee.jade.impl.ui;
 
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.IntConsumer;
 import java.util.function.ToIntFunction;
@@ -11,14 +12,19 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiSpriteManager;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.metadata.gui.GuiSpriteScaling;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.Jade;
+import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
 import snownee.jade.api.theme.IThemeHelper;
+import snownee.jade.api.theme.Theme;
 import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.Direction2D;
 import snownee.jade.api.ui.Element;
@@ -27,6 +33,7 @@ import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.MessageType;
 import snownee.jade.api.ui.TooltipRect;
+import snownee.jade.gui.PreviewOptionsScreen;
 import snownee.jade.impl.Tooltip;
 import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.overlay.OverlayRenderer;
@@ -158,7 +165,7 @@ public class BoxElement extends Element implements IBoxElement {
 			Vec2 offset = icon.getTranslation();
 			float offsetY = offset.y;
 			float min = contentTop + padding(Direction2D.DOWN) + iconSize.y;
-			if (IWailaConfig.get().getOverlay().getIconMode() == IWailaConfig.IconMode.TOP && min < size.y) {
+			if (IWailaConfig.get().getOverlay().getIconMode() == IWailaConfig.IconMode.TOP && min < getCachedSize().y) {
 				offsetY += contentTop;
 			} else {
 				offsetY += (size.y - iconSize.y) / 2;
@@ -245,6 +252,34 @@ public class BoxElement extends Element implements IBoxElement {
 		this.icon = icon;
 	}
 
+	public void setThemeIcon(@Nullable IElement icon, Theme theme) {
+		if (!IWailaConfig.get().getOverlay().shouldShowIcon()) {
+			return;
+		}
+		if (icon != null && theme.iconSlotSprite != null) {
+			if (theme.iconSlotSpriteCache == null) {
+				GuiSpriteManager guiSprites = Minecraft.getInstance().getGuiSprites();
+				TextureAtlasSprite textureAtlasSprite = guiSprites.getSprite(theme.iconSlotSprite);
+				GuiSpriteScaling scaling = guiSprites.getSpriteScaling(textureAtlasSprite);
+				int[] padding = new int[4];
+				Arrays.fill(padding, theme.iconSlotInflation);
+				if (scaling instanceof GuiSpriteScaling.NineSlice nineSlice) {
+					GuiSpriteScaling.NineSlice.Border border = nineSlice.border();
+					padding[0] += border.top();
+					padding[1] += border.right();
+					padding[2] += border.bottom();
+					padding[3] += border.left();
+				}
+				theme.iconSlotSpriteCache = new BoxElement(new Tooltip(), BoxStyle.getSprite(theme.iconSlotSprite, padding));
+			}
+			ITooltip tooltip1 = theme.iconSlotSpriteCache.getTooltip();
+			tooltip1.clear();
+			tooltip1.add(icon);
+			icon = theme.iconSlotSpriteCache.size(null);
+		}
+		setIcon(icon);
+	}
+
 	public void updateExpectedRect(TooltipRect rect) {
 		Window window = Minecraft.getInstance().getWindow();
 		IWailaConfig.IConfigOverlay overlay = Jade.CONFIG.get().getOverlay();
@@ -272,6 +307,10 @@ public class BoxElement extends Element implements IBoxElement {
 		expectedRect.setHeight((int) (height * rect.scale));
 		expectedRect.setX((int) (x - expectedRect.getWidth() * overlay.tryFlip(overlay.getAnchorX())));
 		expectedRect.setY((int) (y - expectedRect.getHeight() * overlay.getAnchorY()));
+
+		if (PreviewOptionsScreen.isAdjustingPosition()) {
+			return;
+		}
 
 		IWailaConfig.BossBarOverlapMode mode = Jade.CONFIG.get().getGeneral().getBossBarOverlapMode();
 		if (mode == IWailaConfig.BossBarOverlapMode.PUSH_DOWN) {
