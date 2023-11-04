@@ -33,7 +33,6 @@ import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElement.Align;
 import snownee.jade.api.ui.IElementHelper;
-import snownee.jade.impl.ui.SubTextElement;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
 
@@ -137,7 +136,12 @@ public enum HarvestToolProvider implements IBlockComponentProvider, ResourceMana
 			if (state.requiresCorrectToolForDrops() || canHarvest) {
 				IThemeHelper t = IThemeHelper.get();
 				Component text = canHarvest ? t.success(CHECK) : t.danger(X);
-				elements.add(new SubTextElement(text).translate(new Vec2(-3, 7 + offsetY)));
+				elements.add(IElementHelper.get().textElement(text)
+						.scale(0.75F)
+						.zOffset(800)
+						.size(Vec2.ZERO)
+						.translate(new Vec2(-3, 6.25F + offsetY))
+				);
 			}
 		}
 

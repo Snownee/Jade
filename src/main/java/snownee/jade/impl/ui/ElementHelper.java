@@ -15,6 +15,7 @@ import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.IBoxElement;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.ui.ITextElement;
 import snownee.jade.api.ui.ProgressStyle;
 import snownee.jade.impl.Tooltip;
 
@@ -28,6 +29,11 @@ public class ElementHelper implements IElementHelper {
 
 	@Override
 	public IElement text(Component component) {
+		return new TextElement(component);
+	}
+
+	@Override
+	public ITextElement textElement(Component component) {
 		return new TextElement(component);
 	}
 

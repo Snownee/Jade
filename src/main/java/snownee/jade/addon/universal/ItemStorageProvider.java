@@ -47,7 +47,6 @@ import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.impl.ui.HorizontalLineElement;
-import snownee.jade.impl.ui.ScaledTextElement;
 import snownee.jade.util.CommonProxy;
 import snownee.jade.util.WailaExceptionHandler;
 
@@ -106,7 +105,7 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 			if (renderGroup) {
 				theTooltip.add(new HorizontalLineElement());
 				if (group.title != null) {
-					theTooltip.append(new ScaledTextElement(group.title, 0.5F));
+					theTooltip.append(helper.textElement(group.title).scale(0.5F));
 					theTooltip.append(new HorizontalLineElement());
 				}
 			}
