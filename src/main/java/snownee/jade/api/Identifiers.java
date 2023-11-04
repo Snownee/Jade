@@ -33,6 +33,7 @@ public class Identifiers {
 	public static final ResourceLocation MC_BEEHIVE = MC("beehive");
 	public static final ResourceLocation MC_BLOCK_STATES = MC("block_states");
 	public static final ResourceLocation MC_BREWING_STAND = MC("brewing_stand");
+	public static final ResourceLocation MC_CAMPFIRE = MC("campfire");
 	public static final ResourceLocation MC_CHICKEN_EGG = MC("chicken_egg");
 	public static final ResourceLocation MC_CHISELED_BOOKSHELF = MC("chiseled_bookshelf");
 	public static final ResourceLocation MC_COMMAND_BLOCK = MC("command_block");
