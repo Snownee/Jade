@@ -47,3 +47,6 @@ accessible field net/minecraft/client/gui/components/EditBox SPRITES Lnet/minecr
 accessible field net/minecraft/client/gui/components/AbstractSelectionList SCROLLER_SPRITE Lnet/minecraft/resources/ResourceLocation;
 
 accessible field net/minecraft/client/gui/screens/Screen deferredTooltipRendering Lnet/minecraft/client/gui/screens/Screen$DeferredTooltipRendering;
+
+accessible field net/minecraft/world/level/block/entity/CampfireBlockEntity cookingProgress [I
+accessible field net/minecraft/world/level/block/entity/CampfireBlockEntity cookingTime [I
