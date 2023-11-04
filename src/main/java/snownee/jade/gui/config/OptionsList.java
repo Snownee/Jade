@@ -43,6 +43,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.StringUtil;
 import snownee.jade.Jade;
 import snownee.jade.gui.BaseOptionsScreen;
+import snownee.jade.gui.PreviewOptionsScreen;
 import snownee.jade.gui.config.value.CycleOptionValue;
 import snownee.jade.gui.config.value.InputOptionValue;
 import snownee.jade.gui.config.value.OptionValue;
@@ -110,6 +111,8 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 
 	@Override
 	protected boolean isSelectedItem(int i) {
+		if (PreviewOptionsScreen.isAdjustingPosition())
+			return false;
 		return Objects.equals(getSelected(), children().get(i));
 	}
 
@@ -136,24 +139,26 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 			}
 		}
 		hovered = null;
-		if (isMouseOver(mouseX, mouseY)) {
-			hovered = getEntryAtPosition(mouseX, mouseY);
-		}
-		if (hovered instanceof Title) {
-			setSelected(null);
-		} else {
-			setSelected(hovered);
-		}
-		int activeIndex = hovered != null ? children().indexOf(hovered) : Mth.clamp((int) getScrollAmount() / itemHeight, 0, getItemCount() - 1);
-		if (activeIndex >= 0 && activeIndex != lastActiveIndex) {
-			lastActiveIndex = activeIndex;
-			Entry entry = getEntry(activeIndex);
-			while (entry != null) {
-				if (entry instanceof Title) {
-					currentTitle = (Title) entry;
-					break;
+		if (!PreviewOptionsScreen.isAdjustingPosition()) {
+			if (isMouseOver(mouseX, mouseY)) {
+				hovered = getEntryAtPosition(mouseX, mouseY);
+			}
+			if (hovered instanceof Title) {
+				setSelected(null);
+			} else {
+				setSelected(hovered);
+			}
+			int activeIndex = hovered != null ? children().indexOf(hovered) : Mth.clamp((int) getScrollAmount() / itemHeight, 0, getItemCount() - 1);
+			if (activeIndex >= 0 && activeIndex != lastActiveIndex) {
+				lastActiveIndex = activeIndex;
+				Entry entry = getEntry(activeIndex);
+				while (entry != null) {
+					if (entry instanceof Title) {
+						currentTitle = (Title) entry;
+						break;
+					}
+					entry = entry.parent;
 				}
-				entry = entry.parent;
 			}
 		}
 
@@ -179,7 +184,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		guiGraphics.setColor(0.35f, 0.35f, 0.35f, 1.0f);
 		guiGraphics.blit(Screen.BACKGROUND_LOCATION, 0, owner.height - 32, owner.width, 32, owner.width, owner.height, 32, 32);
 		guiGraphics.setColor(1.0f, 1.0f, 1.0f, 1.0f);
-		guiGraphics.fillGradient(0, owner.height - 32 - 4, owner.width, owner.height - 32, 100, 0x00000000, 0xEE000000);
+		guiGraphics.fillGradient(0, owner.height - 32 - 4, owner.width, owner.height - 32, 40, 0x00000000, 0xEE000000);
 	}
 
 	public void save() {

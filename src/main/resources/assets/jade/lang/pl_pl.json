@@ -33,8 +33,6 @@
   "config.jade.display_item": "Pokazuj przedmiot",
 
   "config.jade.overlay": "Nakładka",
-  "config.jade.overlay_pos_x": "Stosunek poziomy",
-  "config.jade.overlay_pos_y": "Stosunek pionowy",
   "config.jade.overlay_scale": "Skala wyświetlacza",
 
   "config.jade.overlay_alpha": "St. alfa",
