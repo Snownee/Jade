@@ -124,10 +124,10 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 		squareEntry = options.choices("overlay_square", overlay.getSquare(), overlay::setSquare);
 		opacityEntry = options.slider("overlay_alpha", overlay.getAlpha(), overlay::setAlpha);
 		options.forcePreview.add(options.slider("overlay_scale", overlay.getOverlayScale(), overlay::setOverlayScale, 0.2f, 2, FloatUnaryOperator.identity()));
-		options.forcePreview.add(entry = options.slider("overlay_pos_x", overlay.getOverlayPosX(), overlay::setOverlayPosX));
-		options.forcePreview.add(options.slider("overlay_anchor_x", overlay.getAnchorX(), overlay::setAnchorX).parent(entry));
-		options.forcePreview.add(entry = options.slider("overlay_pos_y", overlay.getOverlayPosY(), overlay::setOverlayPosY));
-		options.forcePreview.add(options.slider("overlay_anchor_y", overlay.getAnchorY(), overlay::setAnchorY).parent(entry));
+		Component adjust = Component.translatable(OptionsList.Entry.makeKey("overlay_pos.adjust"));
+		options.add(new OptionButton(Component.translatable(OptionsList.Entry.makeKey("overlay_pos")), Button.builder(adjust, w -> {
+			adjustingPosition = true;
+		}).size(100, 20).build()));
 		options.choices("display_item", overlay.getIconMode(), overlay::setIconMode);
 		options.choices("animation", overlay.getAnimation(), overlay::setAnimation);
 
