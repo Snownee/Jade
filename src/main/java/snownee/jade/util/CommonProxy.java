@@ -8,6 +8,7 @@ import java.util.concurrent.ExecutionException;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.cache.Cache;
 
 import net.minecraft.core.BlockPos;
@@ -284,7 +285,7 @@ public final class CommonProxy {
 	}
 
 	public static ItemStack getEntityPickedResult(Entity entity, Player player, EntityHitResult hitResult) {
-		return entity.getPickedResult(hitResult);
+		return MoreObjects.firstNonNull(entity.getPickedResult(hitResult), ItemStack.EMPTY);
 	}
 
 	public static Component getFluidName(JadeFluidObject fluid) {
