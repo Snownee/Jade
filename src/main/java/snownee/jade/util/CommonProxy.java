@@ -3,13 +3,16 @@ package snownee.jade.util;
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Strings;
+import com.google.common.base.Throwables;
 import com.google.common.cache.Cache;
+import com.google.common.collect.Sets;
 import com.mojang.brigadier.CommandDispatcher;
 
 import net.fabricmc.api.EnvType;
@@ -350,6 +353,7 @@ public final class CommonProxy implements ModInitializer {
 	}
 
 	public static void loadComplete() {
+		Set<Class<?>> classes = Sets.newHashSet();
 		FabricLoader.getInstance().getEntrypointContainers(Jade.MODID, IWailaPlugin.class).forEach(entrypoint -> {
 			ModMetadata metadata = entrypoint.getProvider().getMetadata();
 			Jade.LOGGER.info("Start loading plugin from {}", metadata.getName());
@@ -357,15 +361,23 @@ public final class CommonProxy implements ModInitializer {
 			try {
 				IWailaPlugin plugin = entrypoint.getEntrypoint();
 				WailaPlugin a = plugin.getClass().getDeclaredAnnotation(WailaPlugin.class);
-				if (a != null && !Strings.isNullOrEmpty(a.value()) && !isModLoaded(a.value()))
+				if (a != null && !Strings.isNullOrEmpty(a.value()) && !isModLoaded(a.value())) {
 					return;
+				}
 				className = plugin.getClass().getName();
+				if (className.startsWith("snownee.jade.") && !metadata.getId().startsWith(Jade.MODID)) {
+					throw new IllegalStateException("Mod " + metadata.getName() + " is not allowed to register built-in plugins. Please contact the mod author");
+				}
+				if (!classes.add(plugin.getClass())) {
+					throw new IllegalStateException("Duplicate plugin class " + className);
+				}
 				plugin.register(WailaCommonRegistration.instance());
 				if (isPhysicallyClient()) {
 					plugin.registerClient(WailaClientRegistration.instance());
 				}
 			} catch (Throwable e) {
 				Jade.LOGGER.error("Error loading plugin at {}", className, e);
+				Throwables.throwIfInstanceOf(e, IllegalStateException.class);
 			}
 		});
 		Jade.loadComplete();
