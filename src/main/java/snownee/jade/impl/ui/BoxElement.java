@@ -95,7 +95,7 @@ public class BoxElement extends Element implements IBoxElement {
 		int lineCount = tooltip.lines.size();
 		Tooltip.Line line = tooltip.lines.get(0);
 		for (int i = 0; i < lineCount; i++) {
-			Vec2 size = line.getSize();
+			Vec2 size = line.size();
 			width = Math.max(width, size.x);
 			height += size.y;
 			if (i < lineCount - 1) {
@@ -139,11 +139,10 @@ public class BoxElement extends Element implements IBoxElement {
 		}
 		style.render(guiGraphics, this, 0, 0, maxX - x, maxY - y, alpha);
 
-		float maxWidth = maxX - x - padding(Direction2D.RIGHT);
 		// render box progress
 		if (boxProgressType != null) {
 			float left = style.boxProgressOffset(Direction2D.LEFT);
-			float width = maxWidth - left + style.boxProgressOffset(Direction2D.RIGHT);
+			float width = maxX - x - left;
 			float top = maxY - y - 1 + style.boxProgressOffset(Direction2D.UP) + style.borderWidth();
 			float height = 1 + style.boxProgressOffset(Direction2D.DOWN);
 			float progress = boxProgress;
@@ -182,8 +181,8 @@ public class BoxElement extends Element implements IBoxElement {
 			int lineCount = tooltip.lines.size();
 			Tooltip.Line line = tooltip.lines.get(0);
 			for (int i = 0; i < lineCount; i++) {
-				Vec2 lineSize = line.getSize();
-				line.render(guiGraphics, contentLeft, lineTop, maxWidth, lineSize.y);
+				Vec2 lineSize = line.size();
+				line.render(guiGraphics, contentLeft, lineTop, maxX - padding(Direction2D.RIGHT), lineTop + lineSize.y);
 				if (i < lineCount - 1) {
 					int marginBottom = line.marginBottom;
 					line = tooltip.lines.get(i + 1);
