@@ -15,7 +15,6 @@ public class SpecialTextElement extends TextElement {
 
 	private float scale = 1;
 	private int zOffset;
-	private boolean centered;
 
 	public SpecialTextElement(FormattedText text) {
 		super(text);
@@ -31,10 +30,6 @@ public class SpecialTextElement extends TextElement {
 	public void render(GuiGraphics guiGraphics, float x, float y, float maxX, float maxY) {
 		PoseStack matrixStack = guiGraphics.pose();
 		matrixStack.pushPose();
-		Font font = Minecraft.getInstance().font;
-		if (centered) {
-			x += (maxX - x - font.width(text) * scale) / 2;
-		}
 		matrixStack.translate(x, y + scale, zOffset);
 		matrixStack.scale(scale, scale, 1);
 		DisplayHelper.INSTANCE.drawText(guiGraphics, text, 0, 0, IThemeHelper.get().getNormalColor());
@@ -55,12 +50,6 @@ public class SpecialTextElement extends TextElement {
 	@Override
 	public ITextElement zOffset(int zOffset) {
 		this.zOffset = zOffset;
-		return this;
-	}
-
-	@Override
-	public ITextElement centered() {
-		this.centered = true;
 		return this;
 	}
 }

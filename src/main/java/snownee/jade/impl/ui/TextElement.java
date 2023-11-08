@@ -54,9 +54,4 @@ public class TextElement extends Element implements ITextElement {
 	public ITextElement zOffset(int zOffset) {
 		return toSpecial().zOffset(zOffset);
 	}
-
-	@Override
-	public ITextElement centered() {
-		return toSpecial().centered();
-	}
 }
