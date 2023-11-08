@@ -27,6 +27,21 @@ public enum ExampleComponentProvider implements IBlockComponentProvider, IServer
 			tooltip.add(icon);
 			tooltip.append(Component.translatable("mymod.fuel", accessor.getServerData().getInt("Fuel")));
 		}
+
+		Component test1 = Component.literal("1");
+		Component test2 = Component.literal("2");
+		Component test3 = Component.literal("3");
+		tooltip.add(IElementHelper.get().text(test2).align(IElement.Align.RIGHT));
+		tooltip.add(IElementHelper.get().text(test3).align(IElement.Align.CENTER));
+		tooltip.add(IElementHelper.get().text(test1).align(IElement.Align.LEFT));
+		tooltip.append(IElementHelper.get().text(test1).align(IElement.Align.RIGHT));
+		tooltip.append(IElementHelper.get().text(test1).align(IElement.Align.CENTER));
+		tooltip.append(IElementHelper.get().text(test2).align(IElement.Align.CENTER));
+		tooltip.append(IElementHelper.get().text(test2).align(IElement.Align.RIGHT));
+		tooltip.append(IElementHelper.get().text(test3).align(IElement.Align.RIGHT));
+		tooltip.append(IElementHelper.get().text(test2).align(IElement.Align.LEFT));
+		tooltip.append(IElementHelper.get().text(test3).align(IElement.Align.LEFT));
+		tooltip.append(IElementHelper.get().text(test3).align(IElement.Align.CENTER));
 	}
 
 	@Override
