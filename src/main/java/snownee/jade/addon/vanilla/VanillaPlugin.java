@@ -61,7 +61,6 @@ import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.WailaPlugin;
 import snownee.jade.overlay.DatapackBlockManager;
-import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
 
 @WailaPlugin
@@ -184,8 +183,6 @@ public class VanillaPlugin implements IWailaPlugin {
 
 		registration.registerItemStorageClient(CampfireProvider.INSTANCE);
 
-		ClientProxy.registerReloadListener(HarvestToolProvider.INSTANCE);
-
 		registration.addRayTraceCallback(-10, JadeClient::builtInOverrides);
 		registration.addRayTraceCallback(5000, DatapackBlockManager::override);
 		registration.addAfterRenderCallback(100, JadeClient::drawBreakingProgress);
@@ -193,6 +190,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.markAsClientFeature(Identifiers.MC_EFFECTIVE_TOOL);
 		registration.markAsClientFeature(Identifiers.MC_HARVEST_TOOL_NEW_LINE);
 		registration.markAsClientFeature(Identifiers.MC_SHOW_UNBREAKABLE);
+		registration.markAsClientFeature(Identifiers.MC_HARVEST_TOOL_CREATIVE);
 		registration.markAsClientFeature(Identifiers.MC_BREAKING_PROGRESS);
 		registration.markAsClientFeature(Identifiers.MC_ENTITY_ARMOR_MAX_FOR_RENDER);
 		registration.markAsClientFeature(Identifiers.MC_ENTITY_HEALTH_MAX_FOR_RENDER);

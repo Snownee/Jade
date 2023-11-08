@@ -36,9 +36,9 @@ import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
 
-public enum HarvestToolProvider implements IBlockComponentProvider, ResourceManagerReloadListener {
+public class HarvestToolProvider implements IBlockComponentProvider, ResourceManagerReloadListener {
 
-	INSTANCE;
+	public static final HarvestToolProvider INSTANCE = new HarvestToolProvider();
 
 	public static final Cache<BlockState, ImmutableList<ItemStack>> resultCache = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
 	public static final Map<String, ToolHandler> TOOL_HANDLERS = Maps.newLinkedHashMap();
@@ -150,9 +150,7 @@ public enum HarvestToolProvider implements IBlockComponentProvider, ResourceMana
 
 	@Override
 	public void onResourceManagerReload(ResourceManager resourceManager) {
-		//if (resourcePredicate.test(VanillaResourceType.LANGUAGES)) {
 		resultCache.invalidateAll();
-		//}
 	}
 
 	@Override

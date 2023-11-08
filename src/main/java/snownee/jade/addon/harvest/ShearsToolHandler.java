@@ -1,6 +1,9 @@
 package snownee.jade.addon.harvest;
 
+import java.util.List;
+
 import net.minecraft.core.BlockPos;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -12,24 +15,22 @@ public class ShearsToolHandler extends SpecialToolHandler {
 
 	public ShearsToolHandler() {
 		super("shears", Items.SHEARS.getDefaultInstance());
-		blocks.add(Blocks.GLOW_LICHEN);
-		blocks.add(Blocks.TRIPWIRE);
-		blocks.add(Blocks.WHITE_WOOL);
-		blocks.add(Blocks.ORANGE_WOOL);
-		blocks.add(Blocks.MAGENTA_WOOL);
-		blocks.add(Blocks.LIGHT_BLUE_WOOL);
-		blocks.add(Blocks.YELLOW_WOOL);
-		blocks.add(Blocks.LIME_WOOL);
-		blocks.add(Blocks.PINK_WOOL);
-		blocks.add(Blocks.GRAY_WOOL);
-		blocks.add(Blocks.LIGHT_GRAY_WOOL);
-		blocks.add(Blocks.CYAN_WOOL);
-		blocks.add(Blocks.PURPLE_WOOL);
-		blocks.add(Blocks.BLUE_WOOL);
-		blocks.add(Blocks.BROWN_WOOL);
-		blocks.add(Blocks.GREEN_WOOL);
-		blocks.add(Blocks.RED_WOOL);
-		blocks.add(Blocks.BLACK_WOOL);
+		blocks.addAll(List.of(
+				Blocks.GLOW_LICHEN,
+				Blocks.TRIPWIRE,
+				Blocks.VINE,
+				Blocks.SMALL_DRIPLEAF,
+				Blocks.DEAD_BUSH,
+				Blocks.COBWEB,
+				Blocks.GRASS,
+				Blocks.TALL_GRASS,
+				Blocks.FERN,
+				Blocks.LARGE_FERN
+		));
+		blockTags = List.of(
+				BlockTags.WOOL,
+				BlockTags.LEAVES
+		);
 	}
 
 	@Override

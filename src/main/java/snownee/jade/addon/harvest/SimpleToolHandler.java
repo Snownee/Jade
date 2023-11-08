@@ -16,13 +16,17 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public class SimpleToolHandler implements ToolHandler {
 
-	private final String name;
-	protected final List<ItemStack> tools = Lists.newArrayList();
-	protected final TagKey<Block> tag;
 	public final Set<Block> blocks = Sets.newIdentityHashSet();
+	protected final List<ItemStack> tools = Lists.newArrayList();
+	protected final List<TagKey<Block>> blockTags;
+	private final String name;
 
-	public SimpleToolHandler(String name, TagKey<Block> tag, Item... tools) {
-		this.tag = tag;
+	public SimpleToolHandler(String name, TagKey<Block> blockTag, Item... tools) {
+		this(name, List.of(blockTag), tools);
+	}
+
+	public SimpleToolHandler(String name, List<TagKey<Block>> blockTags, Item... tools) {
+		this.blockTags = blockTags;
 		this.name = name;
 		for (Item tool : tools) {
 			this.tools.add(tool.getDefaultInstance());
@@ -30,10 +34,10 @@ public class SimpleToolHandler implements ToolHandler {
 	}
 
 	public boolean matchesBlock(BlockState state) {
-		if (tag != null && state.is(tag)) {
+		if (blocks.contains(state.getBlock())) {
 			return true;
 		}
-		return blocks.contains(state.getBlock());
+		return blockTags.stream().anyMatch(state::is);
 	}
 
 	@Override

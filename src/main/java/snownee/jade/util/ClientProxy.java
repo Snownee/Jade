@@ -55,6 +55,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.util.LazyLoadedValue;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -67,6 +68,7 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.HitResult;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
+import snownee.jade.addon.harvest.HarvestToolProvider;
 import snownee.jade.addon.harvest.SimpleToolHandler;
 import snownee.jade.addon.harvest.ToolHandler;
 import snownee.jade.api.BlockAccessor;
@@ -233,7 +235,7 @@ public final class ClientProxy implements ClientModInitializer {
 	}
 
 	public static ToolHandler createSwordToolHandler() {
-		return new SimpleToolHandler("sword", FabricMineableTags.SWORD_MINEABLE, Items.WOODEN_SWORD);
+		return new SimpleToolHandler("sword", List.of(BlockTags.SWORD_EFFICIENT, FabricMineableTags.SWORD_MINEABLE), Items.WOODEN_SWORD);
 	}
 
 	public static KeyMapping registerDetailsKeyBinding() {
@@ -313,5 +315,6 @@ public final class ClientProxy implements ClientModInitializer {
 		}
 		JadeClient.init();
 		ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener((IdentifiableResourceReloadListener) ThemeHelper.INSTANCE);
+		ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener((IdentifiableResourceReloadListener) HarvestToolProvider.INSTANCE);
 	}
 }
