@@ -1,9 +1,9 @@
 package snownee.jade.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Stream;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
@@ -52,8 +52,7 @@ public class Tooltip implements ITooltip {
 		if (isEmpty() || index == size()) {
 			add(element);
 		} else {
-			Line lastLine = lines.get(index);
-			lastLine.getAlignedElements(element.getAlignment()).add(element);
+			lines.get(index).elements.add(element);
 		}
 	}
 
@@ -74,7 +73,7 @@ public class Tooltip implements ITooltip {
 			element.tag(ElementHelper.INSTANCE.currentUid());
 		}
 		Line line = new Line();
-		line.getAlignedElements(element.getAlignment()).add(element);
+		line.elements.add(element);
 		lines.add(index, line);
 	}
 
@@ -82,8 +81,7 @@ public class Tooltip implements ITooltip {
 	public List<IElement> get(ResourceLocation tag) {
 		List<IElement> elements = Lists.newArrayList();
 		for (Line line : lines) {
-			line.left.stream().filter(e -> Objects.equal(tag, e.getTag())).forEach(elements::add);
-			line.right.stream().filter(e -> Objects.equal(tag, e.getTag())).forEach(elements::add);
+			line.sortedElements().stream().filter(e -> Objects.equal(tag, e.getTag())).forEach(elements::add);
 		}
 		return elements;
 	}
@@ -91,17 +89,18 @@ public class Tooltip implements ITooltip {
 	@Override
 	public List<IElement> get(int index, Align align) {
 		Line line = lines.get(index);
-		return line.getAlignedElements(align);
+		return line.alignedElements(align);
 	}
 
 	@Override
 	public void remove(ResourceLocation tag) {
 		for (Iterator<Line> iterator = lines.iterator(); iterator.hasNext(); ) {
 			Line line = iterator.next();
-			line.left.removeIf(e -> Objects.equal(tag, e.getTag()));
-			line.right.removeIf(e -> Objects.equal(tag, e.getTag()));
-			if (line.left.isEmpty() && line.right.isEmpty()) {
-				iterator.remove();
+			if (line.elements.removeIf(e -> Objects.equal(tag, e.getTag()))) {
+				line.markDirty();
+				if (line.elements.isEmpty()) {
+					iterator.remove();
+				}
 			}
 		}
 	}
@@ -112,7 +111,7 @@ public class Tooltip implements ITooltip {
 		for (Line line : lines) {
 			/* off */
 			msgs.add(Joiner.on(' ').join(
-							Stream.concat(line.left.stream(), line.right.stream())
+							line.sortedElements().stream()
 									.filter(e -> !Identifiers.CORE_MOD_NAME.equals(e.getTag()))
 									.map(IElement::getCachedMessage)
 									.filter(java.util.Objects::nonNull)
@@ -138,52 +137,89 @@ public class Tooltip implements ITooltip {
 	}
 
 	public static class Line {
-		private final List<IElement> left = new ArrayList<>();
-		private final List<IElement> right = new ArrayList<>(0);
+		private final List<IElement> elements = Lists.newArrayList();
+		private final int[] starts = new int[3-1];
+		private final float[] widths = new float[3];
 		public int marginTop = 0;
 		public int marginBottom = 2;
 		private Vec2 size;
+		private boolean sorted;
 
-		public List<IElement> getAlignedElements(Align align) {
-			return align == Align.LEFT ? left : right;
+		public void sort() {
+			if (sorted)
+				return;
+			sorted = true;
+			Arrays.fill(starts, 0);
+			Arrays.fill(widths, 0);
+			List<IElement> tempList = Lists.newArrayListWithExpectedSize(elements.size());
+			float width = 0;
+			float height = 0;
+			for (IElement element : elements) {
+				int index = element.getAlignment().ordinal();
+				int start = index == 2 ? tempList.size() : starts[index];
+				tempList.add(start, element);
+				for (int i = index; i < starts.length; i++) {
+					starts[i]++;
+				}
+				Vec2 elementSize = element.getCachedSize();
+				widths[index] += elementSize.x;
+				width += elementSize.x;
+				height = Math.max(height, elementSize.y);
+			}
+			elements.clear();
+			elements.addAll(tempList);
+			size = new Vec2(width, height);
 		}
 
-		public Vec2 getSize() {
-			if (size == null) {
-				float width = 0, height = 0;
-				for (IElement element : left) {
-					Vec2 elementSize = element.getCachedSize();
-					width += elementSize.x;
-					height = Math.max(height, elementSize.y);
-				}
-				for (IElement element : right) {
-					Vec2 elementSize = element.getCachedSize();
-					width += elementSize.x;
-					height = Math.max(height, elementSize.y);
-				}
-				size = new Vec2(width, height);
-			}
+		public void markDirty() {
+			sorted = false;
+			size = null;
+		}
+
+		public List<IElement> sortedElements() {
+			sort();
+			return elements;
+		}
+
+		public List<IElement> alignedElements(Align align) {
+			sort();
+			int index = align.ordinal();
+			int start = index == 0 ? 0 : starts[index - 1];
+			int end = index == 2 ? elements.size() : starts[index];
+			return elements.subList(start, end);
+		}
+
+		public Vec2 size() {
+			sort();
 			return size;
 		}
 
-		public void render(GuiGraphics guiGraphics, float x, float y, float maxWidth, float maxHeight) {
-			float ox = maxWidth;
-			for (int i = right.size() - 1; i >= 0; i--) {
-				IElement element = right.get(i);
-				Vec2 translate = element.getTranslation();
-				Vec2 size = element.getCachedSize();
-				ox -= size.x;
-				drawDebugBorder(guiGraphics, ox, y, element);
-				element.render(guiGraphics, ox + translate.x, y + translate.y, x + size.x + translate.x, y + maxHeight + translate.y);
+		public void render(GuiGraphics guiGraphics, float x, float y, float maxX, float maxY) {
+			sort();
+			for (Align align : Align.VALUES) {
+				renderAligned(guiGraphics, x, y, maxX, maxY, align);
 			}
-			maxWidth = ox;
-			ox = x;
-			for (int i = 0; i < left.size(); i++) {
-				IElement element = left.get(i);
+		}
+
+		private void renderAligned(GuiGraphics guiGraphics, float x, float y, float maxX, float maxY, Align align) {
+			List<IElement> alignedElements = alignedElements(align);
+			float ox = switch (align) {
+				case LEFT   -> x;
+				case RIGHT  -> maxX - widths[1];
+				case CENTER -> {
+					float left = x + widths[0];
+					float right = maxX - widths[1];
+					yield left + (right - left - widths[2]) / 2;
+				}
+			};
+
+			boolean extendable = align == Align.LEFT && alignedElements.size() == elements.size();
+			IElement lastElement = alignedElements.isEmpty() ? null : alignedElements.get(alignedElements.size() - 1);
+			for (IElement element: alignedElements) {
 				Vec2 translate = element.getTranslation();
 				Vec2 size = element.getCachedSize();
 				drawDebugBorder(guiGraphics, ox, y, element);
-				element.render(guiGraphics, ox + translate.x, y + translate.y, ((i == left.size() - 1) ? maxWidth : (ox + size.x)) + translate.x, y + maxHeight + translate.y);
+				element.render(guiGraphics, ox + translate.x, y + translate.y, (extendable && element == lastElement ? maxX : (ox + size.x)) + translate.x, maxY + translate.y);
 				ox += size.x;
 			}
 		}

@@ -33,8 +33,8 @@ public interface IElement {
 	 * @param guiGraphics
 	 * @param x
 	 * @param y
-	 * @param maxX Max width this element can expand to
-	 * @param maxY Max height this element can expand to
+	 * @param maxX        Max width this element can expand to
+	 * @param maxY        Max height this element can expand to
 	 */
 	void render(GuiGraphics guiGraphics, float x, float y, float maxX, float maxY);
 
@@ -70,6 +70,7 @@ public interface IElement {
 	IElement message(@Nullable String message);
 
 	enum Align {
-		LEFT, RIGHT
+		LEFT, RIGHT, CENTER;
+		public static final Align[] VALUES = values();
 	}
 }
