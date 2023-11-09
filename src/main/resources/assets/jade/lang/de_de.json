@@ -109,7 +109,6 @@
   "config.jade.plugin_minecraft.profession": "Dorfbewohner-Beruf",
   "config.jade.plugin_minecraft.item_tooltip": "Item-Tooltip",
   "jade.locked": "Inventar ist gesperrt",
-  "jade.not_generated": "Inventar wird nicht generiert",
   "jade.fe": "%s / %s",
   "jade.fluid": "%s %s",
   "jade.fluid.empty": "Leer",

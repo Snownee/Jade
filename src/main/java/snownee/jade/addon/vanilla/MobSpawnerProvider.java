@@ -4,7 +4,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.vehicle.MinecartSpawner;
 import net.minecraft.world.level.BaseSpawner;
@@ -39,7 +38,7 @@ public enum MobSpawnerProvider implements IBlockComponentProvider, IEntityCompon
 	}
 
 	public static void appendTooltip(ITooltip tooltip, Accessor<?> accessor, BaseSpawner spawner, BlockPos pos, MutableComponent name) {
-		Entity entity = spawner.getOrCreateDisplayEntity(accessor.getLevel(), RandomSource.create(42), pos);
+		Entity entity = spawner.getOrCreateDisplayEntity(accessor.getLevel(), pos);
 		//TODO multiple choices?
 		if (entity != null) {
 			name = Component.translatable("jade.spawner", name, entity.getDisplayName());

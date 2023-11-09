@@ -23,7 +23,7 @@ public class ThemeCodecs {
 	public static final Codec<TextSetting> TEXT_SETTING_CODEC = RecordCodecBuilder.create(i -> i.group(
 			ColorPalette.CODEC.optionalFieldOf("colors", ColorPalette.DEFAULT).forGetter(TextSetting::colors),
 			Codec.BOOL.optionalFieldOf("shadow", true).forGetter(TextSetting::shadow),
-			Style.FORMATTING_CODEC.optionalFieldOf("modNameStyle").forGetter($ -> Optional.ofNullable($.modNameStyle())),
+			Style.Serializer.CODEC.optionalFieldOf("modNameStyle").forGetter($ -> Optional.ofNullable($.modNameStyle())),
 			Color.CODEC.optionalFieldOf("itemAmountColor", 0xFFFFFFFF).forGetter(TextSetting::itemAmountColor)
 	).apply(i, TextSetting::new));
 

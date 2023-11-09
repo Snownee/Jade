@@ -28,12 +28,7 @@ public class ElementHelper implements IElementHelper {
 	private ResourceLocation uid;
 
 	@Override
-	public IElement text(Component component) {
-		return new TextElement(component);
-	}
-
-	@Override
-	public ITextElement textElement(Component component) {
+	public ITextElement text(Component component) {
 		return new TextElement(component);
 	}
 

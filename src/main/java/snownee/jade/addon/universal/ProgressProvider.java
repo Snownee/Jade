@@ -45,7 +45,7 @@ public enum ProgressProvider implements IBlockComponentProvider, IServerDataProv
 					}
 					for (var view : group.views) {
 						if (view.text != null) {
-							theTooltip.add(helper.textElement(view.text).scale(0.75F));
+							theTooltip.add(helper.text(view.text).scale(0.75F));
 							theTooltip.setLineMargin(-1, Direction2D.DOWN, 0);
 						}
 						theTooltip.add(helper.progress(view.progress, null, view.style, boxStyle, false).size(new Vec2(10, 2)));

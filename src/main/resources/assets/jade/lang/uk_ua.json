@@ -157,7 +157,6 @@
   "config.jade.plugin_minecraft.item_storage.show_name_amount": "Кіль-ть найменувань",
   "config.jade.plugin_minecraft.item_storage.items_per_line": "Кіль-ть предметів на рядок",
   "jade.locked": "Інвентар заблокований",
-  "jade.not_generated": "Інвентар не згенеровано",
   "config.jade.plugin_minecraft.energy_storage": "Енерго-сховище",
   "config.jade.plugin_minecraft.energy_storage.detailed": "Лише детально",
   "jade.fe": "%s / %s",

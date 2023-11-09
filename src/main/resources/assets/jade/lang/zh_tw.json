@@ -165,7 +165,6 @@
   "config.jade.plugin_minecraft.item_storage.show_name_amount": "顯示名稱閾值",
   "config.jade.plugin_minecraft.item_storage.items_per_line": "每行物品數量",
   "jade.locked": "物品欄已鎖住",
-  "jade.not_generated": "物品欄未生成",
   "config.jade.plugin_minecraft.energy_storage": "能量儲存",
   "config.jade.plugin_minecraft.energy_storage.detailed": "僅詳細資料",
   "jade.fe": "%s/%s",

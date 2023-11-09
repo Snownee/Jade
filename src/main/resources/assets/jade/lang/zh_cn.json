@@ -131,7 +131,7 @@
   "config.jade.plugin_minecraft.item_tooltip": "物品提示框",
   "config.jade.plugin_minecraft.item_storage": "物品存储",
   "jade.locked": "容器已上锁",
-  "jade.not_generated": "物品未生成",
+  "jade.loot_not_generated": "战利品未生成",
   "jade.fe": "%s / %s",
   "config.jade.plugin_minecraft.fluid_storage": "流体存储",
   "jade.fluid": "%s %s",
