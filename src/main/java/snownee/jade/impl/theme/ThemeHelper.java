@@ -12,7 +12,6 @@ import org.jetbrains.annotations.NotNull;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.JsonOps;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -44,8 +43,8 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener implements ITh
 	private static final Int2ObjectMap<Style> styleCache = new Int2ObjectOpenHashMap<>(6);
 	private final Map<ResourceLocation, Theme> themes = Maps.newTreeMap(Comparator.comparing(ResourceLocation::toString));
 	private final MinMaxBounds.Ints allowedVersions = MinMaxBounds.Ints.between(100, 199);
+	private final Style[] modNameStyleCache = new Style[3];
 	private Theme fallback;
-	private Style[] modNameStyleCache = new Style[3];
 
 	public ThemeHelper() {
 		super(JsonConfig.DEFAULT_GSON, "jade_themes");
@@ -131,7 +130,17 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener implements ITh
 
 	@Override
 	public MutableComponent seconds(int ticks) {
-		return info(JadeClient.format("jade.seconds", ticks / 20));
+		ticks /= 20;
+		if (ticks >= 60) {
+			int minutes = ticks / 60;
+			ticks %= 60;
+			if (ticks == 0) {
+				return info(JadeClient.format("jade.minutes", minutes));
+			} else {
+				return info(JadeClient.format("jade.minutes_seconds", minutes, ticks));
+			}
+		}
+		return info(JadeClient.format("jade.seconds", ticks));
 	}
 
 	protected MutableComponent color(Object componentOrString, int color) {
