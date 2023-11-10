@@ -55,13 +55,13 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.util.LazyLoadedValue;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
@@ -235,7 +235,10 @@ public final class ClientProxy implements ClientModInitializer {
 	}
 
 	public static ToolHandler createSwordToolHandler() {
-		return new SimpleToolHandler("sword", List.of(BlockTags.SWORD_EFFICIENT, FabricMineableTags.SWORD_MINEABLE), Items.WOODEN_SWORD);
+		return SimpleToolHandler.create(Identifiers.JADE("sword"), false, List.of(Items.WOODEN_SWORD))
+				.addBlock(Blocks.COBWEB)
+				.addBlock(Blocks.BAMBOO)
+				.addBlockTag(FabricMineableTags.SWORD_MINEABLE);
 	}
 
 	public static KeyMapping registerDetailsKeyBinding() {

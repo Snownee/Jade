@@ -9,12 +9,13 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import snownee.jade.api.Identifiers;
 import snownee.jade.util.CommonProxy;
 
-public class ShearsToolHandler extends SpecialToolHandler {
+public class ShearsToolHandler extends SimpleToolHandler {
 
 	public ShearsToolHandler() {
-		super("shears", Items.SHEARS.getDefaultInstance());
+		super(Identifiers.JADE("shears"), false, List.of(Items.SHEARS.getDefaultInstance()));
 		blocks.addAll(List.of(
 				Blocks.GLOW_LICHEN,
 				Blocks.TRIPWIRE,
@@ -27,16 +28,16 @@ public class ShearsToolHandler extends SpecialToolHandler {
 				Blocks.FERN,
 				Blocks.LARGE_FERN
 		));
-		blockTags = List.of(
+		blockTags.addAll(List.of(
 				BlockTags.WOOL,
 				BlockTags.LEAVES
-		);
+		));
 	}
 
 	@Override
 	public ItemStack test(BlockState state, Level world, BlockPos pos) {
 		if (CommonProxy.isShearable(state)) {
-			return tool;
+			return tools.get(0);
 		}
 		return super.test(state, world, pos);
 	}
