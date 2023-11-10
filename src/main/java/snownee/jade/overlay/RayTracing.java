@@ -139,7 +139,7 @@ public class RayTracing {
 			fluidView = Jade.CONFIG.get().getGeneral().getDisplayFluids().ctx;
 		}
 		CollisionContext collisionContext = CollisionContext.of(entity);
-		ClipContext context = new ClipContext(eyePosition, traceEnd, ClipContext.Block.OUTLINE, fluidView, collisionContext);
+		ClipContext context = new ClipContext(eyePosition, traceEnd, ClipContext.Block.OUTLINE, fluidView, entity);
 
 		BlockHitResult blockResult = world.clip(context);
 		if (entityResult != null) {
