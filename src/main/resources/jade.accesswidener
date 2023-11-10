@@ -49,3 +49,5 @@ accessible field net/minecraft/client/gui/screens/Screen deferredTooltipRenderin
 
 accessible field net/minecraft/world/level/block/entity/CampfireBlockEntity cookingProgress [I
 accessible field net/minecraft/world/level/block/entity/CampfireBlockEntity cookingTime [I
+
+accessible field net/minecraft/world/level/block/entity/trialspawner/TrialSpawnerData cooldownEndsAt J
