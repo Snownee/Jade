@@ -60,10 +60,11 @@ import net.minecraftforge.forgespi.language.IModInfo;
 import net.minecraftforge.network.PacketDistributor;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
-import snownee.jade.addon.harvest.SpecialToolHandler;
+import snownee.jade.addon.harvest.SimpleToolHandler;
 import snownee.jade.addon.harvest.ToolHandler;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
+import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.IWailaConfig.BossBarOverlapMode;
 import snownee.jade.api.fluid.JadeFluidObject;
@@ -280,10 +281,9 @@ public final class ClientProxy {
 	}
 
 	public static ToolHandler createSwordToolHandler() {
-		SpecialToolHandler handler = new SpecialToolHandler("sword", Items.WOODEN_SWORD.getDefaultInstance());
-		handler.blocks.add(Blocks.COBWEB);
-		handler.blocks.add(Blocks.BAMBOO);
-		return handler;
+		return SimpleToolHandler.create(Identifiers.JADE("sword"), false, List.of(Items.WOODEN_SWORD))
+			.addBlock(Blocks.COBWEB)
+			.addBlock(Blocks.BAMBOO);
 	}
 
 	public static void renderItemDecorationsExtra(GuiGraphics guiGraphics, Font font, ItemStack stack, int x, int y, String text) {
