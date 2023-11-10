@@ -182,7 +182,7 @@ public class BoxElement extends Element implements IBoxElement {
 			Tooltip.Line line = tooltip.lines.get(0);
 			for (int i = 0; i < lineCount; i++) {
 				Vec2 lineSize = line.size();
-				line.render(guiGraphics, contentLeft, lineTop, maxX - padding(Direction2D.RIGHT), lineTop + lineSize.y);
+				line.render(guiGraphics, contentLeft, lineTop, maxX - x - padding(Direction2D.RIGHT), lineTop + lineSize.y);
 				if (i < lineCount - 1) {
 					int marginBottom = line.marginBottom;
 					line = tooltip.lines.get(i + 1);
