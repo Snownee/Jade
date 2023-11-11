@@ -17,7 +17,7 @@ public class SpecialToolHandler implements ToolHandler {
 	public final Set<Block> blocks = Sets.newIdentityHashSet();
 	protected final ItemStack tool;
 	private final String name;
-	protected List<TagKey<Block>> blockTags = List.of();
+	public List<TagKey<Block>> blockTags = List.of();
 
 	public SpecialToolHandler(String name, ItemStack tool) {
 		this.name = name;

@@ -43,6 +43,9 @@ public class SimpleToolHandler implements ToolHandler {
 	@Override
 	public ItemStack test(BlockState state, Level world, BlockPos pos) {
 		if (matchesBlock(state)) {
+			if (!state.requiresCorrectToolForDrops() && state.getDestroySpeed(world, pos) == 0) {
+				return ItemStack.EMPTY;
+			}
 			for (ItemStack tool : tools) {
 				if (tool.isCorrectToolForDrops(state)) {
 					return tool;
