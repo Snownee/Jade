@@ -87,11 +87,16 @@ public enum HarvestToolProvider implements IBlockComponentProvider, ResourceMana
 		}
 		IElementHelper helper = tooltip.getElementHelper();
 		BlockState state = accessor.getBlockState();
-		float hardness = state.getDestroySpeed(accessor.getLevel(), accessor.getPosition());
-		if (hardness < 0) {
+		Level level = accessor.getLevel();
+		BlockPos pos = accessor.getPosition();
+		float destroySpeed = state.getDestroySpeed(level, pos);
+		// player-sensitive method, used by Waystones
+		float destroyProgress = state.getDestroyProgress(player, level, pos);
+		if (destroySpeed < 0 || destroyProgress <= 0) {
 			if (config.get(Identifiers.MC_SHOW_UNBREAKABLE)) {
 				tooltip.add(helper.text(UNBREAKABLE_TEXT).message(null));
 			}
+			//TODO: high priority handlers?
 			return;
 		}
 
