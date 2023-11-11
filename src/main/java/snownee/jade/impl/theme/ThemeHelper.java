@@ -169,7 +169,7 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener implements ITh
 				return;
 			}
 			try {
-				ThemeCodecs.CODEC.decode(JsonOps.INSTANCE, o).resultOrPartial(Jade.LOGGER::error).map(Pair::getFirst).ifPresent(theme -> {
+				ThemeCodecs.CODEC.parse(JsonOps.INSTANCE, o).resultOrPartial(Jade.LOGGER::error).ifPresent(theme -> {
 					theme.id = id;
 					themes.put(id, theme);
 					if (enable.getValue() == null && GsonHelper.getAsBoolean(o, "autoEnable", false) && !existingKeys.contains(id)) {
