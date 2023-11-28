@@ -74,7 +74,7 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 	@Override
 	public OptionsList createOptions() {
 		Objects.requireNonNull(minecraft);
-		OptionsList options = new OptionsList(this, minecraft, width - 120, height, 0, height - 32, 26, Jade.CONFIG::save);
+		OptionsList options = new OptionsList(this, minecraft, width - 120, height - 32, 0, 26, Jade.CONFIG::save);
 
 		ConfigGeneral general = Jade.CONFIG.get().getGeneral();
 		options.title("general");

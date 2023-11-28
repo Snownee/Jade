@@ -12,8 +12,8 @@ public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
 	private final OptionsList options;
 	private final SmoothChasingValue anchor;
 
-	public OptionsNav(OptionsList options, int width, int height, int top, int bottom, int itemHeight) {
-		super(Minecraft.getInstance(), width, height, top, bottom, itemHeight);
+	public OptionsNav(OptionsList options, int width, int height, int top, int itemHeight) {
+		super(Minecraft.getInstance(), width, height, top, itemHeight);
 		this.options = options;
 		this.anchor = new SmoothChasingValue();
 		setRenderBackground(false);
@@ -26,17 +26,17 @@ public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
 		if (children().isEmpty()) {
 			return;
 		}
-		int top = (int) (y0 + 4 - this.getScrollAmount() + anchor.value * this.itemHeight + this.headerHeight);
+		int top = (int) (getY() + 4 - this.getScrollAmount() + anchor.value * this.itemHeight + this.headerHeight);
 		int left = getRowLeft() + 2;
 		guiGraphics.fill(left, top, left + 2, top + itemHeight - 4, 0xFFFFFFFF);
 	}
 
 	@Override
-	public void render(GuiGraphics guiGraphics, int i, int j, float f) {
+	public void renderWidget(GuiGraphics guiGraphics, int i, int j, float f) {
         guiGraphics.setColor(0.125f, 0.125f, 0.125f, 1.0f);
-        guiGraphics.blit(Screen.BACKGROUND_LOCATION, this.x0, this.y0, this.x1, this.y1 + (int)this.getScrollAmount(), this.x1 - this.x0, this.y1 - this.y0, 32, 32);
+        guiGraphics.blit(Screen.BACKGROUND_LOCATION, getX(), getY(), this.getRight(), this.getBottom() + (int)this.getScrollAmount(), getWidth(), getHeight(), 32, 32);
         guiGraphics.setColor(1.0f, 1.0f, 1.0f, 1.0f);
-		super.render(guiGraphics, i, j, f);
+		super.renderWidget(guiGraphics, i, j, f);
 	}
 
 	@Override

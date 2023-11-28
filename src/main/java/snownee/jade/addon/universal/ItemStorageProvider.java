@@ -25,7 +25,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.EnderChestBlockEntity;
-import snownee.jade.JadeCommonConfig;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
@@ -182,7 +181,7 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 				tag.putString("JadeItemStorageUid", provider.getUid().toString());
 			} else if (target instanceof RandomizableContainer containerEntity && containerEntity.getLootTable() != null) {
 				tag.putBoolean("Loot", true);
-			} else if (!JadeCommonConfig.bypassLockedContainer && !player.isCreative() && !player.isSpectator() && target instanceof BaseContainerBlockEntity te) {
+			} else if (!player.isCreative() && !player.isSpectator() && target instanceof BaseContainerBlockEntity te) {
 				if (te.lockKey != LockCode.NO_LOCK) {
 					tag.putBoolean("Locked", true);
 				}
@@ -200,7 +199,7 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 
 	@Override
 	public void appendServerData(CompoundTag tag, BlockAccessor accessor) {
-		if (JadeCommonConfig.shouldIgnoreTE(tag.getString("id")) || accessor.getBlockEntity() instanceof AbstractFurnaceBlockEntity) {
+		if (accessor.getBlockEntity() instanceof AbstractFurnaceBlockEntity) {
 			return;
 		}
 		putData(accessor);
@@ -225,7 +224,7 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 			return List.of();
 		}
 		Player player = accessor.getPlayer();
-		if (!JadeCommonConfig.bypassLockedContainer && !player.isCreative() && !player.isSpectator() && target instanceof BaseContainerBlockEntity te) {
+		if (!player.isCreative() && !player.isSpectator() && target instanceof BaseContainerBlockEntity te) {
 			if (te.lockKey != LockCode.NO_LOCK) {
 				return List.of();
 			}
