@@ -98,6 +98,7 @@ public class HomeConfigScreen extends Screen {
 	@Override
 	protected void init() {
 		Objects.requireNonNull(minecraft);
+		particles.clear();
 		creditWidth = font.width(credit);
 		addRenderableWidget(Button.builder(Component.translatable("gui.jade.jade_settings"), w -> {
 			minecraft.setScreen(new WailaConfigScreen(HomeConfigScreen.this));

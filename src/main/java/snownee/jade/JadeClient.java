@@ -14,7 +14,6 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.toasts.SystemToast;
-import net.minecraft.client.gui.components.toasts.SystemToast.SystemToastIds;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
@@ -65,6 +64,7 @@ import snownee.jade.util.ModIdentification;
 
 public final class JadeClient {
 
+	public static final SystemToast.SystemToastId JADE_TUTORIAL = new SystemToast.SystemToastId(10000L);
 	public static KeyMapping openConfig;
 	public static KeyMapping showOverlay;
 	public static KeyMapping toggleLiquid;
@@ -106,7 +106,7 @@ public final class JadeClient {
 			if (mode == IWailaConfig.DisplayMode.TOGGLE) {
 				general.setDisplayTooltip(!general.shouldDisplayTooltip());
 				if (!general.shouldDisplayTooltip() && general.hintOverlayToggle) {
-					SystemToast.add(Minecraft.getInstance().getToasts(), SystemToastIds.UNSECURE_SERVER_WARNING, Component.translatable("toast.jade.toggle_hint.1"), Component.translatable("toast.jade.toggle_hint.2", showOverlay.getTranslatedKeyMessage()));
+					SystemToast.add(Minecraft.getInstance().getToasts(), JADE_TUTORIAL, Component.translatable("toast.jade.toggle_hint.1"), Component.translatable("toast.jade.toggle_hint.2", showOverlay.getTranslatedKeyMessage()));
 					general.hintOverlayToggle = false;
 				}
 				Jade.CONFIG.save();
@@ -122,7 +122,7 @@ public final class JadeClient {
 			if (general.getTTSMode() == TTSMode.TOGGLE) {
 				general.toggleTTS();
 				if (general.shouldEnableTextToSpeech() && general.hintNarratorToggle) {
-					SystemToast.add(Minecraft.getInstance().getToasts(), SystemToastIds.UNSECURE_SERVER_WARNING, Component.translatable("toast.jade.tts_hint.1"), Component.translatable("toast.jade.tts_hint.2", narrate.getTranslatedKeyMessage()));
+					SystemToast.add(Minecraft.getInstance().getToasts(), JADE_TUTORIAL, Component.translatable("toast.jade.tts_hint.1"), Component.translatable("toast.jade.tts_hint.2", narrate.getTranslatedKeyMessage()));
 					general.hintNarratorToggle = false;
 				}
 				Jade.CONFIG.save();
