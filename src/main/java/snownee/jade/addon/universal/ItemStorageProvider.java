@@ -86,7 +86,7 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 			int totalSize = 0;
 			for (var group : groups) {
 				for (var view : group.views) {
-					if (view.text != null) {
+					if (view.amountText != null) {
 						showName.setFalse();
 					}
 					if (!view.item.isEmpty()) {
@@ -138,12 +138,17 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 				}
 
 				if (showName.isTrue()) {
-					ItemStack copy = stack.copy();
-					copy.setCount(1);
-					elements.add(helper.smallItem(copy).clearCachedMessage());
-					elements.add(helper.text(Component.literal(itemView.text != null ? itemView.text : IDisplayHelper.get().humanReadableNumber(stack.getCount(), "", false, null)).append("× ").append(IDisplayHelper.get().stripColor(stack.getHoverName()))).message(null));
-				} else if (itemView.text != null) {
-					elements.add(helper.item(stack, 1, itemView.text));
+					if (itemView.description != null) {
+						elements.add(helper.smallItem(stack));
+						elements.addAll(itemView.description);
+					} else {
+						elements.add(helper.smallItem(stack).clearCachedMessage());
+						elements.add(helper.text(Component.literal(IDisplayHelper.get().humanReadableNumber(stack.getCount(), "", false, null))
+								.append("× ")
+								.append(IDisplayHelper.get().stripColor(stack.getHoverName()))).message(null));
+					}
+				} else if (itemView.amountText != null) {
+					elements.add(helper.item(stack, 1, itemView.amountText));
 				} else {
 					elements.add(helper.item(stack));
 				}

@@ -54,7 +54,7 @@ public class ElementHelper implements IElementHelper {
 
 	@Override
 	public IElement smallItem(ItemStack stack) {
-		return item(stack, 0.5F).size(SMALL_ITEM_SIZE).translate(SMALL_ITEM_OFFSET).message(null);
+		return item(stack, 0.5F, "").size(SMALL_ITEM_SIZE).translate(SMALL_ITEM_OFFSET).message(null);
 	}
 
 	@Override

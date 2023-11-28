@@ -34,7 +34,7 @@ public enum CampfireProvider implements IServerExtensionProvider<Object, ItemSta
 			if (stack.getTag() != null && stack.getTag().contains("jade:cooking")) {
 				text = IThemeHelper.get().seconds(stack.getTag().getInt("jade:cooking")).getString();
 			}
-			return new ItemView(stack, text);
+			return new ItemView(stack).amountText(text);
 		}, null);
 	}
 
