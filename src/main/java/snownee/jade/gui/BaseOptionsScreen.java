@@ -46,8 +46,8 @@ public abstract class BaseOptionsScreen extends Screen {
 		if (options != null)
 			options.removed();
 		options = createOptions();
-		options.setLeftPos(120);
-		optionsNav = new OptionsNav(options, 120, height, 18, height - 32, 18);
+		options.setX(120);
+		optionsNav = new OptionsNav(options, 120, height - 32, 18, 18);
 		searchBox = new NotUglyEditBox(font, 0, 0, 120, 18, searchBox, Component.translatable("gui.jade.search"));
 		searchBox.setBordered(false);
 		searchBox.setHint(Component.translatable("gui.jade.search.hint"));

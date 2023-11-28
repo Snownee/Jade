@@ -13,7 +13,6 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import snownee.jade.JadeCommonConfig;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IBlockComponentProvider;
@@ -94,7 +93,7 @@ public enum ObjectNameProvider
 	@Override
 	public void appendServerData(CompoundTag data, BlockAccessor accessor) {
 		BlockEntity blockEntity = accessor.getBlockEntity();
-		if (blockEntity instanceof Nameable nameable && JadeCommonConfig.shouldShowCustomName(blockEntity)) {
+		if (blockEntity instanceof Nameable nameable) {
 			if (nameable.hasCustomName()) {
 				data.putString("givenName", Component.Serializer.toJson(nameable.getCustomName()));
 			}

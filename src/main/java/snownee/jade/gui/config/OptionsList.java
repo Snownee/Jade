@@ -64,14 +64,14 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 	private Entry defaultParent;
 	private int lastActiveIndex;
 
-	public OptionsList(BaseOptionsScreen owner, Minecraft client, int width, int height, int y0, int y1, int entryHeight, Runnable diskWriter) {
-		super(client, width, height, y0, y1, entryHeight);
+	public OptionsList(BaseOptionsScreen owner, Minecraft client, int width, int height, int y0, int entryHeight, Runnable diskWriter) {
+		super(client, width, height, y0, entryHeight);
 		this.owner = owner;
 		this.diskWriter = diskWriter;
 	}
 
-	public OptionsList(BaseOptionsScreen owner, Minecraft client, int width, int height, int y0, int y1, int entryHeight) {
-		this(owner, client, width, height, y0, y1, entryHeight, null);
+	public OptionsList(BaseOptionsScreen owner, Minecraft client, int width, int height, int y0, int entryHeight) {
+		this(owner, client, width, height, y0, entryHeight, null);
 	}
 
 	private static void walkChildren(Entry entry, Consumer<Entry> consumer) {
@@ -126,11 +126,11 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 
 	@Override
 	protected void renderSelection(GuiGraphics guiGraphics, int i, int j, int k, int l, int m) {
-		guiGraphics.fill(x0, i - 2, x1, i + k + 2, 0x33FFFFFF);
+		guiGraphics.fill(getX(), i - 2, getRight(), i + k + 2, 0x33FFFFFF);
 	}
 
 	@Override
-	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
+	public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
 		{
 			targetScroll = Math.min(targetScroll, getMaxScroll());
 			double diff = targetScroll - super.getScrollAmount();
@@ -165,17 +165,17 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		enableScissor(guiGraphics);
 		renderList(guiGraphics, mouseX, mouseY, delta);
 		int k = this.getMaxScroll();
-        if (k > 0) {
-            int l = this.getScrollbarPosition();
-            int m = (int)((float)((this.y1 - this.y0) * (this.y1 - this.y0)) / (float)this.getMaxPosition());
-            m = Mth.clamp(m, 32, this.y1 - this.y0 - 8);
-            int n = (int)this.getScrollAmount() * (this.y1 - this.y0 - m) / k + this.y0;
-            if (n < this.y0) {
-                n = this.y0;
-            }
-            guiGraphics.fill(l, this.y0, l + 6, this.y1, -16777216);
-            guiGraphics.blitSprite(SCROLLER_SPRITE, l, n, 6, m);
-        }
+		if ((k = this.getMaxScroll()) > 0) {
+			int l = this.getScrollbarPosition();
+			int m = (int) ((float) (this.height * this.height) / (float) this.getMaxPosition());
+			m = Mth.clamp(m, 32, this.height - 8);
+			int n = (int) this.getScrollAmount() * (this.height - m) / k + this.getY();
+			if (n < this.getY()) {
+				n = this.getY();
+			}
+			guiGraphics.fill(l, this.getY(), l + 6, this.getBottom(), -16777216);
+			guiGraphics.blitSprite(SCROLLER_SPRITE, l, n, 6, m);
+		}
 
 		renderDecorations(guiGraphics, mouseX, mouseY);
 		RenderSystem.disableBlend();
