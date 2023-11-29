@@ -21,7 +21,7 @@
   "gui.jade.jade_settings": "Настройки Мода",
   "gui.jade.plugin_settings": "Настройки плагина",
   "gui.jade.save_and_quit": "Сохранить & Выйти",
-  "gui.jade.plugin_settings": "Настройки плагина",
+  "gui.jade.forced_plugin_config": "Эта опция контролируется сервером",
   "gui.jade.disabled_by_mods": "Эта опция отключена следующими модами:",
   "gui.jade.server_feature": "Для этой функции требуется, чтобы на сервере была установлена Jade.",
   "gui.jade.search": "Поиск",
