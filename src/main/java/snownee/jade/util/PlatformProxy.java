@@ -123,7 +123,7 @@ public final class PlatformProxy {
 	public static List<ViewGroup<CompoundTag>> wrapEnergyStorage(Object target, @Nullable Player player) {
 		if (target instanceof CapabilityProvider<?> capProvider) {
 			IEnergyStorage storage = capProvider.getCapability(CapabilityEnergy.ENERGY).orElse(null);
-			if (storage != null) {
+			if (storage != null && storage.getMaxEnergyStored() > 0)) {
 				var group = new ViewGroup<>(List.of(EnergyView.fromForgeEnergy(storage)));
 				group.getExtraData().putString("Unit", "FE");
 				return List.of(group);
