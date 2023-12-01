@@ -31,8 +31,7 @@ public enum MobSpawnerProvider implements IBlockComponentProvider, IEntityCompon
 			return;
 		}
 		name = Component.translatable("jade.spawner", name, displayEntity.getDisplayName());
-		tooltip.remove(Identifiers.CORE_OBJECT_NAME);
-		tooltip.add(0, IThemeHelper.get().title(name), Identifiers.CORE_OBJECT_NAME);
+		tooltip.replace(Identifiers.CORE_OBJECT_NAME, IThemeHelper.get().title(name));
 	}
 
 	@Override

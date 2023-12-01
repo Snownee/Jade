@@ -1,5 +1,7 @@
 package snownee.jade.test;
 
+import java.util.List;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -11,6 +13,7 @@ import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
+import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElementHelper;
@@ -42,6 +45,9 @@ public enum ExampleComponentProvider implements IBlockComponentProvider, IServer
 		tooltip.append(IElementHelper.get().text(test2).align(IElement.Align.LEFT));
 		tooltip.append(IElementHelper.get().text(test3).align(IElement.Align.LEFT));
 		tooltip.append(IElementHelper.get().text(test3).align(IElement.Align.CENTER));
+
+		IElement text = IElementHelper.get().text(Component.literal("test"));
+		tooltip.replace(Identifiers.CORE_OBJECT_NAME, $ -> List.of(List.of(text), List.of(text), List.of(text)));
 	}
 
 	@Override
