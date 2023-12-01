@@ -177,7 +177,7 @@
   "config.jade.key_binds": "按键绑定",
   "config.jade.accessibility": "辅助功能",
   "config.jade.danger_zone": "危险区",
-  "config.jade.danger_zone_desc": "冷静，这不是§o危险区§r。",
+  "config.jade.danger_zone_desc": "放心，这不会有什么§o危险§r。",
   "config.jade.reset_settings": "重置设置",
   "config.jade.reset_settings.confirm": "您确定要重置设置吗？",
   "config.jade.plugin_jade": "Jade 核心",
