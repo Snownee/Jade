@@ -1,6 +1,7 @@
 package snownee.jade.api;
 
 import java.util.List;
+import java.util.function.UnaryOperator;
 
 import org.jetbrains.annotations.ApiStatus.NonExtendable;
 
@@ -119,8 +120,19 @@ public interface ITooltip {
 
 	/**
 	 * Clear all elements that are tagged with this tag
+	 *
+	 * @return true if any element is removed
 	 */
-	void remove(ResourceLocation tag);
+	boolean remove(ResourceLocation tag);
+
+	/**
+	 * Replace all elements that are tagged with this tag at the position of the first found element
+	 *
+	 * @return true if any element is replaced
+	 */
+	boolean replace(ResourceLocation tag, UnaryOperator<List<List<IElement>>> elements);
+
+	boolean replace(ResourceLocation tag, Component component);
 
 	@Deprecated
 	IElementHelper getElementHelper();

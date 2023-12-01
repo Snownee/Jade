@@ -36,8 +36,7 @@ public enum PlayerHeadProvider implements IBlockComponentProvider {
 			if (!name.contains(" ") && !name.contains("§")) {
 				name = I18n.get(Items.PLAYER_HEAD.getDescriptionId() + ".named", name);
 			}
-			tooltip.remove(Identifiers.CORE_OBJECT_NAME);
-			tooltip.add(0, IThemeHelper.get().title(name), Identifiers.CORE_OBJECT_NAME);
+			tooltip.replace(Identifiers.CORE_OBJECT_NAME, IThemeHelper.get().title(name));
 		}
 	}
 
