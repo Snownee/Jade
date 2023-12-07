@@ -69,7 +69,6 @@
   "config.jade.animation": "Анімація",
   "config.jade.accessibility": "Доступність",
   "config.jade.danger_zone": "Небезпечна зона",
-  "config.jade.danger_zone_desc": "Заспокойтеся, це не §oНебезпечна зона",
   "config.jade.reset_settings": "Скинути параметри",
   "config.jade.reset_settings.confirm": "Ви впевнені, що бажаєте скинути параметри?",
   "config.jade.plugin_jade.registry_name": "Назва реєстру",
