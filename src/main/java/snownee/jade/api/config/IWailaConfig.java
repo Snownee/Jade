@@ -113,6 +113,10 @@ public interface IWailaConfig {
 		boolean isDebug();
 
 		void setDebug(boolean debug);
+
+		boolean getBuiltinCamouflage();
+
+		void setBuiltinCamouflage(boolean builtinCamouflage);
 	}
 
 	@NonExtendable
