@@ -87,6 +87,10 @@ public interface IWailaConfig {
 
 		void setDebug(boolean debug);
 
+		boolean getBuiltinCamouflage();
+
+		void setBuiltinCamouflage(boolean builtinCamouflage);
+
 		boolean isDebug();
 	}
 

@@ -69,6 +69,7 @@ public class WailaConfig implements IWailaConfig {
 		private boolean debug = false;
 		private boolean itemModNameTooltip = true;
 		private BossBarOverlapMode bossBarOverlapMode = BossBarOverlapMode.PUSH_DOWN;
+		private boolean builtinCamouflage = true;
 
 		public static void init() {
 			/* off */
@@ -229,6 +230,16 @@ public class WailaConfig implements IWailaConfig {
 		@Override
 		public void setDisplayBosses(boolean displayBosses) {
 			this.displayBosses = displayBosses;
+		}
+
+		@Override
+		public boolean getBuiltinCamouflage() {
+			return builtinCamouflage;
+		}
+
+		@Override
+		public void setBuiltinCamouflage(boolean builtinCamouflage) {
+			this.builtinCamouflage = builtinCamouflage;
 		}
 
 	}
