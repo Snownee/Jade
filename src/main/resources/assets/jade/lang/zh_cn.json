@@ -263,6 +263,8 @@
   "config.jade.plugin_minecraft.chiseled_bookshelf": "雕纹书架",
   "config.jade.plugin_minecraft.zombie_villager": "僵尸村民转化时间",
   "jade.zombieConversion.time": "转化时间：%s",
+  "config.jade.plugin_minecraft.waxed": "上蜡状态",
+  "config.jade.plugin_minecraft.waxed_desc": "显示某些方块是否已打蜡，如告示牌。",
   "toast.jade.toggle_hint.1": "Jade已关闭",
   "toast.jade.toggle_hint.2": "按下%s重新打开",
   "toast.jade.tts_hint.1": "Jade语音复述已开启",
