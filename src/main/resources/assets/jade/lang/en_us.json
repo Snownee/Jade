@@ -263,6 +263,8 @@
   "config.jade.plugin_minecraft.chiseled_bookshelf": "Chiseled Bookshelf",
   "config.jade.plugin_minecraft.zombie_villager": "Zombie Villager Conversion",
   "jade.zombieConversion.time": "Conversion time: %s",
+  "config.jade.plugin_minecraft.waxed": "Waxed State",
+  "config.jade.plugin_minecraft.waxed_desc": "Show the waxed state of the block, such as waxed sign.",
   "toast.jade.toggle_hint.1": "Jade is now closed",
   "toast.jade.toggle_hint.2": "Press %s again to reopen",
   "toast.jade.tts_hint.1": "Jade's narrator is now open",

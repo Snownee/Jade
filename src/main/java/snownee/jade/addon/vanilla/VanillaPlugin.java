@@ -38,6 +38,7 @@ import net.minecraft.world.level.block.EnchantmentTableBlock;
 import net.minecraft.world.level.block.JukeboxBlock;
 import net.minecraft.world.level.block.LecternBlock;
 import net.minecraft.world.level.block.NoteBlock;
+import net.minecraft.world.level.block.SignBlock;
 import net.minecraft.world.level.block.SpawnerBlock;
 import net.minecraft.world.level.block.TntBlock;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
@@ -180,6 +181,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerEntityIcon(ItemDisplayProvider.INSTANCE, ItemDisplay.class);
 		registration.registerEntityIcon(BlockDisplayProvider.INSTANCE, BlockDisplay.class);
 		registration.registerEntityComponent(ZombieVillagerProvider.INSTANCE, ZombieVillager.class);
+		registration.registerBlockIcon(WaxedProvider.INSTANCE, SignBlock.class);
 
 		registration.registerItemStorageClient(CampfireProvider.INSTANCE);
 
@@ -214,6 +216,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.markAsClientFeature(Identifiers.MC_ENTITY_ARMOR);
 		registration.markAsClientFeature(Identifiers.MC_CROP_PROGRESS);
 		registration.markAsClientFeature(Identifiers.MC_MOB_SPAWNER);
+		registration.markAsClientFeature(Identifiers.MC_WAXED);
 
 		registration.usePickedResult(EntityType.BOAT);
 		registration.usePickedResult(EntityType.CHEST_BOAT);
