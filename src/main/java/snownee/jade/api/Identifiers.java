@@ -70,6 +70,7 @@ public class Identifiers {
 	public static final ResourceLocation MC_TNT_STABILITY = MC("tnt_stability");
 	public static final ResourceLocation MC_TOTAL_ENCHANTMENT_POWER = MC("total_enchantment_power");
 	public static final ResourceLocation MC_VILLAGER_PROFESSION = MC("villager_profession");
+	public static final ResourceLocation MC_WAXED = MC("waxed");
 	public static final ResourceLocation MC_ITEM_DISPLAY = MC("item_display");
 	public static final ResourceLocation MC_BLOCK_DISPLAY = MC("block_display");
 	public static final ResourceLocation MC_BREAKING_PROGRESS = MC("breaking_progress");
