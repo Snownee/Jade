@@ -220,7 +220,7 @@
   "config.jade.plugin_minecraft.item_storage.show_name_amount_desc": "显示项目名称而不仅仅是项目图标的最大项目数量。",
   "config.jade.plugin_minecraft.item_storage.items_per_line": "每行物品数量",
   "jade.locked": "容器已上锁",
-  "jade.not_generated": "物品未生成",
+  "jade.loot_not_generated": "战利品未生成",
   "config.jade.plugin_minecraft.energy_storage": "储能",
   "config.jade.plugin_minecraft.energy_storage.detailed": "仅在细节显示",
   "config.jade.plugin_minecraft.energy_storage.detailed_desc": "仅在按下[显示详情]键时显示。",
