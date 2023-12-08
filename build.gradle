@@ -189,8 +189,8 @@ dependencies {
     annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
 
     compileOnly fg.deobf("mezz.jei:jei-1.20.2-common-api:${jei_version}")
-    compileOnly fg.deobf("mezz.jei:jei-1.20.2-forge-api:${jei_version}")
-    runtimeOnly fg.deobf("mezz.jei:jei-1.20.2-forge:${jei_version}")
+    //compileOnly fg.deobf("mezz.jei:jei-1.20.2-forge-api:${jei_version}")
+    //runtimeOnly fg.deobf("mezz.jei:jei-1.20.2-forge:${jei_version}")
     //implementation fg.deobf("curse.maven:jei-238222:3834070")
 }
 
