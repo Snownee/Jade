@@ -41,6 +41,7 @@ import net.minecraft.world.level.block.NoteBlock;
 import net.minecraft.world.level.block.SignBlock;
 import net.minecraft.world.level.block.SpawnerBlock;
 import net.minecraft.world.level.block.TntBlock;
+import net.minecraft.world.level.block.TrialSpawnerBlock;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BeehiveBlockEntity;
 import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
@@ -52,6 +53,7 @@ import net.minecraft.world.level.block.entity.ComparatorBlockEntity;
 import net.minecraft.world.level.block.entity.HopperBlockEntity;
 import net.minecraft.world.level.block.entity.JukeboxBlockEntity;
 import net.minecraft.world.level.block.entity.LecternBlockEntity;
+import net.minecraft.world.level.block.entity.TrialSpawnerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import snownee.jade.JadeClient;
@@ -111,6 +113,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerBlockDataProvider(RedstoneProvider.INSTANCE, CalibratedSculkSensorBlockEntity.class);
 		registration.registerBlockDataProvider(FurnaceProvider.INSTANCE, AbstractFurnaceBlockEntity.class);
 		registration.registerBlockDataProvider(ChiseledBookshelfProvider.INSTANCE, ChiseledBookShelfBlockEntity.class);
+		registration.registerBlockDataProvider(MobSpawnerCooldownProvider.INSTANCE, TrialSpawnerBlockEntity.class);
 
 		registration.registerEntityDataProvider(AnimalOwnerProvider.INSTANCE, Entity.class);
 		registration.registerEntityDataProvider(StatusEffectsProvider.INSTANCE, LivingEntity.class);
@@ -176,7 +179,9 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerBlockComponent(JukeboxProvider.INSTANCE, JukeboxBlock.class);
 		registration.registerBlockComponent(LecternProvider.INSTANCE, LecternBlock.class);
 		registration.registerBlockComponent(MobSpawnerProvider.INSTANCE, SpawnerBlock.class);
+		registration.registerBlockComponent(MobSpawnerProvider.INSTANCE, TrialSpawnerBlock.class);
 		registration.registerEntityComponent(MobSpawnerProvider.INSTANCE, MinecartSpawner.class);
+		registration.registerBlockComponent(MobSpawnerCooldownProvider.INSTANCE, TrialSpawnerBlock.class);
 		registration.registerBlockComponent(ChiseledBookshelfProvider.INSTANCE, ChiseledBookShelfBlock.class);
 		registration.registerBlockIcon(ChiseledBookshelfProvider.INSTANCE, ChiseledBookShelfBlock.class);
 		registration.registerEntityIcon(ItemDisplayProvider.INSTANCE, ItemDisplay.class);

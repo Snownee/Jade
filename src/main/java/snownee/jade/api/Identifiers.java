@@ -61,6 +61,7 @@ public class Identifiers {
 	public static final ResourceLocation MC_MOB_BREEDING = MC("mob_breeding");
 	public static final ResourceLocation MC_MOB_GROWTH = MC("mob_growth");
 	public static final ResourceLocation MC_MOB_SPAWNER = MC("mob_spawner");
+	public static final ResourceLocation MC_MOB_SPAWNER_COOLDOWN = MC("mob_spawner_cooldown");
 	public static final ResourceLocation MC_NOTE_BLOCK = MC("note_block");
 	public static final ResourceLocation MC_PAINTING = MC("painting");
 	public static final ResourceLocation MC_PLAYER_HEAD = MC("player_head");

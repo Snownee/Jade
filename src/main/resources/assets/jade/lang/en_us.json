@@ -263,6 +263,7 @@
   "config.jade.plugin_minecraft.jukebox": "Jukebox Record",
   "config.jade.plugin_minecraft.villager_profession": "Villager Profession",
   "jade.spawner": "%s (%s)",
+  "jade.trial_spawner_cd": "Cooldown: %s",
   "config.jade.plugin_minecraft.chiseled_bookshelf": "Chiseled Bookshelf",
   "config.jade.plugin_minecraft.zombie_villager": "Zombie Villager Conversion",
   "jade.zombieConversion.time": "Conversion time: %s",
