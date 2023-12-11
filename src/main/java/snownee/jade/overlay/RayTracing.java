@@ -10,17 +10,19 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.HitResult.Type;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
 import snownee.jade.Jade;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.ui.IElement;
@@ -31,11 +33,61 @@ import snownee.jade.impl.ui.ItemStackElement;
 public class RayTracing {
 
 	public static final RayTracing INSTANCE = new RayTracing();
-	private HitResult target = null;
-	private final Minecraft mc = Minecraft.getInstance();
 	public static Predicate<Entity> ENTITY_FILTER = entity -> true;
+	private final Minecraft mc = Minecraft.getInstance();
+	private HitResult target = null;
 
 	private RayTracing() {
+	}
+
+	public static BlockState wrapBlock(BlockGetter level, BlockHitResult hit, CollisionContext context) {
+		if (hit.getType() != HitResult.Type.BLOCK) {
+			return Blocks.AIR.defaultBlockState();
+		}
+		BlockState blockState = level.getBlockState(hit.getBlockPos());
+		FluidState fluidState = blockState.getFluidState();
+		if (!fluidState.isEmpty()) {
+			if (blockState.is(Blocks.BARRIER) && WailaClientRegistration.instance().shouldHide(blockState)) {
+				return fluidState.createLegacyBlock();
+			}
+			if (blockState.getShape(level, hit.getBlockPos(), context).isEmpty()) {
+				return fluidState.createLegacyBlock();
+			}
+		}
+		return blockState;
+	}
+
+	// from ProjectileUtil
+	@Nullable
+	public static EntityHitResult getEntityHitResult(Level worldIn, Entity projectile, Vec3 startVec, Vec3 endVec, AABB boundingBox, Predicate<Entity> filter) {
+		double d0 = Double.MAX_VALUE;
+		Entity entity = null;
+
+		for (Entity entity1 : worldIn.getEntities(projectile, boundingBox, filter)) {
+			AABB axisalignedbb = entity1.getBoundingBox();
+			if (axisalignedbb.getSize() < 0.3) {
+				axisalignedbb = axisalignedbb.inflate(0.3);
+			}
+			if (axisalignedbb.contains(startVec)) {
+				entity = entity1;
+				d0 = 0;
+				break;
+			}
+			Optional<Vec3> optional = axisalignedbb.clip(startVec, endVec);
+			if (optional.isPresent()) {
+				double d1 = startVec.distanceToSqr(optional.get());
+				if (d1 < d0) {
+					entity = entity1;
+					d0 = d1;
+				}
+			}
+		}
+
+		return entity == null ? null : new EntityHitResult(entity);
+	}
+
+	public static boolean isEmptyElement(IElement element) {
+		return element == null || element == ItemStackElement.EMPTY;
 	}
 
 	public void fire() {
@@ -80,15 +132,16 @@ public class RayTracing {
 			traceEnd = eyePosition.add(lookVector.x * playerReach, lookVector.y * playerReach, lookVector.z * playerReach);
 		}
 
-		Block eyeBlock = world.getBlockState(BlockPos.containing(eyePosition)).getBlock();
+		BlockState eyeBlock = world.getBlockState(BlockPos.containing(eyePosition));
 		ClipContext.Fluid fluidView = ClipContext.Fluid.NONE;
-		if (!(eyeBlock instanceof LiquidBlock)) {
+		if (eyeBlock.getFluidState().isEmpty()) {
 			fluidView = Jade.CONFIG.get().getGeneral().getDisplayFluids().ctx;
 		}
-		ClipContext context = new ClipContext(eyePosition, traceEnd, ClipContext.Block.OUTLINE, fluidView, entity);
+		CollisionContext collisionContext = CollisionContext.of(entity);
+		ClipContext context = new ClipContext(eyePosition, traceEnd, ClipContext.Block.OUTLINE, fluidView, collisionContext);
 
 		BlockHitResult blockResult = world.clip(context);
-		if (entityResult != null && blockResult != null) {
+		if (entityResult != null) {
 			if (blockResult.getType() == Type.BLOCK) {
 				double entityDist = entityResult.getLocation().distanceToSqr(eyePosition);
 				double blockDist = blockResult.getLocation().distanceToSqr(eyePosition);
@@ -99,8 +152,8 @@ public class RayTracing {
 				return entityResult;
 			}
 		}
-		if (blockResult != null && blockResult.getType() == Type.BLOCK) {
-			BlockState state = world.getBlockState(blockResult.getBlockPos());
+		if (blockResult.getType() == Type.BLOCK) {
+			BlockState state = wrapBlock(world, blockResult, collisionContext);
 			if (WailaClientRegistration.instance().shouldHide(state)) {
 				return null;
 			}
@@ -125,35 +178,6 @@ public class RayTracing {
 		return !WailaClientRegistration.instance().shouldHide(target) && ENTITY_FILTER.test(target);
 	}
 
-	// from ProjectileUtil
-	@Nullable
-	public static EntityHitResult getEntityHitResult(Level worldIn, Entity projectile, Vec3 startVec, Vec3 endVec, AABB boundingBox, Predicate<Entity> filter) {
-		double d0 = Double.MAX_VALUE;
-		Entity entity = null;
-
-		for (Entity entity1 : worldIn.getEntities(projectile, boundingBox, filter)) {
-			AABB axisalignedbb = entity1.getBoundingBox();
-			if (axisalignedbb.getSize() < 0.3) {
-				axisalignedbb = axisalignedbb.inflate(0.3);
-			}
-			if (axisalignedbb.contains(startVec)) {
-				entity = entity1;
-				d0 = 0;
-				break;
-			}
-			Optional<Vec3> optional = axisalignedbb.clip(startVec, endVec);
-			if (optional.isPresent()) {
-				double d1 = startVec.distanceToSqr(optional.get());
-				if (d1 < d0) {
-					entity = entity1;
-					d0 = d1;
-				}
-			}
-		}
-
-		return entity == null ? null : new EntityHitResult(entity);
-	}
-
 	public IElement getIcon() {
 		Accessor<?> accessor = ObjectDataCenter.get();
 		if (accessor == null)
@@ -164,10 +188,6 @@ public class RayTracing {
 			return null;
 		else
 			return icon;
-	}
-
-	public static boolean isEmptyElement(IElement element) {
-		return element == null || element == ItemStackElement.EMPTY;
 	}
 
 }
