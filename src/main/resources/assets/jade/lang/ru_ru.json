@@ -95,7 +95,7 @@
   "config.jade.item_mod_name_extra_msg": "modid",
   "config.jade.overlay": "Внешний вид",
   "config.jade.overlay_pos": "Позиция",
-  "config.jade.overlay_pos.adjust": "Регулирование",
+  "config.jade.overlay_pos.adjust": "Регулирование...",
   "config.jade.overlay_pos.exit": "Нажмите на пустое место, чтобы выйти",
   "config.jade.overlay_pos_extra_msg": "вверху,внизу,слева,справа,в центре",
   "config.jade.overlay_scale": "Отображение масштаба",
