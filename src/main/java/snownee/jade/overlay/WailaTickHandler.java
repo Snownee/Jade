@@ -10,6 +10,7 @@ import com.mojang.text2speech.Narrator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Direction;
 import net.minecraft.util.StringUtil;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -18,6 +19,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
 import snownee.jade.Jade;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.ITooltip;
@@ -90,8 +92,8 @@ public class WailaTickHandler {
 		}
 
 		Level world = client.level;
-		Player player = client.player;
-		if (world == null || player == null) {
+		Entity entity = client.getCameraEntity();
+		if (world == null || entity == null) {
 			rootElement = null;
 			return;
 		}
@@ -108,7 +110,7 @@ public class WailaTickHandler {
 
 		Accessor<?> accessor = null;
 		if (target instanceof BlockHitResult blockTarget && blockTarget.getType() != HitResult.Type.MISS) {
-			BlockState state = world.getBlockState(blockTarget.getBlockPos());
+			BlockState state = RayTracing.wrapBlock(world, blockTarget, CollisionContext.of(entity));
 			BlockEntity tileEntity = world.getBlockEntity(blockTarget.getBlockPos());
 			/* off */
 			accessor = WailaClientRegistration.instance().blockAccessor()
@@ -130,7 +132,7 @@ public class WailaTickHandler {
 			/* off */
 			accessor = WailaClientRegistration.instance().blockAccessor()
 					.blockState(Blocks.GRASS_BLOCK.defaultBlockState())
-					.hit(new BlockHitResult(player.position(), Direction.UP, player.blockPosition(), false))
+					.hit(new BlockHitResult(entity.position(), Direction.UP, entity.blockPosition(), false))
 					.build();
 			/* on */
 		}
