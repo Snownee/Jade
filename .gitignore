@@ -24,3 +24,5 @@ run
 *.log
 /docs/site/
 /site/
+/CHANGELOG.md
+/runs/

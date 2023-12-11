@@ -26,10 +26,14 @@ registration.addConfig(new ResourceLocation("examplemod:parent.suboption"), true
 
 Client feature is option that can work without the need of server data.
 
-Mark a config option as client feature:
+To mark a config option as client feature:
 
 ``` java
 registration.markAsClientFeature(optionId);
+```
 
+To check if a config option is a client feature:
+
+```
 registration.isClientFeature(optionId); // true
 ```

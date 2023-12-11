@@ -2,53 +2,98 @@
 
 ## Setup
 
-=== "Forge"
-
-	In your `build.gradle`:
-
-	``` groovy
-	repositories {
-		maven {
-			url "https://www.cursemaven.com"
-			content {
-				includeGroup "curse.maven"
-			}
-		}
-	}
-
-	dependencies {
-		// Visit https://www.curseforge.com/minecraft/mc-mods/jade/files/all?filter-status=1&filter-game-version=2020709689%3A7498
-		// to get the latest version's jade_id
-		implementation fg.deobf("curse.maven:jade-324717:${jade_id}")
-	}
-	```
-
 === "Fabric"
 
-	In your `build.gradle`:
+    In your `build.gradle`:
 
-	``` groovy
-	repositories {
-		maven {
-			url "https://www.cursemaven.com"
-			content {
-				includeGroup "curse.maven"
-			}
-		}
-	}
+    ``` groovy
+    repositories {
+      maven {
+        url "https://www.cursemaven.com"
+        content {
+          includeGroup "curse.maven"
+        }
+      }
+    }
 
-	dependencies {
-		// Visit https://www.curseforge.com/minecraft/mc-mods/jade/files/all?filter-status=1&filter-game-version=2020709689%3A7499
-		// to get the latest version's jade_id
-		modImplementation "curse.maven:jade-324717:${jade_id}"
-	}
-	```
+    dependencies {
+      // Visit https://www.curseforge.com/minecraft/mc-mods/jade/files/all?filter-status=1&filter-game-version=2020709689%3A7499
+      // to get the latest version's jade_id
+      modImplementation "curse.maven:jade-324717:${jade_id}"
+    }
+    ```
+
+=== "NeoForge 20.2+"
+
+    In your `build.gradle`:
+
+    ``` groovy
+    repositories {
+      maven {
+        url "https://www.cursemaven.com"
+        content {
+          includeGroup "curse.maven"
+        }
+      }
+    }
+
+    dependencies {
+      // Visit https://www.curseforge.com/minecraft/mc-mods/jade/files/all?filter-status=1&filter-game-version=2020709689%3A7498
+      // to get the latest version's jade_id
+      implementation "curse.maven:jade-324717:${jade_id}"
+    }
+    ```
+
+=== "Forge"
+
+    In your `build.gradle`:
+
+    ``` groovy
+    repositories {
+      maven {
+        url "https://www.cursemaven.com"
+        content {
+          includeGroup "curse.maven"
+        }
+      }
+    }
+
+    dependencies {
+      // Visit https://www.curseforge.com/minecraft/mc-mods/jade/files/all?filter-status=1&filter-game-version=2020709689%3A7498
+      // to get the latest version's jade_id
+      implementation fg.deobf("curse.maven:jade-324717:${jade_id}")
+    }
+    ```
+
+    !!! note "Fix mixin error"
+
+        You might get an error like this:
+
+        ```
+        [mixin/]: Mixing XxxMixin from jade.mixins.json into Xxx
+        [mixin/]: jade.mixins.json:XxxMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
+        ```
+
+        You need to add this to your `build.gradle`:
+
+        ``` groovy
+        minecraft {
+          runs {
+            client {
+              property 'mixin.env.remapRefMap', 'true'
+              property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            }
+          }
+        }
+        ```
+
+        Then re-run `genIntellijRuns`/`genEclipseRuns` and refresh gradle project. ([Source](https://github.com/SpongePowered/Mixin/issues/462#issuecomment-791370319))
 
 Visit [CurseMaven](https://www.cursemaven.com/) to find more information about how to set up your workspace.
 
 ## Registering
 
-``` java
+```java
 package snownee.jade.test;
 
 import snownee.jade.api.IWailaClientRegistration;
@@ -59,16 +104,15 @@ import snownee.jade.api.WailaPlugin;
 @WailaPlugin
 public class ExamplePlugin implements IWailaPlugin {
 
-	@Override
-	public void register(IWailaCommonRegistration registration) {
-		//TODO register data providers
-	}
+  @Override
+  public void register(IWailaCommonRegistration registration) {
+    //TODO register data providers
+  }
 
-	@Override
-	public void registerClient(IWailaClientRegistration registration) {
-		//TODO register component providers, icon providers, callbacks, and config options here
-	}
-
+  @Override
+  public void registerClient(IWailaClientRegistration registration) {
+    //TODO register component providers, icon providers, callbacks, and config options here
+  }
 }
 ```
 
@@ -80,9 +124,7 @@ public class ExamplePlugin implements IWailaPlugin {
     {
       "entrypoints": {
         "jade": [
-          "{your full class path here}",
-          "snownee.jade.addon.vanilla.VanillaPlugin",
-          "snownee.jade.addon.universal.UniversalPlugin"
+          "full.class.path.to.ExamplePlugin"
         ]
       }
     }
@@ -94,7 +136,7 @@ Component providers can append information (texts or images) to the tooltip.
 
 Let's create a simple block component provider that adds an extra line to all the furnaces:
 
-``` java
+```java
 package snownee.jade.test;
 
 import net.minecraft.network.chat.Component;
@@ -105,19 +147,21 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IPluginConfig;
 
 public enum ExampleComponentProvider implements IBlockComponentProvider {
+  INSTANCE;
 
-	INSTANCE;
+  @Override
+  public void appendTooltip(
+    ITooltip tooltip,
+    BlockAccessor accessor,
+    IPluginConfig config
+  ) {
+    tooltip.append(Component.translatable("mymod.fuel"));
+  }
 
-	@Override
-	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		tooltip.append(Component.translatable("mymod.fuel"));
-	}
-
-	@Override
-	public ResourceLocation getUid() {
-		return ExamplePlugin.FURNACE_FUEL;
-	}
-
+  @Override
+  public ResourceLocation getUid() {
+    return ExamplePlugin.FURNACE_FUEL;
+  }
 }
 ```
 
@@ -127,10 +171,10 @@ You also have the `accessor`, which you can get access to the context. We will u
 
 Then register our `ExampleComponentProvider`:
 
-``` java
+```java
 @Override
 public void registerClient(IWailaClientRegistration registration) {
-	registration.registerBlockComponent(ExampleComponentProvider.INSTANCE, AbstractFurnaceBlock.class);
+  registration.registerBlockComponent(ExampleComponentProvider.INSTANCE, AbstractFurnaceBlock.class);
 }
 ```
 
@@ -158,7 +202,7 @@ This is a chart shows the basic lifecycle:
 
 Now it's time to implement our `IServerDataProvider`:
 
-``` java
+```java
 package snownee.jade.test;
 
 import net.minecraft.nbt.CompoundTag;
@@ -171,28 +215,36 @@ import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IPluginConfig;
 
-public enum ExampleComponentProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
+public enum ExampleComponentProvider implements
+  IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
+  INSTANCE;
 
-	INSTANCE;
+  @Override
+  public void appendTooltip(
+    ITooltip tooltip,
+    BlockAccessor accessor,
+    IPluginConfig config
+  ) {
+    if (accessor.getServerData().contains("Fuel")) {
+      tooltip.append(
+        Component.translatable(
+          "mymod.fuel",
+          accessor.getServerData().getInt("Fuel")
+        )
+      );
+    }
+  }
 
-	@Override
-	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		if (accessor.getServerData().contains("Fuel")) {
-			tooltip.append(Component.translatable("mymod.fuel", accessor.getServerData().getInt("Fuel")));
-		}
-	}
+  @Override
+  public void appendServerData(CompoundTag data, BlockAccessor accessor) {
+    AbstractFurnaceBlockEntity furnace = (AbstractFurnaceBlockEntity) accessor.getBlockEntity();
+    data.putInt("Fuel", furnace.litTime);
+  }
 
-	@Override
-	public void appendServerData(CompoundTag data, BlockAccessor accessor) {
-		AbstractFurnaceBlockEntity furnace = (AbstractFurnaceBlockEntity) accessor.getBlockEntity();
-		data.putInt("Fuel", furnace.litTime);
-	}
-
-	@Override
-	public ResourceLocation getUid() {
-		return ExamplePlugin.FURNACE_FUEL;
-	}
-
+  @Override
+  public ResourceLocation getUid() {
+    return ExamplePlugin.FURNACE_FUEL;
+  }
 }
 ```
 
@@ -200,16 +252,16 @@ Here we used [Access Transformer](https://forge.gemwire.uk/wiki/Access_Transform
 
 Register `IServerDataProvider`:
 
-``` java
+```java
 @Override
 public void register(IWailaCommonRegistration registration) {
-	registration.registerBlockDataProvider(ExampleComponentProvider.INSTANCE, AbstractFurnaceBlockEntity.class);
+  registration.registerBlockDataProvider(ExampleComponentProvider.INSTANCE, AbstractFurnaceBlockEntity.class);
 }
 ```
 
 Don't forget to add translations:
 
-``` json
+```json
 {
   "config.jade.plugin_mymod.furnace_fuel": "Test",
   "mymod.fuel": "Fuel: %d ticks"
@@ -224,15 +276,15 @@ Great!
 
 Now let's show a clock as a small icon:
 
-``` java
+```java
 @Override
 public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-	if (accessor.getServerData().contains("Fuel")) {
-		IElementHelper elements = tooltip.getElementHelper();
-		IElement icon = elements.item(new ItemStack(Items.CLOCK), 0.5f);
-		tooltip.add(icon);
-		tooltip.append(Component.translatable("mymod.fuel", accessor.getServerData().getInt("Fuel")));
-	}
+  if (accessor.getServerData().contains("Fuel")) {
+    IElementHelper elements = tooltip.getElementHelper();
+    IElement icon = elements.item(new ItemStack(Items.CLOCK), 0.5f);
+    tooltip.add(icon);
+    tooltip.append(Component.translatable("mymod.fuel", accessor.getServerData().getInt("Fuel")));
+  }
 }
 ```
 
@@ -242,15 +294,15 @@ Result:
 
 Hmmm, would be better if we do some fine-tuning:
 
-``` java 
+```java
 @Override
 public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-	if (accessor.getServerData().contains("Fuel")) {
-		IElementHelper elements = tooltip.getElementHelper();
-		IElement icon = elements.item(new ItemStack(Items.CLOCK), 0.5f).size(new Vec2(10, 10)).translate(new Vec2(0, -1));
-		tooltip.add(icon);
-		tooltip.append(Component.translatable("mymod.fuel", accessor.getServerData().getInt("Fuel")));
-	}
+  if (accessor.getServerData().contains("Fuel")) {
+    IElementHelper elements = tooltip.getElementHelper();
+    IElement icon = elements.item(new ItemStack(Items.CLOCK), 0.5f).size(new Vec2(10, 10)).translate(new Vec2(0, -1));
+    tooltip.add(icon);
+    tooltip.append(Component.translatable("mymod.fuel", accessor.getServerData().getInt("Fuel")));
+  }
 }
 ```
 
@@ -264,15 +316,15 @@ Much better now!
 
 Jade has a feature that allows user to narrate the tooltip (press keypad 5 by default). Now the problem is we don't want our clock icon to be narrated. So we can clear the narratable message in this way:
 
-``` java
+```java
 @Override
 public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-	if (accessor.getServerData().contains("Fuel")) {
-		IElementHelper elements = tooltip.getElementHelper();
-		IElement icon = elements.item(new ItemStack(Items.CLOCK), 0.5f).size(new Vec2(10, 10)).translate(new Vec2(0, -1));
-		icon.message(null);
-		tooltip.add(icon);
-		tooltip.append(Component.translatable("mymod.fuel", accessor.getServerData().getInt("Fuel")));
-	}
+  if (accessor.getServerData().contains("Fuel")) {
+    IElementHelper elements = tooltip.getElementHelper();
+    IElement icon = elements.item(new ItemStack(Items.CLOCK), 0.5f).size(new Vec2(10, 10)).translate(new Vec2(0, -1));
+    icon.message(null);
+    tooltip.add(icon);
+    tooltip.append(Component.translatable("mymod.fuel", accessor.getServerData().getInt("Fuel")));
+  }
 }
 ```
