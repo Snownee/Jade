@@ -123,7 +123,7 @@ public class Tooltip implements ITooltip {
 				}
 				removed = true;
 				if (collector != null && !collected.isEmpty()) {
-					collector.add(List.copyOf(collected));
+					collector.add(Lists.newArrayList(collected));
 					collected.clear();
 				}
 			}
