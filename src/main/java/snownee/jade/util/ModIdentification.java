@@ -1,6 +1,7 @@
 package snownee.jade.util;
 
 import java.util.Map;
+import java.util.Optional;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
@@ -21,31 +22,26 @@ import snownee.jade.impl.WailaClientRegistration;
 
 public class ModIdentification implements ResourceManagerReloadListener {
 
-	public static final Map<String, String> NAMES = Maps.newConcurrentMap();
 	public static final ModIdentification INSTANCE = new ModIdentification();
+	private static final Map<String, Optional<String>> NAMES = Maps.newConcurrentMap();
 
-	static {
-		init();
-	}
-
-	public static void init() {
+	public static void invalidateCache() {
 		NAMES.clear();
-		ClientProxy.initModNames(NAMES);
 	}
 
-	public static String getModName(String namespace) {
-		return NAMES.computeIfAbsent(namespace, $ -> {
+	public static Optional<String> getModName(String namespace) {
+		return NAMES.computeIfAbsent(namespace, $ -> ClientProxy.getModName(namespace).or(() -> {
 			String key = "jade.modName." + namespace;
 			if (I18n.exists(key)) {
-				return I18n.get(key);
+				return Optional.of(I18n.get(key));
 			} else {
-				return namespace;
+				return Optional.empty();
 			}
-		});
+		}));
 	}
 
 	public static String getModName(ResourceLocation id) {
-		return getModName(id.getNamespace());
+		return getModName(id.getNamespace()).orElse(id.getNamespace());
 	}
 
 	public static String getModName(Block block) {
@@ -59,13 +55,14 @@ public class ModIdentification implements ResourceManagerReloadListener {
 				return s;
 			}
 		}
-		return getModName(CommonProxy.getModIdFromItem(stack));
+		String id = CommonProxy.getModIdFromItem(stack);
+		return getModName(id).orElse(id);
 	}
 
 	public static String getModName(Entity entity) {
 		if (entity instanceof Painting) {
 			PaintingVariant motive = ((Painting) entity).getVariant().value();
-			return getModName(CommonProxy.getId(motive).getNamespace());
+			return getModName(CommonProxy.getId(motive));
 		}
 		if (entity instanceof ItemEntity) {
 			return getModName(((ItemEntity) entity).getItem());
@@ -78,7 +75,7 @@ public class ModIdentification implements ResourceManagerReloadListener {
 
 	@Override
 	public void onResourceManagerReload(ResourceManager manager) {
-		init();
+		invalidateCache();
 	}
 
 }

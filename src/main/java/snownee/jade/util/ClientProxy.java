@@ -1,14 +1,13 @@
 package snownee.jade.util;
 
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import java.util.function.BiConsumer;
+import java.util.function.Predicate;
 
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonObject;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.brigadier.CommandDispatcher;
@@ -36,6 +35,7 @@ import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
+import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -95,21 +95,15 @@ public final class ClientProxy implements ClientModInitializer {
 	public static boolean hasFastScroll = CommonProxy.isModLoaded("fastscroll");
 	public static boolean maybeLowVisionUser = CommonProxy.isModLoaded("minecraft_access");
 
-	public static void initModNames(Map<String, String> map) {
-		List<ModContainer> mods = ImmutableList.copyOf(FabricLoader.getInstance().getAllMods());
-		for (ModContainer mod : mods) {
-			String modid = mod.getMetadata().getId();
-			String modMenuKey = "modmenu.nameTranslation.%s".formatted(modid);
-			if (I18n.exists(modMenuKey)) {
-				map.put(modid, I18n.get(modMenuKey));
-				continue;
-			}
-			String name = mod.getMetadata().getName();
-			if (Strings.isNullOrEmpty(name)) {
-				name = StringUtils.capitalize(modid);
-			}
-			map.put(modid, name);
+	public static Optional<String> getModName(String namespace) {
+		String modMenuKey = "modmenu.nameTranslation.%s".formatted(namespace);
+		if (I18n.exists(modMenuKey)) {
+			return Optional.of(I18n.get(modMenuKey));
 		}
+		return FabricLoader.getInstance().getModContainer(namespace)
+				.map(ModContainer::getMetadata)
+				.map(ModMetadata::getName)
+				.filter(Predicate.not(Strings::isNullOrEmpty));
 	}
 
 	public static void registerClientCommand(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandBuildContext registryAccess) {
