@@ -56,7 +56,9 @@ public class Tooltip implements ITooltip {
 		if (isEmpty() || index == size()) {
 			add(element);
 		} else {
-			lines.get(index).elements.add(element);
+			Line line = lines.get(index);
+			line.elements.add(element);
+			line.markDirty();
 		}
 	}
 
