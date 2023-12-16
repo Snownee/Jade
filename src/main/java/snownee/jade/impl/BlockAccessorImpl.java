@@ -40,7 +40,7 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 	private ItemStack fakeBlock;
 
 	private BlockAccessorImpl(Builder builder) {
-		super(builder.level, builder.player, builder.serverData, () -> builder.hit, builder.connected, builder.showDetails);
+		super(builder.level, builder.player, builder.serverData, Suppliers.ofInstance(builder.hit), builder.connected, builder.showDetails);
 		blockState = builder.blockState;
 		blockEntity = builder.blockEntity;
 		fakeBlock = builder.fakeBlock;
@@ -159,6 +159,8 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 
 	@Override
 	public boolean verifyData(CompoundTag data) {
+		if (!verify)
+			return true;
 		int x = data.getInt("x");
 		int y = data.getInt("y");
 		int z = data.getInt("z");
