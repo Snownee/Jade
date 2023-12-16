@@ -21,7 +21,7 @@ public abstract class AccessorImpl<T extends HitResult> implements Accessor<T> {
 	private final Supplier<T> hit;
 	private final boolean serverConnected;
 	private final boolean showDetails;
-	private boolean verify;
+	protected boolean verify;
 
 	public AccessorImpl(Level level, Player player, CompoundTag serverData, Supplier<T> hit, boolean serverConnected, boolean showDetails) {
 		this.level = level;
@@ -29,7 +29,7 @@ public abstract class AccessorImpl<T extends HitResult> implements Accessor<T> {
 		this.hit = hit;
 		this.serverConnected = serverConnected;
 		this.showDetails = showDetails;
-		this.serverData = serverData == null ? new CompoundTag() : serverData;
+		this.serverData = serverData == null ? new CompoundTag() : serverData.copy();
 	}
 
 	@Override
@@ -44,9 +44,6 @@ public abstract class AccessorImpl<T extends HitResult> implements Accessor<T> {
 
 	@Override
 	public final @NotNull CompoundTag getServerData() {
-		if (verify && level.isClientSide && !serverData.isEmpty() && !verifyData(serverData)) {
-			serverData.getAllKeys().clear();
-		}
 		return serverData;
 	}
 
