@@ -153,6 +153,9 @@ public class WailaTickHandler {
 			return;
 		}
 		if (accessor.isServerConnected()) {
+			if (!accessor.verifyData(accessor.getServerData())) {
+				accessor.getServerData().getAllKeys().clear();
+			}
 			boolean request = handler.shouldRequestData(accessor);
 			if (ObjectDataCenter.isTimeElapsed(ObjectDataCenter.rateLimiter)) {
 				ObjectDataCenter.resetTimer();

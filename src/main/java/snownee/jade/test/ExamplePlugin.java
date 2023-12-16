@@ -1,5 +1,6 @@
 package snownee.jade.test;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.animal.Sheep;
 import net.minecraft.world.entity.monster.Slime;
@@ -51,6 +52,22 @@ public class ExamplePlugin implements IWailaPlugin {
 			}
 			return accessor;
 		});
+		
+		registration.addRayTraceCallback(((hitResult, accessor, accessor1) -> {
+            if(accessor instanceof  BlockAccessor blockAccessor){
+                if(blockAccessor.getBlock().equals(Blocks.FURNACE)){
+                    BlockPos newPos = blockAccessor.getPosition().below();
+                    var t = registration.blockAccessor()
+                            .from(blockAccessor)
+                            .hit(blockAccessor.getHitResult().withPosition(newPos))
+                            .blockState(blockAccessor.getLevel().getBlockState(newPos))
+                            .blockEntity(blockAccessor.getLevel().getBlockEntity(newPos))
+                            .build();
+                    return t;
+                }
+            }
+            return accessor;
+        }));
 
 		registration.registerItemStorageClient(ExampleItemStorageProvider.INSTANCE);
 		registration.registerFluidStorageClient(ExampleFluidStorageProvider.INSTANCE);
