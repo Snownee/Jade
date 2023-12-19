@@ -26,7 +26,10 @@ public enum MobBreedingProvider implements IEntityComponentProvider, IServerData
 		}
 		int time = accessor.getServerData().getInt("BreedingCD");
 		if (time > 0) {
-			tooltip.add(Component.translatable(accessor.getEntity() instanceof Allay ? "jade.mobduplication.time" : "jade.mobbreeding.time", IThemeHelper.get().seconds(time)));
+			var totalSeconds = time / 20;
+			var seconds = totalSeconds % 60;
+			var minutes = totalSeconds / 60;
+			tooltip.add(Component.translatable(accessor.getEntity() instanceof Allay ? "jade.mobduplication.time" : "jade.mobbreeding.time", "%d:%02d".formatted(minutes, seconds)));
 		}
 	}
 

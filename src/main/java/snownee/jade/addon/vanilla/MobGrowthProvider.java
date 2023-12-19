@@ -26,7 +26,10 @@ public enum MobGrowthProvider implements IEntityComponentProvider, IServerDataPr
 		}
 		int time = accessor.getServerData().getInt("GrowingTime");
 		if (time > 0) {
-			tooltip.add(Component.translatable("jade.mobgrowth.time", IThemeHelper.get().seconds(time)));
+			var totalSeconds = time / 20;
+			var seconds = totalSeconds % 60;
+			var minutes = totalSeconds / 60;
+			tooltip.add(Component.translatable("jade.mobgrowth.time", "%d:%02d".formatted(minutes, seconds)));
 		}
 	}
 
