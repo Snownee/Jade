@@ -1,1 +1,5 @@
 blank_issues_enabled: false
+contact_links:
+  - name: Request to add support for other mods
+    url: https://github.com/Snownee/JadeAddons/issues?q=is%3Aissue
+    about: Please open issues here instead.
