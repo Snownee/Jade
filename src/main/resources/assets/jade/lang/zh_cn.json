@@ -16,7 +16,7 @@
   "tooltip.jade.villager_profession": "职业：%s",
   "gui.jade.by": "Made with %s by Snownee",
   "gui.jade.configuration": "Jade 配置",
-  "gui.jade.configuration.desc1": "为你§f显示目标信息§r的§fUI增强§r模组。",
+  "gui.jade.configuration.desc1": "Jade是一款免费模组，如遇盗卖等行为请向平台举报。",
   "gui.jade.configuration.desc2": "",
   "gui.jade.jade_settings": "模组设置",
   "gui.jade.plugin_settings": "插件设置",

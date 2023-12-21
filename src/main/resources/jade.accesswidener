@@ -39,3 +39,6 @@ accessible field net/minecraft/client/gui/components/CycleButton onValueChange L
 
 accessible field net/minecraft/client/gui/screens/inventory/CreativeModeInventoryScreen selectedTab Lnet/minecraft/world/item/CreativeModeTab;
 accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen hoveredSlot Lnet/minecraft/world/inventory/Slot;
+
+accessible field net/minecraft/world/level/block/entity/CampfireBlockEntity cookingProgress [I
+accessible field net/minecraft/world/level/block/entity/CampfireBlockEntity cookingTime [I
