@@ -10,6 +10,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
@@ -162,9 +163,13 @@ public class RayTracing {
 	}
 
 	private boolean canBeTarget(Entity target, Entity viewEntity) {
+		if (target.isRemoved())
+			return false;
 		if (target.isSpectator())
 			return false;
 		if (target == viewEntity.getVehicle())
+			return false;
+		if (target instanceof Projectile projectile && projectile.tickCount <= 10)
 			return false;
 		if (viewEntity instanceof Player player) {
 			if (target.isInvisibleTo(player))
