@@ -44,6 +44,7 @@ import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BeehiveBlockEntity;
 import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
 import net.minecraft.world.level.block.entity.CalibratedSculkSensorBlockEntity;
+import net.minecraft.world.level.block.entity.CampfireBlockEntity;
 import net.minecraft.world.level.block.entity.ChiseledBookShelfBlockEntity;
 import net.minecraft.world.level.block.entity.CommandBlockEntity;
 import net.minecraft.world.level.block.entity.ComparatorBlockEntity;
@@ -118,6 +119,8 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerEntityDataProvider(MobBreedingProvider.INSTANCE, Allay.class);
 		registration.registerEntityDataProvider(ChickenEggProvider.INSTANCE, Chicken.class);
 		registration.registerEntityDataProvider(ZombieVillagerProvider.INSTANCE, ZombieVillager.class);
+
+		registration.registerItemStorage(CampfireProvider.INSTANCE, CampfireBlockEntity.class);
 	}
 
 	@Override
@@ -178,6 +181,8 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerEntityIcon(ItemDisplayProvider.INSTANCE, ItemDisplay.class);
 		registration.registerEntityIcon(BlockDisplayProvider.INSTANCE, BlockDisplay.class);
 		registration.registerEntityComponent(ZombieVillagerProvider.INSTANCE, ZombieVillager.class);
+
+		registration.registerItemStorageClient(CampfireProvider.INSTANCE);
 
 		ClientProxy.registerReloadListener(HarvestToolProvider.INSTANCE);
 
