@@ -31,6 +31,7 @@ minecraft.accessTransformers.file rootProject.file('src/main/resources/META-INF/
 // Default run configurations.
 // These can be tweaked, removed, or duplicated as needed.
 runs {
+    // applies to all the run configs below
     configureEach {
         // Recommended logging data for a userdev environment
         // The markers can be added/remove as needed separated by commas.
@@ -45,37 +46,17 @@ runs {
         systemProperty 'forge.logging.console.level', 'debug'
 
         modSource project.sourceSets.main
-
-		// Export mixin-changed classes
-		systemProperty 'mixin.debug.export', 'true'
-		systemProperty 'mixin.env.remapRefMap', 'true'
-		systemProperty 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-
-		// Add mixin config to runtime
-		programArguments.addAll '-mixin.config=' + project.getProperty('mod_id') + '.mixins.json'
     }
-	
-	client {
+
+    client {
         // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
         systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
+    }
 
-		// These arguments allow for optional authentication with Mojang servers.
-		// If you want to authenticate, put these properties in GRADLE_HOME/gradle.properties.
-		// By default, this is C:\Users\<your username>\.gradle\gradle.properties on Windows or ~/.gradle/gradle.properties on Linux/MacOS.
-		if (project.hasProperty('mc_uuid')) {
-			// Your UUID, trimmed / without the dashes
-			programArguments.addAll '--uuid', project.getProperty('mc_uuid')
-		}
-		if (project.hasProperty('mc_username')) {
-			// Your Minecraft in-game username, not email
-			programArguments.addAll '--username', project.getProperty('mc_username')
-		}
-		if (project.hasProperty('mc_accessToken')) {
-			// Your current access token. When it expires, you need to retrieve a new one and regenerate your run configurations.
-			// You may be able to find it in your .minecraft folder in launcher_accounts.json or launcher_profiles.json.
-			programArguments.addAll '--accessToken', project.getProperty('mc_accessToken')
-		}
-	}
+    server {
+        systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
+        programArgument '--nogui'
+    }
 
     // This run config launches GameTestServer and runs all registered gametests, then exits.
     // By default, the server will crash when no gametests are provided.
@@ -141,7 +122,7 @@ dependencies {
     // annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
 
     compileOnly "mezz.jei:jei-1.20.2-common-api:${jei_version}"
-    compileOnly "mezz.jei:jei-1.20.2-forge-api:${jei_version}"
+    //compileOnly "mezz.jei:jei-1.20.2-forge-api:${jei_version}"
     //runtimeOnly "mezz.jei:jei-1.20.2-forge:${jei_version}"
     //implementation "curse.maven:jei-238222:3834070"
 }
@@ -172,10 +153,9 @@ publishing {
     }
 }
 
-/*
 unifiedPublishing {
     project {
-        displayName = project.version
+        displayName = "[NeoForge $project.supported_version] $project.mod_version"
         version = project.mod_version // Optional, Inferred from project by default
         changelog = file("CHANGELOG.md").exists() ? file("CHANGELOG.md").text : "" // Optional, in markdown format
         releaseType = project.release_type // Optional, use "release", "beta" or "alpha"
@@ -185,24 +165,26 @@ unifiedPublishing {
         mainPublication tasks.jar // Declares the publicated jar
         secondaryPublications.builtBy(tasks.apiJar)
 
-        curseforge {
-            token = System.getenv("CURSE_TOKEN")
-            id = "324717" // Required, must be a string, ID of CurseForge project
+        if (System.getenv("CURSE_TOKEN") != null) {
+            curseforge {
+                token = System.getenv("CURSE_TOKEN")
+                id = "324717"
 
-            relations { // Optional, Inferred from the relations above by default
-                optional "jei"
+                relations { // Optional, Inferred from the relations above by default
+                    optional "jei"
+                }
             }
         }
 
-        modrinth {
-            token = System.getenv("MODRINTH_TOKEN")
-            id = "nvQzSEkH" // Required, must be a string, ID of Modrinth project
-            displayName = project.mod_version
+        if (System.getenv("MODRINTH_TOKEN") != null) {
+            modrinth {
+                token = System.getenv("MODRINTH_TOKEN")
+                id = "nvQzSEkH"
 
-            relations { // Optional, Inferred from the relations above by default
-                optional "jei"
+                relations { // Optional, Inferred from the relations above by default
+                    optional "jei"
+                }
             }
         }
     }
 }
-*/
