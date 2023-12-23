@@ -59,7 +59,6 @@ import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.network.NetworkRegistry;
 import net.neoforged.neoforge.network.PlayNetworkDirection;
 import net.neoforged.neoforge.network.simple.SimpleChannel;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.neoforged.neoforgespi.language.ModFileScanData;
 import snownee.jade.Jade;
 import snownee.jade.addon.universal.ItemCollector;
@@ -263,7 +262,7 @@ public final class CommonProxy {
 	}
 
 	public static MutableComponent getProfressionName(VillagerProfession profession) {
-		ResourceLocation profName = ForgeRegistries.VILLAGER_PROFESSIONS.getKey(profession);
+		ResourceLocation profName = BuiltInRegistries.VILLAGER_PROFESSION.getKey(profession);
 		return Component.translatable(EntityType.VILLAGER.getDescriptionId() + '.' + (!ResourceLocation.DEFAULT_NAMESPACE.equals(profName.getNamespace()) ? profName.getNamespace() + '.' : "") + profName.getPath());
 	}
 
