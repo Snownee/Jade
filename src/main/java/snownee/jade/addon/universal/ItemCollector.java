@@ -11,6 +11,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import snownee.jade.api.Accessor;
 import snownee.jade.api.view.ViewGroup;
 
 public class ItemCollector<T> {
@@ -40,7 +41,7 @@ public class ItemCollector<T> {
 		this.iterator = iterator;
 	}
 
-	public List<ViewGroup<ItemStack>> update(Object target, long gameTime) {
+	public List<ViewGroup<ItemStack>> update(Accessor<?> target, long gameTime) {
 		if (iterator == null) {
 			return null;
 		}

@@ -1,7 +1,6 @@
 package snownee.jade.util;
 
 import java.lang.reflect.Type;
-import java.util.function.Function;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;

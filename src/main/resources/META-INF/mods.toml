@@ -14,7 +14,7 @@ credits = "TehNut, ProfMobius, kalkafox"
 
 [[dependencies.jade]]
 modId = "neoforge"
-mandatory = true
-versionRange = "[20.2, )"
+type = "required"
+versionRange = "[20.4, )"
 ordering = "NONE"
 side = "BOTH"

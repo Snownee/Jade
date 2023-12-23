@@ -234,13 +234,14 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 				return List.of();
 			}
 		}
-		if (player != null && target instanceof EnderChestBlockEntity) {
+		if (target instanceof EnderChestBlockEntity) {
 			PlayerEnderChestContainer inventory = player.getEnderChestInventory();
-			return new ItemCollector<>(new ItemIterator.ContainerItemIterator(0)).update(inventory, accessor.getLevel().getGameTime());
+			// only call once. simply return container
+			return new ItemCollector<>(new ItemIterator.ContainerItemIterator($ -> inventory, 0)).update(accessor, accessor.getLevel().getGameTime());
 		}
 		ItemCollector<?> itemCollector;
 		try {
-			itemCollector = targetCache.get(target, () -> CommonProxy.createItemCollector(target, containerCache));
+			itemCollector = targetCache.get(target, () -> CommonProxy.createItemCollector(accessor, containerCache));
 		} catch (ExecutionException e) {
 			WailaExceptionHandler.handleErr(e, null, null);
 			return null;
@@ -248,7 +249,7 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 		if (itemCollector == ItemCollector.EMPTY) {
 			return null;
 		}
-		return itemCollector.update(target, accessor.getLevel().getGameTime());
+		return itemCollector.update(accessor, accessor.getLevel().getGameTime());
 	}
 
 	@Override

@@ -23,7 +23,7 @@ public class ShearsToolHandler extends SimpleToolHandler {
 				Blocks.SMALL_DRIPLEAF,
 				Blocks.DEAD_BUSH,
 				Blocks.COBWEB,
-				Blocks.GRASS,
+				Blocks.SHORT_GRASS,
 				Blocks.TALL_GRASS,
 				Blocks.FERN,
 				Blocks.LARGE_FERN

@@ -1,14 +1,17 @@
 package snownee.jade.api;
 
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.ApiStatus.NonExtendable;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -51,6 +54,12 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 	void addConfig(ResourceLocation key, float defaultValue, float min, float max, boolean slider);
 
 	void addConfigListener(ResourceLocation key, Consumer<ResourceLocation> listener);
+
+	@ApiStatus.Experimental
+	void setConfigCategoryOverride(ResourceLocation key, Component override);
+
+	@ApiStatus.Experimental
+	void setConfigCategoryOverride(ResourceLocation key, List<Component> override);
 
 	/**
 	 * Register an {@link IJadeProvider} instance to allow overriding the icon for a block via the
@@ -157,7 +166,10 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 
 	void addBeforeTooltipCollectCallback(int priority, JadeBeforeTooltipCollectCallback callback);
 
+	@Deprecated
 	Screen createPluginConfigScreen(@Nullable Screen parent, @Nullable String namespace);
+
+	Screen createPluginConfigScreen(@Nullable Screen parent, @Nullable Component jumpToCategory);
 
 	void registerItemStorageClient(IClientExtensionProvider<ItemStack, ItemView> provider);
 
