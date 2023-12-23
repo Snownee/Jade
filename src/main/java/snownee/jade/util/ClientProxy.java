@@ -1,14 +1,13 @@
 package snownee.jade.util;
 
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import java.util.function.BiConsumer;
+import java.util.function.Predicate;
 
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.InputConstants;
 
@@ -53,6 +52,7 @@ import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -93,21 +93,15 @@ public final class ClientProxy {
 	private static boolean bossbarShown;
 	private static int bossbarHeight;
 
-	public static void initModNames(Map<String, String> map) {
-		List<IModInfo> mods = ImmutableList.copyOf(ModList.get().getMods());
-		for (IModInfo mod : mods) {
-			String modid = mod.getModId();
-			String modMenuKey = "modmenu.nameTranslation.%s".formatted(modid);
-			if (I18n.exists(modMenuKey)) {
-				map.put(modid, I18n.get(modMenuKey));
-				continue;
-			}
-			String name = mod.getDisplayName();
-			if (Strings.isNullOrEmpty(name)) {
-				name = StringUtils.capitalize(modid);
-			}
-			map.put(modid, name);
+	public static Optional<String> getModName(String namespace) {
+		String modMenuKey = "modmenu.nameTranslation.%s".formatted(namespace);
+		if (I18n.exists(modMenuKey)) {
+			return Optional.of(I18n.get(modMenuKey));
 		}
+		return ModList.get().getModContainerById(namespace)
+				.map(ModContainer::getModInfo)
+				.map(IModInfo::getDisplayName)
+				.filter(Predicate.not(Strings::isNullOrEmpty));
 	}
 
 	public static void init() {

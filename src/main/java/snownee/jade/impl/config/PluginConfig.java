@@ -5,6 +5,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -17,20 +19,28 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.reflect.TypeToken;
 
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.Jade;
 import snownee.jade.api.IToggleableProvider;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.gui.config.OptionsList;
+import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.impl.config.entry.ConfigEntry;
 import snownee.jade.util.CommonProxy;
 import snownee.jade.util.JsonConfig;
+import snownee.jade.util.ModIdentification;
 
 public class PluginConfig implements IPluginConfig {
 
@@ -38,11 +48,19 @@ public class PluginConfig implements IPluginConfig {
 	public static final String CLIENT_FILE = Jade.MODID + "/plugins.json";
 	public static final String SERVER_FILE = Jade.MODID + "/server-plugin-overrides.json";
 
-	private final Map<ResourceLocation, ConfigEntry<Object>> configs;
+	private final Map<ResourceLocation, ConfigEntry<Object>> configs = Maps.newHashMap();
+	private final Multimap<ResourceLocation, Component> categoryOverrides = ArrayListMultimap.create();
 	private JsonObject serverConfigs;
 
 	private PluginConfig() {
-		configs = Maps.newHashMap();
+	}
+
+	public static boolean isPrimaryKey(ResourceLocation key) {
+		return !key.getPath().contains(".");
+	}
+
+	public static ResourceLocation getPrimaryKey(ResourceLocation key) {
+		return new ResourceLocation(key.getNamespace(), key.getPath().substring(0, key.getPath().indexOf('.')));
 	}
 
 	public void addConfig(ConfigEntry<?> entry) {
@@ -97,10 +115,6 @@ public class PluginConfig implements IPluginConfig {
 	@Override
 	public String getString(ResourceLocation key) {
 		return (String) getEntry(key).getValue();
-	}
-
-	public List<String> getNamespaces() {
-		return configs.keySet().stream().sorted((o1, o2) -> o1.getNamespace().compareToIgnoreCase(o2.getNamespace())).map(ResourceLocation::getNamespace).distinct().collect(Collectors.toList());
 	}
 
 	public ConfigEntry<?> getEntry(ResourceLocation key) {
@@ -244,6 +258,58 @@ public class PluginConfig implements IPluginConfig {
 	public void addConfigListener(ResourceLocation key, Consumer<ResourceLocation> listener) {
 		Preconditions.checkArgument(containsKey(key));
 		configs.get(key).addListener(listener);
+	}
+
+	public void setCategoryOverride(ResourceLocation key, Component override) {
+		Preconditions.checkArgument(containsKey(key), "Unknown config key: %s", key);
+		Preconditions.checkArgument(isPrimaryKey(key), "Only primary config key can be overridden");
+		categoryOverrides.put(key, override);
+	}
+
+	public void setCategoryOverride(ResourceLocation key, List<Component> overrides) {
+		Preconditions.checkArgument(containsKey(key), "Unknown config key: %s", key);
+		Preconditions.checkArgument(isPrimaryKey(key), "Only primary config key can be overridden");
+		categoryOverrides.putAll(key, overrides);
+	}
+
+	public List<Category> getListView() {
+		Multimap<String, ConfigEntry<?>> categoryMap = ArrayListMultimap.create();
+		categoryOverrides.forEach((key, component) -> {
+			categoryMap.put(component.getString(), getEntry(key));
+		});
+		configs.forEach((key, entry) -> {
+			if (categoryOverrides.containsKey(key)) {
+				return;
+			}
+			if (!isPrimaryKey(key)) {
+				ResourceLocation primaryKey = getPrimaryKey(key);
+				Collection<Component> components = categoryOverrides.get(primaryKey);
+				if (!components.isEmpty()) {
+					for (Component component : components) {
+						categoryMap.put(component.getString(), entry);
+					}
+					return;
+				}
+			}
+			String namespace = key.getNamespace();
+			Optional<String> modName = ModIdentification.getModName(namespace);
+			if (!Jade.MODID.equals(namespace) && modName.isPresent()) {
+				categoryMap.put(modName.get(), entry);
+			} else {
+				categoryMap.put(I18n.get(OptionsList.Entry.makeKey("plugin_" + namespace)), entry);
+			}
+		});
+
+		return categoryMap.asMap().entrySet().stream()
+				.map(e -> new Category(Component.literal(e.getKey()), e.getValue().stream()
+						.sorted(Comparator.comparingInt($ -> WailaCommonRegistration.instance().priorities.getSortedList().indexOf($.getId())))
+						.toList()
+				))
+				.sorted((o1, o2) -> o1.title.getString().compareToIgnoreCase(o2.title.getString()))
+				.toList();
+	}
+
+	public record Category(MutableComponent title, List<ConfigEntry<?>> entries) {
 	}
 
 }

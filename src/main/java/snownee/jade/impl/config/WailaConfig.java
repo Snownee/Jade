@@ -1,6 +1,7 @@
 package snownee.jade.impl.config;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.google.common.collect.Lists;
 import com.google.gson.annotations.Expose;
@@ -75,6 +76,7 @@ public class WailaConfig implements IWailaConfig {
 			List<String> names = itemModNameTooltipDisabledByMods.stream()
 					.filter(CommonProxy::isModLoaded)
 					.map(ModIdentification::getModName)
+					.map(Optional::orElseThrow)
 					.toList();
 			/* on */
 			itemModNameTooltipDisabledByMods.clear();

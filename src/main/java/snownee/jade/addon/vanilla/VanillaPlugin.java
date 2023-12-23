@@ -1,11 +1,13 @@
 package snownee.jade.addon.vanilla;
 
+import java.util.List;
 import java.util.Map;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.Display.BlockDisplay;
@@ -227,5 +229,42 @@ public class VanillaPlugin implements IWailaPlugin {
 
 		registration.usePickedResult(EntityType.BOAT);
 		registration.usePickedResult(EntityType.CHEST_BOAT);
+
+		Component block = Component.translatable("config.jade.plugin_minecraft.block");
+		Component entity = Component.translatable("config.jade.plugin_minecraft.entity");
+		List<Component> both = List.of(block, entity);
+		registration.setConfigCategoryOverride(Identifiers.MC_ANIMAL_OWNER, entity);
+		registration.setConfigCategoryOverride(Identifiers.MC_ARMOR_STAND, both);
+		registration.setConfigCategoryOverride(Identifiers.MC_BEEHIVE, block);
+		registration.setConfigCategoryOverride(Identifiers.MC_BLOCK_STATES, block);
+		registration.setConfigCategoryOverride(Identifiers.MC_BREWING_STAND, block);
+		registration.setConfigCategoryOverride(Identifiers.MC_CHICKEN_EGG, entity);
+		registration.setConfigCategoryOverride(Identifiers.MC_CHISELED_BOOKSHELF, block);
+		registration.setConfigCategoryOverride(Identifiers.MC_COMMAND_BLOCK, block);
+		registration.setConfigCategoryOverride(Identifiers.MC_CROP_PROGRESS, block);
+		registration.setConfigCategoryOverride(Identifiers.MC_ENCHANTMENT_POWER, block);
+		registration.setConfigCategoryOverride(Identifiers.MC_ENTITY_ARMOR, entity);
+		registration.setConfigCategoryOverride(Identifiers.MC_ENTITY_HEALTH, entity);
+		registration.setConfigCategoryOverride(Identifiers.MC_FURNACE, block);
+		registration.setConfigCategoryOverride(Identifiers.MC_HARVEST_TOOL, block);
+		registration.setConfigCategoryOverride(Identifiers.MC_HORSE_STATS, entity);
+		registration.setConfigCategoryOverride(Identifiers.MC_ITEM_FRAME, both);
+		registration.setConfigCategoryOverride(Identifiers.MC_ITEM_TOOLTIP, entity);
+		registration.setConfigCategoryOverride(Identifiers.MC_JUKEBOX, block);
+		registration.setConfigCategoryOverride(Identifiers.MC_LECTERN, block);
+		registration.setConfigCategoryOverride(Identifiers.MC_MOB_BREEDING, entity);
+		registration.setConfigCategoryOverride(Identifiers.MC_MOB_GROWTH, entity);
+		registration.setConfigCategoryOverride(Identifiers.MC_MOB_SPAWNER, block);
+		registration.setConfigCategoryOverride(Identifiers.MC_NOTE_BLOCK, block);
+		registration.setConfigCategoryOverride(Identifiers.MC_PAINTING, both);
+		registration.setConfigCategoryOverride(Identifiers.MC_PLAYER_HEAD, block);
+		registration.setConfigCategoryOverride(Identifiers.MC_POTION_EFFECTS, entity);
+		registration.setConfigCategoryOverride(Identifiers.MC_REDSTONE, block);
+		registration.setConfigCategoryOverride(Identifiers.MC_TNT_STABILITY, block);
+		registration.setConfigCategoryOverride(Identifiers.MC_TOTAL_ENCHANTMENT_POWER, block);
+		registration.setConfigCategoryOverride(Identifiers.MC_VILLAGER_PROFESSION, entity);
+		registration.setConfigCategoryOverride(Identifiers.MC_WAXED, block);
+		registration.setConfigCategoryOverride(Identifiers.MC_BREAKING_PROGRESS, block);
+		registration.setConfigCategoryOverride(Identifiers.MC_ZOMBIE_VILLAGER, entity);
 	}
 }

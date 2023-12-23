@@ -3,6 +3,7 @@ package snownee.jade.impl;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import net.minecraft.nbt.CompoundTag;
@@ -17,6 +18,7 @@ import snownee.jade.api.IJadeProvider;
 import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.IWailaCommonRegistration;
 import snownee.jade.api.view.IServerExtensionProvider;
+import snownee.jade.impl.config.PluginConfig;
 
 public class WailaCommonRegistration implements IWailaCommonRegistration {
 
@@ -36,10 +38,12 @@ public class WailaCommonRegistration implements IWailaCommonRegistration {
 		entityDataProviders = new HierarchyLookup<>(Entity.class);
 		priorities = new PriorityStore<>(IJadeProvider::getDefaultPriority, IJadeProvider::getUid);
 		priorities.setSortingFunction((store, allKeys) -> {
-			List<ResourceLocation> keys = allKeys.stream().filter($ -> !$.getPath().contains(".")).sorted(Comparator.comparingInt(store::byKey)).collect(Collectors.toCollection(ArrayList::new));
-			allKeys.stream().filter($ -> $.getPath().contains(".")).forEach($ -> {
-				ResourceLocation parent = new ResourceLocation($.getNamespace(), $.getPath().substring(0, $.getPath().indexOf('.')));
-				int index = keys.indexOf(parent);
+			List<ResourceLocation> keys = allKeys.stream()
+					.filter(PluginConfig::isPrimaryKey)
+					.sorted(Comparator.comparingInt(store::byKey))
+					.collect(Collectors.toCollection(ArrayList::new));
+			allKeys.stream().filter(Predicate.not(PluginConfig::isPrimaryKey)).forEach($ -> {
+				int index = keys.indexOf(PluginConfig.getPrimaryKey($));
 				keys.add(index + 1, $);
 			});
 			return keys;

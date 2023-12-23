@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -17,6 +18,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -46,6 +48,7 @@ import snownee.jade.api.view.IClientExtensionProvider;
 import snownee.jade.api.view.ItemView;
 import snownee.jade.api.view.ProgressView;
 import snownee.jade.gui.PluginsConfigScreen;
+import snownee.jade.gui.config.OptionsList;
 import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.impl.config.entry.BooleanConfigEntry;
 import snownee.jade.impl.config.entry.EnumConfigEntry;
@@ -54,6 +57,7 @@ import snownee.jade.impl.config.entry.IntConfigEntry;
 import snownee.jade.impl.config.entry.StringConfigEntry;
 import snownee.jade.overlay.DatapackBlockManager;
 import snownee.jade.util.ClientProxy;
+import snownee.jade.util.ModIdentification;
 
 public class WailaClientRegistration implements IWailaClientRegistration {
 
@@ -217,6 +221,16 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 		PluginConfig.INSTANCE.addConfigListener(key, listener);
 	}
 
+	@Override
+	public void setConfigCategoryOverride(ResourceLocation key, Component override) {
+		PluginConfig.INSTANCE.setCategoryOverride(key, override);
+	}
+
+	@Override
+	public void setConfigCategoryOverride(ResourceLocation key, List<Component> override) {
+		PluginConfig.INSTANCE.setCategoryOverride(key, override);
+	}
+
 	private void tryAddConfig(IToggleableProvider provider) {
 		if (!provider.isRequired() && !PluginConfig.INSTANCE.containsKey(provider.getUid())) {
 			addConfig(provider.getUid(), provider.enabledByDefault());
@@ -293,9 +307,27 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 		customEnchantPowers.put(block, customEnchantPower);
 	}
 
+	@Deprecated
 	@Override
 	public Screen createPluginConfigScreen(@Nullable Screen parent, @Nullable String namespace) {
-		return PluginsConfigScreen.createPluginConfigScreen(parent, namespace, false);
+		return createPluginConfigScreen(parent, ModIdentification.getModName(namespace).map(Component::literal).orElse(null));
+	}
+
+	@Override
+	public Screen createPluginConfigScreen(@Nullable Screen parent, @Nullable Component jumpToCategory) {
+		Function<OptionsList, OptionsList.Entry> jumpTo = null;
+		if (jumpToCategory != null){
+			String title = jumpToCategory.getString();
+			jumpTo = options -> {
+				for (OptionsList.Entry entry : options.children()) {
+					if (entry instanceof OptionsList.Title e && e.getTitle().getString().equals(title)) {
+						return entry;
+					}
+				}
+				return null;
+			};
+		}
+		return PluginsConfigScreen.createPluginConfigScreen(parent, jumpTo, false);
 	}
 
 	@Override
