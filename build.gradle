@@ -159,7 +159,7 @@ unifiedPublishing {
         version = project.mod_version // Optional, Inferred from project by default
         changelog = file("CHANGELOG.md").exists() ? file("CHANGELOG.md").text : "" // Optional, in markdown format
         releaseType = project.release_type // Optional, use "release", "beta" or "alpha"
-        gameVersions = ["1.20.3", "1.20.4"]
+        gameVersions = ["1.20.4"]
         gameLoaders = ["neoforge"]
 
         mainPublication tasks.jar // Declares the publicated jar
