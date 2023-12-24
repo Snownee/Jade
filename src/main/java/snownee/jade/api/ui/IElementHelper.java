@@ -15,10 +15,7 @@ public interface IElementHelper {
 		return Internals.getElementHelper();
 	}
 
-	IElement text(Component component);
-
-	//TODO (1.21): Remove this and make text() return ITextElement
-	ITextElement textElement(Component component);
+	ITextElement text(Component component);
 
 	IElement spacer(int x, int y);
 

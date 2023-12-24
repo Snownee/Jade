@@ -104,7 +104,6 @@
   "config.jade.plugin_minecraft.profession": "Professione villico",
   "config.jade.plugin_minecraft.item_tooltip": "Tooltip dell'oggetto",
   "jade.locked": "Inventario chiuso",
-  "jade.not_generated": "Inventario non generato",
   "jade.fe": "%s / %s",
   "jade.fluid": "%s %s",
   "jade.fluid.empty": "Vuoto",

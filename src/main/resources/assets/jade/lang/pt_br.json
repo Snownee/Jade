@@ -214,7 +214,6 @@
   "config.jade.plugin_minecraft.item_storage.show_name_amount_desc": "A quantidade máxima de itens p/ mostrar nomes de itens em vez de apenas ícones de itens.",
   "config.jade.plugin_minecraft.item_storage.items_per_line": "Itens por Linha",
   "jade.locked": "O inventário está bloqueado",
-  "jade.not_generated": "O inventário não foi gerado",
   "config.jade.plugin_minecraft.energy_storage": "Armazenamento de Energia",
   "config.jade.plugin_minecraft.energy_storage.detailed": "Somente Detalhado",
   "config.jade.plugin_minecraft.energy_storage.detailed_desc": "Mostrar informações de energia apenas quando a tecla [Mostrar detalhes] for pressionada.",

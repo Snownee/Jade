@@ -145,7 +145,7 @@ public enum HarvestToolProvider implements IBlockComponentProvider, ResourceMana
 			if (state.requiresCorrectToolForDrops() || canHarvest) {
 				IThemeHelper t = IThemeHelper.get();
 				Component text = canHarvest ? t.success(CHECK) : t.danger(X);
-				elements.add(IElementHelper.get().textElement(text)
+				elements.add(IElementHelper.get().text(text)
 						.scale(0.75F)
 						.zOffset(800)
 						.size(Vec2.ZERO)

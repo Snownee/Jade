@@ -17,6 +17,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.LockCode;
+import net.minecraft.world.RandomizableContainer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.ContainerEntity;
 import net.minecraft.world.inventory.PlayerEnderChestContainer;
@@ -24,7 +25,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.EnderChestBlockEntity;
-import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import snownee.jade.JadeCommonConfig;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.BlockAccessor;
@@ -61,7 +61,7 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 	public static void append(ITooltip tooltip, Accessor<?> accessor, IPluginConfig config) {
 		if (!accessor.getServerData().contains("JadeItemStorage")) {
 			if (accessor.getServerData().getBoolean("Loot")) {
-				tooltip.add(Component.translatable("jade.not_generated"));
+				tooltip.add(Component.translatable("jade.loot_not_generated"));
 			} else if (accessor.getServerData().getBoolean("Locked")) {
 				tooltip.add(Component.translatable("jade.locked"));
 			}
@@ -105,7 +105,7 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 			if (renderGroup) {
 				theTooltip.add(new HorizontalLineElement());
 				if (group.title != null) {
-					theTooltip.append(helper.textElement(group.title).scale(0.5F));
+					theTooltip.append(helper.text(group.title).scale(0.5F));
 					theTooltip.append(new HorizontalLineElement());
 				}
 			}
@@ -180,9 +180,7 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 				return itemTag;
 			})) {
 				tag.putString("JadeItemStorageUid", provider.getUid().toString());
-			} else if (target instanceof RandomizableContainerBlockEntity te && te.lootTable != null) {
-				tag.putBoolean("Loot", true);
-			} else if (target instanceof ContainerEntity containerEntity && containerEntity.getLootTable() != null) {
+			} else if (target instanceof RandomizableContainer containerEntity && containerEntity.getLootTable() != null) {
 				tag.putBoolean("Loot", true);
 			} else if (!JadeCommonConfig.bypassLockedContainer && !player.isCreative() && !player.isSpectator() && target instanceof BaseContainerBlockEntity te) {
 				if (te.lockKey != LockCode.NO_LOCK) {
@@ -220,7 +218,7 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 
 	@Override
 	public List<ViewGroup<ItemStack>> getGroups(Accessor<?> accessor, Object target) {
-		if (target instanceof RandomizableContainerBlockEntity te && te.lootTable != null) {
+		if (target instanceof RandomizableContainer te && te.getLootTable() != null) {
 			return List.of();
 		}
 		if (target instanceof ContainerEntity containerEntity && containerEntity.getLootTable() != null) {

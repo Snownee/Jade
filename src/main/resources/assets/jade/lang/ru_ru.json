@@ -220,7 +220,6 @@
   "config.jade.plugin_minecraft.item_storage.show_name_amount_desc": "Максимальное количество предметов, для отображения названий предметов, а не только значков предметов.",
   "config.jade.plugin_minecraft.item_storage.items_per_line": "Предметов в строке",
   "jade.locked": "Инвентарь заблокирован",
-  "jade.not_generated": "Инвентарь не генерируется",
   "config.jade.plugin_minecraft.energy_storage": "Хранилище энергии",
   "config.jade.plugin_minecraft.energy_storage.detailed": "Только детальная информация",
   "config.jade.plugin_minecraft.energy_storage.detailed_desc": "Информация об энергии отображается только при нажатии клавиши [Показать подробности].",

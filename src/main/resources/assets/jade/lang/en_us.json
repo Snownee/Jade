@@ -223,7 +223,7 @@
   "config.jade.plugin_minecraft.item_storage.show_name_amount_desc": "The maximum amount of items to show item names instead of just item icons.",
   "config.jade.plugin_minecraft.item_storage.items_per_line": "Items per Line",
   "jade.locked": "Inventory is locked",
-  "jade.not_generated": "Inventory isn't generated",
+  "jade.loot_not_generated": "Loot not generated yet",
   "config.jade.plugin_minecraft.energy_storage": "Energy Storage",
   "config.jade.plugin_minecraft.energy_storage.detailed": "Detailed-Only",
   "config.jade.plugin_minecraft.energy_storage.detailed_desc": "Only show energy info when [Show Details] key is pressed.",

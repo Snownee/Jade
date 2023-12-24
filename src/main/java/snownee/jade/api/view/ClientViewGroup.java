@@ -79,7 +79,7 @@ public class ClientViewGroup<T> {
 	public void renderHeader(ITooltip tooltip) {
 		if (title != null) {
 			tooltip.add(new HorizontalLineElement());
-			tooltip.append(IElementHelper.get().textElement(title).scale(0.5F));
+			tooltip.append(IElementHelper.get().text(title).scale(0.5F));
 			tooltip.append(new HorizontalLineElement());
 		}
 //		else if (bgColor == 0) {
