@@ -169,7 +169,7 @@ public class RayTracing {
 			return false;
 		if (target == viewEntity.getVehicle())
 			return false;
-		if (target instanceof Projectile projectile && projectile.tickCount <= 10)
+		if (target instanceof Projectile projectile && projectile.tickCount <= 10 && !target.level().tickRateManager().isEntityFrozen(target))
 			return false;
 		if (viewEntity instanceof Player player) {
 			if (target.isInvisibleTo(player))
