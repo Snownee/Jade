@@ -17,6 +17,7 @@ import com.google.common.collect.Multimap;
 
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.api.IJadeProvider;
+import snownee.jade.util.CommonProxy;
 
 public class HierarchyLookup<T extends IJadeProvider> {
 
@@ -35,6 +36,9 @@ public class HierarchyLookup<T extends IJadeProvider> {
 	}
 
 	public void register(Class<?> clazz, T provider) {
+		if (CommonProxy.isBlockedUid(provider)) {
+			return;
+		}
 		Objects.requireNonNull(clazz);
 		Objects.requireNonNull(provider.getUid());
 		WailaCommonRegistration.INSTANCE.priorities.put(provider);
@@ -43,7 +47,7 @@ public class HierarchyLookup<T extends IJadeProvider> {
 
 	public List<T> get(Object obj) {
 		if (obj == null) {
-			return Collections.EMPTY_LIST;
+			return List.of();
 		}
 		return get(obj.getClass());
 	}
@@ -61,7 +65,7 @@ public class HierarchyLookup<T extends IJadeProvider> {
 		} catch (ExecutionException e) {
 			e.printStackTrace();
 		}
-		return Collections.EMPTY_LIST;
+		return List.of();
 	}
 
 	private void getInternal(Class<?> clazz, List<T> list) {

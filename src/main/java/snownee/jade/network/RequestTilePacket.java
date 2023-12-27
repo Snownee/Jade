@@ -2,7 +2,13 @@ package snownee.jade.network;
 
 import java.util.function.Supplier;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
+
+import net.minecraft.CrashReport;
+import net.minecraft.ReportedException;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.common.util.LogicalSidedProvider;
+import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
 import snownee.jade.api.BlockAccessor;
@@ -33,7 +39,9 @@ public class RequestTilePacket {
 	public static class Handler {
 
 		public static void onMessage(RequestTilePacket message, Supplier<NetworkEvent.Context> context) {
-			BlockAccessorImpl.handleRequest(message.buffer, context.get().getSender(), context.get()::enqueueWork, tag -> {
+			BlockAccessorImpl.handleRequest(message.buffer, context.get().getSender(), $ -> {
+				context.get().enqueueWork($).exceptionally(CommonProxy::crashAnyway);
+			}, tag -> {
 				CommonProxy.NETWORK.sendTo(new ReceiveDataPacket(tag), context.get().getNetworkManager(), NetworkDirection.PLAY_TO_CLIENT);
 			});
 			context.get().setPacketHandled(true);

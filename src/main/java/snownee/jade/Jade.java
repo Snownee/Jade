@@ -30,6 +30,7 @@ public class Jade {
 		}
 		FROZEN = true;
 		if (CommonProxy.isDevEnv()) {
+			Jade.LOGGER.info("Dev environment detected, loading test plugin");
 			try {
 				IWailaPlugin plugin = new ExamplePlugin();
 				plugin.register(WailaCommonRegistration.INSTANCE);

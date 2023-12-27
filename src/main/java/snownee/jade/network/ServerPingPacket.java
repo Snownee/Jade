@@ -49,6 +49,10 @@ public class ServerPingPacket {
 				if (json != null && !json.keySet().isEmpty())
 					PluginConfig.INSTANCE.applyServerConfigs(json);
 				Jade.LOGGER.info("Received config from the server: {}", s);
+			}).exceptionally(e -> {
+				Jade.LOGGER.error("Failed to apply config from the server: {}", s);
+				Jade.LOGGER.catching(e);
+				return null;
 			});
 			context.get().setPacketHandled(true);
 		}

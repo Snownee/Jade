@@ -33,7 +33,9 @@ public class RequestEntityPacket {
 	public static class Handler {
 
 		public static void onMessage(final RequestEntityPacket message, Supplier<NetworkEvent.Context> context) {
-			EntityAccessorImpl.handleRequest(message.buffer, context.get().getSender(), context.get()::enqueueWork, tag -> {
+			EntityAccessorImpl.handleRequest(message.buffer, context.get().getSender(), $ -> {
+				context.get().enqueueWork($).exceptionally(CommonProxy::crashAnyway);
+			}, tag -> {
 				CommonProxy.NETWORK.sendTo(new ReceiveDataPacket(tag), context.get().getNetworkManager(), NetworkDirection.PLAY_TO_CLIENT);
 			});
 			context.get().setPacketHandled(true);

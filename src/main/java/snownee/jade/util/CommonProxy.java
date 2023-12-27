@@ -4,13 +4,14 @@ import java.io.File;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.cache.Cache;
+import com.google.common.collect.Sets;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -42,12 +43,14 @@ import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.UsernameCache;
 import net.minecraftforge.common.capabilities.CapabilityProvider;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.common.util.LogicalSidedProvider;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fml.IExtensionPoint;
+import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -69,6 +72,7 @@ import snownee.jade.addon.universal.ItemIterator;
 import snownee.jade.addon.universal.ItemCollector;
 import snownee.jade.addon.universal.ItemStorageProvider;
 import snownee.jade.api.Accessor;
+import snownee.jade.api.IJadeProvider;
 import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.WailaPlugin;
 import snownee.jade.api.fluid.JadeFluidObject;
@@ -87,6 +91,8 @@ import snownee.jade.network.ShowOverlayPacket;
 @Mod(Jade.MODID)
 public final class CommonProxy {
 	public static final SimpleChannel NETWORK = NetworkRegistry.ChannelBuilder.named(new ResourceLocation(Jade.MODID, "networking")).clientAcceptedVersions(s -> true).serverAcceptedVersions(s -> true).networkProtocolVersion(() -> "1").simpleChannel();
+	// Added time: 2023/12/27 - devs please remove by yourself
+	public static final Set<ResourceLocation> BLOCKED_UIDS = Sets.newHashSet(new ResourceLocation("bluepower:machines"), new ResourceLocation("bluepower:parts"));
 
 	public CommonProxy() {
 		ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (a, b) -> true));
@@ -106,6 +112,14 @@ public final class CommonProxy {
 			CommonProxy.NETWORK.sendTo(msg, player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
 		}
 		return players.size();
+	}
+
+	public static boolean isBlockedUid(IJadeProvider provider) {
+		try {
+			return BLOCKED_UIDS.contains(provider.getUid());
+		} catch (Throwable e) {
+			return true;
+		}
 	}
 
 	private void setup(FMLCommonSetupEvent event) {
@@ -129,7 +143,7 @@ public final class CommonProxy {
 					return false;
 				})
 				.map(AnnotationData::memberName)
-				.collect(Collectors.toList());
+				.toList();
 		/* on */
 
 		for (String className : classNames) {
@@ -336,5 +350,12 @@ public final class CommonProxy {
 
 	public static FluidStack toFluidStack(JadeFluidObject fluid) {
 		return new FluidStack(fluid.getType(), (int) fluid.getAmount(), fluid.getTag());
+	}
+
+	public static Void crashAnyway(Throwable e) {
+		LogicalSidedProvider.WORKQUEUE.get(LogicalSide.SERVER).execute(() -> {
+			throw new AssertionError(e);
+		});
+		return null;
 	}
 }

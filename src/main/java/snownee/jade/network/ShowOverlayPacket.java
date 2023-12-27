@@ -30,6 +30,10 @@ public class ShowOverlayPacket {
 			context.get().enqueueWork(() -> {
 				Jade.CONFIG.get().getGeneral().setDisplayTooltip(show);
 				Jade.CONFIG.save();
+			}).exceptionally(e -> {
+				Jade.LOGGER.error("Failed to toggle overlay from the server");
+				Jade.LOGGER.catching(e);
+				return null;
 			});
 			context.get().setPacketHandled(true);
 		}

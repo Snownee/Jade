@@ -53,6 +53,7 @@ import snownee.jade.impl.config.entry.IntConfigEntry;
 import snownee.jade.impl.config.entry.StringConfigEntry;
 import snownee.jade.overlay.DatapackBlockManager;
 import snownee.jade.util.ClientProxy;
+import snownee.jade.util.CommonProxy;
 
 public class WailaClientRegistration implements IWailaClientRegistration {
 
@@ -213,7 +214,7 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	}
 
 	private void tryAddConfig(IToggleableProvider provider) {
-		if (!provider.isRequired() && !PluginConfig.INSTANCE.containsKey(provider.getUid())) {
+		if (!CommonProxy.isBlockedUid(provider) && !provider.isRequired() && !PluginConfig.INSTANCE.containsKey(provider.getUid())) {
 			addConfig(provider.getUid(), provider.enabledByDefault());
 		}
 	}

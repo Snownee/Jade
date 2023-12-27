@@ -54,7 +54,7 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 			for (IServerDataProvider<EntityAccessor> provider : providers) {
 				try {
 					provider.appendServerData(tag, accessor);
-				} catch (Exception e) {
+				} catch (Throwable e) {
 					WailaExceptionHandler.handleErr(e, provider, null);
 				}
 			}
