@@ -46,7 +46,7 @@
   "narration.jade.clear_content.usage": "左键清空内容",
   "config.jade.general": "通用",
   "config.jade.debug_mode": "调试模式",
-  "config.jade.edit_blocklist": "在文件中编辑方块列表…",
+  "config.jade.edit_blocklist": "在文件中编辑禁止列表…",
   "config.jade.display_tooltip": "显示提示框",
   "config.jade.display_tooltip_desc": "收集数据并渲染提示框",
   "config.jade.display_entities": "显示实体",
