@@ -161,6 +161,7 @@ unifiedPublishing {
                 relations { // Optional, Inferred from the relations above by default
                     optional "jei"
                 }
+            }
         }
 
         if (System.getenv("MODRINTH_TOKEN") != null) {
