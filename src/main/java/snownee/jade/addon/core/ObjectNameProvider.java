@@ -5,6 +5,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.Nameable;
 import net.minecraft.world.entity.Display.BlockDisplay;
 import net.minecraft.world.entity.Display.ItemDisplay;
@@ -12,7 +13,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IBlockComponentProvider;
@@ -94,8 +97,17 @@ public enum ObjectNameProvider
 	public void appendServerData(CompoundTag data, BlockAccessor accessor) {
 		BlockEntity blockEntity = accessor.getBlockEntity();
 		if (blockEntity instanceof Nameable nameable) {
-			if (nameable.hasCustomName()) {
-				data.putString("givenName", Component.Serializer.toJson(nameable.getCustomName()));
+			Component name = null;
+			if (blockEntity instanceof ChestBlockEntity && accessor.getBlock() instanceof ChestBlock chestBlock) {
+				MenuProvider menuProvider = accessor.getBlockState().getMenuProvider(accessor.getLevel(), accessor.getPosition());
+				if (menuProvider != null) {
+					name = menuProvider.getDisplayName();
+				}
+			} else if (nameable.hasCustomName()) {
+				name = nameable.getDisplayName();
+			}
+			if (name != null) {
+				data.putString("givenName", Component.Serializer.toJson(name));
 			}
 		}
 	}
