@@ -82,7 +82,7 @@
   "config.jade.display_item": "圖示位置",
   "config.jade.display_item_extra_msg": "隱藏,靠上,置中",
   "config.jade.display_item_hide": "隱藏",
-  "config.jade.display_item_top": "靠上",
+  "config.jade.display_item_top": "頂部",
   "config.jade.display_item_centered": "置中",
   "config.jade.tts_mode": "朗讀功能模式",
   "config.jade.tts_mode_extra_msg": "朗讀功能,朗讀,按下,切換",
