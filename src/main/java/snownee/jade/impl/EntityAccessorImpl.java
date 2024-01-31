@@ -70,11 +70,12 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 		builder.player(player);
 		builder.showDetails(buf.readBoolean());
 		int id = buf.readVarInt();
+		int partIndex = buf.readVarInt();
 		float hitX = buf.readFloat();
 		float hitY = buf.readFloat();
 		float hitZ = buf.readFloat();
 		// you can only get block entity from the main thread
-		Supplier<Entity> entity = Suppliers.memoize(() -> builder.level.getEntity(id));
+		Supplier<Entity> entity = Suppliers.memoize(() -> CommonProxy.getPartEntity(builder.level.getEntity(id), partIndex));
 		builder.entity(entity);
 		builder.hit(Suppliers.memoize(() -> new EntityHitResult(entity.get(), new Vec3(hitX, hitY, hitZ))));
 		return builder.build();
@@ -83,7 +84,13 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 	@Override
 	public void toNetwork(FriendlyByteBuf buf) {
 		buf.writeBoolean(showDetails());
-		buf.writeVarInt(entity.get().getId());
+		Entity entity = getEntity();
+		buf.writeVarInt(entity.getId());
+		if (CommonProxy.isMultipartEntity(entity)) {
+			buf.writeVarInt(CommonProxy.getPartEntityIndex(entity));
+		} else {
+			buf.writeVarInt(-1);
+		}
 		Vec3 hitVec = getHitResult().getLocation();
 		buf.writeFloat((float) hitVec.x);
 		buf.writeFloat((float) hitVec.y);
@@ -92,6 +99,11 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 
 	@Override
 	public Entity getEntity() {
+		return CommonProxy.wrapPartEntityParent(getRawEntity());
+	}
+
+	@Override
+	public Entity getRawEntity() {
 		return entity.get();
 	}
 
@@ -175,7 +187,7 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 			connected = accessor.isServerConnected();
 			showDetails = accessor.showDetails();
 			hit = accessor::getHitResult;
-			entity = accessor::getEntity;
+			entity = accessor::getRawEntity;
 			return this;
 		}
 

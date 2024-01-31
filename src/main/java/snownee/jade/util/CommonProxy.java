@@ -45,6 +45,7 @@ import net.minecraftforge.common.capabilities.CapabilityProvider;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LogicalSidedProvider;
 import net.minecraftforge.energy.IEnergyStorage;
+import net.minecraftforge.entity.PartEntity;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fluids.FluidStack;
@@ -90,7 +91,7 @@ import snownee.jade.network.ShowOverlayPacket;
 
 @Mod(Jade.MODID)
 public final class CommonProxy {
-	public static final SimpleChannel NETWORK = NetworkRegistry.ChannelBuilder.named(new ResourceLocation(Jade.MODID, "networking")).clientAcceptedVersions(s -> true).serverAcceptedVersions(s -> true).networkProtocolVersion(() -> "1").simpleChannel();
+	public static final SimpleChannel NETWORK = NetworkRegistry.ChannelBuilder.named(new ResourceLocation(Jade.MODID, "networking")).clientAcceptedVersions(s -> true).serverAcceptedVersions(s -> true).networkProtocolVersion(() -> "2").simpleChannel();
 	// Added time: 2023/12/27 - devs please remove by yourself
 	public static final Set<ResourceLocation> BLOCKED_UIDS = Sets.newHashSet(new ResourceLocation("bluepower:machines"), new ResourceLocation("bluepower:parts"));
 
@@ -120,6 +121,43 @@ public final class CommonProxy {
 		} catch (Throwable e) {
 			return true;
 		}
+	}
+
+	public static boolean isMultipartEntity(Entity target) {
+		return target.isMultipartEntity();
+	}
+
+	public static Entity wrapPartEntityParent(Entity target) {
+		if (target instanceof PartEntity<?> part) {
+			return part.getParent();
+		}
+		return target;
+	}
+
+	public static int getPartEntityIndex(Entity entity) {
+		if (!(entity instanceof PartEntity<?> part)) {
+			return -1;
+		}
+		Entity parent = wrapPartEntityParent(entity);
+		PartEntity<?>[] parts = parent.getParts();
+		if (parts == null) {
+			return -1;
+		}
+		return List.of(parts).indexOf(part);
+	}
+
+	public static Entity getPartEntity(Entity parent, int index) {
+		if (parent == null) {
+			return null;
+		}
+		if (index < 0) {
+			return parent;
+		}
+		PartEntity<?>[] parts = parent.getParts();
+		if (parts == null || index >= parts.length) {
+			return parent;
+		}
+		return parts[index];
 	}
 
 	private void setup(FMLCommonSetupEvent event) {
