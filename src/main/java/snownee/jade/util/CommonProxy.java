@@ -53,6 +53,8 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.boss.EnderDragonPart;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.decoration.Painting;
 import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.entity.npc.VillagerProfession;
@@ -385,6 +387,44 @@ public final class CommonProxy implements ModInitializer {
 			ServerPlayNetworking.send(player, Identifiers.PACKET_SHOW_OVERLAY, buf);
 		}
 		return players.size();
+	}
+
+	public static boolean isMultipartEntity(Entity target) {
+		return target instanceof EnderDragon;
+	}
+
+	public static Entity wrapPartEntityParent(Entity target) {
+		if (target instanceof EnderDragonPart part) {
+			return part.parentMob;
+		}
+		return target;
+	}
+
+	public static int getPartEntityIndex(Entity entity) {
+		if (!(entity instanceof EnderDragonPart part)) {
+			return -1;
+		}
+		if (!(wrapPartEntityParent(entity) instanceof EnderDragon parent)) {
+			return -1;
+		}
+		EnderDragonPart[] parts = parent.getSubEntities();
+		return List.of(parts).indexOf(part);
+	}
+
+	public static Entity getPartEntity(Entity parent, int index) {
+		if (parent == null) {
+			return null;
+		}
+		if (index < 0) {
+			return parent;
+		}
+		if (parent instanceof EnderDragon dragon) {
+			EnderDragonPart[] parts = dragon.getSubEntities();
+			if (index < parts.length) {
+				return parts[index];
+			}
+		}
+		return parent;
 	}
 
 	@Override
