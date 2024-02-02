@@ -24,7 +24,7 @@ public enum ZombieVillagerProvider implements IEntityComponentProvider, IServerD
 		}
 		int time = accessor.getServerData().getInt("ConversionTime");
 		if (time > 0) {
-			tooltip.add(Component.translatable("jade.zombieConversion.time", IThemeHelper.get().seconds(time / 20)));
+			tooltip.add(Component.translatable("jade.zombieConversion.time", IThemeHelper.get().seconds(time)));
 		}
 	}
 
