@@ -109,7 +109,11 @@ public class InventoryProvider implements IComponentProvider, IServerDataProvide
 
 	@Override
 	public void appendServerData(CompoundTag tag, ServerPlayer player, Level world, BlockEntity te, boolean showDetails) {
-		if (te == null || JadeCommonConfig.shouldIgnoreTE(tag.getString("id")) || te instanceof AbstractFurnaceBlockEntity) {
+		if (te == null || te instanceof AbstractFurnaceBlockEntity) {
+			return;
+		}
+
+		if (JadeCommonConfig.shouldIgnoreTE(te.getType())) {
 			return;
 		}
 

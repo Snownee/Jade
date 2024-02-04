@@ -30,7 +30,7 @@
 
   "config.waila.general": "通用",
   "config.waila.display_tooltip": "显示提示框",
-  "config.waila.display_tooltip_desc": "收集数据并渲染提示框",
+  "config.waila.display_tooltip_desc": "Jade是一款免费模组，如遇盗卖等行为请向平台举报。",
   "config.waila.display_entities": "显示实体",
   "config.waila.display_blocks": "显示方块",
   "config.waila.display_fluids": "显示流体",
