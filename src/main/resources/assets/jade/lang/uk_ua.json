@@ -79,7 +79,7 @@
   "config.jade.plugin_minecraft.entity_health.icons_per_line": "Кіль-ть іконок на рядок",
   "config.jade.plugin_minecraft.entity_armor": "Броня сутности",
   "config.jade.plugin_minecraft.entity_armor.max_for_render": "Макс. відобр. броні",
-  "config.jade.plugin_minecraft.block_states": "Стан блока",
+  "config.jade.plugin_jade.block_states": "Стан блока",
   "config.jade.plugin_jade.item_mod_name": "Назва мода у підказці предмета",
   "config.jade.plugin_jade.mod_name": "Назва мода",
   "config.jade.plugin_jade.distance": "Відстань",

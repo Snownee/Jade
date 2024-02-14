@@ -1,7 +1,10 @@
-package snownee.jade.addon.core;
+package snownee.jade.addon.debug;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.material.FluidState;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IBlockComponentProvider;
@@ -19,7 +22,19 @@ public enum RegistryNameProvider implements IBlockComponentProvider, IEntityComp
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		append(tooltip, CommonProxy.getId(accessor.getBlock()).toString(), config);
+		if (append(tooltip, CommonProxy.getId(accessor.getBlock()).toString(), config) && config.get(Identifiers.DEBUG_SPECIAL_REGISTRY_NAME)) {
+			if (accessor.getBlockEntity() != null) {
+				ResourceLocation id = CommonProxy.getId(accessor.getBlockEntity().getType());
+				String s = I18n.get("config.jade.plugin_jade.registry_name.special.block_entity_type", id);
+				tooltip.add(IWailaConfig.get().getFormatting().registryName(s), Identifiers.DEBUG_SPECIAL_REGISTRY_NAME);
+			}
+			FluidState fluidState = accessor.getBlockState().getFluidState();
+			if (!fluidState.isEmpty()) {
+				ResourceLocation id = BuiltInRegistries.FLUID.getKey(fluidState.getType());
+				String s = I18n.get("config.jade.plugin_jade.registry_name.special.fluid", id);
+				tooltip.add(IWailaConfig.get().getFormatting().registryName(s), Identifiers.DEBUG_SPECIAL_REGISTRY_NAME);
+			}
+		}
 	}
 
 	@Override
@@ -27,18 +42,19 @@ public enum RegistryNameProvider implements IBlockComponentProvider, IEntityComp
 		append(tooltip, CommonProxy.getId(accessor.getEntity().getType()).toString(), config);
 	}
 
-	public void append(ITooltip tooltip, String id, IPluginConfig config) {
-		Mode mode = config.getEnum(Identifiers.CORE_REGISTRY_NAME);
+	public boolean append(ITooltip tooltip, String id, IPluginConfig config) {
+		Mode mode = config.getEnum(Identifiers.DEBUG_REGISTRY_NAME);
 		if (mode == Mode.OFF)
-			return;
+			return false;
 		if (mode == Mode.ADVANCED_TOOLTIPS && !Minecraft.getInstance().options.advancedItemTooltips)
-			return;
+			return false;
 		tooltip.add(IWailaConfig.get().getFormatting().registryName(id));
+		return true;
 	}
 
 	@Override
 	public ResourceLocation getUid() {
-		return Identifiers.CORE_REGISTRY_NAME;
+		return Identifiers.DEBUG_REGISTRY_NAME;
 	}
 
 	@Override

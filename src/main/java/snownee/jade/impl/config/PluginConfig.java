@@ -13,6 +13,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -305,8 +306,24 @@ public class PluginConfig implements IPluginConfig {
 						.sorted(Comparator.comparingInt($ -> WailaCommonRegistration.instance().priorities.getSortedList().indexOf($.getId())))
 						.toList()
 				))
-				.sorted((o1, o2) -> o1.title.getString().compareToIgnoreCase(o2.title.getString()))
+				.sorted(Comparator.comparingInt(specialOrder()).thenComparing($ -> $.title.getString()))
 				.toList();
+	}
+
+	private static ToIntFunction<Category> specialOrder() {
+		String core = I18n.get(OptionsList.Entry.makeKey("plugin_" + Jade.MODID));
+		String debug = I18n.get(OptionsList.Entry.makeKey("plugin_" + Jade.MODID + ".debug"));
+		// core is always the first, debug is always the last
+		return category -> {
+			String title = category.title.getString();
+			if (core.equals(title)) {
+				return -1;
+			}
+			if (debug.equals(title)) {
+				return 1;
+			}
+			return 0;
+		};
 	}
 
 	public record Category(MutableComponent title, List<ConfigEntry<?>> entries) {

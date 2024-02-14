@@ -52,7 +52,7 @@
   "config.jade.plugin_jade.registry_name": "레지스트리 이름",
   "config.jade.plugin_minecraft.entity_health": "엔티티 체력",
   "config.jade.plugin_minecraft.entity_armor": "엔티티 갑옷",
-  "config.jade.plugin_minecraft.block_states": "블록 상태",
+  "config.jade.plugin_jade.block_states": "블록 상태",
   "config.jade.plugin_jade.item_mod_name": "아이템 설명에서 모드 이름",
   "config.jade.plugin_jade.mod_name": "모드 이름",
   "entity.minecraft.villager.none": "실업자",

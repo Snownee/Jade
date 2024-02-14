@@ -51,7 +51,7 @@
   "config.jade.plugin_jade.registry_name": "Registrierungsname",
   "config.jade.plugin_minecraft.entity_health": "Entitätszustand",
   "config.jade.plugin_minecraft.entity_armor": "Entitätsrüstung",
-  "config.jade.plugin_minecraft.block_states": "Zustände blockieren",
+  "config.jade.plugin_jade.block_states": "Zustände blockieren",
   "config.jade.plugin_jade.item_mod_name": "Mod-Name im Item-Tooltip",
   "config.jade.plugin_jade.mod_name": "Mod-Name",
   "entity.minecraft.villager.none": "Arbeitslos",

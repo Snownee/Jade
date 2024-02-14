@@ -124,7 +124,7 @@
   "config.jade.plugin_minecraft.entity_health.show_fractions": "Показать фракции",
   "config.jade.plugin_minecraft.entity_armor": "Броня существа",
   "config.jade.plugin_minecraft.entity_armor.max_for_render": "Максимум брони для отображения",
-  "config.jade.plugin_minecraft.block_states": "Состояния блока",
+  "config.jade.plugin_jade.block_states": "Состояния блока",
   "config.jade.plugin_jade.item_mod_name": "Название модификации в подсказке предмета",
   "config.jade.plugin_jade.mod_name": "Название модификации",
    "config.jade.plugin_jade.mod_name_extra_msg": "пространство имен,modid",

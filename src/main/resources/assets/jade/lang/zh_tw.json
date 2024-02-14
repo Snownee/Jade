@@ -126,7 +126,7 @@
   "config.jade.plugin_minecraft.entity_health.show_fractions": "顯示分數",
   "config.jade.plugin_minecraft.entity_armor": "實體護甲",
   "config.jade.plugin_minecraft.entity_armor.max_for_render": "渲染的最大護甲",
-  "config.jade.plugin_minecraft.block_states": "方塊狀態",
+  "config.jade.plugin_jade.block_states": "方塊狀態",
   "config.jade.plugin_jade.item_mod_name": "物品提示中的模組名稱",
   "config.jade.plugin_jade.mod_name": "模組名稱",
   "config.jade.plugin_jade.mod_name_extra_msg": "命名空間,模組 ID",

@@ -46,7 +46,7 @@
   "config.jade.plugin_jade.registry_name": "Nome del registro di sistema",
   "config.jade.plugin_minecraft.entity_health": "Salute dell'entita",
   "config.jade.plugin_minecraft.entity_armor": "Armatura dell'entità",
-  "config.jade.plugin_minecraft.block_states": "Block States",
+  "config.jade.plugin_jade.block_states": "Block States",
   "config.jade.plugin_jade.item_mod_name": "Nome della mod nel tooltip dell'oggetto",
   "config.jade.plugin_jade.mod_name": "Nome della mod",
   "entity.minecraft.villager.none": "Disoccupato",
