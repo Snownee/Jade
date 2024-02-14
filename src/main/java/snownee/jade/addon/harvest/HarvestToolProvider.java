@@ -20,6 +20,7 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec2;
@@ -82,9 +83,13 @@ public class HarvestToolProvider implements IBlockComponentProvider, ResourceMan
 		if (!config.get(Identifiers.MC_HARVEST_TOOL_CREATIVE) && (player.isCreative() || player.isSpectator())) {
 			return;
 		}
-		BlockState state = accessor.getBlockState();
 		Level level = accessor.getLevel();
 		BlockPos pos = accessor.getPosition();
+		GameType gameType = ClientProxy.getGameMode();
+		if (gameType == GameType.ADVENTURE && player.blockActionRestricted(level, pos, gameType)) {
+			return;
+		}
+		BlockState state = accessor.getBlockState();
 		float destroySpeed = state.getDestroySpeed(level, pos);
 		// player-sensitive method, used by Waystones
 		float destroyProgress = state.getDestroyProgress(player, level, pos);
