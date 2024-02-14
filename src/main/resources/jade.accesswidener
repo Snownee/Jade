@@ -51,3 +51,9 @@ accessible field net/minecraft/world/level/block/entity/CampfireBlockEntity cook
 accessible field net/minecraft/world/level/block/entity/CampfireBlockEntity cookingTime [I
 
 accessible field net/minecraft/world/level/block/entity/trialspawner/TrialSpawnerData cooldownEndsAt J
+
+accessible method net/minecraft/client/renderer/FogRenderer getPriorityFogFunction (Lnet/minecraft/world/entity/Entity;F)Lnet/minecraft/client/renderer/FogRenderer$MobEffectFogFunction;
+accessible class net/minecraft/client/renderer/FogRenderer$MobEffectFogFunction
+accessible class net/minecraft/client/renderer/FogRenderer$FogData
+accessible method net/minecraft/client/renderer/LightTexture getDarknessGamma (F)F
+accessible method net/minecraft/client/renderer/LightTexture calculateDarknessScale (Lnet/minecraft/world/entity/LivingEntity;FF)F

@@ -18,7 +18,10 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
+import net.minecraft.client.renderer.FogRenderer;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -204,6 +207,33 @@ public final class JadeClient {
 		return accessor;
 	}
 
+	@Nullable
+	public static Accessor<?> limitMobEffectFog(HitResult hitResult, @Nullable Accessor<?> accessor, @Nullable Accessor<?> originalAccessor) {
+		if (accessor == null) {
+			return null;
+		}
+		Player player = accessor.getPlayer();
+		Minecraft mc = Minecraft.getInstance();
+		LightTexture lightTexture = mc.gameRenderer.lightTexture();
+		float darknessEffectScale = mc.options.darknessEffectScale().get().floatValue();
+		float gamma = lightTexture.getDarknessGamma(1) * darknessEffectScale;
+		gamma = lightTexture.calculateDarknessScale(player, gamma, 1);
+		if (gamma > 0.15f && accessor.getLevel().getMaxLocalRawBrightness(BlockPos.containing(accessor.getHitResult().getLocation())) < 7) {
+			return null;
+		}
+		FogRenderer.MobEffectFogFunction fogFunction = FogRenderer.getPriorityFogFunction(player, 1);
+		if (fogFunction == null) {
+			return accessor;
+		}
+		FogRenderer.FogData fogData = new FogRenderer.FogData(FogRenderer.FogMode.FOG_TERRAIN);
+		fogFunction.setupFog(fogData, player, player.getEffect(fogFunction.getMobEffect()), Math.max(32, mc.gameRenderer.getRenderDistance()), 1);
+		float dist = (fogData.start + fogData.end) * 0.5F;
+		if (accessor.getHitResult().distanceTo(player) > dist * dist) {
+			return null;
+		}
+		return accessor;
+	}
+
 	public static void drawBreakingProgress(IBoxElement rootElement, TooltipRect rect, GuiGraphics guiGraphics, Accessor<?> accessor) {
 		if (!PluginConfig.INSTANCE.get(Identifiers.MC_BREAKING_PROGRESS)) {
 			progressAlpha = 0;
@@ -265,5 +295,4 @@ public final class JadeClient {
 			return Component.translatable(s, objects);
 		}
 	}
-
 }
