@@ -1,4 +1,4 @@
-package snownee.jade.addon.vanilla;
+package snownee.jade.addon.debug;
 
 import java.util.Collection;
 
@@ -42,7 +42,7 @@ public enum BlockStatesProvider implements IBlockComponentProvider {
 
 	@Override
 	public ResourceLocation getUid() {
-		return Identifiers.MC_BLOCK_STATES;
+		return Identifiers.DEBUG_BLOCK_STATES;
 	}
 
 	@Override

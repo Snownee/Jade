@@ -126,7 +126,7 @@
   "config.jade.plugin_minecraft.entity_health.show_fractions": "显示小数",
   "config.jade.plugin_minecraft.entity_armor": "实体盔甲值",
   "config.jade.plugin_minecraft.entity_armor.max_for_render": "显示盔甲的最大值（大于则显示数字）",
-  "config.jade.plugin_minecraft.block_states": "方块状态",
+  "config.jade.plugin_jade.block_states": "方块状态",
   "config.jade.plugin_jade.item_mod_name": "物品模组名称",
   "config.jade.plugin_jade.mod_name": "模组名称",
   "config.jade.plugin_jade.mod_name_extra_msg": "命名空间,modid",

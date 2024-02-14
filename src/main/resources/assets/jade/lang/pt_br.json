@@ -120,7 +120,7 @@
   "config.jade.plugin_minecraft.entity_health.show_fractions": "Mostrar Frações",
   "config.jade.plugin_minecraft.entity_armor": "Armadura de Entidade",
   "config.jade.plugin_minecraft.entity_armor.max_for_render": "Armaduras máx. p/ Renderização",
-  "config.jade.plugin_minecraft.block_states": "Estados do Bloco",
+  "config.jade.plugin_jade.block_states": "Estados do Bloco",
   "config.jade.plugin_jade.item_mod_name": "Nome do mod na dica de ferramenta do item",
   "config.jade.plugin_jade.mod_name": "Nome do Mod",
   "config.jade.plugin_jade.mod_name_extra_msg": "namespace,modid",

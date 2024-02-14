@@ -46,7 +46,7 @@
 
   "config.jade.plugin_jade.registry_name": "Pokaż nazwy rejetrów",
   "config.jade.plugin_minecraft.entity_health": "Pokaż zdrowie bytów",
-  "config.jade.plugin_minecraft.block_states": "Pokaż stan",
+  "config.jade.plugin_jade.block_states": "Pokaż stan",
 
   "entity.minecraft.villager.none": "Głupiec"
 }

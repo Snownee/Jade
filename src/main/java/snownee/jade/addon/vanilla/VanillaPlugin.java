@@ -140,12 +140,11 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.addConfig(Identifiers.MC_BREAKING_PROGRESS, true);
 		registration.addConfig(Identifiers.MC_ANIMAL_OWNER_FETCH_NAMES, true);
 
-		registration.addConfig(Identifiers.MC_ENTITY_ARMOR_MAX_FOR_RENDER, 40, 0, 100, false);
+		registration.addConfig(Identifiers.MC_ENTITY_ARMOR_MAX_FOR_RENDER, 20, 0, 100, false);
 		registration.addConfig(Identifiers.MC_ENTITY_HEALTH_MAX_FOR_RENDER, 40, 0, 100, false);
 		registration.addConfig(Identifiers.MC_ENTITY_HEALTH_ICONS_PER_LINE, 10, 5, 30, false);
 		registration.addConfig(Identifiers.MC_ENTITY_HEALTH_SHOW_FRACTIONS, false);
 
-		registration.registerBlockComponent(BlockStatesProvider.INSTANCE, Block.class);
 		registration.registerBlockComponent(BrewingStandProvider.INSTANCE, BrewingStandBlock.class);
 		registration.registerEntityComponent(HorseStatsProvider.INSTANCE, AbstractHorse.class);
 		registration.registerEntityComponent(ItemFrameProvider.INSTANCE, ItemFrame.class);
@@ -208,7 +207,6 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.markAsClientFeature(Identifiers.MC_ENTITY_HEALTH_MAX_FOR_RENDER);
 		registration.markAsClientFeature(Identifiers.MC_ENTITY_HEALTH_ICONS_PER_LINE);
 		registration.markAsClientFeature(Identifiers.MC_ENTITY_HEALTH_SHOW_FRACTIONS);
-		registration.markAsClientFeature(Identifiers.MC_BLOCK_STATES);
 		registration.markAsClientFeature(Identifiers.MC_HORSE_STATS);
 		registration.markAsClientFeature(Identifiers.MC_ITEM_FRAME);
 		registration.markAsClientFeature(Identifiers.MC_TNT_STABILITY);
@@ -237,7 +235,6 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.setConfigCategoryOverride(Identifiers.MC_ANIMAL_OWNER, entity);
 		registration.setConfigCategoryOverride(Identifiers.MC_ARMOR_STAND, both);
 		registration.setConfigCategoryOverride(Identifiers.MC_BEEHIVE, block);
-		registration.setConfigCategoryOverride(Identifiers.MC_BLOCK_STATES, block);
 		registration.setConfigCategoryOverride(Identifiers.MC_BREWING_STAND, block);
 		registration.setConfigCategoryOverride(Identifiers.MC_CHICKEN_EGG, entity);
 		registration.setConfigCategoryOverride(Identifiers.MC_CHISELED_BOOKSHELF, block);

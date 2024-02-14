@@ -126,7 +126,7 @@
   "config.jade.plugin_minecraft.entity_health.show_fractions": "分数の表示",
   "config.jade.plugin_minecraft.entity_armor": "エンティティの防御力",
   "config.jade.plugin_minecraft.entity_armor.max_for_render": "描画する防御力の最大数",
-  "config.jade.plugin_minecraft.block_states": "ブロック状態",
+  "config.jade.plugin_jade.block_states": "ブロック状態",
   "config.jade.plugin_jade.item_mod_name": "アイテム情報内にMod名",
   "config.jade.plugin_jade.mod_name": "Mod名",
   "config.jade.plugin_jade.mod_name_extra_msg": "名前空間,modid",
