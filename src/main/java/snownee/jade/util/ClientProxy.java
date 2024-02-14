@@ -25,7 +25,6 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.event.Event;
-import net.fabricmc.fabric.api.event.client.player.ClientPickBlockGatherCallback;
 import net.fabricmc.fabric.api.mininglevel.v1.FabricMineableTags;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
@@ -58,7 +57,6 @@ import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.util.LazyLoadedValue;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
@@ -67,7 +65,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.phys.HitResult;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
 import snownee.jade.addon.harvest.HarvestToolProvider;
@@ -178,10 +175,6 @@ public final class ClientProxy implements ClientModInitializer {
 		FriendlyByteBuf buf = PacketByteBufs.create();
 		accessor.toNetwork(buf);
 		ClientPlayNetworking.send(Identifiers.PACKET_REQUEST_ENTITY, buf);
-	}
-
-	static ItemStack invokePickEvent(Player player, HitResult hitResult) {
-		return ClientPickBlockGatherCallback.EVENT.invoker().pick(player, hitResult);
 	}
 
 	public static IElement elementFromLiquid(LiquidBlock block) {

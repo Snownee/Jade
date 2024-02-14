@@ -314,24 +314,14 @@ public final class CommonProxy implements ModInitializer {
 
 	public static ItemStack getBlockPickedResult(BlockState state, Player player, BlockHitResult hitResult) {
 		Block block = state.getBlock();
-		if (isPhysicallyClient()) {
-			ItemStack result = ClientProxy.invokePickEvent(player, hitResult);
-			if (!result.isEmpty()) {
-				return result;
-			}
-		} else if (block instanceof BlockPickInteractionAware) {
+		if (block instanceof BlockPickInteractionAware) {
 			return ((BlockPickInteractionAware) block).getPickedStack(state, player.level(), hitResult.getBlockPos(), player, hitResult);
 		}
 		return block.getCloneItemStack(player.level(), hitResult.getBlockPos(), state);
 	}
 
 	public static ItemStack getEntityPickedResult(Entity entity, Player player, EntityHitResult hitResult) {
-		if (isPhysicallyClient()) {
-			ItemStack result = ClientProxy.invokePickEvent(player, hitResult);
-			if (!result.isEmpty()) {
-				return result;
-			}
-		} else if (entity instanceof EntityPickInteractionAware) {
+		if (entity instanceof EntityPickInteractionAware) {
 			return ((EntityPickInteractionAware) entity).getPickedStack(player, hitResult);
 		}
 		ItemStack stack = entity.getPickResult();

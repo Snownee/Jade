@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Objects;
 
 import com.google.common.collect.Lists;
+import com.mojang.math.Axis;
 
-import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.ChatFormatting;
@@ -35,10 +35,12 @@ public class HomeConfigScreen extends Screen {
 	private final SmoothChasingValue creditHover;
 	private final Component credit;
 	private final List<TextParticle> particles = Lists.newArrayList();
+	private final List<TextParticle> pendingParticles = Lists.newArrayList();
 	private int creditWidth;
 	private boolean hovered;
 	private float ticks;
 	private byte festival;
+	private float nextParticleIn;
 
 	public HomeConfigScreen(Screen parent) {
 		super(Component.translatable("gui.jade.configuration"));
@@ -53,46 +55,50 @@ public class HomeConfigScreen extends Screen {
 			festival = 1;
 		} else if (month == 6 && day == 28) {
 			festival = 2;
-		} else {
-			var newyears = new Int2IntOpenHashMap();
-			newyears.put(2024, 210);
-			newyears.put(2025, 129);
-			newyears.put(2026, 217);
-			newyears.put(2027, 206);
-			newyears.put(2028, 126);
-			newyears.put(2029, 213);
-			newyears.put(2030, 203);
-			newyears.put(2031, 123);
-			newyears.put(2032, 211);
-			newyears.put(2033, 131);
-			newyears.put(2034, 219);
-			newyears.put(2035, 208);
-			newyears.put(2036, 128);
-			newyears.put(2037, 215);
-			newyears.put(2038, 204);
-			newyears.put(2039, 124);
-			newyears.put(2040, 212);
-			newyears.put(2041, 201);
-			newyears.put(2042, 122);
-			newyears.put(2043, 210);
-			int year = now.getYear();
-			if (newyears.containsKey(year)) {
-				int newyearMonth = newyears.get(year) / 100;
-				int newyearDay = newyears.get(year) % 100;
-				LocalDate newyearDate = LocalDate.of(year, newyearMonth, newyearDay);
-				int newyearDayofyear = newyearDate.getDayOfYear();
-				int dayofyear = now.getDayOfYear();
-				if (dayofyear >= newyearDayofyear - 1 && dayofyear <= newyearDayofyear + 2) {
-					festival = 99;
-				}
-			}
+		} else if (month <= 2 && isLunarNewYear(now)) {
+			festival = 99;
 		}
 		credit = Component.translatable("gui.jade.by", Component.literal("❤").withStyle(ChatFormatting.RED)).withStyle(s -> {
-			if (festival != 0) {
+			if (festival != 0 && festival != 1) {
 				s = s.withColor(0xF1E3A4);
 			}
 			return s;
 		});
+	}
+
+	private static boolean isLunarNewYear(LocalDate now) {
+		int year = now.getYear();
+		int newYearMonthAndDay = switch (year) {
+			case 2025 -> 129;
+			case 2026 -> 217;
+			case 2027 -> 206;
+			case 2028 -> 126;
+			case 2029 -> 213;
+			case 2030 -> 203;
+			case 2031 -> 123;
+			case 2032 -> 211;
+			case 2033 -> 131;
+			case 2034 -> 219;
+			case 2035 -> 208;
+			case 2036 -> 128;
+			case 2037 -> 215;
+			case 2038 -> 204;
+			case 2039 -> 124;
+			case 2040 -> 212;
+			case 2041 -> 201;
+			case 2042 -> 122;
+			case 2043 -> 210;
+			default -> 0;
+		};
+		if (newYearMonthAndDay == 0) {
+			return false;
+		}
+		int newYearMonth = newYearMonthAndDay / 100;
+		int newYearDay = newYearMonthAndDay % 100;
+		LocalDate newYearDate = LocalDate.of(year, newYearMonth, newYearDay);
+		int newYearDayOfYear = newYearDate.getDayOfYear();
+		int dayOfYear = now.getDayOfYear();
+		return dayOfYear >= newYearDayOfYear - 1 && dayOfYear <= newYearDayOfYear + 2;
 	}
 
 	@Override
@@ -119,10 +125,30 @@ public class HomeConfigScreen extends Screen {
 	}
 
 	@Override
-	public void render(GuiGraphics guiGraphics, int x, int y, float partialTicks) {
+	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		Objects.requireNonNull(minecraft);
 		ticks += partialTicks;
-		renderBackground(guiGraphics, x, y, partialTicks);
+		if (ticks > nextParticleIn) {
+			if (festival == 3) {
+				nextParticleIn = ticks + 1;
+				if (pendingParticles.isEmpty()) {
+					festival3populateNew();
+				}
+				TextParticle particle = pendingParticles.remove(0);
+				particle.x = mouseX - 5;
+				particle.y = mouseY;
+				particles.add(particle);
+			} else if (festival == 1) {
+				nextParticleIn = ticks + 10 + random.nextFloat() * 10;
+				int color = Mth.color(1 - random.nextFloat() * 0.6F, 1, 1);
+				color |= (random.nextInt(80) + 40) << 24;
+				int x = random.nextIntBetweenInclusive(40, width + 100);
+				var particle = new TextParticle("❄", x, -20, -0.3F, 0.5f, color, 2F + random.nextFloat());
+				particle.gravity = 0F;
+				particles.add(particle);
+			}
+		}
+		renderBackground(guiGraphics, mouseX, mouseY, partialTicks);
 		boolean smallUI = minecraft.getWindow().getGuiScale() < 3;
 		int left = width / 2 - 105;
 		int top = height / 4 - 20;
@@ -141,22 +167,22 @@ public class HomeConfigScreen extends Screen {
 			guiGraphics.pose().popPose();
 			guiGraphics.pose().pushPose();
 			guiGraphics.pose().translate(left, top, 0);
-			scaledX = x - left;
-			scaledY = y - top;
+			scaledX = mouseX - left;
+			scaledY = mouseY - top;
 		} else {
-			scaledX = (x - left) / scale * 2;
-			scaledY = (y - top) / scale * 2;
+			scaledX = (mouseX - left) / scale * 2;
+			scaledY = (mouseY - top) / scale * 2;
 		}
 		drawFancyTitle(guiGraphics, I18n.get("gui.jade.configuration.desc1"), Math.min(titleY.value, 20F), 20F, scaledX, scaledY);
 		if (!desc2.isEmpty()) {
-			drawFancyTitle(guiGraphics, desc2, titleY.value, 32F, scaledX, scaledY);
+			drawFancyTitle(guiGraphics, desc2, Math.min(titleY.value + 3F, 32F), 32F, scaledX, scaledY);
 		}
 		guiGraphics.pose().popPose();
-		super.render(guiGraphics, x, y, partialTicks);
+		super.render(guiGraphics, mouseX, mouseY, partialTicks);
 
 		int creditX = (int) (width * 0.5F - creditWidth * 0.5F);
 		int creditY = (int) (height * 0.9F - 5);
-		boolean hover = x >= creditX && x < creditX + creditWidth && y >= creditY && y < creditY + 10;
+		boolean hover = mouseX >= creditX && mouseX < creditX + creditWidth && mouseY >= creditY && mouseY < creditY + 10;
 		if (!hovered && hover) {
 			creditHover.target(1);
 		} else if (!hover) {
@@ -166,15 +192,7 @@ public class HomeConfigScreen extends Screen {
 			IntList colors = new IntArrayList();
 			String text = "❄";
 			if (festival == 2) {
-				for (int i = 0; i < 11; i++) {
-					colors.add(Mth.hsvToRgb(random.nextFloat(), .8F, .9F));
-				}
-				text = "❤";
-			} else if (festival == 1) {
-				IntList palette = IntList.of(0xD6E4E5, 0xD6E4E5, 0xEFF5F5, 0xEFF5F5, 0x497174, 0xEB6440);
-				for (int i = 0; i < 11; i++) {
-					colors.add(palette.getInt(random.nextInt(palette.size())));
-				}
+				festival = 3;
 			} else if (festival == 99) {
 				for (int i = 0; i < 11; i++) {
 					colors.add(random.nextBoolean() ? 0xA80000 : 0xC01800);
@@ -187,7 +205,11 @@ public class HomeConfigScreen extends Screen {
 			}
 			for (int color : colors) {
 				int ox = random.nextIntBetweenInclusive(-creditWidth / 2, creditWidth / 2);
-				var particle = new TextParticle(text, width * 0.5F + ox, creditY + random.nextInt(10), ox * 0.08F, -5 - random.nextFloat() * 3, color, 0.75F + random.nextFloat() * 0.5F);
+				float x = width * 0.5F + ox;
+				float y = creditY + random.nextInt(10);
+				float dx = ox * 0.08F;
+				float dy = -5 - random.nextFloat() * 3;
+				var particle = new TextParticle(text, x, y, dx, dy, color, 0.75F + random.nextFloat() * 0.5F);
 				particles.add(particle);
 				if (festival == 99) {
 					particle.age = 8 + random.nextFloat() * 5;
@@ -207,12 +229,77 @@ public class HomeConfigScreen extends Screen {
 
 		particles.removeIf(p -> {
 			p.tick(partialTicks);
-			if (p.y > height) {
+			if (p.y > height + 20) {
 				return true;
 			}
 			p.render(guiGraphics, font);
 			return false;
 		});
+	}
+
+	private void festival3populateNew() {
+		IntList colors = new IntArrayList();
+		String text = random.nextBoolean() ? "UwU" : "OwO";
+		switch (random.nextInt(7)) {
+			case 0 -> {
+				colors.add(0xE40303);
+				colors.add(0xFF8C00);
+				colors.add(0xFFED00);
+				colors.add(0x008026);
+				colors.add(0x732982);
+				colors.add(0x732982);
+			}
+			case 1 -> {
+				colors.add(0x5BCEFA);
+				colors.add(0xF5A9B8);
+				colors.add(0xFFFFFF);
+				colors.add(0xF5A9B8);
+				colors.add(0x5BCEFA);
+			}
+			case 2 -> {
+				colors.add(0xD60270);
+				colors.add(0xD60270);
+				colors.add(0x9B4F96);
+				colors.add(0x0038A8);
+				colors.add(0x0038A8);
+			}
+			case 3 -> {
+				colors.add(0xFF218C);
+				colors.add(0xFF218C);
+				colors.add(0xFFD800);
+				colors.add(0xFFD800);
+				colors.add(0x21B1FF);
+				colors.add(0x21B1FF);
+			}
+			case 4 -> {
+				colors.add(0x000000);
+				colors.add(0xA3A3A3);
+				colors.add(0xFFFFFF);
+				colors.add(0x800080);
+			}
+			case 5 -> {
+				colors.add(0xFF76A4);
+				colors.add(0xFFFFFF);
+				colors.add(0xC011D7);
+				colors.add(0x000000);
+				colors.add(0x2F3CBE);
+			}
+			case 6 -> {
+				colors.add(0xFCF434);
+				colors.add(0xFFFFFF);
+				colors.add(0x9C59D1);
+				colors.add(0x2C2C2C);
+			}
+		}
+		int ox = random.nextIntBetweenInclusive(-creditWidth / 2, creditWidth / 2);
+		float dx = ox * 0.08F;
+		float dy = -5 - random.nextFloat() * 3;
+		for (int color : colors) {
+			for (int i = 0; i < 5; i++) {
+				var particle = new TextParticle(text, 0, 0, dx, dy, color, 1);
+				pendingParticles.add(particle);
+			}
+		}
 	}
 
 	private void drawFancyTitle(GuiGraphics guiGraphics, String text, float y, float expectY, float mouseX, float mouseY) {
@@ -239,6 +326,7 @@ public class HomeConfigScreen extends Screen {
 		private float motionY;
 		private int color;
 		private float scale;
+		private float gravity = 0.98F;
 
 		public TextParticle(String text, float x, float y, float motionX, float motionY, int color, float scale) {
 			this.text = text;
@@ -253,16 +341,18 @@ public class HomeConfigScreen extends Screen {
 		private void tick(float partialTicks) {
 			x += motionX * partialTicks;
 			y += motionY * partialTicks;
-			motionY += 0.98F * partialTicks;
+			motionY += gravity * partialTicks;
 			if (festival == 99) {
-				boolean geaterThanZero = age > 0;
+				boolean greaterThanZero = age > 0;
 				age -= partialTicks;
-				if (geaterThanZero && age <= 0) {
+				if (greaterThanZero && age <= 0) {
 					text = random.nextBoolean() ? "✴" : "✳";
 					color = random.nextBoolean() ? 0xFFD427 : 0xF0C415;
 					Objects.requireNonNull(minecraft);
 					minecraft.getSoundManager().play(SimpleSoundInstance.forUI(random.nextBoolean() ? SoundEvents.FIREWORK_ROCKET_BLAST : SoundEvents.FIREWORK_ROCKET_LARGE_BLAST, 0.7F));
 				}
+			} else if (festival == 1) {
+				age -= partialTicks;
 			}
 		}
 
@@ -273,6 +363,9 @@ public class HomeConfigScreen extends Screen {
 			guiGraphics.pose().pushPose();
 			guiGraphics.pose().translate(x, y, 0);
 			guiGraphics.pose().scale(scale, scale, scale);
+			if (festival == 1) {
+				guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees(age));
+			}
 			guiGraphics.drawString(font, text, 0, 0, color);
 			guiGraphics.pose().popPose();
 		}
