@@ -1,32 +1,34 @@
 package snownee.jade.network;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.neoforged.neoforge.network.NetworkEvent;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import snownee.jade.Jade;
+import snownee.jade.api.Identifiers;
 
-public class ShowOverlayPacket {
-
-	public final boolean show;
-
-	public ShowOverlayPacket(boolean show) {
-		this.show = show;
-	}
+public record ShowOverlayPacket(boolean show) implements CustomPacketPayload {
 
 	public static ShowOverlayPacket read(FriendlyByteBuf buffer) {
 		return new ShowOverlayPacket(buffer.readBoolean());
 	}
 
-	public static void write(ShowOverlayPacket message, FriendlyByteBuf buffer) {
-		buffer.writeBoolean(message.show);
-	}
-
-	public static void handle(ShowOverlayPacket message, NetworkEvent.Context context) {
+	public static void handle(ShowOverlayPacket message, PlayPayloadContext context) {
 		boolean show = message.show;
 		Jade.LOGGER.info("Received request from the server to {} overlay", show ? "show" : "hide");
-		context.enqueueWork(() -> {
+		context.workHandler().execute(() -> {
 			Jade.CONFIG.get().getGeneral().setDisplayTooltip(show);
 			Jade.CONFIG.save();
 		});
-		context.setPacketHandled(true);
+	}
+
+	@Override
+	public void write(FriendlyByteBuf buffer) {
+		buffer.writeBoolean(show);
+	}
+
+	@Override
+	public ResourceLocation id() {
+		return Identifiers.PACKET_SHOW_OVERLAY;
 	}
 }

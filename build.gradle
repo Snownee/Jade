@@ -3,8 +3,8 @@ plugins {
     id 'idea'
     id 'maven-publish'
     id "me.shedaniel.unified-publishing" version "0.1.+"
-    id 'net.neoforged.gradle.userdev' version '7.0.57'
-    id 'net.neoforged.gradle.mixin' version '7.0.57'
+    id 'net.neoforged.gradle.userdev' version '7.0.80'
+    id 'net.neoforged.gradle.mixin' version '7.0.80'
 }
 
 version = "${minecraft_version}-neoforge-${mod_version}"
@@ -121,7 +121,7 @@ dependencies {
     implementation "net.neoforged:neoforge:${neo_version}"
     // annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
 
-    compileOnly "mezz.jei:jei-1.20.2-common-api:${jei_version}"
+    compileOnly "mezz.jei:jei-1.20.4-common-api:${jei_version}"
     //compileOnly "mezz.jei:jei-1.20.2-forge-api:${jei_version}"
     //runtimeOnly "mezz.jei:jei-1.20.2-forge:${jei_version}"
     //implementation "curse.maven:jei-238222:3834070"

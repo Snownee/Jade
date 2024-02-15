@@ -46,15 +46,11 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 		fakeBlock = builder.fakeBlock;
 	}
 
-	public static void handleRequest(FriendlyByteBuf buf, ServerPlayer player, Consumer<Runnable> executor, Consumer<CompoundTag> responseSender) {
-		BlockAccessor accessor;
-		try {
-			accessor = fromNetwork(buf, player);
-		} catch (Exception e) {
-			WailaExceptionHandler.handleErr(e, null, null);
-			return;
-		}
+	public static void handleRequest(SyncData data, ServerPlayer player, Consumer<Runnable> executor, Consumer<CompoundTag> responseSender) {
 		executor.accept(() -> {
+			BlockAccessor accessor = data.unpack(player);
+			if (accessor == null)
+				return;
 			BlockPos pos = accessor.getPosition();
 			ServerLevel world = player.serverLevel();
 			if (pos.distSqr(player.blockPosition()) > Jade.MAX_DISTANCE_SQR || !world.isLoaded(pos))
@@ -85,22 +81,8 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 		});
 	}
 
-	public static BlockAccessor fromNetwork(FriendlyByteBuf buf, ServerPlayer player) {
-		Builder builder = new Builder();
-		builder.level(player.level());
-		builder.player(player);
-		builder.showDetails(buf.readBoolean());
-		builder.hit(buf.readBlockHitResult());
-		builder.blockState(Block.stateById(buf.readVarInt()));
-		builder.fakeBlock(buf.readItem());
-		if (builder.blockState.hasBlockEntity()) {
-			// you can only get block entity from the main thread
-			builder.blockEntity(Suppliers.memoize(() -> builder.level.getBlockEntity(builder.hit.getBlockPos())));
-		}
-		return builder.build();
-	}
-
 	@Override
+	@Deprecated
 	public void toNetwork(FriendlyByteBuf buf) {
 		buf.writeBoolean(showDetails());
 		buf.writeBlockHitResult(getHitResult());
@@ -263,7 +245,38 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 			}
 			return accessor;
 		}
-
 	}
 
+	public record SyncData(boolean showDetails, BlockHitResult hit, BlockState blockState, ItemStack fakeBlock) {
+		public SyncData(BlockAccessor accessor) {
+			this(accessor.showDetails(), accessor.getHitResult(), accessor.getBlockState(), accessor.getFakeBlock());
+		}
+
+		public SyncData(FriendlyByteBuf buffer) {
+			this(buffer.readBoolean(), buffer.readBlockHitResult(), Block.stateById(buffer.readVarInt()), buffer.readItem());
+		}
+
+		public void write(FriendlyByteBuf buffer) {
+			buffer.writeBoolean(showDetails);
+			buffer.writeBlockHitResult(hit);
+			buffer.writeVarInt(Block.getId(blockState));
+			buffer.writeItem(fakeBlock);
+		}
+
+		public BlockAccessor unpack(ServerPlayer player) {
+			Supplier<BlockEntity> blockEntity = null;
+			if (blockState.hasBlockEntity()) {
+				blockEntity = Suppliers.memoize(() -> player.level().getBlockEntity(hit.getBlockPos()));
+			}
+			return new Builder()
+					.level(player.level())
+					.player(player)
+					.showDetails(showDetails)
+					.hit(hit)
+					.blockState(blockState)
+					.blockEntity(blockEntity)
+					.fakeBlock(fakeBlock)
+					.build();
+		}
+	}
 }

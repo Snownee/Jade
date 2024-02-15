@@ -6,19 +6,19 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import snownee.jade.api.Identifiers;
-import snownee.jade.impl.EntityAccessorImpl;
+import snownee.jade.impl.BlockAccessorImpl;
 
-public record RequestEntityPacket(EntityAccessorImpl.SyncData data) implements CustomPacketPayload {
+public record RequestBlockPacket(BlockAccessorImpl.SyncData data) implements CustomPacketPayload {
 
-	public static RequestEntityPacket read(FriendlyByteBuf buffer) {
-		return new RequestEntityPacket(new EntityAccessorImpl.SyncData(buffer));
+	public static RequestBlockPacket read(FriendlyByteBuf buffer) {
+		return new RequestBlockPacket(new BlockAccessorImpl.SyncData(buffer));
 	}
 
-	public static void handle(RequestEntityPacket message, PlayPayloadContext context) {
+	public static void handle(RequestBlockPacket message, PlayPayloadContext context) {
 		if (!(context.player().orElse(null) instanceof ServerPlayer player)) {
 			return;
 		}
-		EntityAccessorImpl.handleRequest(message.data, player, context.workHandler()::execute, tag -> {
+		BlockAccessorImpl.handleRequest(message.data, player, context.workHandler()::execute, tag -> {
 			player.connection.send(new ReceiveDataPacket(tag));
 		});
 	}
@@ -30,6 +30,6 @@ public record RequestEntityPacket(EntityAccessorImpl.SyncData data) implements C
 
 	@Override
 	public ResourceLocation id() {
-		return Identifiers.PACKET_REQUEST_ENTITY;
+		return Identifiers.PACKET_REQUEST_TILE;
 	}
 }

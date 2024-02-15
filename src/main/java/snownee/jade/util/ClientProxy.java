@@ -1,6 +1,7 @@
 package snownee.jade.util;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
@@ -71,11 +72,13 @@ import snownee.jade.command.JadeClientCommand;
 import snownee.jade.compat.JEICompat;
 import snownee.jade.gui.BaseOptionsScreen;
 import snownee.jade.gui.HomeConfigScreen;
+import snownee.jade.impl.BlockAccessorImpl;
+import snownee.jade.impl.EntityAccessorImpl;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.theme.ThemeHelper;
 import snownee.jade.impl.ui.FluidStackElement;
+import snownee.jade.network.RequestBlockPacket;
 import snownee.jade.network.RequestEntityPacket;
-import snownee.jade.network.RequestTilePacket;
 import snownee.jade.overlay.DatapackBlockManager;
 import snownee.jade.overlay.OverlayRenderer;
 import snownee.jade.overlay.WailaTickHandler;
@@ -204,11 +207,11 @@ public final class ClientProxy {
 	}
 
 	public static void requestBlockData(BlockAccessor accessor) {
-		CommonProxy.NETWORK.sendToServer(new RequestTilePacket(accessor));
+		Objects.requireNonNull(Minecraft.getInstance().getConnection()).send(new RequestBlockPacket(new BlockAccessorImpl.SyncData(accessor)));
 	}
 
 	public static void requestEntityData(EntityAccessor accessor) {
-		CommonProxy.NETWORK.sendToServer(new RequestEntityPacket(accessor));
+		Objects.requireNonNull(Minecraft.getInstance().getConnection()).send(new RequestEntityPacket(new EntityAccessorImpl.SyncData(accessor)));
 	}
 
 	public static IElement elementFromLiquid(LiquidBlock block) {
@@ -273,8 +276,8 @@ public final class ClientProxy {
 
 	public static ToolHandler createSwordToolHandler() {
 		return SimpleToolHandler.create(Identifiers.JADE("sword"), false, List.of(Items.WOODEN_SWORD))
-			.addBlock(Blocks.COBWEB)
-			.addBlock(Blocks.BAMBOO);
+				.addBlock(Blocks.COBWEB)
+				.addBlock(Blocks.BAMBOO);
 	}
 
 	public static void renderItemDecorationsExtra(GuiGraphics guiGraphics, Font font, ItemStack stack, int x, int y, String text) {

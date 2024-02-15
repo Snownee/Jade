@@ -39,7 +39,6 @@ import net.neoforged.fml.IExtensionPoint;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLPaths;
@@ -55,9 +54,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.network.NetworkRegistry;
-import net.neoforged.neoforge.network.PlayNetworkDirection;
-import net.neoforged.neoforge.network.simple.SimpleChannel;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
 import net.neoforged.neoforgespi.language.ModFileScanData;
 import snownee.jade.Jade;
 import snownee.jade.addon.universal.ItemCollector;
@@ -67,6 +64,7 @@ import snownee.jade.api.Accessor;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IWailaPlugin;
+import snownee.jade.api.Identifiers;
 import snownee.jade.api.WailaPlugin;
 import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.view.EnergyView;
@@ -77,22 +75,16 @@ import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.network.ReceiveDataPacket;
 import snownee.jade.network.RequestEntityPacket;
-import snownee.jade.network.RequestTilePacket;
+import snownee.jade.network.RequestBlockPacket;
 import snownee.jade.network.ServerPingPacket;
 import snownee.jade.network.ShowOverlayPacket;
 
 @Mod(Jade.MODID)
 public final class CommonProxy {
-	public static final SimpleChannel NETWORK = NetworkRegistry.ChannelBuilder.named(new ResourceLocation(Jade.MODID, "networking"))
-			.clientAcceptedVersions(s -> true)
-			.serverAcceptedVersions(s -> true)
-			.networkProtocolVersion(() -> "1")
-			.simpleChannel();
-
 	public CommonProxy(IEventBus modBus) {
 		ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> IExtensionPoint.DisplayTest.IGNORESERVERONLY, (a, b) -> true));
-		modBus.addListener(this::setup);
 		modBus.addListener(this::loadComplete);
+		modBus.addListener(this::registerPayloadHandlers);
 		NeoForge.EVENT_BUS.addListener(CommonProxy::playerJoin);
 		NeoForge.EVENT_BUS.addListener(CommonProxy::registerServerCommand);
 		if (isPhysicallyClient()) {
@@ -100,17 +92,32 @@ public final class CommonProxy {
 		}
 	}
 
+	private void registerPayloadHandlers(RegisterPayloadHandlerEvent event) {
+		event.registrar(Jade.MODID)
+				.versioned("1")
+				.optional()
+				.play(Identifiers.PACKET_RECEIVE_DATA, ReceiveDataPacket::read, handlers -> handlers.client(ReceiveDataPacket::handle))
+				.play(Identifiers.PACKET_SERVER_PING, ServerPingPacket::read, handlers -> handlers.client(ServerPingPacket::handle))
+				.play(Identifiers.PACKET_REQUEST_ENTITY, RequestEntityPacket::read, handlers -> handlers.server(RequestEntityPacket::handle))
+				.play(Identifiers.PACKET_REQUEST_TILE, RequestBlockPacket::read, handlers -> handlers.server(RequestBlockPacket::handle))
+				.play(Identifiers.PACKET_SHOW_OVERLAY, ShowOverlayPacket::read, handlers -> handlers.client(ShowOverlayPacket::handle));
+	}
+
 	public static int showOrHideFromServer(Collection<ServerPlayer> players, boolean show) {
 		ShowOverlayPacket msg = new ShowOverlayPacket(show);
 		for (ServerPlayer player : players) {
-			CommonProxy.NETWORK.sendTo(msg, player.connection.connection, PlayNetworkDirection.PLAY_TO_CLIENT);
+			player.connection.send(msg);
 		}
 		return players.size();
 	}
 
 	private static void playerJoin(PlayerEvent.PlayerLoggedInEvent event) {
-		Jade.LOGGER.info("Syncing config to {} ({})", event.getEntity().getGameProfile().getName(), event.getEntity().getGameProfile().getId());
-		NETWORK.sendTo(new ServerPingPacket(PluginConfig.INSTANCE), ((ServerPlayer) event.getEntity()).connection.connection, PlayNetworkDirection.PLAY_TO_CLIENT);
+		ServerPlayer player = (ServerPlayer) event.getEntity();
+		String configs = PluginConfig.INSTANCE.getServerConfigs();
+		if (!configs.isEmpty()) {
+			Jade.LOGGER.debug("Syncing config to {} ({})", event.getEntity().getGameProfile().getName(), event.getEntity().getGameProfile().getId());
+		}
+		player.connection.send(new ServerPingPacket(configs));
 	}
 
 	@Nullable
@@ -310,34 +317,6 @@ public final class CommonProxy {
 
 	public static FluidStack toFluidStack(JadeFluidObject fluid) {
 		return new FluidStack(fluid.getType(), (int) fluid.getAmount(), fluid.getTag());
-	}
-
-	private void setup(FMLCommonSetupEvent event) {
-		NETWORK.messageBuilder(ReceiveDataPacket.class, 1, PlayNetworkDirection.PLAY_TO_CLIENT)
-				.encoder(ReceiveDataPacket::write)
-				.decoder(ReceiveDataPacket::read)
-				.consumerNetworkThread(ReceiveDataPacket::handle)
-				.add();
-		NETWORK.messageBuilder(ServerPingPacket.class, 2, PlayNetworkDirection.PLAY_TO_CLIENT)
-				.encoder(ServerPingPacket::write)
-				.decoder(ServerPingPacket::read)
-				.consumerNetworkThread(ServerPingPacket::handle)
-				.add();
-		NETWORK.messageBuilder(RequestEntityPacket.class, 3, PlayNetworkDirection.PLAY_TO_SERVER)
-				.encoder(RequestEntityPacket::write)
-				.decoder(RequestEntityPacket::read)
-				.consumerNetworkThread(RequestEntityPacket::handle)
-				.add();
-		NETWORK.messageBuilder(RequestTilePacket.class, 4, PlayNetworkDirection.PLAY_TO_SERVER)
-				.encoder(RequestTilePacket::write)
-				.decoder(RequestTilePacket::read)
-				.consumerNetworkThread(RequestTilePacket::handle)
-				.add();
-		NETWORK.messageBuilder(ShowOverlayPacket.class, 5, PlayNetworkDirection.PLAY_TO_CLIENT)
-				.encoder(ShowOverlayPacket::write)
-				.decoder(ShowOverlayPacket::read)
-				.consumerNetworkThread(ShowOverlayPacket::handle)
-				.add();
 	}
 
 	private void loadComplete(FMLLoadCompleteEvent event) {
