@@ -78,6 +78,8 @@ import snownee.jade.api.ui.IElement;
 import snownee.jade.command.JadeClientCommand;
 import snownee.jade.compat.JEICompat;
 import snownee.jade.gui.BaseOptionsScreen;
+import snownee.jade.impl.BlockAccessorImpl;
+import snownee.jade.impl.EntityAccessorImpl;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.impl.theme.ThemeHelper;
@@ -167,13 +169,13 @@ public final class ClientProxy implements ClientModInitializer {
 
 	public static void requestBlockData(BlockAccessor accessor) {
 		FriendlyByteBuf buf = PacketByteBufs.create();
-		accessor.toNetwork(buf);
+		new BlockAccessorImpl.SyncData(accessor).write(buf);
 		ClientPlayNetworking.send(Identifiers.PACKET_REQUEST_TILE, buf);
 	}
 
 	public static void requestEntityData(EntityAccessor accessor) {
 		FriendlyByteBuf buf = PacketByteBufs.create();
-		accessor.toNetwork(buf);
+		new EntityAccessorImpl.SyncData(accessor).write(buf);
 		ClientPlayNetworking.send(Identifiers.PACKET_REQUEST_ENTITY, buf);
 	}
 

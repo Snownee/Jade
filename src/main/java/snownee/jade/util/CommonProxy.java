@@ -330,11 +330,13 @@ public final class CommonProxy implements ModInitializer {
 
 	private static void playerJoin(ServerGamePacketListenerImpl handler, PacketSender sender, MinecraftServer server) {
 		ServerPlayer player = handler.player;
-		Jade.LOGGER.info("Syncing config to {} ({})", player.getGameProfile().getName(), player.getGameProfile().getId());
+		String configs = PluginConfig.INSTANCE.getServerConfigs();
+		if (!configs.isEmpty()) {
+			Jade.LOGGER.debug("Syncing config to {} ({})", player.getGameProfile().getName(), player.getGameProfile().getId());
+		}
 		FriendlyByteBuf buf = PacketByteBufs.create();
-		buf.writeUtf(Strings.nullToEmpty(PluginConfig.INSTANCE.getServerConfigs()));
+		buf.writeUtf(configs);
 		ServerPlayNetworking.send(player, Identifiers.PACKET_SERVER_PING, buf);
-
 		if (server.isDedicatedServer() && !(player instanceof FakePlayer)) {
 			UsernameCache.setUsername(player.getUUID(), player.getGameProfile().getName());
 		}
@@ -432,17 +434,17 @@ public final class CommonProxy implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		ServerPlayNetworking.registerGlobalReceiver(Identifiers.PACKET_REQUEST_ENTITY, (server, player, handler, buf, responseSender) -> {
-			EntityAccessorImpl.handleRequest(buf, player, server::execute, tag -> {
-				FriendlyByteBuf data = PacketByteBufs.create();
-				data.writeNbt(tag);
-				responseSender.sendPacket(Identifiers.PACKET_RECEIVE_DATA, data);
+			EntityAccessorImpl.SyncData data = new EntityAccessorImpl.SyncData(buf);
+			EntityAccessorImpl.handleRequest(data, player, server::execute, tag -> {
+				FriendlyByteBuf buf1 = PacketByteBufs.create().writeNbt(tag);
+				responseSender.sendPacket(Identifiers.PACKET_RECEIVE_DATA, buf1);
 			});
 		});
 		ServerPlayNetworking.registerGlobalReceiver(Identifiers.PACKET_REQUEST_TILE, (server, player, handler, buf, responseSender) -> {
-			BlockAccessorImpl.handleRequest(buf, player, server::execute, tag -> {
-				FriendlyByteBuf data = PacketByteBufs.create();
-				data.writeNbt(tag);
-				responseSender.sendPacket(Identifiers.PACKET_RECEIVE_DATA, data);
+			BlockAccessorImpl.SyncData data = new BlockAccessorImpl.SyncData(buf);
+			BlockAccessorImpl.handleRequest(data, player, server::execute, tag -> {
+				FriendlyByteBuf buf1 = PacketByteBufs.create().writeNbt(tag);
+				responseSender.sendPacket(Identifiers.PACKET_RECEIVE_DATA, buf1);
 			});
 		});
 

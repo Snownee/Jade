@@ -36,6 +36,7 @@ public interface Accessor<T extends HitResult> {
 
 	Class<? extends Accessor<?>> getAccessorType();
 
+	@Deprecated
 	void toNetwork(FriendlyByteBuf buf);
 
 	boolean verifyData(CompoundTag data);
