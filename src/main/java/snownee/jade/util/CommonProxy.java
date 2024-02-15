@@ -49,6 +49,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.UsernameCache;
 import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.entity.PartEntity;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -94,7 +95,7 @@ public final class CommonProxy {
 
 	private void registerPayloadHandlers(RegisterPayloadHandlerEvent event) {
 		event.registrar(Jade.MODID)
-				.versioned("1")
+				.versioned("2")
 				.optional()
 				.play(Identifiers.PACKET_RECEIVE_DATA, ReceiveDataPacket::read, handlers -> handlers.client(ReceiveDataPacket::handle))
 				.play(Identifiers.PACKET_SERVER_PING, ServerPingPacket::read, handlers -> handlers.client(ServerPingPacket::handle))
@@ -351,5 +352,42 @@ public final class CommonProxy {
 			}
 		}
 		Jade.loadComplete();
+	}
+
+	public static boolean isMultipartEntity(Entity target) {
+		return target.isMultipartEntity();
+	}
+
+	public static Entity wrapPartEntityParent(Entity target) {
+		if (target instanceof PartEntity<?> part) {
+			return part.getParent();
+		}
+		return target;
+	}
+
+	public static int getPartEntityIndex(Entity entity) {
+		if (!(entity instanceof PartEntity<?> part)) {
+			return -1;
+		}
+		Entity parent = wrapPartEntityParent(entity);
+		PartEntity<?>[] parts = parent.getParts();
+		if (parts == null) {
+			return -1;
+		}
+		return List.of(parts).indexOf(part);
+	}
+
+	public static Entity getPartEntity(Entity parent, int index) {
+		if (parent == null) {
+			return null;
+		}
+		if (index < 0) {
+			return parent;
+		}
+		PartEntity<?>[] parts = parent.getParts();
+		if (parts == null || index >= parts.length) {
+			return parent;
+		}
+		return parts[index];
 	}
 }

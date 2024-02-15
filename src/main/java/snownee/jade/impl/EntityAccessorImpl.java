@@ -64,7 +64,13 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 	@Deprecated
 	public void toNetwork(FriendlyByteBuf buf) {
 		buf.writeBoolean(showDetails());
-		buf.writeVarInt(entity.get().getId());
+		Entity entity = getEntity();
+		buf.writeVarInt(entity.getId());
+		if (CommonProxy.isMultipartEntity(entity)) {
+			buf.writeVarInt(CommonProxy.getPartEntityIndex(entity));
+		} else {
+			buf.writeVarInt(-1);
+		}
 		Vec3 hitVec = getHitResult().getLocation();
 		buf.writeFloat((float) hitVec.x);
 		buf.writeFloat((float) hitVec.y);
@@ -73,6 +79,11 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 
 	@Override
 	public Entity getEntity() {
+		return CommonProxy.wrapPartEntityParent(getRawEntity());
+	}
+
+	@Override
+	public Entity getRawEntity() {
 		return entity.get();
 	}
 
@@ -176,13 +187,13 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 		}
 	}
 
-	public record SyncData(boolean showDetails, int id, Vec3 hitVec) {
+	public record SyncData(boolean showDetails, int id, int partIndex, Vec3 hitVec) {
 		public SyncData(EntityAccessor accessor) {
-			this(accessor.showDetails(), accessor.getEntity().getId(), accessor.getHitResult().getLocation());
+			this(accessor.showDetails(), accessor.getEntity().getId(), CommonProxy.getPartEntityIndex(accessor.getRawEntity()), accessor.getHitResult().getLocation());
 		}
 
 		public SyncData(FriendlyByteBuf buffer) {
-			this(buffer.readBoolean(), buffer.readInt(), new Vec3(buffer.readFloat(), buffer.readFloat(), buffer.readFloat()));
+			this(buffer.readBoolean(), buffer.readVarInt(), buffer.readVarInt(), new Vec3(buffer.readFloat(), buffer.readFloat(), buffer.readFloat()));
 		}
 
 		public void write(FriendlyByteBuf buffer) {
@@ -194,7 +205,7 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 		}
 
 		public EntityAccessor unpack(ServerPlayer player) {
-			Supplier<Entity> entity = Suppliers.memoize(() -> player.level().getEntity(id));
+			Supplier<Entity> entity = Suppliers.memoize(() -> CommonProxy.getPartEntity(player.level().getEntity(id), partIndex));
 			return new EntityAccessorImpl.Builder()
 					.level(player.level())
 					.player(player)

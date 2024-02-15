@@ -30,6 +30,7 @@ import snownee.jade.api.ui.IElement;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.ui.ItemStackElement;
+import snownee.jade.util.CommonProxy;
 
 public class RayTracing {
 
@@ -170,6 +171,8 @@ public class RayTracing {
 		if (target == viewEntity.getVehicle())
 			return false;
 		if (target instanceof Projectile projectile && projectile.tickCount <= 10 && !target.level().tickRateManager().isEntityFrozen(target))
+			return false;
+		if (CommonProxy.isMultipartEntity(target) && !target.isPickable())
 			return false;
 		if (viewEntity instanceof Player player) {
 			if (target.isInvisibleTo(player))
