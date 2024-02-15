@@ -61,7 +61,7 @@ public class HierarchyLookup<T extends IJadeProvider> {
 				return list;
 			});
 		} catch (ExecutionException e) {
-			Jade.LOGGER.catching(e);
+			Jade.LOGGER.error("", e);
 		}
 		return List.of();
 	}

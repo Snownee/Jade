@@ -35,7 +35,7 @@ public enum JukeboxProvider implements IBlockComponentProvider, IServerDataProvi
 				}
 				tooltip.add(Component.translatable("record.nowPlaying", IDisplayHelper.get().stripColor(name)));
 			} catch (Exception e) {
-				Jade.LOGGER.catching(e);
+				Jade.LOGGER.error("", e);
 			}
 		} else {
 			tooltip.add(Component.translatable("tooltip.jade.empty"));

@@ -1,7 +1,8 @@
 package snownee.jade;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+
+import com.mojang.logging.LogUtils;
 
 import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.config.IWailaConfig;
@@ -16,7 +17,7 @@ import snownee.jade.util.JsonConfig;
 
 public class Jade {
 	public static final String MODID = "jade";
-	public static final Logger LOGGER = LogManager.getLogger("Jade");
+	public static final Logger LOGGER = LogUtils.getLogger();
 	/**
 	 * addons: Use {@link IWailaConfig#get()}
 	 */

@@ -174,7 +174,7 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 						PluginConfig.INSTANCE.reload();
 						rebuildWidgets();
 					} catch (Throwable e) {
-						Jade.LOGGER.catching(e);
+						Jade.LOGGER.error("", e);
 					}
 				}
 				minecraft.setScreen(this);
