@@ -198,7 +198,8 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 
 		public void write(FriendlyByteBuf buffer) {
 			buffer.writeBoolean(showDetails);
-			buffer.writeInt(id);
+			buffer.writeVarInt(id);
+			buffer.writeVarInt(partIndex);
 			buffer.writeFloat((float) hitVec.x);
 			buffer.writeFloat((float) hitVec.y);
 			buffer.writeFloat((float) hitVec.z);
