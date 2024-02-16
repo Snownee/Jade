@@ -48,7 +48,7 @@ public class WailaExceptionHandler {
 				modid = provider.getUid().getNamespace();
 			}
 			if (modid == null || ResourceLocation.DEFAULT_NAMESPACE.equals(modid)) {
-				modid = Jade.MODID;
+				modid = Jade.ID;
 			}
 			tooltip.add(Component.translatable("jade.error", ModIdentification.getModName(modid)).withStyle(ChatFormatting.DARK_RED));
 		}

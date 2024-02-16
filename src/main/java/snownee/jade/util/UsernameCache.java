@@ -34,7 +34,7 @@ public final class UsernameCache {
 	private static final HashMap<UUID, String> map = new HashMap<>();
 	private static final Set<UUID> downloadingList = Collections.synchronizedSet(new HashSet<>());
 
-	private static final Path saveFile = CommonProxy.getConfigDirectory().toPath().resolve(Jade.MODID + "/usernamecache.json");
+	private static final Path saveFile = CommonProxy.getConfigDirectory().toPath().resolve(Jade.ID + "/usernamecache.json");
 	private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 	private static boolean loading = false;
 

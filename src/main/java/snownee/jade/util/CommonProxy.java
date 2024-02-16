@@ -23,8 +23,8 @@ import net.fabricmc.fabric.api.entity.EntityPickInteractionAware;
 import net.fabricmc.fabric.api.entity.FakePlayer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.mininglevel.v1.FabricMineableTags;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
@@ -44,7 +44,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceKey;
@@ -68,7 +67,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.PotionItem;
 import net.minecraft.world.item.ShearsItem;
 import net.minecraft.world.item.TippedArrowItem;
-import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
@@ -88,18 +86,20 @@ import snownee.jade.addon.universal.ItemIterator;
 import snownee.jade.addon.universal.ItemStorageProvider;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.IWailaPlugin;
-import snownee.jade.api.Identifiers;
 import snownee.jade.api.WailaPlugin;
 import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.view.EnergyView;
 import snownee.jade.api.view.ViewGroup;
 import snownee.jade.command.JadeServerCommand;
-import snownee.jade.impl.BlockAccessorImpl;
-import snownee.jade.impl.EntityAccessorImpl;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.mixin.AbstractHorseAccess;
+import snownee.jade.network.ReceiveDataPacket;
+import snownee.jade.network.RequestBlockPacket;
+import snownee.jade.network.RequestEntityPacket;
+import snownee.jade.network.ServerPingPacket;
+import snownee.jade.network.ShowOverlayPacket;
 
 public final class CommonProxy implements ModInitializer {
 
@@ -157,8 +157,11 @@ public final class CommonProxy implements ModInitializer {
 			}
 		}
 		if (stack.getItem() instanceof PotionItem || stack.getItem() instanceof TippedArrowItem) {
-			Potion potion = PotionUtils.getPotion(stack);
-			return BuiltInRegistries.POTION.getKey(potion).getNamespace();
+			return PotionUtils.getPotion(stack)
+					.unwrapKey()
+					.map(ResourceKey::location)
+					.map(ResourceLocation::getNamespace)
+					.orElse(ResourceLocation.DEFAULT_NAMESPACE);
 		}
 		if (stack.is(Items.PAINTING)) {
 			CompoundTag compoundTag = stack.getTag();
@@ -178,7 +181,6 @@ public final class CommonProxy implements ModInitializer {
 		return FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT;
 	}
 
-	@SuppressWarnings("UnstableApiUsage")
 	public static ItemCollector<?> createItemCollector(Object target, Cache<Object, ItemCollector<?>> containerCache) {
 		if (target instanceof AbstractHorseAccess) {
 			return new ItemCollector<>(new ItemIterator.ContainerItemIterator(o -> {
@@ -228,7 +230,6 @@ public final class CommonProxy implements ModInitializer {
 	}
 
 	@Nullable
-	@SuppressWarnings("UnstableApiUsage")
 	public static List<ViewGroup<ItemStack>> storageGroup(Object storage, Accessor<?> accessor) {
 		try {
 			return ItemStorageProvider.INSTANCE.containerCache.get(storage, () -> new ItemCollector<>(JadeFabricUtils.fromItemStorage((Storage<ItemVariant>) storage, 0))).update(storage, accessor.getLevel().getGameTime());
@@ -237,7 +238,6 @@ public final class CommonProxy implements ModInitializer {
 		}
 	}
 
-	@SuppressWarnings("UnstableApiUsage")
 	public static List<ViewGroup<CompoundTag>> wrapFluidStorage(Accessor<?> accessor, Object target) {
 		if (target instanceof BlockEntity be) {
 			try {
@@ -334,9 +334,7 @@ public final class CommonProxy implements ModInitializer {
 		if (!configs.isEmpty()) {
 			Jade.LOGGER.debug("Syncing config to {} ({})", player.getGameProfile().getName(), player.getGameProfile().getId());
 		}
-		FriendlyByteBuf buf = PacketByteBufs.create();
-		buf.writeUtf(configs);
-		ServerPlayNetworking.send(player, Identifiers.PACKET_SERVER_PING, buf);
+		ServerPlayNetworking.send(player, new ServerPingPacket(configs));
 		if (server.isDedicatedServer() && !(player instanceof FakePlayer)) {
 			UsernameCache.setUsername(player.getUUID(), player.getGameProfile().getName());
 		}
@@ -348,7 +346,7 @@ public final class CommonProxy implements ModInitializer {
 
 	public static void loadComplete() {
 		Set<Class<?>> classes = Sets.newHashSet();
-		FabricLoader.getInstance().getEntrypointContainers(Jade.MODID, IWailaPlugin.class).forEach(entrypoint -> {
+		FabricLoader.getInstance().getEntrypointContainers(Jade.ID, IWailaPlugin.class).forEach(entrypoint -> {
 			ModMetadata metadata = entrypoint.getProvider().getMetadata();
 			Jade.LOGGER.info("Start loading plugin from {}", metadata.getName());
 			String className = null;
@@ -359,7 +357,7 @@ public final class CommonProxy implements ModInitializer {
 					return;
 				}
 				className = plugin.getClass().getName();
-				if (className.startsWith("snownee.jade.") && !metadata.getId().startsWith(Jade.MODID)) {
+				if (className.startsWith("snownee.jade.") && !metadata.getId().startsWith(Jade.ID)) {
 					throw new IllegalStateException("Mod " + metadata.getName() + " is not allowed to register built-in plugins. Please contact the mod author");
 				}
 				if (!classes.add(plugin.getClass())) {
@@ -377,7 +375,6 @@ public final class CommonProxy implements ModInitializer {
 		Jade.loadComplete();
 	}
 
-	@SuppressWarnings("UnstableApiUsage")
 	public static Component getFluidName(JadeFluidObject fluidObject) {
 		Fluid fluid = fluidObject.getType();
 		CompoundTag nbt = fluidObject.getTag();
@@ -385,10 +382,9 @@ public final class CommonProxy implements ModInitializer {
 	}
 
 	public static int showOrHideFromServer(Collection<ServerPlayer> players, boolean show) {
-		FriendlyByteBuf buf = PacketByteBufs.create();
-		buf.writeBoolean(show);
+		ShowOverlayPacket packet = new ShowOverlayPacket(show);
 		for (ServerPlayer player : players) {
-			ServerPlayNetworking.send(player, Identifiers.PACKET_SHOW_OVERLAY, buf);
+			ServerPlayNetworking.send(player, packet);
 		}
 		return players.size();
 	}
@@ -433,19 +429,16 @@ public final class CommonProxy implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		ServerPlayNetworking.registerGlobalReceiver(Identifiers.PACKET_REQUEST_ENTITY, (server, player, handler, buf, responseSender) -> {
-			EntityAccessorImpl.SyncData data = new EntityAccessorImpl.SyncData(buf);
-			EntityAccessorImpl.handleRequest(data, player, server::execute, tag -> {
-				FriendlyByteBuf buf1 = PacketByteBufs.create().writeNbt(tag);
-				responseSender.sendPacket(Identifiers.PACKET_RECEIVE_DATA, buf1);
-			});
+		PayloadTypeRegistry.playS2C().register(ReceiveDataPacket.TYPE, ReceiveDataPacket.CODEC);
+		PayloadTypeRegistry.playC2S().register(RequestBlockPacket.TYPE, RequestBlockPacket.CODEC);
+		PayloadTypeRegistry.playC2S().register(RequestEntityPacket.TYPE, RequestEntityPacket.CODEC);
+		PayloadTypeRegistry.playS2C().register(ServerPingPacket.TYPE, ServerPingPacket.CODEC);
+		PayloadTypeRegistry.playS2C().register(ShowOverlayPacket.TYPE, ShowOverlayPacket.CODEC);
+		ServerPlayNetworking.registerGlobalReceiver(RequestEntityPacket.TYPE, (payload, context) -> {
+			RequestEntityPacket.handle(payload, context::player);
 		});
-		ServerPlayNetworking.registerGlobalReceiver(Identifiers.PACKET_REQUEST_TILE, (server, player, handler, buf, responseSender) -> {
-			BlockAccessorImpl.SyncData data = new BlockAccessorImpl.SyncData(buf);
-			BlockAccessorImpl.handleRequest(data, player, server::execute, tag -> {
-				FriendlyByteBuf buf1 = PacketByteBufs.create().writeNbt(tag);
-				responseSender.sendPacket(Identifiers.PACKET_RECEIVE_DATA, buf1);
-			});
+		ServerPlayNetworking.registerGlobalReceiver(RequestBlockPacket.TYPE, (payload, context) -> {
+			RequestBlockPacket.handle(payload, context::player);
 		});
 
 		CommandRegistrationCallback.EVENT.register(CommonProxy::registerServerCommand);

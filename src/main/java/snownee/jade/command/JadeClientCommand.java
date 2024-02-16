@@ -17,7 +17,7 @@ import snownee.jade.util.DumpGenerator;
 public class JadeClientCommand {
 
 	public static void register(CommandDispatcher<FabricClientCommandSource> dispatcher) {
-		dispatcher.register(ClientCommandManager.literal(Jade.MODID + "c").then(ClientCommandManager.literal("handlers").executes(context -> {
+		dispatcher.register(ClientCommandManager.literal(Jade.ID + "c").then(ClientCommandManager.literal("handlers").executes(context -> {
 			File file = new File("jade_handlers.md");
 			try (FileWriter writer = new FileWriter(file)) {
 				writer.write(DumpGenerator.generateInfoDump());

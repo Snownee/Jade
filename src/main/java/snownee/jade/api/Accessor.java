@@ -3,7 +3,6 @@ package snownee.jade.api;
 import org.jetbrains.annotations.NotNull;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -35,9 +34,6 @@ public interface Accessor<T extends HitResult> {
 	Object getTarget();
 
 	Class<? extends Accessor<?>> getAccessorType();
-
-	@Deprecated
-	void toNetwork(FriendlyByteBuf buf);
 
 	boolean verifyData(CompoundTag data);
 

@@ -29,7 +29,7 @@ public enum StatusEffectsProvider implements IEntityComponentProvider, IServerDa
 	INSTANCE;
 
 	public static Component getEffectName(MobEffectInstance mobEffectInstance) {
-		MutableComponent mutableComponent = mobEffectInstance.getEffect().getDisplayName().copy();
+		MutableComponent mutableComponent = mobEffectInstance.getEffect().value().getDisplayName().copy();
 		if (mobEffectInstance.getAmplifier() >= 1 && mobEffectInstance.getAmplifier() <= 9) {
 			mutableComponent.append(CommonComponents.SPACE).append(Component.translatable("enchantment.level." + (mobEffectInstance.getAmplifier() + 1)));
 		}
@@ -81,7 +81,7 @@ public enum StatusEffectsProvider implements IEntityComponentProvider, IServerDa
 			} else {
 				compound.putInt("Duration", effect.getDuration());
 			}
-			compound.putBoolean("Bad", effect.getEffect().getCategory() == MobEffectCategory.HARMFUL);
+			compound.putBoolean("Bad", effect.getEffect().value().getCategory() == MobEffectCategory.HARMFUL);
 			list.add(compound);
 		}
 		tag.put("StatusEffects", list);

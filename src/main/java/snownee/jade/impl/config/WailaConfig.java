@@ -64,7 +64,7 @@ public class WailaConfig implements IWailaConfig {
 		private boolean enableTextToSpeech = false;
 		private TTSMode ttsMode = TTSMode.PRESS;
 		private FluidMode fluidMode = FluidMode.ANY;
-		private float reachDistance = 0;
+		private float extendedReach = 0;
 		@Expose
 		private boolean debug = false;
 		private boolean itemModNameTooltip = true;
@@ -174,13 +174,13 @@ public class WailaConfig implements IWailaConfig {
 		}
 
 		@Override
-		public float getReachDistance() {
-			return reachDistance;
+		public float getExtendedReach() {
+			return extendedReach;
 		}
 
 		@Override
-		public void setReachDistance(float reachDistance) {
-			this.reachDistance = Mth.clamp(reachDistance, 0, 20);
+		public void setExtendedReach(float extendedReach) {
+			this.extendedReach = Mth.clamp(extendedReach, 0, 20);
 		}
 
 		@Override

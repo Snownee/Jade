@@ -30,7 +30,7 @@ public enum BlockDisplayProvider implements IEntityComponentProvider {
 			return null;
 		IElement icon = ItemStackElement.of(new ItemStack(block));
 		if (RayTracing.isEmptyElement(icon) && block instanceof LiquidBlock) {
-			icon = ClientProxy.elementFromLiquid((LiquidBlock) block);
+			icon = ClientProxy.elementFromLiquid(itemDisplay.getBlockState());
 		}
 		return icon;
 	}

@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.2-SNAPSHOT'
+    id 'fabric-loom' version '1.5-SNAPSHOT'
     id 'maven-publish'
     id "me.shedaniel.unified-publishing" version "0.1.+"
 }
@@ -55,8 +55,8 @@ dependencies {
     //modCompileOnly "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
     //modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
 
-    modCompileOnlyApi "mezz.jei:jei-1.20.1-common-api:${jei_version}"
-    modCompileOnlyApi "mezz.jei:jei-1.20.1-fabric-api:${jei_version}"
+    modCompileOnlyApi "mezz.jei:jei-1.20.4-common-api:${jei_version}"
+    modCompileOnlyApi "mezz.jei:jei-1.20.4-fabric-api:${jei_version}"
     //modRuntimeOnly "mezz.jei:jei-1.20.1-fabric:${jei_version}"
 
     modApi("teamreborn:energy:${project.tr_energy_version}") {
@@ -147,7 +147,7 @@ unifiedPublishing {
         version = project.mod_version // Optional, Inferred from project by default
         changelog = file("CHANGELOG.md").exists() ? file("CHANGELOG.md").text : "" // Optional, in markdown format
         releaseType = project.release_type // Optional, use "release", "beta" or "alpha"
-        gameVersions = ["1.20.4"]
+        gameVersions = ["1.20.5"]
         gameLoaders = ["fabric", "quilt"]
 
         mainPublication tasks.remapJar // Declares the publicated jar

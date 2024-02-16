@@ -1,7 +1,6 @@
 package snownee.jade.addon.vanilla;
 
 import java.util.List;
-import java.util.Optional;
 
 import com.google.common.collect.Lists;
 
@@ -13,9 +12,7 @@ import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.ChiseledBookShelfBlock;
-import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.entity.ChiseledBookShelfBlockEntity;
-import net.minecraft.world.phys.Vec2;
 import snownee.jade.addon.universal.ItemStorageProvider;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
@@ -38,11 +35,11 @@ public enum ChiseledBookshelfProvider implements IBlockComponentProvider, IServe
 		if (!accessor.getServerData().contains("Bookshelf")) {
 			return ItemStack.EMPTY;
 		}
-		Optional<Vec2> optional = ChiseledBookShelfBlock.getRelativeHitCoordinatesForBlockFace(accessor.getHitResult(), accessor.getBlockState().getValue(HorizontalDirectionalBlock.FACING));
-		if (optional.isEmpty()) {
+		ChiseledBookShelfBlock block = (ChiseledBookShelfBlock) accessor.getBlock();
+		int i = block.getHitSlot(accessor.getHitResult(), accessor.getBlockState()).orElse(-1);
+		if (i < 0) {
 			return ItemStack.EMPTY;
 		}
-		int i = ChiseledBookShelfBlock.getHitSlot(optional.get());
 		NonNullList<ItemStack> items = NonNullList.withSize(((ChiseledBookShelfBlockEntity) accessor.getBlockEntity()).getContainerSize(), ItemStack.EMPTY);
 		ContainerHelper.loadAllItems(accessor.getServerData().getCompound("Bookshelf"), items);
 		if (i >= items.size()) {
@@ -82,7 +79,7 @@ public enum ChiseledBookshelfProvider implements IBlockComponentProvider, IServe
 	public void appendServerData(CompoundTag data, BlockAccessor accessor) {
 		ChiseledBookShelfBlockEntity be = (ChiseledBookShelfBlockEntity) accessor.getBlockEntity();
 		if (!be.isEmpty()) {
-			data.put("Bookshelf", be.saveWithoutMetadata());
+			data.put("Bookshelf", be.saveWithoutMetadata(accessor.getLevel().registryAccess()));
 		}
 	}
 

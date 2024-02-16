@@ -62,7 +62,7 @@ public class BlockAccessorClientHandler implements AccessorClientHandler<BlockAc
 		}
 
 		if (RayTracing.isEmptyElement(icon) && block instanceof LiquidBlock) {
-			icon = ClientProxy.elementFromLiquid((LiquidBlock) block);
+			icon = ClientProxy.elementFromLiquid(blockState);
 		}
 
 		for (IBlockComponentProvider provider : WailaClientRegistration.instance().getBlockIconProviders(block, PluginConfig.INSTANCE::get)) {

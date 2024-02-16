@@ -46,8 +46,8 @@ import snownee.jade.util.ModIdentification;
 public class PluginConfig implements IPluginConfig {
 
 	public static final PluginConfig INSTANCE = new PluginConfig();
-	public static final String CLIENT_FILE = Jade.MODID + "/plugins.json";
-	public static final String SERVER_FILE = Jade.MODID + "/server-plugin-overrides.json";
+	public static final String CLIENT_FILE = Jade.ID + "/plugins.json";
+	public static final String SERVER_FILE = Jade.ID + "/server-plugin-overrides.json";
 
 	private final Map<ResourceLocation, ConfigEntry<Object>> configs = Maps.newHashMap();
 	private final Multimap<ResourceLocation, Component> categoryOverrides = ArrayListMultimap.create();
@@ -294,7 +294,7 @@ public class PluginConfig implements IPluginConfig {
 			}
 			String namespace = key.getNamespace();
 			Optional<String> modName = ModIdentification.getModName(namespace);
-			if (!Jade.MODID.equals(namespace) && modName.isPresent()) {
+			if (!Jade.ID.equals(namespace) && modName.isPresent()) {
 				categoryMap.put(modName.get(), entry);
 			} else {
 				categoryMap.put(I18n.get(OptionsList.Entry.makeKey("plugin_" + namespace)), entry);
@@ -311,8 +311,8 @@ public class PluginConfig implements IPluginConfig {
 	}
 
 	private static ToIntFunction<Category> specialOrder() {
-		String core = I18n.get(OptionsList.Entry.makeKey("plugin_" + Jade.MODID));
-		String debug = I18n.get(OptionsList.Entry.makeKey("plugin_" + Jade.MODID + ".debug"));
+		String core = I18n.get(OptionsList.Entry.makeKey("plugin_" + Jade.ID));
+		String debug = I18n.get(OptionsList.Entry.makeKey("plugin_" + Jade.ID + ".debug"));
 		// core is always the first, debug is always the last
 		return category -> {
 			String title = category.title.getString();

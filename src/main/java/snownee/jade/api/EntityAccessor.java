@@ -20,10 +20,7 @@ public interface EntityAccessor extends Accessor<EntityHitResult> {
 	/**
 	 * For part entity like ender dragon's, getEntity() will return the parent entity.
 	 */
-	//TODO 1.21: remove default implementation
-	default Entity getRawEntity() {
-		return getEntity();
-	}
+	Entity getRawEntity();
 
 	@Override
 	default Class<? extends Accessor<?>> getAccessorType() {

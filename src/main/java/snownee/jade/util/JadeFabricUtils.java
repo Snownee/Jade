@@ -25,7 +25,6 @@ import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.view.FluidView;
 import snownee.jade.api.view.ViewGroup;
 
-@SuppressWarnings("UnstableApiUsage")
 public final class JadeFabricUtils {
 
 	private JadeFabricUtils() {

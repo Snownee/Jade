@@ -8,7 +8,6 @@ import java.util.function.Predicate;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Strings;
-import com.google.gson.JsonObject;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.brigadier.CommandDispatcher;
 
@@ -26,7 +25,6 @@ import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.mininglevel.v1.FabricMineableTags;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRenderHandler;
@@ -48,8 +46,6 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.commands.CommandBuildContext;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
@@ -62,7 +58,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import snownee.jade.Jade;
@@ -81,10 +77,14 @@ import snownee.jade.gui.BaseOptionsScreen;
 import snownee.jade.impl.BlockAccessorImpl;
 import snownee.jade.impl.EntityAccessorImpl;
 import snownee.jade.impl.ObjectDataCenter;
-import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.impl.theme.ThemeHelper;
 import snownee.jade.impl.ui.FluidStackElement;
 import snownee.jade.mixin.KeyAccess;
+import snownee.jade.network.ReceiveDataPacket;
+import snownee.jade.network.RequestBlockPacket;
+import snownee.jade.network.RequestEntityPacket;
+import snownee.jade.network.ServerPingPacket;
+import snownee.jade.network.ShowOverlayPacket;
 import snownee.jade.overlay.DatapackBlockManager;
 import snownee.jade.overlay.OverlayRenderer;
 import snownee.jade.overlay.WailaTickHandler;
@@ -168,19 +168,15 @@ public final class ClientProxy implements ClientModInitializer {
 	}
 
 	public static void requestBlockData(BlockAccessor accessor) {
-		FriendlyByteBuf buf = PacketByteBufs.create();
-		new BlockAccessorImpl.SyncData(accessor).write(buf);
-		ClientPlayNetworking.send(Identifiers.PACKET_REQUEST_TILE, buf);
+		ClientPlayNetworking.send(new RequestBlockPacket(new BlockAccessorImpl.SyncData(accessor)));
 	}
 
 	public static void requestEntityData(EntityAccessor accessor) {
-		FriendlyByteBuf buf = PacketByteBufs.create();
-		new EntityAccessorImpl.SyncData(accessor).write(buf);
-		ClientPlayNetworking.send(Identifiers.PACKET_REQUEST_ENTITY, buf);
+		ClientPlayNetworking.send(new RequestEntityPacket(new EntityAccessorImpl.SyncData(accessor)));
 	}
 
-	public static IElement elementFromLiquid(LiquidBlock block) {
-		FluidState fluidState = block.getFluidState(block.defaultBlockState());
+	public static IElement elementFromLiquid(BlockState blockState) {
+		FluidState fluidState = blockState.getFluidState();
 		return new FluidStackElement(JadeFluidObject.of(fluidState.getType()));//.size(new Size(18, 18));
 	}
 
@@ -214,7 +210,6 @@ public final class ClientProxy implements ClientModInitializer {
 		return screen == null || screen instanceof BaseOptionsScreen || screen instanceof ChatScreen;
 	}
 
-	@SuppressWarnings("UnstableApiUsage")
 	public static void getFluidSpriteAndColor(JadeFluidObject fluid, BiConsumer<@Nullable TextureAtlasSprite, Integer> consumer) {
 		Fluid type = fluid.getType();
 		FluidVariant variant = FluidVariant.of(type, fluid.getTag());
@@ -254,7 +249,7 @@ public final class ClientProxy implements ClientModInitializer {
 		ClientLifecycleEvents.CLIENT_STARTED.register(mc -> CommonProxy.loadComplete());
 		ClientEntityEvents.ENTITY_LOAD.register(ClientProxy::onEntityJoin);
 		ClientEntityEvents.ENTITY_UNLOAD.register(ClientProxy::onEntityLeave);
-		ResourceLocation lowest = new ResourceLocation(Jade.MODID, "mod_name");
+		ResourceLocation lowest = new ResourceLocation(Jade.ID, "mod_name");
 		ItemTooltipCallback.EVENT.addPhaseOrdering(Event.DEFAULT_PHASE, lowest);
 		ItemTooltipCallback.EVENT.register(lowest, ClientProxy::onTooltip);
 		ClientPlayConnectionEvents.DISCONNECT.register(ClientProxy::onPlayerLeave);
@@ -275,36 +270,14 @@ public final class ClientProxy implements ClientModInitializer {
 			}
 		});
 
-		ClientPlayNetworking.registerGlobalReceiver(Identifiers.PACKET_RECEIVE_DATA, (client, handler, buf, responseSender) -> {
-			CompoundTag nbt = buf.readNbt();
-			client.execute(() -> {
-				ObjectDataCenter.setServerData(nbt);
-			});
+		ClientPlayNetworking.registerGlobalReceiver(ReceiveDataPacket.TYPE, (payload, context) -> {
+			ReceiveDataPacket.handle(payload, context.client()::execute);
 		});
-		ClientPlayNetworking.registerGlobalReceiver(Identifiers.PACKET_SERVER_PING, (client, handler, buf, responseSender) -> {
-			String s = buf.readUtf();
-			JsonObject json;
-			try {
-				json = s.isEmpty() ? null : JsonConfig.DEFAULT_GSON.fromJson(s, JsonObject.class);
-			} catch (Throwable e) {
-				Jade.LOGGER.error("Received malformed config from the server: {}", s);
-				return;
-			}
-			client.execute(() -> {
-				ObjectDataCenter.serverConnected = true;
-				PluginConfig.INSTANCE.reload(); // clear the server config last time we applied
-				if (json != null && !json.keySet().isEmpty())
-					PluginConfig.INSTANCE.applyServerConfigs(json);
-				Jade.LOGGER.info("Received config from the server: {}", s);
-			});
+		ClientPlayNetworking.registerGlobalReceiver(ServerPingPacket.TYPE, (payload, context) -> {
+			ServerPingPacket.handle(payload, context.client()::execute);
 		});
-		ClientPlayNetworking.registerGlobalReceiver(Identifiers.PACKET_SHOW_OVERLAY, (client, handler, buf, responseSender) -> {
-			boolean show = buf.readBoolean();
-			Jade.LOGGER.info("Received request from the server to {} overlay", show ? "show" : "hide");
-			client.execute(() -> {
-				Jade.CONFIG.get().getGeneral().setDisplayTooltip(show);
-				Jade.CONFIG.save();
-			});
+		ClientPlayNetworking.registerGlobalReceiver(ShowOverlayPacket.TYPE, (payload, context) -> {
+			ShowOverlayPacket.handle(payload, context.client()::execute);
 		});
 
 		for (int i = 320; i < 330; i++) {

@@ -7,18 +7,19 @@ import java.util.function.Supplier;
 import com.google.common.base.Suppliers;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
-import snownee.jade.Jade;
 import snownee.jade.api.AccessorImpl;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IServerDataProvider;
+import snownee.jade.network.ServerPayloadContext;
 import snownee.jade.util.CommonProxy;
 import snownee.jade.util.WailaExceptionHandler;
 
@@ -34,13 +35,15 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 		entity = builder.entity;
 	}
 
-	public static void handleRequest(SyncData data, ServerPlayer player, Consumer<Runnable> executor, Consumer<CompoundTag> responseSender) {
-		executor.accept(() -> {
+	public static void handleRequest(SyncData data, ServerPayloadContext context, Consumer<CompoundTag> responseSender) {
+		ServerPlayer player = context.player();
+		context.execute(() -> {
 			EntityAccessor accessor = data.unpack(player);
 			if (accessor == null)
 				return;
 			Entity entity = accessor.getEntity();
-			if (entity == null || player.distanceToSqr(entity) > Jade.MAX_DISTANCE_SQR)
+			double maxDistance = Mth.square(player.entityInteractionRange() + 21);
+			if (entity == null || player.distanceToSqr(entity) > maxDistance)
 				return;
 			List<IServerDataProvider<EntityAccessor>> providers = WailaCommonRegistration.instance().getEntityNBTProviders(entity);
 			if (providers.isEmpty())
@@ -58,23 +61,6 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 			tag.putInt("WailaEntityID", entity.getId());
 			responseSender.accept(tag);
 		});
-	}
-
-	@Override
-	@Deprecated
-	public void toNetwork(FriendlyByteBuf buf) {
-		buf.writeBoolean(showDetails());
-		Entity entity = getEntity();
-		buf.writeVarInt(entity.getId());
-		if (CommonProxy.isMultipartEntity(entity)) {
-			buf.writeVarInt(CommonProxy.getPartEntityIndex(entity));
-		} else {
-			buf.writeVarInt(-1);
-		}
-		Vec3 hitVec = getHitResult().getLocation();
-		buf.writeFloat((float) hitVec.x);
-		buf.writeFloat((float) hitVec.y);
-		buf.writeFloat((float) hitVec.z);
 	}
 
 	@Override
@@ -192,11 +178,11 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 			this(accessor.showDetails(), accessor.getEntity().getId(), CommonProxy.getPartEntityIndex(accessor.getRawEntity()), accessor.getHitResult().getLocation());
 		}
 
-		public SyncData(FriendlyByteBuf buffer) {
+		public SyncData(RegistryFriendlyByteBuf buffer) {
 			this(buffer.readBoolean(), buffer.readVarInt(), buffer.readVarInt(), new Vec3(buffer.readFloat(), buffer.readFloat(), buffer.readFloat()));
 		}
 
-		public void write(FriendlyByteBuf buffer) {
+		public void write(RegistryFriendlyByteBuf buffer) {
 			buffer.writeBoolean(showDetails);
 			buffer.writeVarInt(id);
 			buffer.writeVarInt(partIndex);

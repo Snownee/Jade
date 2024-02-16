@@ -21,7 +21,7 @@ public enum ItemBERProvider implements IBlockComponentProvider {
 	public @Nullable IElement getIcon(BlockAccessor accessor, IPluginConfig config, IElement currentIcon) {
 		if (accessor.getBlockEntity() != null) {
 			ItemStack stack = accessor.getPickedResult();
-			Minecraft.getInstance().addCustomNbtData(stack, accessor.getBlockEntity());
+			Minecraft.getInstance().addCustomNbtData(stack, accessor.getBlockEntity(), accessor.getLevel().registryAccess());
 			return IElementHelper.get().item(stack);
 		}
 		return null;

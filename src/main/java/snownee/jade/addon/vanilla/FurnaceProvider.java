@@ -54,7 +54,7 @@ public enum FurnaceProvider implements IBlockComponentProvider, IServerDataProvi
 			items.add(furnace.getItem(i).save(new CompoundTag()));
 		}
 		data.put("furnace", items);
-		CompoundTag furnaceTag = furnace.saveWithoutMetadata();
+		CompoundTag furnaceTag = furnace.saveWithoutMetadata(accessor.getLevel().registryAccess());
 		data.putInt("progress", furnaceTag.getInt("CookTime"));
 		data.putInt("total", furnaceTag.getInt("CookTimeTotal"));
 	}

@@ -157,7 +157,7 @@ public class HomeConfigScreen extends Screen {
 
 		float scale = smallUI ? 2F : 1.5F;
 		guiGraphics.pose().scale(scale, scale, scale);
-		guiGraphics.drawString(font, ModIdentification.getModName(Jade.MODID).orElse("Jade"), 0, 0, 0xFFFFFF);
+		guiGraphics.drawString(font, ModIdentification.getModName(Jade.ID).orElse("Jade"), 0, 0, 0xFFFFFF);
 
 		guiGraphics.pose().scale(0.5F, 0.5F, 0.5F);
 		titleY.tick(partialTicks);

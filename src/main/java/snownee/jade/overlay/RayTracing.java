@@ -93,45 +93,44 @@ public class RayTracing {
 	}
 
 	public void fire() {
-		Entity viewpoint = mc.getCameraEntity();
-		if (viewpoint == null)
+		Entity viewEntity = mc.getCameraEntity();
+		Player viewPlayer = viewEntity instanceof Player ? (Player) viewEntity : mc.player;
+		if (viewEntity == null || viewPlayer == null)
 			return;
 
 		if (mc.hitResult != null && mc.hitResult.getType() == Type.ENTITY) {
 			Entity targetEntity = ((EntityHitResult) mc.hitResult).getEntity();
-			if (canBeTarget(targetEntity, viewpoint)) {
+			if (canBeTarget(targetEntity, viewEntity)) {
 				target = mc.hitResult;
 				return;
 			}
 		}
 
-		float reach = mc.gameMode.getPickRange() + Jade.CONFIG.get().getGeneral().getReachDistance();
-		target = rayTrace(viewpoint, reach, mc.getFrameTime());
+		float extendedReach = Jade.CONFIG.get().getGeneral().getExtendedReach();
+		double blockReach = viewPlayer.blockInteractionRange() + extendedReach;
+		double entityReach = viewPlayer.entityInteractionRange() + extendedReach;
+		target = rayTrace(viewEntity, blockReach, entityReach, mc.getFrameTime());
 	}
 
 	public HitResult getTarget() {
 		return target;
 	}
 
-	public HitResult rayTrace(Entity entity, double playerReach, float partialTicks) {
+	public HitResult rayTrace(Entity entity, double blockReach, double entityReach, float partialTicks) {
 		Vec3 eyePosition = entity.getEyePosition(partialTicks);
-		Vec3 traceEnd;
+		Vec3 lookVector = entity.getViewVector(partialTicks);
 		if (mc.hitResult != null && mc.hitResult.getType() == Type.BLOCK) {
-			traceEnd = mc.hitResult.getLocation();
-			traceEnd = eyePosition.add(traceEnd.subtract(eyePosition).scale(1.01));
-		} else {
-			Vec3 lookVector = entity.getViewVector(partialTicks);
-			traceEnd = eyePosition.add(lookVector.x * playerReach, lookVector.y * playerReach, lookVector.z * playerReach);
+			blockReach = entityReach = mc.hitResult.getLocation().distanceTo(eyePosition) + 0.1;
 		}
 
+		Vec3 traceEnd = eyePosition.add(lookVector.scale(entityReach));
 		Level world = entity.level();
 		AABB bound = new AABB(eyePosition, traceEnd);
 		Predicate<Entity> predicate = e -> canBeTarget(e, entity);
 		EntityHitResult entityResult = getEntityHitResult(world, entity, eyePosition, traceEnd, bound, predicate);
 
-		if (mc.hitResult != null && mc.hitResult.getType() == Type.BLOCK) {
-			Vec3 lookVector = entity.getViewVector(partialTicks);
-			traceEnd = eyePosition.add(lookVector.x * playerReach, lookVector.y * playerReach, lookVector.z * playerReach);
+		if (blockReach != entityReach) {
+			traceEnd = eyePosition.add(lookVector.scale(blockReach));
 		}
 
 		BlockState eyeBlock = world.getBlockState(BlockPos.containing(eyePosition));

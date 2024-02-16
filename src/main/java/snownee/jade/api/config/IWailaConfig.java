@@ -102,9 +102,9 @@ public interface IWailaConfig {
 
 		boolean showItemModNameTooltip();
 
-		float getReachDistance();
+		float getExtendedReach();
 
-		void setReachDistance(float reachDistance);
+		void setExtendedReach(float extendedReach);
 
 		BossBarOverlapMode getBossBarOverlapMode();
 

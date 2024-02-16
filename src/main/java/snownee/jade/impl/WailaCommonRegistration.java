@@ -48,7 +48,7 @@ public class WailaCommonRegistration implements IWailaCommonRegistration {
 			});
 			return keys;
 		});
-		priorities.setConfigFile(Jade.MODID + "/sort-order");
+		priorities.setConfigFile(Jade.ID + "/sort-order");
 
 		itemStorageProviders = new HierarchyLookup<>(Object.class, true);
 		fluidStorageProviders = new HierarchyLookup<>(Object.class, true);
