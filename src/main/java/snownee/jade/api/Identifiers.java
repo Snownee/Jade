@@ -11,8 +11,6 @@ public class Identifiers {
 	public static final ResourceLocation PACKET_REQUEST_BLOCK = JADE("request_block");
 	public static final ResourceLocation PACKET_SHOW_OVERLAY = JADE("show_overlay");
 	public static final ResourceLocation CORE_OBJECT_NAME = JADE("object_name");
-	@Deprecated
-	public static final ResourceLocation CORE_REGISTRY_NAME = JADE("registry_name");
 	public static final ResourceLocation CORE_MOD_NAME = JADE("mod_name");
 	public static final ResourceLocation CORE_DISTANCE = JADE("distance");
 	public static final ResourceLocation CORE_COORDINATES = JADE("coordinates");
@@ -35,8 +33,6 @@ public class Identifiers {
 	public static final ResourceLocation MC_ANIMAL_OWNER_FETCH_NAMES = MC("animal_owner.fetch_names");
 	public static final ResourceLocation MC_ARMOR_STAND = MC("armor_stand");
 	public static final ResourceLocation MC_BEEHIVE = MC("beehive");
-	@Deprecated
-	public static final ResourceLocation MC_BLOCK_STATES = JADE("block_states");
 	public static final ResourceLocation MC_BREWING_STAND = MC("brewing_stand");
 	public static final ResourceLocation MC_CAMPFIRE = MC("campfire");
 	public static final ResourceLocation MC_CHICKEN_EGG = MC("chicken_egg");

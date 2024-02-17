@@ -57,7 +57,6 @@ import snownee.jade.impl.config.entry.IntConfigEntry;
 import snownee.jade.impl.config.entry.StringConfigEntry;
 import snownee.jade.overlay.DatapackBlockManager;
 import snownee.jade.util.ClientProxy;
-import snownee.jade.util.ModIdentification;
 
 public class WailaClientRegistration implements IWailaClientRegistration {
 
@@ -305,12 +304,6 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	@Override
 	public void registerCustomEnchantPower(Block block, CustomEnchantPower customEnchantPower) {
 		customEnchantPowers.put(block, customEnchantPower);
-	}
-
-	@Deprecated
-	@Override
-	public Screen createPluginConfigScreen(@Nullable Screen parent, @Nullable String namespace) {
-		return createPluginConfigScreen(parent, ModIdentification.getModName(namespace).map(Component::literal).orElse(null));
 	}
 
 	@Override

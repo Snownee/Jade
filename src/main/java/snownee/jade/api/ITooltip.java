@@ -134,9 +134,6 @@ public interface ITooltip {
 
 	boolean replace(ResourceLocation tag, Component component);
 
-	@Deprecated
-	IElementHelper getElementHelper();
-
 	/**
 	 * Get all elements that are tagged with this tag
 	 */

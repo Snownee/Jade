@@ -63,12 +63,6 @@ public class Tooltip implements ITooltip {
 	}
 
 	@Override
-	@Deprecated
-	public IElementHelper getElementHelper() {
-		return IElementHelper.get();
-	}
-
-	@Override
 	public int size() {
 		return lines.size();
 	}

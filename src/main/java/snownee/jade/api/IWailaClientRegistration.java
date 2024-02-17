@@ -166,9 +166,6 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 
 	void addBeforeTooltipCollectCallback(int priority, JadeBeforeTooltipCollectCallback callback);
 
-	@Deprecated
-	Screen createPluginConfigScreen(@Nullable Screen parent, @Nullable String namespace);
-
 	Screen createPluginConfigScreen(@Nullable Screen parent, @Nullable Component jumpToCategory);
 
 	void registerItemStorageClient(IClientExtensionProvider<ItemStack, ItemView> provider);
