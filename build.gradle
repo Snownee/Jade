@@ -8,7 +8,7 @@ sourceCompatibility = JavaVersion.VERSION_17
 targetCompatibility = JavaVersion.VERSION_17
 
 archivesBaseName = project.archives_base_name
-version = project.archive_minecraft_version + "-fabric-" + project.mod_version
+version = project.archive_minecraft_version + "-Fabric-" + project.mod_version
 group = project.maven_group
 
 repositories {
@@ -73,10 +73,10 @@ loom {
 }
 
 processResources {
-    inputs.property "version", project.mod_version
+    inputs.property "version", "${project.mod_version}+fabric"
 
     filesMatching("fabric.mod.json") {
-        expand "version": project.mod_version
+        expand "version": "${project.mod_version}+fabric"
     }
 }
 
