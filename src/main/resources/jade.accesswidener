@@ -57,3 +57,5 @@ accessible class net/minecraft/client/renderer/FogRenderer$MobEffectFogFunction
 accessible class net/minecraft/client/renderer/FogRenderer$FogData
 accessible method net/minecraft/client/renderer/LightTexture getDarknessGamma (F)F
 accessible method net/minecraft/client/renderer/LightTexture calculateDarknessScale (Lnet/minecraft/world/entity/LivingEntity;FF)F
+
+accessible field net/minecraft/world/entity/animal/armadillo/Armadillo scuteTime I

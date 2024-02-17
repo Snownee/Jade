@@ -89,7 +89,6 @@
   "jade.instrument.harp": "Arpa",
   "config.jade.plugin_minecraft.armor_stand": "Supporto per armatura",
   "config.jade.plugin_minecraft.painting": "Quadro",
-  "config.jade.plugin_minecraft.chicken_egg": "Uovo di gallina",
   "jade.nextEgg": "Prossimo uovo: %s",
   "config.jade.plugin_minecraft.breaking_progress": "Progresso rottura",
   "config.jade.plugin_minecraft.command_block": "Blocco comandi",

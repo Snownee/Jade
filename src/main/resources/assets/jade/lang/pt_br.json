@@ -188,7 +188,6 @@
   "jade.instrument.custom_head": "Cabeça Personalizada",
   "config.jade.plugin_minecraft.armor_stand": "Suporte de Armadura",
   "config.jade.plugin_minecraft.painting": "Quadro",
-  "config.jade.plugin_minecraft.chicken_egg": "Ovo de Galinha",
   "jade.nextEgg": "Próximo Ovo: %s",
   "config.jade.plugin_minecraft.breaking_progress": "Quebrando o Progresso",
   "config.jade.plugin_minecraft.command_block": "Bloco de Comando",

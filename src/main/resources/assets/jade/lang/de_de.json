@@ -94,7 +94,6 @@
   "jade.instrument.harp": "Harfe",
   "config.jade.plugin_minecraft.armor_stand": "Rüstungsständer",
   "config.jade.plugin_minecraft.painting": "Gemälde",
-  "config.jade.plugin_minecraft.chicken_egg": "Hühnerei",
   "jade.nextEgg": "Nächstes Ei: %s",
   "config.jade.plugin_minecraft.breaking_progress": "Abbau-Fortschritt",
   "config.jade.plugin_minecraft.command_block": "Befehlsblock",

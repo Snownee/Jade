@@ -18,6 +18,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.Chicken;
 import net.minecraft.world.entity.animal.allay.Allay;
+import net.minecraft.world.entity.animal.armadillo.Armadillo;
 import net.minecraft.world.entity.animal.frog.Tadpole;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.decoration.ArmorStand;
@@ -123,7 +124,8 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerEntityDataProvider(MobGrowthProvider.INSTANCE, Tadpole.class);
 		registration.registerEntityDataProvider(MobBreedingProvider.INSTANCE, Animal.class);
 		registration.registerEntityDataProvider(MobBreedingProvider.INSTANCE, Allay.class);
-		registration.registerEntityDataProvider(ChickenEggProvider.INSTANCE, Chicken.class);
+		registration.registerEntityDataProvider(NextEntityDropProvider.INSTANCE, Chicken.class);
+		registration.registerEntityDataProvider(NextEntityDropProvider.INSTANCE, Armadillo.class);
 		registration.registerEntityDataProvider(ZombieVillagerProvider.INSTANCE, ZombieVillager.class);
 
 		registration.registerItemStorage(CampfireProvider.INSTANCE, CampfireBlockEntity.class);
@@ -158,7 +160,8 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerBlockComponent(NoteBlockProvider.INSTANCE, NoteBlock.class);
 		registration.registerEntityComponent(ArmorStandProvider.INSTANCE, ArmorStand.class);
 		registration.registerEntityComponent(PaintingProvider.INSTANCE, Painting.class);
-		registration.registerEntityComponent(ChickenEggProvider.INSTANCE, Chicken.class);
+		registration.registerEntityComponent(NextEntityDropProvider.INSTANCE, Chicken.class);
+		registration.registerEntityComponent(NextEntityDropProvider.INSTANCE, Armadillo.class);
 		registration.registerBlockComponent(HarvestToolProvider.INSTANCE, Block.class);
 		registration.registerBlockComponent(CommandBlockProvider.INSTANCE, CommandBlock.class);
 		registration.registerBlockComponent(EnchantmentPowerProvider.INSTANCE, Block.class);
@@ -237,7 +240,6 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.setConfigCategoryOverride(Identifiers.MC_ARMOR_STAND, both);
 		registration.setConfigCategoryOverride(Identifiers.MC_BEEHIVE, block);
 		registration.setConfigCategoryOverride(Identifiers.MC_BREWING_STAND, block);
-		registration.setConfigCategoryOverride(Identifiers.MC_CHICKEN_EGG, entity);
 		registration.setConfigCategoryOverride(Identifiers.MC_CHISELED_BOOKSHELF, block);
 		registration.setConfigCategoryOverride(Identifiers.MC_COMMAND_BLOCK, block);
 		registration.setConfigCategoryOverride(Identifiers.MC_CROP_PROGRESS, block);
@@ -254,6 +256,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.setConfigCategoryOverride(Identifiers.MC_MOB_BREEDING, entity);
 		registration.setConfigCategoryOverride(Identifiers.MC_MOB_GROWTH, entity);
 		registration.setConfigCategoryOverride(Identifiers.MC_MOB_SPAWNER, block);
+		registration.setConfigCategoryOverride(Identifiers.MC_NEXT_ENTITY_DROP, entity);
 		registration.setConfigCategoryOverride(Identifiers.MC_NOTE_BLOCK, block);
 		registration.setConfigCategoryOverride(Identifiers.MC_PAINTING, both);
 		registration.setConfigCategoryOverride(Identifiers.MC_PLAYER_HEAD, block);

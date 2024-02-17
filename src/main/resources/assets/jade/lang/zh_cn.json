@@ -194,7 +194,6 @@
   "jade.instrument.custom_head": "自定义头颅",
   "config.jade.plugin_minecraft.armor_stand": "盔甲架",
   "config.jade.plugin_minecraft.painting": "画",
-  "config.jade.plugin_minecraft.chicken_egg": "鸡产蛋时间",
   "jade.nextEgg": "产卵冷却：%s",
   "config.jade.plugin_minecraft.breaking_progress": "破坏进度",
   "config.jade.plugin_minecraft.command_block": "命令方块",

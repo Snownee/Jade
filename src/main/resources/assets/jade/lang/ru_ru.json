@@ -192,7 +192,6 @@
   "jade.instrument.custom_head": "Пользовательская голова",
   "config.jade.plugin_minecraft.armor_stand": "Стойка для брони",
   "config.jade.plugin_minecraft.painting": "Картина",
-  "config.jade.plugin_minecraft.chicken_egg": "Куриное яйцо",
   "jade.nextEgg": "Следующее яйцо: %s",
   "config.jade.plugin_minecraft.breaking_progress": "Прогресс разрушения",
   "config.jade.plugin_minecraft.command_block": "Командный блок",

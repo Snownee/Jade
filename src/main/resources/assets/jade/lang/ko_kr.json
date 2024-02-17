@@ -95,7 +95,6 @@
   "jade.instrument.harp": "하프",
   "config.jade.plugin_minecraft.armor_stand": "갑옷 거치대",
   "config.jade.plugin_minecraft.painting": "그림",
-  "config.jade.plugin_minecraft.chicken_egg": "달걀",
   "jade.nextEgg": "다음 달걀: %s",
   "config.jade.plugin_minecraft.breaking_progress": "부수기 진행률",
   "config.jade.plugin_minecraft.command_block": "명령 블록",

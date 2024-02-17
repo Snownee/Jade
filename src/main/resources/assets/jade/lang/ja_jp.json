@@ -194,7 +194,6 @@
   "jade.instrument.custom_head": "カスタムの頭",
   "config.jade.plugin_minecraft.armor_stand": "防具立て",
   "config.jade.plugin_minecraft.painting": "絵画",
-  "config.jade.plugin_minecraft.chicken_egg": "ニワトリの卵",
   "jade.nextEgg": "産卵まで：%s",
   "config.jade.plugin_minecraft.breaking_progress": "破壊の進行度",
   "config.jade.plugin_minecraft.command_block": "コマンドブロック",

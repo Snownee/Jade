@@ -35,7 +35,6 @@ public class Identifiers {
 	public static final ResourceLocation MC_BEEHIVE = MC("beehive");
 	public static final ResourceLocation MC_BREWING_STAND = MC("brewing_stand");
 	public static final ResourceLocation MC_CAMPFIRE = MC("campfire");
-	public static final ResourceLocation MC_CHICKEN_EGG = MC("chicken_egg");
 	public static final ResourceLocation MC_CHISELED_BOOKSHELF = MC("chiseled_bookshelf");
 	public static final ResourceLocation MC_COMMAND_BLOCK = MC("command_block");
 	public static final ResourceLocation MC_CROP_PROGRESS = MC("crop_progress");
@@ -63,6 +62,7 @@ public class Identifiers {
 	public static final ResourceLocation MC_MOB_GROWTH = MC("mob_growth");
 	public static final ResourceLocation MC_MOB_SPAWNER = MC("mob_spawner");
 	public static final ResourceLocation MC_MOB_SPAWNER_COOLDOWN = MC("mob_spawner.cooldown");
+	public static final ResourceLocation MC_NEXT_ENTITY_DROP = MC("next_entity_drop");
 	public static final ResourceLocation MC_NOTE_BLOCK = MC("note_block");
 	public static final ResourceLocation MC_PAINTING = MC("painting");
 	public static final ResourceLocation MC_PLAYER_HEAD = MC("player_head");

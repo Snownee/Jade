@@ -34,6 +34,4 @@ You should add the keywords according to your language. If you don't want the ex
 
 ## Plural form
 
-There is a key called `jade.seconds`, which is used to display the time in seconds. If your language has plural form for describing seconds, you can follow [this guide](https://www.baeldung.com/java-localization-messages-formatting) to display the seconds correctly.
-
-I will probably add more keys like this in the future.
+There are some keys whose parameters are enclosed in curly brackets, like `jade.seconds`. If your language has plural form for describing them, you can follow [this guide](https://www.baeldung.com/java-localization-messages-formatting) to display them correctly.

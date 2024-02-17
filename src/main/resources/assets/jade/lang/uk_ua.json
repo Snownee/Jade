@@ -135,7 +135,6 @@
   "jade.instrument.custom_head": "Голова гравця",
   "config.jade.plugin_minecraft.armor_stand": "Стійка для броні",
   "config.jade.plugin_minecraft.painting": "Картина",
-  "config.jade.plugin_minecraft.chicken_egg": "Куряче яйце",
   "jade.nextEgg": "Наступне яйце через: %s",
   "config.jade.plugin_minecraft.breaking_progress": "Прогрес ламання",
   "config.jade.plugin_minecraft.command_block": "Командний блок",
