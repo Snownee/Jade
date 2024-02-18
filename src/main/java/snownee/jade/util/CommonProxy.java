@@ -53,6 +53,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.Container;
+import net.minecraft.world.WorldlyContainerHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.boss.EnderDragonPart;
@@ -85,6 +86,7 @@ import snownee.jade.addon.universal.ItemCollector;
 import snownee.jade.addon.universal.ItemIterator;
 import snownee.jade.addon.universal.ItemStorageProvider;
 import snownee.jade.api.Accessor;
+import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.WailaPlugin;
 import snownee.jade.api.fluid.JadeFluidObject;
@@ -157,11 +159,8 @@ public final class CommonProxy implements ModInitializer {
 			}
 		}
 		if (stack.getItem() instanceof PotionItem || stack.getItem() instanceof TippedArrowItem) {
-			return PotionUtils.getPotion(stack)
-					.unwrapKey()
-					.map(ResourceKey::location)
-					.map(ResourceLocation::getNamespace)
-					.orElse(ResourceLocation.DEFAULT_NAMESPACE);
+			return PotionUtils.getPotion(stack).unwrapKey().map(ResourceKey::location).map(ResourceLocation::getNamespace).orElse(
+					ResourceLocation.DEFAULT_NAMESPACE);
 		}
 		if (stack.is(Items.PAINTING)) {
 			CompoundTag compoundTag = stack.getTag();
@@ -205,7 +204,11 @@ public final class CommonProxy implements ModInitializer {
 				return new ItemCollector<>(new ItemIterator.ContainerItemIterator(o -> {
 					if (o instanceof ChestBlockEntity be) {
 						if (be.getBlockState().getBlock() instanceof ChestBlock chestBlock) {
-							Container compound = ChestBlock.getContainer(chestBlock, be.getBlockState(), be.getLevel(), be.getBlockPos(), false);
+							Container compound = ChestBlock.getContainer(chestBlock,
+									be.getBlockState(),
+									be.getLevel(),
+									be.getBlockPos(),
+									false);
 							if (compound != null) {
 								return compound;
 							}
@@ -223,7 +226,8 @@ public final class CommonProxy implements ModInitializer {
 	@Nullable
 	public static List<ViewGroup<ItemStack>> containerGroup(Container container, Accessor<?> accessor) {
 		try {
-			return ItemStorageProvider.INSTANCE.containerCache.get(container, () -> new ItemCollector<>(new ItemIterator.ContainerItemIterator(0))).update(container, accessor.getLevel().getGameTime());
+			return ItemStorageProvider.containerCache.get(container, () -> new ItemCollector<>(new ItemIterator.ContainerItemIterator(0)))
+					.update(container, accessor.getLevel().getGameTime());
 		} catch (ExecutionException e) {
 			return null;
 		}
@@ -232,14 +236,16 @@ public final class CommonProxy implements ModInitializer {
 	@Nullable
 	public static List<ViewGroup<ItemStack>> storageGroup(Object storage, Accessor<?> accessor) {
 		try {
-			return ItemStorageProvider.INSTANCE.containerCache.get(storage, () -> new ItemCollector<>(JadeFabricUtils.fromItemStorage((Storage<ItemVariant>) storage, 0))).update(storage, accessor.getLevel().getGameTime());
+			return ItemStorageProvider.containerCache.get(storage,
+					() -> new ItemCollector<>(JadeFabricUtils.fromItemStorage((Storage<ItemVariant>) storage, 0))).update(storage,
+					accessor.getLevel().getGameTime());
 		} catch (ExecutionException e) {
 			return null;
 		}
 	}
 
-	public static List<ViewGroup<CompoundTag>> wrapFluidStorage(Accessor<?> accessor, Object target) {
-		if (target instanceof BlockEntity be) {
+	public static List<ViewGroup<CompoundTag>> wrapFluidStorage(Accessor<?> accessor) {
+		if (accessor.getTarget() instanceof BlockEntity be) {
 			try {
 				var storage = FluidStorage.SIDED.find(be.getLevel(), be.getBlockPos(), be.getBlockState(), be, null);
 				if (storage != null) {
@@ -252,8 +258,8 @@ public final class CommonProxy implements ModInitializer {
 		return null;
 	}
 
-	public static List<ViewGroup<CompoundTag>> wrapEnergyStorage(Accessor<?> accessor, Object target) {
-		if (hasTechRebornEnergy && target instanceof BlockEntity be) {
+	public static List<ViewGroup<CompoundTag>> wrapEnergyStorage(Accessor<?> accessor) {
+		if (hasTechRebornEnergy && accessor.getTarget() instanceof BlockEntity be) {
 			try {
 				var storage = TechRebornEnergyCompat.getSided().find(be.getLevel(), be.getBlockPos(), be.getBlockState(), be, null);
 				if (storage != null && storage.getCapacity() > 0) {
@@ -300,10 +306,12 @@ public final class CommonProxy implements ModInitializer {
 	}
 
 	public static MutableComponent getProfressionName(VillagerProfession profession) {
-		return Component.translatable(EntityType.VILLAGER.getDescriptionId() + "." + BuiltInRegistries.VILLAGER_PROFESSION.getKey(profession).getPath());
+		return Component.translatable(
+				EntityType.VILLAGER.getDescriptionId() + "." + BuiltInRegistries.VILLAGER_PROFESSION.getKey(profession).getPath());
 	}
 
-	private static void registerServerCommand(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext registryAccess, Commands.CommandSelection environment) {
+	private static void registerServerCommand(
+			CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext registryAccess, Commands.CommandSelection environment) {
 		JadeServerCommand.register(dispatcher);
 	}
 
@@ -358,7 +366,8 @@ public final class CommonProxy implements ModInitializer {
 				}
 				className = plugin.getClass().getName();
 				if (className.startsWith("snownee.jade.") && !metadata.getId().startsWith(Jade.ID)) {
-					throw new IllegalStateException("Mod " + metadata.getName() + " is not allowed to register built-in plugins. Please contact the mod author");
+					throw new IllegalStateException(
+							"Mod " + metadata.getName() + " is not allowed to register built-in plugins. Please contact the mod author");
 				}
 				if (!classes.add(plugin.getClass())) {
 					throw new IllegalStateException("Duplicate plugin class " + className);
@@ -425,6 +434,42 @@ public final class CommonProxy implements ModInitializer {
 			}
 		}
 		return parent;
+	}
+
+	public static boolean hasDefaultItemStorage(Accessor<?> accessor) {
+		if (accessor instanceof BlockAccessor blockAccessor) {
+			if (blockAccessor.getBlockEntity() == null) {
+				return blockAccessor.getBlock() instanceof WorldlyContainerHolder;
+			}
+			return ItemStorage.SIDED.find(accessor.getLevel(),
+					blockAccessor.getPosition(),
+					blockAccessor.getBlockState(),
+					blockAccessor.getBlockEntity(),
+					null) != null;
+		}
+		return true;
+	}
+
+	public static boolean hasDefaultFluidStorage(Accessor<?> accessor) {
+		if (accessor instanceof BlockAccessor blockAccessor) {
+			return FluidStorage.SIDED.find(accessor.getLevel(),
+					blockAccessor.getPosition(),
+					blockAccessor.getBlockState(),
+					blockAccessor.getBlockEntity(),
+					null) != null;
+		}
+		return true;
+	}
+
+	public static boolean hasDefaultEnergyStorage(Accessor<?> accessor) {
+		if (hasTechRebornEnergy && accessor instanceof BlockAccessor blockAccessor) {
+			return TechRebornEnergyCompat.getSided().find(accessor.getLevel(),
+					blockAccessor.getPosition(),
+					blockAccessor.getBlockState(),
+					blockAccessor.getBlockEntity(),
+					null) != null;
+		}
+		return true;
 	}
 
 	@Override

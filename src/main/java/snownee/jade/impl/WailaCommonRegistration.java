@@ -6,10 +6,13 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.jetbrains.annotations.Nullable;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import snownee.jade.Jade;
 import snownee.jade.api.BlockAccessor;
@@ -19,22 +22,25 @@ import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.IWailaCommonRegistration;
 import snownee.jade.api.view.IServerExtensionProvider;
 import snownee.jade.impl.config.PluginConfig;
+import snownee.jade.impl.lookup.HierarchyLookup;
+import snownee.jade.impl.lookup.PairHierarchyLookup;
+import snownee.jade.impl.lookup.WrappedHierarchyLookup;
 
 public class WailaCommonRegistration implements IWailaCommonRegistration {
 
 	private static final WailaCommonRegistration INSTANCE = new WailaCommonRegistration();
 
-	public final HierarchyLookup<IServerDataProvider<BlockAccessor>> blockDataProviders;
+	public final PairHierarchyLookup<IServerDataProvider<BlockAccessor>> blockDataProviders;
 	public final HierarchyLookup<IServerDataProvider<EntityAccessor>> entityDataProviders;
 	public final PriorityStore<ResourceLocation, IJadeProvider> priorities;
 
-	public final HierarchyLookup<IServerExtensionProvider<Object, ItemStack>> itemStorageProviders;
-	public final HierarchyLookup<IServerExtensionProvider<Object, CompoundTag>> fluidStorageProviders;
-	public final HierarchyLookup<IServerExtensionProvider<Object, CompoundTag>> energyStorageProviders;
-	public final HierarchyLookup<IServerExtensionProvider<Object, CompoundTag>> progressProviders;
+	public final WrappedHierarchyLookup<IServerExtensionProvider<ItemStack>> itemStorageProviders;
+	public final WrappedHierarchyLookup<IServerExtensionProvider<CompoundTag>> fluidStorageProviders;
+	public final WrappedHierarchyLookup<IServerExtensionProvider<CompoundTag>> energyStorageProviders;
+	public final WrappedHierarchyLookup<IServerExtensionProvider<CompoundTag>> progressProviders;
 
 	WailaCommonRegistration() {
-		blockDataProviders = new HierarchyLookup<>(BlockEntity.class);
+		blockDataProviders = new PairHierarchyLookup<>(new HierarchyLookup<>(Block.class), new HierarchyLookup<>(BlockEntity.class));
 		entityDataProviders = new HierarchyLookup<>(Entity.class);
 		priorities = new PriorityStore<>(IJadeProvider::getDefaultPriority, IJadeProvider::getUid);
 		priorities.setSortingFunction((store, allKeys) -> {
@@ -50,10 +56,10 @@ public class WailaCommonRegistration implements IWailaCommonRegistration {
 		});
 		priorities.setConfigFile(Jade.ID + "/sort-order");
 
-		itemStorageProviders = new HierarchyLookup<>(Object.class, true);
-		fluidStorageProviders = new HierarchyLookup<>(Object.class, true);
-		energyStorageProviders = new HierarchyLookup<>(Object.class, true);
-		progressProviders = new HierarchyLookup<>(Object.class, true);
+		itemStorageProviders = new WrappedHierarchyLookup<>();
+		fluidStorageProviders = new WrappedHierarchyLookup<>();
+		energyStorageProviders = new WrappedHierarchyLookup<>();
+		progressProviders = new WrappedHierarchyLookup<>();
 	}
 
 	public static WailaCommonRegistration instance() {
@@ -61,19 +67,22 @@ public class WailaCommonRegistration implements IWailaCommonRegistration {
 	}
 
 	@Override
-	public void registerBlockDataProvider(IServerDataProvider<BlockAccessor> dataProvider, Class<? extends BlockEntity> block) {
-		blockDataProviders.register(block, dataProvider);
+	public void registerBlockDataProvider(IServerDataProvider<BlockAccessor> dataProvider, Class<?> blockOrBlobkEntityClass) {
+		blockDataProviders.register(blockOrBlobkEntityClass, dataProvider);
 	}
 
 	@Override
-	public void registerEntityDataProvider(IServerDataProvider<EntityAccessor> dataProvider, Class<? extends Entity> entity) {
-		entityDataProviders.register(entity, dataProvider);
+	public void registerEntityDataProvider(IServerDataProvider<EntityAccessor> dataProvider, Class<? extends Entity> entityClass) {
+		entityDataProviders.register(entityClass, dataProvider);
 	}
 
 	/* PROVIDER GETTERS */
 
-	public List<IServerDataProvider<BlockAccessor>> getBlockNBTProviders(BlockEntity block) {
-		return blockDataProviders.get(block);
+	public List<IServerDataProvider<BlockAccessor>> getBlockNBTProviders(Block block, @Nullable BlockEntity blockEntity) {
+		if (blockEntity == null) {
+			return blockDataProviders.first.get(block);
+		}
+		return blockDataProviders.getMerged(block, blockEntity);
 	}
 
 	public List<IServerDataProvider<EntityAccessor>> getEntityNBTProviders(Entity entity) {
@@ -90,23 +99,23 @@ public class WailaCommonRegistration implements IWailaCommonRegistration {
 	}
 
 	@Override
-	public <T> void registerItemStorage(IServerExtensionProvider<T, ItemStack> provider, Class<? extends T> clazz) {
-		itemStorageProviders.register(clazz, (IServerExtensionProvider<Object, ItemStack>) provider);
+	public <T> void registerItemStorage(IServerExtensionProvider<ItemStack> provider, Class<? extends T> clazz) {
+		itemStorageProviders.register(clazz, provider);
 	}
 
 	@Override
-	public <T> void registerFluidStorage(IServerExtensionProvider<T, CompoundTag> provider, Class<? extends T> clazz) {
-		fluidStorageProviders.register(clazz, (IServerExtensionProvider<Object, CompoundTag>) provider);
+	public <T> void registerFluidStorage(IServerExtensionProvider<CompoundTag> provider, Class<? extends T> clazz) {
+		fluidStorageProviders.register(clazz, provider);
 	}
 
 	@Override
-	public <T> void registerEnergyStorage(IServerExtensionProvider<T, CompoundTag> provider, Class<? extends T> clazz) {
-		energyStorageProviders.register(clazz, (IServerExtensionProvider<Object, CompoundTag>) provider);
+	public <T> void registerEnergyStorage(IServerExtensionProvider<CompoundTag> provider, Class<? extends T> clazz) {
+		energyStorageProviders.register(clazz, provider);
 	}
 
 	@Override
-	public <T> void registerProgress(IServerExtensionProvider<T, CompoundTag> provider, Class<? extends T> clazz) {
-		progressProviders.register(clazz, (IServerExtensionProvider<Object, CompoundTag>) provider);
+	public <T> void registerProgress(IServerExtensionProvider<CompoundTag> provider, Class<? extends T> clazz) {
+		progressProviders.register(clazz, provider);
 	}
 
 }

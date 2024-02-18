@@ -4,11 +4,9 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
-import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.ChiseledBookShelfBlock;
@@ -29,39 +27,20 @@ public enum ChiseledBookshelfProvider implements IBlockComponentProvider, IServe
 	INSTANCE;
 
 	private static ItemStack getHitBook(BlockAccessor accessor) {
-		if (!(accessor.getBlockEntity() instanceof ChiseledBookShelfBlockEntity)) {
+		if (accessor.showDetails() || !accessor.getServerData().contains("Book")) {
 			return ItemStack.EMPTY;
 		}
-		if (!accessor.getServerData().contains("Bookshelf")) {
-			return ItemStack.EMPTY;
-		}
-		ChiseledBookShelfBlock block = (ChiseledBookShelfBlock) accessor.getBlock();
-		int i = block.getHitSlot(accessor.getHitResult(), accessor.getBlockState()).orElse(-1);
-		if (i < 0) {
-			return ItemStack.EMPTY;
-		}
-		NonNullList<ItemStack> items = NonNullList.withSize(((ChiseledBookShelfBlockEntity) accessor.getBlockEntity()).getContainerSize(), ItemStack.EMPTY);
-		ContainerHelper.loadAllItems(accessor.getServerData().getCompound("Bookshelf"), items);
-		if (i >= items.size()) {
-			return ItemStack.EMPTY;
-		}
-		return items.get(i);
+		return ItemStack.of(accessor.getServerData().getCompound("Book"));
 	}
 
 	@Override
 	public IElement getIcon(BlockAccessor accessor, IPluginConfig config, IElement currentIcon) {
-		if (accessor.showDetails()) {
-			return null;
-		}
 		ItemStack item = getHitBook(accessor);
 		return item.isEmpty() ? null : IElementHelper.get().item(item);
 	}
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		if (accessor.showDetails()) {
-			return;
-		}
 		ItemStack item = getHitBook(accessor);
 		if (item.isEmpty()) {
 			return;
@@ -77,9 +56,16 @@ public enum ChiseledBookshelfProvider implements IBlockComponentProvider, IServe
 
 	@Override
 	public void appendServerData(CompoundTag data, BlockAccessor accessor) {
-		ChiseledBookShelfBlockEntity be = (ChiseledBookShelfBlockEntity) accessor.getBlockEntity();
-		if (!be.isEmpty()) {
-			data.put("Bookshelf", be.saveWithoutMetadata(accessor.getLevel().registryAccess()));
+		if (accessor.getBlockEntity() instanceof ChiseledBookShelfBlockEntity bookshelf) {
+			int slot = ((ChiseledBookShelfBlock) accessor.getBlock()).getHitSlot(accessor.getHitResult(), accessor.getBlockState())
+					.orElse(-1);
+			if (slot == -1) {
+				return;
+			}
+			ItemStack book = bookshelf.getItem(slot);
+			if (!book.isEmpty()) {
+				data.put("Book", book.save(new CompoundTag()));
+			}
 		}
 	}
 
@@ -90,7 +76,7 @@ public enum ChiseledBookshelfProvider implements IBlockComponentProvider, IServe
 
 	@Override
 	public int getDefaultPriority() {
-		return ItemStorageProvider.INSTANCE.getDefaultPriority() + 1;
+		return ItemStorageProvider.getBlock().getDefaultPriority() + 1;
 	}
 
 }

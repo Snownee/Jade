@@ -20,19 +20,21 @@ public class Identifiers {
 	public static final ResourceLocation DEBUG_SPECIAL_REGISTRY_NAME = JADE("registry_name.special");
 	public static final ResourceLocation DEBUG_BLOCK_STATES = JADE("block_states");
 	public static final ResourceLocation UNIVERSAL_ITEM_STORAGE = MC("item_storage");
+	public static final ResourceLocation UNIVERSAL_ITEM_STORAGE_DETAILED_AMOUNT = MC("item_storage.detailed_amount");
+	public static final ResourceLocation UNIVERSAL_ITEM_STORAGE_NORMAL_AMOUNT = MC("item_storage.normal_amount");
+	public static final ResourceLocation UNIVERSAL_ITEM_STORAGE_SHOW_NAME_AMOUNT = MC("item_storage.show_name_amount");
+	public static final ResourceLocation UNIVERSAL_ITEM_STORAGE_ITEMS_PER_LINE = MC("item_storage.items_per_line");
 	public static final ResourceLocation UNIVERSAL_FLUID_STORAGE = MC("fluid_storage");
 	public static final ResourceLocation UNIVERSAL_FLUID_STORAGE_DETAILED = MC("fluid_storage.detailed");
 	public static final ResourceLocation UNIVERSAL_ENERGY_STORAGE = MC("energy_storage");
 	public static final ResourceLocation UNIVERSAL_ENERGY_STORAGE_DETAILED = MC("energy_storage.detailed");
 	public static final ResourceLocation UNIVERSAL_PROGRESS = MC("progress");
-	public static final ResourceLocation MC_ITEM_STORAGE_DETAILED_AMOUNT = MC("item_storage.detailed_amount");
-	public static final ResourceLocation MC_ITEM_STORAGE_NORMAL_AMOUNT = MC("item_storage.normal_amount");
-	public static final ResourceLocation MC_ITEM_STORAGE_SHOW_NAME_AMOUNT = MC("item_storage.show_name_amount");
-	public static final ResourceLocation MC_ITEM_STORAGE_ITEMS_PER_LINE = MC("item_storage.items_per_line");
 	public static final ResourceLocation MC_ANIMAL_OWNER = MC("animal_owner");
 	public static final ResourceLocation MC_ANIMAL_OWNER_FETCH_NAMES = MC("animal_owner.fetch_names");
 	public static final ResourceLocation MC_ARMOR_STAND = MC("armor_stand");
 	public static final ResourceLocation MC_BEEHIVE = MC("beehive");
+	public static final ResourceLocation MC_BLOCK_DISPLAY = MC("block_display");
+	public static final ResourceLocation MC_BREAKING_PROGRESS = MC("breaking_progress");
 	public static final ResourceLocation MC_BREWING_STAND = MC("brewing_stand");
 	public static final ResourceLocation MC_CAMPFIRE = MC("campfire");
 	public static final ResourceLocation MC_CHISELED_BOOKSHELF = MC("chiseled_bookshelf");
@@ -54,6 +56,7 @@ public class Identifiers {
 	public static final ResourceLocation MC_HARVEST_TOOL_CREATIVE = MC("harvest_tool.creative");
 	public static final ResourceLocation MC_HORSE_STATS = MC("horse_stats");
 	public static final ResourceLocation MC_ITEM_BER = MC("item_ber");
+	public static final ResourceLocation MC_ITEM_DISPLAY = MC("item_display");
 	public static final ResourceLocation MC_ITEM_FRAME = MC("item_frame");
 	public static final ResourceLocation MC_ITEM_TOOLTIP = MC("item_tooltip");
 	public static final ResourceLocation MC_JUKEBOX = MC("jukebox");
@@ -72,9 +75,6 @@ public class Identifiers {
 	public static final ResourceLocation MC_TOTAL_ENCHANTMENT_POWER = MC("total_enchantment_power");
 	public static final ResourceLocation MC_VILLAGER_PROFESSION = MC("villager_profession");
 	public static final ResourceLocation MC_WAXED = MC("waxed");
-	public static final ResourceLocation MC_ITEM_DISPLAY = MC("item_display");
-	public static final ResourceLocation MC_BLOCK_DISPLAY = MC("block_display");
-	public static final ResourceLocation MC_BREAKING_PROGRESS = MC("breaking_progress");
 	public static final ResourceLocation MC_ZOMBIE_VILLAGER = MC("zombie_villager");
 
 	public static ResourceLocation JADE(String path) {

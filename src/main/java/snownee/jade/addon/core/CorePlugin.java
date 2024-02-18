@@ -27,7 +27,7 @@ public class CorePlugin implements IWailaPlugin {
 
 	@Override
 	public void register(IWailaCommonRegistration registration) {
-		registration.registerBlockDataProvider(ObjectNameProvider.INSTANCE, BlockEntity.class);
+		registration.registerBlockDataProvider(ObjectNameProvider.getBlock(), BlockEntity.class);
 	}
 
 	@Override
@@ -39,14 +39,14 @@ public class CorePlugin implements IWailaPlugin {
 		registration.addConfig(Identifiers.CORE_COORDINATES, false);
 		registration.addConfig(Identifiers.CORE_REL_COORDINATES, false);
 
-		registration.registerBlockComponent(ObjectNameProvider.INSTANCE, Block.class);
-		registration.registerBlockComponent(ModNameProvider.INSTANCE, Block.class);
-		registration.registerBlockComponent(DistanceProvider.INSTANCE, Block.class);
+		registration.registerBlockComponent(ObjectNameProvider.getBlock(), Block.class);
+		registration.registerBlockComponent(ModNameProvider.getBlock(), Block.class);
+		registration.registerBlockComponent(DistanceProvider.getBlock(), Block.class);
 		registration.registerBlockComponent(BlockFaceProvider.INSTANCE, Block.class);
 
-		registration.registerEntityComponent(ObjectNameProvider.INSTANCE, Entity.class);
-		registration.registerEntityComponent(ModNameProvider.INSTANCE, Entity.class);
-		registration.registerEntityComponent(DistanceProvider.INSTANCE, Entity.class);
+		registration.registerEntityComponent(ObjectNameProvider.getEntity(), Entity.class);
+		registration.registerEntityComponent(ModNameProvider.getEntity(), Entity.class);
+		registration.registerEntityComponent(DistanceProvider.getEntity(), Entity.class);
 
 		registration.markAsClientFeature(Identifiers.CORE_DISTANCE);
 		registration.markAsClientFeature(Identifiers.CORE_COORDINATES);

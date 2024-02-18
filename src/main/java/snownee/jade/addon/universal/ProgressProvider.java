@@ -8,7 +8,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.BlockAccessor;
-import snownee.jade.api.IBlockComponentProvider;
+import snownee.jade.api.EntityAccessor;
+import snownee.jade.api.IComponentProvider;
 import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
@@ -22,15 +23,31 @@ import snownee.jade.api.view.ViewGroup;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
 
-public enum ProgressProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
+public abstract class ProgressProvider<T extends Accessor<?>> implements IComponentProvider<T>, IServerDataProvider<T> {
 
-	INSTANCE;
+	public static ForBlock getBlock() {
+		return ForBlock.INSTANCE;
+	}
+
+	public static ForEntity getEntity() {
+		return ForEntity.INSTANCE;
+	}
+
+	public static class ForBlock extends ProgressProvider<BlockAccessor> {
+		private static final ForBlock INSTANCE = new ForBlock();
+	}
+
+	public static class ForEntity extends ProgressProvider<EntityAccessor> {
+		private static final ForEntity INSTANCE = new ForEntity();
+	}
 
 	public static void append(ITooltip tooltip, Accessor<?> accessor, IPluginConfig config) {
 		if (accessor.getServerData().contains("JadeProgress")) {
-			var provider = Optional.ofNullable(ResourceLocation.tryParse(accessor.getServerData().getString("JadeProgressUid"))).map(WailaClientRegistration.instance().progressProviders::get);
+			var provider = Optional.ofNullable(ResourceLocation.tryParse(accessor.getServerData().getString("JadeProgressUid"))).map(
+					WailaClientRegistration.instance().progressProviders::get);
 			if (provider.isPresent()) {
-				var groups = provider.get().getClientGroups(accessor, ViewGroup.readList(accessor.getServerData(), "JadeProgress", Function.identity()));
+				var groups = provider.get().getClientGroups(accessor,
+						ViewGroup.readList(accessor.getServerData(), "JadeProgress", Function.identity()));
 				if (groups.isEmpty()) {
 					return;
 				}
@@ -59,23 +76,34 @@ public enum ProgressProvider implements IBlockComponentProvider, IServerDataProv
 		CompoundTag tag = accessor.getServerData();
 		Object target = accessor.getTarget();
 		for (var provider : WailaCommonRegistration.instance().progressProviders.get(target)) {
-			var groups = provider.getGroups(accessor, target);
+			var groups = provider.getGroups(accessor);
 			if (groups != null) {
-				if (ViewGroup.saveList(tag, "JadeProgress", groups, Function.identity()))
+				if (ViewGroup.saveList(tag, "JadeProgress", groups, Function.identity())) {
 					tag.putString("JadeProgressUid", provider.getUid().toString());
+				}
 				return;
 			}
 		}
 	}
 
 	@Override
-	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
+	public void appendTooltip(ITooltip tooltip, T accessor, IPluginConfig config) {
 		append(tooltip, accessor, config);
 	}
 
 	@Override
-	public void appendServerData(CompoundTag data, BlockAccessor accessor) {
+	public void appendServerData(CompoundTag data, T accessor) {
 		putData(accessor);
+	}
+
+	@Override
+	public boolean shouldRequestData(T accessor) {
+		for (var provider : WailaCommonRegistration.instance().progressProviders.get(accessor)) {
+			if (provider.shouldRequestData(accessor)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override

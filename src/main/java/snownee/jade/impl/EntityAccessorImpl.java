@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.google.common.base.Suppliers;
 
 import net.minecraft.nbt.CompoundTag;
@@ -58,7 +60,7 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 				}
 			}
 
-			tag.putInt("WailaEntityID", entity.getId());
+			tag.putInt("EntityId", entity.getId());
 			responseSender.accept(tag);
 		});
 	}
@@ -78,6 +80,7 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 		return CommonProxy.getEntityPickedResult(entity.get(), getPlayer(), getHitResult());
 	}
 
+	@NotNull
 	@Override
 	public Object getTarget() {
 		return getEntity();
@@ -87,9 +90,9 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 	public boolean verifyData(CompoundTag data) {
 		if (!verify)
 			return true;
-		if (!data.contains("WailaEntityID"))
+		if (!data.contains("EntityId"))
 			return false;
-		return data.getInt("WailaEntityID") == getEntity().getId();
+		return data.getInt("EntityId") == getEntity().getId();
 	}
 
 	public static class Builder implements EntityAccessor.Builder {

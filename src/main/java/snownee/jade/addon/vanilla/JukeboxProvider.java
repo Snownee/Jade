@@ -44,9 +44,11 @@ public enum JukeboxProvider implements IBlockComponentProvider, IServerDataProvi
 
 	@Override
 	public void appendServerData(CompoundTag data, BlockAccessor accessor) {
-		ItemStack stack = ((JukeboxBlockEntity) accessor.getBlockEntity()).getTheItem();
-		if (!stack.isEmpty()) {
-			data.put("Record", stack.save(new CompoundTag()));
+		if (accessor instanceof JukeboxBlockEntity jukebox) {
+			ItemStack stack = jukebox.getTheItem();
+			if (!stack.isEmpty()) {
+				data.put("Record", stack.save(new CompoundTag()));
+			}
 		}
 	}
 

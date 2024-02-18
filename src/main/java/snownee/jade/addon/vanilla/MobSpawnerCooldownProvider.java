@@ -27,11 +27,12 @@ public enum MobSpawnerCooldownProvider implements IBlockComponentProvider, IServ
 
 	@Override
 	public void appendServerData(CompoundTag data, BlockAccessor accessor) {
-		TrialSpawnerBlockEntity spawner = (TrialSpawnerBlockEntity) accessor.getBlockEntity();
-		TrialSpawnerData spawnerData = spawner.getTrialSpawner().getData();
-		Level level = accessor.getLevel();
-		if (spawner.getTrialSpawner().canSpawnInLevel(level) && level.getGameTime() < spawnerData.cooldownEndsAt) {
-			data.putInt("Cooldown", (int) (spawnerData.cooldownEndsAt - level.getGameTime()));
+		if (accessor.getBlockEntity() instanceof TrialSpawnerBlockEntity spawner) {
+			TrialSpawnerData spawnerData = spawner.getTrialSpawner().getData();
+			Level level = accessor.getLevel();
+			if (spawner.getTrialSpawner().canSpawnInLevel(level) && level.getGameTime() < spawnerData.cooldownEndsAt) {
+				data.putInt("Cooldown", (int) (spawnerData.cooldownEndsAt - level.getGameTime()));
+			}
 		}
 	}
 

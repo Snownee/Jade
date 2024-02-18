@@ -68,7 +68,7 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 	 * @param provider The data provider instance
 	 * @param block    The highest level class to apply to
 	 */
-	void registerBlockIcon(IBlockComponentProvider provider, Class<? extends Block> block);
+	void registerBlockIcon(IComponentProvider<BlockAccessor> provider, Class<? extends Block> blockClass);
 
 	/**
 	 * Register an {@link IJadeProvider} instance for appending informations to
@@ -77,7 +77,7 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 	 * @param provider The data provider instance
 	 * @param block    The highest level class to apply to
 	 */
-	void registerBlockComponent(IBlockComponentProvider provider, Class<? extends Block> block);
+	void registerBlockComponent(IComponentProvider<BlockAccessor> provider, Class<? extends Block> blockClass);
 
 	/**
 	 * Register an {@link IEntityComponentProvider} instance to allow overriding the icon for a entity via the
@@ -86,7 +86,7 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 	 * @param provider The data provider instance
 	 * @param entity   The highest level class to apply to
 	 */
-	void registerEntityIcon(IEntityComponentProvider provider, Class<? extends Entity> entity);
+	void registerEntityIcon(IComponentProvider<EntityAccessor> provider, Class<? extends Entity> entityClass);
 
 	/**
 	 * Register an {@link IEntityComponentProvider} instance for appending {@link net.minecraft.network.chat.Component}
@@ -95,7 +95,7 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 	 * @param provider The data provider instance
 	 * @param entity   The highest level class to apply to
 	 */
-	void registerEntityComponent(IEntityComponentProvider provider, Class<? extends Entity> entity);
+	void registerEntityComponent(IComponentProvider<EntityAccessor> provider, Class<? extends Entity> entityClass);
 
 	/**
 	 * Mark a block as hidden in tooltip.

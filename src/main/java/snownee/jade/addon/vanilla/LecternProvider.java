@@ -36,10 +36,12 @@ public enum LecternProvider implements IBlockComponentProvider, IServerDataProvi
 
 	@Override
 	public void appendServerData(CompoundTag data, BlockAccessor accessor) {
-		ItemStack stack = ((LecternBlockEntity) accessor.getBlockEntity()).getBook();
-		if (!stack.isEmpty()) {
-			if (stack.hasCustomHoverName() || stack.getItem() != Items.WRITABLE_BOOK) {
-				data.put("Book", stack.save(new CompoundTag()));
+		if (accessor.getBlockEntity() instanceof LecternBlockEntity lectern) {
+			ItemStack stack = lectern.getBook();
+			if (!stack.isEmpty()) {
+				if (stack.hasCustomHoverName() || stack.getItem() != Items.WRITABLE_BOOK) {
+					data.put("Book", stack.save(new CompoundTag()));
+				}
 			}
 		}
 	}

@@ -11,12 +11,14 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.BlockAccessor;
-import snownee.jade.api.IBlockComponentProvider;
+import snownee.jade.api.EntityAccessor;
+import snownee.jade.api.IComponentProvider;
 import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.api.ui.ProgressStyle;
@@ -29,19 +31,34 @@ import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.util.CommonProxy;
 
-public enum EnergyStorageProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor>,
-		IServerExtensionProvider<Object, CompoundTag>, IClientExtensionProvider<CompoundTag, EnergyView> {
+public abstract class EnergyStorageProvider<T extends Accessor<?>> implements IComponentProvider<T>, IServerDataProvider<T> {
 
-	INSTANCE;
+	public static ForBlock getBlock() {
+		return ForBlock.INSTANCE;
+	}
+
+	public static ForEntity getEntity() {
+		return ForEntity.INSTANCE;
+	}
+
+	public static class ForBlock extends EnergyStorageProvider<BlockAccessor> {
+		private static final ForBlock INSTANCE = new ForBlock();
+	}
+
+	public static class ForEntity extends EnergyStorageProvider<EntityAccessor> {
+		private static final ForEntity INSTANCE = new ForEntity();
+	}
 
 	public static void append(ITooltip tooltip, Accessor<?> accessor, IPluginConfig config) {
 		if ((!accessor.showDetails() && config.get(Identifiers.UNIVERSAL_ENERGY_STORAGE_DETAILED))) {
 			return;
 		}
 		if (accessor.getServerData().contains("JadeEnergyStorage")) {
-			var provider = Optional.ofNullable(ResourceLocation.tryParse(accessor.getServerData().getString("JadeEnergyStorageUid"))).map(WailaClientRegistration.instance().energyStorageProviders::get);
+			var provider = Optional.ofNullable(ResourceLocation.tryParse(accessor.getServerData().getString("JadeEnergyStorageUid"))).map(
+					WailaClientRegistration.instance().energyStorageProviders::get);
 			if (provider.isPresent()) {
-				var groups = provider.get().getClientGroups(accessor, ViewGroup.readList(accessor.getServerData(), "JadeEnergyStorage", Function.identity()));
+				var groups = provider.get().getClientGroups(accessor,
+						ViewGroup.readList(accessor.getServerData(), "JadeEnergyStorage", Function.identity()));
 				if (groups.isEmpty()) {
 					return;
 				}
@@ -57,7 +74,8 @@ public enum EnergyStorageProvider implements IBlockComponentProvider, IServerDat
 						if (view.overrideText != null) {
 							text = view.overrideText;
 						} else {
-							text = Component.translatable("jade.fe", ChatFormatting.WHITE + view.current, view.max).withStyle(ChatFormatting.GRAY);
+							text = Component.translatable("jade.fe", ChatFormatting.WHITE + view.current, view.max)
+									.withStyle(ChatFormatting.GRAY);
 						}
 						ProgressStyle progressStyle = helper.progressStyle().color(0xFFAA0000, 0xFF660000);
 						theTooltip.add(helper.progress(view.ratio, text, progressStyle, BoxStyle.getNestedBox(), true));
@@ -70,24 +88,16 @@ public enum EnergyStorageProvider implements IBlockComponentProvider, IServerDat
 	public static void putData(Accessor<?> accessor) {
 		CompoundTag tag = accessor.getServerData();
 		Object target = accessor.getTarget();
-		for (var provider : WailaCommonRegistration.instance().energyStorageProviders.get(target)) {
-			var groups = provider.getGroups(accessor, target);
+		for (var provider : WailaCommonRegistration.instance().energyStorageProviders.<IServerExtensionProvider<CompoundTag>>get(
+				target)) {
+			var groups = provider.getGroups(accessor);
 			if (groups != null) {
-				if (ViewGroup.saveList(tag, "JadeEnergyStorage", groups, Function.identity()))
+				if (ViewGroup.saveList(tag, "JadeEnergyStorage", groups, Function.identity())) {
 					tag.putString("JadeEnergyStorageUid", provider.getUid().toString());
+				}
 				return;
 			}
 		}
-	}
-
-	@Override
-	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		append(tooltip, accessor, config);
-	}
-
-	@Override
-	public void appendServerData(CompoundTag data, BlockAccessor accessor) {
-		putData(accessor);
 	}
 
 	@Override
@@ -101,16 +111,53 @@ public enum EnergyStorageProvider implements IBlockComponentProvider, IServerDat
 	}
 
 	@Override
-	public List<ClientViewGroup<EnergyView>> getClientGroups(Accessor<?> accessor, List<ViewGroup<CompoundTag>> groups) {
-		return groups.stream().map($ -> {
-			String unit = $.getExtraData().getString("Unit");
-			return new ClientViewGroup<>($.views.stream().map(tag -> EnergyView.read(tag, unit)).filter(Objects::nonNull).toList());
-		}).toList();
+	public void appendTooltip(ITooltip tooltip, T accessor, IPluginConfig config) {
+		append(tooltip, accessor, config);
 	}
 
 	@Override
-	public List<ViewGroup<CompoundTag>> getGroups(Accessor<?> accessor, Object target) {
-		return CommonProxy.wrapEnergyStorage(accessor, target);
+	public void appendServerData(CompoundTag data, T accessor) {
+		putData(accessor);
+	}
+
+	@Override
+	public boolean shouldRequestData(T accessor) {
+		if (!accessor.showDetails() && IWailaConfig.get().getPlugin().get(Identifiers.UNIVERSAL_ENERGY_STORAGE_DETAILED)) {
+			return false;
+		}
+		for (var provider : WailaCommonRegistration.instance().energyStorageProviders.get(accessor)) {
+			if (provider.shouldRequestData(accessor)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public enum Extension implements IServerExtensionProvider<CompoundTag>, IClientExtensionProvider<CompoundTag, EnergyView> {
+		INSTANCE;
+
+		@Override
+		public ResourceLocation getUid() {
+			return Identifiers.UNIVERSAL_ENERGY_STORAGE;
+		}
+
+		@Override
+		public List<ClientViewGroup<EnergyView>> getClientGroups(Accessor<?> accessor, List<ViewGroup<CompoundTag>> groups) {
+			return groups.stream().map($ -> {
+				String unit = $.getExtraData().getString("Unit");
+				return new ClientViewGroup<>($.views.stream().map(tag -> EnergyView.read(tag, unit)).filter(Objects::nonNull).toList());
+			}).toList();
+		}
+
+		@Override
+		public List<ViewGroup<CompoundTag>> getGroups(Accessor<?> accessor) {
+			return CommonProxy.wrapEnergyStorage(accessor);
+		}
+
+		@Override
+		public boolean shouldRequestData(Accessor<?> accessor) {
+			return CommonProxy.hasDefaultEnergyStorage(accessor);
+		}
 	}
 
 }

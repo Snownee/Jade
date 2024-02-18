@@ -16,8 +16,8 @@ public class DebugPlugin implements IWailaPlugin {
 		registration.addConfig(Identifiers.DEBUG_SPECIAL_REGISTRY_NAME, false);
 
 		registration.registerBlockComponent(BlockStatesProvider.INSTANCE, Block.class);
-		registration.registerBlockComponent(RegistryNameProvider.INSTANCE, Block.class);
-		registration.registerEntityComponent(RegistryNameProvider.INSTANCE, Entity.class);
+		registration.registerBlockComponent(RegistryNameProvider.getBlock(), Block.class);
+		registration.registerEntityComponent(RegistryNameProvider.getEntity(), Entity.class);
 
 		registration.markAsClientFeature(Identifiers.DEBUG_BLOCK_STATES);
 		registration.markAsClientFeature(Identifiers.DEBUG_REGISTRY_NAME);

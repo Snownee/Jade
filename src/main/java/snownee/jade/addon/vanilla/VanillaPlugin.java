@@ -45,18 +45,10 @@ import net.minecraft.world.level.block.SignBlock;
 import net.minecraft.world.level.block.SpawnerBlock;
 import net.minecraft.world.level.block.TntBlock;
 import net.minecraft.world.level.block.TrialSpawnerBlock;
-import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
-import net.minecraft.world.level.block.entity.BeehiveBlockEntity;
-import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
 import net.minecraft.world.level.block.entity.CalibratedSculkSensorBlockEntity;
 import net.minecraft.world.level.block.entity.CampfireBlockEntity;
-import net.minecraft.world.level.block.entity.ChiseledBookShelfBlockEntity;
-import net.minecraft.world.level.block.entity.CommandBlockEntity;
 import net.minecraft.world.level.block.entity.ComparatorBlockEntity;
 import net.minecraft.world.level.block.entity.HopperBlockEntity;
-import net.minecraft.world.level.block.entity.JukeboxBlockEntity;
-import net.minecraft.world.level.block.entity.LecternBlockEntity;
-import net.minecraft.world.level.block.entity.TrialSpawnerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import snownee.jade.JadeClient;
@@ -98,25 +90,26 @@ public class VanillaPlugin implements IWailaPlugin {
 	private static <T extends Comparable<T>> BlockState copyProperties(BlockState oldState, BlockState newState) {
 		for (Map.Entry<Property<?>, Comparable<?>> entry : oldState.getValues().entrySet()) {
 			Property<T> property = (Property<T>) entry.getKey();
-			if (newState.hasProperty(property))
+			if (newState.hasProperty(property)) {
 				newState = newState.setValue(property, property.getValueClass().cast(entry.getValue()));
+			}
 		}
 		return newState;
 	}
 
 	@Override
 	public void register(IWailaCommonRegistration registration) {
-		registration.registerBlockDataProvider(BrewingStandProvider.INSTANCE, BrewingStandBlockEntity.class);
-		registration.registerBlockDataProvider(BeehiveProvider.INSTANCE, BeehiveBlockEntity.class);
-		registration.registerBlockDataProvider(CommandBlockProvider.INSTANCE, CommandBlockEntity.class);
-		registration.registerBlockDataProvider(JukeboxProvider.INSTANCE, JukeboxBlockEntity.class);
-		registration.registerBlockDataProvider(LecternProvider.INSTANCE, LecternBlockEntity.class);
+		registration.registerBlockDataProvider(BrewingStandProvider.INSTANCE, BrewingStandBlock.class);
+		registration.registerBlockDataProvider(BeehiveProvider.INSTANCE, BeehiveBlock.class);
+		registration.registerBlockDataProvider(CommandBlockProvider.INSTANCE, CommandBlock.class);
+		registration.registerBlockDataProvider(JukeboxProvider.INSTANCE, JukeboxBlock.class);
+		registration.registerBlockDataProvider(LecternProvider.INSTANCE, LecternBlock.class);
 		registration.registerBlockDataProvider(RedstoneProvider.INSTANCE, ComparatorBlockEntity.class);
 		registration.registerBlockDataProvider(RedstoneProvider.INSTANCE, HopperBlockEntity.class);
 		registration.registerBlockDataProvider(RedstoneProvider.INSTANCE, CalibratedSculkSensorBlockEntity.class);
-		registration.registerBlockDataProvider(FurnaceProvider.INSTANCE, AbstractFurnaceBlockEntity.class);
-		registration.registerBlockDataProvider(ChiseledBookshelfProvider.INSTANCE, ChiseledBookShelfBlockEntity.class);
-		registration.registerBlockDataProvider(MobSpawnerCooldownProvider.INSTANCE, TrialSpawnerBlockEntity.class);
+		registration.registerBlockDataProvider(FurnaceProvider.INSTANCE, AbstractFurnaceBlock.class);
+		registration.registerBlockDataProvider(ChiseledBookshelfProvider.INSTANCE, ChiseledBookShelfBlock.class);
+		registration.registerBlockDataProvider(MobSpawnerCooldownProvider.INSTANCE, TrialSpawnerBlock.class);
 
 		registration.registerEntityDataProvider(AnimalOwnerProvider.INSTANCE, Entity.class);
 		registration.registerEntityDataProvider(StatusEffectsProvider.INSTANCE, LivingEntity.class);
@@ -182,9 +175,9 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerBlockComponent(CropProgressProvider.INSTANCE, Block.class);
 		registration.registerBlockComponent(JukeboxProvider.INSTANCE, JukeboxBlock.class);
 		registration.registerBlockComponent(LecternProvider.INSTANCE, LecternBlock.class);
-		registration.registerBlockComponent(MobSpawnerProvider.INSTANCE, SpawnerBlock.class);
-		registration.registerBlockComponent(MobSpawnerProvider.INSTANCE, TrialSpawnerBlock.class);
-		registration.registerEntityComponent(MobSpawnerProvider.INSTANCE, MinecartSpawner.class);
+		registration.registerBlockComponent(MobSpawnerProvider.getBlock(), SpawnerBlock.class);
+		registration.registerBlockComponent(MobSpawnerProvider.getBlock(), TrialSpawnerBlock.class);
+		registration.registerEntityComponent(MobSpawnerProvider.getEntity(), MinecartSpawner.class);
 		registration.registerBlockComponent(MobSpawnerCooldownProvider.INSTANCE, TrialSpawnerBlock.class);
 		registration.registerBlockComponent(ChiseledBookshelfProvider.INSTANCE, ChiseledBookShelfBlock.class);
 		registration.registerBlockIcon(ChiseledBookshelfProvider.INSTANCE, ChiseledBookShelfBlock.class);

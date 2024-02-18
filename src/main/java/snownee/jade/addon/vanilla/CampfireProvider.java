@@ -18,7 +18,7 @@ import snownee.jade.api.view.IServerExtensionProvider;
 import snownee.jade.api.view.ItemView;
 import snownee.jade.api.view.ViewGroup;
 
-public enum CampfireProvider implements IServerExtensionProvider<Object, ItemStack>, IClientExtensionProvider<ItemStack, ItemView> {
+public enum CampfireProvider implements IServerExtensionProvider<ItemStack>, IClientExtensionProvider<ItemStack, ItemView> {
 
 	INSTANCE;
 
@@ -39,8 +39,8 @@ public enum CampfireProvider implements IServerExtensionProvider<Object, ItemSta
 	}
 
 	@Override
-	public @Nullable List<ViewGroup<ItemStack>> getGroups(Accessor<?> accessor, Object target) {
-		if (target instanceof CampfireBlockEntity campfire) {
+	public @Nullable List<ViewGroup<ItemStack>> getGroups(Accessor<?> accessor) {
+		if (accessor.getTarget() instanceof CampfireBlockEntity campfire) {
 			List<ItemStack> list = Lists.newArrayList();
 			for (int i = 0; i < campfire.cookingTime.length; i++) {
 				ItemStack stack = campfire.getItems().get(i);

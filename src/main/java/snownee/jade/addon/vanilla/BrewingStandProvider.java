@@ -39,11 +39,12 @@ public enum BrewingStandProvider implements IBlockComponentProvider, IServerData
 
 	@Override
 	public void appendServerData(CompoundTag tag, BlockAccessor accessor) {
-		BrewingStandBlockEntity brewingStand = (BrewingStandBlockEntity) accessor.getBlockEntity();
-		CompoundTag compound = new CompoundTag();
-		compound.putInt("Time", brewingStand.brewTime);
-		compound.putInt("Fuel", brewingStand.fuel);
-		tag.put("BrewingStand", compound);
+		if (accessor instanceof BrewingStandBlockEntity brewingStand) {
+			CompoundTag compound = new CompoundTag();
+			compound.putInt("Time", brewingStand.brewTime);
+			compound.putInt("Fuel", brewingStand.fuel);
+			tag.put("BrewingStand", compound);
+		}
 	}
 
 	@Override

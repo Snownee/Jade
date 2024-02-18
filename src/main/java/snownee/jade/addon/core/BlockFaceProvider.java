@@ -33,7 +33,7 @@ public enum BlockFaceProvider implements IBlockComponentProvider {
 
 	@Override
 	public int getDefaultPriority() {
-		return ObjectNameProvider.INSTANCE.getDefaultPriority() + 1;
+		return ObjectNameProvider.getBlock().getDefaultPriority() + 1;
 	}
 
 	@Override

@@ -45,7 +45,9 @@ public enum FurnaceProvider implements IBlockComponentProvider, IServerDataProvi
 
 	@Override
 	public void appendServerData(CompoundTag data, BlockAccessor accessor) {
-		AbstractFurnaceBlockEntity furnace = (AbstractFurnaceBlockEntity) accessor.getBlockEntity();
+		if (!(accessor.getBlockEntity() instanceof AbstractFurnaceBlockEntity furnace)) {
+			return;
+		}
 		if (furnace.isEmpty()) {
 			return;
 		}

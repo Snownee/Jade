@@ -1,6 +1,5 @@
 package snownee.jade.impl;
 
-import java.util.List;
 import java.util.function.Function;
 
 import net.minecraft.world.entity.Entity;
@@ -10,8 +9,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SpawnEggItem;
 import snownee.jade.api.AccessorClientHandler;
 import snownee.jade.api.EntityAccessor;
-import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.IJadeProvider;
+import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.ui.IElement;
@@ -39,7 +38,13 @@ public class EntityAccessorClientHandler implements AccessorClientHandler<Entity
 
 	@Override
 	public boolean shouldRequestData(EntityAccessor accessor) {
-		return !WailaCommonRegistration.instance().getEntityNBTProviders(accessor.getEntity()).isEmpty();
+		for (IServerDataProvider<EntityAccessor> provider : WailaCommonRegistration.instance()
+				.getEntityNBTProviders(accessor.getEntity())) {
+			if (provider.shouldRequestData(accessor)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override
@@ -55,15 +60,17 @@ public class EntityAccessorClientHandler implements AccessorClientHandler<Entity
 			icon = ItemStackElement.of(((ItemEntity) entity).getItem());
 		} else {
 			ItemStack stack = accessor.getPickedResult();
-			if ((!(stack.getItem() instanceof SpawnEggItem) || !(entity instanceof LivingEntity)))
+			if ((!(stack.getItem() instanceof SpawnEggItem) || !(entity instanceof LivingEntity))) {
 				icon = ItemStackElement.of(stack);
+			}
 		}
 
-		for (IEntityComponentProvider provider : WailaClientRegistration.instance().getEntityIconProviders(entity, PluginConfig.INSTANCE::get)) {
+		for (var provider : WailaClientRegistration.instance().getEntityIconProviders(entity, PluginConfig.INSTANCE::get)) {
 			try {
 				IElement element = provider.getIcon(accessor, PluginConfig.INSTANCE, icon);
-				if (!RayTracing.isEmptyElement(element))
+				if (!RayTracing.isEmptyElement(element)) {
 					icon = element;
+				}
 			} catch (Throwable e) {
 				WailaExceptionHandler.handleErr(e, provider, null);
 			}
@@ -73,8 +80,7 @@ public class EntityAccessorClientHandler implements AccessorClientHandler<Entity
 
 	@Override
 	public void gatherComponents(EntityAccessor accessor, Function<IJadeProvider, ITooltip> tooltipProvider) {
-		List<IEntityComponentProvider> providers = WailaClientRegistration.instance().getEntityProviders(accessor.getEntity(), PluginConfig.INSTANCE::get);
-		for (IEntityComponentProvider provider : providers) {
+		for (var provider : WailaClientRegistration.instance().getEntityProviders(accessor.getEntity(), PluginConfig.INSTANCE::get)) {
 			ITooltip tooltip = tooltipProvider.apply(provider);
 			try {
 				ElementHelper.INSTANCE.setCurrentUid(provider.getUid());

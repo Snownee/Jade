@@ -59,11 +59,7 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 			if (pos.distSqr(player.blockPosition()) > maxDistance || !world.isLoaded(pos))
 				return;
 
-			BlockEntity tile = accessor.getBlockEntity();
-			if (tile == null)
-				return;
-
-			List<IServerDataProvider<BlockAccessor>> providers = WailaCommonRegistration.instance().getBlockNBTProviders(tile);
+			List<IServerDataProvider<BlockAccessor>> providers = WailaCommonRegistration.instance().getBlockNBTProviders(accessor.getBlock(), accessor.getBlockEntity());
 			if (providers.isEmpty())
 				return;
 
@@ -79,7 +75,7 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 			tag.putInt("x", pos.getX());
 			tag.putInt("y", pos.getY());
 			tag.putInt("z", pos.getZ());
-			tag.putString("id", CommonProxy.getId(tile.getType()).toString());
+			tag.putString("BlockId", CommonProxy.getId(accessor.getBlock()).toString());
 			responseSender.accept(tag);
 		});
 	}
@@ -114,6 +110,7 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 		return CommonProxy.getBlockPickedResult(blockState, getPlayer(), getHitResult());
 	}
 
+	@Nullable
 	@Override
 	public Object getTarget() {
 		return getBlockEntity();

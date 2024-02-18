@@ -8,6 +8,7 @@ import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.IEntityComponentProvider;
+import snownee.jade.api.IToggleableProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.TooltipPosition;
@@ -16,33 +17,48 @@ import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.util.ModIdentification;
 
-public enum ModNameProvider implements IBlockComponentProvider, IEntityComponentProvider {
+public abstract class ModNameProvider implements IToggleableProvider {
 
-	INSTANCE;
+	public static ForBlock getBlock() {
+		return ForBlock.INSTANCE;
+	}
 
-	@Override
-	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		String modName = null;
-		if (accessor.isFakeBlock()) {
-			modName = ModIdentification.getModName(accessor.getFakeBlock());
-		}
-		if (modName == null && WailaClientRegistration.instance().shouldPick(accessor.getBlockState())) {
-			ItemStack pick = accessor.getPickedResult();
-			if (!pick.isEmpty())
-				modName = ModIdentification.getModName(pick);
-		}
-		if (modName == null) {
-			modName = ModIdentification.getModName(accessor.getBlock());
-		}
+	public static ForEntity getEntity() {
+		return ForEntity.INSTANCE;
+	}
 
-		if (!Strings.isNullOrEmpty(modName)) {
-			tooltip.add(IThemeHelper.get().modName(modName));
+	public static class ForBlock extends ModNameProvider implements IBlockComponentProvider {
+		private static final ForBlock INSTANCE = new ForBlock();
+
+		@Override
+		public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
+			String modName = null;
+			if (accessor.isFakeBlock()) {
+				modName = ModIdentification.getModName(accessor.getFakeBlock());
+			}
+			if (modName == null && WailaClientRegistration.instance().shouldPick(accessor.getBlockState())) {
+				ItemStack pick = accessor.getPickedResult();
+				if (!pick.isEmpty()) {
+					modName = ModIdentification.getModName(pick);
+				}
+			}
+			if (modName == null) {
+				modName = ModIdentification.getModName(accessor.getBlock());
+			}
+
+			if (!Strings.isNullOrEmpty(modName)) {
+				tooltip.add(IThemeHelper.get().modName(modName));
+			}
 		}
 	}
 
-	@Override
-	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
-		tooltip.add(IThemeHelper.get().modName(ModIdentification.getModName(accessor.getEntity())));
+	public static class ForEntity extends ModNameProvider implements IEntityComponentProvider {
+		private static final ForEntity INSTANCE = new ForEntity();
+
+		@Override
+		public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
+			tooltip.add(IThemeHelper.get().modName(ModIdentification.getModName(accessor.getEntity())));
+		}
 	}
 
 	@Override

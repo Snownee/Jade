@@ -67,7 +67,7 @@ import snownee.jade.util.ModIdentification;
 
 public final class JadeClient {
 
-	public static final SystemToast.SystemToastId JADE_TUTORIAL = new SystemToast.SystemToastId(10000L);
+	public static final SystemToast.SystemToastId JADE_TUTORIAL = new SystemToast.SystemToastId(6000L);
 	public static KeyMapping openConfig;
 	public static KeyMapping showOverlay;
 	public static KeyMapping toggleLiquid;
@@ -98,8 +98,8 @@ public final class JadeClient {
 	public static void onKeyPressed(int action) {
 		while (openConfig.consumeClick()) {
 			Jade.CONFIG.invalidate();
-			ItemStorageProvider.INSTANCE.targetCache.invalidateAll();
-			ItemStorageProvider.INSTANCE.containerCache.invalidateAll();
+			ItemStorageProvider.targetCache.invalidateAll();
+			ItemStorageProvider.containerCache.invalidateAll();
 			Minecraft.getInstance().setScreen(new HomeConfigScreen(null));
 		}
 
@@ -109,7 +109,11 @@ public final class JadeClient {
 			if (mode == IWailaConfig.DisplayMode.TOGGLE) {
 				general.setDisplayTooltip(!general.shouldDisplayTooltip());
 				if (!general.shouldDisplayTooltip() && general.hintOverlayToggle) {
-					SystemToast.add(Minecraft.getInstance().getToasts(), JADE_TUTORIAL, Component.translatable("toast.jade.toggle_hint.1"), Component.translatable("toast.jade.toggle_hint.2", showOverlay.getTranslatedKeyMessage()));
+					SystemToast.add(
+							Minecraft.getInstance().getToasts(),
+							JADE_TUTORIAL,
+							Component.translatable("toast.jade.toggle_hint.1"),
+							Component.translatable("toast.jade.toggle_hint.2", showOverlay.getTranslatedKeyMessage()));
 					general.hintOverlayToggle = false;
 				}
 				Jade.CONFIG.save();
@@ -125,7 +129,11 @@ public final class JadeClient {
 			if (general.getTTSMode() == TTSMode.TOGGLE) {
 				general.toggleTTS();
 				if (general.shouldEnableTextToSpeech() && general.hintNarratorToggle) {
-					SystemToast.add(Minecraft.getInstance().getToasts(), JADE_TUTORIAL, Component.translatable("toast.jade.tts_hint.1"), Component.translatable("toast.jade.tts_hint.2", narrate.getTranslatedKeyMessage()));
+					SystemToast.add(
+							Minecraft.getInstance().getToasts(),
+							JADE_TUTORIAL,
+							Component.translatable("toast.jade.tts_hint.1"),
+							Component.translatable("toast.jade.tts_hint.2", narrate.getTranslatedKeyMessage()));
 					general.hintNarratorToggle = false;
 				}
 				Jade.CONFIG.save();
@@ -159,9 +167,11 @@ public final class JadeClient {
 	}
 
 	private static void appendModName(List<Component> tooltip, ItemStack stack, TooltipFlag context) {
-		if (hideModName || !Jade.CONFIG.get().getGeneral().showItemModNameTooltip())
+		if (hideModName || !Jade.CONFIG.get().getGeneral().showItemModNameTooltip()) {
 			return;
-		if (Minecraft.getInstance().screen instanceof CreativeModeInventoryScreen screen && screen.hoveredSlot != null && screen.hoveredSlot.getItem() == stack) {
+		}
+		if (Minecraft.getInstance().screen instanceof CreativeModeInventoryScreen screen && screen.hoveredSlot != null &&
+				screen.hoveredSlot.getItem() == stack) {
 			if (CreativeModeInventoryScreen.selectedTab.getType() != CreativeModeTab.Type.CATEGORY || !context.isCreative()) {
 				return;
 			}
@@ -177,14 +187,18 @@ public final class JadeClient {
 	}
 
 	@Nullable
-	public static Accessor<?> builtInOverrides(HitResult hitResult, @Nullable Accessor<?> accessor, @Nullable Accessor<?> originalAccessor) {
+	public static Accessor<?> builtInOverrides(
+			HitResult hitResult,
+			@Nullable Accessor<?> accessor,
+			@Nullable Accessor<?> originalAccessor) {
 		if (WailaClientRegistration.instance().maybeLowVisionUser() || !IWailaConfig.get().getGeneral().getBuiltinCamouflage()) {
 			return accessor;
 		}
 		if (accessor instanceof BlockAccessor target) {
 			Player player = accessor.getPlayer();
-			if (player.isCreative() || player.isSpectator())
+			if (player.isCreative() || player.isSpectator()) {
 				return accessor;
+			}
 			IWailaClientRegistration client = VanillaPlugin.CLIENT_REGISTRATION;
 			if (target.getBlock() instanceof TrappedChestBlock) {
 				BlockState state = VanillaPlugin.getCorrespondingNormalChest(target.getBlockState());
@@ -208,7 +222,10 @@ public final class JadeClient {
 	}
 
 	@Nullable
-	public static Accessor<?> limitMobEffectFog(HitResult hitResult, @Nullable Accessor<?> accessor, @Nullable Accessor<?> originalAccessor) {
+	public static Accessor<?> limitMobEffectFog(
+			HitResult hitResult,
+			@Nullable Accessor<?> accessor,
+			@Nullable Accessor<?> originalAccessor) {
 		if (accessor == null) {
 			return null;
 		}
@@ -226,7 +243,12 @@ public final class JadeClient {
 			return accessor;
 		}
 		FogRenderer.FogData fogData = new FogRenderer.FogData(FogRenderer.FogMode.FOG_TERRAIN);
-		fogFunction.setupFog(fogData, player, player.getEffect(fogFunction.getMobEffect()), Math.max(32, mc.gameRenderer.getRenderDistance()), 1);
+		fogFunction.setupFog(
+				fogData,
+				player,
+				player.getEffect(fogFunction.getMobEffect()),
+				Math.max(32, mc.gameRenderer.getRenderDistance()),
+				1);
 		float dist = (fogData.start + fogData.end) * 0.5F;
 		if (accessor.getHitResult().distanceTo(player) > dist * dist) {
 			return null;

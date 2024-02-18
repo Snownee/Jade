@@ -17,14 +17,52 @@ import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.IEntityComponentProvider;
+import snownee.jade.api.IToggleableProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
 
-public enum MobSpawnerProvider implements IBlockComponentProvider, IEntityComponentProvider {
+public abstract class MobSpawnerProvider implements IToggleableProvider {
 
-	INSTANCE;
+	public static ForBlock getBlock() {
+		return ForBlock.INSTANCE;
+	}
+
+	public static ForEntity getEntity() {
+		return ForEntity.INSTANCE;
+	}
+
+	public static class ForBlock extends MobSpawnerProvider implements IBlockComponentProvider {
+		private static final ForBlock INSTANCE = new ForBlock();
+
+		@Override
+		public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
+			MutableComponent name = accessor.getBlock().getName();
+			Level level = accessor.getLevel();
+			BlockPos pos = accessor.getPosition();
+			if (accessor.getBlockEntity() instanceof SpawnerBlockEntity spawner) {
+				appendTooltip(tooltip, spawner.getSpawner().getOrCreateDisplayEntity(level, pos), name);
+			} else if (accessor.getBlockEntity() instanceof TrialSpawnerBlockEntity spawner) {
+				TrialSpawnerData data = spawner.getTrialSpawner().getData();
+				appendTooltip(tooltip, data.getOrCreateDisplayEntity(spawner.getTrialSpawner(), level, spawner.getState()), name);
+			}
+		}
+	}
+
+	public static class ForEntity extends MobSpawnerProvider implements IEntityComponentProvider {
+		private static final ForEntity INSTANCE = new ForEntity();
+
+		@Override
+		public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
+			MinecartSpawner spawner = (MinecartSpawner) accessor.getEntity();
+			MutableComponent name = ObjectNameProvider.getEntityName(spawner).copy();
+			appendTooltip(
+					tooltip,
+					spawner.getSpawner().getOrCreateDisplayEntity(accessor.getLevel(), accessor.getEntity().blockPosition()),
+					name);
+		}
+	}
 
 	public static void appendTooltip(ITooltip tooltip, @Nullable Entity displayEntity, MutableComponent name) {
 		if (displayEntity == null) {
@@ -35,33 +73,13 @@ public enum MobSpawnerProvider implements IBlockComponentProvider, IEntityCompon
 	}
 
 	@Override
-	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		MutableComponent name = accessor.getBlock().getName();
-		Level level = accessor.getLevel();
-		BlockPos pos = accessor.getPosition();
-		if (accessor.getBlockEntity() instanceof SpawnerBlockEntity spawner) {
-			appendTooltip(tooltip, spawner.getSpawner().getOrCreateDisplayEntity(level, pos), name);
-		} else if (accessor.getBlockEntity() instanceof TrialSpawnerBlockEntity spawner) {
-			TrialSpawnerData data = spawner.getTrialSpawner().getData();
-			appendTooltip(tooltip, data.getOrCreateDisplayEntity(spawner.getTrialSpawner(), level, spawner.getState()), name);
-		}
-	}
-
-	@Override
-	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
-		MinecartSpawner spawner = (MinecartSpawner) accessor.getEntity();
-		MutableComponent name = ObjectNameProvider.getEntityName(spawner).copy();
-		appendTooltip(tooltip, spawner.getSpawner().getOrCreateDisplayEntity(accessor.getLevel(), accessor.getEntity().blockPosition()), name);
-	}
-
-	@Override
 	public ResourceLocation getUid() {
 		return Identifiers.MC_MOB_SPAWNER;
 	}
 
 	@Override
 	public int getDefaultPriority() {
-		return ObjectNameProvider.INSTANCE.getDefaultPriority() + 10;
+		return ObjectNameProvider.getEntity().getDefaultPriority() + 10;
 	}
 
 }

@@ -1,6 +1,7 @@
 package snownee.jade.test;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.IntStream;
 
 import net.minecraft.network.chat.Component;
@@ -15,8 +16,7 @@ import snownee.jade.api.view.IServerExtensionProvider;
 import snownee.jade.api.view.ItemView;
 import snownee.jade.api.view.ViewGroup;
 
-public enum ExampleItemStorageProvider implements IServerExtensionProvider<BrewingStandBlockEntity, ItemStack>,
-		IClientExtensionProvider<ItemStack, ItemView> {
+public enum ExampleItemStorageProvider implements IServerExtensionProvider<ItemStack>, IClientExtensionProvider<ItemStack, ItemView> {
 	INSTANCE;
 
 	@Override
@@ -33,7 +33,8 @@ public enum ExampleItemStorageProvider implements IServerExtensionProvider<Brewi
 	}
 
 	@Override
-	public List<ViewGroup<ItemStack>> getGroups(Accessor<?> accessor, BrewingStandBlockEntity target) {
+	public List<ViewGroup<ItemStack>> getGroups(Accessor<?> accessor) {
+		BrewingStandBlockEntity target = (BrewingStandBlockEntity) Objects.requireNonNull(accessor.getTarget());
 		var potions = new ViewGroup<>(IntStream.of(0, 1, 2).mapToObj(target::getItem).filter($ -> !$.isEmpty()).toList());
 		potions.id = "Potions";
 		var ingredient = new ViewGroup<>(IntStream.of(3).mapToObj(target::getItem).filter($ -> !$.isEmpty()).toList());
