@@ -1,4 +1,4 @@
-name: New Issue (Bug / Suggestion)
+name: New Issue (Bug/Suggestion) other than mod support requests
 description: Do not write different problems/ideas in one issue. Separate them
 body:
   - type: dropdown
@@ -55,4 +55,4 @@ body:
   - type: textarea
     attributes:
       label: Issue description
-      placeholder: A description of the bug / suggestion.
+      placeholder: A description of the bug/suggestion.
