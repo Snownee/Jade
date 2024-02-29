@@ -1,0 +1,17 @@
+name: Close Mod Support Request Issue
+on:
+  issues:
+    types: labeled
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  action:
+    if: github.event.label.name == 'mod support request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: dessant/label-actions@v4
+        with:
+          config-path: '.github/close-mod-support-request.yml'
