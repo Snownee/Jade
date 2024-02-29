@@ -1,6 +1,7 @@
 mod support request:
   close: true
+  close-reason: 'not planned'
   comment: |
     Thank you for your suggestion regarding my project. However, this project is designed to have only basic or vanilla features, to support new Minecraft versions as soon as possible.
-    If you have requests for adding support for other mods, it is highly recommended to ask the developers of that mod first. This will help us fulfill your request as quickly as possible.
+    If you have requests for adding support for other mods, it is highly recommended to ask the developers of that mod first. This may help to fulfill your request much faster.
     If the developers have stated that they have no plans for it, please consider [creating an issue in my child project - JadeAddons](https://github.com/Snownee/JadeAddons) instead.
