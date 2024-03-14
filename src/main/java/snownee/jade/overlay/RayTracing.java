@@ -115,6 +115,7 @@ public class RayTracing {
 
 	public HitResult rayTrace(Entity entity, double playerReach, float partialTicks) {
 		Vec3 eyePosition = entity.getEyePosition(partialTicks);
+		Vec3 cameraPosition = mc.gameRenderer.getMainCamera().getPosition();
 		Vec3 traceEnd;
 		if (mc.hitResult != null && mc.hitResult.getType() == Type.BLOCK) {
 			traceEnd = mc.hitResult.getLocation();
@@ -129,14 +130,15 @@ public class RayTracing {
 		Predicate<Entity> predicate = e -> canBeTarget(e, entity);
 		EntityHitResult entityResult = getEntityHitResult(world, entity, eyePosition, traceEnd, bound, predicate);
 
-		if (mc.hitResult != null && mc.hitResult.getType() == Type.BLOCK) {
-			Vec3 lookVector = entity.getViewVector(partialTicks);
-			traceEnd = eyePosition.add(lookVector.x * playerReach, lookVector.y * playerReach, lookVector.z * playerReach);
+		if (mc.hitResult != null && mc.hitResult.getType() != Type.ENTITY) {
+			traceEnd =  mc.hitResult.getLocation().subtract(eyePosition).normalize().scale(playerReach + 1e-5).add(eyePosition);
 		}
 
 		BlockState eyeBlock = world.getBlockState(BlockPos.containing(eyePosition));
+		BlockState cameraBlock = world.getBlockState(BlockPos.containing(cameraPosition));
 		ClipContext.Fluid fluidView = ClipContext.Fluid.NONE;
-		if (eyeBlock.getFluidState().isEmpty()) {
+		// Use eyeBlock or cameraBlock ?
+		if (cameraBlock.getFluidState().isEmpty()) {
 			fluidView = Jade.CONFIG.get().getGeneral().getDisplayFluids().ctx;
 		}
 		ClipContext context = new ClipContext(eyePosition, traceEnd, ClipContext.Block.OUTLINE, fluidView, entity);
