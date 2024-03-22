@@ -29,8 +29,9 @@ public abstract class Element implements IElement {
 
 	@Override
 	public Vec2 getCachedSize() {
-		if (size == null)
+		if (size == null) {
 			size = getSize();
+		}
 		return size;
 	}
 

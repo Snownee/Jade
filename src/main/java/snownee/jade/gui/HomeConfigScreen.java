@@ -348,7 +348,9 @@ public class HomeConfigScreen extends Screen {
 					text = random.nextBoolean() ? "✴" : "✳";
 					color = random.nextBoolean() ? 0xFFD427 : 0xF0C415;
 					Objects.requireNonNull(minecraft);
-					minecraft.getSoundManager().play(SimpleSoundInstance.forUI(random.nextBoolean() ? SoundEvents.FIREWORK_ROCKET_BLAST : SoundEvents.FIREWORK_ROCKET_LARGE_BLAST, 0.7F));
+					minecraft.getSoundManager().play(SimpleSoundInstance.forUI(random.nextBoolean() ?
+							SoundEvents.FIREWORK_ROCKET_BLAST :
+							SoundEvents.FIREWORK_ROCKET_LARGE_BLAST, 0.7F));
 				}
 			} else if (festival == 1) {
 				age -= partialTicks;

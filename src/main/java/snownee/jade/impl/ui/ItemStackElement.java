@@ -45,15 +45,17 @@ public class ItemStackElement extends Element {
 
 	@Override
 	public void render(GuiGraphics guiGraphics, float x, float y, float maxX, float maxY) {
-		if (stack.isEmpty())
+		if (stack.isEmpty()) {
 			return;
+		}
 		DisplayHelper.INSTANCE.drawItem(guiGraphics, x + 1, y + 1, stack, scale, text);
 	}
 
 	@Override
 	public @Nullable String getMessage() {
-		if (stack.isEmpty())
+		if (stack.isEmpty()) {
 			return null;
+		}
 		return "%s %s".formatted(stack.getCount(), stack.getHoverName().getString());
 	}
 

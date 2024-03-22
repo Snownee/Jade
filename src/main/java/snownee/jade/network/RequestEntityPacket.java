@@ -8,7 +8,9 @@ import snownee.jade.impl.EntityAccessorImpl;
 
 public record RequestEntityPacket(EntityAccessorImpl.SyncData data) implements CustomPacketPayload {
 	public static final Type<RequestEntityPacket> TYPE = new Type<>(Identifiers.PACKET_REQUEST_ENTITY);
-	public static final StreamCodec<RegistryFriendlyByteBuf, RequestEntityPacket> CODEC = CustomPacketPayload.codec(RequestEntityPacket::write, RequestEntityPacket::read);
+	public static final StreamCodec<RegistryFriendlyByteBuf, RequestEntityPacket> CODEC = CustomPacketPayload.codec(
+			RequestEntityPacket::write,
+			RequestEntityPacket::read);
 
 	public static RequestEntityPacket read(RegistryFriendlyByteBuf buffer) {
 		return new RequestEntityPacket(new EntityAccessorImpl.SyncData(buffer));

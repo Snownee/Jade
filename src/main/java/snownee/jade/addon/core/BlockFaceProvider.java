@@ -21,7 +21,8 @@ public enum BlockFaceProvider implements IBlockComponentProvider {
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		tooltip.replace(Identifiers.CORE_OBJECT_NAME, lists -> {
 			List<IElement> lastList = lists.get(lists.size() - 1);
-			lastList.add(IElementHelper.get().text(Component.translatable("jade.blockFace", I18n.get("jade." + accessor.getSide().getName()))));
+			lastList.add(IElementHelper.get()
+					.text(Component.translatable("jade.blockFace", I18n.get("jade." + accessor.getSide().getName()))));
 			return lists;
 		});
 	}

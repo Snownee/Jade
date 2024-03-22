@@ -78,8 +78,9 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 
 		ConfigGeneral general = Jade.CONFIG.get().getGeneral();
 		options.title("general");
-		if (CommonProxy.isDevEnv())
+		if (CommonProxy.isDevEnv()) {
 			options.choices("debug_mode", general.isDebug(), general::setDebug);
+		}
 		options.choices("display_tooltip", general.shouldDisplayTooltip(), general::setDisplayTooltip);
 		OptionsList.Entry entry = options.choices("display_entities", general.getDisplayEntities(), general::setDisplayEntities);
 		editBlocklist(entry, "hide-entities", () -> CorePlugin.createBlockBlocklist().get());
@@ -90,8 +91,9 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 		options.choices("display_mode", general.getDisplayMode(), general::setDisplayMode, builder -> {
 			builder.withTooltip(mode -> {
 				String key = "display_mode_" + mode.name().toLowerCase(Locale.ENGLISH) + "_desc";
-				if (mode == IWailaConfig.DisplayMode.LITE && "fabric".equals(CommonProxy.getPlatformIdentifier()))
+				if (mode == IWailaConfig.DisplayMode.LITE && "fabric".equals(CommonProxy.getPlatformIdentifier())) {
 					key += ".fabric";
+				}
 				return Tooltip.create(OptionsList.Entry.makeTitle(key));
 			});
 		});
@@ -111,19 +113,33 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 
 		ConfigOverlay overlay = Jade.CONFIG.get().getOverlay();
 		options.title("overlay");
-		options.choices("overlay_theme", overlay.getTheme().id, IThemeHelper.get().getThemes().stream().filter($ -> !$.hidden).map($ -> $.id).toList(), id -> {
-			if (Objects.equals(id, overlay.getTheme().id))
-				return;
-			overlay.applyTheme(id);
-			Theme theme = overlay.getTheme();
-			if (theme.changeRoundCorner != null)
-				squareEntry.setValue(theme.changeRoundCorner);
-			if (theme.changeOpacity != 0)
-				opacityEntry.setValue(theme.changeOpacity);
-		}, id -> Component.translatable(Util.makeDescriptionId("jade.theme", id)));
+		options.choices(
+				"overlay_theme",
+				overlay.getTheme().id,
+				IThemeHelper.get().getThemes().stream().filter($ -> !$.hidden).map($ -> $.id).toList(),
+				id -> {
+					if (Objects.equals(id, overlay.getTheme().id)) {
+						return;
+					}
+					overlay.applyTheme(id);
+					Theme theme = overlay.getTheme();
+					if (theme.changeRoundCorner != null) {
+						squareEntry.setValue(theme.changeRoundCorner);
+					}
+					if (theme.changeOpacity != 0) {
+						opacityEntry.setValue(theme.changeOpacity);
+					}
+				},
+				id -> Component.translatable(Util.makeDescriptionId("jade.theme", id)));
 		squareEntry = options.choices("overlay_square", overlay.getSquare(), overlay::setSquare);
 		opacityEntry = options.slider("overlay_alpha", overlay.getAlpha(), overlay::setAlpha);
-		options.forcePreview.add(options.slider("overlay_scale", overlay.getOverlayScale(), overlay::setOverlayScale, 0.2f, 2, FloatUnaryOperator.identity()));
+		options.forcePreview.add(options.slider(
+				"overlay_scale",
+				overlay.getOverlayScale(),
+				overlay::setOverlayScale,
+				0.2f,
+				2,
+				FloatUnaryOperator.identity()));
 		Component adjust = Component.translatable(OptionsList.Entry.makeKey("overlay_pos.adjust"));
 		options.add(new OptionButton(Component.translatable(OptionsList.Entry.makeKey("overlay_pos")), Button.builder(adjust, w -> {
 			adjustingPosition = true;
@@ -156,30 +172,35 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 		Component reset = Component.translatable("controls.reset").withStyle(ChatFormatting.RED);
 		Component title = Component.translatable(OptionsList.Entry.makeKey("reset_settings")).withStyle(ChatFormatting.RED);
 		options.add(new OptionButton(title, Button.builder(reset, w -> {
-			minecraft.setScreen(new ConfirmScreen(bl -> {
-				if (bl) {
-					for (KeyMapping keyMapping : minecraft.options.keyMappings) {
-						if (JadeClient.openConfig.getCategory().equals(keyMapping.getCategory())) {
-							keyMapping.setKey(keyMapping.getDefaultKey());
+			minecraft.setScreen(new ConfirmScreen(
+					bl -> {
+						if (bl) {
+							for (KeyMapping keyMapping : minecraft.options.keyMappings) {
+								if (JadeClient.openConfig.getCategory().equals(keyMapping.getCategory())) {
+									keyMapping.setKey(keyMapping.getDefaultKey());
+								}
+							}
+							minecraft.options.save();
+							try {
+								int themesHash = Jade.CONFIG.get().getOverlay().themesHash;
+								Preconditions.checkState(Jade.CONFIG.getFile().delete());
+								Preconditions.checkState(PluginConfig.INSTANCE.getFile().delete());
+								Jade.CONFIG.invalidate();
+								Jade.CONFIG.get().getOverlay().themesHash = themesHash;
+								Jade.CONFIG.save();
+								PluginConfig.INSTANCE.reload();
+								rebuildWidgets();
+							} catch (Throwable e) {
+								Jade.LOGGER.error("", e);
+							}
 						}
-					}
-					minecraft.options.save();
-					try {
-						int themesHash = Jade.CONFIG.get().getOverlay().themesHash;
-						Preconditions.checkState(Jade.CONFIG.getFile().delete());
-						Preconditions.checkState(PluginConfig.INSTANCE.getFile().delete());
-						Jade.CONFIG.invalidate();
-						Jade.CONFIG.get().getOverlay().themesHash = themesHash;
-						Jade.CONFIG.save();
-						PluginConfig.INSTANCE.reload();
-						rebuildWidgets();
-					} catch (Throwable e) {
-						Jade.LOGGER.error("", e);
-					}
-				}
-				minecraft.setScreen(this);
-				this.options.setScrollAmount(this.options.getMaxScroll());
-			}, title, Component.translatable(OptionsList.Entry.makeKey("reset_settings.confirm")), reset, Component.translatable("gui.cancel")));
+						minecraft.setScreen(this);
+						this.options.setScrollAmount(this.options.getMaxScroll());
+					},
+					title,
+					Component.translatable(OptionsList.Entry.makeKey("reset_settings.confirm")),
+					reset,
+					Component.translatable("gui.cancel")));
 		}).size(100, 20).build()));
 
 		return options;

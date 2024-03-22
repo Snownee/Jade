@@ -31,7 +31,10 @@ public class ClientViewGroup<T> {
 		this.views = views;
 	}
 
-	public static <IN, OUT> List<ClientViewGroup<OUT>> map(List<ViewGroup<IN>> groups, Function<IN, OUT> itemFactory, @Nullable BiConsumer<ViewGroup<IN>, ClientViewGroup<OUT>> clientGroupDecorator) {
+	public static <IN, OUT> List<ClientViewGroup<OUT>> map(
+			List<ViewGroup<IN>> groups,
+			Function<IN, OUT> itemFactory,
+			@Nullable BiConsumer<ViewGroup<IN>, ClientViewGroup<OUT>> clientGroupDecorator) {
 		return groups.stream().map($ -> {
 			var group = new ClientViewGroup<>($.views.stream().map(itemFactory).filter(Objects::nonNull).toList());
 			CompoundTag data = $.extraData;
@@ -51,7 +54,11 @@ public class ClientViewGroup<T> {
 		}).toList();
 	}
 
-	public static <T> void tooltip(ITooltip tooltip, List<ClientViewGroup<T>> groups, boolean renderGroup, BiConsumer<ITooltip, ClientViewGroup<T>> consumer) {
+	public static <T> void tooltip(
+			ITooltip tooltip,
+			List<ClientViewGroup<T>> groups,
+			boolean renderGroup,
+			BiConsumer<ITooltip, ClientViewGroup<T>> consumer) {
 		for (var group : groups) {
 			ITooltip theTooltip = renderGroup ? IElementHelper.get().tooltip() : tooltip;
 			consumer.accept(theTooltip, group);

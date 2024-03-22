@@ -37,23 +37,25 @@ public class SimpleProgressStyle extends ProgressStyle {
 		float v = max;
 		float delta = max - min;
 		float h, s;
-		if (max != 0)
+		if (max != 0) {
 			s = delta / max; // s
-		else {
+		} else {
 			// r = g = b = 0        // s = 0, v is undefined
 			s = 0;
 			h = -1;
 			return new Vector3f(h, s, 0 /*Float.NaN*/);
 		}
-		if (r == max)
+		if (r == max) {
 			h = (g - b) / delta; // between yellow & magenta
-		else if (g == max)
+		} else if (g == max) {
 			h = 2 + (b - r) / delta; // between cyan & yellow
-		else
+		} else {
 			h = 4 + (r - g) / delta; // between magenta & cyan
+		}
 		h /= 6; // degrees
-		if (h < 0)
+		if (h < 0) {
 			h += 1;
+		}
 		return new Vector3f(h, s, v / 255);
 	}
 
@@ -89,8 +91,24 @@ public class SimpleProgressStyle extends ProgressStyle {
 				int lighter = Color.hsl(color3.getHue(), color3.getSaturation(), color3.getLightness() * 0.7f, color3.getOpacity()).toInt();
 
 				float half = choose(true, height, width) / 2;
-				DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x, progressY, choose(true, progress, half), choose(false, progress, half), lighter, color, vertical);
-				DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x + choose(false, half, 0), progressY + choose(true, half, 0), choose(true, progress, half), choose(false, progress, half), color, lighter, vertical);
+				DisplayHelper.INSTANCE.drawGradientRect(
+						guiGraphics,
+						x,
+						progressY,
+						choose(true, progress, half),
+						choose(false, progress, half),
+						lighter,
+						color,
+						vertical);
+				DisplayHelper.INSTANCE.drawGradientRect(
+						guiGraphics,
+						x + choose(false, half, 0),
+						progressY + choose(true, half, 0),
+						choose(true, progress, half),
+						choose(false, progress, half),
+						color,
+						lighter,
+						vertical);
 				if (color != color2) {
 					if (vertical) {
 						for (float yy = y + height; yy > progressY; yy -= 2) {

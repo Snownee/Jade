@@ -57,7 +57,8 @@ public abstract class EnergyStorageProvider<T extends Accessor<?>> implements IC
 			var provider = Optional.ofNullable(ResourceLocation.tryParse(accessor.getServerData().getString("JadeEnergyStorageUid"))).map(
 					WailaClientRegistration.instance().energyStorageProviders::get);
 			if (provider.isPresent()) {
-				var groups = provider.get().getClientGroups(accessor,
+				var groups = provider.get().getClientGroups(
+						accessor,
 						ViewGroup.readList(accessor.getServerData(), "JadeEnergyStorage", Function.identity()));
 				if (groups.isEmpty()) {
 					return;

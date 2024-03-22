@@ -51,8 +51,9 @@ public final class UsernameCache {
 		Objects.requireNonNull(uuid);
 		Objects.requireNonNull(username);
 
-		if (!isValidName(username))
+		if (!isValidName(username)) {
 			return;
+		}
 
 		String prev = map.put(uuid, username);
 		if (!loading && !Objects.equals(prev, username)) {
@@ -131,8 +132,9 @@ public final class UsernameCache {
 	 * Load the cache from file
 	 */
 	public static void load() {
-		if (!Files.exists(saveFile))
+		if (!Files.exists(saveFile)) {
 			return;
+		}
 
 		loading = true;
 		try (final BufferedReader reader = Files.newBufferedReader(saveFile, Charsets.UTF_8)) {

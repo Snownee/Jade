@@ -61,7 +61,13 @@ public class RayTracing {
 
 	// from ProjectileUtil
 	@Nullable
-	public static EntityHitResult getEntityHitResult(Level worldIn, Entity projectile, Vec3 startVec, Vec3 endVec, AABB boundingBox, Predicate<Entity> filter) {
+	public static EntityHitResult getEntityHitResult(
+			Level worldIn,
+			Entity projectile,
+			Vec3 startVec,
+			Vec3 endVec,
+			AABB boundingBox,
+			Predicate<Entity> filter) {
 		double d0 = Double.MAX_VALUE;
 		Entity entity = null;
 
@@ -95,8 +101,9 @@ public class RayTracing {
 	public void fire() {
 		Entity viewEntity = mc.getCameraEntity();
 		Player viewPlayer = viewEntity instanceof Player ? (Player) viewEntity : mc.player;
-		if (viewEntity == null || viewPlayer == null)
+		if (viewEntity == null || viewPlayer == null) {
 			return;
+		}
 
 		if (mc.hitResult != null && mc.hitResult.getType() == Type.ENTITY) {
 			Entity targetEntity = ((EntityHitResult) mc.hitResult).getEntity();
@@ -163,38 +170,49 @@ public class RayTracing {
 	}
 
 	private boolean canBeTarget(Entity target, Entity viewEntity) {
-		if (target.isRemoved())
+		if (target.isRemoved()) {
 			return false;
-		if (target.isSpectator())
+		}
+		if (target.isSpectator()) {
 			return false;
-		if (target == viewEntity.getVehicle())
+		}
+		if (target == viewEntity.getVehicle()) {
 			return false;
-		if (target instanceof Projectile projectile && projectile.tickCount <= 10 && !target.level().tickRateManager().isEntityFrozen(target))
+		}
+		if (target instanceof Projectile projectile && projectile.tickCount <= 10 &&
+				!target.level().tickRateManager().isEntityFrozen(target)) {
 			return false;
-		if (CommonProxy.isMultipartEntity(target) && !target.isPickable())
+		}
+		if (CommonProxy.isMultipartEntity(target) && !target.isPickable()) {
 			return false;
+		}
 		if (viewEntity instanceof Player player) {
-			if (target.isInvisibleTo(player))
+			if (target.isInvisibleTo(player)) {
 				return false;
-			if (mc.gameMode.isDestroying() && target.getType() == EntityType.ITEM)
+			}
+			if (mc.gameMode.isDestroying() && target.getType() == EntityType.ITEM) {
 				return false;
+			}
 		} else {
-			if (target.isInvisible())
+			if (target.isInvisible()) {
 				return false;
+			}
 		}
 		return !WailaClientRegistration.instance().shouldHide(target) && ENTITY_FILTER.test(target);
 	}
 
 	public IElement getIcon() {
 		Accessor<?> accessor = ObjectDataCenter.get();
-		if (accessor == null)
+		if (accessor == null) {
 			return null;
+		}
 
 		IElement icon = ObjectDataCenter.getIcon();
-		if (isEmptyElement(icon))
+		if (isEmptyElement(icon)) {
 			return null;
-		else
+		} else {
 			return icon;
+		}
 	}
 
 }

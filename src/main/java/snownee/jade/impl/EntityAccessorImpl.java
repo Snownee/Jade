@@ -41,15 +41,18 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 		ServerPlayer player = context.player();
 		context.execute(() -> {
 			EntityAccessor accessor = data.unpack(player);
-			if (accessor == null)
+			if (accessor == null) {
 				return;
+			}
 			Entity entity = accessor.getEntity();
 			double maxDistance = Mth.square(player.entityInteractionRange() + 21);
-			if (entity == null || player.distanceToSqr(entity) > maxDistance)
+			if (entity == null || player.distanceToSqr(entity) > maxDistance) {
 				return;
+			}
 			List<IServerDataProvider<EntityAccessor>> providers = WailaCommonRegistration.instance().getEntityNBTProviders(entity);
-			if (providers.isEmpty())
+			if (providers.isEmpty()) {
 				return;
+			}
 
 			CompoundTag tag = accessor.getServerData();
 			for (IServerDataProvider<EntityAccessor> provider : providers) {
@@ -88,10 +91,12 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 
 	@Override
 	public boolean verifyData(CompoundTag data) {
-		if (!verify)
+		if (!verify) {
 			return true;
-		if (!data.contains("EntityId"))
+		}
+		if (!data.contains("EntityId")) {
 			return false;
+		}
 		return data.getInt("EntityId") == getEntity().getId();
 	}
 
@@ -178,11 +183,19 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 
 	public record SyncData(boolean showDetails, int id, int partIndex, Vec3 hitVec) {
 		public SyncData(EntityAccessor accessor) {
-			this(accessor.showDetails(), accessor.getEntity().getId(), CommonProxy.getPartEntityIndex(accessor.getRawEntity()), accessor.getHitResult().getLocation());
+			this(
+					accessor.showDetails(),
+					accessor.getEntity().getId(),
+					CommonProxy.getPartEntityIndex(accessor.getRawEntity()),
+					accessor.getHitResult().getLocation());
 		}
 
 		public SyncData(RegistryFriendlyByteBuf buffer) {
-			this(buffer.readBoolean(), buffer.readVarInt(), buffer.readVarInt(), new Vec3(buffer.readFloat(), buffer.readFloat(), buffer.readFloat()));
+			this(
+					buffer.readBoolean(),
+					buffer.readVarInt(),
+					buffer.readVarInt(),
+					new Vec3(buffer.readFloat(), buffer.readFloat(), buffer.readFloat()));
 		}
 
 		public void write(RegistryFriendlyByteBuf buffer) {

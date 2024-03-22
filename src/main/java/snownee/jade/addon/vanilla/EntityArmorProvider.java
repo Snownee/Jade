@@ -17,8 +17,9 @@ public enum EntityArmorProvider implements IEntityComponentProvider {
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		LivingEntity living = (LivingEntity) accessor.getEntity();
 		float armor = living.getArmorValue();
-		if (armor == 0)
+		if (armor == 0) {
 			return;
+		}
 		tooltip.add(new ArmorElement(armor));
 	}
 

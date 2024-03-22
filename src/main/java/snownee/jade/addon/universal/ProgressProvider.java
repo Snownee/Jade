@@ -46,7 +46,8 @@ public abstract class ProgressProvider<T extends Accessor<?>> implements ICompon
 			var provider = Optional.ofNullable(ResourceLocation.tryParse(accessor.getServerData().getString("JadeProgressUid"))).map(
 					WailaClientRegistration.instance().progressProviders::get);
 			if (provider.isPresent()) {
-				var groups = provider.get().getClientGroups(accessor,
+				var groups = provider.get().getClientGroups(
+						accessor,
 						ViewGroup.readList(accessor.getServerData(), "JadeProgress", Function.identity()));
 				if (groups.isEmpty()) {
 					return;

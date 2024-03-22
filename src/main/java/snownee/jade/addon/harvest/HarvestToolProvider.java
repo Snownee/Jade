@@ -41,7 +41,9 @@ public class HarvestToolProvider implements IBlockComponentProvider, ResourceMan
 
 	public static final HarvestToolProvider INSTANCE = new HarvestToolProvider();
 
-	public static final Cache<BlockState, ImmutableList<ItemStack>> resultCache = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
+	public static final Cache<BlockState, ImmutableList<ItemStack>> resultCache = CacheBuilder.newBuilder().expireAfterAccess(
+			5,
+			TimeUnit.MINUTES).build();
 	public static final Map<ResourceLocation, ToolHandler> TOOL_HANDLERS = Maps.newLinkedHashMap();
 	private static final Component CHECK = Component.literal("✔");
 	private static final Component X = Component.literal("✕");
@@ -49,13 +51,25 @@ public class HarvestToolProvider implements IBlockComponentProvider, ResourceMan
 
 	static {
 		if (CommonProxy.isPhysicallyClient()) {
-			registerHandler(SimpleToolHandler.create(Identifiers.JADE("pickaxe"), true, List.of(Items.WOODEN_PICKAXE, Items.STONE_PICKAXE, Items.IRON_PICKAXE, Items.DIAMOND_PICKAXE, Items.NETHERITE_PICKAXE))
+			registerHandler(SimpleToolHandler.create(
+							Identifiers.JADE("pickaxe"),
+							true,
+							List.of(Items.WOODEN_PICKAXE, Items.STONE_PICKAXE, Items.IRON_PICKAXE, Items.DIAMOND_PICKAXE, Items.NETHERITE_PICKAXE))
 					.addBlockTag(BlockTags.MINEABLE_WITH_PICKAXE));
-			registerHandler(SimpleToolHandler.create(Identifiers.JADE("axe"), true, List.of(Items.WOODEN_AXE, Items.STONE_AXE, Items.IRON_AXE, Items.DIAMOND_AXE, Items.NETHERITE_AXE))
+			registerHandler(SimpleToolHandler.create(
+							Identifiers.JADE("axe"),
+							true,
+							List.of(Items.WOODEN_AXE, Items.STONE_AXE, Items.IRON_AXE, Items.DIAMOND_AXE, Items.NETHERITE_AXE))
 					.addBlockTag(BlockTags.MINEABLE_WITH_AXE));
-			registerHandler(SimpleToolHandler.create(Identifiers.JADE("shovel"), true, List.of(Items.WOODEN_SHOVEL, Items.STONE_SHOVEL, Items.IRON_SHOVEL, Items.DIAMOND_SHOVEL, Items.NETHERITE_SHOVEL))
+			registerHandler(SimpleToolHandler.create(
+							Identifiers.JADE("shovel"),
+							true,
+							List.of(Items.WOODEN_SHOVEL, Items.STONE_SHOVEL, Items.IRON_SHOVEL, Items.DIAMOND_SHOVEL, Items.NETHERITE_SHOVEL))
 					.addBlockTag(BlockTags.MINEABLE_WITH_SHOVEL));
-			registerHandler(SimpleToolHandler.create(Identifiers.JADE("hoe"), true, List.of(Items.WOODEN_HOE, Items.STONE_HOE, Items.IRON_HOE, Items.DIAMOND_HOE, Items.NETHERITE_HOE))
+			registerHandler(SimpleToolHandler.create(
+							Identifiers.JADE("hoe"),
+							true,
+							List.of(Items.WOODEN_HOE, Items.STONE_HOE, Items.IRON_HOE, Items.DIAMOND_HOE, Items.NETHERITE_HOE))
 					.addBlockTag(BlockTags.MINEABLE_WITH_HOE));
 			registerHandler(ClientProxy.createSwordToolHandler());
 			registerHandler(new ShearsToolHandler());

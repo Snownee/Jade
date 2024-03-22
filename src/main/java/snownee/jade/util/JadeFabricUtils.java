@@ -35,13 +35,17 @@ public final class JadeFabricUtils {
 		long emptyCapacity = 0;
 		for (var view : storage) {
 			long capacity = view.getCapacity();
-			if (capacity <= 0)
+			if (capacity <= 0) {
 				continue;
+			}
 			if (view.isResourceBlank() || view.getAmount() <= 0) {
 				emptyCapacity = LongMath.saturatedAdd(emptyCapacity, capacity);
 				continue;
 			}
-			list.add(FluidView.writeDefault(JadeFluidObject.of(view.getResource().getFluid(), view.getAmount(), view.getResource().getComponents()), capacity));
+			list.add(FluidView.writeDefault(JadeFluidObject.of(
+					view.getResource().getFluid(),
+					view.getAmount(),
+					view.getResource().getComponents()), capacity));
 		}
 		if (list.isEmpty() && emptyCapacity > 0) {
 			list.add(FluidView.writeDefault(JadeFluidObject.empty(), emptyCapacity));
@@ -61,7 +65,10 @@ public final class JadeFabricUtils {
 		});
 	}
 
-	public static ItemIterator<? extends Storage<ItemVariant>> fromItemStorage(Storage<ItemVariant> storage, int fromIndex, Function<Object, @Nullable Storage<ItemVariant>> containerFinder) {
+	public static ItemIterator<? extends Storage<ItemVariant>> fromItemStorage(
+			Storage<ItemVariant> storage,
+			int fromIndex,
+			Function<Object, @Nullable Storage<ItemVariant>> containerFinder) {
 		if (storage instanceof SlottedStorage) {
 			return new ItemIterator.SlottedItemIterator<>(target -> {
 				if (containerFinder.apply(target) instanceof SlottedStorage<ItemVariant> slotted) {
@@ -89,7 +96,8 @@ public final class JadeFabricUtils {
 			return new ItemIterator.SlotlessItemIterator<>(containerFinder, fromIndex) {
 				@Override
 				protected Stream<ItemStack> populateRaw(Storage<ItemVariant> container) {
-					return Streams.stream(container.nonEmptyIterator()).map($ -> $.getResource().toStack((int) Mth.clamp($.getAmount(), 0, Integer.MAX_VALUE)));
+					return Streams.stream(container.nonEmptyIterator()).map($ -> $.getResource()
+							.toStack((int) Mth.clamp($.getAmount(), 0, Integer.MAX_VALUE)));
 				}
 
 				@Override

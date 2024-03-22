@@ -11,7 +11,9 @@ import snownee.jade.impl.ObjectDataCenter;
 
 public record ReceiveDataPacket(CompoundTag tag) implements CustomPacketPayload {
 	public static final Type<ReceiveDataPacket> TYPE = new Type<>(Identifiers.PACKET_RECEIVE_DATA);
-	public static final StreamCodec<FriendlyByteBuf, ReceiveDataPacket> CODEC = CustomPacketPayload.codec(ReceiveDataPacket::write, ReceiveDataPacket::read);
+	public static final StreamCodec<FriendlyByteBuf, ReceiveDataPacket> CODEC = CustomPacketPayload.codec(
+			ReceiveDataPacket::write,
+			ReceiveDataPacket::read);
 
 	public static ReceiveDataPacket read(FriendlyByteBuf buffer) {
 		return new ReceiveDataPacket(buffer.readNbt());

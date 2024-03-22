@@ -1,14 +1,14 @@
 {
-  "version": 100,
-  "tooltipStyle": {
-    "backgroundColor": "#006699",
-    "borderColor": [
-      "#9999ff",
-      "#9999ff",
-      "#9999ff",
-      "#9999ff"
-    ],
-    "borderWidth": 2
-  },
-  "changeRoundCorner": true
+	"version": 100,
+	"tooltipStyle": {
+		"backgroundColor": "#006699",
+		"borderColor": [
+			"#9999ff",
+			"#9999ff",
+			"#9999ff",
+			"#9999ff"
+		],
+		"borderWidth": 2
+	},
+	"changeRoundCorner": true
 }

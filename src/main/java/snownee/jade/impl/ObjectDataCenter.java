@@ -47,10 +47,12 @@ public final class ObjectDataCenter {
 	}
 
 	public static CompoundTag getServerData() {
-		if (accessor == null || clientHandler == null || serverData == null)
+		if (accessor == null || clientHandler == null || serverData == null) {
 			return null;
-		if (accessor.verifyData(serverData))
+		}
+		if (accessor.verifyData(serverData)) {
 			return serverData;
+		}
 		requestServerData();
 		return null;
 	}
@@ -76,8 +78,9 @@ public final class ObjectDataCenter {
 	}
 
 	public static IElement getIcon() {
-		if (accessor == null || clientHandler == null)
+		if (accessor == null || clientHandler == null) {
 			return null;
+		}
 		return clientHandler.getIcon(accessor);
 	}
 }

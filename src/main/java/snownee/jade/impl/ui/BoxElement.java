@@ -65,8 +65,9 @@ public class BoxElement extends Element implements IBoxElement {
 				return;
 			}
 			float delta = Minecraft.getInstance().getDeltaFrameTime() * 2;
-			if (delta < 1)
+			if (delta < 1) {
 				diff *= delta;
+			}
 			if (Mth.abs(diff) < 1) {
 				diff = diff > 0 ? 1 : -1;
 			}
@@ -152,7 +153,14 @@ public class BoxElement extends Element implements IBoxElement {
 			if (track != null) {
 				progress = track.tick(Minecraft.getInstance().getDeltaFrameTime());
 			}
-			((DisplayHelper) IDisplayHelper.get()).drawGradientProgress(guiGraphics, left, top, width, height, progress, style.boxProgressColors.get(boxProgressType));
+			((DisplayHelper) IDisplayHelper.get()).drawGradientProgress(
+					guiGraphics,
+					left,
+					top,
+					width,
+					height,
+					progress,
+					style.boxProgressColors.get(boxProgressType));
 		}
 
 		float contentLeft = padding(Direction2D.LEFT);

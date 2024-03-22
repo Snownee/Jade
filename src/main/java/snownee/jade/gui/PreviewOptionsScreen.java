@@ -55,10 +55,16 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 		Objects.requireNonNull(minecraft);
 		super.init();
 		if (minecraft.level != null) {
-			CycleButton<Boolean> previewButton = CycleButton.booleanBuilder(OptionsList.OPTION_ON, OptionsList.OPTION_OFF).create(10, saveButton.getY(), 85, 20, Component.translatable("gui.jade.preview"), (button, value) -> {
-				Jade.CONFIG.get().getGeneral().previewOverlay = value;
-				saver.run();
-			});
+			CycleButton<Boolean> previewButton = CycleButton.booleanBuilder(OptionsList.OPTION_ON, OptionsList.OPTION_OFF).create(
+					10,
+					saveButton.getY(),
+					85,
+					20,
+					Component.translatable("gui.jade.preview"),
+					(button, value) -> {
+						Jade.CONFIG.get().getGeneral().previewOverlay = value;
+						saver.run();
+					});
 			previewButton.setValue(Jade.CONFIG.get().getGeneral().previewOverlay);
 			addRenderableWidget(previewButton);
 		}
@@ -66,10 +72,16 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 
 	public boolean forcePreviewOverlay() {
 		Objects.requireNonNull(minecraft);
-		if (adjustingPosition) return true;
-		if (!isDragging() || options == null) return false;
+		if (adjustingPosition) {
+			return true;
+		}
+		if (!isDragging() || options == null) {
+			return false;
+		}
 		OptionsList.Entry entry = options.getSelected();
-		if (entry == null || entry.getFirstWidget() == null) return false;
+		if (entry == null || entry.getFirstWidget() == null) {
+			return false;
+		}
 		return options.forcePreview.contains(entry);
 	}
 
@@ -164,7 +176,12 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 			guiGraphics.fill(0, 0, width, height, 50, 0x80AAAAAA);
 			guiGraphics.pose().pushPose();
 			guiGraphics.pose().translate(0, 0, 50);
-			guiGraphics.drawCenteredString(font, Component.translatable("config.jade.overlay_pos.exit"), width / 2, height / 2 - 7, 0xFFFFFF);
+			guiGraphics.drawCenteredString(
+					font,
+					Component.translatable("config.jade.overlay_pos.exit"),
+					width / 2,
+					height / 2 - 7,
+					0xFFFFFF);
 			guiGraphics.pose().popPose();
 			IWailaConfig.IConfigOverlay config = IWailaConfig.get().getOverlay();
 			Rect2i rect = OverlayRenderer.rect.expectedRect;

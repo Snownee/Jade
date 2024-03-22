@@ -67,7 +67,10 @@ public class PluginConfig implements IPluginConfig {
 	public void addConfig(ConfigEntry<?> entry) {
 		Preconditions.checkArgument(StringUtils.countMatches(entry.getId().getPath(), '.') <= 1);
 		Preconditions.checkArgument(!containsKey(entry.getId()), "Duplicate config key: %s", entry.getId());
-		Preconditions.checkArgument(entry.isValidValue(entry.getDefaultValue()), "Default value of config %s does not pass value check", entry.getId());
+		Preconditions.checkArgument(
+				entry.isValidValue(entry.getDefaultValue()),
+				"Default value of config %s does not pass value check",
+				entry.getId());
 		configs.put(entry.getId(), (ConfigEntry<Object>) entry);
 	}
 
@@ -94,7 +97,8 @@ public class PluginConfig implements IPluginConfig {
 		if (CommonProxy.isPhysicallyClient()) {
 			return (Boolean) getEntry(key).getValue();
 		} else {
-			return Optional.ofNullable(serverConfigs).map($ -> $.getAsJsonObject(key.getNamespace())).map($ -> $.get(key.getPath())).map(JsonElement::getAsBoolean).orElse(false);
+			return Optional.ofNullable(serverConfigs).map($ -> $.getAsJsonObject(key.getNamespace())).map($ -> $.get(key.getPath())).map(
+					JsonElement::getAsBoolean).orElse(false);
 		}
 	}
 
@@ -146,8 +150,9 @@ public class PluginConfig implements IPluginConfig {
 		boolean client = CommonProxy.isPhysicallyClient();
 		File configFile = getFile();
 
-		if (client)
+		if (client) {
 			configs.values().forEach($ -> $.setSynced(false));
+		}
 
 		if (!configFile.exists()) {
 			writeConfig(configFile, true);
@@ -170,8 +175,9 @@ public class PluginConfig implements IPluginConfig {
 				if (!configs.containsKey(id)) {
 					return;
 				}
-				if (!set(id, value))
+				if (!set(id, value)) {
 					saveFlag.setTrue();
+				}
 				found.add(id);
 			}));
 
@@ -183,8 +189,9 @@ public class PluginConfig implements IPluginConfig {
 				}
 			}
 
-			if (saveFlag.isTrue())
+			if (saveFlag.isTrue()) {
 				save();
+			}
 		} else {
 			try (FileReader reader = new FileReader(configFile, StandardCharsets.UTF_8)) {
 				serverConfigs = JsonConfig.DEFAULT_GSON.fromJson(reader, JsonObject.class);
@@ -206,16 +213,18 @@ public class PluginConfig implements IPluginConfig {
 			Map<String, Map<String, Object>> config = Maps.newHashMap();
 			configs.values().forEach(e -> {
 				Map<String, Object> modConfig = config.computeIfAbsent(e.getId().getNamespace(), k -> Maps.newHashMap());
-				if (reset)
+				if (reset) {
 					e.setValue(e.getDefaultValue());
+				}
 				modConfig.put(e.getId().getPath(), e.getValue());
 			});
 			json = JsonConfig.DEFAULT_GSON.toJson(config);
 		} else {
 			json = "{}";
 		}
-		if (!file.getParentFile().exists())
+		if (!file.getParentFile().exists()) {
 			file.getParentFile().mkdirs();
+		}
 		try (FileWriter writer = new FileWriter(file, StandardCharsets.UTF_8)) {
 			writer.write(json);
 		} catch (IOException e) {
@@ -231,14 +240,15 @@ public class PluginConfig implements IPluginConfig {
 				if (configEntry != null) {
 					JsonPrimitive primitive = entry.getValue().getAsJsonPrimitive();
 					Object v;
-					if (primitive.isBoolean())
+					if (primitive.isBoolean()) {
 						v = primitive.getAsBoolean();
-					else if (primitive.isNumber())
+					} else if (primitive.isNumber()) {
 						v = primitive.getAsNumber();
-					else if (primitive.isString())
+					} else if (primitive.isString()) {
 						v = primitive.getAsString();
-					else
+					} else {
 						return;
+					}
 					if (configEntry.isValidValue(v)) {
 						configEntry.setValue(v);
 						configEntry.setSynced(true);
@@ -303,7 +313,8 @@ public class PluginConfig implements IPluginConfig {
 
 		return categoryMap.asMap().entrySet().stream()
 				.map(e -> new Category(Component.literal(e.getKey()), e.getValue().stream()
-						.sorted(Comparator.comparingInt($ -> WailaCommonRegistration.instance().priorities.getSortedList().indexOf($.getId())))
+						.sorted(Comparator.comparingInt($ -> WailaCommonRegistration.instance().priorities.getSortedList()
+								.indexOf($.getId())))
 						.toList()
 				))
 				.sorted(Comparator.comparingInt(specialOrder()).thenComparing($ -> $.title.getString()))

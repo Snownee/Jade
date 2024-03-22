@@ -25,16 +25,18 @@ public enum BlockStatesProvider implements IBlockComponentProvider {
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		BlockState state = accessor.getBlockState();
 		Collection<Property<?>> properties = state.getProperties();
-		if (properties.isEmpty())
+		if (properties.isEmpty()) {
 			return;
+		}
 		IElementHelper helper = IElementHelper.get();
 		IThemeHelper t = IThemeHelper.get();
 		ITooltip box = helper.tooltip();
 		properties.forEach(p -> {
 			Comparable<?> value = state.getValue(p);
 			MutableComponent valueText = Component.literal(" " + value).withStyle();
-			if (p instanceof BooleanProperty)
+			if (p instanceof BooleanProperty) {
 				valueText = value == Boolean.TRUE ? t.success(valueText) : t.danger(valueText);
+			}
 			box.add(Component.literal(p.getName() + ":").append(valueText));
 		});
 		tooltip.add(helper.box(box, BoxStyle.getNestedBox()));

@@ -23,7 +23,17 @@ public class Theme {
 	public int iconSlotInflation;
 	public IBoxElement iconSlotSpriteCache;
 
-	public Theme(BoxStyle tooltipStyle, BoxStyle nestedBoxStyle, BoxStyle viewGroupStyle, TextSetting text, Optional<Boolean> changeRoundCorner, float changeOpacity, boolean lightColorScheme, boolean hidden, Optional<ResourceLocation> iconSlotSprite, int iconSlotInflation) {
+	public Theme(
+			BoxStyle tooltipStyle,
+			BoxStyle nestedBoxStyle,
+			BoxStyle viewGroupStyle,
+			TextSetting text,
+			Optional<Boolean> changeRoundCorner,
+			float changeOpacity,
+			boolean lightColorScheme,
+			boolean hidden,
+			Optional<ResourceLocation> iconSlotSprite,
+			int iconSlotInflation) {
 		this.tooltipStyle = tooltipStyle;
 		this.nestedBoxStyle = nestedBoxStyle;
 		this.viewGroupStyle = viewGroupStyle;

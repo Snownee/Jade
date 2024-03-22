@@ -100,14 +100,16 @@ public class ThemeCodecs {
 	}
 
 	public static Optional<int[]> nullableClone(int[] array) {
-		if (array == null)
+		if (array == null) {
 			return Optional.empty();
+		}
 		return Optional.of(array.clone());
 	}
 
 	public static Optional<float[]> nullableClone(float[] array) {
-		if (array == null)
+		if (array == null) {
 			return Optional.empty();
+		}
 		return Optional.of(array.clone());
 	}
 

@@ -13,7 +13,9 @@ import snownee.jade.util.JsonConfig;
 
 public record ServerPingPacket(String serverConfig) implements CustomPacketPayload {
 	public static final Type<ServerPingPacket> TYPE = new Type<>(Identifiers.PACKET_SERVER_PING);
-	public static final StreamCodec<RegistryFriendlyByteBuf, ServerPingPacket> CODEC = CustomPacketPayload.codec(ServerPingPacket::write, ServerPingPacket::read);
+	public static final StreamCodec<RegistryFriendlyByteBuf, ServerPingPacket> CODEC = CustomPacketPayload.codec(
+			ServerPingPacket::write,
+			ServerPingPacket::read);
 
 	public static ServerPingPacket read(RegistryFriendlyByteBuf buffer) {
 		return new ServerPingPacket(buffer.readUtf());
@@ -31,8 +33,9 @@ public record ServerPingPacket(String serverConfig) implements CustomPacketPaylo
 		context.execute(() -> {
 			ObjectDataCenter.serverConnected = true;
 			PluginConfig.INSTANCE.reload(); // clear the server config last time we applied
-			if (json != null && !json.keySet().isEmpty())
+			if (json != null && !json.keySet().isEmpty()) {
 				PluginConfig.INSTANCE.applyServerConfigs(json);
+			}
 			Jade.LOGGER.info("Received config from the server: {}", s);
 		});
 	}

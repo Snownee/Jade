@@ -124,8 +124,9 @@ public interface IWailaConfig {
 
 		static int applyAlpha(int color, float alpha) {
 			int prevAlphaChannel = (color >> 24) & 0xFF;
-			if (prevAlphaChannel > 0)
+			if (prevAlphaChannel > 0) {
 				alpha *= prevAlphaChannel / 256f;
+			}
 			int alphaChannel = Mth.clamp((int) (0xFF * alpha), 4, 255);
 			return (color & 0xFFFFFF) | alphaChannel << 24;
 		}

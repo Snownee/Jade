@@ -65,7 +65,11 @@ public class CorePlugin implements IWailaPlugin {
 	public static JsonConfig<TargetBlocklist> createEntityBlocklist() {
 		return new JsonConfig<>(Jade.ID + "/hide-entities", TargetBlocklist.class, null, () -> {
 			var blocklist = new TargetBlocklist();
-			blocklist.values = Stream.of(EntityType.AREA_EFFECT_CLOUD, EntityType.FIREWORK_ROCKET, EntityType.INTERACTION, EntityType.TEXT_DISPLAY)
+			blocklist.values = Stream.of(
+							EntityType.AREA_EFFECT_CLOUD,
+							EntityType.FIREWORK_ROCKET,
+							EntityType.INTERACTION,
+							EntityType.TEXT_DISPLAY)
 					.map(EntityType::getKey)
 					.map(Object::toString)
 					.toList();

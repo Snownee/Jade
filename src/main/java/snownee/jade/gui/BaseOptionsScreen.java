@@ -43,8 +43,9 @@ public abstract class BaseOptionsScreen extends Screen {
 		double scroll = options == null ? 0 : options.getScrollAmount();
 		super.init();
 		entryWidgets.clear();
-		if (options != null)
+		if (options != null) {
 			options.removed();
+		}
 		options = createOptions();
 		options.setX(120);
 		optionsNav = new OptionsNav(options, 120, height - 32 - 18, 18, 18);
@@ -65,7 +66,8 @@ public abstract class BaseOptionsScreen extends Screen {
 		searchBox.responder.accept(searchBox.getValue());
 		options.setScrollAmount(scroll);
 
-		saveButton = addRenderableWidget(Button.builder(Component.translatable("gui.jade.save_and_quit").withStyle(style -> style.withColor(0xFFB9F6CA)), w -> {
+		saveButton = addRenderableWidget(Button.builder(Component.translatable("gui.jade.save_and_quit")
+				.withStyle(style -> style.withColor(0xFFB9F6CA)), w -> {
 			options.save();
 			saver.run();
 			minecraft.setScreen(parent);
@@ -88,14 +90,20 @@ public abstract class BaseOptionsScreen extends Screen {
 			if (!Strings.isNullOrEmpty(entry.getDescription())) {
 				int valueX = entry.getTextX(options.getRowWidth());
 				if (mouseX >= valueX && mouseX < valueX + entry.getTextWidth()) {
-					setTooltipForNextRenderPass(Tooltip.create(Component.literal(entry.getDescription())), new BelowOrAboveListEntryTooltipPositioner(options, entry), false);
+					setTooltipForNextRenderPass(
+							Tooltip.create(Component.literal(entry.getDescription())),
+							new BelowOrAboveListEntryTooltipPositioner(options, entry),
+							false);
 				}
 			}
 			if (entry instanceof OptionValue<?> optionValue && optionValue.serverFeature) {
 				int x = entry.getTextX(options.getRowWidth()) + entry.getTextWidth() + 1;
 				int y = options.getRowTop(options.children().indexOf(entry)) + 7;
 				if (mouseX >= x && mouseX < x + 4 && mouseY >= y && mouseY < y + 4) {
-					setTooltipForNextRenderPass(Tooltip.create(Component.translatable("gui.jade.server_feature")), new BelowOrAboveListEntryTooltipPositioner(options, entry), false);
+					setTooltipForNextRenderPass(
+							Tooltip.create(Component.translatable("gui.jade.server_feature")),
+							new BelowOrAboveListEntryTooltipPositioner(options, entry),
+							false);
 				}
 			}
 		}
@@ -105,15 +113,17 @@ public abstract class BaseOptionsScreen extends Screen {
 
 	@Override
 	public boolean mouseScrolled(double mouseX, double mouseY, double deltaX, double deltaY) {
-		if (optionsNav.isMouseOver(mouseX, mouseY))
+		if (optionsNav.isMouseOver(mouseX, mouseY)) {
 			return optionsNav.mouseScrolled(mouseX, mouseY, deltaX, deltaY);
+		}
 		return options.mouseScrolled(mouseX, mouseY, deltaX, deltaY);
 	}
 
 	@Override
 	public void onClose() {
-		if (canceller != null)
+		if (canceller != null) {
 			canceller.run();
+		}
 		Objects.requireNonNull(minecraft).setScreen(parent);
 	}
 

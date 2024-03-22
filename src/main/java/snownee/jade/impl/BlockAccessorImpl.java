@@ -51,17 +51,21 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 		ServerPlayer player = context.player();
 		context.execute(() -> {
 			BlockAccessor accessor = data.unpack(player);
-			if (accessor == null)
+			if (accessor == null) {
 				return;
+			}
 			BlockPos pos = accessor.getPosition();
 			ServerLevel world = player.serverLevel();
 			double maxDistance = Mth.square(player.blockInteractionRange() + 21);
-			if (pos.distSqr(player.blockPosition()) > maxDistance || !world.isLoaded(pos))
+			if (pos.distSqr(player.blockPosition()) > maxDistance || !world.isLoaded(pos)) {
 				return;
+			}
 
-			List<IServerDataProvider<BlockAccessor>> providers = WailaCommonRegistration.instance().getBlockNBTProviders(accessor.getBlock(), accessor.getBlockEntity());
-			if (providers.isEmpty())
+			List<IServerDataProvider<BlockAccessor>> providers = WailaCommonRegistration.instance()
+					.getBlockNBTProviders(accessor.getBlock(), accessor.getBlockEntity());
+			if (providers.isEmpty()) {
 				return;
+			}
 
 			CompoundTag tag = accessor.getServerData();
 			for (IServerDataProvider<BlockAccessor> provider : providers) {
@@ -132,8 +136,9 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 
 	@Override
 	public boolean verifyData(CompoundTag data) {
-		if (!verify)
+		if (!verify) {
 			return true;
+		}
 		int x = data.getInt("x");
 		int y = data.getInt("y");
 		int z = data.getInt("z");
@@ -244,7 +249,11 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 		}
 
 		public SyncData(RegistryFriendlyByteBuf buffer) {
-			this(buffer.readBoolean(), buffer.readBlockHitResult(), Block.stateById(buffer.readVarInt()), ItemStack.OPTIONAL_STREAM_CODEC.decode(buffer));
+			this(
+					buffer.readBoolean(),
+					buffer.readBlockHitResult(),
+					Block.stateById(buffer.readVarInt()),
+					ItemStack.OPTIONAL_STREAM_CODEC.decode(buffer));
 		}
 
 		public void write(RegistryFriendlyByteBuf buffer) {

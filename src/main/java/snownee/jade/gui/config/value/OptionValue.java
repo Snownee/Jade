@@ -29,12 +29,23 @@ public abstract class OptionValue<T> extends OptionsList.Entry {
 		addMessage(title.getString());
 		addMessageKey(optionName);
 		String key = makeKey(optionName + "_desc");
-		if (I18n.exists(key))
+		if (I18n.exists(key)) {
 			appendDescription(I18n.get(key));
+		}
 	}
 
 	@Override
-	public final void render(GuiGraphics guiGraphics, int index, int rowTop, int rowLeft, int width, int height, int mouseX, int mouseY, boolean hovered, float deltaTime) {
+	public final void render(
+			GuiGraphics guiGraphics,
+			int index,
+			int rowTop,
+			int rowLeft,
+			int width,
+			int height,
+			int mouseX,
+			int mouseY,
+			boolean hovered,
+			float deltaTime) {
 		AbstractWidget widget = getFirstWidget();
 		Component title0 = widget.active ? title : title.copy().withStyle(ChatFormatting.STRIKETHROUGH, ChatFormatting.GRAY);
 		int left = rowLeft + indent + 10;
@@ -56,10 +67,11 @@ public abstract class OptionValue<T> extends OptionsList.Entry {
 	}
 
 	public void appendDescription(String description) {
-		if (this.description == null)
+		if (this.description == null) {
 			this.description = description;
-		else
+		} else {
 			this.description += '\n' + description;
+		}
 		addMessage(description);
 	}
 

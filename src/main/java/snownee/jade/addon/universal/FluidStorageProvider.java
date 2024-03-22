@@ -57,7 +57,8 @@ public abstract class FluidStorageProvider<T extends Accessor<?>> implements ICo
 			var provider = Optional.ofNullable(ResourceLocation.tryParse(accessor.getServerData().getString("JadeFluidStorageUid"))).map(
 					WailaClientRegistration.instance().fluidStorageProviders::get);
 			if (provider.isPresent()) {
-				var groups = provider.get().getClientGroups(accessor,
+				var groups = provider.get().getClientGroups(
+						accessor,
 						ViewGroup.readList(accessor.getServerData(), "JadeFluidStorage", Function.identity()));
 				if (groups.isEmpty()) {
 					return;
@@ -76,7 +77,8 @@ public abstract class FluidStorageProvider<T extends Accessor<?>> implements ICo
 						} else if (view.fluidName == null) {
 							text = Component.literal(view.current);
 						} else if (accessor.showDetails()) {
-							text = Component.translatable("jade.fluid2",
+							text = Component.translatable(
+									"jade.fluid2",
 									IDisplayHelper.get().stripColor(view.fluidName).withStyle(ChatFormatting.WHITE),
 									Component.literal(view.current).withStyle(ChatFormatting.WHITE),
 									view.max).withStyle(ChatFormatting.GRAY);

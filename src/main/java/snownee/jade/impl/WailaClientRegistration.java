@@ -31,7 +31,6 @@ import snownee.jade.api.AccessorClientHandler;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IComponentProvider;
-import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.IToggleableProvider;
 import snownee.jade.api.IWailaClientRegistration;
 import snownee.jade.api.callback.JadeAfterRenderCallback;
@@ -249,7 +248,8 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 		blockIconProviders.loadComplete(priorities);
 		entityComponentProviders.loadComplete(priorities);
 		entityIconProviders.loadComplete(priorities);
-		Stream.of(afterRenderCallback,
+		Stream.of(
+				afterRenderCallback,
 				beforeRenderCallback,
 				rayTraceCallback,
 				tooltipCollectedCallback,

@@ -46,7 +46,8 @@ public enum AnimalOwnerProvider implements IEntityComponentProvider, IServerData
 	@Override
 	public void appendServerData(CompoundTag data, EntityAccessor accessor) {
 		MinecraftServer server = accessor.getLevel().getServer();
-		if (server != null && server.isSingleplayerOwner(accessor.getPlayer().getGameProfile()) && accessor.getEntity() instanceof TamableAnimal) {
+		if (server != null && server.isSingleplayerOwner(accessor.getPlayer().getGameProfile()) &&
+				accessor.getEntity() instanceof TamableAnimal) {
 			return;
 		}
 		Entity entity = accessor.getEntity();

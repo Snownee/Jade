@@ -22,7 +22,21 @@ public class FontMixin implements JadeFont {
 	private float glint2Strength = 1;
 
 	@Inject(method = "renderChar", at = @At("HEAD"), cancellable = true)
-	private void jade$renderChar(BakedGlyph bakedGlyph, boolean bl, boolean bl2, float f, float x, float y, Matrix4f matrix4f, VertexConsumer vertexConsumer, float r, float g, float b, float a, int m, CallbackInfo ci) {
+	private void jade$renderChar(
+			BakedGlyph bakedGlyph,
+			boolean bl,
+			boolean bl2,
+			float f,
+			float x,
+			float y,
+			Matrix4f matrix4f,
+			VertexConsumer vertexConsumer,
+			float r,
+			float g,
+			float b,
+			float a,
+			int m,
+			CallbackInfo ci) {
 		if (Float.isNaN(glint1)) {
 			return;
 		}

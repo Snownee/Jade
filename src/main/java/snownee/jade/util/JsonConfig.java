@@ -87,13 +87,15 @@ public class JsonConfig<T> {
 	}
 
 	public void write(T t, boolean invalidate) {
-		if (!configFile.getParentFile().exists())
+		if (!configFile.getParentFile().exists()) {
 			configFile.getParentFile().mkdirs();
+		}
 
 		try (FileWriter writer = new FileWriter(configFile, StandardCharsets.UTF_8)) {
 			writer.write(gson.toJson(t));
-			if (invalidate)
+			if (invalidate) {
 				invalidate();
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

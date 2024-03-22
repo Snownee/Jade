@@ -36,7 +36,11 @@ public class FloatConfigEntry extends ConfigEntry<Float> {
 		if (slider) {
 			return options.slider(optionName, getValue(), f -> PluginConfig.INSTANCE.set(id, f), min, max, FloatUnaryOperator.identity());
 		} else {
-			return options.input(optionName, getValue(), f -> PluginConfig.INSTANCE.set(id, Mth.clamp(f, min, max)), InputOptionValue.FLOAT.and($ -> isValidValue(Float.valueOf($))));
+			return options.input(
+					optionName,
+					getValue(),
+					f -> PluginConfig.INSTANCE.set(id, Mth.clamp(f, min, max)),
+					InputOptionValue.FLOAT.and($ -> isValidValue(Float.valueOf($))));
 		}
 	}
 

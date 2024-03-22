@@ -3,9 +3,9 @@ package snownee.jade.util;
 import java.util.Comparator;
 
 import snownee.jade.api.IJadeProvider;
-import snownee.jade.impl.lookup.IHierarchyLookup;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
+import snownee.jade.impl.lookup.IHierarchyLookup;
 
 public class DumpGenerator {
 
@@ -28,14 +28,20 @@ public class DumpGenerator {
 	}
 
 	private static void createSection(StringBuilder builder, String subsection, IHierarchyLookup<? extends IJadeProvider> lookup) {
-		if (lookup.isEmpty())
+		if (lookup.isEmpty()) {
 			return;
+		}
 		builder.append("\n### ").append(subsection);
 		lookup.entries().forEach(entry -> {
 			builder.append("\n\n#### ").append(entry.getKey().getName());
-			entry.getValue().stream().distinct().sorted(Comparator.comparingInt(WailaCommonRegistration.instance().priorities::byValue)).forEach($ -> {
-				builder.append("\n* ").append($.getUid()).append(", ").append(WailaCommonRegistration.instance().priorities.byValue($)).append(", ").append($.getClass().getName());
-			});
+			entry.getValue()
+					.stream()
+					.distinct()
+					.sorted(Comparator.comparingInt(WailaCommonRegistration.instance().priorities::byValue))
+					.forEach($ -> {
+						builder.append("\n* ").append($.getUid()).append(", ").append(WailaCommonRegistration.instance().priorities.byValue(
+								$)).append(", ").append($.getClass().getName());
+					});
 		});
 		builder.append("\n\n");
 	}

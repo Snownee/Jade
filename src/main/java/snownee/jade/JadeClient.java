@@ -108,7 +108,8 @@ public final class JadeClient {
 			if (mode == IWailaConfig.DisplayMode.TOGGLE) {
 				general.setDisplayTooltip(!general.shouldDisplayTooltip());
 				if (!general.shouldDisplayTooltip() && general.hintOverlayToggle) {
-					SystemToast.add(Minecraft.getInstance().getToasts(),
+					SystemToast.add(
+							Minecraft.getInstance().getToasts(),
 							JADE_TUTORIAL,
 							Component.translatable("toast.jade.toggle_hint.1"),
 							Component.translatable("toast.jade.toggle_hint.2", showOverlay.getTranslatedKeyMessage()));
@@ -127,7 +128,8 @@ public final class JadeClient {
 			if (general.getTTSMode() == TTSMode.TOGGLE) {
 				general.toggleTTS();
 				if (general.shouldEnableTextToSpeech() && general.hintNarratorToggle) {
-					SystemToast.add(Minecraft.getInstance().getToasts(),
+					SystemToast.add(
+							Minecraft.getInstance().getToasts(),
 							JADE_TUTORIAL,
 							Component.translatable("toast.jade.tts_hint.1"),
 							Component.translatable("toast.jade.tts_hint.2", narrate.getTranslatedKeyMessage()));
@@ -233,7 +235,8 @@ public final class JadeClient {
 			return accessor;
 		}
 		FogRenderer.FogData fogData = new FogRenderer.FogData(FogRenderer.FogMode.FOG_TERRAIN);
-		fogFunction.setupFog(fogData,
+		fogFunction.setupFog(
+				fogData,
 				player,
 				player.getEffect(fogFunction.getMobEffect()),
 				Math.max(32, mc.gameRenderer.getRenderDistance()),

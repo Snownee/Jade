@@ -21,8 +21,9 @@ public enum ArmorStandProvider implements IEntityComponentProvider {
 		ArmorStand entity = (ArmorStand) accessor.getEntity();
 		boolean empty = true;
 		for (ItemStack stack : entity.getArmorSlots()) {
-			if (stack.isEmpty())
+			if (stack.isEmpty()) {
 				continue;
+			}
 			tooltip.add(IElementHelper.get().smallItem(stack));
 			tooltip.append(IDisplayHelper.get().stripColor(stack.getHoverName()));
 			tooltip.setLineMargin(-1, Direction2D.DOWN, -1);

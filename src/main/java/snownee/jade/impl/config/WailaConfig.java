@@ -325,8 +325,9 @@ public class WailaConfig implements IWailaConfig {
 
 		@Override
 		public float tryFlip(float f) {
-			if (flipMainHand && Minecraft.getInstance().options.mainHand().get() == HumanoidArm.LEFT)
+			if (flipMainHand && Minecraft.getInstance().options.mainHand().get() == HumanoidArm.LEFT) {
 				f = 1 - f;
+			}
 			return f;
 		}
 
@@ -357,8 +358,9 @@ public class WailaConfig implements IWailaConfig {
 
 		@Override
 		public Theme getTheme() {
-			if (activeThemeInstance == null)
+			if (activeThemeInstance == null) {
 				applyTheme(activeTheme);
+			}
 			return activeThemeInstance;
 		}
 
@@ -420,7 +422,9 @@ public class WailaConfig implements IWailaConfig {
 
 		@Override
 		public Component registryName(String name) {
-			return Component.literal(name).withStyle(IThemeHelper.get().isLightColorScheme() ? ChatFormatting.DARK_GRAY : ChatFormatting.GRAY);
+			return Component.literal(name).withStyle(IThemeHelper.get().isLightColorScheme() ?
+					ChatFormatting.DARK_GRAY :
+					ChatFormatting.GRAY);
 		}
 	}
 

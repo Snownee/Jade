@@ -34,22 +34,24 @@ public class InputOptionValue<T> extends OptionValue<T> {
 	}
 
 	private void setValue(String text) {
-		if (value instanceof String)
+		if (value instanceof String) {
 			value = (T) text;
+		}
 
 		try {
-			if (value instanceof Integer)
+			if (value instanceof Integer) {
 				value = (T) Integer.valueOf(text);
-			else if (value instanceof Short)
+			} else if (value instanceof Short) {
 				value = (T) Short.valueOf(text);
-			else if (value instanceof Byte)
+			} else if (value instanceof Byte) {
 				value = (T) Byte.valueOf(text);
-			else if (value instanceof Long)
+			} else if (value instanceof Long) {
 				value = (T) Long.valueOf(text);
-			else if (value instanceof Double)
+			} else if (value instanceof Double) {
 				value = (T) Double.valueOf(text);
-			else if (value instanceof Float)
+			} else if (value instanceof Float) {
 				value = (T) Float.valueOf(text);
+			}
 		} catch (NumberFormatException e) {
 			// no-op
 		}

@@ -21,7 +21,9 @@ public enum MobSpawnerCooldownProvider implements IBlockComponentProvider, IServ
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		if (config.get(Identifiers.MC_MOB_SPAWNER) && accessor.getServerData().contains("Cooldown")) {
-			tooltip.add(Component.translatable("jade.trial_spawner_cd", IThemeHelper.get().seconds(accessor.getServerData().getInt("Cooldown"))));
+			tooltip.add(Component.translatable(
+					"jade.trial_spawner_cd",
+					IThemeHelper.get().seconds(accessor.getServerData().getInt("Cooldown"))));
 		}
 	}
 

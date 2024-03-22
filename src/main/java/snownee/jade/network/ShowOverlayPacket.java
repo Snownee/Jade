@@ -9,7 +9,9 @@ import snownee.jade.api.Identifiers;
 
 public record ShowOverlayPacket(boolean show) implements CustomPacketPayload {
 	public static final Type<ShowOverlayPacket> TYPE = new Type<>(Identifiers.PACKET_SHOW_OVERLAY);
-	public static final StreamCodec<RegistryFriendlyByteBuf, ShowOverlayPacket> CODEC = CustomPacketPayload.codec(ShowOverlayPacket::write, ShowOverlayPacket::read);
+	public static final StreamCodec<RegistryFriendlyByteBuf, ShowOverlayPacket> CODEC = CustomPacketPayload.codec(
+			ShowOverlayPacket::write,
+			ShowOverlayPacket::read);
 
 	public static ShowOverlayPacket read(FriendlyByteBuf buffer) {
 		return new ShowOverlayPacket(buffer.readBoolean());

@@ -27,8 +27,9 @@ public enum ExampleFluidStorageProvider
 	@Override
 	public List<ClientViewGroup<FluidView>> getClientGroups(Accessor<?> accessor, List<ViewGroup<CompoundTag>> groups) {
 		return ClientViewGroup.map(groups, FluidView::readDefault, (group, clientGroup) -> {
-			if (group.id != null)
+			if (group.id != null) {
 				clientGroup.title = Component.literal(group.id);
+			}
 			clientGroup.messageType = MessageType.SUCCESS;
 		});
 	}
@@ -37,7 +38,9 @@ public enum ExampleFluidStorageProvider
 	public List<ViewGroup<CompoundTag>> getGroups(Accessor<?> accessor) {
 		var tank1 = new ViewGroup<>(List.of(FluidView.writeDefault(JadeFluidObject.of(Fluids.LAVA, 1000), 2000)));
 		tank1.id = "1";
-		var tank2 = new ViewGroup<>(List.of(FluidView.writeDefault(JadeFluidObject.of(Fluids.WATER, 500), 2000), FluidView.writeDefault(JadeFluidObject.empty(), 2000)));
+		var tank2 = new ViewGroup<>(List.of(
+				FluidView.writeDefault(JadeFluidObject.of(Fluids.WATER, 500), 2000),
+				FluidView.writeDefault(JadeFluidObject.empty(), 2000)));
 		// tank2.id = "2";
 		return List.of(tank1, tank2, tank2, tank2, tank2);
 	}

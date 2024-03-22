@@ -28,7 +28,10 @@ public class PluginsConfigScreen extends PreviewOptionsScreen {
 		canceller = PluginConfig.INSTANCE::reload;
 	}
 
-	public static Screen createPluginConfigScreen(@Nullable Screen parent, @Nullable Function<OptionsList, OptionsList.Entry> jumpTo, boolean dontSave) {
+	public static Screen createPluginConfigScreen(
+			@Nullable Screen parent,
+			@Nullable Function<OptionsList, OptionsList.Entry> jumpTo,
+			boolean dontSave) {
 		PluginsConfigScreen screen = new PluginsConfigScreen(parent);
 		screen.jumpTo = jumpTo;
 		return screen;
@@ -37,7 +40,8 @@ public class PluginsConfigScreen extends PreviewOptionsScreen {
 	@Override
 	public OptionsList createOptions() {
 		OptionsList options = new OptionsList(this, minecraft, width - 120, height - 32, 0, 26, PluginConfig.INSTANCE::save);
-		boolean noteServerFeature = Minecraft.getInstance().level == null || IWailaConfig.get().getGeneral().isDebug() || !ObjectDataCenter.serverConnected;
+		boolean noteServerFeature =
+				Minecraft.getInstance().level == null || IWailaConfig.get().getGeneral().isDebug() || !ObjectDataCenter.serverConnected;
 		PluginConfig.INSTANCE.getListView().forEach(category -> {
 			options.add(new OptionsList.Title(category.title()));
 			MutableObject<OptionValue<?>> lastPrimary = new MutableObject<>();

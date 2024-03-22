@@ -39,7 +39,17 @@ public class StringRenderOutputMixin {
 	private float a;
 
 	@Inject(method = "<init>", at = @At("RETURN"))
-	private void jade$init(Font font, MultiBufferSource multiBufferSource, float f, float g, int i, boolean bl, Matrix4f matrix4f, Font.DisplayMode displayMode, int j, CallbackInfo ci) {
+	private void jade$init(
+			Font font,
+			MultiBufferSource multiBufferSource,
+			float f,
+			float g,
+			int i,
+			boolean bl,
+			Matrix4f matrix4f,
+			Font.DisplayMode displayMode,
+			int j,
+			CallbackInfo ci) {
 		if (bl && DisplayHelper.enableBetterTextShadow() && IThemeHelper.get().isLightColorScheme()) {
 			dimFactor = 1;
 			this.r = (float) (i >> 16 & 0xFF) / 255.0f;

@@ -31,7 +31,9 @@ public class PriorityStore<K, V> {
 	@Nullable
 	private String configFile;
 	private ImmutableList<K> sortedList = ImmutableList.of();
-	private BiFunction<PriorityStore<K, V>, Collection<K>, List<K>> sortingFunction = (store, allKeys) -> allKeys.stream().sorted(Comparator.comparingInt(store::byKey)).toList();
+	private BiFunction<PriorityStore<K, V>, Collection<K>, List<K>> sortingFunction = (store, allKeys) -> allKeys.stream()
+			.sorted(Comparator.comparingInt(store::byKey))
+			.toList();
 
 	public PriorityStore(ToIntFunction<V> defaultPriorityGetter, Function<V, K> keyGetter) {
 		this.defaultPriorityGetter = defaultPriorityGetter;
@@ -71,8 +73,9 @@ public class PriorityStore<K, V> {
 			JsonConfig<Map<K, Integer>> config = new JsonConfig<>(configFile, type, null, LinkedHashMap::new);
 			Map<K, Integer> map = config.get();
 			for (var e : map.entrySet()) {
-				if (e.getValue() != null)
+				if (e.getValue() != null) {
 					priorities.put(e.getKey(), e.getValue().intValue());
+				}
 			}
 			new Thread(() -> {
 				for (K id : priorities.keySet()) {

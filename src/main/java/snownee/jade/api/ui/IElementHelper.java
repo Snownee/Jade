@@ -33,7 +33,13 @@ public interface IElementHelper {
 
 	IElement progress(float progress);
 
-	IElement progress(float progress, ResourceLocation baseSprite, ResourceLocation progressSprite, int width, int height, boolean canDecrease);
+	IElement progress(
+			float progress,
+			ResourceLocation baseSprite,
+			ResourceLocation progressSprite,
+			int width,
+			int height,
+			boolean canDecrease);
 
 	/**
 	 * Display a nested tooltip
