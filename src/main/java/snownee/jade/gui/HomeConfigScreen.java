@@ -148,7 +148,7 @@ public class HomeConfigScreen extends Screen {
 				particles.add(particle);
 			}
 		}
-		renderBackground(guiGraphics, mouseX, mouseY, partialTicks);
+		super.render(guiGraphics, mouseX, mouseY, partialTicks);
 		boolean smallUI = minecraft.getWindow().getGuiScale() < 3;
 		int left = width / 2 - 105;
 		int top = height / 4 - 20;
@@ -178,7 +178,6 @@ public class HomeConfigScreen extends Screen {
 			drawFancyTitle(guiGraphics, desc2, Math.min(titleY.value + 3F, 32F), 32F, scaledX, scaledY);
 		}
 		guiGraphics.pose().popPose();
-		super.render(guiGraphics, mouseX, mouseY, partialTicks);
 
 		int creditX = (int) (width * 0.5F - creditWidth * 0.5F);
 		int creditY = (int) (height * 0.9F - 5);

@@ -111,8 +111,9 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 
 	@Override
 	protected boolean isSelectedItem(int i) {
-		if (PreviewOptionsScreen.isAdjustingPosition())
+		if (PreviewOptionsScreen.isAdjustingPosition()) {
 			return false;
+		}
 		return Objects.equals(getSelected(), children().get(i));
 	}
 
@@ -122,6 +123,14 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 			renderSelection(guiGraphics, m, n, o, -1, -1);
 		}
 		super.renderItem(guiGraphics, i, j, f, k, l, m, n, o);
+	}
+
+	@Override
+	protected void renderListSeparators(GuiGraphics guiGraphics) {
+		RenderSystem.enableBlend();
+		ResourceLocation resourceLocation2 = this.minecraft.level == null ? Screen.FOOTER_SEPARATOR : Screen.INWORLD_FOOTER_SEPARATOR;
+		guiGraphics.blit(resourceLocation2, 0, this.getBottom(), 0.0F, 0.0F, owner.width, 2, 32, 2);
+		RenderSystem.disableBlend();
 	}
 
 	@Override
@@ -148,7 +157,10 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 			} else {
 				setSelected(hovered);
 			}
-			int activeIndex = hovered != null ? children().indexOf(hovered) : Mth.clamp((int) getScrollAmount() / itemHeight, 0, getItemCount() - 1);
+			int activeIndex = hovered != null ? children().indexOf(hovered) : Mth.clamp(
+					(int) getScrollAmount() / itemHeight,
+					0,
+					getItemCount() - 1);
 			if (activeIndex >= 0 && activeIndex != lastActiveIndex) {
 				lastActiveIndex = activeIndex;
 				Entry entry = getEntry(activeIndex);
@@ -163,34 +175,36 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		}
 
 		enableScissor(guiGraphics);
-		renderList(guiGraphics, mouseX, mouseY, delta);
-		int k = this.getMaxScroll();
-		if ((k = this.getMaxScroll()) > 0) {
-			int l = this.getScrollbarPosition();
-			int m = (int) ((float) (this.height * this.height) / (float) this.getMaxPosition());
-			m = Mth.clamp(m, 32, this.height - 8);
-			int n = (int) this.getScrollAmount() * (this.height - m) / k + this.getY();
-			if (n < this.getY()) {
-				n = this.getY();
+		renderListItems(guiGraphics, mouseX, mouseY, delta);
+		guiGraphics.disableScissor();
+		this.renderListSeparators(guiGraphics);
+		if (this.scrollbarVisible()) {
+			int k = this.getScrollbarPosition();
+			int l = (int) ((float) (this.height * this.height) / (float) this.getMaxPosition());
+			l = Mth.clamp(l, 32, this.height - 8);
+			int m = (int) this.getScrollAmount() * (this.height - l) / this.getMaxScroll() + this.getY();
+			if (m < this.getY()) {
+				m = this.getY();
 			}
-			guiGraphics.fill(l, this.getY(), l + 6, this.getBottom(), -16777216);
-			guiGraphics.blitSprite(SCROLLER_SPRITE, l, n, 6, m);
+			RenderSystem.enableBlend();
+			guiGraphics.blitSprite(SCROLLER_BACKGROUND_SPRITE, k, this.getY(), 6, this.getHeight());
+			guiGraphics.blitSprite(SCROLLER_SPRITE, k, m, 6, l);
+			RenderSystem.disableBlend();
 		}
-
 		renderDecorations(guiGraphics, mouseX, mouseY);
 		RenderSystem.disableBlend();
-		guiGraphics.disableScissor();
 
-		guiGraphics.setColor(0.35f, 0.35f, 0.35f, 1.0f);
-		guiGraphics.blit(Screen.BACKGROUND_LOCATION, 0, owner.height - 32, owner.width, 32, owner.width, owner.height, 32, 32);
-		guiGraphics.setColor(1.0f, 1.0f, 1.0f, 1.0f);
-		guiGraphics.fillGradient(0, owner.height - 32 - 4, owner.width, owner.height - 32, 40, 0x00000000, 0xEE000000);
+//		guiGraphics.setColor(0.35f, 0.35f, 0.35f, 1.0f);
+//		guiGraphics.blit(Screen.BACKGROUND_LOCATION, 0, owner.height - 32, owner.width, 32, owner.width, owner.height, 32, 32);
+//		guiGraphics.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+//		guiGraphics.fillGradient(0, owner.height - 32 - 4, owner.width, owner.height - 32, 40, 0x00000000, 0xEE000000);
 	}
 
 	public void save() {
 		children().stream().filter(e -> e instanceof OptionValue).map(e -> (OptionValue<?>) e).forEach(OptionValue::save);
-		if (diskWriter != null)
+		if (diskWriter != null) {
 			diskWriter.run();
+		}
 	}
 
 	public <T extends Entry> T add(T entry) {
@@ -230,7 +244,13 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		return slider(optionName, value, setter, 0, 1, FloatUnaryOperator.identity());
 	}
 
-	public OptionValue<Float> slider(String optionName, float value, Consumer<Float> setter, float min, float max, FloatUnaryOperator aligner) {
+	public OptionValue<Float> slider(
+			String optionName,
+			float value,
+			Consumer<Float> setter,
+			float min,
+			float max,
+			FloatUnaryOperator aligner) {
 		return add(new SliderOptionValue(optionName, value, setter, min, max, aligner));
 	}
 
@@ -246,7 +266,11 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		return choices(optionName, value, setter, null);
 	}
 
-	public OptionValue<Boolean> choices(String optionName, boolean value, BooleanConsumer setter, @Nullable Consumer<CycleButton.Builder<Boolean>> builderConsumer) {
+	public OptionValue<Boolean> choices(
+			String optionName,
+			boolean value,
+			BooleanConsumer setter,
+			@Nullable Consumer<CycleButton.Builder<Boolean>> builderConsumer) {
 		CycleButton.Builder<Boolean> builder = CycleButton.booleanBuilder(OPTION_ON, OPTION_OFF);
 		if (builderConsumer != null) {
 			builderConsumer.accept(builder);
@@ -258,14 +282,18 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		return choices(optionName, value, setter, null);
 	}
 
-	public <T extends Enum<T>> OptionValue<T> choices(String optionName, T value, Consumer<T> setter, @Nullable Consumer<CycleButton.Builder<T>> builderConsumer) {
+	public <T extends Enum<T>> OptionValue<T> choices(
+			String optionName,
+			T value,
+			Consumer<T> setter,
+			@Nullable Consumer<CycleButton.Builder<T>> builderConsumer) {
 		List<T> values = (List<T>) Arrays.asList(value.getClass().getEnumConstants());
 		CycleButton.Builder<T> builder = CycleButton.<T>builder(v -> {
 			String name = v.name().toLowerCase(Locale.ENGLISH);
 			return switch (name) {
-			case "on" -> OPTION_ON;
-			case "off" -> OPTION_OFF;
-			default -> Entry.makeTitle(optionName + "_" + name);
+				case "on" -> OPTION_ON;
+				case "off" -> OPTION_OFF;
+				default -> Entry.makeTitle(optionName + "_" + name);
 			};
 		}).withValues(values);
 		if (builderConsumer != null) {
@@ -416,7 +444,17 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		}
 
 		@Override
-		public void render(GuiGraphics guiGraphics, int index, int rowTop, int rowLeft, int width, int height, int mouseX, int mouseY, boolean hovered, float deltaTime) {
+		public void render(
+				GuiGraphics guiGraphics,
+				int index,
+				int rowTop,
+				int rowLeft,
+				int width,
+				int height,
+				int mouseX,
+				int mouseY,
+				boolean hovered,
+				float deltaTime) {
 			for (AbstractWidget widget : widgets) {
 				Vector2i offset = widgetOffsets.get(widgets.indexOf(widget));
 				widget.setX(rowLeft + width - 110 + offset.x);
@@ -504,7 +542,17 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		}
 
 		@Override
-		public void render(GuiGraphics guiGraphics, int index, int rowTop, int rowLeft, int width, int height, int mouseX, int mouseY, boolean hovered, float deltaTime) {
+		public void render(
+				GuiGraphics guiGraphics,
+				int index,
+				int rowTop,
+				int rowLeft,
+				int width,
+				int height,
+				int mouseX,
+				int mouseY,
+				boolean hovered,
+				float deltaTime) {
 			x = rowLeft;
 			guiGraphics.drawString(client.font, title, getTextX(width), rowTop + height - client.font.lineHeight, 16777215);
 		}

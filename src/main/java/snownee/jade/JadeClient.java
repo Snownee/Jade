@@ -22,7 +22,6 @@ import net.minecraft.client.renderer.FogRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -109,8 +108,7 @@ public final class JadeClient {
 			if (mode == IWailaConfig.DisplayMode.TOGGLE) {
 				general.setDisplayTooltip(!general.shouldDisplayTooltip());
 				if (!general.shouldDisplayTooltip() && general.hintOverlayToggle) {
-					SystemToast.add(
-							Minecraft.getInstance().getToasts(),
+					SystemToast.add(Minecraft.getInstance().getToasts(),
 							JADE_TUTORIAL,
 							Component.translatable("toast.jade.toggle_hint.1"),
 							Component.translatable("toast.jade.toggle_hint.2", showOverlay.getTranslatedKeyMessage()));
@@ -129,8 +127,7 @@ public final class JadeClient {
 			if (general.getTTSMode() == TTSMode.TOGGLE) {
 				general.toggleTTS();
 				if (general.shouldEnableTextToSpeech() && general.hintNarratorToggle) {
-					SystemToast.add(
-							Minecraft.getInstance().getToasts(),
+					SystemToast.add(Minecraft.getInstance().getToasts(),
 							JADE_TUTORIAL,
 							Component.translatable("toast.jade.tts_hint.1"),
 							Component.translatable("toast.jade.tts_hint.2", narrate.getTranslatedKeyMessage()));
@@ -161,9 +158,6 @@ public final class JadeClient {
 
 	public static void onTooltip(List<Component> tooltip, ItemStack stack, TooltipFlag context) {
 		appendModName(tooltip, stack, context);
-		if (Jade.CONFIG.get().getGeneral().isDebug() && stack.hasTag()) {
-			tooltip.add(NbtUtils.toPrettyComponent(stack.getTag()));
-		}
 	}
 
 	private static void appendModName(List<Component> tooltip, ItemStack stack, TooltipFlag context) {
@@ -188,9 +182,7 @@ public final class JadeClient {
 
 	@Nullable
 	public static Accessor<?> builtInOverrides(
-			HitResult hitResult,
-			@Nullable Accessor<?> accessor,
-			@Nullable Accessor<?> originalAccessor) {
+			HitResult hitResult, @Nullable Accessor<?> accessor, @Nullable Accessor<?> originalAccessor) {
 		if (WailaClientRegistration.instance().maybeLowVisionUser() || !IWailaConfig.get().getGeneral().getBuiltinCamouflage()) {
 			return accessor;
 		}
@@ -223,9 +215,7 @@ public final class JadeClient {
 
 	@Nullable
 	public static Accessor<?> limitMobEffectFog(
-			HitResult hitResult,
-			@Nullable Accessor<?> accessor,
-			@Nullable Accessor<?> originalAccessor) {
+			HitResult hitResult, @Nullable Accessor<?> accessor, @Nullable Accessor<?> originalAccessor) {
 		if (accessor == null) {
 			return null;
 		}
@@ -243,8 +233,7 @@ public final class JadeClient {
 			return accessor;
 		}
 		FogRenderer.FogData fogData = new FogRenderer.FogData(FogRenderer.FogMode.FOG_TERRAIN);
-		fogFunction.setupFog(
-				fogData,
+		fogFunction.setupFog(fogData,
 				player,
 				player.getEffect(fogFunction.getMobEffect()),
 				Math.max(32, mc.gameRenderer.getRenderDistance()),

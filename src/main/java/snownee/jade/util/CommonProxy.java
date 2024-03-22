@@ -14,6 +14,8 @@ import com.google.common.base.Throwables;
 import com.google.common.cache.Cache;
 import com.google.common.collect.Sets;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
@@ -22,7 +24,6 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.entity.EntityPickInteractionAware;
 import net.fabricmc.fabric.api.entity.FakePlayer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.mininglevel.v1.FabricMineableTags;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -40,10 +41,11 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceKey;
@@ -54,6 +56,7 @@ import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.Container;
 import net.minecraft.world.WorldlyContainerHolder;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.boss.EnderDragonPart;
@@ -65,11 +68,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.PotionItem;
 import net.minecraft.world.item.ShearsItem;
-import net.minecraft.world.item.TippedArrowItem;
-import net.minecraft.world.item.alchemy.PotionUtils;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -107,6 +110,7 @@ public final class CommonProxy implements ModInitializer {
 
 	public static final TagKey<EntityType<?>> BOSSES = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("c:bosses"));
 	public static boolean hasTechRebornEnergy = isModLoaded("team_reborn_energy");
+	private static final MapCodec<String> CUSTOM_ITEM_ID = Codec.STRING.fieldOf("id");
 
 	@Nullable
 	public static String getLastKnownUsername(UUID uuid) {
@@ -122,7 +126,8 @@ public final class CommonProxy implements ModInitializer {
 	}
 
 	public static boolean isShearable(BlockState state) {
-		return state.is(FabricMineableTags.SHEARS_MINEABLE);
+		return false;
+//		return state.is(FabricMineableTags.SHEARS_MINEABLE); FIXME
 	}
 
 	public static boolean isCorrectToolForDrops(BlockState state, Player player) {
@@ -130,22 +135,25 @@ public final class CommonProxy implements ModInitializer {
 	}
 
 	public static String getModIdFromItem(ItemStack stack) {
-		if (stack.getTag() != null && stack.getTag().contains("id")) {
-			String s = stack.getTag().getString("id");
-			if (s.contains(":")) {
-				ResourceLocation id = ResourceLocation.tryParse(s);
-				if (id != null) {
-					return id.getNamespace();
+		{
+			CustomData customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+			if (customData.contains("id")) {
+				String s = customData.read(CUSTOM_ITEM_ID).result().orElse("");
+				if (s.contains(":")) {
+					ResourceLocation id = ResourceLocation.tryParse(s);
+					if (id != null) {
+						return id.getNamespace();
+					}
 				}
 			}
 		}
 		if (stack.getItem() instanceof EnchantedBookItem) {
-			ListTag listTag = EnchantedBookItem.getEnchantments(stack);
+			ItemEnchantments enchantments = stack.getOrDefault(DataComponents.STORED_ENCHANTMENTS, ItemEnchantments.EMPTY);
 			String modid = null;
-			for (int i = 0; i < listTag.size(); i++) {
-				ResourceLocation enchantmentId = EnchantmentHelper.getEnchantmentId(listTag.getCompound(i));
-				if (enchantmentId != null) {
-					String namespace = enchantmentId.getNamespace();
+			for (Holder<Enchantment> enchantmentHolder : enchantments.keySet()) {
+				ResourceLocation id = enchantmentHolder.unwrapKey().map(ResourceKey::location).orElse(null);
+				if (id != null) {
+					String namespace = id.getNamespace();
 					if (modid == null) {
 						modid = namespace;
 					} else if (!modid.equals(namespace)) {
@@ -158,15 +166,29 @@ public final class CommonProxy implements ModInitializer {
 				return modid;
 			}
 		}
-		if (stack.getItem() instanceof PotionItem || stack.getItem() instanceof TippedArrowItem) {
-			return PotionUtils.getPotion(stack).unwrapKey().map(ResourceKey::location).map(ResourceLocation::getNamespace).orElse(
-					ResourceLocation.DEFAULT_NAMESPACE);
+		PotionContents potionContents = stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
+		if (potionContents.hasEffects()) {
+			String modid = null;
+			for (MobEffectInstance effect : potionContents.getAllEffects()) {
+				ResourceLocation id = effect.getEffect().unwrapKey().map(ResourceKey::location).orElse(null);
+				if (id != null) {
+					String namespace = id.getNamespace();
+					if (modid == null) {
+						modid = namespace;
+					} else if (!modid.equals(namespace)) {
+						modid = null;
+						break;
+					}
+				}
+			}
+			if (modid != null) {
+				return modid;
+			}
 		}
 		if (stack.is(Items.PAINTING)) {
-			CompoundTag compoundTag = stack.getTag();
-			if (compoundTag != null && compoundTag.contains("EntityTag", 10)) {
-				CompoundTag compoundTag2 = compoundTag.getCompound("EntityTag");
-				return Painting.loadVariant(compoundTag2)
+			CustomData customData = stack.getOrDefault(DataComponents.ENTITY_DATA, CustomData.EMPTY);
+			if (!customData.isEmpty()) {
+				return customData.read(Painting.VARIANT_MAP_CODEC).result()
 						.flatMap(Holder::unwrapKey)
 						.map(ResourceKey::location)
 						.map(ResourceLocation::getNamespace)
@@ -204,7 +226,8 @@ public final class CommonProxy implements ModInitializer {
 				return new ItemCollector<>(new ItemIterator.ContainerItemIterator(o -> {
 					if (o instanceof ChestBlockEntity be) {
 						if (be.getBlockState().getBlock() instanceof ChestBlock chestBlock) {
-							Container compound = ChestBlock.getContainer(chestBlock,
+							Container compound = ChestBlock.getContainer(
+									chestBlock,
 									be.getBlockState(),
 									be.getLevel(),
 									be.getBlockPos(),
@@ -236,8 +259,10 @@ public final class CommonProxy implements ModInitializer {
 	@Nullable
 	public static List<ViewGroup<ItemStack>> storageGroup(Object storage, Accessor<?> accessor) {
 		try {
-			return ItemStorageProvider.containerCache.get(storage,
-					() -> new ItemCollector<>(JadeFabricUtils.fromItemStorage((Storage<ItemVariant>) storage, 0))).update(storage,
+			return ItemStorageProvider.containerCache.get(
+					storage,
+					() -> new ItemCollector<>(JadeFabricUtils.fromItemStorage((Storage<ItemVariant>) storage, 0))).update(
+					storage,
 					accessor.getLevel().getGameTime());
 		} catch (ExecutionException e) {
 			return null;
@@ -386,8 +411,8 @@ public final class CommonProxy implements ModInitializer {
 
 	public static Component getFluidName(JadeFluidObject fluidObject) {
 		Fluid fluid = fluidObject.getType();
-		CompoundTag nbt = fluidObject.getTag();
-		return FluidVariantAttributes.getName(FluidVariant.of(fluid, nbt));
+		DataComponentPatch components = fluidObject.getComponents();
+		return FluidVariantAttributes.getName(FluidVariant.of(fluid, components));
 	}
 
 	public static int showOrHideFromServer(Collection<ServerPlayer> players, boolean show) {
@@ -441,7 +466,8 @@ public final class CommonProxy implements ModInitializer {
 			if (blockAccessor.getBlockEntity() == null) {
 				return blockAccessor.getBlock() instanceof WorldlyContainerHolder;
 			}
-			return ItemStorage.SIDED.find(accessor.getLevel(),
+			return ItemStorage.SIDED.find(
+					accessor.getLevel(),
 					blockAccessor.getPosition(),
 					blockAccessor.getBlockState(),
 					blockAccessor.getBlockEntity(),
@@ -452,7 +478,8 @@ public final class CommonProxy implements ModInitializer {
 
 	public static boolean hasDefaultFluidStorage(Accessor<?> accessor) {
 		if (accessor instanceof BlockAccessor blockAccessor) {
-			return FluidStorage.SIDED.find(accessor.getLevel(),
+			return FluidStorage.SIDED.find(
+					accessor.getLevel(),
 					blockAccessor.getPosition(),
 					blockAccessor.getBlockState(),
 					blockAccessor.getBlockEntity(),
@@ -463,7 +490,8 @@ public final class CommonProxy implements ModInitializer {
 
 	public static boolean hasDefaultEnergyStorage(Accessor<?> accessor) {
 		if (hasTechRebornEnergy && accessor instanceof BlockAccessor blockAccessor) {
-			return TechRebornEnergyCompat.getSided().find(accessor.getLevel(),
+			return TechRebornEnergyCompat.getSided().find(
+					accessor.getLevel(),
 					blockAccessor.getPosition(),
 					blockAccessor.getBlockState(),
 					blockAccessor.getBlockEntity(),

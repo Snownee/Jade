@@ -1,13 +1,19 @@
 package snownee.jade.addon.vanilla;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.Lists;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
+import net.minecraft.Util;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.block.entity.CampfireBlockEntity;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.Identifiers;
@@ -19,8 +25,9 @@ import snownee.jade.api.view.ItemView;
 import snownee.jade.api.view.ViewGroup;
 
 public enum CampfireProvider implements IServerExtensionProvider<ItemStack>, IClientExtensionProvider<ItemStack, ItemView> {
-
 	INSTANCE;
+
+	private static final MapCodec<Integer> COOKING_TIME_CODEC = Codec.INT.fieldOf("jade:cooking");
 
 	@Override
 	public ResourceLocation getUid() {
@@ -30,10 +37,15 @@ public enum CampfireProvider implements IServerExtensionProvider<ItemStack>, ICl
 	@Override
 	public List<ClientViewGroup<ItemView>> getClientGroups(Accessor<?> accessor, List<ViewGroup<ItemStack>> groups) {
 		return ClientViewGroup.map(groups, stack -> {
-			String text = null;
-			if (stack.getTag() != null && stack.getTag().contains("jade:cooking")) {
-				text = IThemeHelper.get().seconds(stack.getTag().getInt("jade:cooking")).getString();
+			CustomData customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+			if (customData.isEmpty()) {
+				return null;
 			}
+			Optional<Integer> result = customData.read(COOKING_TIME_CODEC).result();
+			if (result.isEmpty()) {
+				return null;
+			}
+			String text = IThemeHelper.get().seconds(result.get()).getString();
 			return new ItemView(stack).amountText(text);
 		}, null);
 	}
@@ -48,7 +60,9 @@ public enum CampfireProvider implements IServerExtensionProvider<ItemStack>, ICl
 					continue;
 				}
 				stack = stack.copy();
-				stack.getOrCreateTag().putInt("jade:cooking", campfire.cookingTime[i] - campfire.cookingProgress[i]);
+				CustomData customData = Util.getOrThrow(stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
+						.update(COOKING_TIME_CODEC, campfire.cookingTime[i] - campfire.cookingProgress[i]), IllegalStateException::new);
+				stack.set(DataComponents.CUSTOM_DATA, customData);
 				list.add(stack);
 			}
 			return List.of(new ViewGroup<>(list));

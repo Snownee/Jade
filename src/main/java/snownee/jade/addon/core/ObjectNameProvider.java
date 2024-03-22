@@ -1,9 +1,11 @@
 package snownee.jade.addon.core;
 
+import com.mojang.serialization.MapCodec;
+
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.Nameable;
@@ -28,8 +30,10 @@ import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.impl.WailaClientRegistration;
+import snownee.jade.util.ServerDataUtil;
 
 public abstract class ObjectNameProvider implements IToggleableProvider {
+	private static final MapCodec<Component> GIVEN_NAME_CODEC = ComponentSerialization.CODEC.fieldOf("given_name");
 
 	public static ForBlock getBlock() {
 		return ForBlock.INSTANCE;
@@ -68,10 +72,7 @@ public abstract class ObjectNameProvider implements IToggleableProvider {
 
 		@Override
 		public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-			Component name = null;
-			if (accessor.getServerData().contains("givenName", Tag.TAG_STRING)) {
-				name = Component.Serializer.fromJson(accessor.getServerData().getString("givenName"));
-			}
+			Component name = ServerDataUtil.read(accessor.getServerData(), GIVEN_NAME_CODEC).orElse(null);
 			if (name == null && accessor.isFakeBlock()) {
 				name = accessor.getFakeBlock().getHoverName();
 			}
@@ -111,7 +112,7 @@ public abstract class ObjectNameProvider implements IToggleableProvider {
 					name = nameable.getDisplayName();
 				}
 				if (name != null) {
-					data.putString("givenName", Component.Serializer.toJson(name));
+					ServerDataUtil.write(data, GIVEN_NAME_CODEC, name);
 				}
 			}
 		}

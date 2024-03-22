@@ -244,14 +244,14 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 		}
 
 		public SyncData(RegistryFriendlyByteBuf buffer) {
-			this(buffer.readBoolean(), buffer.readBlockHitResult(), Block.stateById(buffer.readVarInt()), ItemStack.STREAM_CODEC.decode(buffer));
+			this(buffer.readBoolean(), buffer.readBlockHitResult(), Block.stateById(buffer.readVarInt()), ItemStack.OPTIONAL_STREAM_CODEC.decode(buffer));
 		}
 
 		public void write(RegistryFriendlyByteBuf buffer) {
 			buffer.writeBoolean(showDetails);
 			buffer.writeBlockHitResult(hit);
 			buffer.writeVarInt(Block.getId(blockState));
-			ItemStack.STREAM_CODEC.encode(buffer, fakeBlock);
+			ItemStack.OPTIONAL_STREAM_CODEC.encode(buffer, fakeBlock);
 		}
 
 		public BlockAccessor unpack(ServerPlayer player) {

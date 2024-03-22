@@ -55,9 +55,11 @@ import snownee.jade.util.WailaExceptionHandler;
 
 public abstract class ItemStorageProvider<T extends Accessor<?>> implements IComponentProvider<T>, IServerDataProvider<T> {
 
-	public static final Cache<Object, ItemCollector<?>> targetCache = CacheBuilder.newBuilder().weakKeys().expireAfterAccess(60,
+	public static final Cache<Object, ItemCollector<?>> targetCache = CacheBuilder.newBuilder().weakKeys().expireAfterAccess(
+			60,
 			TimeUnit.SECONDS).build();
-	public static final Cache<Object, ItemCollector<?>> containerCache = CacheBuilder.newBuilder().weakKeys().expireAfterAccess(120,
+	public static final Cache<Object, ItemCollector<?>> containerCache = CacheBuilder.newBuilder().weakKeys().expireAfterAccess(
+			120,
 			TimeUnit.SECONDS).build();
 
 	public static ForBlock getBlock() {
@@ -91,7 +93,7 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 			return;
 		}
 		var groups = provider.get().getClientGroups(accessor, ViewGroup.readList(accessor.getServerData(), "JadeItemStorage", itemTag -> {
-			ItemStack item = ItemStack.of(itemTag);
+			ItemStack item = ItemStack.parseOptional(accessor.getLevel().registryAccess(), itemTag);
 			if (!item.isEmpty() && itemTag.contains("NewCount")) {
 				item.setCount(itemTag.getInt("NewCount"));
 			}
@@ -199,13 +201,12 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 				continue;
 			}
 			if (ViewGroup.saveList(tag, "JadeItemStorage", groups, item -> {
-				CompoundTag itemTag = new CompoundTag();
 				int count = item.getCount();
-				if (count > 64) {
+				if (count > item.getMaxStackSize()) {
 					item.setCount(1);
 				}
-				item.save(itemTag);
-				if (count > 64) {
+				CompoundTag itemTag = (CompoundTag) item.save(accessor.getLevel().registryAccess());
+				if (count > item.getMaxStackSize()) {
 					itemTag.putInt("NewCount", count);
 					item.setCount(count);
 				}
@@ -284,7 +285,8 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 			Object target = accessor.getTarget();
 			if (target == null && accessor instanceof BlockAccessor blockAccessor &&
 					blockAccessor.getBlock() instanceof WorldlyContainerHolder holder) {
-				WorldlyContainer container = holder.getContainer(blockAccessor.getBlockState(),
+				WorldlyContainer container = holder.getContainer(
+						blockAccessor.getBlockState(),
 						accessor.getLevel(),
 						blockAccessor.getPosition());
 				return CommonProxy.containerGroup(container, accessor);

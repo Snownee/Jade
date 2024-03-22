@@ -47,7 +47,7 @@ public abstract class BaseOptionsScreen extends Screen {
 			options.removed();
 		options = createOptions();
 		options.setX(120);
-		optionsNav = new OptionsNav(options, 120, height - 32, 18, 18);
+		optionsNav = new OptionsNav(options, 120, height - 32 - 18, 18, 18);
 		searchBox = new NotUglyEditBox(font, 0, 0, 120, 18, searchBox, Component.translatable("gui.jade.search"));
 		searchBox.setBordered(false);
 		searchBox.setHint(Component.translatable("gui.jade.search.hint"));
@@ -81,7 +81,6 @@ public abstract class BaseOptionsScreen extends Screen {
 
 	@Override
 	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-		renderBackground(guiGraphics, mouseX, mouseY, partialTicks);
 		super.render(guiGraphics, mouseX, mouseY, partialTicks);
 
 		OptionsList.Entry entry = options.isMouseOver(mouseX, mouseY) ? options.getEntryAt(mouseX, mouseY) : null;

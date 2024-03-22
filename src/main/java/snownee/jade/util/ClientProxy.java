@@ -24,7 +24,6 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.event.Event;
-import net.fabricmc.fabric.api.mininglevel.v1.FabricMineableTags;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRenderHandler;
@@ -212,7 +211,8 @@ public final class ClientProxy implements ClientModInitializer {
 
 	public static void getFluidSpriteAndColor(JadeFluidObject fluid, BiConsumer<@Nullable TextureAtlasSprite, Integer> consumer) {
 		Fluid type = fluid.getType();
-		FluidVariant variant = FluidVariant.of(type, fluid.getTag());
+//		FluidVariant variant = FluidVariant.of(type, fluid.getTag()); FIXME
+		FluidVariant variant = FluidVariant.of(type);
 		FluidVariantRenderHandler handler = FluidVariantRendering.getHandlerOrDefault(type);
 		TextureAtlasSprite[] sprites = handler.getSprites(variant);
 		TextureAtlasSprite fluidStillSprite = sprites == null ? null : sprites[0];
@@ -223,8 +223,8 @@ public final class ClientProxy implements ClientModInitializer {
 	public static ToolHandler createSwordToolHandler() {
 		return SimpleToolHandler.create(Identifiers.JADE("sword"), false, List.of(Items.WOODEN_SWORD))
 				.addBlock(Blocks.COBWEB)
-				.addBlock(Blocks.BAMBOO)
-				.addBlockTag(FabricMineableTags.SWORD_MINEABLE);
+				.addBlock(Blocks.BAMBOO);
+//				.addBlockTag(FabricMineableTags.SWORD_MINEABLE); FIXME
 	}
 
 	public static KeyMapping registerDetailsKeyBinding() {
@@ -286,7 +286,9 @@ public final class ClientProxy implements ClientModInitializer {
 			((KeyAccess) (Object) key).setDisplayName(new LazyLoadedValue<>(() -> Component.translatable(key.getName())));
 		}
 		JadeClient.init();
-		ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener((IdentifiableResourceReloadListener) ThemeHelper.INSTANCE);
-		ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener((IdentifiableResourceReloadListener) HarvestToolProvider.INSTANCE);
+		ResourceManagerHelper.get(PackType.CLIENT_RESOURCES)
+				.registerReloadListener((IdentifiableResourceReloadListener) ThemeHelper.INSTANCE);
+		ResourceManagerHelper.get(PackType.SERVER_DATA)
+				.registerReloadListener((IdentifiableResourceReloadListener) HarvestToolProvider.INSTANCE);
 	}
 }

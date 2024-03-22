@@ -41,7 +41,7 @@ public final class JadeFabricUtils {
 				emptyCapacity = LongMath.saturatedAdd(emptyCapacity, capacity);
 				continue;
 			}
-			list.add(FluidView.writeDefault(JadeFluidObject.of(view.getResource().getFluid(), view.getAmount(), view.getResource().getNbt()), capacity));
+			list.add(FluidView.writeDefault(JadeFluidObject.of(view.getResource().getFluid(), view.getAmount(), view.getResource().getComponents()), capacity));
 		}
 		if (list.isEmpty() && emptyCapacity > 0) {
 			list.add(FluidView.writeDefault(JadeFluidObject.empty(), emptyCapacity));

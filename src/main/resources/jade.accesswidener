@@ -44,6 +44,7 @@ accessible method net/minecraft/client/gui/GuiGraphics blitSprite (Lnet/minecraf
 
 accessible field net/minecraft/client/gui/components/EditBox SPRITES Lnet/minecraft/client/gui/components/WidgetSprites;
 accessible field net/minecraft/client/gui/components/AbstractSelectionList SCROLLER_SPRITE Lnet/minecraft/resources/ResourceLocation;
+accessible field net/minecraft/client/gui/components/AbstractSelectionList SCROLLER_BACKGROUND_SPRITE Lnet/minecraft/resources/ResourceLocation;
 
 accessible field net/minecraft/client/gui/screens/Screen deferredTooltipRendering Lnet/minecraft/client/gui/screens/Screen$DeferredTooltipRendering;
 
