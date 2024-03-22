@@ -53,35 +53,5 @@ public class CorePlugin implements IWailaPlugin {
 		registration.markAsClientFeature(Identifiers.CORE_REL_COORDINATES);
 		registration.markAsClientFeature(Identifiers.CORE_MOD_NAME);
 		registration.markAsClientFeature(Identifiers.CORE_BLOCK_FACE);
-
-		for (String id : createEntityBlocklist().get().values) {
-			BuiltInRegistries.ENTITY_TYPE.getOptional(ResourceLocation.tryParse(id)).ifPresent(registration::hideTarget);
-		}
-		for (String id : createBlockBlocklist().get().values) {
-			BuiltInRegistries.BLOCK.getOptional(ResourceLocation.tryParse(id)).ifPresent(registration::hideTarget);
-		}
-	}
-
-	public static JsonConfig<TargetBlocklist> createEntityBlocklist() {
-		return new JsonConfig<>(Jade.ID + "/hide-entities", TargetBlocklist.class, null, () -> {
-			var blocklist = new TargetBlocklist();
-			blocklist.values = Stream.of(
-							EntityType.AREA_EFFECT_CLOUD,
-							EntityType.FIREWORK_ROCKET,
-							EntityType.INTERACTION,
-							EntityType.TEXT_DISPLAY)
-					.map(EntityType::getKey)
-					.map(Object::toString)
-					.toList();
-			return blocklist;
-		});
-	}
-
-	public static JsonConfig<TargetBlocklist> createBlockBlocklist() {
-		return new JsonConfig<>(Jade.ID + "/hide-blocks", TargetBlocklist.class, null, () -> {
-			var blocklist = new TargetBlocklist();
-			blocklist.values = List.of("minecraft:barrier");
-			return blocklist;
-		});
 	}
 }

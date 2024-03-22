@@ -23,6 +23,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import snownee.jade.Jade;
 import snownee.jade.api.config.IWailaConfig;
+import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.util.ModIdentification;
 import snownee.jade.util.SmoothChasingValue;
@@ -121,6 +122,7 @@ public class HomeConfigScreen extends Screen {
 	public void onClose() {
 		Jade.CONFIG.save();
 		PluginConfig.INSTANCE.save();
+		WailaClientRegistration.instance().reloadBlocklists();
 		Objects.requireNonNull(minecraft).setScreen(parent);
 	}
 
