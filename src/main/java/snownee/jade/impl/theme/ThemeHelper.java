@@ -29,9 +29,11 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.util.profiling.ProfilerFiller;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
+import snownee.jade.addon.vanilla.HorseStatsProvider;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
+import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.impl.config.WailaConfig;
 import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.overlay.OverlayRenderer;
@@ -144,6 +146,9 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener implements ITh
 	}
 
 	protected MutableComponent color(Object componentOrString, int color) {
+		if (componentOrString instanceof Number number) {
+			componentOrString = DisplayHelper.dfCommas.format(number.doubleValue());
+		}
 		if (componentOrString instanceof MutableComponent component) {
 			if (component.getStyle().isEmpty()) {
 				return component.setStyle(colorStyle(color));

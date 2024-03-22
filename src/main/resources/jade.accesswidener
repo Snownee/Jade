@@ -60,3 +60,10 @@ accessible method net/minecraft/client/renderer/LightTexture getDarknessGamma (F
 accessible method net/minecraft/client/renderer/LightTexture calculateDarknessScale (Lnet/minecraft/world/entity/LivingEntity;FF)F
 
 accessible field net/minecraft/world/entity/animal/armadillo/Armadillo scuteTime I
+
+accessible field net/minecraft/world/level/block/state/BlockBehaviour$Properties explosionResistance F
+accessible field net/minecraft/world/level/block/state/BlockBehaviour$Properties destroyTime F
+accessible field net/minecraft/world/level/block/state/BlockBehaviour$Properties jumpFactor F
+accessible field net/minecraft/world/level/block/state/BlockBehaviour$Properties speedFactor F
+accessible method net/minecraft/world/level/block/FireBlock getBurnOdds (Lnet/minecraft/world/level/block/state/BlockState;)I
+accessible method net/minecraft/world/level/block/FireBlock getIgniteOdds (Lnet/minecraft/world/level/block/state/BlockState;)I

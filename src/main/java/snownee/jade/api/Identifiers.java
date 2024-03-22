@@ -18,6 +18,7 @@ public class Identifiers {
 	public static final ResourceLocation CORE_BLOCK_FACE = JADE("block_face");
 	public static final ResourceLocation DEBUG_REGISTRY_NAME = JADE("registry_name");
 	public static final ResourceLocation DEBUG_SPECIAL_REGISTRY_NAME = JADE("registry_name.special");
+	public static final ResourceLocation DEBUG_BLOCK_PROPERTIES = JADE("block_properties");
 	public static final ResourceLocation DEBUG_BLOCK_STATES = JADE("block_states");
 	public static final ResourceLocation UNIVERSAL_ITEM_STORAGE = MC("item_storage");
 	public static final ResourceLocation UNIVERSAL_ITEM_STORAGE_DETAILED_AMOUNT = MC("item_storage.detailed_amount");
