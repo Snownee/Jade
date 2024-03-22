@@ -23,13 +23,13 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
-import snownee.jade.addon.core.CorePlugin;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
 import snownee.jade.gui.config.OptionButton;
 import snownee.jade.gui.config.OptionsList;
 import snownee.jade.gui.config.value.OptionValue;
+import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.impl.config.WailaConfig.ConfigGeneral;
 import snownee.jade.impl.config.WailaConfig.ConfigOverlay;
@@ -82,10 +82,10 @@ public class WailaConfigScreen extends BaseOptionsScreen {
 			options.choices("debug_mode", general.isDebug(), general::setDebug);
 		options.choices("display_tooltip", general.shouldDisplayTooltip(), general::setDisplayTooltip);
 		OptionsList.Entry entry = options.choices("display_entities", general.getDisplayEntities(), general::setDisplayEntities);
-		editBlocklist(entry, "hide-entities", () -> CorePlugin.createBlockBlocklist().get());
+		editBlocklist(entry, "hide-entities", () -> WailaClientRegistration.createEntityBlocklist().get());
 		options.choices("display_bosses", general.getDisplayBosses(), general::setDisplayBosses).parent(entry);
 		entry = options.choices("display_blocks", general.getDisplayBlocks(), general::setDisplayBlocks);
-		editBlocklist(entry, "hide-blocks", () -> CorePlugin.createBlockBlocklist().get());
+		editBlocklist(entry, "hide-blocks", () -> WailaClientRegistration.createBlockBlocklist().get());
 		options.choices("display_fluids", general.getDisplayFluids(), general::setDisplayFluids).parent(entry);
 		options.choices("display_mode", general.getDisplayMode(), general::setDisplayMode, builder -> {
 			builder.withTooltip(mode -> {

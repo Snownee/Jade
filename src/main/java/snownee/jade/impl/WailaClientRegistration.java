@@ -16,6 +16,7 @@ import com.google.common.collect.Sets;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -24,6 +25,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import snownee.jade.Jade;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
@@ -38,6 +40,7 @@ import snownee.jade.api.callback.JadeRayTraceCallback;
 import snownee.jade.api.callback.JadeRenderBackgroundCallback;
 import snownee.jade.api.callback.JadeTooltipCollectedCallback;
 import snownee.jade.api.config.IWailaConfig;
+import snownee.jade.api.config.TargetBlocklist;
 import snownee.jade.api.platform.CustomEnchantPower;
 import snownee.jade.api.view.EnergyView;
 import snownee.jade.api.view.FluidView;
@@ -53,6 +56,7 @@ import snownee.jade.impl.config.entry.IntConfigEntry;
 import snownee.jade.impl.config.entry.StringConfigEntry;
 import snownee.jade.overlay.DatapackBlockManager;
 import snownee.jade.util.ClientProxy;
+import snownee.jade.util.JsonConfig;
 
 public class WailaClientRegistration implements IWailaClientRegistration {
 
@@ -65,7 +69,9 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	public final HierarchyLookup<IEntityComponentProvider> entityComponentProviders;
 
 	public final Set<Block> hideBlocks = Sets.newHashSet();
+	public final Set<Block> hideBlocksReloadable = Sets.newHashSet();
 	public final Set<EntityType<?>> hideEntities = Sets.newHashSet();
+	public final Set<EntityType<?>> hideEntitiesReloadable = Sets.newHashSet();
 	public final Set<Block> pickBlocks = Sets.newHashSet();
 	public final Set<EntityType<?>> pickEntities = Sets.newHashSet();
 
@@ -92,6 +98,33 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 
 		entityIconProviders = new HierarchyLookup<>(Entity.class);
 		entityComponentProviders = new HierarchyLookup<>(Entity.class);
+	}
+
+	public static WailaClientRegistration instance() {
+		return INSTANCE;
+	}
+
+	public static JsonConfig<TargetBlocklist> createEntityBlocklist() {
+		return new JsonConfig<>(Jade.MODID + "/hide-entities", TargetBlocklist.class, null, () -> {
+			var blocklist = new TargetBlocklist();
+			blocklist.values = Stream.of(
+							EntityType.AREA_EFFECT_CLOUD,
+							EntityType.FIREWORK_ROCKET,
+							EntityType.INTERACTION,
+							EntityType.TEXT_DISPLAY)
+					.map(EntityType::getKey)
+					.map(Object::toString)
+					.toList();
+			return blocklist;
+		});
+	}
+
+	public static JsonConfig<TargetBlocklist> createBlockBlocklist() {
+		return new JsonConfig<>(Jade.MODID + "/hide-blocks", TargetBlocklist.class, null, () -> {
+			var blocklist = new TargetBlocklist();
+			blocklist.values = List.of("minecraft:barrier");
+			return blocklist;
+		});
 	}
 
 	@Override
@@ -160,7 +193,7 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 
 	@Override
 	public boolean shouldHide(BlockState state) {
-		return hideBlocks.contains(state.getBlock());
+		return hideBlocksReloadable.contains(state.getBlock());
 	}
 
 	@Override
@@ -170,7 +203,7 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 
 	@Override
 	public boolean shouldHide(Entity entity) {
-		return hideEntities.contains(entity.getType());
+		return hideEntitiesReloadable.contains(entity.getType());
 	}
 
 	@Override
@@ -219,12 +252,31 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	}
 
 	public void loadComplete() {
+		reloadBlocklists();
 		var priorities = WailaCommonRegistration.INSTANCE.priorities;
 		blockComponentProviders.loadComplete(priorities);
 		blockIconProviders.loadComplete(priorities);
 		entityComponentProviders.loadComplete(priorities);
 		entityIconProviders.loadComplete(priorities);
-		Stream.of(afterRenderCallback, beforeRenderCallback, rayTraceCallback, tooltipCollectedCallback, itemModNameCallback, renderBackgroundCallback).forEach(CallbackContainer::sort);
+		Stream.of(
+				afterRenderCallback,
+				beforeRenderCallback,
+				rayTraceCallback,
+				tooltipCollectedCallback,
+				itemModNameCallback).forEach(CallbackContainer::sort);
+	}
+
+	public void reloadBlocklists() {
+		hideEntitiesReloadable.clear();
+		hideEntitiesReloadable.addAll(hideEntities);
+		for (String id : createEntityBlocklist().get().values) {
+			BuiltInRegistries.ENTITY_TYPE.getOptional(ResourceLocation.tryParse(id)).ifPresent(hideEntitiesReloadable::add);
+		}
+		hideBlocksReloadable.clear();
+		hideBlocksReloadable.addAll(hideBlocks);
+		for (String id : createBlockBlocklist().get().values) {
+			BuiltInRegistries.BLOCK.getOptional(ResourceLocation.tryParse(id)).ifPresent(hideBlocksReloadable::add);
+		}
 	}
 
 	@Override

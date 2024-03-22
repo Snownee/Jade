@@ -3,8 +3,6 @@ package snownee.jade.addon.core;
 import java.util.List;
 import java.util.stream.Stream;
 
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.Block;
@@ -57,19 +55,16 @@ public class CorePlugin implements IWailaPlugin {
 		registration.markAsClientFeature(Identifiers.CORE_REGISTRY_NAME);
 		registration.markAsClientFeature(Identifiers.CORE_MOD_NAME);
 		registration.markAsClientFeature(Identifiers.CORE_BLOCK_FACE);
-
-		for (String id : createEntityBlocklist().get().values) {
-			BuiltInRegistries.ENTITY_TYPE.getOptional(ResourceLocation.tryParse(id)).ifPresent(registration::hideTarget);
-		}
-		for (String id : createBlockBlocklist().get().values) {
-			BuiltInRegistries.BLOCK.getOptional(ResourceLocation.tryParse(id)).ifPresent(registration::hideTarget);
-		}
 	}
 
 	public static JsonConfig<TargetBlocklist> createEntityBlocklist() {
 		return new JsonConfig<>(Jade.MODID + "/hide-entities", TargetBlocklist.class, null, () -> {
 			var blocklist = new TargetBlocklist();
-			blocklist.values = Stream.of(EntityType.AREA_EFFECT_CLOUD, EntityType.FIREWORK_ROCKET, EntityType.INTERACTION, EntityType.TEXT_DISPLAY)
+			blocklist.values = Stream.of(
+							EntityType.AREA_EFFECT_CLOUD,
+							EntityType.FIREWORK_ROCKET,
+							EntityType.INTERACTION,
+							EntityType.TEXT_DISPLAY)
 					.map(EntityType::getKey)
 					.map(Object::toString)
 					.toList();
