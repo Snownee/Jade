@@ -13,11 +13,14 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -35,9 +38,10 @@ public class HomeConfigScreen extends Screen {
 	private final SmoothChasingValue titleY;
 	private final SmoothChasingValue creditHover;
 	private final Component credit;
+	private final Component creditHovered;
+	private final Rect2i creditBounds = new Rect2i(0, 0, 0, 0);
 	private final List<TextParticle> particles = Lists.newArrayList();
 	private final List<TextParticle> pendingParticles = Lists.newArrayList();
-	private int creditWidth;
 	private boolean hovered;
 	private float ticks;
 	private byte festival;
@@ -59,12 +63,12 @@ public class HomeConfigScreen extends Screen {
 		} else if (month <= 2 && isLunarNewYear(now)) {
 			festival = 99;
 		}
-		credit = Component.translatable("gui.jade.by", Component.literal("❤").withStyle(ChatFormatting.RED)).withStyle(s -> {
-			if (festival != 0 && festival != 1) {
-				s = s.withColor(0xF1E3A4);
-			}
-			return s;
-		});
+		Style style = Style.EMPTY;
+		if (festival != 0 && festival != 1) {
+			style = style.withColor(0xF1E3A4);
+		}
+		credit = Component.translatable("gui.jade.by", Component.literal("❤").withStyle(ChatFormatting.RED)).withStyle(style);
+		creditHovered = Component.translatable("gui.jade.by.hovered").withStyle(style);
 	}
 
 	private static boolean isLunarNewYear(LocalDate now) {
@@ -106,7 +110,10 @@ public class HomeConfigScreen extends Screen {
 	protected void init() {
 		Objects.requireNonNull(minecraft);
 		particles.clear();
-		creditWidth = font.width(credit);
+		creditBounds.setWidth(font.width(credit));
+		creditBounds.setHeight(10);
+		creditBounds.setX((int) (width * 0.5F - creditBounds.getWidth() * 0.5F));
+		creditBounds.setY((int) (height * 0.9F - 5));
 		addRenderableWidget(Button.builder(Component.translatable("gui.jade.jade_settings"), w -> {
 			minecraft.setScreen(new WailaConfigScreen(HomeConfigScreen.this));
 		}).bounds(width / 2 - 105, height / 2 - 10, 100, 20).build());
@@ -181,9 +188,7 @@ public class HomeConfigScreen extends Screen {
 		}
 		guiGraphics.pose().popPose();
 
-		int creditX = (int) (width * 0.5F - creditWidth * 0.5F);
-		int creditY = (int) (height * 0.9F - 5);
-		boolean hover = mouseX >= creditX && mouseX < creditX + creditWidth && mouseY >= creditY && mouseY < creditY + 10;
+		boolean hover = creditBounds.contains(mouseX, mouseY);
 		if (!hovered && hover) {
 			creditHover.target(1);
 		} else if (!hover) {
@@ -205,9 +210,9 @@ public class HomeConfigScreen extends Screen {
 				}
 			}
 			for (int color : colors) {
-				int ox = random.nextIntBetweenInclusive(-creditWidth / 2, creditWidth / 2);
+				int ox = random.nextIntBetweenInclusive(-creditBounds.getWidth() / 2, creditBounds.getWidth() / 2);
 				float x = width * 0.5F + ox;
-				float y = creditY + random.nextInt(10);
+				float y = random.nextIntBetweenInclusive(creditBounds.getY(), creditBounds.getY() + creditBounds.getHeight());
 				float dx = ox * 0.08F;
 				float dy = -5 - random.nextFloat() * 3;
 				var particle = new TextParticle(text, x, y, dx, dy, color, 0.75F + random.nextFloat() * 0.5F);
@@ -220,11 +225,12 @@ public class HomeConfigScreen extends Screen {
 		creditHover.tick(partialTicks);
 		creditHover.value = Math.min(0.6F, creditHover.value);
 		guiGraphics.pose().pushPose();
-		guiGraphics.pose().translate(width * 0.5F, creditY, 0);
+		guiGraphics.pose().translate(width * 0.5F, creditBounds.getY(), 0);
 		scale = 1 + creditHover.value * 0.2F;
 		guiGraphics.pose().scale(scale, scale, scale);
-		guiGraphics.pose().translate(creditWidth * -0.5F, 0, 0);
-		guiGraphics.drawString(font, credit, 0, 0, 0x55FFFFFF);
+		Component credit = hover ? creditHovered : this.credit;
+		guiGraphics.pose().translate(font.width(credit) * -0.5F, 0, 0);
+		guiGraphics.drawString(font, credit, 0, 0, hover ? 0xAAFFFFFF : 0x55FFFFFF);
 		guiGraphics.pose().popPose();
 		hovered = hover;
 
@@ -236,6 +242,15 @@ public class HomeConfigScreen extends Screen {
 			p.render(guiGraphics, font);
 			return false;
 		});
+	}
+
+	@Override
+	public boolean mouseClicked(double mouseX, double mouseY, int i) {
+		if (creditBounds.contains((int) mouseX, (int) mouseY)) {
+			ConfirmLinkScreen.confirmLinkNow(this, "https://www.curseforge.com/members/snownee_/projects");
+			return true;
+		}
+		return super.mouseClicked(mouseX, mouseY, i);
 	}
 
 	private void festival3populateNew() {
@@ -292,7 +307,7 @@ public class HomeConfigScreen extends Screen {
 				colors.add(0x2C2C2C);
 			}
 		}
-		int ox = random.nextIntBetweenInclusive(-creditWidth / 2, creditWidth / 2);
+		int ox = random.nextIntBetweenInclusive(creditBounds.getX(), creditBounds.getX() + creditBounds.getWidth());
 		float dx = ox * 0.08F;
 		float dy = -5 - random.nextFloat() * 3;
 		for (int color : colors) {

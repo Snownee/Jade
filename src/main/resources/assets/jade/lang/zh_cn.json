@@ -15,6 +15,7 @@
 	"jade.input_signal": "输入：%d",
 	"tooltip.jade.villager_profession": "职业：%s",
 	"gui.jade.by": "由Snownee用%s打造",
+	"gui.jade.by.hovered": "查看我的所有作品！",
 	"gui.jade.configuration": "Jade 配置",
 	"gui.jade.configuration.desc1": "Jade是一款免费模组，如遇盗卖等行为请向平台举报。",
 	"gui.jade.configuration.desc2": "",
