@@ -56,9 +56,9 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 		};
 	}
 
-	public static OptionsList.Entry editBlocklist(OptionsList.Entry entry, String fileName, Runnable defaultCreator) {
+	public static OptionsList.Entry editIgnoreList(OptionsList.Entry entry, String fileName, Runnable defaultCreator) {
 		entry.getFirstWidget().setWidth(79);
-		MutableComponent tooltip = Component.translatable("config.jade.edit_blocklist");
+		MutableComponent tooltip = Component.translatable("config.jade.edit_ignore_list");
 		entry.addWidget(Button.builder(Component.literal("☰"), b -> {
 			File file = new File(CommonProxy.getConfigDirectory(), "jade/%s.json".formatted(fileName));
 			if (!file.exists()) {
@@ -81,10 +81,10 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 		}
 		options.choices("display_tooltip", general.shouldDisplayTooltip(), general::setDisplayTooltip);
 		OptionsList.Entry entry = options.choices("display_entities", general.getDisplayEntities(), general::setDisplayEntities);
-		editBlocklist(entry, "hide-entities", () -> WailaClientRegistration.createEntityBlocklist().get());
+		editIgnoreList(entry, "hide-entities", () -> WailaClientRegistration.createEntityIgnoreList().get());
 		options.choices("display_bosses", general.getDisplayBosses(), general::setDisplayBosses).parent(entry);
 		entry = options.choices("display_blocks", general.getDisplayBlocks(), general::setDisplayBlocks);
-		editBlocklist(entry, "hide-blocks", () -> WailaClientRegistration.createBlockBlocklist().get());
+		editIgnoreList(entry, "hide-blocks", () -> WailaClientRegistration.createBlockIgnoreList().get());
 		options.choices("display_fluids", general.getDisplayFluids(), general::setDisplayFluids).parent(entry);
 		options.choices("display_mode", general.getDisplayMode(), general::setDisplayMode, builder -> {
 			builder.withTooltip(mode -> {

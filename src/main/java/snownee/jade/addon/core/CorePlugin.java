@@ -1,15 +1,8 @@
 package snownee.jade.addon.core;
 
-import java.util.List;
-import java.util.stream.Stream;
-
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import snownee.jade.Jade;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IWailaClientRegistration;
@@ -17,10 +10,8 @@ import snownee.jade.api.IWailaCommonRegistration;
 import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.WailaPlugin;
-import snownee.jade.api.config.TargetBlocklist;
 import snownee.jade.impl.BlockAccessorClientHandler;
 import snownee.jade.impl.EntityAccessorClientHandler;
-import snownee.jade.util.JsonConfig;
 
 @WailaPlugin
 public class CorePlugin implements IWailaPlugin {

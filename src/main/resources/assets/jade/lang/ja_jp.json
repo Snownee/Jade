@@ -46,7 +46,6 @@
 	"narration.jade.clear_content.usage": "左クリックで内容を消去",
 	"config.jade.general": "全般",
 	"config.jade.debug_mode": "デバッグモード",
-	"config.jade.edit_blocklist": "ファイル内のブロック一覧を編集…",
 	"config.jade.display_tooltip": "情報を表示",
 	"config.jade.display_tooltip_desc": "データを収集して情報をレンダリングします。",
 	"config.jade.display_entities": "エンティティを表示",

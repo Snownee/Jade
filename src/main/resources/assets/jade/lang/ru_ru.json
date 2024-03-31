@@ -46,7 +46,6 @@
   "narration.jade.clear_content.usage": "Щелкните левой кнопкой мыши, чтобы очистить содержимое",
   "config.jade.general": "Основные",
   "config.jade.debug_mode": "Режим отладки",
-  "config.jade.edit_blocklist": "Редактировать черный список в файлах…",
   "config.jade.display_tooltip": "Отобразить подсказку",
   "config.jade.display_tooltip_desc": "Соберёт данные и отобразит подсказку.",
   "config.jade.display_entities": "Отображать сущности",

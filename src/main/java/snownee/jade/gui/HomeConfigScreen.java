@@ -129,7 +129,7 @@ public class HomeConfigScreen extends Screen {
 	public void onClose() {
 		Jade.CONFIG.save();
 		PluginConfig.INSTANCE.save();
-		WailaClientRegistration.instance().reloadBlocklists();
+		WailaClientRegistration.instance().reloadIgnoreLists();
 		Objects.requireNonNull(minecraft).setScreen(parent);
 	}
 

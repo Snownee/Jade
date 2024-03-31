@@ -46,7 +46,6 @@
 	"narration.jade.clear_content.usage": "左鍵點擊以清除內容",
 	"config.jade.general": "一般",
 	"config.jade.debug_mode": "偵錯模式",
-	"config.jade.edit_blocklist": "編輯檔案中的封鎖清單...",
 	"config.jade.display_tooltip": "顯示物品提示",
 	"config.jade.display_tooltip_desc": "收集資料並顯示物品提示。",
 	"config.jade.display_entities": "顯示實體",

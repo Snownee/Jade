@@ -50,7 +50,7 @@
 	"config.jade.key_name_n_bind_2": "[%s](currently %s, %s)",
 	"config.jade.general": "General",
 	"config.jade.debug_mode": "Debug Mode",
-	"config.jade.edit_blocklist": "Edit Blocklist in Files...",
+	"config.jade.edit_ignore_list": "Edit ignore list in Files...",
 	"config.jade.display_tooltip": "Display Tooltip",
 	"config.jade.display_tooltip_desc": "Collect data and render the tooltip.",
 	"config.jade.display_entities": "Display Entities",

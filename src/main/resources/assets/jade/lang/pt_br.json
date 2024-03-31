@@ -46,7 +46,6 @@
 	"narration.jade.clear_content.usage": "Clique com o botão esquerdo p/ limpar o conteúdo",
 	"config.jade.general": "Geral",
 	"config.jade.debug_mode": "Modo de Depuração",
-	"config.jade.edit_blocklist": "Editar lista de bloqueio em arquivos...",
 	"config.jade.display_tooltip": "Exibir dica de ferramenta",
 	"config.jade.display_tooltip_desc": "Colete dados e renderize a dica de ferramenta",
 	"config.jade.display_entities": "Exibir Entidades",

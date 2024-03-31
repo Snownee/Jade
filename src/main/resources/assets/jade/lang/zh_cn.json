@@ -50,7 +50,7 @@
 	"config.jade.key_name_n_bind_2": "[%s]（当前为%s键和%s键）",
 	"config.jade.general": "通用",
 	"config.jade.debug_mode": "调试模式",
-	"config.jade.edit_blocklist": "在文件中编辑禁止列表…",
+	"config.jade.edit_ignore_list": "在文件中编辑忽略列表…",
 	"config.jade.display_tooltip": "显示提示框",
 	"config.jade.display_tooltip_desc": "收集数据并渲染提示框",
 	"config.jade.display_entities": "显示实体",
