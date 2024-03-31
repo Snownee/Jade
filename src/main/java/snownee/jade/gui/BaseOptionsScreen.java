@@ -1,10 +1,11 @@
 package snownee.jade.gui;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import net.minecraft.client.gui.GuiGraphics;
@@ -87,11 +88,16 @@ public abstract class BaseOptionsScreen extends Screen {
 
 		OptionsList.Entry entry = options.isMouseOver(mouseX, mouseY) ? options.getEntryAt(mouseX, mouseY) : null;
 		if (entry != null) {
-			if (!Strings.isNullOrEmpty(entry.getDescription())) {
+			List<Component> descs = Lists.newArrayListWithExpectedSize(2);
+			descs.addAll(entry.getDescription());
+			if (hasShiftDown()) {
+				descs.addAll(entry.getDescriptionOnShift());
+			}
+			if (!descs.isEmpty()) {
 				int valueX = entry.getTextX(options.getRowWidth());
 				if (mouseX >= valueX && mouseX < valueX + entry.getTextWidth()) {
 					setTooltipForNextRenderPass(
-							Tooltip.create(Component.literal(entry.getDescription())),
+							MultilineTooltip.create(descs),
 							new BelowOrAboveListEntryTooltipPositioner(options, entry),
 							false);
 				}

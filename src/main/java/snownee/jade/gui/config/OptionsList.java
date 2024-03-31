@@ -403,8 +403,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		private final List<String> messages = Lists.newArrayList();
 		private final List<AbstractWidget> widgets = Lists.newArrayList();
 		private final List<Vector2i> widgetOffsets = Lists.newArrayList();
-		@Nullable
-		protected String description;
+		protected List<Component> description = List.of();
 		private Entry parent;
 		private List<Entry> children = List.of();
 
@@ -472,9 +471,12 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 			}
 		}
 
-		@Nullable
-		public String getDescription() {
+		public List<Component> getDescription() {
 			return description;
+		}
+
+		public List<Component> getDescriptionOnShift() {
+			return List.of();
 		}
 
 		public int getTextX(int width) {
@@ -503,7 +505,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		}
 
 		public void addMessage(String message) {
-			messages.add(StringUtil.stripColor(message).toLowerCase(Locale.ENGLISH));
+			messages.add(StringUtil.stripColor(message));
 		}
 
 		public void addMessageKey(String key) {
@@ -526,8 +528,8 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 			addMessage(title.getString());
 			key = makeKey(key + "_desc");
 			if (I18n.exists(key)) {
-				description = I18n.get(key);
-				addMessage(description);
+				description = List.of(Component.translatable(key));
+				addMessage(description.get(0).getString());
 			}
 			narration = Component.translatable("narration.jade.category", title);
 		}

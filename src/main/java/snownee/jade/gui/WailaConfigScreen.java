@@ -17,7 +17,6 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
@@ -100,10 +99,10 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 		OptionValue<?> value = options.choices("item_mod_name", general.showItemModNameTooltip(), general::setItemModNameTooltip);
 		if (!ConfigGeneral.itemModNameTooltipDisabledByMods.isEmpty()) {
 			value.setDisabled(true);
-			value.appendDescription(I18n.get("gui.jade.disabled_by_mods"));
-			ConfigGeneral.itemModNameTooltipDisabledByMods.forEach(value::appendDescription);
+			value.appendDescription(Component.translatable("gui.jade.disabled_by_mods"));
+			ConfigGeneral.itemModNameTooltipDisabledByMods.stream().map(Component::literal).forEach(value::appendDescription);
 			if (value.getFirstWidget() != null && value.getDescription() != null) {
-				value.getFirstWidget().setTooltip(Tooltip.create(Component.literal(value.getDescription())));
+				value.getFirstWidget().setTooltip(MultilineTooltip.create(value.getDescription()));
 			}
 		}
 		options.choices("hide_from_debug", general.shouldHideFromDebug(), general::setHideFromDebug);
