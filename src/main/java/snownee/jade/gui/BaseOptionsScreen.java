@@ -5,9 +5,13 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.mojang.blaze3d.platform.InputConstants;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
@@ -16,6 +20,8 @@ import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import snownee.jade.JadeClient;
 import snownee.jade.gui.config.BelowOrAboveListEntryTooltipPositioner;
 import snownee.jade.gui.config.NotUglyEditBox;
 import snownee.jade.gui.config.OptionsList;
@@ -88,14 +94,15 @@ public abstract class BaseOptionsScreen extends Screen {
 
 		OptionsList.Entry entry = options.isMouseOver(mouseX, mouseY) ? options.getEntryAt(mouseX, mouseY) : null;
 		if (entry != null) {
-			List<Component> descs = Lists.newArrayListWithExpectedSize(2);
-			descs.addAll(entry.getDescription());
-			if (hasShiftDown()) {
-				descs.addAll(entry.getDescriptionOnShift());
-			}
-			if (!descs.isEmpty()) {
-				int valueX = entry.getTextX(options.getRowWidth());
-				if (mouseX >= valueX && mouseX < valueX + entry.getTextWidth()) {
+			int valueX = entry.getTextX(options.getRowWidth());
+			if (mouseX >= valueX && mouseX < valueX + entry.getTextWidth()) {
+				List<Component> descs = Lists.newArrayListWithExpectedSize(3);
+				descs.addAll(entry.getDescription());
+				if (hasShiftDown()) {
+					descs.addAll(entry.getDescriptionOnShift());
+				}
+				if (!descs.isEmpty()) {
+					descs.replaceAll(BaseOptionsScreen::processBuiltInVariables);
 					setTooltipForNextRenderPass(
 							MultilineTooltip.create(descs),
 							new BelowOrAboveListEntryTooltipPositioner(options, entry),
@@ -113,6 +120,54 @@ public abstract class BaseOptionsScreen extends Screen {
 				}
 			}
 		}
+	}
+
+	public static Component processBuiltInVariables(Component component) {
+		if (component.getString().contains("${SHOW_DETAILS}")) {
+			List<Component> objects = Lists.newArrayListWithExpectedSize(3);
+			objects.add(Component.translatable("key.jade.show_details"));
+			if (JadeClient.showDetails.getName().contains("alternative")) {
+				objects.add(InputConstants.getKey("key.keyboard.left.shift").getDisplayName().copy().withStyle(ChatFormatting.AQUA));
+			}
+			if (!JadeClient.showDetails.isUnbound()) {
+				objects.add(JadeClient.showDetails.getTranslatedKeyMessage().copy().withStyle(ChatFormatting.AQUA));
+			}
+			Component keyName = Component.translatable("config.jade.key_name_n_bind_" + (objects.size() - 1), objects.toArray());
+			component = replaceVariables(component, "${SHOW_DETAILS}", keyName);
+		}
+		if (component.getString().contains("${SHOW_OVERLAY}")) {
+			List<Component> objects = Lists.newArrayListWithExpectedSize(3);
+			objects.add(Component.translatable(JadeClient.showOverlay.getName()));
+			if (!JadeClient.showOverlay.isUnbound()) {
+				objects.add(JadeClient.showOverlay.getTranslatedKeyMessage().copy().withStyle(ChatFormatting.AQUA));
+			}
+			Component keyName = Component.translatable("config.jade.key_name_n_bind_" + (objects.size() - 1), objects.toArray());
+			component = replaceVariables(component, "${SHOW_OVERLAY}", keyName);
+		}
+		return component;
+	}
+
+	private static Component replaceVariables(Component component, String source, Component replacement) {
+		MutableComponent newComponent = Component.empty().withStyle(component.getStyle());
+		for (Component part : component.toFlatList()) {
+			String partString = part.getString();
+			if (partString.contains(source)) {
+				boolean first = true;
+				for (String s : StringUtils.splitByWholeSeparatorPreserveAllTokens(partString, source)) {
+					if (first) {
+						first = false;
+					} else {
+						newComponent.append(replacement);
+					}
+					if (!s.isEmpty()) {
+						newComponent.append(Component.literal(s));
+					}
+				}
+			} else {
+				newComponent.append(part);
+			}
+		}
+		return newComponent;
 	}
 
 	public abstract OptionsList createOptions();

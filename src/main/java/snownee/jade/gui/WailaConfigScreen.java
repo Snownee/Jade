@@ -22,7 +22,6 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
-import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
 import snownee.jade.gui.config.OptionButton;
@@ -90,10 +89,7 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 		options.choices("display_mode", general.getDisplayMode(), general::setDisplayMode, builder -> {
 			builder.withTooltip(mode -> {
 				String key = "display_mode_" + mode.name().toLowerCase(Locale.ENGLISH) + "_desc";
-				if (mode == IWailaConfig.DisplayMode.LITE && "fabric".equals(CommonProxy.getPlatformIdentifier())) {
-					key += ".fabric";
-				}
-				return Tooltip.create(OptionsList.Entry.makeTitle(key));
+				return Tooltip.create(processBuiltInVariables(OptionsList.Entry.makeTitle(key)));
 			});
 		});
 		OptionValue<?> value = options.choices("item_mod_name", general.showItemModNameTooltip(), general::setItemModNameTooltip);
