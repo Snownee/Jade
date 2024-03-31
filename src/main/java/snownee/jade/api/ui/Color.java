@@ -228,7 +228,6 @@ public class Color {
 	 *     <li><code>rgb[a](red, green, blue[, opacity])</code></li>
 	 *     <li><code>cmyk[a](cyan, magenta, yellow, black[, opacity])</code></li>
 	 *     <li><code>hsl[a](hue, saturation, lightness[, opacity])</code></li>
-	 *     <li>{@link NamedColor named color}</li>
 	 *     <li>hexadecimal numbers</li>
 	 * </ul>
 	 * <p>
@@ -266,11 +265,8 @@ public class Color {
 	 * @throws IllegalArgumentException if the given string value cannot be recognized as <code>rgb</code>, <code>cmyk</code>, <code>hsl</code>, {@link NamedColor named color} or hexadecimal numbers
 	 * @see #rgb(int, int, int)
 	 * @see #rgb(int, int, int, double)
-	 * @see #cmyk(double, double, double, double)
-	 * @see #cmyk(double, double, double, double, double)
 	 * @see #hsl(double, double, double)
 	 * @see #hsl(double, double, double, double)
-	 * @see org.silentsoft.csscolor4j.NamedColor
 	 * @see #hex(String)
 	 */
 	public static Color valueOf(String value) throws IllegalArgumentException {
