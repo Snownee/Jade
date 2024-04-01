@@ -65,6 +65,11 @@ public class PriorityStore<K, V> {
 		priorities.put(uid, priority);
 	}
 
+	public void putUnsafe(K key, int priority) {
+		Objects.requireNonNull(key);
+		priorities.put(key, priority);
+	}
+
 	public void sort(Set<K> extraKeys) {
 		Set<K> allKeys = priorities.keySet();
 		if (!extraKeys.isEmpty()) {

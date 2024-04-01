@@ -58,6 +58,7 @@ import snownee.jade.api.IWailaCommonRegistration;
 import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.WailaPlugin;
+import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.overlay.DatapackBlockManager;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
@@ -134,10 +135,12 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.addConfig(Identifiers.MC_HARVEST_TOOL_CREATIVE, false);
 		registration.addConfig(Identifiers.MC_BREAKING_PROGRESS, true);
 		registration.addConfig(Identifiers.MC_ANIMAL_OWNER_FETCH_NAMES, true);
+		registration.addConfig(Identifiers.MC_ENTITY_HEALTH, true);
+		registration.addConfig(Identifiers.MC_ENTITY_ARMOR, true);
 
-		registration.addConfig(Identifiers.MC_ENTITY_ARMOR_MAX_FOR_RENDER, 20, 0, 100, false);
-		registration.addConfig(Identifiers.MC_ENTITY_HEALTH_MAX_FOR_RENDER, 40, 0, 100, false);
-		registration.addConfig(Identifiers.MC_ENTITY_HEALTH_ICONS_PER_LINE, 10, 5, 30, false);
+		registration.addConfig(Identifiers.MC_ENTITY_ARMOR_MAX_FOR_RENDER, 20, 0, 200, false);
+		registration.addConfig(Identifiers.MC_ENTITY_HEALTH_MAX_FOR_RENDER, 40, 0, 200, false);
+		registration.addConfig(Identifiers.MC_ENTITY_HEALTH_ICONS_PER_LINE, 10, 5, 40, false);
 		registration.addConfig(Identifiers.MC_ENTITY_HEALTH_SHOW_FRACTIONS, false);
 
 		registration.registerBlockComponent(BrewingStandProvider.INSTANCE, BrewingStandBlock.class);
@@ -169,8 +172,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerEntityComponent(AnimalOwnerProvider.INSTANCE, Entity.class);
 		registration.registerEntityComponent(FallingBlockProvider.INSTANCE, FallingBlockEntity.class);
 		registration.registerEntityIcon(FallingBlockProvider.INSTANCE, FallingBlockEntity.class);
-		registration.registerEntityComponent(EntityHealthProvider.INSTANCE, LivingEntity.class);
-		registration.registerEntityComponent(EntityArmorProvider.INSTANCE, LivingEntity.class);
+		registration.registerEntityComponent(EntityHealthAndArmorProvider.INSTANCE, LivingEntity.class);
 		registration.registerBlockComponent(RedstoneProvider.INSTANCE, Block.class);
 		registration.registerBlockComponent(CropProgressProvider.INSTANCE, Block.class);
 		registration.registerBlockComponent(JukeboxProvider.INSTANCE, JukeboxBlock.class);
@@ -261,5 +263,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.setConfigCategoryOverride(Identifiers.MC_WAXED, block);
 		registration.setConfigCategoryOverride(Identifiers.MC_BREAKING_PROGRESS, block);
 		registration.setConfigCategoryOverride(Identifiers.MC_ZOMBIE_VILLAGER, entity);
+
+		WailaCommonRegistration.instance().priorities.putUnsafe(Identifiers.MC_ENTITY_ARMOR, -4499);
 	}
 }

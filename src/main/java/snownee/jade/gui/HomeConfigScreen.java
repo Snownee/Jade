@@ -115,9 +115,11 @@ public class HomeConfigScreen extends Screen {
 		creditBounds.setX((int) (width * 0.5F - creditBounds.getWidth() * 0.5F));
 		creditBounds.setY((int) (height * 0.9F - 5));
 		addRenderableWidget(Button.builder(Component.translatable("gui.jade.jade_settings"), w -> {
+			titleY.set(titleY.getTarget());
 			minecraft.setScreen(new WailaConfigScreen(HomeConfigScreen.this));
 		}).bounds(width / 2 - 105, height / 2 - 10, 100, 20).build());
 		addRenderableWidget(Button.builder(Component.translatable("gui.jade.plugin_settings"), w -> {
+			titleY.set(titleY.getTarget());
 			minecraft.setScreen(new PluginsConfigScreen(HomeConfigScreen.this));
 		}).bounds(width / 2 + 5, height / 2 - 10, 100, 20).build());
 		addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, w -> {
