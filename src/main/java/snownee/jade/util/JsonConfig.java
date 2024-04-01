@@ -15,6 +15,7 @@ import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 
+import net.minecraft.Util;
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.Jade;
 
@@ -44,7 +45,9 @@ public class JsonConfig<T> {
 				return def;
 			}
 			try (FileReader reader = new FileReader(file, StandardCharsets.UTF_8)) {
-				T ret = codec.parse(JsonOps.INSTANCE, GSON.fromJson(reader, JsonElement.class)).getOrThrow();
+				T ret = Util.getOrThrow(
+						codec.parse(JsonOps.INSTANCE, GSON.fromJson(reader, JsonElement.class)),
+						IllegalStateException::new);
 				if (ret == null) {
 					ret = defaultFactory.get();
 					write(ret, false);
@@ -89,7 +92,7 @@ public class JsonConfig<T> {
 		}
 
 		try (FileWriter writer = new FileWriter(file, StandardCharsets.UTF_8)) {
-			writer.write(GSON.toJson(codec.encodeStart(JsonOps.INSTANCE, t).getOrThrow()));
+			writer.write(GSON.toJson(Util.getOrThrow(codec.encodeStart(JsonOps.INSTANCE, t), IllegalStateException::new)));
 			if (invalidate) {
 				invalidate();
 			}

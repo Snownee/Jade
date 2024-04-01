@@ -9,6 +9,7 @@ import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 
+import net.minecraft.Util;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -59,9 +60,8 @@ public enum CampfireProvider implements IServerExtensionProvider<ItemStack>, ICl
 					continue;
 				}
 				stack = stack.copy();
-				CustomData customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).update(
-						COOKING_TIME_CODEC,
-						campfire.cookingTime[i] - campfire.cookingProgress[i]).getOrThrow();
+				CustomData customData = Util.getOrThrow(stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
+						.update(COOKING_TIME_CODEC, campfire.cookingTime[i] - campfire.cookingProgress[i]), IllegalStateException::new);
 				stack.set(DataComponents.CUSTOM_DATA, customData);
 				list.add(stack);
 			}

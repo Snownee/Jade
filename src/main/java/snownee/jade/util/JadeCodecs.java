@@ -14,6 +14,7 @@ import it.unimi.dsi.fastutil.floats.FloatArrayList;
 import it.unimi.dsi.fastutil.floats.FloatList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+import net.minecraft.Util;
 import net.minecraft.core.Registry;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Style;
@@ -53,9 +54,9 @@ public class JadeCodecs {
 		@Override
 		public <T> DataResult<Pair<OptionalInt, T>> decode(DynamicOps<T> ops, T input) {
 			return DataResult.success(ops.getNumberValue(input)
-					.mapOrElse(
-							number -> Pair.of(OptionalInt.of(number.intValue()), ops.empty()),
-							ignored -> Pair.of(OptionalInt.empty(), ops.empty())));
+					.result()
+					.map(number -> Pair.of(OptionalInt.of(number.intValue()), ops.empty()))
+					.orElseGet(() -> Pair.of(OptionalInt.empty(), ops.empty())));
 		}
 
 		@Override
@@ -144,6 +145,6 @@ public class JadeCodecs {
 	}
 
 	public static <T> T createFromEmptyMap(Codec<T> codec) {
-		return codec.parse(JsonOps.INSTANCE, JsonOps.INSTANCE.emptyMap()).getOrThrow();
+		return Util.getOrThrow(codec.parse(JsonOps.INSTANCE, JsonOps.INSTANCE.emptyMap()), IllegalStateException::new);
 	}
 }
