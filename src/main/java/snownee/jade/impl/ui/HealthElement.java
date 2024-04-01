@@ -15,18 +15,24 @@ import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.overlay.DisplayHelper;
+import snownee.jade.overlay.WailaTickHandler;
+import snownee.jade.track.HealthTrackInfo;
 
 public class HealthElement extends Element {
 
 	public static final ResourceLocation HEART = new ResourceLocation("hud/heart/full");
+	public static final ResourceLocation HEART_BLINKING = new ResourceLocation("hud/heart/full_blinking");
 	public static final ResourceLocation HALF_HEART = new ResourceLocation("hud/heart/half");
+	public static final ResourceLocation HALF_HEART_BLINKING = new ResourceLocation("hud/heart/half_blinking");
 	public static final ResourceLocation EMPTY_HEART = new ResourceLocation("hud/heart/container");
+	public static final ResourceLocation EMPTY_HEART_BLINKING = new ResourceLocation("hud/heart/container_blinking");
 
 	private final float health;
 	private String text;
 	private int iconsPerLine = 1;
 	private int lineCount = 1;
 	private int iconCount = 1;
+	private HealthTrackInfo track;
 
 	public HealthElement(float maxHealth, float health) {
 		this.health = health;
@@ -57,18 +63,42 @@ public class HealthElement extends Element {
 
 	@Override
 	public void render(GuiGraphics guiGraphics, float x, float y, float maxX, float maxY) {
+		float health = this.health * 0.5F;
+		float lastHealth = health;
+		boolean blink = false;
+		if (track == null && getTag() != null) {
+			track = WailaTickHandler.instance().progressTracker.getOrCreate(getTag(), HealthTrackInfo.class, () -> {
+				return new HealthTrackInfo(this.health);
+			});
+		}
+		if (track != null) {
+			track.setHealth(this.health);
+			track.update(Minecraft.getInstance().getDeltaFrameTime());
+			lastHealth = track.getLastHealth() * 0.5F;
+			blink = track.isBlinking();
+		}
+
 		IDisplayHelper helper = IDisplayHelper.get();
 		int xOffset = (iconCount - 1) % iconsPerLine * 8;
 		int yOffset = lineCount * 4 - 4;
 		for (int i = iconCount; i > 0; --i) {
-			helper.blitSprite(guiGraphics, EMPTY_HEART, (int) (x + xOffset), (int) (y + yOffset), 9, 9);
+			int xPos = (int) (x + xOffset);
+			int yPos = (int) (y + yOffset);
+			helper.blitSprite(guiGraphics, blink ? EMPTY_HEART_BLINKING : EMPTY_HEART, xPos, yPos, 9, 9);
 
 			if (i <= Mth.floor(health)) {
-				helper.blitSprite(guiGraphics, HEART, (int) (x + xOffset), (int) (y + yOffset), 9, 9);
+				helper.blitSprite(guiGraphics, HEART, xPos, yPos, 9, 9);
 			}
 
-			if ((i > health) && (i < health + 1)) {
-				helper.blitSprite(guiGraphics, HALF_HEART, (int) (x + xOffset), (int) (y + yOffset), 9, 9);
+			if (i > health) {
+				if (i <= Mth.floor(lastHealth)) {
+					helper.blitSprite(guiGraphics, HEART_BLINKING, xPos, yPos, 9, 9);
+				} else if ((i > lastHealth) && (i < lastHealth + 1)) {
+					helper.blitSprite(guiGraphics, HALF_HEART_BLINKING, xPos, yPos, 9, 9);
+				}
+				if (i < health + 1) {
+					helper.blitSprite(guiGraphics, HALF_HEART, xPos, yPos, 9, 9);
+				}
 			}
 
 			xOffset -= 8;

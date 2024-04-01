@@ -37,7 +37,7 @@ import snownee.jade.gui.PreviewOptionsScreen;
 import snownee.jade.impl.Tooltip;
 import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.overlay.OverlayRenderer;
-import snownee.jade.overlay.ProgressTracker;
+import snownee.jade.track.ProgressTrackInfo;
 import snownee.jade.overlay.WailaTickHandler;
 import snownee.jade.util.ClientProxy;
 
@@ -48,7 +48,7 @@ public class BoxElement extends Element implements IBoxElement {
 	private IElement icon;
 	private float boxProgress;
 	private MessageType boxProgressType;
-	private ProgressTracker.TrackInfo track;
+	private ProgressTrackInfo track;
 	private Vec2 contentSize = Vec2.ZERO;
 
 	public BoxElement(Tooltip tooltip, BoxStyle style) {
@@ -148,10 +148,14 @@ public class BoxElement extends Element implements IBoxElement {
 			float height = 1 + style.boxProgressOffset(Direction2D.DOWN);
 			float progress = boxProgress;
 			if (track == null && tag != null) {
-				track = WailaTickHandler.instance().progressTracker.createInfo(tag, progress, false, 0);
+				track = WailaTickHandler.instance().progressTracker.getOrCreate(tag, ProgressTrackInfo.class, () -> {
+					return new ProgressTrackInfo(false, boxProgress, 0);
+				});
 			}
 			if (track != null) {
-				progress = track.tick(Minecraft.getInstance().getDeltaFrameTime());
+				track.setProgress(progress);
+				track.update(Minecraft.getInstance().getDeltaFrameTime());
+				progress = track.getSmoothProgress();
 			}
 			((DisplayHelper) IDisplayHelper.get()).drawGradientProgress(
 					guiGraphics,

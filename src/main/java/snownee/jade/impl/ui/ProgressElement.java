@@ -13,7 +13,7 @@ import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.ProgressStyle;
-import snownee.jade.overlay.ProgressTracker.TrackInfo;
+import snownee.jade.track.ProgressTrackInfo;
 import snownee.jade.overlay.WailaTickHandler;
 
 public class ProgressElement extends Element implements StyledElement {
@@ -22,7 +22,7 @@ public class ProgressElement extends Element implements StyledElement {
 	private final Component text;
 	private final ProgressStyle style;
 	private final BoxStyle boxStyle;
-	private TrackInfo track;
+	private ProgressTrackInfo track;
 	private boolean canDecrease;
 
 	public ProgressElement(float progress, Component text, ProgressStyle style, BoxStyle boxStyle, boolean canDecrease) {
@@ -42,9 +42,11 @@ public class ProgressElement extends Element implements StyledElement {
 			Font font = Minecraft.getInstance().font;
 			width += font.width(text) + 3;
 		}
-		width = Math.max(20, width);
+		float finalWidth = width = Math.max(20, width);
 		if (getTag() != null) {
-			track = WailaTickHandler.instance().progressTracker.createInfo(getTag(), progress, canDecrease, width);
+			track = WailaTickHandler.instance().progressTracker.getOrCreate(getTag(), ProgressTrackInfo.class, () -> {
+				return new ProgressTrackInfo(canDecrease, this.progress, finalWidth);
+			});
 			width = track.getWidth();
 		}
 		return new Vec2(width, height);
@@ -59,10 +61,15 @@ public class ProgressElement extends Element implements StyledElement {
 		boxStyle.render(guiGraphics, this, x, y, width, height, IDisplayHelper.get().opacity());
 		float progress = this.progress;
 		if (track == null && getTag() != null) {
-			track = WailaTickHandler.instance().progressTracker.createInfo(getTag(), progress, canDecrease, width);
+			track = WailaTickHandler.instance().progressTracker.getOrCreate(getTag(), ProgressTrackInfo.class, () -> {
+				return new ProgressTrackInfo(canDecrease, this.progress, width);
+			});
 		}
 		if (track != null) {
-			progress = track.tick(Minecraft.getInstance().getDeltaFrameTime());
+			track.setProgress(progress);
+			track.setExpectedWidth(width);
+			track.update(Minecraft.getInstance().getDeltaFrameTime());
+			progress = track.getSmoothProgress();
 		}
 		float b = boxStyle.borderWidth();
 		style.render(guiGraphics, x + b, y + b, width - b * 2, height - b * 2, progress, text);

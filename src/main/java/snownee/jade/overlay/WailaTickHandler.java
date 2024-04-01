@@ -36,6 +36,7 @@ import snownee.jade.impl.Tooltip;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.impl.ui.BoxElement;
+import snownee.jade.track.ProgressTracker;
 import snownee.jade.util.ClientProxy;
 
 public class WailaTickHandler {
