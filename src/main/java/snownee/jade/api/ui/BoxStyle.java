@@ -19,29 +19,29 @@ import net.minecraft.client.resources.metadata.gui.GuiSpriteScaling;
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.theme.IThemeHelper;
-import snownee.jade.impl.theme.ThemeCodecs;
 import snownee.jade.impl.ui.StyledElement;
 import snownee.jade.overlay.DisplayHelper;
+import snownee.jade.util.JadeCodecs;
 
 public abstract class BoxStyle implements Cloneable {
 	private static final int[] DEFAULT_PADDING = new int[]{4, 4, 4, 4};
 	public static final Codec<GradientBorder> GRADIENT_BORDER_CODEC = RecordCodecBuilder.create(i -> i.group(
-			ThemeCodecs.floatArrayCodec(4, Codec.FLOAT)
+			JadeCodecs.floatArrayCodec(4, Codec.FLOAT)
 					.optionalFieldOf("boxProgressOffset")
 					.forGetter($ -> Optional.ofNullable($.boxProgressOffset)),
 			ColorPalette.CODEC.optionalFieldOf("boxProgressColors", ColorPalette.DEFAULT).forGetter($ -> $.boxProgressColors),
-			ThemeCodecs.intArrayCodec(4, Codec.INT).optionalFieldOf("padding").forGetter($ -> Optional.ofNullable($.padding)),
+			JadeCodecs.intArrayCodec(4, Codec.INT).optionalFieldOf("padding").forGetter($ -> Optional.ofNullable($.padding)),
 			Color.CODEC.optionalFieldOf("backgroundColor", -1).forGetter($ -> $.bgColor),
-			ThemeCodecs.intArrayCodec(4, Color.CODEC).fieldOf("borderColor").forGetter($ -> $.borderColor),
+			JadeCodecs.intArrayCodec(4, Color.CODEC).fieldOf("borderColor").forGetter($ -> $.borderColor),
 			Codec.FLOAT.optionalFieldOf("borderWidth", 1F).forGetter($ -> $.borderWidth),
 			Codec.BOOL.optionalFieldOf("roundCorner").forGetter($ -> Optional.ofNullable($.roundCorner))
 	).apply(i, GradientBorder::new));
 	public static final Codec<SpriteBase> SPRITE_BASE_CODEC = RecordCodecBuilder.create(i -> i.group(
-			ThemeCodecs.floatArrayCodec(4, Codec.FLOAT)
+			JadeCodecs.floatArrayCodec(4, Codec.FLOAT)
 					.optionalFieldOf("boxProgressOffset")
 					.forGetter($ -> Optional.ofNullable($.boxProgressOffset)),
 			ColorPalette.CODEC.optionalFieldOf("boxProgressColors", ColorPalette.DEFAULT).forGetter($ -> $.boxProgressColors),
-			ThemeCodecs.intArrayCodec(4, Codec.INT).optionalFieldOf("padding").forGetter($ -> Optional.ofNullable($.padding)),
+			JadeCodecs.intArrayCodec(4, Codec.INT).optionalFieldOf("padding").forGetter($ -> Optional.ofNullable($.padding)),
 			ResourceLocation.CODEC.fieldOf("sprite").forGetter($ -> $.sprite),
 			ResourceLocation.CODEC.optionalFieldOf("withIconSprite").forGetter($ -> Optional.ofNullable($.withIconSprite))
 	).apply(i, SpriteBase::new));
@@ -202,9 +202,9 @@ public abstract class BoxStyle implements Cloneable {
 		@Override
 		public GradientBorder clone() {
 			return new GradientBorder(
-					ThemeCodecs.nullableClone(boxProgressOffset),
+					JadeCodecs.nullableClone(boxProgressOffset),
 					boxProgressColors,
-					ThemeCodecs.nullableClone(padding),
+					JadeCodecs.nullableClone(padding),
 					bgColor,
 					borderColor,
 					borderWidth,
@@ -457,9 +457,9 @@ public abstract class BoxStyle implements Cloneable {
 		@Override
 		public SpriteBase clone() {
 			return new SpriteBase(
-					ThemeCodecs.nullableClone(boxProgressOffset),
+					JadeCodecs.nullableClone(boxProgressOffset),
 					boxProgressColors,
-					ThemeCodecs.nullableClone(padding),
+					JadeCodecs.nullableClone(padding),
 					sprite,
 					Optional.ofNullable(withIconSprite));
 		}

@@ -56,13 +56,21 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 		};
 	}
 
-	public static OptionsList.Entry editIgnoreList(OptionsList.Entry entry, String fileName, Runnable defaultCreator) {
+	@SuppressWarnings("UnusedReturnValue")
+	public static OptionsList.Entry editIgnoreList(OptionsList.Entry entry, String fileName, Runnable defaultFactory) {
 		entry.getFirstWidget().setWidth(79);
 		MutableComponent tooltip = Component.translatable("config.jade.edit_ignore_list");
 		entry.addWidget(Button.builder(Component.literal("☰"), b -> {
+			new Thread(() -> {
+				try {
+					Thread.sleep(500);
+				} catch (InterruptedException ignored) {
+				}
+				JadeClient.pleaseWait();
+			}).start();
 			File file = new File(CommonProxy.getConfigDirectory(), "jade/%s.json".formatted(fileName));
 			if (!file.exists()) {
-				defaultCreator.run();
+				defaultFactory.run();
 			}
 			Util.getPlatform().openFile(file);
 		}).size(20, 20).tooltip(Tooltip.create(tooltip)).createNarration($ -> tooltip).build(), 80);
@@ -81,10 +89,10 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 		}
 		options.choices("display_tooltip", general.shouldDisplayTooltip(), general::setDisplayTooltip);
 		OptionsList.Entry entry = options.choices("display_entities", general.getDisplayEntities(), general::setDisplayEntities);
-		editIgnoreList(entry, "hide-entities", () -> WailaClientRegistration.createEntityIgnoreList().get());
+		editIgnoreList(entry, "hide-entities", () -> WailaClientRegistration.instance().reloadIgnoreLists());
 		options.choices("display_bosses", general.getDisplayBosses(), general::setDisplayBosses).parent(entry);
 		entry = options.choices("display_blocks", general.getDisplayBlocks(), general::setDisplayBlocks);
-		editIgnoreList(entry, "hide-blocks", () -> WailaClientRegistration.createBlockIgnoreList().get());
+		editIgnoreList(entry, "hide-blocks", () -> WailaClientRegistration.instance().reloadIgnoreLists());
 		options.choices("display_fluids", general.getDisplayFluids(), general::setDisplayFluids).parent(entry);
 		options.choices("display_mode", general.getDisplayMode(), general::setDisplayMode, builder -> {
 			builder.withTooltip(mode -> {
@@ -177,11 +185,11 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 							}
 							minecraft.options.save();
 							try {
-								int themesHash = Jade.CONFIG.get().getOverlay().themesHash;
+								int themesHash = Jade.CONFIG.get().getHistory().themesHash;
 								Preconditions.checkState(Jade.CONFIG.getFile().delete());
 								Preconditions.checkState(PluginConfig.INSTANCE.getFile().delete());
 								Jade.CONFIG.invalidate();
-								Jade.CONFIG.get().getOverlay().themesHash = themesHash;
+								Jade.CONFIG.get().getHistory().themesHash = themesHash;
 								Jade.CONFIG.save();
 								PluginConfig.INSTANCE.reload();
 								rebuildWidgets();

@@ -35,6 +35,7 @@ import snownee.jade.api.theme.Theme;
 import snownee.jade.impl.config.WailaConfig;
 import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.overlay.OverlayRenderer;
+import snownee.jade.util.JadeCodecs;
 import snownee.jade.util.JsonConfig;
 
 public class ThemeHelper extends SimpleJsonResourceReloadListener implements IThemeHelper {
@@ -47,7 +48,7 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener implements ITh
 	private Theme fallback;
 
 	public ThemeHelper() {
-		super(JsonConfig.DEFAULT_GSON, "jade_themes");
+		super(JsonConfig.GSON, "jade_themes");
 	}
 
 	public static Style colorStyle(int color) {
@@ -163,6 +164,7 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener implements ITh
 		Set<ResourceLocation> existingKeys = Set.copyOf(themes.keySet());
 		MutableObject<Theme> enable = new MutableObject<>();
 		WailaConfig.ConfigOverlay config = Jade.CONFIG.get().getOverlay();
+		WailaConfig.ConfigHistory history = Jade.CONFIG.get().getHistory();
 		themes.clear();
 		map.forEach((id, json) -> {
 			JsonObject o = json.getAsJsonObject();
@@ -172,7 +174,7 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener implements ITh
 				return;
 			}
 			try {
-				ThemeCodecs.CODEC.parse(JsonOps.INSTANCE, o).resultOrPartial(Jade.LOGGER::error).ifPresent(theme -> {
+				JadeCodecs.THEME.parse(JsonOps.INSTANCE, o).resultOrPartial(Jade.LOGGER::error).ifPresent(theme -> {
 					theme.id = id;
 					themes.put(id, theme);
 					if (enable.getValue() == null && GsonHelper.getAsBoolean(o, "autoEnable", false) && !existingKeys.contains(id)) {
@@ -192,7 +194,7 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener implements ITh
 		for (ResourceLocation id : themes.keySet()) {
 			hash = 31 * hash + id.hashCode();
 		}
-		if (hash != config.themesHash) {
+		if (hash != history.themesHash) {
 			if (hash != 0 && enable.getValue() != null) {
 				Theme theme = enable.getValue();
 				config.activeTheme = theme.id;
@@ -204,7 +206,7 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener implements ITh
 					config.setAlpha(theme.changeOpacity);
 				}
 			}
-			config.themesHash = hash;
+			history.themesHash = hash;
 			Jade.CONFIG.save();
 		}
 		config.applyTheme(config.activeTheme);

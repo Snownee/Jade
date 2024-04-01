@@ -17,9 +17,12 @@ import com.google.common.collect.Sets;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -42,7 +45,7 @@ import snownee.jade.api.callback.JadeItemModNameCallback;
 import snownee.jade.api.callback.JadeRayTraceCallback;
 import snownee.jade.api.callback.JadeTooltipCollectedCallback;
 import snownee.jade.api.config.IWailaConfig;
-import snownee.jade.api.config.TargetIgnoreList;
+import snownee.jade.api.config.IgnoreList;
 import snownee.jade.api.platform.CustomEnchantPower;
 import snownee.jade.api.view.EnergyView;
 import snownee.jade.api.view.FluidView;
@@ -60,6 +63,7 @@ import snownee.jade.impl.config.entry.StringConfigEntry;
 import snownee.jade.impl.lookup.HierarchyLookup;
 import snownee.jade.overlay.DatapackBlockManager;
 import snownee.jade.util.ClientProxy;
+import snownee.jade.util.JadeCodecs;
 import snownee.jade.util.JsonConfig;
 
 public class WailaClientRegistration implements IWailaClientRegistration {
@@ -108,25 +112,13 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 		return INSTANCE;
 	}
 
-	public static JsonConfig<TargetIgnoreList> createEntityIgnoreList() {
-		return new JsonConfig<>(Jade.ID + "/hide-entities", TargetIgnoreList.class, null, () -> {
-			var ignoreList = new TargetIgnoreList();
-			ignoreList.values = Stream.of(
-							EntityType.AREA_EFFECT_CLOUD,
-							EntityType.FIREWORK_ROCKET,
-							EntityType.INTERACTION,
-							EntityType.TEXT_DISPLAY)
-					.map(EntityType::getKey)
-					.map(Object::toString)
-					.toList();
-			return ignoreList;
-		});
-	}
-
-	public static JsonConfig<TargetIgnoreList> createBlockIgnoreList() {
-		return new JsonConfig<>(Jade.ID + "/hide-blocks", TargetIgnoreList.class, null, () -> {
-			var ignoreList = new TargetIgnoreList();
-			ignoreList.values = List.of("minecraft:barrier");
+	public static <T> JsonConfig<IgnoreList<T>> createIgnoreListConfig(
+			String file,
+			ResourceKey<Registry<T>> registryKey,
+			List<String> defaultValues) {
+		return new JsonConfig<>(Jade.ID + "/" + file, JadeCodecs.ignoreList(registryKey), null, () -> {
+			var ignoreList = new IgnoreList<T>();
+			ignoreList.values = defaultValues.stream().map(ResourceLocation::new).map($ -> ResourceKey.create(registryKey, $)).toList();
 			return ignoreList;
 		});
 	}
@@ -290,13 +282,19 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	public void reloadIgnoreLists() {
 		hideEntitiesReloadable.clear();
 		hideEntitiesReloadable.addAll(hideEntities);
-		for (String id : createEntityIgnoreList().get().values) {
-			BuiltInRegistries.ENTITY_TYPE.getOptional(ResourceLocation.tryParse(id)).ifPresent(hideEntitiesReloadable::add);
+		for (ResourceKey<EntityType<?>> id : createIgnoreListConfig(
+				"hide-entities",
+				Registries.ENTITY_TYPE,
+				List.of("area_effect_cloud", "firework_rocket", "interaction", "text_display")).get().values) {
+			BuiltInRegistries.ENTITY_TYPE.getOptional(id.location()).ifPresent(hideEntitiesReloadable::add);
 		}
 		hideBlocksReloadable.clear();
 		hideBlocksReloadable.addAll(hideBlocks);
-		for (String id : createBlockIgnoreList().get().values) {
-			BuiltInRegistries.BLOCK.getOptional(ResourceLocation.tryParse(id)).ifPresent(hideBlocksReloadable::add);
+		for (ResourceKey<Block> id : createIgnoreListConfig(
+				"hide-blocks",
+				Registries.BLOCK,
+				List.of("minecraft:barrier")).get().values) {
+			BuiltInRegistries.BLOCK.getOptional(id.location()).ifPresent(hideBlocksReloadable::add);
 		}
 	}
 

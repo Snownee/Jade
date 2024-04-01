@@ -21,7 +21,7 @@ public class Jade {
 	/**
 	 * addons: Use {@link IWailaConfig#get()}
 	 */
-	public static final JsonConfig<WailaConfig> CONFIG = new JsonConfig<>(Jade.ID + "/" + Jade.ID, WailaConfig.class, null);
+	public static final JsonConfig<WailaConfig> CONFIG = new JsonConfig<>(Jade.ID + "/" + Jade.ID, WailaConfig.CODEC, null);
 	public static boolean FROZEN;
 
 	public static void loadComplete() {
