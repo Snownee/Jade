@@ -24,7 +24,6 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.item.Items;
 import snownee.jade.Jade;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.impl.WailaClientRegistration;
@@ -374,8 +373,6 @@ public class HomeConfigScreen extends Screen {
 				}
 			} else if (festival == 1) {
 				age -= partialTicks;
-			} else if (festival == 0) {
-				age += hashCode() % 2 == 0 ? partialTicks : -partialTicks;
 			}
 		}
 
@@ -389,12 +386,7 @@ public class HomeConfigScreen extends Screen {
 			if (festival == 1) {
 				guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees(age));
 			}
-			if ("❄".equals(text)) {
-				guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees(age));
-				guiGraphics.renderFakeItem(Items.POISONOUS_POTATO.getDefaultInstance(), 0, 0);
-			} else {
-				guiGraphics.drawString(font, text, 0, 0, color);
-			}
+			guiGraphics.drawString(font, text, 0, 0, color);
 			guiGraphics.pose().popPose();
 		}
 	}

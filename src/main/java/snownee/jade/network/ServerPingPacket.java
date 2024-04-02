@@ -3,6 +3,7 @@ package snownee.jade.network;
 import com.google.gson.JsonObject;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import snownee.jade.Jade;
@@ -13,13 +14,11 @@ import snownee.jade.util.JsonConfig;
 
 public record ServerPingPacket(String serverConfig) implements CustomPacketPayload {
 	public static final Type<ServerPingPacket> TYPE = new Type<>(Identifiers.PACKET_SERVER_PING);
-	public static final StreamCodec<RegistryFriendlyByteBuf, ServerPingPacket> CODEC = CustomPacketPayload.codec(
-			ServerPingPacket::write,
-			ServerPingPacket::read);
-
-	public static ServerPingPacket read(RegistryFriendlyByteBuf buffer) {
-		return new ServerPingPacket(buffer.readUtf());
-	}
+	public static final StreamCodec<RegistryFriendlyByteBuf, ServerPingPacket> CODEC = StreamCodec.composite(
+			ByteBufCodecs.STRING_UTF8,
+			ServerPingPacket::serverConfig,
+			ServerPingPacket::new
+	);
 
 	public static void handle(ServerPingPacket message, ClientPayloadContext context) {
 		String s = message.serverConfig;
@@ -38,10 +37,6 @@ public record ServerPingPacket(String serverConfig) implements CustomPacketPaylo
 			}
 			Jade.LOGGER.info("Received config from the server: {}", s);
 		});
-	}
-
-	public void write(RegistryFriendlyByteBuf buffer) {
-		buffer.writeUtf(serverConfig);
 	}
 
 	@Override

@@ -10,6 +10,8 @@ import com.google.common.base.Suppliers;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -182,29 +184,24 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 	}
 
 	public record SyncData(boolean showDetails, int id, int partIndex, Vec3 hitVec) {
+		public static final StreamCodec<RegistryFriendlyByteBuf, SyncData> STREAM_CODEC = StreamCodec.composite(
+				ByteBufCodecs.BOOL,
+				SyncData::showDetails,
+				ByteBufCodecs.VAR_INT,
+				SyncData::id,
+				ByteBufCodecs.VAR_INT,
+				SyncData::partIndex,
+				ByteBufCodecs.VECTOR3F.map(Vec3::new, Vec3::toVector3f),
+				SyncData::hitVec,
+				SyncData::new
+		);
+
 		public SyncData(EntityAccessor accessor) {
 			this(
 					accessor.showDetails(),
 					accessor.getEntity().getId(),
 					CommonProxy.getPartEntityIndex(accessor.getRawEntity()),
 					accessor.getHitResult().getLocation());
-		}
-
-		public SyncData(RegistryFriendlyByteBuf buffer) {
-			this(
-					buffer.readBoolean(),
-					buffer.readVarInt(),
-					buffer.readVarInt(),
-					new Vec3(buffer.readFloat(), buffer.readFloat(), buffer.readFloat()));
-		}
-
-		public void write(RegistryFriendlyByteBuf buffer) {
-			buffer.writeBoolean(showDetails);
-			buffer.writeVarInt(id);
-			buffer.writeVarInt(partIndex);
-			buffer.writeFloat((float) hitVec.x);
-			buffer.writeFloat((float) hitVec.y);
-			buffer.writeFloat((float) hitVec.z);
 		}
 
 		public EntityAccessor unpack(ServerPlayer player) {

@@ -11,7 +11,10 @@ import com.google.common.base.Suppliers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
@@ -244,23 +247,20 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 	}
 
 	public record SyncData(boolean showDetails, BlockHitResult hit, BlockState blockState, ItemStack fakeBlock) {
+		public static final StreamCodec<RegistryFriendlyByteBuf, SyncData> STREAM_CODEC = StreamCodec.composite(
+				ByteBufCodecs.BOOL,
+				SyncData::showDetails,
+				StreamCodec.of(FriendlyByteBuf::writeBlockHitResult, FriendlyByteBuf::readBlockHitResult),
+				SyncData::hit,
+				ByteBufCodecs.idMapper(Block.BLOCK_STATE_REGISTRY),
+				SyncData::blockState,
+				ItemStack.OPTIONAL_STREAM_CODEC,
+				SyncData::fakeBlock,
+				SyncData::new
+		);
+
 		public SyncData(BlockAccessor accessor) {
 			this(accessor.showDetails(), accessor.getHitResult(), accessor.getBlockState(), accessor.getFakeBlock());
-		}
-
-		public SyncData(RegistryFriendlyByteBuf buffer) {
-			this(
-					buffer.readBoolean(),
-					buffer.readBlockHitResult(),
-					Block.stateById(buffer.readVarInt()),
-					ItemStack.OPTIONAL_STREAM_CODEC.decode(buffer));
-		}
-
-		public void write(RegistryFriendlyByteBuf buffer) {
-			buffer.writeBoolean(showDetails);
-			buffer.writeBlockHitResult(hit);
-			buffer.writeVarInt(Block.getId(blockState));
-			ItemStack.OPTIONAL_STREAM_CODEC.encode(buffer, fakeBlock);
 		}
 
 		public BlockAccessor unpack(ServerPlayer player) {
