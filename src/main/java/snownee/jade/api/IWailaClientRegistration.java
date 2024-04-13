@@ -65,8 +65,8 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 	 * Register an {@link IJadeProvider} instance to allow overriding the icon for a block via the
 	 * {@link IBlockComponentProvider#getIcon(BlockAccessor, IPluginConfig, IElement)} method.
 	 *
-	 * @param provider The data provider instance
-	 * @param block    The highest level class to apply to
+	 * @param provider   The data provider instance
+	 * @param blockClass The highest level class to apply to
 	 */
 	void registerBlockIcon(IComponentProvider<BlockAccessor> provider, Class<? extends Block> blockClass);
 
@@ -74,8 +74,8 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 	 * Register an {@link IJadeProvider} instance for appending informations to
 	 * the tooltip.
 	 *
-	 * @param provider The data provider instance
-	 * @param block    The highest level class to apply to
+	 * @param provider   The data provider instance
+	 * @param blockClass The highest level class to apply to
 	 */
 	void registerBlockComponent(IComponentProvider<BlockAccessor> provider, Class<? extends Block> blockClass);
 
@@ -83,8 +83,8 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 	 * Register an {@link IEntityComponentProvider} instance to allow overriding the icon for a entity via the
 	 * {@link IEntityComponentProvider#getIcon(EntityAccessor, IPluginConfig, IElement)} method.
 	 *
-	 * @param provider The data provider instance
-	 * @param entity   The highest level class to apply to
+	 * @param provider    The data provider instance
+	 * @param entityClass The highest level class to apply to
 	 */
 	void registerEntityIcon(IComponentProvider<EntityAccessor> provider, Class<? extends Entity> entityClass);
 
@@ -92,8 +92,8 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 	 * Register an {@link IEntityComponentProvider} instance for appending {@link net.minecraft.network.chat.Component}
 	 * to the tooltip.
 	 *
-	 * @param provider The data provider instance
-	 * @param entity   The highest level class to apply to
+	 * @param provider    The data provider instance
+	 * @param entityClass The highest level class to apply to
 	 */
 	void registerEntityComponent(IComponentProvider<EntityAccessor> provider, Class<? extends Entity> entityClass);
 

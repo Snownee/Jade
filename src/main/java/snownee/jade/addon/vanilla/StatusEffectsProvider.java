@@ -56,8 +56,7 @@ public enum StatusEffectsProvider implements IEntityComponentProvider, IServerDa
 			if (effect.isInfiniteDuration()) {
 				duration = I18n.get("effect.duration.infinite");
 			} else {
-				float tickrate = accessor.getLevel().tickRateManager().tickrate();
-				duration = StringUtil.formatTickDuration(effect.getDuration(), tickrate);
+				duration = StringUtil.formatTickDuration(effect.getDuration(), accessor.tickRate());
 			}
 			MutableComponent s = Component.translatable("jade.potion", name, duration);
 			IThemeHelper t = IThemeHelper.get();

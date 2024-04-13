@@ -33,7 +33,7 @@ public enum BrewingStandProvider implements IBlockComponentProvider, IServerData
 		if (time > 0) {
 			tooltip.append(helper.spacer(5, 0));
 			tooltip.append(helper.smallItem(new ItemStack(Items.CLOCK)));
-			tooltip.append(IThemeHelper.get().seconds(time));
+			tooltip.append(IThemeHelper.get().seconds(time, accessor.tickRate()));
 		}
 	}
 

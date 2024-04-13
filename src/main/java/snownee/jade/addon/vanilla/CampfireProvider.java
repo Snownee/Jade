@@ -44,7 +44,7 @@ public enum CampfireProvider implements IServerExtensionProvider<ItemStack>, ICl
 			if (result.isEmpty()) {
 				return null;
 			}
-			String text = IThemeHelper.get().seconds(result.get()).getString();
+			String text = IThemeHelper.get().seconds(result.get(), accessor.tickRate()).getString();
 			return new ItemView(stack).amountText(text);
 		}, null);
 	}

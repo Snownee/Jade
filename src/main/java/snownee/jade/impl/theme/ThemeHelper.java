@@ -26,6 +26,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.GsonHelper;
+import net.minecraft.util.Mth;
 import net.minecraft.util.profiling.ProfilerFiller;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
@@ -130,8 +131,8 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener implements ITh
 	}
 
 	@Override
-	public MutableComponent seconds(int ticks) {
-		ticks /= 20;
+	public MutableComponent seconds(int ticks, float tickRate) {
+		ticks = Mth.floor(ticks / tickRate);
 		if (ticks >= 60) {
 			int minutes = ticks / 60;
 			ticks %= 60;

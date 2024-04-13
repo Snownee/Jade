@@ -39,4 +39,5 @@ public interface Accessor<T extends HitResult> {
 
 	boolean verifyData(CompoundTag data);
 
+	float tickRate();
 }

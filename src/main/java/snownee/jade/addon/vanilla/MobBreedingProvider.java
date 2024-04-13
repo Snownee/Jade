@@ -28,7 +28,7 @@ public enum MobBreedingProvider implements IEntityComponentProvider, IServerData
 		if (time > 0) {
 			tooltip.add(Component.translatable(
 					accessor.getEntity() instanceof Allay ? "jade.mobduplication.time" : "jade.mobbreeding.time",
-					IThemeHelper.get().seconds(time)));
+					IThemeHelper.get().seconds(time, accessor.tickRate())));
 		}
 	}
 

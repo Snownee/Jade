@@ -71,4 +71,9 @@ public abstract class AccessorImpl<T extends HitResult> implements Accessor<T> {
 	public void requireVerification() {
 		verify = true;
 	}
+
+	@Override
+	public float tickRate() {
+		return getLevel().tickRateManager().tickrate();
+	}
 }

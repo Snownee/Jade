@@ -26,7 +26,9 @@ public enum NextEntityDropProvider implements IEntityComponentProvider, IServerD
 
 	public static void appendSeconds(ITooltip tooltip, Accessor<?> accessor, String tagKey, String translationKey) {
 		if (accessor.getServerData().contains(tagKey)) {
-			tooltip.add(Component.translatable(translationKey, IThemeHelper.get().seconds(accessor.getServerData().getInt(tagKey))));
+			tooltip.add(Component.translatable(
+					translationKey,
+					IThemeHelper.get().seconds(accessor.getServerData().getInt(tagKey), accessor.tickRate())));
 		}
 	}
 
