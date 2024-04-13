@@ -28,6 +28,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.block.Block;
@@ -162,17 +163,13 @@ public final class JadeClient {
 		}
 	}
 
-	public static void onTooltip(List<Component> tooltip, ItemStack stack, TooltipFlag context) {
-		appendModName(tooltip, stack, context);
-	}
-
-	private static void appendModName(List<Component> tooltip, ItemStack stack, TooltipFlag context) {
+	public static void appendModName(List<Component> tooltip, ItemStack stack, Item.TooltipContext tooltipContext, TooltipFlag flag) {
 		if (hideModName || !Jade.CONFIG.get().getGeneral().showItemModNameTooltip()) {
 			return;
 		}
 		if (Minecraft.getInstance().screen instanceof CreativeModeInventoryScreen screen && screen.hoveredSlot != null &&
 				screen.hoveredSlot.getItem() == stack) {
-			if (CreativeModeInventoryScreen.selectedTab.getType() != CreativeModeTab.Type.CATEGORY || !context.isCreative()) {
+			if (CreativeModeInventoryScreen.selectedTab.getType() != CreativeModeTab.Type.CATEGORY || !flag.isCreative()) {
 				return;
 			}
 		}

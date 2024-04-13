@@ -1,15 +1,16 @@
 plugins {
-    id 'fabric-loom' version '1.5-SNAPSHOT'
+    id 'fabric-loom' version '1.6-SNAPSHOT'
     id 'maven-publish'
     id "me.shedaniel.unified-publishing" version "0.1.+"
 }
 
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
+sourceCompatibility = JavaVersion.VERSION_21
+targetCompatibility = JavaVersion.VERSION_21
 
 archivesBaseName = project.archives_base_name
 version = project.archive_minecraft_version + "-Fabric-" + project.mod_version
 group = project.maven_group
+var realVersion = project.mod_version + '+fabric'
 
 repositories {
     maven { url "https://maven.parchmentmc.org" }
@@ -73,10 +74,10 @@ loom {
 }
 
 processResources {
-    inputs.property "version", "${project.mod_version}+fabric"
+    inputs.property "version", realVersion
 
     filesMatching("fabric.mod.json") {
-        expand "version": "${project.mod_version}+fabric"
+        expand "version": realVersion
     }
 }
 
@@ -86,9 +87,7 @@ tasks.withType(JavaCompile).configureEach {
     // see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
     // If Javadoc is generated, this must be specified in that task too.
     it.options.encoding = "UTF-8"
-
-    // Minecraft 1.18 (1.18-pre2) upwards uses Java 17.
-    it.options.release = 17
+    it.options.release = 21
 }
 
 task apiJar(type: Jar) {
@@ -144,7 +143,7 @@ publishing {
 unifiedPublishing {
     project {
         displayName = "[Fabric $project.supported_version] $project.mod_version"
-        version = project.mod_version // Optional, Inferred from project by default
+        version = realVersion // Optional, Inferred from project by default
         changelog = file("CHANGELOG.md").exists() ? file("CHANGELOG.md").text : "" // Optional, in markdown format
         releaseType = project.release_type // Optional, use "release", "beta" or "alpha"
         gameVersions = ["1.20.5"]

@@ -17,6 +17,7 @@ import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import snownee.jade.JadeClient;
@@ -37,7 +38,7 @@ public enum ItemTooltipProvider implements IEntityComponentProvider {
 		ItemStack stack = ((ItemEntity) accessor.getEntity()).getItem();
 		JadeClient.hideModName = true;
 		List<Either<FormattedText, TooltipComponent>> lines = Lists.newArrayList();
-		stack.getTooltipLines(null, TooltipFlag.Default.NORMAL)
+		stack.getTooltipLines(Item.TooltipContext.of(accessor.getLevel()), null, TooltipFlag.Default.NORMAL)
 				.stream()
 				.peek(component -> {
 					if (component instanceof MutableComponent mutable && mutable.getStyle().getColor() != null) {

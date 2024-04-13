@@ -52,6 +52,7 @@ import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.util.LazyLoadedValue;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
@@ -118,8 +119,8 @@ public final class ClientProxy implements ClientModInitializer {
 		DatapackBlockManager.onEntityLeave(entity);
 	}
 
-	private static void onTooltip(ItemStack stack, TooltipFlag context, List<Component> lines) {
-		JadeClient.onTooltip(lines, stack, context);
+	private static void onTooltip(ItemStack stack, Item.TooltipContext tooltipContext, TooltipFlag tooltipType, List<Component> lines) {
+		JadeClient.appendModName(lines, stack, tooltipContext, tooltipType);
 	}
 
 	public static void onRenderTick(GuiGraphics guiGraphics, float tickDelta) {

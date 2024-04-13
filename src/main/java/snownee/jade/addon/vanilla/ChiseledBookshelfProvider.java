@@ -10,6 +10,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
@@ -57,7 +58,8 @@ public enum ChiseledBookshelfProvider implements IBlockComponentProvider, IServe
 		tooltip.add(IDisplayHelper.get().stripColor(item.getHoverName()));
 		if (item.has(DataComponents.STORED_ENCHANTMENTS)) {
 			List<Component> list = Lists.newArrayList();
-			item.getOrDefault(DataComponents.STORED_ENCHANTMENTS, ItemEnchantments.EMPTY).addToTooltip(list::add, TooltipFlag.NORMAL);
+			item.getOrDefault(DataComponents.STORED_ENCHANTMENTS, ItemEnchantments.EMPTY)
+					.addToTooltip(Item.TooltipContext.of(accessor.getLevel()), list::add, TooltipFlag.NORMAL);
 			tooltip.addAll(list);
 		}
 	}
