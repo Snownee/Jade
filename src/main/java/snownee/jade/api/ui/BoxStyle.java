@@ -78,11 +78,11 @@ public abstract class BoxStyle implements Cloneable {
 
 	public abstract float borderWidth();
 
-	public float boxProgressOffset(Direction2D dir) {
+	public float boxProgressOffset(ScreenDirection dir) {
 		return boxProgressOffset == null ? 0 : boxProgressOffset[dir.ordinal()];
 	}
 
-	public int padding(Direction2D dir) {
+	public int padding(ScreenDirection dir) {
 		return MoreObjects.firstNonNull(padding, DEFAULT_PADDING)[dir.ordinal()];
 	}
 

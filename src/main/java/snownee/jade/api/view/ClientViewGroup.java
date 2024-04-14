@@ -11,7 +11,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.ui.BoxStyle;
-import snownee.jade.api.ui.Direction2D;
+import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.ui.IBoxElement;
 import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.api.ui.MessageType;
@@ -67,13 +67,13 @@ public class ClientViewGroup<T> {
 				IBoxElement box = IElementHelper.get().box(theTooltip, boxStyle);
 				box.setBoxProgress(group.messageType, group.boxProgress);
 				if (group.title != null) {
-					box.setPadding(Direction2D.UP, 0);
+					box.setPadding(ScreenDirection.UP, 0);
 					box.size(null);
 				}
 				tooltip.add(box);
 				if (box.getStyle().hasRoundCorner()) {
-					tooltip.setLineMargin(-1, Direction2D.UP, 3);
-					tooltip.setLineMargin(-1, Direction2D.DOWN, 3);
+					tooltip.setLineMargin(-1, ScreenDirection.UP, 3);
+					tooltip.setLineMargin(-1, ScreenDirection.DOWN, 3);
 				}
 			}
 		}

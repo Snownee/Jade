@@ -20,7 +20,7 @@ import net.minecraft.world.phys.Vec2;
 import snownee.jade.Jade;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
-import snownee.jade.api.ui.Direction2D;
+import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElement.Align;
 import snownee.jade.api.ui.IElementHelper;
@@ -197,7 +197,7 @@ public class Tooltip implements ITooltip {
 	}
 
 	@Override
-	public void setLineMargin(int index, Direction2D side, int margin) {
+	public void setLineMargin(int index, ScreenDirection side, int margin) {
 		if (index < 0) {
 			index += lines.size();
 		}

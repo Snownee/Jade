@@ -16,7 +16,7 @@ import snownee.jade.api.Identifiers;
 import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.BoxStyle;
-import snownee.jade.api.ui.Direction2D;
+import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.api.view.ClientViewGroup;
 import snownee.jade.api.view.ViewGroup;
@@ -64,7 +64,7 @@ public abstract class ProgressProvider<T extends Accessor<?>> implements ICompon
 					for (var view : group.views) {
 						if (view.text != null) {
 							theTooltip.add(helper.text(view.text).scale(0.75F));
-							theTooltip.setLineMargin(-1, Direction2D.DOWN, 0);
+							theTooltip.setLineMargin(-1, ScreenDirection.DOWN, 0);
 						}
 						theTooltip.add(helper.progress(view.progress, null, view.style, boxStyle, false).size(new Vec2(10, 2)));
 					}

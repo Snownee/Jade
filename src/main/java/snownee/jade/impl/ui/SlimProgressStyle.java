@@ -3,7 +3,7 @@ package snownee.jade.impl.ui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec2;
-import snownee.jade.api.ui.Direction2D;
+import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.ui.ProgressStyle;
 import snownee.jade.overlay.DisplayHelper;
 
@@ -26,7 +26,7 @@ public class SlimProgressStyle extends ProgressStyle {
 	}
 
 	@Override
-	public ProgressStyle direction(Direction2D direction) {
+	public ProgressStyle direction(ScreenDirection direction) {
 		throw new UnsupportedOperationException();
 	}
 

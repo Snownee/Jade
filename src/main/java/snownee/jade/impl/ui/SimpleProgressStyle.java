@@ -11,7 +11,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
 import snownee.jade.api.ui.Color;
-import snownee.jade.api.ui.Direction2D;
+import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.ui.ProgressStyle;
 import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.overlay.OverlayRenderer;
@@ -67,10 +67,10 @@ public class SimpleProgressStyle extends ProgressStyle {
 	}
 
 	@Override
-	public ProgressStyle direction(Direction2D direction) {
-		Preconditions.checkArgument(direction == Direction2D.UP || direction == Direction2D.RIGHT, "Only UP and RIGHT are supported");
+	public ProgressStyle direction(ScreenDirection direction) {
+		Preconditions.checkArgument(direction == ScreenDirection.UP || direction == ScreenDirection.RIGHT, "Only UP and RIGHT are supported");
 		super.direction(direction);
-		vertical = direction == Direction2D.UP;
+		vertical = direction.isVertical();
 		return this;
 	}
 

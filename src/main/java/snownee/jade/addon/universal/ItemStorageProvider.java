@@ -37,7 +37,7 @@ import snownee.jade.api.Identifiers;
 import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
-import snownee.jade.api.ui.Direction2D;
+import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElementHelper;
@@ -161,7 +161,7 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 						showName.isTrue() ||
 								drawnCount >= PluginConfig.INSTANCE.getInt(Identifiers.UNIVERSAL_ITEM_STORAGE_ITEMS_PER_LINE))) {
 					theTooltip.add(elements);
-					theTooltip.setLineMargin(-1, Direction2D.DOWN, -1);
+					theTooltip.setLineMargin(-1, ScreenDirection.DOWN, -1);
 					elements.clear();
 					drawnCount = 0;
 				}

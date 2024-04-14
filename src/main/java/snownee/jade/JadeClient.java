@@ -52,7 +52,7 @@ import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
 import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.ColorPalette;
-import snownee.jade.api.ui.Direction2D;
+import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.ui.IBoxElement;
 import snownee.jade.api.ui.TooltipRect;
 import snownee.jade.gui.HomeConfigScreen;
@@ -295,10 +295,10 @@ public final class JadeClient {
 			return;
 		}
 		color = IConfigOverlay.applyAlpha(color, progressAlpha);
-		float offset0 = theme.tooltipStyle.boxProgressOffset(Direction2D.UP);
-		float offset1 = theme.tooltipStyle.boxProgressOffset(Direction2D.RIGHT);
-		float offset2 = theme.tooltipStyle.boxProgressOffset(Direction2D.DOWN);
-		float offset3 = theme.tooltipStyle.boxProgressOffset(Direction2D.LEFT);
+		float offset0 = theme.tooltipStyle.boxProgressOffset(ScreenDirection.UP);
+		float offset1 = theme.tooltipStyle.boxProgressOffset(ScreenDirection.RIGHT);
+		float offset2 = theme.tooltipStyle.boxProgressOffset(ScreenDirection.DOWN);
+		float offset3 = theme.tooltipStyle.boxProgressOffset(ScreenDirection.LEFT);
 		width += offset1 - offset3;
 		DisplayHelper.fill(guiGraphics, offset3, top - 1 + offset0, offset3 + width * savedProgress, top + offset2, color);
 	}

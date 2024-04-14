@@ -26,7 +26,7 @@ import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
 import snownee.jade.api.ui.BoxStyle;
-import snownee.jade.api.ui.Direction2D;
+import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.IBoxElement;
 import snownee.jade.api.ui.IDisplayHelper;
@@ -111,14 +111,14 @@ public class BoxElement extends Element implements IBoxElement {
 			width += size.x + 3;
 			height = Math.max(height, size.y);
 		}
-		width += padding(Direction2D.LEFT) + padding(Direction2D.RIGHT);
-		height += padding(Direction2D.UP) + padding(Direction2D.DOWN);
+		width += padding(ScreenDirection.LEFT) + padding(ScreenDirection.RIGHT);
+		height += padding(ScreenDirection.UP) + padding(ScreenDirection.DOWN);
 		// our limited negative-padding support:
 		width = Math.max(width, 0);
 		height = Math.max(height, 0);
 
 		if (icon != null && icon.getCachedSize().y > contentSize.y) {
-			setPadding(Direction2D.UP, padding(Direction2D.UP) + (int) (icon.getCachedSize().y - contentSize.y) / 2);
+			setPadding(ScreenDirection.UP, padding(ScreenDirection.UP) + (int) (icon.getCachedSize().y - contentSize.y) / 2);
 		}
 
 		return new Vec2(width, height);
@@ -142,10 +142,10 @@ public class BoxElement extends Element implements IBoxElement {
 
 		// render box progress
 		if (boxProgressType != null) {
-			float left = style.boxProgressOffset(Direction2D.LEFT);
+			float left = style.boxProgressOffset(ScreenDirection.LEFT);
 			float width = maxX - x - left;
-			float top = maxY - y - 1 + style.boxProgressOffset(Direction2D.UP) + style.borderWidth();
-			float height = 1 + style.boxProgressOffset(Direction2D.DOWN);
+			float top = maxY - y - 1 + style.boxProgressOffset(ScreenDirection.UP) + style.borderWidth();
+			float height = 1 + style.boxProgressOffset(ScreenDirection.DOWN);
 			float progress = boxProgress;
 			if (track == null && tag != null) {
 				track = WailaTickHandler.instance().progressTracker.getOrCreate(tag, ProgressTrackInfo.class, () -> {
@@ -167,15 +167,15 @@ public class BoxElement extends Element implements IBoxElement {
 					style.boxProgressColors.get(boxProgressType));
 		}
 
-		float contentLeft = padding(Direction2D.LEFT);
-		float contentTop = padding(Direction2D.UP);
+		float contentLeft = padding(ScreenDirection.LEFT);
+		float contentTop = padding(ScreenDirection.UP);
 
 		// render icon
 		if (icon != null) {
 			Vec2 iconSize = icon.getCachedSize();
 			Vec2 offset = icon.getTranslation();
 			float offsetY = offset.y;
-			float min = contentTop + padding(Direction2D.DOWN) + iconSize.y;
+			float min = contentTop + padding(ScreenDirection.DOWN) + iconSize.y;
 			if (IWailaConfig.get().getOverlay().getIconMode() == IWailaConfig.IconMode.TOP && min < getCachedSize().y) {
 				offsetY += contentTop;
 			} else {
@@ -194,7 +194,7 @@ public class BoxElement extends Element implements IBoxElement {
 			Tooltip.Line line = tooltip.lines.get(0);
 			for (int i = 0; i < lineCount; i++) {
 				Vec2 lineSize = line.size();
-				line.render(guiGraphics, contentLeft, lineTop, maxX - x - padding(Direction2D.RIGHT), lineTop + lineSize.y);
+				line.render(guiGraphics, contentLeft, lineTop, maxX - x - padding(ScreenDirection.RIGHT), lineTop + lineSize.y);
 				if (i < lineCount - 1) {
 					int marginBottom = line.marginBottom;
 					line = tooltip.lines.get(i + 1);
@@ -363,7 +363,7 @@ public class BoxElement extends Element implements IBoxElement {
 	}
 
 	@Override
-	public int padding(Direction2D direction) {
+	public int padding(ScreenDirection direction) {
 		if (padding != null) {
 			return padding[direction.ordinal()];
 		}
@@ -371,7 +371,7 @@ public class BoxElement extends Element implements IBoxElement {
 	}
 
 	@Override
-	public void setPadding(Direction2D direction, int value) {
+	public void setPadding(ScreenDirection direction, int value) {
 		if (padding == null) {
 			padding = style.padding.clone();
 		}

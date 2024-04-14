@@ -17,9 +17,9 @@ public interface IBoxElement extends IElement, StyledElement {
 
 	void setIcon(@Nullable IElement icon);
 
-	int padding(Direction2D direction);
+	int padding(ScreenDirection direction);
 
-	void setPadding(Direction2D direction, int value);
+	void setPadding(ScreenDirection direction, int value);
 
 	@Override
 	BoxStyle getStyle();
