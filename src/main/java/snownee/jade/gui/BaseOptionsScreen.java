@@ -6,17 +6,21 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.mojang.blaze3d.platform.InputConstants;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.client.gui.navigation.FocusNavigationEvent;
+import net.minecraft.client.gui.navigation.ScreenAxis;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -56,7 +60,18 @@ public abstract class BaseOptionsScreen extends Screen {
 		options = createOptions();
 		options.setX(120);
 		optionsNav = new OptionsNav(options, 120, height - 32 - 18, 18, 18);
-		searchBox = new NotUglyEditBox(font, 0, 0, 120, 18, searchBox, Component.translatable("gui.jade.search"));
+		searchBox = new NotUglyEditBox(font, 0, 0, 120, 18, searchBox, Component.translatable("gui.jade.search")) {
+			@Override
+			public @Nullable ComponentPath nextFocusPath(FocusNavigationEvent event) {
+				if (event instanceof FocusNavigationEvent.ArrowNavigation arrow && arrow.direction().getAxis() == ScreenAxis.HORIZONTAL) {
+					return null;
+				}
+				if (event instanceof FocusNavigationEvent.InitialFocus) {
+					return null;
+				}
+				return super.nextFocusPath(event);
+			}
+		};
 		searchBox.setBordered(false);
 		searchBox.setHint(Component.translatable("gui.jade.search.hint"));
 		searchBox.responder = s -> {
@@ -71,7 +86,7 @@ public abstract class BaseOptionsScreen extends Screen {
 		addRenderableWidget(options);
 
 		searchBox.responder.accept(searchBox.getValue());
-		options.setScrollAmount(scroll);
+		options.forceSetScrollAmount(scroll);
 
 		saveButton = addRenderableWidget(Button.builder(Component.translatable("gui.jade.save_and_quit")
 				.withStyle(style -> style.withColor(0xFFB9F6CA)), w -> {
@@ -235,5 +250,9 @@ public abstract class BaseOptionsScreen extends Screen {
 		}
 
 		return Optional.empty();
+	}
+
+	public OptionsNav getOptionsNav() {
+		return optionsNav;
 	}
 }

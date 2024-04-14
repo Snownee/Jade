@@ -19,7 +19,7 @@ public class InputOptionValue<T> extends OptionValue<T> {
 		super(optionName, setter);
 		this.value = value;
 		this.validator = validator;
-		textField = new EditBox(client.font, 0, 0, 98, 18, Component.literal(""));
+		textField = new EditBox(client.font, 0, 0, 98, 18, getTitle());
 		textField.setValue(String.valueOf(value));
 		textField.setResponder(s -> {
 			if (this.validator.test(s)) {

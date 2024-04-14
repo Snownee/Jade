@@ -66,6 +66,7 @@ import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.EnchantedBookItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ShearsItem;
@@ -109,6 +110,7 @@ import snownee.jade.network.ShowOverlayPacket;
 public final class CommonProxy implements ModInitializer {
 
 	public static final TagKey<EntityType<?>> BOSSES = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("c:bosses"));
+	public static final TagKey<Item> SHEARS = TagKey.create(Registries.ITEM, new ResourceLocation("c:shears"));
 	public static boolean hasTechRebornEnergy = isModLoaded("team_reborn_energy");
 	private static final MapCodec<String> CUSTOM_ITEM_ID = Codec.STRING.fieldOf("id");
 
@@ -122,12 +124,12 @@ public final class CommonProxy implements ModInitializer {
 	}
 
 	public static boolean isShears(ItemStack tool) {
-		return tool.getItem() instanceof ShearsItem;
+		return tool.getItem() instanceof ShearsItem || tool.is(SHEARS);
 	}
 
 	public static boolean isShearable(BlockState state) {
 		return false;
-//		return state.is(FabricMineableTags.SHEARS_MINEABLE); FIXME
+//		return state.is(FabricMineableTags.SHEARS_MINEABLE); TODO harvest tool api
 	}
 
 	public static boolean isCorrectToolForDrops(BlockState state, Player player) {

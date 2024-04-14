@@ -22,6 +22,7 @@ import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import it.unimi.dsi.fastutil.floats.FloatUnaryOperator;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
+import net.minecraft.client.InputType;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
@@ -35,6 +36,7 @@ import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
+import net.minecraft.client.gui.navigation.ScreenDirection;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.CommonComponents;
@@ -63,15 +65,14 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 	public Title currentTitle;
 	public KeyMapping selectedKey;
 	private BaseOptionsScreen owner;
-	private final SmoothChasingValue targetScroll;
+	private final SmoothChasingValue smoothScroll;
 	private Entry defaultParent;
-	private int lastActiveIndex;
 
 	public OptionsList(BaseOptionsScreen owner, Minecraft client, int width, int height, int y0, int entryHeight, Runnable diskWriter) {
 		super(client, width, height, y0, entryHeight);
 		this.owner = owner;
 		this.diskWriter = diskWriter;
-		targetScroll = new SmoothChasingValue().withSpeed(0.6F);
+		smoothScroll = new SmoothChasingValue().withSpeed(0.6F);
 	}
 
 	public OptionsList(BaseOptionsScreen owner, Minecraft client, int width, int height, int y0, int entryHeight) {
@@ -96,33 +97,51 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 	}
 
 	@Override
-	public void setScrollAmount(double d) {
-		targetScroll.target(Mth.clamp((float) d, 0, getMaxScroll()));
+	public void setScrollAmount(double scroll) {
+		smoothScroll.target(Mth.clamp((float) scroll, 0, getMaxScroll()));
+	}
+
+	public void forceSetScrollAmount(double scroll) {
+		smoothScroll.start((float) scroll);
+		super.setScrollAmount(scroll);
 	}
 
 	@Override
 	public boolean mouseScrolled(double mouseX, double mouseY, double deltaX, double deltaY) {
 		double speed = !ClientProxy.hasFastScroll && Screen.hasControlDown() ? 4.5 : 1.5;
-		setScrollAmount(targetScroll.getTarget() - deltaY * itemHeight * speed);
+		setScrollAmount(smoothScroll.getTarget() - deltaY * itemHeight * speed);
 		return true;
 	}
 
 	@Override
 	public boolean mouseDragged(double d, double e, int i, double f, double g) {
-		targetScroll.value = targetScroll.getTarget();
-		super.setScrollAmount(targetScroll.value);
+		smoothScroll.value = smoothScroll.getTarget();
+		super.setScrollAmount(smoothScroll.value);
 		return super.mouseDragged(d, e, i, f, g);
-	}
-
-	@Nullable
-	@Override
-	public ComponentPath nextFocusPath(FocusNavigationEvent focusNavigationEvent) {
-		return super.nextFocusPath(focusNavigationEvent);
 	}
 
 	@Override
 	public boolean isFocused() {
 		return owner.getFocused() == this;
+	}
+
+	@Nullable
+	@Override
+	public ComponentPath nextFocusPath(FocusNavigationEvent event) {
+		OptionsNav.Entry navEntry = owner.getOptionsNav().getFocused();
+		if (navEntry != null && event instanceof FocusNavigationEvent.ArrowNavigation nav && nav.direction() == ScreenDirection.RIGHT) {
+			Title title = navEntry.getTitle();
+			setFocused(title);
+			ComponentPath path = super.nextFocusPath(new FocusNavigationEvent.ArrowNavigation(ScreenDirection.DOWN));
+			setFocused(null);
+			return path;
+		}
+		return super.nextFocusPath(event);
+	}
+
+	@Override
+	public void ensureVisible(Entry entry) {
+		super.ensureVisible(entry);
 	}
 
 	@Override
@@ -131,14 +150,6 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 			return false;
 		}
 		return Objects.equals(getSelected(), children().get(i));
-	}
-
-	@Override
-	protected void renderItem(GuiGraphics guiGraphics, int i, int j, float f, int k, int l, int m, int n, int o) {
-		if (isSelectedItem(k) && isMouseOver(i, j)) {
-			renderSelection(guiGraphics, m, n, o, -1, -1);
-		}
-		super.renderItem(guiGraphics, i, j, f, k, l, m, n, o);
 	}
 
 	@Override
@@ -156,31 +167,24 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 
 	@Override
 	public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
-		targetScroll.tick(delta);
-		super.setScrollAmount(targetScroll.value);
+		smoothScroll.tick(delta);
+		super.setScrollAmount(smoothScroll.value);
 		hovered = null;
 		if (!PreviewOptionsScreen.isAdjustingPosition()) {
-			if (isMouseOver(mouseX, mouseY)) {
+			InputType lastInputType = minecraft.getLastInputType();
+			mouseY = Math.min(mouseY, getRowRight());
+			if (lastInputType.isMouse() && isMouseOver(mouseX, mouseY)) {
 				hovered = getEntryAtPosition(mouseX, mouseY);
+			} else if (lastInputType.isKeyboard() && getFocused() != null) {
+				hovered = getFocused();
 			}
-			if (hovered instanceof Title) {
+			if (hovered instanceof Title title) {
 				setSelected(null);
+				currentTitle = title;
 			} else {
 				setSelected(hovered);
-			}
-			int activeIndex = hovered != null ? children().indexOf(hovered) : Mth.clamp(
-					(int) getScrollAmount() / itemHeight,
-					0,
-					getItemCount() - 1);
-			if (activeIndex >= 0 && activeIndex != lastActiveIndex) {
-				lastActiveIndex = activeIndex;
-				Entry entry = getEntry(activeIndex);
-				while (entry != null) {
-					if (entry instanceof Title) {
-						currentTitle = (Title) entry;
-						break;
-					}
-					entry = entry.parent;
+				if (hovered != null && hovered.root() instanceof Title title) {
+					currentTitle = title;
 				}
 			}
 		}
@@ -204,11 +208,6 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		}
 		renderDecorations(guiGraphics, mouseX, mouseY);
 		RenderSystem.disableBlend();
-
-//		guiGraphics.setColor(0.35f, 0.35f, 0.35f, 1.0f);
-//		guiGraphics.blit(Screen.BACKGROUND_LOCATION, 0, owner.height - 32, owner.width, 32, owner.width, owner.height, 32, 32);
-//		guiGraphics.setColor(1.0f, 1.0f, 1.0f, 1.0f);
-//		guiGraphics.fillGradient(0, owner.height - 32 - 4, owner.width, owner.height - 32, 40, 0x00000000, 0xEE000000);
 	}
 
 	public void save() {
@@ -354,8 +353,8 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 			}
 			if (bingo == keywords.length) {
 				walkChildren(entry, matches::add);
-				while (entry.parent != null) {
-					entry = entry.parent;
+				while (entry.parent() != null) {
+					entry = entry.parent();
 					matches.add(entry);
 				}
 			}
@@ -522,6 +521,14 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 			return parent;
 		}
 
+		public Entry root() {
+			Entry entry = this;
+			while (entry.parent() != null) {
+				entry = entry.parent();
+			}
+			return entry;
+		}
+
 		public final List<String> getMessages() {
 			return messages;
 		}
@@ -606,7 +613,6 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 				}
 			});
 		}
-
 	}
 
 }

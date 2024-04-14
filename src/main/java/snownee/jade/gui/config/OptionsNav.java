@@ -1,9 +1,15 @@
 package snownee.jade.gui.config;
 
+import org.jetbrains.annotations.Nullable;
+
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ObjectSelectionList;
+import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.navigation.CommonInputs;
+import net.minecraft.client.gui.navigation.FocusNavigationEvent;
+import net.minecraft.client.gui.navigation.ScreenDirection;
 import net.minecraft.network.chat.Component;
 
 public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
@@ -21,6 +27,10 @@ public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
 		super.renderListItems(guiGraphics, i, j, f);
 		if (children().isEmpty()) {
 			return;
+		}
+		Entry focused = getFocused();
+		if (focused != null && minecraft.getLastInputType().isKeyboard()) {
+			current = children().indexOf(focused);
 		}
 		double top = getY() + 4 - this.getScrollAmount() + current * this.itemHeight + this.headerHeight;
 		int left = getRowLeft() + 2;
@@ -64,6 +74,27 @@ public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
 		}
 	}
 
+	@Nullable
+	@Override
+	public ComponentPath nextFocusPath(FocusNavigationEvent event) {
+		if (!isFocused() && event instanceof FocusNavigationEvent.ArrowNavigation nav && nav.direction() == ScreenDirection.LEFT) {
+			for (Entry entry : children()) {
+				if (entry.title == options.currentTitle) {
+					return ComponentPath.path(entry, this);
+				}
+			}
+		}
+		return super.nextFocusPath(event);
+	}
+
+	@Override
+	public void setFocused(@Nullable GuiEventListener listener) {
+		super.setFocused(listener);
+		if (minecraft.getLastInputType().isKeyboard() && getFocused() instanceof Entry entry) {
+			options.showOnTop(entry.title);
+		}
+	}
+
 	public static class Entry extends ObjectSelectionList.Entry<Entry> {
 
 		private final OptionsList.Title title;
@@ -101,8 +132,7 @@ public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
 				guiGraphics.fill(left, bottom, right, bottom - 1, color);
 				guiGraphics.fill(left, rowTop, left + 1, bottom, color);
 				guiGraphics.fill(right, rowTop, right - 1, bottom, color);
-			}
-			if (parent.options.currentTitle == title) {
+			} else if (parent.options.currentTitle == title) {
 				if (!parent.isMouseOver(mouseX, mouseY)) {
 					parent.ensureVisible(this);
 				}
@@ -135,6 +165,10 @@ public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
 		public void onPress() {
 			parent.playDownSound(Minecraft.getInstance().getSoundManager());
 			parent.options.showOnTop(title);
+		}
+
+		public OptionsList.Title getTitle() {
+			return title;
 		}
 	}
 
