@@ -25,6 +25,7 @@ import net.minecraft.Util;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
+import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
@@ -33,6 +34,7 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.CommonComponents;
@@ -49,6 +51,7 @@ import snownee.jade.gui.config.value.InputOptionValue;
 import snownee.jade.gui.config.value.OptionValue;
 import snownee.jade.gui.config.value.SliderOptionValue;
 import snownee.jade.util.ClientProxy;
+import snownee.jade.util.SmoothChasingValue;
 
 public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry> {
 
@@ -60,7 +63,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 	public Title currentTitle;
 	public KeyMapping selectedKey;
 	private BaseOptionsScreen owner;
-	private double targetScroll;
+	private final SmoothChasingValue targetScroll;
 	private Entry defaultParent;
 	private int lastActiveIndex;
 
@@ -68,6 +71,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		super(client, width, height, y0, entryHeight);
 		this.owner = owner;
 		this.diskWriter = diskWriter;
+		targetScroll = new SmoothChasingValue().withSpeed(0.6F);
 	}
 
 	public OptionsList(BaseOptionsScreen owner, Minecraft client, int width, int height, int y0, int entryHeight) {
@@ -93,15 +97,27 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 
 	@Override
 	public void setScrollAmount(double d) {
-		super.setScrollAmount(d);
-		targetScroll = getScrollAmount();
+		targetScroll.target(Mth.clamp((float) d, 0, getMaxScroll()));
 	}
 
 	@Override
 	public boolean mouseScrolled(double mouseX, double mouseY, double deltaX, double deltaY) {
 		double speed = !ClientProxy.hasFastScroll && Screen.hasControlDown() ? 4.5 : 1.5;
-		targetScroll = getScrollAmount() - deltaY * itemHeight * speed;
+		setScrollAmount(targetScroll.getTarget() - deltaY * itemHeight * speed);
 		return true;
+	}
+
+	@Override
+	public boolean mouseDragged(double d, double e, int i, double f, double g) {
+		targetScroll.value = targetScroll.getTarget();
+		super.setScrollAmount(targetScroll.value);
+		return super.mouseDragged(d, e, i, f, g);
+	}
+
+	@Nullable
+	@Override
+	public ComponentPath nextFocusPath(FocusNavigationEvent focusNavigationEvent) {
+		return super.nextFocusPath(focusNavigationEvent);
 	}
 
 	@Override
@@ -140,13 +156,8 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 
 	@Override
 	public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
-		{
-			targetScroll = Math.min(targetScroll, getMaxScroll());
-			double diff = targetScroll - super.getScrollAmount();
-			if (Math.abs(diff) > 0.0003) {
-				super.setScrollAmount(super.getScrollAmount() + diff * delta);
-			}
-		}
+		targetScroll.tick(delta);
+		super.setScrollAmount(targetScroll.value);
 		hovered = null;
 		if (!PreviewOptionsScreen.isAdjustingPosition()) {
 			if (isMouseOver(mouseX, mouseY)) {
@@ -287,7 +298,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 			T value,
 			Consumer<T> setter,
 			@Nullable Consumer<CycleButton.Builder<T>> builderConsumer) {
-		List<T> values = (List<T>) Arrays.asList(value.getClass().getEnumConstants());
+		List<T> values = Arrays.asList(value.getDeclaringClass().getEnumConstants());
 		CycleButton.Builder<T> builder = CycleButton.<T>builder(v -> {
 			String name = v.name().toLowerCase(Locale.ENGLISH);
 			return switch (name) {
@@ -370,7 +381,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 	}
 
 	public void showOnTop(Entry entry) {
-		targetScroll = itemHeight * children().indexOf(entry) + 1;
+		setScrollAmount(itemHeight * children().indexOf(entry) + 1);
 	}
 
 	public void resetMappingAndUpdateButtons() {

@@ -56,7 +56,6 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 		};
 	}
 
-	@SuppressWarnings("UnusedReturnValue")
 	public static OptionsList.Entry editIgnoreList(OptionsList.Entry entry, String fileName, Runnable defaultFactory) {
 		entry.getFirstWidget().setWidth(79);
 		MutableComponent tooltip = Component.translatable("config.jade.edit_ignore_list");
@@ -145,16 +144,10 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 				FloatUnaryOperator.identity()));
 		Component adjust = Component.translatable(OptionsList.Entry.makeKey("overlay_pos.adjust"));
 		options.add(new OptionButton(Component.translatable(OptionsList.Entry.makeKey("overlay_pos")), Button.builder(adjust, w -> {
-			adjustingPosition = true;
-		}).size(100, 20).build()));
+			startAdjustingPosition();
+		}).size(100, 20)));
 		options.choices("display_item", overlay.getIconMode(), overlay::setIconMode);
 		options.choices("animation", overlay.getAnimation(), overlay::setAnimation);
-
-		//		IConfigFormatting formatting = JadeClient.CONFIG.get().getFormatting();
-		//		options.title("formatting");
-		//		options.input("format_mod_name", formatting.getModName(), val -> formatting.setModName(val.isEmpty() || !val.contains("%s") ? formatting.getModName() : val));
-		//		options.input("format_title_name", formatting.getTitleName(), val -> formatting.setTitleName(val.isEmpty() || !val.contains("%s") ? formatting.getTitleName() : val));
-		//		options.input("format_registry_name", formatting.getRegistryName(), val -> formatting.setRegistryName(val.isEmpty() || !val.contains("%s") ? formatting.getRegistryName() : val));
 
 		options.title("key_binds");
 		options.keybind(JadeClient.openConfig);
@@ -204,7 +197,7 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 					Component.translatable(OptionsList.Entry.makeKey("reset_settings.confirm")),
 					reset,
 					Component.translatable("gui.cancel")));
-		}).size(100, 20).build()));
+		}).size(100, 20)));
 
 		return options;
 	}

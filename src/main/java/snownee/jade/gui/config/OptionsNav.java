@@ -3,30 +3,31 @@ package snownee.jade.gui.config;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ObjectSelectionList;
+import net.minecraft.client.gui.navigation.CommonInputs;
 import net.minecraft.network.chat.Component;
-import snownee.jade.util.SmoothChasingValue;
 
 public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
 
 	private final OptionsList options;
-	private final SmoothChasingValue anchor;
+	private int current;
 
 	public OptionsNav(OptionsList options, int width, int height, int top, int itemHeight) {
 		super(Minecraft.getInstance(), width, height, top, itemHeight);
 		this.options = options;
-		this.anchor = new SmoothChasingValue();
 	}
 
 	@Override
 	protected void renderListItems(GuiGraphics guiGraphics, int i, int j, float f) {
 		super.renderListItems(guiGraphics, i, j, f);
-		anchor.tick(f);
 		if (children().isEmpty()) {
 			return;
 		}
-		int top = (int) (getY() + 4 - this.getScrollAmount() + anchor.value * this.itemHeight + this.headerHeight);
+		double top = getY() + 4 - this.getScrollAmount() + current * this.itemHeight + this.headerHeight;
 		int left = getRowLeft() + 2;
-		guiGraphics.fill(left, top, left + 2, top + itemHeight - 4, 0xFFFFFFFF);
+		guiGraphics.pose().pushPose();
+		guiGraphics.pose().translate(0, top, 0);
+		guiGraphics.fill(left, 0, left + 2, itemHeight - 4, 0xFFFFFFFF);
+		guiGraphics.pose().popPose();
 	}
 
 	@Override
@@ -91,25 +92,49 @@ public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
 					rowLeft + 10,
 					rowTop + (height / 2) - (title.client.font.lineHeight / 2),
 					0xFFFFFF);
+			if (isFocused() && parent.minecraft.getLastInputType().isKeyboard()) {
+				int color = 0xFFAAAAAA;
+				int left = rowLeft + 2;
+				int right = rowLeft + width - 2;
+				int bottom = rowTop + height;
+				guiGraphics.fill(left, rowTop, right, rowTop + 1, color);
+				guiGraphics.fill(left, bottom, right, bottom - 1, color);
+				guiGraphics.fill(left, rowTop, left + 1, bottom, color);
+				guiGraphics.fill(right, rowTop, right - 1, bottom, color);
+			}
 			if (parent.options.currentTitle == title) {
 				if (!parent.isMouseOver(mouseX, mouseY)) {
 					parent.ensureVisible(this);
 				}
-				parent.anchor.target(index);
+				parent.current = index;
 			}
 		}
 
 		@Override
 		public boolean mouseClicked(double mouseX, double mouseY, int button) {
 			if (button == 0) {
-				parent.options.showOnTop(title);
+				onPress();
 			}
 			return true;
 		}
 
 		@Override
+		public boolean keyPressed(int i, int j, int k) {
+			if (CommonInputs.selected(i)) {
+				this.onPress();
+				return true;
+			}
+			return false;
+		}
+
+		@Override
 		public Component getNarration() {
 			return title.narration;
+		}
+
+		public void onPress() {
+			parent.playDownSound(Minecraft.getInstance().getSoundManager());
+			parent.options.showOnTop(title);
 		}
 	}
 

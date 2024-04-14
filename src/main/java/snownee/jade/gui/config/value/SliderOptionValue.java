@@ -6,7 +6,9 @@ import java.util.function.Consumer;
 
 import it.unimi.dsi.fastutil.floats.FloatUnaryOperator;
 import net.minecraft.client.gui.components.AbstractSliderButton;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
 
 public class SliderOptionValue extends OptionValue<Float> {
@@ -72,6 +74,11 @@ public class SliderOptionValue extends OptionValue<Float> {
 			this.value = fromScaled(value, parent.min, parent.max);
 			applyValue();
 			updateMessage();
+		}
+
+		@Override
+		protected MutableComponent createNarrationMessage() {
+			return CommonComponents.joinForNarration(parent.getTitle(), super.createNarrationMessage());
 		}
 	}
 }

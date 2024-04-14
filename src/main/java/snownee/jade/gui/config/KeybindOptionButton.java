@@ -10,7 +10,7 @@ public class KeybindOptionButton extends OptionButton {
 	private final KeyMapping keybind;
 
 	public KeybindOptionButton(OptionsList owner, KeyMapping keybind) {
-		super(Component.translatable(keybind.getName()), null);
+		super(Component.translatable(keybind.getName()), (Button) null);
 		this.keybind = keybind;
 		var button = Button.builder(keybind.getTranslatedKeyMessage(), b -> {
 			owner.selectedKey = this.keybind;
@@ -27,9 +27,7 @@ public class KeybindOptionButton extends OptionButton {
 	public void refresh(KeyMapping selectedKey) {
 		var button = getFirstWidget();
 		if (selectedKey == keybind) {
-			button.setMessage(Component.literal("> ").append(button.getMessage()
-					.copy()
-					.withStyle(ChatFormatting.WHITE, ChatFormatting.UNDERLINE)).append(" <").withStyle(ChatFormatting.YELLOW));
+			button.setMessage(Component.literal("> ").append(button.getMessage().copy().withStyle(ChatFormatting.WHITE, ChatFormatting.UNDERLINE)).append(" <").withStyle(ChatFormatting.YELLOW));
 		} else {
 			button.setMessage(keybind.getTranslatedKeyMessage());
 		}

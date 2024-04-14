@@ -45,7 +45,7 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 	 */
 	void addConfig(ResourceLocation key, boolean defaultValue);
 
-	void addConfig(ResourceLocation key, Enum<?> defaultValue);
+	<T extends Enum<T>> void addConfig(ResourceLocation key, T defaultValue);
 
 	void addConfig(ResourceLocation key, String defaultValue, Predicate<String> validator);
 

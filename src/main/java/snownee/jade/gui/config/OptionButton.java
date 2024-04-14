@@ -2,6 +2,7 @@ package snownee.jade.gui.config;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 
 public class OptionButton extends OptionsList.Entry {
@@ -23,6 +24,10 @@ public class OptionButton extends OptionsList.Entry {
 			}
 			addWidget(button, 0);
 		}
+	}
+
+	public OptionButton(Component title, Button.Builder builder) {
+		this(title, builder.createNarration($ -> CommonComponents.joinForNarration(title, $.get())).build());
 	}
 
 	@Override

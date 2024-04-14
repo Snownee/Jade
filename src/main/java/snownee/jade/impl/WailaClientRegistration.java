@@ -150,23 +150,23 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	public List<IComponentProvider<BlockAccessor>> getBlockProviders(
 			Block block,
 			Predicate<IComponentProvider<? extends Accessor<?>>> filter) {
-		return blockComponentProviders.<IComponentProvider<Accessor<?>>>get(block).stream().filter(filter).toList();
+		return blockComponentProviders.get(block).stream().filter(filter).toList();
 	}
 
 	public List<IComponentProvider<BlockAccessor>> getBlockIconProviders(
 			Block block,
 			Predicate<IComponentProvider<? extends Accessor<?>>> filter) {
-		return blockIconProviders.<IComponentProvider<Accessor<?>>>get(block).stream().filter(filter).toList();
+		return blockIconProviders.get(block).stream().filter(filter).toList();
 	}
 
 	public List<IComponentProvider<EntityAccessor>> getEntityProviders(
 			Entity entity, Predicate<IComponentProvider<? extends Accessor<?>>> filter) {
-		return entityComponentProviders.<IComponentProvider<Accessor<?>>>get(entity).stream().filter(filter).toList();
+		return entityComponentProviders.get(entity).stream().filter(filter).toList();
 	}
 
 	public List<IComponentProvider<EntityAccessor>> getEntityIconProviders(
 			Entity entity, Predicate<IComponentProvider<? extends Accessor<?>>> filter) {
-		return entityIconProviders.<IComponentProvider<Accessor<?>>>get(entity).stream().filter(filter).toList();
+		return entityIconProviders.get(entity).stream().filter(filter).toList();
 	}
 
 	@Override
@@ -218,11 +218,10 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 		PluginConfig.INSTANCE.addConfig(new BooleanConfigEntry(key, defaultValue));
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
-	public void addConfig(ResourceLocation key, Enum<?> defaultValue) {
+	public <T extends Enum<T>> void addConfig(ResourceLocation key, T defaultValue) {
 		Objects.requireNonNull(defaultValue);
-		PluginConfig.INSTANCE.addConfig(new EnumConfigEntry(key, defaultValue));
+		PluginConfig.INSTANCE.addConfig(new EnumConfigEntry<>(key, defaultValue));
 	}
 
 	@Override

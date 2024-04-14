@@ -7,7 +7,6 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 
 import net.minecraft.resources.ResourceLocation;
-import snownee.jade.util.SmoothChasingValue;
 
 public class ProgressTracker {
 
