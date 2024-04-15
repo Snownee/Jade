@@ -99,16 +99,21 @@ public class HomeConfigScreen extends Screen {
 	protected void init() {
 		Objects.requireNonNull(minecraft);
 		particles.clear();
-		addRenderableWidget(Button.builder(Component.translatable("gui.jade.jade_settings"), w -> {
+		Component modSettings = Component.translatable("gui.jade.jade_settings");
+		Component pluginSettings = Component.translatable("gui.jade.plugin_settings");
+		int maxWidth = Math.max(100, Math.max(font.width(modSettings) + 8, font.width(pluginSettings) + 8));
+		maxWidth = Math.min(maxWidth, Math.min(240, width / 2 - 40));
+
+		addRenderableWidget(Button.builder(modSettings, w -> {
 			titleY.set(titleY.getTarget());
 			minecraft.setScreen(new WailaConfigScreen(HomeConfigScreen.this));
 			showTranslators = true;
-		}).bounds(width / 2 - 105, height / 2 - 10, 100, 20).build());
-		addRenderableWidget(Button.builder(Component.translatable("gui.jade.plugin_settings"), w -> {
+		}).bounds(width / 2 - 5 - maxWidth, height / 2 - 10, maxWidth, 20).build());
+		addRenderableWidget(Button.builder(pluginSettings, w -> {
 			titleY.set(titleY.getTarget());
 			minecraft.setScreen(new PluginsConfigScreen(HomeConfigScreen.this));
 			showTranslators = true;
-		}).bounds(width / 2 + 5, height / 2 - 10, 100, 20).build());
+		}).bounds(width / 2 + 5, height / 2 - 10, maxWidth, 20).build());
 		addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, w -> {
 			onClose();
 		}).bounds(width / 2 - 50, height / 2 + 20, 100, 20).build());
