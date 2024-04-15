@@ -13,6 +13,8 @@
 	"tooltip.jade.villager_profession": "Професія: %s",
 	"gui.jade.plugin_settings": "Параметри плаґіна",
 	"gui.jade.forced_plugin_config": "Цей параметр керується сервером",
+	"gui.jade.translated_by": "placeholder %s",
+	"gui.jade.translators": "Altegar, BurrConnie",
 	"key.jade.config": "Відкрити конфіг",
 	"key.jade.show_overlay": "Показати оверлей",
 	"key.jade.toggle_liquid": "Перемкнути відображення рідин",

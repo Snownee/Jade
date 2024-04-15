@@ -16,6 +16,8 @@
 	"tooltip.jade.villager_profession": "Profession: %s",
 	"gui.jade.by": "Made with %s by Snownee",
 	"gui.jade.by.hovered": "Check out all my works!",
+	"gui.jade.translated_by": "English Localization by %s",
+	"gui.jade.translators": "Bob, Alice, Charlie",
 	"gui.jade.configuration": "Jade Configuration",
 	"gui.jade.configuration.desc1": "a §fUI enhancement§r mod that",
 	"gui.jade.configuration.desc2": "§fdisplays information§r about what §fyou are looking at§r.",

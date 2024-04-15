@@ -40,7 +40,8 @@ public class HomeConfigScreen extends Screen {
 	private float ticks;
 	private byte festival;
 	private float nextParticleIn;
-	private AuthorButton authorButton;
+	private CreditButton creditButton;
+	private boolean showTranslators;
 
 	public HomeConfigScreen(Screen parent) {
 		super(Component.translatable("gui.jade.configuration"));
@@ -101,10 +102,12 @@ public class HomeConfigScreen extends Screen {
 		addRenderableWidget(Button.builder(Component.translatable("gui.jade.jade_settings"), w -> {
 			titleY.set(titleY.getTarget());
 			minecraft.setScreen(new WailaConfigScreen(HomeConfigScreen.this));
+			showTranslators = true;
 		}).bounds(width / 2 - 105, height / 2 - 10, 100, 20).build());
 		addRenderableWidget(Button.builder(Component.translatable("gui.jade.plugin_settings"), w -> {
 			titleY.set(titleY.getTarget());
 			minecraft.setScreen(new PluginsConfigScreen(HomeConfigScreen.this));
+			showTranslators = true;
 		}).bounds(width / 2 + 5, height / 2 - 10, 100, 20).build());
 		addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, w -> {
 			onClose();
@@ -120,7 +123,7 @@ public class HomeConfigScreen extends Screen {
 		int btnX = (int) (width * 0.5F - btnWidth * 0.5F);
 		int btnY = (int) (height * 0.9F - 5);
 		Component narration = Component.translatable("narration.jade.by");
-		addRenderableWidget(authorButton = new AuthorButton(
+		creditButton = addRenderableWidget(new CreditButton(
 				btnX,
 				btnY,
 				btnWidth,
@@ -130,6 +133,9 @@ public class HomeConfigScreen extends Screen {
 				b -> ConfirmLinkScreen.confirmLinkNow(this, "https://www.curseforge.com/members/snownee_/projects"),
 				this::triggerAuthorButton,
 				$ -> narration.copy()));
+		if (showTranslators) {
+			creditButton.showTranslators();
+		}
 	}
 
 	private void triggerAuthorButton(Button button) {
@@ -288,7 +294,7 @@ public class HomeConfigScreen extends Screen {
 				colors.add(0x2C2C2C);
 			}
 		}
-		int ox = random.nextIntBetweenInclusive(authorButton.getX(), authorButton.getX() + authorButton.getWidth());
+		int ox = random.nextIntBetweenInclusive(creditButton.getX(), creditButton.getX() + creditButton.getWidth());
 		float dx = ox * 0.08F;
 		float dy = -5 - random.nextFloat() * 3;
 		for (int color : colors) {

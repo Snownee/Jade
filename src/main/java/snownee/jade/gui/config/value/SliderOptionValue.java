@@ -34,7 +34,7 @@ public class SliderOptionValue extends OptionValue<Float> {
 	}
 
 	public static class Slider extends AbstractSliderButton {
-		private static DecimalFormat fmt = new DecimalFormat("##.##");
+		private static final DecimalFormat fmt = new DecimalFormat("##.##");
 		private final SliderOptionValue parent;
 
 		public Slider(SliderOptionValue parent, int x, int y, int width, int height, Component message) {

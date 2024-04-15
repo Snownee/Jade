@@ -12,6 +12,8 @@
 	"tooltip.jade.power": "Stärke: %d",
 	"tooltip.jade.villager_profession": "Beruf: %s",
 	"gui.jade.plugin_settings": "Plugin-Einstellungen",
+	"gui.jade.translated_by": "placeholder %s",
+	"gui.jade.translators": "MelanX, Sven G",
 	"key.jade.config": "Öffne Einstellungen",
 	"key.jade.show_overlay": "Zeige Oberfläche",
 	"key.jade.toggle_liquid": "Flüssigkeiten anzeigen/verstecken",

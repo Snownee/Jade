@@ -15,6 +15,8 @@
 	"jade.input_signal": "Entrada: %d",
 	"tooltip.jade.villager_profession": "Profissão: %s",
 	"gui.jade.by": "Feito com %s por Snownee",
+	"gui.jade.translated_by": "placeholder %s",
+	"gui.jade.translators": "FITFC",
 	"gui.jade.configuration": "Configuração do Jade",
 	"gui.jade.configuration.desc1": "Um mod que §fmelhora a interface§r",
 	"gui.jade.configuration.desc2": "§fExibe informações§r sobre o que §fvocê está olhando§r.",

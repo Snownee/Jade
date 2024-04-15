@@ -12,6 +12,8 @@
 	"tooltip.jade.power": "Energia: %d",
 	"tooltip.jade.villager_profession": "Professione: %s",
 	"gui.jade.plugin_settings": "Impostazioni plug-in",
+	"gui.jade.translated_by": "placeholder %s",
+	"gui.jade.translators": "simcosmico",
 	"key.jade.config": "Apri config",
 	"key.jade.show_overlay": "Mostra overlay",
 	"key.jade.toggle_liquid": "Toggle liquidi",

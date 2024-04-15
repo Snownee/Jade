@@ -15,6 +15,8 @@
 	"jade.input_signal": "輸入：%d",
 	"tooltip.jade.villager_profession": "職業：%s",
 	"gui.jade.by": "Snownee 用%s製作",
+	"gui.jade.translated_by": "placeholder %s",
+	"gui.jade.translators": "Jimmy-sheep, notlin4, HJ-zhtw",
 	"gui.jade.configuration": "Jade 設置",
 	"gui.jade.configuration.desc1": "一個§f使用者介面增強§r模組，顯示有關§f你正在查看的東西的資訊§r。",
 	"gui.jade.configuration.desc2": "",

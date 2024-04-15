@@ -15,6 +15,8 @@
 	"jade.input_signal": "入力：%d",
 	"tooltip.jade.villager_profession": "職業：%s",
 	"gui.jade.by": "Snowneeより%sを籠めて",
+	"gui.jade.translated_by": "placeholder %s",
+	"gui.jade.translators": "momo-i, RascalNiki",
 	"gui.jade.configuration": "Jadeの構成",
 	"gui.jade.configuration.desc1": "§f見ているもの§rに関する§f情報を表示する",
 	"gui.jade.configuration.desc2": "§fUI拡張§rModです。",

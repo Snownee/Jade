@@ -12,6 +12,8 @@
 	"tooltip.jade.power": "전력: %d",
 	"tooltip.jade.villager_profession": "직업: %s",
 	"gui.jade.plugin_settings": "플러그인 설정",
+	"gui.jade.translated_by": "placeholder %s",
+	"gui.jade.translators": "red1854th",
 	"key.jade.config": "설정 열기",
 	"key.jade.show_overlay": "오버레이 표시",
 	"key.jade.toggle_liquid": "액체 전환",

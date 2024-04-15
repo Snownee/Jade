@@ -12,6 +12,8 @@
 	"tooltip.jade.power": "Zasilanie: %d",
 	"tooltip.jade.villager_profession": "Profesja: %s",
 	"gui.jade.plugin_settings": "Ustawienia pluginu",
+	"gui.jade.translated_by": "placeholder %s",
+	"gui.jade.translators": "Waterrail",
 	"key.jade.config": "Otwórz konfigurację",
 	"key.jade.show_overlay": "Pokazuj nakładkę",
 	"key.jade.toggle_liquid": "Przełącz ciecz",

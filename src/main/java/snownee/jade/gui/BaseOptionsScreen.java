@@ -34,7 +34,7 @@ import snownee.jade.gui.config.value.OptionValue;
 
 public abstract class BaseOptionsScreen extends Screen {
 
-	private final Screen parent;
+	protected final Screen parent;
 	private final Set<GuiEventListener> entryWidgets = Sets.newIdentityHashSet();
 	public Button saveButton;
 	protected Runnable saver;
