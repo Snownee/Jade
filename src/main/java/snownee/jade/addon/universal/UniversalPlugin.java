@@ -33,8 +33,8 @@ public class UniversalPlugin implements IWailaPlugin {
 
 	@Override
 	public void registerClient(IWailaClientRegistration registration) {
-		registration.addConfig(Identifiers.UNIVERSAL_ITEM_STORAGE_DETAILED_AMOUNT, 54, 1, 54, false);
-		registration.addConfig(Identifiers.UNIVERSAL_ITEM_STORAGE_NORMAL_AMOUNT, 9, 1, 54, false);
+		registration.addConfig(Identifiers.UNIVERSAL_ITEM_STORAGE_DETAILED_AMOUNT, 54, 0, 54, false);
+		registration.addConfig(Identifiers.UNIVERSAL_ITEM_STORAGE_NORMAL_AMOUNT, 9, 0, 54, false);
 		registration.addConfig(Identifiers.UNIVERSAL_ITEM_STORAGE_SHOW_NAME_AMOUNT, 5, 0, 9, true);
 		registration.addConfig(Identifiers.UNIVERSAL_ITEM_STORAGE_ITEMS_PER_LINE, 9, 3, 27, true);
 		registration.addConfig(Identifiers.UNIVERSAL_ENERGY_STORAGE_DETAILED, false);
