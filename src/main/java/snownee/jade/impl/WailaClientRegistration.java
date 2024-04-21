@@ -284,7 +284,7 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 		for (ResourceKey<EntityType<?>> id : createIgnoreListConfig(
 				"hide-entities",
 				Registries.ENTITY_TYPE,
-				List.of("area_effect_cloud", "firework_rocket", "interaction", "text_display")).get().values) {
+				List.of("area_effect_cloud", "firework_rocket", "interaction", "text_display", "lightning_bolt")).get().values) {
 			BuiltInRegistries.ENTITY_TYPE.getOptional(id.location()).ifPresent(hideEntitiesReloadable::add);
 		}
 		hideBlocksReloadable.clear();
