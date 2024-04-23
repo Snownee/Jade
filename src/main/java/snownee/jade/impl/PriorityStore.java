@@ -1,13 +1,13 @@
 package snownee.jade.impl;
 
-import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.OptionalInt;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
@@ -16,11 +16,13 @@ import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.google.common.reflect.TypeToken;
+import com.mojang.serialization.Codec;
 
 import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import snownee.jade.util.JadeCodecs;
 import snownee.jade.util.JsonConfig;
 
 public class PriorityStore<K, V> {
@@ -30,8 +32,12 @@ public class PriorityStore<K, V> {
 	private final ToIntFunction<V> defaultPriorityGetter;
 	@Nullable
 	private String configFile;
+	@Nullable
+	private Codec<K> keyCodec;
 	private ImmutableList<K> sortedList = ImmutableList.of();
-	private BiFunction<PriorityStore<K, V>, Collection<K>, List<K>> sortingFunction = (store, allKeys) -> allKeys.stream().sorted(Comparator.comparingInt(store::byKey)).toList();
+	private BiFunction<PriorityStore<K, V>, Collection<K>, List<K>> sortingFunction = (store, allKeys) -> allKeys.stream()
+			.sorted(Comparator.comparingInt(store::byKey))
+			.toList();
 
 	public PriorityStore(ToIntFunction<V> defaultPriorityGetter, Function<V, K> keyGetter) {
 		this.defaultPriorityGetter = defaultPriorityGetter;
@@ -42,8 +48,9 @@ public class PriorityStore<K, V> {
 		this.sortingFunction = sortingFunction;
 	}
 
-	public void setConfigFile(String configFile) {
+	public void configurable(String configFile, Codec<K> keyCodec) {
 		this.configFile = configFile;
+		this.keyCodec = keyCodec;
 	}
 
 	public void put(V provider) {
@@ -65,22 +72,30 @@ public class PriorityStore<K, V> {
 		}
 
 		if (!Strings.isNullOrEmpty(configFile)) {
-			@SuppressWarnings("serial")
-			Type type = new TypeToken<LinkedHashMap<K, Integer>>() {
-			}.getType();
-			JsonConfig<Map<K, Integer>> config = new JsonConfig<>(configFile, type, null, LinkedHashMap::new);
-			Map<K, Integer> map = config.get();
+			JsonConfig<Map<K, OptionalInt>> config = new JsonConfig<>(
+					configFile,
+					Codec.unboundedMap(keyCodec, JadeCodecs.OPTIONAL_INT),
+					null,
+					Map::of);
+			Map<K, OptionalInt> map = config.get();
 			for (var e : map.entrySet()) {
-				if (e.getValue() != null)
-					priorities.put(e.getKey(), e.getValue().intValue());
+				if (e.getValue().isPresent()) {
+					priorities.put(e.getKey(), e.getValue().getAsInt());
+				}
 			}
 			new Thread(() -> {
+				boolean changed = false;
+				TreeMap<K, OptionalInt> newMap = Maps.newTreeMap(Comparator.comparing(Object::toString));
 				for (K id : priorities.keySet()) {
 					if (!map.containsKey(id)) {
-						map.put(id, null);
+						newMap.put(id, OptionalInt.empty());
+						changed = true;
 					}
 				}
-				config.save();
+				if (changed) {
+					newMap.putAll(map);
+					config.write(newMap, false);
+				}
 			}).start();
 		}
 
