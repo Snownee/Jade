@@ -17,6 +17,8 @@ import com.mojang.serialization.JsonOps;
 
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.Jade;
+import snownee.jade.api.theme.Theme;
+import snownee.jade.impl.theme.ThemeSerializer;
 
 public class JsonConfig<T> {
 
@@ -26,6 +28,7 @@ public class JsonConfig<T> {
 			.serializeNulls()
 			.enableComplexMapKeySerialization()
 			.registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
+			.registerTypeAdapter(Theme.class, new ThemeSerializer())
 			.setLenient()
 			.create();
 	/* on */
@@ -44,12 +47,10 @@ public class JsonConfig<T> {
 				return def;
 			}
 			try (FileReader reader = new FileReader(file, StandardCharsets.UTF_8)) {
-				T ret = codec.parse(JsonOps.INSTANCE, GSON.fromJson(reader, JsonElement.class)).getOrThrow();
-				if (ret == null) {
-					ret = defaultFactory.get();
-					write(ret, false);
-				}
-				return ret;
+				return codec.parse(JsonOps.INSTANCE, GSON.fromJson(reader, JsonElement.class))
+							.get()
+							.left()
+							.orElseThrow();
 			} catch (Throwable e) {
 				Jade.LOGGER.error("Failed to read config file %s".formatted(file), e);
 				if (file.length() > 0) {
@@ -89,7 +90,7 @@ public class JsonConfig<T> {
 		}
 
 		try (FileWriter writer = new FileWriter(file, StandardCharsets.UTF_8)) {
-			writer.write(GSON.toJson(codec.encodeStart(JsonOps.INSTANCE, t).getOrThrow()));
+			writer.write(GSON.toJson(codec.encodeStart(JsonOps.INSTANCE, t).get().left().orElseThrow()));
 			if (invalidate) {
 				invalidate();
 			}

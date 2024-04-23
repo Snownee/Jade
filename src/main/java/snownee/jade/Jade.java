@@ -20,7 +20,7 @@ public class Jade {
 	/**
 	 * addons: Use {@link IWailaConfig#get()}
 	 */
-	public static final JsonConfig<WailaConfig> CONFIG = new JsonConfig<>(Jade.MODID + "/" + Jade.MODID, WailaConfig.class, null);
+	public static final JsonConfig<WailaConfig> CONFIG = new JsonConfig<>(Jade.MODID + "/" + Jade.MODID, WailaConfig.CODEC, null);
 	public static int MAX_DISTANCE_SQR = 900;
 	public static boolean FROZEN;
 

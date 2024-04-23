@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.api.Accessor;
-import snownee.jade.api.IComponentProvider;
+import snownee.jade.api.IToggleableProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.IElement;
@@ -15,7 +15,7 @@ import snownee.jade.api.ui.IElement;
 /**
  * A template implementation for script languages like KubeJS
  */
-public abstract class TemplateComponentProvider<T extends Accessor<?>> implements IComponentProvider<T> {
+public abstract class TemplateComponentProvider<T extends Accessor<?>> implements IToggleableProvider {
 	private final ResourceLocation uid;
 	private final boolean required;
 	private final boolean enabledByDefault;
@@ -50,12 +50,10 @@ public abstract class TemplateComponentProvider<T extends Accessor<?>> implement
 		return uid;
 	}
 
-	@Override
 	public @Nullable IElement getIcon(T accessor, IPluginConfig config, IElement currentIcon) {
 		return iconFunction.apply(accessor, currentIcon);
 	}
 
-	@Override
 	public void appendTooltip(ITooltip tooltip, T accessor, IPluginConfig config) {
 		tooltipFunction.accept(tooltip, accessor);
 	}

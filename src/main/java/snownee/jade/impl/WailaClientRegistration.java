@@ -56,6 +56,7 @@ import snownee.jade.impl.config.entry.IntConfigEntry;
 import snownee.jade.impl.config.entry.StringConfigEntry;
 import snownee.jade.overlay.DatapackBlockManager;
 import snownee.jade.util.ClientProxy;
+import snownee.jade.util.JadeCodecs;
 import snownee.jade.util.JsonConfig;
 
 public class WailaClientRegistration implements IWailaClientRegistration {
@@ -83,14 +84,19 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	public final CallbackContainer<JadeRenderBackgroundCallback> renderBackgroundCallback = new CallbackContainer<>();
 
 	public final Map<Block, CustomEnchantPower> customEnchantPowers = Maps.newHashMap();
-	public final Map<ResourceLocation, IClientExtensionProvider<ItemStack, ItemView>> itemStorageProviders = Maps.newHashMap();
-	public final Map<ResourceLocation, IClientExtensionProvider<CompoundTag, FluidView>> fluidStorageProviders = Maps.newHashMap();
-	public final Map<ResourceLocation, IClientExtensionProvider<CompoundTag, EnergyView>> energyStorageProviders = Maps.newHashMap();
-	public final Map<ResourceLocation, IClientExtensionProvider<CompoundTag, ProgressView>> progressProviders = Maps.newHashMap();
+	public final Map<ResourceLocation, IClientExtensionProvider<ItemStack, ItemView>> itemStorageProviders =
+			Maps.newHashMap();
+	public final Map<ResourceLocation, IClientExtensionProvider<CompoundTag, FluidView>> fluidStorageProviders =
+			Maps.newHashMap();
+	public final Map<ResourceLocation, IClientExtensionProvider<CompoundTag, EnergyView>> energyStorageProviders =
+			Maps.newHashMap();
+	public final Map<ResourceLocation, IClientExtensionProvider<CompoundTag, ProgressView>> progressProviders =
+			Maps.newHashMap();
 
 	public final Set<ResourceLocation> clientFeatures = Sets.newHashSet();
 
-	public final Map<Class<Accessor<?>>, Accessor.ClientHandler<Accessor<?>>> accessorHandlers = Maps.newIdentityHashMap();
+	public final Map<Class<Accessor<?>>, Accessor.ClientHandler<Accessor<?>>> accessorHandlers =
+			Maps.newIdentityHashMap();
 
 	WailaClientRegistration() {
 		blockIconProviders = new HierarchyLookup<>(Block.class);
@@ -105,22 +111,23 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	}
 
 	public static JsonConfig<TargetBlocklist> createEntityBlocklist() {
-		return new JsonConfig<>(Jade.MODID + "/hide-entities", TargetBlocklist.class, null, () -> {
+		return new JsonConfig<>(Jade.MODID + "/hide-entities", JadeCodecs.TARGET_BLOCKLIST_CODEC, null, () -> {
 			var blocklist = new TargetBlocklist();
 			blocklist.values = Stream.of(
-							EntityType.AREA_EFFECT_CLOUD,
-							EntityType.FIREWORK_ROCKET,
-							EntityType.INTERACTION,
-							EntityType.TEXT_DISPLAY)
-					.map(EntityType::getKey)
-					.map(Object::toString)
-					.toList();
+											 EntityType.AREA_EFFECT_CLOUD,
+											 EntityType.FIREWORK_ROCKET,
+											 EntityType.INTERACTION,
+											 EntityType.TEXT_DISPLAY
+									 )
+									 .map(EntityType::getKey)
+									 .map(Object::toString)
+									 .toList();
 			return blocklist;
 		});
 	}
 
 	public static JsonConfig<TargetBlocklist> createBlockBlocklist() {
-		return new JsonConfig<>(Jade.MODID + "/hide-blocks", TargetBlocklist.class, null, () -> {
+		return new JsonConfig<>(Jade.MODID + "/hide-blocks", JadeCodecs.TARGET_BLOCKLIST_CODEC, null, () -> {
 			var blocklist = new TargetBlocklist();
 			blocklist.values = List.of("minecraft:barrier");
 			return blocklist;
@@ -155,15 +162,22 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 		return blockComponentProviders.get(block).stream().filter(filter).toList();
 	}
 
-	public List<IBlockComponentProvider> getBlockIconProviders(Block block, Predicate<IBlockComponentProvider> filter) {
+	public List<IBlockComponentProvider> getBlockIconProviders(Block block,
+                                                               Predicate<IBlockComponentProvider> filter) {
 		return blockIconProviders.get(block).stream().filter(filter).toList();
 	}
 
-	public List<IEntityComponentProvider> getEntityProviders(Entity entity, Predicate<IEntityComponentProvider> filter) {
+	public List<IEntityComponentProvider> getEntityProviders(
+			Entity entity,
+			Predicate<IEntityComponentProvider> filter
+	) {
 		return entityComponentProviders.get(entity).stream().filter(filter).toList();
 	}
 
-	public List<IEntityComponentProvider> getEntityIconProviders(Entity entity, Predicate<IEntityComponentProvider> filter) {
+	public List<IEntityComponentProvider> getEntityIconProviders(
+			Entity entity,
+			Predicate<IEntityComponentProvider> filter
+	) {
 		return entityIconProviders.get(entity).stream().filter(filter).toList();
 	}
 
@@ -263,14 +277,16 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 				beforeRenderCallback,
 				rayTraceCallback,
 				tooltipCollectedCallback,
-				itemModNameCallback).forEach(CallbackContainer::sort);
+				itemModNameCallback
+		).forEach(CallbackContainer::sort);
 	}
 
 	public void reloadBlocklists() {
 		hideEntitiesReloadable.clear();
 		hideEntitiesReloadable.addAll(hideEntities);
 		for (String id : createEntityBlocklist().get().values) {
-			BuiltInRegistries.ENTITY_TYPE.getOptional(ResourceLocation.tryParse(id)).ifPresent(hideEntitiesReloadable::add);
+			BuiltInRegistries.ENTITY_TYPE.getOptional(ResourceLocation.tryParse(id))
+										 .ifPresent(hideEntitiesReloadable::add);
 		}
 		hideBlocksReloadable.clear();
 		hideBlocksReloadable.addAll(hideBlocks);

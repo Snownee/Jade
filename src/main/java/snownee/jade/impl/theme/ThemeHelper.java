@@ -39,7 +39,7 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener implements ITh
 	private final Map<ResourceLocation, Theme> themes = Maps.newTreeMap(Comparator.comparing(ResourceLocation::toString));
 
 	public ThemeHelper() {
-		super(JsonConfig.DEFAULT_GSON, "jade_themes");
+		super(JsonConfig.GSON, "jade_themes");
 	}
 
 	public static Style colorStyle(int color) {
@@ -124,7 +124,7 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener implements ITh
 		map.forEach((id, json) -> {
 			try {
 				JsonObject o = json.getAsJsonObject();
-				Theme theme = JsonConfig.DEFAULT_GSON.fromJson(o, Theme.class);
+				Theme theme = JsonConfig.GSON.fromJson(o, Theme.class);
 				theme.id = id;
 				themes.put(id, theme);
 				if (enable.getValue() == null && GsonHelper.getAsBoolean(o, "autoEnable", false) && !existingKeys.contains(id)) {
