@@ -195,11 +195,11 @@ public final class UsernameCache {
 				if (profile.getName() == null || profile.getName().equals("???")) {
 					return;
 				}
-				//only remove from list if it was successfull
+				//only remove from list if it was successful
 				//if it failed for some reason leave it in the channel so no repeated tries are made
 				UsernameCache.setUsername(profile.getId(), profile.getName());
 				downloadingList.remove(uuid);
-			} catch (Exception e) {
+			} catch (Exception ignored) {
 			}
 		}
 	}
@@ -224,7 +224,7 @@ public final class UsernameCache {
 			try {
 				// Make sure we don't save when another thread is still saving
 				synchronized (saveFile) {
-					Files.write(saveFile, data.getBytes(StandardCharsets.UTF_8));
+					Files.writeString(saveFile, data, StandardCharsets.UTF_8);
 				}
 			} catch (IOException e) {
 				Jade.LOGGER.error("Failed to save username cache to file!");

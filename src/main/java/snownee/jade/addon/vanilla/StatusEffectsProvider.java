@@ -3,6 +3,7 @@ package snownee.jade.addon.vanilla;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 import com.mojang.serialization.MapCodec;
 
@@ -72,7 +73,11 @@ public enum StatusEffectsProvider implements IEntityComponentProvider, IServerDa
 		if (effects.isEmpty()) {
 			return;
 		}
-		ServerDataUtil.write(accessor.getServerData(), EFFECTS_CODEC, List.copyOf(effects));
+		List<MobEffectInstance> effectList = effects.stream().filter(MobEffectInstance::isVisible).toList();
+		if (effectList.isEmpty()) {
+			return;
+		}
+		ServerDataUtil.write(accessor.getServerData(), EFFECTS_CODEC, effectList);
 	}
 
 	@Override
