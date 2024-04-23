@@ -26,12 +26,7 @@ public enum PlayerHeadProvider implements IBlockComponentProvider {
 				return;
 			}
 			String name = profile.name().orElse(null);
-//			GameProfile profile = tile.getOwnerProfile().gameProfile();
-//			String name = profile.getName();
-//			if (name == null) {
-//				name = CommonProxy.getLastKnownUsername(profile.getId());
-//			}
-			if (name == null || StringUtils.isBlank(name)) {
+			if (StringUtils.isBlank(name)) {
 				return;
 			}
 			if (!name.contains(" ") && !name.contains("§")) {
