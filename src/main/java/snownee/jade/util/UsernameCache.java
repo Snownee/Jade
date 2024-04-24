@@ -2,7 +2,6 @@ package snownee.jade.util;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,12 +13,16 @@ import java.util.UUID;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
+import net.minecraft.core.UUIDUtil;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.level.block.entity.SkullBlockEntity;
 import snownee.jade.Jade;
 import snownee.jade.api.Identifiers;
@@ -27,6 +30,7 @@ import snownee.jade.impl.config.PluginConfig;
 
 public final class UsernameCache {
 
+	public static final Codec<Map<UUID, String>> CODEC = Codec.unboundedMap(UUIDUtil.STRING_CODEC, ExtraCodecs.NON_EMPTY_STRING);
 	private static final int CACHE_SIZE = 1024;
 	private static final Object2ObjectLinkedOpenHashMap<UUID, String> map = new Object2ObjectLinkedOpenHashMap<>(CACHE_SIZE);
 	private static final Path saveFile = CommonProxy.getConfigDirectory().toPath().resolve(Jade.ID + "/usernamecache.json");
@@ -127,7 +131,7 @@ public final class UsernameCache {
 	 * Save the cache to file
 	 */
 	public static void save() {
-		new SaveThread(gson.toJson(map)).start();
+		new SaveThread(gson.toJson(CODEC.encodeStart(JsonOps.INSTANCE, map))).start();
 	}
 
 	/**
@@ -140,9 +144,8 @@ public final class UsernameCache {
 
 		loading = true;
 		try (final BufferedReader reader = Files.newBufferedReader(saveFile, StandardCharsets.UTF_8)) {
-			Type type = new TypeToken<Map<UUID, String>>() {
-			}.getType();
-			Map<UUID, String> tempMap = gson.fromJson(reader, type);
+			JsonObject json = gson.fromJson(reader, JsonObject.class);
+			Map<UUID, String> tempMap = CODEC.parse(JsonOps.INSTANCE, json).getOrThrow();
 			if (tempMap != null) {
 				map.clear();
 				tempMap.forEach(UsernameCache::setUsername);

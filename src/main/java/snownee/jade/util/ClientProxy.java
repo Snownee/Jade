@@ -12,6 +12,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.brigadier.CommandDispatcher;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
@@ -108,7 +109,10 @@ public final class ClientProxy implements ClientModInitializer {
 	}
 
 	public static void registerClientCommand(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandBuildContext registryAccess) {
-		JadeClientCommand.register(dispatcher);
+		dispatcher.register(JadeClientCommand.create(
+				ClientCommandManager::literal,
+				FabricClientCommandSource::sendFeedback,
+				FabricClientCommandSource::sendError));
 	}
 
 	private static void onEntityJoin(Entity entity, ClientLevel level) {

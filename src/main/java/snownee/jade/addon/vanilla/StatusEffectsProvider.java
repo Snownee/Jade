@@ -3,8 +3,6 @@ package snownee.jade.addon.vanilla;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Predicate;
-
 import com.mojang.serialization.MapCodec;
 
 import net.minecraft.client.resources.language.I18n;

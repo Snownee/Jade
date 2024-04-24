@@ -18,7 +18,7 @@
 		"sources": "https://github.com/Snownee/Jade",
 		"issues": "https://github.com/Snownee/Jade/issues"
 	},
-	"license": "CC BY-NC-SA 4.0",
+	"license": "CC-BY-NC-SA-4.0",
 	"entrypoints": {
 		"main": [
 			"snownee.jade.util.CommonProxy"

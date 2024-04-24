@@ -5,11 +5,11 @@ import java.util.Objects;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
+import snownee.jade.util.CommonProxy;
 
 public class JadeFluidObject {
 	public static final Codec<JadeFluidObject> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -19,11 +19,11 @@ public class JadeFluidObject {
 			.apply(instance, JadeFluidObject::of));
 
 	public static long bucketVolume() {
-		return FluidConstants.BUCKET;
+		return CommonProxy.bucketVolume();
 	}
 
 	public static long blockVolume() {
-		return FluidConstants.BLOCK;
+		return CommonProxy.blockVolume();
 	}
 
 	public static JadeFluidObject empty() {

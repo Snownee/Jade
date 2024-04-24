@@ -6,6 +6,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.mutable.MutableBoolean;
+import org.jetbrains.annotations.Nullable;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -280,6 +281,7 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 			return Identifiers.UNIVERSAL_FLUID_STORAGE;
 		}
 
+		@Nullable
 		@Override
 		public List<ViewGroup<ItemStack>> getGroups(Accessor<?> accessor) {
 			Object target = accessor.getTarget();

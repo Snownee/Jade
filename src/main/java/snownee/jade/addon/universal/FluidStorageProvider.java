@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
+import org.jetbrains.annotations.Nullable;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -153,6 +155,7 @@ public abstract class FluidStorageProvider<T extends Accessor<?>> implements ICo
 			return ClientViewGroup.map(groups, FluidView::readDefault, null);
 		}
 
+		@Nullable
 		@Override
 		public List<ViewGroup<CompoundTag>> getGroups(Accessor<?> accessor) {
 			return CommonProxy.wrapFluidStorage(accessor);

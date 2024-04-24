@@ -34,7 +34,7 @@ public enum VillagerProfessionProvider implements IEntityComponentProvider {
 		}
 		int level = data.getLevel();
 		VillagerProfession profession = data.getProfession();
-		MutableComponent component = CommonProxy.getProfressionName(profession);
+		MutableComponent component = CommonProxy.getProfessionName(profession);
 		if (profession != VillagerProfession.NONE && profession != VillagerProfession.NITWIT && level > 0 && level <= 5) {
 			component.append(LEVEL_SEPARATOR).append(Component.translatable("merchant.level." + level));
 		}

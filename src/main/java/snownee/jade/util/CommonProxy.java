@@ -14,8 +14,6 @@ import com.google.common.base.Throwables;
 import com.google.common.cache.Cache;
 import com.google.common.collect.Sets;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
@@ -28,6 +26,7 @@ import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
@@ -36,6 +35,7 @@ import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.metadata.ModMetadata;
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -72,6 +72,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ShearsItem;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.component.CustomModelData;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
@@ -112,7 +113,6 @@ public final class CommonProxy implements ModInitializer {
 	public static final TagKey<EntityType<?>> BOSSES = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("c:bosses"));
 	public static final TagKey<Item> SHEARS = TagKey.create(Registries.ITEM, new ResourceLocation("c:shears"));
 	public static boolean hasTechRebornEnergy = isModLoaded("team_reborn_energy");
-	private static final MapCodec<String> CUSTOM_ITEM_ID = Codec.STRING.fieldOf("id");
 
 	@Nullable
 	public static String getLastKnownUsername(UUID uuid) {
@@ -137,15 +137,12 @@ public final class CommonProxy implements ModInitializer {
 	}
 
 	public static String getModIdFromItem(ItemStack stack) {
-		{
-			CustomData customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
-			if (customData.contains("id")) {
-				String s = customData.read(CUSTOM_ITEM_ID).result().orElse("");
-				if (s.contains(":")) {
-					ResourceLocation id = ResourceLocation.tryParse(s);
-					if (id != null) {
-						return id.getNamespace();
-					}
+		if (isPhysicallyClient()) {
+			CustomModelData modelData = stack.getOrDefault(DataComponents.CUSTOM_MODEL_DATA, CustomModelData.DEFAULT);
+			if (!CustomModelData.DEFAULT.equals(modelData)) {
+				String key = "jade.customModelData.%s.namespace".formatted(modelData.value());
+				if (I18n.exists(key)) {
+					return I18n.get(key);
 				}
 			}
 		}
@@ -332,7 +329,7 @@ public final class CommonProxy implements ModInitializer {
 		return "fabric";
 	}
 
-	public static MutableComponent getProfressionName(VillagerProfession profession) {
+	public static MutableComponent getProfessionName(VillagerProfession profession) {
 		return Component.translatable(
 				EntityType.VILLAGER.getDescriptionId() + "." + BuiltInRegistries.VILLAGER_PROFESSION.getKey(profession).getPath());
 	}
@@ -500,6 +497,14 @@ public final class CommonProxy implements ModInitializer {
 					null) != null;
 		}
 		return true;
+	}
+
+	public static long bucketVolume() {
+		return FluidConstants.BUCKET;
+	}
+
+	public static long blockVolume() {
+		return FluidConstants.BLOCK;
 	}
 
 	@Override

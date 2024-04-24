@@ -6,15 +6,12 @@ import java.util.Set;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.Sets;
-import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
@@ -22,8 +19,6 @@ import snownee.jade.api.Accessor;
 import snownee.jade.impl.BlockAccessorImpl;
 
 public class DatapackBlockManager {
-
-	private static final MapCodec<ItemStack> ITEM_STACK_CODEC = ItemStack.CODEC.fieldOf("storedItem");
 	private static final Set<BlockPos> itemFrames = Sets.newConcurrentHashSet();
 
 	public static void onEntityJoin(Entity entity) {
@@ -47,9 +42,7 @@ public class DatapackBlockManager {
 			if (entities.isEmpty()) {
 				itemFrames.remove(pos);
 			} else {
-				ItemStack stack = entities.get(0).getItem();
-				CustomData customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
-				return customData.read(ITEM_STACK_CODEC).result().orElse(stack);
+				return entities.get(0).getItem();
 			}
 		}
 		return ItemStack.EMPTY;

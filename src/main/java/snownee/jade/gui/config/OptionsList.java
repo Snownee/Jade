@@ -381,6 +381,9 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 
 	public void showOnTop(Entry entry) {
 		setScrollAmount(itemHeight * children().indexOf(entry) + 1);
+		if (entry instanceof Title title) {
+			currentTitle = title;
+		}
 	}
 
 	public void resetMappingAndUpdateButtons() {
