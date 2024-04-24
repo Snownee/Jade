@@ -52,7 +52,8 @@ public enum RedstoneProvider implements IBlockComponentProvider, IServerDataProv
 
 		if (block == Blocks.COMPARATOR) {
 			ComparatorMode mode = state.getValue(BlockStateProperties.MODE_COMPARATOR);
-			Component modeInfo = t.info(Component.translatable("tooltip.jade.mode_" + (mode == ComparatorMode.COMPARE ? "comparator" : "subtractor")));
+			Component modeInfo = t.info(Component.translatable(
+					"tooltip.jade.mode_" + (mode == ComparatorMode.COMPARE ? "comparator" : "subtractor")));
 			tooltip.add(Component.translatable("tooltip.jade.mode", modeInfo));
 			if (accessor.getServerData().contains("Signal")) {
 				tooltip.add(Component.translatable("tooltip.jade.power", t.info(accessor.getServerData().getInt("Signal"))));

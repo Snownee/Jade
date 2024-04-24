@@ -4,7 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.EnchantmentTableBlock;
+import net.minecraft.world.level.block.EnchantingTableBlock;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.ITooltip;
@@ -24,8 +24,8 @@ public enum TotalEnchantmentPowerProvider implements IBlockComponentProvider {
 		BlockPos pos = accessor.getPosition();
 		float power = 0;
 		// EnchantmentMenu.java
-		for (BlockPos blockpos : EnchantmentTableBlock.BOOKSHELF_OFFSETS) {
-			if (EnchantmentTableBlock.isValidBookShelf(world, pos, blockpos)) {
+		for (BlockPos blockpos : EnchantingTableBlock.BOOKSHELF_OFFSETS) {
+			if (EnchantingTableBlock.isValidBookShelf(world, pos, blockpos)) {
 				power += getPower(world, pos.offset(blockpos));
 			}
 		}

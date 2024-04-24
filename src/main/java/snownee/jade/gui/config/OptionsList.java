@@ -22,9 +22,11 @@ import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import it.unimi.dsi.fastutil.floats.FloatUnaryOperator;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
+import net.minecraft.client.InputType;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
+import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
@@ -33,6 +35,8 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.gui.navigation.FocusNavigationEvent;
+import net.minecraft.client.gui.navigation.ScreenDirection;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.CommonComponents;
@@ -49,6 +53,7 @@ import snownee.jade.gui.config.value.InputOptionValue;
 import snownee.jade.gui.config.value.OptionValue;
 import snownee.jade.gui.config.value.SliderOptionValue;
 import snownee.jade.util.ClientProxy;
+import snownee.jade.util.SmoothChasingValue;
 
 public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry> {
 
@@ -60,14 +65,14 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 	public Title currentTitle;
 	public KeyMapping selectedKey;
 	private BaseOptionsScreen owner;
-	private double targetScroll;
+	private final SmoothChasingValue smoothScroll;
 	private Entry defaultParent;
-	private int lastActiveIndex;
 
 	public OptionsList(BaseOptionsScreen owner, Minecraft client, int width, int height, int y0, int entryHeight, Runnable diskWriter) {
 		super(client, width, height, y0, entryHeight);
 		this.owner = owner;
 		this.diskWriter = diskWriter;
+		smoothScroll = new SmoothChasingValue().withSpeed(0.6F);
 	}
 
 	public OptionsList(BaseOptionsScreen owner, Minecraft client, int width, int height, int y0, int entryHeight) {
@@ -92,16 +97,27 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 	}
 
 	@Override
-	public void setScrollAmount(double d) {
-		super.setScrollAmount(d);
-		targetScroll = getScrollAmount();
+	public void setScrollAmount(double scroll) {
+		smoothScroll.target(Mth.clamp((float) scroll, 0, getMaxScroll()));
+	}
+
+	public void forceSetScrollAmount(double scroll) {
+		smoothScroll.start((float) scroll);
+		super.setScrollAmount(scroll);
 	}
 
 	@Override
 	public boolean mouseScrolled(double mouseX, double mouseY, double deltaX, double deltaY) {
 		double speed = !ClientProxy.hasFastScroll && Screen.hasControlDown() ? 4.5 : 1.5;
-		targetScroll = getScrollAmount() - deltaY * itemHeight * speed;
+		setScrollAmount(smoothScroll.getTarget() - deltaY * itemHeight * speed);
 		return true;
+	}
+
+	@Override
+	public boolean mouseDragged(double d, double e, int i, double f, double g) {
+		smoothScroll.value = smoothScroll.getTarget();
+		super.setScrollAmount(smoothScroll.value);
+		return super.mouseDragged(d, e, i, f, g);
 	}
 
 	@Override
@@ -109,19 +125,39 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		return owner.getFocused() == this;
 	}
 
+	@Nullable
+	@Override
+	public ComponentPath nextFocusPath(FocusNavigationEvent event) {
+		OptionsNav.Entry navEntry = owner.getOptionsNav().getFocused();
+		if (navEntry != null && event instanceof FocusNavigationEvent.ArrowNavigation nav && nav.direction() == ScreenDirection.RIGHT) {
+			Title title = navEntry.getTitle();
+			setFocused(title);
+			ComponentPath path = super.nextFocusPath(new FocusNavigationEvent.ArrowNavigation(ScreenDirection.DOWN));
+			setFocused(null);
+			return path;
+		}
+		return super.nextFocusPath(event);
+	}
+
+	@Override
+	public void ensureVisible(Entry entry) {
+		super.ensureVisible(entry);
+	}
+
 	@Override
 	protected boolean isSelectedItem(int i) {
-		if (PreviewOptionsScreen.isAdjustingPosition())
+		if (PreviewOptionsScreen.isAdjustingPosition()) {
 			return false;
+		}
 		return Objects.equals(getSelected(), children().get(i));
 	}
 
 	@Override
-	protected void renderItem(GuiGraphics guiGraphics, int i, int j, float f, int k, int l, int m, int n, int o) {
-		if (isSelectedItem(k) && isMouseOver(i, j)) {
-			renderSelection(guiGraphics, m, n, o, -1, -1);
-		}
-		super.renderItem(guiGraphics, i, j, f, k, l, m, n, o);
+	protected void renderListSeparators(GuiGraphics guiGraphics) {
+		RenderSystem.enableBlend();
+		ResourceLocation resourceLocation2 = this.minecraft.level == null ? Screen.FOOTER_SEPARATOR : Screen.INWORLD_FOOTER_SEPARATOR;
+		guiGraphics.blit(resourceLocation2, 0, this.getBottom(), 0.0F, 0.0F, owner.width, 2, 32, 2);
+		RenderSystem.disableBlend();
 	}
 
 	@Override
@@ -131,66 +167,54 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 
 	@Override
 	public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
-		{
-			targetScroll = Math.min(targetScroll, getMaxScroll());
-			double diff = targetScroll - super.getScrollAmount();
-			if (Math.abs(diff) > 0.0003) {
-				super.setScrollAmount(super.getScrollAmount() + diff * delta);
-			}
-		}
+		smoothScroll.tick(delta);
+		super.setScrollAmount(smoothScroll.value);
 		hovered = null;
 		if (!PreviewOptionsScreen.isAdjustingPosition()) {
-			if (isMouseOver(mouseX, mouseY)) {
+			InputType lastInputType = minecraft.getLastInputType();
+			mouseY = Math.min(mouseY, getRowRight());
+			if (lastInputType.isMouse() && isMouseOver(mouseX, mouseY)) {
 				hovered = getEntryAtPosition(mouseX, mouseY);
+			} else if (lastInputType.isKeyboard() && getFocused() != null) {
+				hovered = getFocused();
 			}
-			if (hovered instanceof Title) {
+			if (hovered instanceof Title title) {
 				setSelected(null);
+				currentTitle = title;
 			} else {
 				setSelected(hovered);
-			}
-			int activeIndex = hovered != null ? children().indexOf(hovered) : Mth.clamp((int) getScrollAmount() / itemHeight, 0, getItemCount() - 1);
-			if (activeIndex >= 0 && activeIndex != lastActiveIndex) {
-				lastActiveIndex = activeIndex;
-				Entry entry = getEntry(activeIndex);
-				while (entry != null) {
-					if (entry instanceof Title) {
-						currentTitle = (Title) entry;
-						break;
-					}
-					entry = entry.parent;
+				if (hovered != null && hovered.root() instanceof Title title) {
+					currentTitle = title;
 				}
 			}
 		}
 
 		enableScissor(guiGraphics);
-		renderList(guiGraphics, mouseX, mouseY, delta);
-		int k = this.getMaxScroll();
-		if ((k = this.getMaxScroll()) > 0) {
-			int l = this.getScrollbarPosition();
-			int m = (int) ((float) (this.height * this.height) / (float) this.getMaxPosition());
-			m = Mth.clamp(m, 32, this.height - 8);
-			int n = (int) this.getScrollAmount() * (this.height - m) / k + this.getY();
-			if (n < this.getY()) {
-				n = this.getY();
+		renderListItems(guiGraphics, mouseX, mouseY, delta);
+		guiGraphics.disableScissor();
+		this.renderListSeparators(guiGraphics);
+		if (this.scrollbarVisible()) {
+			int k = this.getScrollbarPosition();
+			int l = (int) ((float) (this.height * this.height) / (float) this.getMaxPosition());
+			l = Mth.clamp(l, 32, this.height - 8);
+			int m = (int) this.getScrollAmount() * (this.height - l) / this.getMaxScroll() + this.getY();
+			if (m < this.getY()) {
+				m = this.getY();
 			}
-			guiGraphics.fill(l, this.getY(), l + 6, this.getBottom(), -16777216);
-			guiGraphics.blitSprite(SCROLLER_SPRITE, l, n, 6, m);
+			RenderSystem.enableBlend();
+			guiGraphics.blitSprite(SCROLLER_BACKGROUND_SPRITE, k, this.getY(), 6, this.getHeight());
+			guiGraphics.blitSprite(SCROLLER_SPRITE, k, m, 6, l);
+			RenderSystem.disableBlend();
 		}
-
 		renderDecorations(guiGraphics, mouseX, mouseY);
 		RenderSystem.disableBlend();
-		guiGraphics.disableScissor();
-
-		guiGraphics.setColor(0.35f, 0.35f, 0.35f, 1.0f);
-		guiGraphics.blit(Screen.BACKGROUND_LOCATION, 0, owner.height - 32, owner.width, 32, owner.width, owner.height, 32, 32);
-		guiGraphics.setColor(1.0f, 1.0f, 1.0f, 1.0f);
-		guiGraphics.fillGradient(0, owner.height - 32 - 4, owner.width, owner.height - 32, 40, 0x00000000, 0xEE000000);
 	}
 
 	public void save() {
 		children().stream().filter(e -> e instanceof OptionValue).map(e -> (OptionValue<?>) e).forEach(OptionValue::save);
-		if (diskWriter != null)
+		if (diskWriter != null) {
 			diskWriter.run();
+		}
 	}
 
 	public <T extends Entry> T add(T entry) {
@@ -230,7 +254,13 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		return slider(optionName, value, setter, 0, 1, FloatUnaryOperator.identity());
 	}
 
-	public OptionValue<Float> slider(String optionName, float value, Consumer<Float> setter, float min, float max, FloatUnaryOperator aligner) {
+	public OptionValue<Float> slider(
+			String optionName,
+			float value,
+			Consumer<Float> setter,
+			float min,
+			float max,
+			FloatUnaryOperator aligner) {
 		return add(new SliderOptionValue(optionName, value, setter, min, max, aligner));
 	}
 
@@ -246,7 +276,11 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		return choices(optionName, value, setter, null);
 	}
 
-	public OptionValue<Boolean> choices(String optionName, boolean value, BooleanConsumer setter, @Nullable Consumer<CycleButton.Builder<Boolean>> builderConsumer) {
+	public OptionValue<Boolean> choices(
+			String optionName,
+			boolean value,
+			BooleanConsumer setter,
+			@Nullable Consumer<CycleButton.Builder<Boolean>> builderConsumer) {
 		CycleButton.Builder<Boolean> builder = CycleButton.booleanBuilder(OPTION_ON, OPTION_OFF);
 		if (builderConsumer != null) {
 			builderConsumer.accept(builder);
@@ -258,14 +292,18 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		return choices(optionName, value, setter, null);
 	}
 
-	public <T extends Enum<T>> OptionValue<T> choices(String optionName, T value, Consumer<T> setter, @Nullable Consumer<CycleButton.Builder<T>> builderConsumer) {
-		List<T> values = (List<T>) Arrays.asList(value.getClass().getEnumConstants());
+	public <T extends Enum<T>> OptionValue<T> choices(
+			String optionName,
+			T value,
+			Consumer<T> setter,
+			@Nullable Consumer<CycleButton.Builder<T>> builderConsumer) {
+		List<T> values = Arrays.asList(value.getDeclaringClass().getEnumConstants());
 		CycleButton.Builder<T> builder = CycleButton.<T>builder(v -> {
 			String name = v.name().toLowerCase(Locale.ENGLISH);
 			return switch (name) {
-			case "on" -> OPTION_ON;
-			case "off" -> OPTION_OFF;
-			default -> Entry.makeTitle(optionName + "_" + name);
+				case "on" -> OPTION_ON;
+				case "off" -> OPTION_OFF;
+				default -> Entry.makeTitle(optionName + "_" + name);
 			};
 		}).withValues(values);
 		if (builderConsumer != null) {
@@ -315,8 +353,8 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 			}
 			if (bingo == keywords.length) {
 				walkChildren(entry, matches::add);
-				while (entry.parent != null) {
-					entry = entry.parent;
+				while (entry.parent() != null) {
+					entry = entry.parent();
 					matches.add(entry);
 				}
 			}
@@ -342,7 +380,10 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 	}
 
 	public void showOnTop(Entry entry) {
-		targetScroll = itemHeight * children().indexOf(entry) + 1;
+		setScrollAmount(itemHeight * children().indexOf(entry) + 1);
+		if (entry instanceof Title title) {
+			currentTitle = title;
+		}
 	}
 
 	public void resetMappingAndUpdateButtons() {
@@ -369,14 +410,24 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		return super.keyPressed(i, j, k);
 	}
 
+	@Override
+	public boolean mouseClicked(double d, double e, int i) {
+		if (selectedKey != null) {
+			Options options = Minecraft.getInstance().options;
+			options.setKey(selectedKey, InputConstants.Type.MOUSE.getOrCreate(i));
+			this.selectedKey = null;
+			resetMappingAndUpdateButtons();
+		}
+		return super.mouseClicked(d, e, i);
+	}
+
 	public static class Entry extends ContainerObjectSelectionList.Entry<Entry> {
 
 		protected final Minecraft client;
 		private final List<String> messages = Lists.newArrayList();
 		private final List<AbstractWidget> widgets = Lists.newArrayList();
 		private final List<Vector2i> widgetOffsets = Lists.newArrayList();
-		@Nullable
-		protected String description;
+		protected List<Component> description = List.of();
 		private Entry parent;
 		private List<Entry> children = List.of();
 
@@ -389,7 +440,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		}
 
 		public static String makeKey(String key) {
-			return Util.makeDescriptionId("config", new ResourceLocation(Jade.MODID, key));
+			return Util.makeDescriptionId("config", new ResourceLocation(Jade.ID, key));
 		}
 
 		public AbstractWidget getFirstWidget() {
@@ -416,7 +467,17 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		}
 
 		@Override
-		public void render(GuiGraphics guiGraphics, int index, int rowTop, int rowLeft, int width, int height, int mouseX, int mouseY, boolean hovered, float deltaTime) {
+		public void render(
+				GuiGraphics guiGraphics,
+				int index,
+				int rowTop,
+				int rowLeft,
+				int width,
+				int height,
+				int mouseX,
+				int mouseY,
+				boolean hovered,
+				float deltaTime) {
 			for (AbstractWidget widget : widgets) {
 				Vector2i offset = widgetOffsets.get(widgets.indexOf(widget));
 				widget.setX(rowLeft + width - 110 + offset.x);
@@ -434,9 +495,12 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 			}
 		}
 
-		@Nullable
-		public String getDescription() {
+		public List<Component> getDescription() {
 			return description;
+		}
+
+		public List<Component> getDescriptionOnShift() {
+			return List.of();
 		}
 
 		public int getTextX(int width) {
@@ -460,12 +524,20 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 			return parent;
 		}
 
+		public Entry root() {
+			Entry entry = this;
+			while (entry.parent() != null) {
+				entry = entry.parent();
+			}
+			return entry;
+		}
+
 		public final List<String> getMessages() {
 			return messages;
 		}
 
 		public void addMessage(String message) {
-			messages.add(StringUtil.stripColor(message).toLowerCase(Locale.ENGLISH));
+			messages.add(StringUtil.stripColor(message));
 		}
 
 		public void addMessageKey(String key) {
@@ -488,8 +560,8 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 			addMessage(title.getString());
 			key = makeKey(key + "_desc");
 			if (I18n.exists(key)) {
-				description = I18n.get(key);
-				addMessage(description);
+				description = List.of(Component.translatable(key));
+				addMessage(description.get(0).getString());
 			}
 			narration = Component.translatable("narration.jade.category", title);
 		}
@@ -504,7 +576,17 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		}
 
 		@Override
-		public void render(GuiGraphics guiGraphics, int index, int rowTop, int rowLeft, int width, int height, int mouseX, int mouseY, boolean hovered, float deltaTime) {
+		public void render(
+				GuiGraphics guiGraphics,
+				int index,
+				int rowTop,
+				int rowLeft,
+				int width,
+				int height,
+				int mouseX,
+				int mouseY,
+				boolean hovered,
+				float deltaTime) {
 			x = rowLeft;
 			guiGraphics.drawString(client.font, title, getTextX(width), rowTop + height - client.font.lineHeight, 16777215);
 		}
@@ -534,7 +616,6 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 				}
 			});
 		}
-
 	}
 
 }

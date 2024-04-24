@@ -16,13 +16,12 @@ import snownee.jade.util.CommonProxy;
 import snownee.jade.util.JsonConfig;
 
 public class Jade {
-	public static final String MODID = "jade";
+	public static final String ID = "jade";
 	public static final Logger LOGGER = LogUtils.getLogger();
 	/**
 	 * addons: Use {@link IWailaConfig#get()}
 	 */
-	public static final JsonConfig<WailaConfig> CONFIG = new JsonConfig<>(Jade.MODID + "/" + Jade.MODID, WailaConfig.class, null);
-	public static int MAX_DISTANCE_SQR = 900;
+	public static final JsonConfig<WailaConfig> CONFIG = new JsonConfig<>(Jade.ID + "/" + Jade.ID, WailaConfig.CODEC, null);
 	public static boolean FROZEN;
 
 	public static void loadComplete() {

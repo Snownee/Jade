@@ -1,5 +1,7 @@
 package snownee.jade.addon.vanilla;
 
+import com.mojang.serialization.MapCodec;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -8,7 +10,6 @@ import net.minecraft.world.item.RecordItem;
 import net.minecraft.world.level.block.JukeboxBlock;
 import net.minecraft.world.level.block.entity.JukeboxBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import snownee.jade.Jade;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.IServerDataProvider;
@@ -16,27 +17,29 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.IDisplayHelper;
+import snownee.jade.util.ServerDataUtil;
 
 public enum JukeboxProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
 
 	INSTANCE;
 
+	private static final MapCodec<ItemStack> RECORD_CODEC = ItemStack.CODEC.fieldOf("record");
+
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		BlockState state = accessor.getBlockState();
-		if (state.getValue(JukeboxBlock.HAS_RECORD) && accessor.getServerData().contains("Record")) {
-			try {
-				ItemStack stack = ItemStack.of(accessor.getServerData().getCompound("Record"));
-				Component name;
-				if (stack.getItem() instanceof RecordItem record) {
-					name = record.getDisplayName();
-				} else {
-					name = stack.getHoverName();
-				}
-				tooltip.add(Component.translatable("record.nowPlaying", IDisplayHelper.get().stripColor(name)));
-			} catch (Exception e) {
-				Jade.LOGGER.error("", e);
+		ItemStack stack = ItemStack.EMPTY;
+		if (state.getValue(JukeboxBlock.HAS_RECORD)) {
+			stack = ServerDataUtil.read(accessor.getServerData(), RECORD_CODEC).orElse(ItemStack.EMPTY);
+		}
+		if (!stack.isEmpty()) {
+			Component name;
+			if (stack.getItem() instanceof RecordItem record) {
+				name = record.getDisplayName();
+			} else {
+				name = stack.getHoverName();
 			}
+			tooltip.add(Component.translatable("record.nowPlaying", IDisplayHelper.get().stripColor(name)));
 		} else {
 			tooltip.add(Component.translatable("tooltip.jade.empty"));
 		}
@@ -44,9 +47,11 @@ public enum JukeboxProvider implements IBlockComponentProvider, IServerDataProvi
 
 	@Override
 	public void appendServerData(CompoundTag data, BlockAccessor accessor) {
-		ItemStack stack = ((JukeboxBlockEntity) accessor.getBlockEntity()).getTheItem();
-		if (!stack.isEmpty()) {
-			data.put("Record", stack.save(new CompoundTag()));
+		if (accessor instanceof JukeboxBlockEntity jukebox) {
+			ItemStack stack = jukebox.getTheItem();
+			if (!stack.isEmpty()) {
+				ServerDataUtil.write(data, RECORD_CODEC, stack);
+			}
 		}
 	}
 

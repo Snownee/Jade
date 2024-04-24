@@ -5,7 +5,6 @@ import java.util.function.Predicate;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.network.chat.Component;
 
 public class InputOptionValue<T> extends OptionValue<T> {
 
@@ -19,7 +18,7 @@ public class InputOptionValue<T> extends OptionValue<T> {
 		super(optionName, setter);
 		this.value = value;
 		this.validator = validator;
-		textField = new EditBox(client.font, 0, 0, 98, 18, Component.literal(""));
+		textField = new EditBox(client.font, 0, 0, 98, 18, getTitle());
 		textField.setValue(String.valueOf(value));
 		textField.setResponder(s -> {
 			if (this.validator.test(s)) {
@@ -34,22 +33,24 @@ public class InputOptionValue<T> extends OptionValue<T> {
 	}
 
 	private void setValue(String text) {
-		if (value instanceof String)
+		if (value instanceof String) {
 			value = (T) text;
+		}
 
 		try {
-			if (value instanceof Integer)
+			if (value instanceof Integer) {
 				value = (T) Integer.valueOf(text);
-			else if (value instanceof Short)
+			} else if (value instanceof Short) {
 				value = (T) Short.valueOf(text);
-			else if (value instanceof Byte)
+			} else if (value instanceof Byte) {
 				value = (T) Byte.valueOf(text);
-			else if (value instanceof Long)
+			} else if (value instanceof Long) {
 				value = (T) Long.valueOf(text);
-			else if (value instanceof Double)
+			} else if (value instanceof Double) {
 				value = (T) Double.valueOf(text);
-			else if (value instanceof Float)
+			} else if (value instanceof Float) {
 				value = (T) Float.valueOf(text);
+			}
 		} catch (NumberFormatException e) {
 			// no-op
 		}

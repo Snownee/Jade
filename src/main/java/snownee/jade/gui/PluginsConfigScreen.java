@@ -8,7 +8,6 @@ import org.jetbrains.annotations.Nullable;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.gui.config.OptionsList;
@@ -28,7 +27,10 @@ public class PluginsConfigScreen extends PreviewOptionsScreen {
 		canceller = PluginConfig.INSTANCE::reload;
 	}
 
-	public static Screen createPluginConfigScreen(@Nullable Screen parent, @Nullable Function<OptionsList, OptionsList.Entry> jumpTo, boolean dontSave) {
+	public static Screen createPluginConfigScreen(
+			@Nullable Screen parent,
+			@Nullable Function<OptionsList, OptionsList.Entry> jumpTo,
+			boolean dontSave) {
 		PluginsConfigScreen screen = new PluginsConfigScreen(parent);
 		screen.jumpTo = jumpTo;
 		return screen;
@@ -37,15 +39,17 @@ public class PluginsConfigScreen extends PreviewOptionsScreen {
 	@Override
 	public OptionsList createOptions() {
 		OptionsList options = new OptionsList(this, minecraft, width - 120, height - 32, 0, 26, PluginConfig.INSTANCE::save);
-		boolean noteServerFeature = Minecraft.getInstance().level == null || IWailaConfig.get().getGeneral().isDebug() || !ObjectDataCenter.serverConnected;
+		boolean noteServerFeature =
+				Minecraft.getInstance().level == null || IWailaConfig.get().getGeneral().isDebug() || !ObjectDataCenter.serverConnected;
 		PluginConfig.INSTANCE.getListView().forEach(category -> {
 			options.add(new OptionsList.Title(category.title()));
 			MutableObject<OptionValue<?>> lastPrimary = new MutableObject<>();
 			category.entries().forEach(entry -> {
 				OptionValue<?> option = entry.createUI(options, "plugin_" + entry.getId().toLanguageKey());
+				option.setId(entry.getId());
 				if (entry.isSynced()) {
 					option.setDisabled(true);
-					option.appendDescription(ChatFormatting.DARK_RED + I18n.get("gui.jade.forced_plugin_config"));
+					option.appendDescription(Component.translatable("gui.jade.forced_plugin_config").withStyle(ChatFormatting.DARK_RED));
 				} else if (noteServerFeature && !WailaClientRegistration.instance().isClientFeature(entry.getId())) {
 					option.serverFeature = true;
 				}

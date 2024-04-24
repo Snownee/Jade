@@ -228,7 +228,6 @@ public class Color {
 	 *     <li><code>rgb[a](red, green, blue[, opacity])</code></li>
 	 *     <li><code>cmyk[a](cyan, magenta, yellow, black[, opacity])</code></li>
 	 *     <li><code>hsl[a](hue, saturation, lightness[, opacity])</code></li>
-	 *     <li>{@link NamedColor named color}</li>
 	 *     <li>hexadecimal numbers</li>
 	 * </ul>
 	 * <p>
@@ -266,11 +265,8 @@ public class Color {
 	 * @throws IllegalArgumentException if the given string value cannot be recognized as <code>rgb</code>, <code>cmyk</code>, <code>hsl</code>, {@link NamedColor named color} or hexadecimal numbers
 	 * @see #rgb(int, int, int)
 	 * @see #rgb(int, int, int, double)
-	 * @see #cmyk(double, double, double, double)
-	 * @see #cmyk(double, double, double, double, double)
 	 * @see #hsl(double, double, double)
 	 * @see #hsl(double, double, double, double)
-	 * @see org.silentsoft.csscolor4j.NamedColor
 	 * @see #hex(String)
 	 */
 	public static Color valueOf(String value) throws IllegalArgumentException {
@@ -380,8 +376,9 @@ public class Color {
 
 	public static Color rgb(int color) {
 		double a = (color >> 24 & 255) / 255D;
-		if (a == 0)
+		if (a == 0) {
 			a = 1;
+		}
 		int r = color >> 16 & 255;
 		int g = color >> 8 & 255;
 		int b = color & 255;
@@ -422,12 +419,18 @@ public class Color {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o)
+		if (this == o) {
 			return true;
-		if (o == null || getClass() != o.getClass())
+		}
+		if (o == null || getClass() != o.getClass()) {
 			return false;
+		}
 		Color color = (Color) o;
-		return red == color.red && green == color.green && blue == color.blue && /*Double.compare(color.cyan, cyan) == 0 && Double.compare(color.magenta, magenta) == 0 && Double.compare(color.yellow, yellow) == 0 && Double.compare(color.black, black) == 0 &&*/ Double.compare(color.hue, hue) == 0 && Double.compare(color.saturation, saturation) == 0 && Double.compare(color.lightness, lightness) == 0 && Double.compare(color.opacity, opacity) == 0;
+		return red == color.red && green == color.green && blue ==
+				color.blue && /*Double.compare(color.cyan, cyan) == 0 && Double.compare(color.magenta, magenta) == 0 && Double.compare(color.yellow, yellow) == 0 && Double.compare(color.black, black) == 0 &&*/
+				Double.compare(color.hue, hue) == 0 && Double.compare(color.saturation, saturation) == 0 && Double.compare(
+				color.lightness,
+				lightness) == 0 && Double.compare(color.opacity, opacity) == 0;
 	}
 
 	@Override
@@ -437,7 +440,9 @@ public class Color {
 
 	@Override
 	public String toString() {
-		return "Color{" + "red=" + red + ", green=" + green + ", blue=" + blue + /*", cyan=" + cyan + ", magenta=" + magenta + ", yellow=" + yellow + ", black=" + black +*/ ", hue=" + hue + ", saturation=" + saturation + ", lightness=" + lightness + ", opacity=" + opacity + ", hex='" + hex + '\'' + '}';
+		return "Color{" + "red=" + red + ", green=" + green + ", blue=" +
+				blue + /*", cyan=" + cyan + ", magenta=" + magenta + ", yellow=" + yellow + ", black=" + black +*/ ", hue=" + hue +
+				", saturation=" + saturation + ", lightness=" + lightness + ", opacity=" + opacity + ", hex='" + hex + '\'' + '}';
 	}
 
 	public int toInt() {

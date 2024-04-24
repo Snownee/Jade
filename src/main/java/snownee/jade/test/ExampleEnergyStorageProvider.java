@@ -5,7 +5,6 @@ import java.util.List;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.animal.Sheep;
 import net.minecraft.world.level.Level;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.ui.MessageType;
@@ -16,7 +15,7 @@ import snownee.jade.api.view.IServerExtensionProvider;
 import snownee.jade.api.view.ViewGroup;
 
 public enum ExampleEnergyStorageProvider
-		implements IServerExtensionProvider<Sheep, CompoundTag>, IClientExtensionProvider<CompoundTag, EnergyView> {
+		implements IServerExtensionProvider<CompoundTag>, IClientExtensionProvider<CompoundTag, EnergyView> {
 	INSTANCE;
 
 	@Override
@@ -37,7 +36,7 @@ public enum ExampleEnergyStorageProvider
 	}
 
 	@Override
-	public List<ViewGroup<CompoundTag>> getGroups(Accessor<?> accessor, Sheep target) {
+	public List<ViewGroup<CompoundTag>> getGroups(Accessor<?> accessor) {
 		Level world = accessor.getLevel();
 		var cell1 = new ViewGroup<>(List.of(EnergyView.of(0, 2000)));
 		cell1.id = "1";

@@ -8,7 +8,7 @@ import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
-import snownee.jade.api.ui.Direction2D;
+import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.IElementHelper;
 
@@ -21,15 +21,16 @@ public enum ArmorStandProvider implements IEntityComponentProvider {
 		ArmorStand entity = (ArmorStand) accessor.getEntity();
 		boolean empty = true;
 		for (ItemStack stack : entity.getArmorSlots()) {
-			if (stack.isEmpty())
+			if (stack.isEmpty()) {
 				continue;
+			}
 			tooltip.add(IElementHelper.get().smallItem(stack));
 			tooltip.append(IDisplayHelper.get().stripColor(stack.getHoverName()));
-			tooltip.setLineMargin(-1, Direction2D.DOWN, -1);
+			tooltip.setLineMargin(-1, ScreenDirection.DOWN, -1);
 			empty = false;
 		}
 		if (!empty) {
-			tooltip.setLineMargin(-1, Direction2D.DOWN, 1);
+			tooltip.setLineMargin(-1, ScreenDirection.DOWN, 1);
 		}
 	}
 

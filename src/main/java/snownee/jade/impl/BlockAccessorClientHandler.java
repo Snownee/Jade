@@ -1,6 +1,5 @@
 package snownee.jade.impl;
 
-import java.util.List;
 import java.util.function.Function;
 
 import net.minecraft.world.item.ItemStack;
@@ -10,8 +9,8 @@ import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import snownee.jade.api.AccessorClientHandler;
 import snownee.jade.api.BlockAccessor;
-import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.IJadeProvider;
+import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.ui.IElement;
@@ -31,9 +30,14 @@ public class BlockAccessorClientHandler implements AccessorClientHandler<BlockAc
 
 	@Override
 	public boolean shouldRequestData(BlockAccessor accessor) {
-		if (accessor.getBlockEntity() == null)
-			return false;
-		return !WailaCommonRegistration.instance().getBlockNBTProviders(accessor.getBlockEntity()).isEmpty();
+		for (IServerDataProvider<BlockAccessor> provider : WailaCommonRegistration.instance().getBlockNBTProviders(
+				accessor.getBlock(),
+				accessor.getBlockEntity())) {
+			if (provider.shouldRequestData(accessor)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override
@@ -45,16 +49,18 @@ public class BlockAccessorClientHandler implements AccessorClientHandler<BlockAc
 	public IElement getIcon(BlockAccessor accessor) {
 		BlockState blockState = accessor.getBlockState();
 		Block block = blockState.getBlock();
-		if (blockState.isAir())
+		if (blockState.isAir()) {
 			return null;
+		}
 		IElement icon = null;
 
 		if (accessor.isFakeBlock()) {
 			icon = ItemStackElement.of(accessor.getFakeBlock());
 		} else {
 			ItemStack pick = accessor.getPickedResult();
-			if (!pick.isEmpty())
+			if (!pick.isEmpty()) {
 				icon = ItemStackElement.of(pick);
+			}
 		}
 
 		if (RayTracing.isEmptyElement(icon) && block.asItem() != Items.AIR) {
@@ -62,14 +68,15 @@ public class BlockAccessorClientHandler implements AccessorClientHandler<BlockAc
 		}
 
 		if (RayTracing.isEmptyElement(icon) && block instanceof LiquidBlock) {
-			icon = ClientProxy.elementFromLiquid((LiquidBlock) block);
+			icon = ClientProxy.elementFromLiquid(blockState);
 		}
 
-		for (IBlockComponentProvider provider : WailaClientRegistration.instance().getBlockIconProviders(block, PluginConfig.INSTANCE::get)) {
+		for (var provider : WailaClientRegistration.instance().getBlockIconProviders(block, PluginConfig.INSTANCE::get)) {
 			try {
 				IElement element = provider.getIcon(accessor, PluginConfig.INSTANCE, icon);
-				if (!RayTracing.isEmptyElement(element))
+				if (!RayTracing.isEmptyElement(element)) {
 					icon = element;
+				}
 			} catch (Throwable e) {
 				WailaExceptionHandler.handleErr(e, provider, null);
 			}
@@ -79,8 +86,7 @@ public class BlockAccessorClientHandler implements AccessorClientHandler<BlockAc
 
 	@Override
 	public void gatherComponents(BlockAccessor accessor, Function<IJadeProvider, ITooltip> tooltipProvider) {
-		List<IBlockComponentProvider> providers = WailaClientRegistration.instance().getBlockProviders(accessor.getBlock(), PluginConfig.INSTANCE::get);
-		for (IBlockComponentProvider provider : providers) {
+		for (var provider : WailaClientRegistration.instance().getBlockProviders(accessor.getBlock(), PluginConfig.INSTANCE::get)) {
 			ITooltip tooltip = tooltipProvider.apply(provider);
 			try {
 				ElementHelper.INSTANCE.setCurrentUid(provider.getUid());

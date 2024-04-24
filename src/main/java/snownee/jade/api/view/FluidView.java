@@ -5,11 +5,9 @@ import java.util.Objects;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.ui.IElement;
@@ -41,17 +39,21 @@ public class FluidView {
 		if (capacity <= 0) {
 			return null;
 		}
-		Fluid fluid = BuiltInRegistries.FLUID.get(new ResourceLocation(tag.getString("fluid")));
-		CompoundTag nbt = tag.contains("tag") ? tag.getCompound("tag") : null;
-		long amount = tag.getLong("amount");
-		JadeFluidObject fluidObject = JadeFluidObject.of(fluid, amount, nbt);
+		JadeFluidObject fluidObject = JadeFluidObject.CODEC.parse(NbtOps.INSTANCE, tag.get("fluid")).result().orElse(null);
+		if (fluidObject == null) {
+			return null;
+		}
+		long amount = fluidObject.getAmount();
 		FluidView fluidView = new FluidView(IElementHelper.get().fluid(fluidObject));
 		fluidView.fluidName = CommonProxy.getFluidName(fluidObject);
 		fluidView.current = FluidTextHelper.getUnicodeMillibuckets(amount, true);
 		fluidView.max = FluidTextHelper.getUnicodeMillibuckets(capacity, true);
 		fluidView.ratio = (float) ((double) amount / capacity);
 		if (fluidObject.getType().isSame(Fluids.EMPTY)) {
-			fluidView.overrideText = Component.translatable("jade.fluid", EMPTY_FLUID, Component.literal(fluidView.max).withStyle(ChatFormatting.GRAY));
+			fluidView.overrideText = Component.translatable(
+					"jade.fluid",
+					EMPTY_FLUID,
+					Component.literal(fluidView.max).withStyle(ChatFormatting.GRAY));
 		}
 		return fluidView;
 	}
@@ -61,12 +63,8 @@ public class FluidView {
 		if (capacity <= 0) {
 			return tag;
 		}
-		tag.putString("fluid", BuiltInRegistries.FLUID.getKey(fluidObject.getType()).toString());
-		tag.putLong("amount", fluidObject.getAmount());
+		tag.put("fluid", JadeFluidObject.CODEC.encodeStart(NbtOps.INSTANCE, fluidObject).result().orElseThrow());
 		tag.putLong("capacity", capacity);
-		if (fluidObject.getTag() != null) {
-			tag.put("tag", fluidObject.getTag());
-		}
 		return tag;
 	}
 

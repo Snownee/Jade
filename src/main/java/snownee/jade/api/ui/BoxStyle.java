@@ -19,25 +19,29 @@ import net.minecraft.client.resources.metadata.gui.GuiSpriteScaling;
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.theme.IThemeHelper;
-import snownee.jade.impl.theme.ThemeCodecs;
 import snownee.jade.impl.ui.StyledElement;
 import snownee.jade.overlay.DisplayHelper;
+import snownee.jade.util.JadeCodecs;
 
 public abstract class BoxStyle implements Cloneable {
 	private static final int[] DEFAULT_PADDING = new int[]{4, 4, 4, 4};
 	public static final Codec<GradientBorder> GRADIENT_BORDER_CODEC = RecordCodecBuilder.create(i -> i.group(
-			ThemeCodecs.floatArrayCodec(4, Codec.FLOAT).optionalFieldOf("boxProgressOffset").forGetter($ -> Optional.ofNullable($.boxProgressOffset)),
+			JadeCodecs.floatArrayCodec(4, Codec.FLOAT)
+					.optionalFieldOf("boxProgressOffset")
+					.forGetter($ -> Optional.ofNullable($.boxProgressOffset)),
 			ColorPalette.CODEC.optionalFieldOf("boxProgressColors", ColorPalette.DEFAULT).forGetter($ -> $.boxProgressColors),
-			ThemeCodecs.intArrayCodec(4, Codec.INT).optionalFieldOf("padding").forGetter($ -> Optional.ofNullable($.padding)),
+			JadeCodecs.intArrayCodec(4, Codec.INT).optionalFieldOf("padding").forGetter($ -> Optional.ofNullable($.padding)),
 			Color.CODEC.optionalFieldOf("backgroundColor", -1).forGetter($ -> $.bgColor),
-			ThemeCodecs.intArrayCodec(4, Color.CODEC).fieldOf("borderColor").forGetter($ -> $.borderColor),
+			JadeCodecs.intArrayCodec(4, Color.CODEC).fieldOf("borderColor").forGetter($ -> $.borderColor),
 			Codec.FLOAT.optionalFieldOf("borderWidth", 1F).forGetter($ -> $.borderWidth),
 			Codec.BOOL.optionalFieldOf("roundCorner").forGetter($ -> Optional.ofNullable($.roundCorner))
 	).apply(i, GradientBorder::new));
 	public static final Codec<SpriteBase> SPRITE_BASE_CODEC = RecordCodecBuilder.create(i -> i.group(
-			ThemeCodecs.floatArrayCodec(4, Codec.FLOAT).optionalFieldOf("boxProgressOffset").forGetter($ -> Optional.ofNullable($.boxProgressOffset)),
+			JadeCodecs.floatArrayCodec(4, Codec.FLOAT)
+					.optionalFieldOf("boxProgressOffset")
+					.forGetter($ -> Optional.ofNullable($.boxProgressOffset)),
 			ColorPalette.CODEC.optionalFieldOf("boxProgressColors", ColorPalette.DEFAULT).forGetter($ -> $.boxProgressColors),
-			ThemeCodecs.intArrayCodec(4, Codec.INT).optionalFieldOf("padding").forGetter($ -> Optional.ofNullable($.padding)),
+			JadeCodecs.intArrayCodec(4, Codec.INT).optionalFieldOf("padding").forGetter($ -> Optional.ofNullable($.padding)),
 			ResourceLocation.CODEC.fieldOf("sprite").forGetter($ -> $.sprite),
 			ResourceLocation.CODEC.optionalFieldOf("withIconSprite").forGetter($ -> Optional.ofNullable($.withIconSprite))
 	).apply(i, SpriteBase::new));
@@ -74,11 +78,11 @@ public abstract class BoxStyle implements Cloneable {
 
 	public abstract float borderWidth();
 
-	public float boxProgressOffset(Direction2D dir) {
+	public float boxProgressOffset(ScreenDirection dir) {
 		return boxProgressOffset == null ? 0 : boxProgressOffset[dir.ordinal()];
 	}
 
-	public int padding(Direction2D dir) {
+	public int padding(ScreenDirection dir) {
 		return MoreObjects.firstNonNull(padding, DEFAULT_PADDING)[dir.ordinal()];
 	}
 
@@ -90,16 +94,44 @@ public abstract class BoxStyle implements Cloneable {
 	}
 
 	public static class GradientBorder extends BoxStyle {
-		public static final GradientBorder TRANSPARENT = new GradientBorder(Optional.empty(), ColorPalette.DEFAULT, Optional.empty(), -1, new int[]{-1, -1, -1, -1}, 0, Optional.of(false));
-		public static final GradientBorder DEFAULT_NESTED_BOX = new GradientBorder(Optional.empty(), ColorPalette.DEFAULT, Optional.empty(), -1, new int[]{0xFF808080, 0xFF808080, 0xFF808080, 0xFF808080}, 1, Optional.empty());
-		public static final GradientBorder DEFAULT_VIEW_GROUP = new GradientBorder(Optional.empty(), ColorPalette.DEFAULT, Optional.of(new int[]{2, 2, 2, 2}), 0x44444444, new int[]{0x44444444, 0x44444444, 0x44444444, 0x44444444}, 0.75F, Optional.empty());
+		public static final GradientBorder TRANSPARENT = new GradientBorder(
+				Optional.empty(),
+				ColorPalette.DEFAULT,
+				Optional.empty(),
+				-1,
+				new int[]{-1, -1, -1, -1},
+				0,
+				Optional.of(false));
+		public static final GradientBorder DEFAULT_NESTED_BOX = new GradientBorder(
+				Optional.empty(),
+				ColorPalette.DEFAULT,
+				Optional.empty(),
+				-1,
+				new int[]{0xFF808080, 0xFF808080, 0xFF808080, 0xFF808080},
+				1,
+				Optional.empty());
+		public static final GradientBorder DEFAULT_VIEW_GROUP = new GradientBorder(
+				Optional.empty(),
+				ColorPalette.DEFAULT,
+				Optional.of(new int[]{2, 2, 2, 2}),
+				0x44444444,
+				new int[]{0x44444444, 0x44444444, 0x44444444, 0x44444444},
+				0.75F,
+				Optional.empty());
 		public int bgColor;
 		public int[] borderColor;
 		public float borderWidth;
 		@Nullable
 		public Boolean roundCorner;
 
-		private GradientBorder(Optional<float[]> boxProgressOffset, ColorPalette boxProgressColors, Optional<int[]> padding, int bgColor, int[] borderColor, float borderWidth, Optional<Boolean> roundCorner) {
+		private GradientBorder(
+				Optional<float[]> boxProgressOffset,
+				ColorPalette boxProgressColors,
+				Optional<int[]> padding,
+				int bgColor,
+				int[] borderColor,
+				float borderWidth,
+				Optional<Boolean> roundCorner) {
 			super(boxProgressOffset, boxProgressColors, padding);
 			this.bgColor = bgColor;
 			this.borderColor = borderColor;
@@ -117,7 +149,14 @@ public abstract class BoxStyle implements Cloneable {
 			boolean roundCorner = hasRoundCorner();
 			if (bgColor != -1) {
 				int bg = IWailaConfig.IConfigOverlay.applyAlpha(bgColor, alpha);
-				DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x + borderWidth, y + borderWidth, w - borderWidth - borderWidth, h - borderWidth - borderWidth, bg, bg);//center
+				DisplayHelper.INSTANCE.drawGradientRect(
+						guiGraphics,
+						x + borderWidth,
+						y + borderWidth,
+						w - borderWidth - borderWidth,
+						h - borderWidth - borderWidth,
+						bg,
+						bg);//center
 				if (roundCorner) {
 					DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x, y - 1, w, 1, bg, bg);
 					DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x, y + h, w, 1, bg, bg);
@@ -132,16 +171,44 @@ public abstract class BoxStyle implements Cloneable {
 						borderColors[i] = IWailaConfig.IConfigOverlay.applyAlpha(borderColor[i], alpha);
 					}
 				}
-				DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x, y + borderWidth, borderWidth, h - borderWidth - borderWidth, borderColors[0], borderColors[3]);
-				DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x + w - borderWidth, y + borderWidth, borderWidth, h - borderWidth - borderWidth, borderColors[1], borderColors[2]);
+				DisplayHelper.INSTANCE.drawGradientRect(
+						guiGraphics,
+						x,
+						y + borderWidth,
+						borderWidth,
+						h - borderWidth - borderWidth,
+						borderColors[0],
+						borderColors[3]);
+				DisplayHelper.INSTANCE.drawGradientRect(
+						guiGraphics,
+						x + w - borderWidth,
+						y + borderWidth,
+						borderWidth,
+						h - borderWidth - borderWidth,
+						borderColors[1],
+						borderColors[2]);
 				DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x, y, w, borderWidth, borderColors[0], borderColors[1]);
-				DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x, y + h - borderWidth, w, borderWidth, borderColors[3], borderColors[2]);
+				DisplayHelper.INSTANCE.drawGradientRect(
+						guiGraphics,
+						x,
+						y + h - borderWidth,
+						w,
+						borderWidth,
+						borderColors[3],
+						borderColors[2]);
 			}
 		}
 
 		@Override
 		public GradientBorder clone() {
-			return new GradientBorder(ThemeCodecs.nullableClone(boxProgressOffset), boxProgressColors, ThemeCodecs.nullableClone(padding), bgColor, borderColor, borderWidth, Optional.ofNullable(roundCorner));
+			return new GradientBorder(
+					JadeCodecs.nullableClone(boxProgressOffset),
+					boxProgressColors,
+					JadeCodecs.nullableClone(padding),
+					bgColor,
+					borderColor,
+					borderWidth,
+					Optional.ofNullable(roundCorner));
 		}
 
 		@Override
@@ -157,7 +224,12 @@ public abstract class BoxStyle implements Cloneable {
 		@Nullable
 		public ResourceLocation withIconSprite;
 
-		public SpriteBase(Optional<float[]> boxProgressOffset, ColorPalette boxProgressColors, Optional<int[]> padding, ResourceLocation sprite, Optional<ResourceLocation> withIconSprite) {
+		public SpriteBase(
+				Optional<float[]> boxProgressOffset,
+				ColorPalette boxProgressColors,
+				Optional<int[]> padding,
+				ResourceLocation sprite,
+				Optional<ResourceLocation> withIconSprite) {
 			super(boxProgressOffset, boxProgressColors, padding);
 			this.sprite = sprite;
 			this.withIconSprite = withIconSprite.orElse(null);
@@ -171,14 +243,34 @@ public abstract class BoxStyle implements Cloneable {
 				guiGraphics.blitSprite(resourceLocation, i, j, k, l, m);
 			} else if (guiSpriteScaling instanceof GuiSpriteScaling.Tile) {
 				GuiSpriteScaling.Tile tile = (GuiSpriteScaling.Tile) guiSpriteScaling;
-				guiGraphics.blitTiledSprite(textureAtlasSprite, i, j, k, l, m, 0, 0, tile.width(), tile.height(), tile.width(), tile.height());
+				guiGraphics.blitTiledSprite(
+						textureAtlasSprite,
+						i,
+						j,
+						k,
+						l,
+						m,
+						0,
+						0,
+						tile.width(),
+						tile.height(),
+						tile.width(),
+						tile.height());
 			} else if (guiSpriteScaling instanceof GuiSpriteScaling.NineSlice) {
 				GuiSpriteScaling.NineSlice nineSlice = (GuiSpriteScaling.NineSlice) guiSpriteScaling;
 				blitNineSlicedSprite(guiGraphics, textureAtlasSprite, nineSlice, i, j, k, l, m);
 			}
 		}
 
-		public static void blitNineSlicedSprite(GuiGraphics guiGraphics, TextureAtlasSprite textureAtlasSprite, GuiSpriteScaling.NineSlice nineSlice, int i, int j, int k, int l, int m) {
+		public static void blitNineSlicedSprite(
+				GuiGraphics guiGraphics,
+				TextureAtlasSprite textureAtlasSprite,
+				GuiSpriteScaling.NineSlice nineSlice,
+				int i,
+				int j,
+				int k,
+				int l,
+				int m) {
 			GuiSpriteScaling.NineSlice.Border border = nineSlice.border();
 			int n = Math.min(border.left(), l / 2);
 			int o = Math.min(border.right(), l / 2);
@@ -190,25 +282,159 @@ public abstract class BoxStyle implements Cloneable {
 			}
 			if (m == nineSlice.height()) {
 				guiGraphics.blitSprite(textureAtlasSprite, nineSlice.width(), nineSlice.height(), 0, 0, i, j, k, n, m);
-				guiGraphics.blitTiledSprite(textureAtlasSprite, i + n, j, k, l - o - n, m, n, 0, nineSlice.width() - o - n, nineSlice.height(), nineSlice.width(), nineSlice.height());
-				guiGraphics.blitSprite(textureAtlasSprite, nineSlice.width(), nineSlice.height(), nineSlice.width() - o, 0, i + l - o, j, k, o, m);
+				guiGraphics.blitTiledSprite(
+						textureAtlasSprite,
+						i + n,
+						j,
+						k,
+						l - o - n,
+						m,
+						n,
+						0,
+						nineSlice.width() - o - n,
+						nineSlice.height(),
+						nineSlice.width(),
+						nineSlice.height());
+				guiGraphics.blitSprite(
+						textureAtlasSprite,
+						nineSlice.width(),
+						nineSlice.height(),
+						nineSlice.width() - o,
+						0,
+						i + l - o,
+						j,
+						k,
+						o,
+						m);
 				return;
 			}
 			if (l == nineSlice.width()) {
 				guiGraphics.blitSprite(textureAtlasSprite, nineSlice.width(), nineSlice.height(), 0, 0, i, j, k, l, p);
-				guiGraphics.blitTiledSprite(textureAtlasSprite, i, j + p, k, l, m - q - p, 0, p, nineSlice.width(), nineSlice.height() - q - p, nineSlice.width(), nineSlice.height());
-				guiGraphics.blitSprite(textureAtlasSprite, nineSlice.width(), nineSlice.height(), 0, nineSlice.height() - q, i, j + m - q, k, l, q);
+				guiGraphics.blitTiledSprite(
+						textureAtlasSprite,
+						i,
+						j + p,
+						k,
+						l,
+						m - q - p,
+						0,
+						p,
+						nineSlice.width(),
+						nineSlice.height() - q - p,
+						nineSlice.width(),
+						nineSlice.height());
+				guiGraphics.blitSprite(
+						textureAtlasSprite,
+						nineSlice.width(),
+						nineSlice.height(),
+						0,
+						nineSlice.height() - q,
+						i,
+						j + m - q,
+						k,
+						l,
+						q);
 				return;
 			}
 			guiGraphics.blitSprite(textureAtlasSprite, nineSlice.width(), nineSlice.height(), 0, 0, i, j, k, n, p);
-			guiGraphics.blitTiledSprite(textureAtlasSprite, i + n, j, k, l - o - n, p, n, 0, nineSlice.width() - o - n, p, nineSlice.width(), nineSlice.height());
-			guiGraphics.blitSprite(textureAtlasSprite, nineSlice.width(), nineSlice.height(), nineSlice.width() - o, 0, i + l - o, j, k, o, p);
-			guiGraphics.blitSprite(textureAtlasSprite, nineSlice.width(), nineSlice.height(), 0, nineSlice.height() - q, i, j + m - q, k, n, q);
-			guiGraphics.blitTiledSprite(textureAtlasSprite, i + n, j + m - q, k, l - o - n, q, n, nineSlice.height() - q, nineSlice.width() - o - n, q, nineSlice.width(), nineSlice.height());
-			guiGraphics.blitSprite(textureAtlasSprite, nineSlice.width(), nineSlice.height(), nineSlice.width() - o, nineSlice.height() - q, i + l - o, j + m - q, k, o, q);
-			guiGraphics.blitTiledSprite(textureAtlasSprite, i, j + p, k, n, m - q - p, 0, p, n, nineSlice.height() - q - p, nineSlice.width(), nineSlice.height());
-			guiGraphics.blitTiledSprite(textureAtlasSprite, i + n, j + p, k, l - o - n, m - q - p, n, p, nineSlice.width() - o - n, nineSlice.height() - q - p, nineSlice.width(), nineSlice.height());
-			guiGraphics.blitTiledSprite(textureAtlasSprite, i + l - o, j + p, k, o, m - q - p, nineSlice.width() - o, p, o, nineSlice.height() - q - p, nineSlice.width(), nineSlice.height());
+			guiGraphics.blitTiledSprite(
+					textureAtlasSprite,
+					i + n,
+					j,
+					k,
+					l - o - n,
+					p,
+					n,
+					0,
+					nineSlice.width() - o - n,
+					p,
+					nineSlice.width(),
+					nineSlice.height());
+			guiGraphics.blitSprite(
+					textureAtlasSprite,
+					nineSlice.width(),
+					nineSlice.height(),
+					nineSlice.width() - o,
+					0,
+					i + l - o,
+					j,
+					k,
+					o,
+					p);
+			guiGraphics.blitSprite(
+					textureAtlasSprite,
+					nineSlice.width(),
+					nineSlice.height(),
+					0,
+					nineSlice.height() - q,
+					i,
+					j + m - q,
+					k,
+					n,
+					q);
+			guiGraphics.blitTiledSprite(
+					textureAtlasSprite,
+					i + n,
+					j + m - q,
+					k,
+					l - o - n,
+					q,
+					n,
+					nineSlice.height() - q,
+					nineSlice.width() - o - n,
+					q,
+					nineSlice.width(),
+					nineSlice.height());
+			guiGraphics.blitSprite(
+					textureAtlasSprite,
+					nineSlice.width(),
+					nineSlice.height(),
+					nineSlice.width() - o,
+					nineSlice.height() - q,
+					i + l - o,
+					j + m - q,
+					k,
+					o,
+					q);
+			guiGraphics.blitTiledSprite(
+					textureAtlasSprite,
+					i,
+					j + p,
+					k,
+					n,
+					m - q - p,
+					0,
+					p,
+					n,
+					nineSlice.height() - q - p,
+					nineSlice.width(),
+					nineSlice.height());
+			guiGraphics.blitTiledSprite(
+					textureAtlasSprite,
+					i + n,
+					j + p,
+					k,
+					l - o - n,
+					m - q - p,
+					n,
+					p,
+					nineSlice.width() - o - n,
+					nineSlice.height() - q - p,
+					nineSlice.width(),
+					nineSlice.height());
+			guiGraphics.blitTiledSprite(
+					textureAtlasSprite,
+					i + l - o,
+					j + p,
+					k,
+					o,
+					m - q - p,
+					nineSlice.width() - o,
+					p,
+					o,
+					nineSlice.height() - q - p,
+					nineSlice.width(),
+					nineSlice.height());
 		}
 
 		@Override
@@ -230,7 +456,12 @@ public abstract class BoxStyle implements Cloneable {
 
 		@Override
 		public SpriteBase clone() {
-			return new SpriteBase(ThemeCodecs.nullableClone(boxProgressOffset), boxProgressColors, ThemeCodecs.nullableClone(padding), sprite, Optional.ofNullable(withIconSprite));
+			return new SpriteBase(
+					JadeCodecs.nullableClone(boxProgressOffset),
+					boxProgressColors,
+					JadeCodecs.nullableClone(padding),
+					sprite,
+					Optional.ofNullable(withIconSprite));
 		}
 	}
 

@@ -3,6 +3,8 @@ package snownee.jade.util;
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
@@ -11,7 +13,10 @@ import org.jetbrains.annotations.Nullable;
 import com.google.common.base.MoreObjects;
 import com.google.common.cache.Cache;
 
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -26,23 +31,26 @@ import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomModelData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ChestBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.IExtensionPoint;
 import net.neoforged.fml.ModList;
-import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.EntityCapability;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.IShearable;
 import net.neoforged.neoforge.common.NeoForge;
@@ -53,9 +61,10 @@ import net.neoforged.neoforge.entity.PartEntity;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforgespi.language.ModFileScanData;
 import snownee.jade.Jade;
 import snownee.jade.addon.universal.ItemCollector;
@@ -65,7 +74,6 @@ import snownee.jade.api.Accessor;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IWailaPlugin;
-import snownee.jade.api.Identifiers;
 import snownee.jade.api.WailaPlugin;
 import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.view.EnergyView;
@@ -75,15 +83,14 @@ import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.network.ReceiveDataPacket;
-import snownee.jade.network.RequestEntityPacket;
 import snownee.jade.network.RequestBlockPacket;
+import snownee.jade.network.RequestEntityPacket;
 import snownee.jade.network.ServerPingPacket;
 import snownee.jade.network.ShowOverlayPacket;
 
-@Mod(Jade.MODID)
+@Mod(Jade.ID)
 public final class CommonProxy {
 	public CommonProxy(IEventBus modBus) {
-		ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> IExtensionPoint.DisplayTest.IGNORESERVERONLY, (a, b) -> true));
 		modBus.addListener(this::loadComplete);
 		modBus.addListener(this::registerPayloadHandlers);
 		NeoForge.EVENT_BUS.addListener(CommonProxy::playerJoin);
@@ -93,15 +100,77 @@ public final class CommonProxy {
 		}
 	}
 
-	private void registerPayloadHandlers(RegisterPayloadHandlerEvent event) {
-		event.registrar(Jade.MODID)
-				.versioned("2")
+	public static <T> T getDefaultStorage(
+			Accessor<?> accessor,
+			BlockCapability<T, ?> blockCapability,
+			EntityCapability<T, ?> entityCapability) {
+		if (accessor instanceof BlockAccessor blockAccessor) {
+			return accessor.getLevel().getCapability(
+					blockCapability,
+					blockAccessor.getPosition(),
+					blockAccessor.getBlockState(),
+					blockAccessor.getBlockEntity(),
+					null);
+		} else if (accessor instanceof EntityAccessor entityAccessor) {
+			return entityAccessor.getEntity().getCapability(entityCapability, null);
+		}
+		return null;
+	}
+
+	public static <T> boolean hasDefaultStorage(
+			Accessor<?> accessor,
+			BlockCapability<T, ?> blockCapability,
+			EntityCapability<T, ?> entityCapability) {
+		if (accessor instanceof BlockAccessor || accessor instanceof EntityAccessor) {
+			return getDefaultStorage(accessor, blockCapability, entityCapability) != null;
+		}
+		return true;
+	}
+
+	public static boolean hasDefaultItemStorage(Accessor<?> accessor) {
+		return hasDefaultStorage(accessor, Capabilities.ItemHandler.BLOCK, Capabilities.ItemHandler.ENTITY);
+	}
+
+	public static boolean hasDefaultFluidStorage(Accessor<?> accessor) {
+		return hasDefaultStorage(accessor, Capabilities.FluidHandler.BLOCK, Capabilities.FluidHandler.ENTITY);
+	}
+
+	public static boolean hasDefaultEnergyStorage(Accessor<?> accessor) {
+		return hasDefaultStorage(accessor, Capabilities.EnergyStorage.BLOCK, Capabilities.EnergyStorage.ENTITY);
+	}
+
+	public static long bucketVolume() {
+		return FluidType.BUCKET_VOLUME;
+	}
+
+	public static long blockVolume() {
+		return FluidType.BUCKET_VOLUME;
+	}
+
+	private void registerPayloadHandlers(RegisterPayloadHandlersEvent event) {
+		event.registrar(Jade.ID)
+				.versioned("3")
 				.optional()
-				.play(Identifiers.PACKET_RECEIVE_DATA, ReceiveDataPacket::read, handlers -> handlers.client(ReceiveDataPacket::handle))
-				.play(Identifiers.PACKET_SERVER_PING, ServerPingPacket::read, handlers -> handlers.client(ServerPingPacket::handle))
-				.play(Identifiers.PACKET_REQUEST_ENTITY, RequestEntityPacket::read, handlers -> handlers.server(RequestEntityPacket::handle))
-				.play(Identifiers.PACKET_REQUEST_TILE, RequestBlockPacket::read, handlers -> handlers.server(RequestBlockPacket::handle))
-				.play(Identifiers.PACKET_SHOW_OVERLAY, ShowOverlayPacket::read, handlers -> handlers.client(ShowOverlayPacket::handle));
+				.playToClient(
+						ReceiveDataPacket.TYPE,
+						ReceiveDataPacket.CODEC,
+						(payload, context) -> ReceiveDataPacket.handle(payload, context::enqueueWork))
+				.playToClient(
+						ServerPingPacket.TYPE,
+						ServerPingPacket.CODEC,
+						(payload, context) -> ServerPingPacket.handle(payload, context::enqueueWork))
+				.playToServer(
+						RequestEntityPacket.TYPE,
+						RequestEntityPacket.CODEC,
+						(payload, context) -> RequestEntityPacket.handle(payload, () -> (ServerPlayer) context.player()))
+				.playToServer(
+						RequestBlockPacket.TYPE,
+						RequestBlockPacket.CODEC,
+						(payload, context) -> RequestBlockPacket.handle(payload, () -> (ServerPlayer) context.player()))
+				.playToClient(
+						ShowOverlayPacket.TYPE,
+						ShowOverlayPacket.CODEC,
+						(payload, context) -> ShowOverlayPacket.handle(payload, context::enqueueWork));
 	}
 
 	public static int showOrHideFromServer(Collection<ServerPlayer> players, boolean show) {
@@ -116,7 +185,10 @@ public final class CommonProxy {
 		ServerPlayer player = (ServerPlayer) event.getEntity();
 		String configs = PluginConfig.INSTANCE.getServerConfigs();
 		if (!configs.isEmpty()) {
-			Jade.LOGGER.debug("Syncing config to {} ({})", event.getEntity().getGameProfile().getName(), event.getEntity().getGameProfile().getId());
+			Jade.LOGGER.debug(
+					"Syncing config to {} ({})",
+					event.getEntity().getGameProfile().getName(),
+					event.getEntity().getGameProfile().getId());
 		}
 		player.connection.send(new ServerPingPacket(configs));
 	}
@@ -131,7 +203,7 @@ public final class CommonProxy {
 	}
 
 	public static boolean isShears(ItemStack tool) {
-		return tool.is(Tags.Items.SHEARS);
+		return tool.is(Tags.Items.TOOLS_SHEARS);
 	}
 
 	public static boolean isShearable(BlockState state) {
@@ -143,12 +215,12 @@ public final class CommonProxy {
 	}
 
 	public static String getModIdFromItem(ItemStack stack) {
-		if (stack.hasTag() && stack.getTag().contains("id")) {
-			String s = stack.getTag().getString("id");
-			if (s.contains(":")) {
-				ResourceLocation id = ResourceLocation.tryParse(s);
-				if (id != null) {
-					return id.getNamespace();
+		if (isPhysicallyClient()) {
+			CustomModelData modelData = stack.getOrDefault(DataComponents.CUSTOM_MODEL_DATA, CustomModelData.DEFAULT);
+			if (!CustomModelData.DEFAULT.equals(modelData)) {
+				String key = "jade.customModelData.%s.namespace".formatted(modelData.value());
+				if (I18n.exists(key)) {
+					return I18n.get(key);
 				}
 			}
 		}
@@ -163,13 +235,16 @@ public final class CommonProxy {
 		JadeServerCommand.register(event.getDispatcher());
 	}
 
-	public static ItemCollector<?> createItemCollector(Accessor<?> accessor, Cache<Object, ItemCollector<?>> containerCache) {
-		Object target = accessor.getTarget();
+	public static ItemCollector<?> createItemCollector(Object target, Cache<Object, ItemCollector<?>> containerCache) {
 		if (!(target instanceof Entity) || target instanceof AbstractChestedHorse) {
 			try {
-				IItemHandler itemHandler = findItemHandler(accessor);
+				IItemHandler itemHandler = findItemHandler(target);
 				if (itemHandler != null) {
-					return containerCache.get(itemHandler, () -> new ItemCollector<>(JadeForgeUtils.fromItemHandler(itemHandler, target instanceof AbstractChestedHorse ? 2 : 0)));
+					return containerCache.get(
+							itemHandler,
+							() -> new ItemCollector<>(JadeForgeUtils.fromItemHandler(
+									itemHandler,
+									target instanceof AbstractChestedHorse ? 2 : 0)));
 				}
 			} catch (Throwable e) {
 				WailaExceptionHandler.handleErr(e, null, null);
@@ -178,10 +253,14 @@ public final class CommonProxy {
 		if (target instanceof Container) {
 			if (target instanceof ChestBlockEntity) {
 				return new ItemCollector<>(new ItemIterator.ContainerItemIterator(a -> {
-					Object o = a.getTarget();
-					if (o instanceof ChestBlockEntity be) {
+					if (target instanceof ChestBlockEntity be) {
 						if (be.getBlockState().getBlock() instanceof ChestBlock chestBlock) {
-							Container compound = ChestBlock.getContainer(chestBlock, be.getBlockState(), a.getLevel(), be.getBlockPos(), false);
+							Container compound = ChestBlock.getContainer(
+									chestBlock,
+									be.getBlockState(),
+									Objects.requireNonNull(be.getLevel()),
+									be.getBlockPos(),
+									false);
 							if (compound != null) {
 								return compound;
 							}
@@ -199,7 +278,8 @@ public final class CommonProxy {
 	@Nullable
 	public static List<ViewGroup<ItemStack>> containerGroup(Container container, Accessor<?> accessor) {
 		try {
-			return ItemStorageProvider.INSTANCE.containerCache.get(container, () -> new ItemCollector<>(new ItemIterator.ContainerItemIterator(0))).update(accessor, accessor.getLevel().getGameTime());
+			return ItemStorageProvider.containerCache.get(container, () -> new ItemCollector<>(new ItemIterator.ContainerItemIterator(0)))
+					.update(container, accessor.getLevel().getGameTime());
 		} catch (ExecutionException e) {
 			return null;
 		}
@@ -208,52 +288,47 @@ public final class CommonProxy {
 	@Nullable
 	public static List<ViewGroup<ItemStack>> storageGroup(Object storage, Accessor<?> accessor) {
 		try {
-			return ItemStorageProvider.INSTANCE.containerCache.get(storage, () -> new ItemCollector<>(JadeForgeUtils.fromItemHandler((IItemHandler) storage, 0))).update(accessor, accessor.getLevel().getGameTime());
+			return ItemStorageProvider.containerCache.get(
+					storage,
+					() -> new ItemCollector<>(JadeForgeUtils.fromItemHandler((IItemHandler) storage, 0))).update(
+					accessor,
+					accessor.getLevel().getGameTime());
 		} catch (ExecutionException e) {
 			return null;
 		}
 	}
 
 	@Nullable
-	public static IItemHandler findItemHandler(Accessor<?> accessor) {
-		if (accessor instanceof BlockAccessor ba) {
-			return ba.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, ba.getPosition(), ba.getBlockState(), ba.getBlockEntity(), null);
-		} else if (accessor instanceof EntityAccessor ea) {
-			return ea.getEntity().getCapability(Capabilities.ItemHandler.ENTITY, null);
+	public static IItemHandler findItemHandler(Object target) {
+		if (target instanceof BlockEntity be) {
+			return Objects.requireNonNull(be.getLevel()).getCapability(
+					Capabilities.ItemHandler.BLOCK,
+					be.getBlockPos(),
+					be.getBlockState(),
+					be,
+					null);
+		} else if (target instanceof Entity entity) {
+			return entity.getCapability(Capabilities.ItemHandler.ENTITY);
 		}
 		return null;
 	}
 
-	public static List<ViewGroup<CompoundTag>> wrapFluidStorage(Accessor<?> accessor, Object target) {
-		if (accessor instanceof BlockAccessor ba) {
-			IFluidHandler fluidHandler = ba.getLevel().getCapability(Capabilities.FluidHandler.BLOCK, ba.getPosition(), ba.getBlockState(), ba.getBlockEntity(), null);
-			if (fluidHandler != null) {
-				return JadeForgeUtils.fromFluidHandler(fluidHandler);
-			}
-		} else if (accessor instanceof EntityAccessor ea) {
-			IFluidHandler fluidHandler = ea.getEntity().getCapability(Capabilities.FluidHandler.ENTITY, null);
-			if (fluidHandler != null) {
-				return JadeForgeUtils.fromFluidHandler(fluidHandler);
-			}
+	@Nullable
+	public static List<ViewGroup<CompoundTag>> wrapFluidStorage(Accessor<?> accessor) {
+		IFluidHandler fluidHandler = getDefaultStorage(accessor, Capabilities.FluidHandler.BLOCK, Capabilities.FluidHandler.ENTITY);
+		if (fluidHandler != null) {
+			return JadeForgeUtils.fromFluidHandler(fluidHandler);
 		}
 		return null;
 	}
 
-	public static List<ViewGroup<CompoundTag>> wrapEnergyStorage(Accessor<?> accessor, Object target) {
-		if (accessor instanceof BlockAccessor ba) {
-			IEnergyStorage energyStorage = ba.getLevel().getCapability(Capabilities.EnergyStorage.BLOCK, ba.getPosition(), ba.getBlockState(), ba.getBlockEntity(), null);
-			if (energyStorage != null) {
-				var group = new ViewGroup<>(List.of(EnergyView.of(energyStorage.getEnergyStored(), energyStorage.getMaxEnergyStored())));
-				group.getExtraData().putString("Unit", "FE");
-				return List.of(group);
-			}
-		} else if (accessor instanceof EntityAccessor ea) {
-			IEnergyStorage energyStorage = ea.getEntity().getCapability(Capabilities.EnergyStorage.ENTITY, null);
-			if (energyStorage != null) {
-				var group = new ViewGroup<>(List.of(EnergyView.of(energyStorage.getEnergyStored(), energyStorage.getMaxEnergyStored())));
-				group.getExtraData().putString("Unit", "FE");
-				return List.of(group);
-			}
+	@Nullable
+	public static List<ViewGroup<CompoundTag>> wrapEnergyStorage(Accessor<?> accessor) {
+		IEnergyStorage energyStorage = getDefaultStorage(accessor, Capabilities.EnergyStorage.BLOCK, Capabilities.EnergyStorage.ENTITY);
+		if (energyStorage != null) {
+			var group = new ViewGroup<>(List.of(EnergyView.of(energyStorage.getEnergyStored(), energyStorage.getMaxEnergyStored())));
+			group.getExtraData().putString("Unit", "FE");
+			return List.of(group);
 		}
 		return null;
 	}
@@ -263,6 +338,9 @@ public final class CommonProxy {
 	}
 
 	public static float getEnchantPowerBonus(BlockState state, Level world, BlockPos pos) {
+		if (WailaClientRegistration.instance().customEnchantPowers.containsKey(state.getBlock())) {
+			return WailaClientRegistration.instance().customEnchantPowers.get(state.getBlock()).getEnchantPowerBonus(state, world, pos);
+		}
 		return state.getEnchantPowerBonus(world, pos);
 	}
 
@@ -286,9 +364,11 @@ public final class CommonProxy {
 		return "neoforge";
 	}
 
-	public static MutableComponent getProfressionName(VillagerProfession profession) {
+	public static MutableComponent getProfessionName(VillagerProfession profession) {
 		ResourceLocation profName = BuiltInRegistries.VILLAGER_PROFESSION.getKey(profession);
-		return Component.translatable(EntityType.VILLAGER.getDescriptionId() + '.' + (!ResourceLocation.DEFAULT_NAMESPACE.equals(profName.getNamespace()) ? profName.getNamespace() + '.' : "") + profName.getPath());
+		return Component.translatable(EntityType.VILLAGER.getDescriptionId() + '.' +
+				(!ResourceLocation.DEFAULT_NAMESPACE.equals(profName.getNamespace()) ? profName.getNamespace() + '.' : "") +
+				profName.getPath());
 	}
 
 	public static boolean isBoss(Entity entity) {
@@ -313,11 +393,13 @@ public final class CommonProxy {
 	}
 
 	public static Component getFluidName(JadeFluidObject fluid) {
-		return toFluidStack(fluid).getDisplayName();
+		return toFluidStack(fluid).getHoverName();
 	}
 
 	public static FluidStack toFluidStack(JadeFluidObject fluid) {
-		return new FluidStack(fluid.getType(), (int) fluid.getAmount(), fluid.getTag());
+		int id = BuiltInRegistries.FLUID.getId(fluid.getType());
+		Optional<Holder.Reference<Fluid>> holder = BuiltInRegistries.FLUID.getHolder(id);
+		return holder.isEmpty() ? FluidStack.EMPTY : new FluidStack(holder.get(), (int) fluid.getAmount(), fluid.getComponents());
 	}
 
 	private void loadComplete(FMLLoadCompleteEvent event) {

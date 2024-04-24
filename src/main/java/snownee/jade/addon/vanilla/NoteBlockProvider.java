@@ -37,7 +37,9 @@ public enum NoteBlockProvider implements IBlockComponentProvider {
 		if (I18n.exists(key)) {
 			name = I18n.get(key);
 		} else {
-			name = Joiner.on(' ').join(Stream.of(instrument.getSerializedName().replace('_', ' ').split(" ")).map(StringUtils::capitalize).toList());
+			name = Joiner.on(' ').join(Stream.of(instrument.getSerializedName().replace('_', ' ').split(" "))
+					.map(StringUtils::capitalize)
+					.toList());
 		}
 		if (instrument.isTunable()) {
 			int note = state.getValue(NoteBlock.NOTE);

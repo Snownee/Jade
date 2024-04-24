@@ -61,7 +61,13 @@ public class RayTracing {
 
 	// from ProjectileUtil
 	@Nullable
-	public static EntityHitResult getEntityHitResult(Level worldIn, Entity projectile, Vec3 startVec, Vec3 endVec, AABB boundingBox, Predicate<Entity> filter) {
+	public static EntityHitResult getEntityHitResult(
+			Level worldIn,
+			Entity projectile,
+			Vec3 startVec,
+			Vec3 endVec,
+			AABB boundingBox,
+			Predicate<Entity> filter) {
 		double d0 = Double.MAX_VALUE;
 		Entity entity = null;
 
@@ -93,45 +99,45 @@ public class RayTracing {
 	}
 
 	public void fire() {
-		Entity viewpoint = mc.getCameraEntity();
-		if (viewpoint == null)
+		Entity viewEntity = mc.getCameraEntity();
+		Player viewPlayer = viewEntity instanceof Player ? (Player) viewEntity : mc.player;
+		if (viewEntity == null || viewPlayer == null) {
 			return;
+		}
 
 		if (mc.hitResult != null && mc.hitResult.getType() == Type.ENTITY) {
 			Entity targetEntity = ((EntityHitResult) mc.hitResult).getEntity();
-			if (canBeTarget(targetEntity, viewpoint)) {
+			if (canBeTarget(targetEntity, viewEntity)) {
 				target = mc.hitResult;
 				return;
 			}
 		}
 
-		float reach = mc.gameMode.getPickRange() + Jade.CONFIG.get().getGeneral().getReachDistance();
-		target = rayTrace(viewpoint, reach, mc.getFrameTime());
+		float extendedReach = Jade.CONFIG.get().getGeneral().getExtendedReach();
+		double blockReach = viewPlayer.blockInteractionRange() + extendedReach;
+		double entityReach = viewPlayer.entityInteractionRange() + extendedReach;
+		target = rayTrace(viewEntity, blockReach, entityReach, mc.getFrameTime());
 	}
 
 	public HitResult getTarget() {
 		return target;
 	}
 
-	public HitResult rayTrace(Entity entity, double playerReach, float partialTicks) {
+	public HitResult rayTrace(Entity entity, double blockReach, double entityReach, float partialTicks) {
 		Vec3 eyePosition = entity.getEyePosition(partialTicks);
-		Vec3 traceEnd;
+		Vec3 lookVector = entity.getViewVector(partialTicks);
 		if (mc.hitResult != null && mc.hitResult.getType() == Type.BLOCK) {
-			traceEnd = mc.hitResult.getLocation();
-			traceEnd = eyePosition.add(traceEnd.subtract(eyePosition).scale(1.01));
-		} else {
-			Vec3 lookVector = entity.getViewVector(partialTicks);
-			traceEnd = eyePosition.add(lookVector.x * playerReach, lookVector.y * playerReach, lookVector.z * playerReach);
+			blockReach = entityReach = mc.hitResult.getLocation().distanceTo(eyePosition) + 0.1;
 		}
 
+		Vec3 traceEnd = eyePosition.add(lookVector.scale(entityReach));
 		Level world = entity.level();
 		AABB bound = new AABB(eyePosition, traceEnd);
 		Predicate<Entity> predicate = e -> canBeTarget(e, entity);
 		EntityHitResult entityResult = getEntityHitResult(world, entity, eyePosition, traceEnd, bound, predicate);
 
-		if (mc.hitResult != null && mc.hitResult.getType() == Type.BLOCK) {
-			Vec3 lookVector = entity.getViewVector(partialTicks);
-			traceEnd = eyePosition.add(lookVector.x * playerReach, lookVector.y * playerReach, lookVector.z * playerReach);
+		if (blockReach != entityReach) {
+			traceEnd = eyePosition.add(lookVector.scale(blockReach));
 		}
 
 		BlockState eyeBlock = world.getBlockState(BlockPos.containing(eyePosition));
@@ -140,7 +146,7 @@ public class RayTracing {
 			fluidView = Jade.CONFIG.get().getGeneral().getDisplayFluids().ctx;
 		}
 		CollisionContext collisionContext = CollisionContext.of(entity);
-		ClipContext context = new ClipContext(eyePosition, traceEnd, ClipContext.Block.OUTLINE, fluidView, entity);
+		ClipContext context = new ClipContext(eyePosition, traceEnd, ClipContext.Block.OUTLINE, fluidView, collisionContext);
 
 		BlockHitResult blockResult = world.clip(context);
 		if (entityResult != null) {
@@ -164,38 +170,49 @@ public class RayTracing {
 	}
 
 	private boolean canBeTarget(Entity target, Entity viewEntity) {
-		if (target.isRemoved())
+		if (target.isRemoved()) {
 			return false;
-		if (target.isSpectator())
+		}
+		if (target.isSpectator()) {
 			return false;
-		if (target == viewEntity.getVehicle())
+		}
+		if (target == viewEntity.getVehicle()) {
 			return false;
-		if (target instanceof Projectile projectile && projectile.tickCount <= 10 && !target.level().tickRateManager().isEntityFrozen(target))
+		}
+		if (target instanceof Projectile projectile && projectile.tickCount <= 10 &&
+				!target.level().tickRateManager().isEntityFrozen(target)) {
 			return false;
-		if (CommonProxy.isMultipartEntity(target) && !target.isPickable())
+		}
+		if (CommonProxy.isMultipartEntity(target) && !target.isPickable()) {
 			return false;
+		}
 		if (viewEntity instanceof Player player) {
-			if (target.isInvisibleTo(player))
+			if (target.isInvisibleTo(player)) {
 				return false;
-			if (mc.gameMode.isDestroying() && target.getType() == EntityType.ITEM)
+			}
+			if (mc.gameMode.isDestroying() && target.getType() == EntityType.ITEM) {
 				return false;
+			}
 		} else {
-			if (target.isInvisible())
+			if (target.isInvisible()) {
 				return false;
+			}
 		}
 		return !WailaClientRegistration.instance().shouldHide(target) && ENTITY_FILTER.test(target);
 	}
 
 	public IElement getIcon() {
 		Accessor<?> accessor = ObjectDataCenter.get();
-		if (accessor == null)
+		if (accessor == null) {
 			return null;
+		}
 
 		IElement icon = ObjectDataCenter.getIcon();
-		if (isEmptyElement(icon))
+		if (isEmptyElement(icon)) {
 			return null;
-		else
+		} else {
 			return icon;
+		}
 	}
 
 }

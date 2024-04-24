@@ -33,9 +33,19 @@ public class IntConfigEntry extends ConfigEntry<Integer> {
 	@Override
 	public OptionValue<?> createUI(OptionsList options, String optionName) {
 		if (slider) {
-			return options.slider(optionName, getValue(), f -> PluginConfig.INSTANCE.set(id, (int) (float) f), min, max, f -> (float) Math.round(f));
+			return options.slider(
+					optionName,
+					getValue(),
+					f -> PluginConfig.INSTANCE.set(id, (int) (float) f),
+					min,
+					max,
+					f -> (float) Math.round(f));
 		} else {
-			return options.input(optionName, getValue(), i -> PluginConfig.INSTANCE.set(id, Mth.clamp(i, min, max)), InputOptionValue.INTEGER.and($ -> isValidValue(Integer.valueOf($))));
+			return options.input(
+					optionName,
+					getValue(),
+					i -> PluginConfig.INSTANCE.set(id, Mth.clamp(i, min, max)),
+					InputOptionValue.INTEGER.and($ -> isValidValue(Integer.valueOf($))));
 		}
 	}
 

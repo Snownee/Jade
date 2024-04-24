@@ -33,17 +33,18 @@ public enum BrewingStandProvider implements IBlockComponentProvider, IServerData
 		if (time > 0) {
 			tooltip.append(helper.spacer(5, 0));
 			tooltip.append(helper.smallItem(new ItemStack(Items.CLOCK)));
-			tooltip.append(IThemeHelper.get().seconds(time));
+			tooltip.append(IThemeHelper.get().seconds(time, accessor.tickRate()));
 		}
 	}
 
 	@Override
 	public void appendServerData(CompoundTag tag, BlockAccessor accessor) {
-		BrewingStandBlockEntity brewingStand = (BrewingStandBlockEntity) accessor.getBlockEntity();
-		CompoundTag compound = new CompoundTag();
-		compound.putInt("Time", brewingStand.brewTime);
-		compound.putInt("Fuel", brewingStand.fuel);
-		tag.put("BrewingStand", compound);
+		if (accessor instanceof BrewingStandBlockEntity brewingStand) {
+			CompoundTag compound = new CompoundTag();
+			compound.putInt("Time", brewingStand.brewTime);
+			compound.putInt("Fuel", brewingStand.fuel);
+			tag.put("BrewingStand", compound);
+		}
 	}
 
 	@Override

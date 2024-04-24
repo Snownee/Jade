@@ -15,15 +15,18 @@ public class DebugPlugin implements IWailaPlugin {
 		registration.addConfig(Identifiers.DEBUG_REGISTRY_NAME, RegistryNameProvider.Mode.OFF);
 		registration.addConfig(Identifiers.DEBUG_SPECIAL_REGISTRY_NAME, false);
 
+		registration.registerBlockComponent(BlockPropertiesProvider.INSTANCE, Block.class);
 		registration.registerBlockComponent(BlockStatesProvider.INSTANCE, Block.class);
-		registration.registerBlockComponent(RegistryNameProvider.INSTANCE, Block.class);
-		registration.registerEntityComponent(RegistryNameProvider.INSTANCE, Entity.class);
+		registration.registerBlockComponent(RegistryNameProvider.getBlock(), Block.class);
+		registration.registerEntityComponent(RegistryNameProvider.getEntity(), Entity.class);
 
 		registration.markAsClientFeature(Identifiers.DEBUG_BLOCK_STATES);
+		registration.markAsClientFeature(Identifiers.DEBUG_BLOCK_PROPERTIES);
 		registration.markAsClientFeature(Identifiers.DEBUG_REGISTRY_NAME);
 		registration.markAsClientFeature(Identifiers.DEBUG_SPECIAL_REGISTRY_NAME);
 
 		Component debug = Component.translatable("config.jade.plugin_jade.debug");
+		registration.setConfigCategoryOverride(Identifiers.DEBUG_BLOCK_PROPERTIES, debug);
 		registration.setConfigCategoryOverride(Identifiers.DEBUG_BLOCK_STATES, debug);
 		registration.setConfigCategoryOverride(Identifiers.DEBUG_REGISTRY_NAME, debug);
 	}

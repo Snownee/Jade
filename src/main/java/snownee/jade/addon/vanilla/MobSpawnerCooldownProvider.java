@@ -21,17 +21,20 @@ public enum MobSpawnerCooldownProvider implements IBlockComponentProvider, IServ
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		if (config.get(Identifiers.MC_MOB_SPAWNER) && accessor.getServerData().contains("Cooldown")) {
-			tooltip.add(Component.translatable("jade.trial_spawner_cd", IThemeHelper.get().seconds(accessor.getServerData().getInt("Cooldown"))));
+			tooltip.add(Component.translatable(
+					"jade.trial_spawner_cd",
+					IThemeHelper.get().seconds(accessor.getServerData().getInt("Cooldown"), accessor.tickRate())));
 		}
 	}
 
 	@Override
 	public void appendServerData(CompoundTag data, BlockAccessor accessor) {
-		TrialSpawnerBlockEntity spawner = (TrialSpawnerBlockEntity) accessor.getBlockEntity();
-		TrialSpawnerData spawnerData = spawner.getTrialSpawner().getData();
-		Level level = accessor.getLevel();
-		if (spawner.getTrialSpawner().canSpawnInLevel(level) && level.getGameTime() < spawnerData.cooldownEndsAt) {
-			data.putInt("Cooldown", (int) (spawnerData.cooldownEndsAt - level.getGameTime()));
+		if (accessor.getBlockEntity() instanceof TrialSpawnerBlockEntity spawner) {
+			TrialSpawnerData spawnerData = spawner.getTrialSpawner().getData();
+			Level level = accessor.getLevel();
+			if (spawner.getTrialSpawner().canSpawnInLevel(level) && level.getGameTime() < spawnerData.cooldownEndsAt) {
+				data.putInt("Cooldown", (int) (spawnerData.cooldownEndsAt - level.getGameTime()));
+			}
 		}
 	}
 

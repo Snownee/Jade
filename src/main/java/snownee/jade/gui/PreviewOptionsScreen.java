@@ -7,6 +7,8 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.CycleButton;
+import net.minecraft.client.gui.narration.NarratedElementType;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
@@ -19,7 +21,7 @@ import snownee.jade.overlay.OverlayRenderer;
 
 public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 
-	public boolean adjustingPosition;
+	private boolean adjustingPosition;
 	private boolean adjustDragging;
 	private double dragOffsetX;
 	private double dragOffsetY;
@@ -55,10 +57,16 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 		Objects.requireNonNull(minecraft);
 		super.init();
 		if (minecraft.level != null) {
-			CycleButton<Boolean> previewButton = CycleButton.booleanBuilder(OptionsList.OPTION_ON, OptionsList.OPTION_OFF).create(10, saveButton.getY(), 85, 20, Component.translatable("gui.jade.preview"), (button, value) -> {
-				Jade.CONFIG.get().getGeneral().previewOverlay = value;
-				saver.run();
-			});
+			CycleButton<Boolean> previewButton = CycleButton.booleanBuilder(OptionsList.OPTION_ON, OptionsList.OPTION_OFF).create(
+					10,
+					saveButton.getY(),
+					85,
+					20,
+					Component.translatable("gui.jade.preview"),
+					(button, value) -> {
+						Jade.CONFIG.get().getGeneral().previewOverlay = value;
+						saver.run();
+					});
 			previewButton.setValue(Jade.CONFIG.get().getGeneral().previewOverlay);
 			addRenderableWidget(previewButton);
 		}
@@ -66,10 +74,16 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 
 	public boolean forcePreviewOverlay() {
 		Objects.requireNonNull(minecraft);
-		if (adjustingPosition) return true;
-		if (!isDragging() || options == null) return false;
+		if (adjustingPosition) {
+			return true;
+		}
+		if (!isDragging() || options == null) {
+			return false;
+		}
 		OptionsList.Entry entry = options.getSelected();
-		if (entry == null || entry.getFirstWidget() == null) return false;
+		if (entry == null || entry.getFirstWidget() == null) {
+			return false;
+		}
 		return options.forcePreview.contains(entry);
 	}
 
@@ -85,13 +99,12 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 				float centerY = rect.getY() + rect.getHeight() / 2F;
 				dragOffsetX = mouseX - centerX;
 				dragOffsetY = mouseY - centerY;
-				return true;
 			} else {
 				adjustingPosition = false;
 				adjustDragging = false;
 				minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0f));
-				return true;
 			}
+			return true;
 		}
 
 		return super.mouseClicked(mouseX, mouseY, p_94697_);
@@ -159,12 +172,17 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 
 	@Override
 	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-		super.render(guiGraphics, mouseX, mouseY, partialTicks);
 		if (adjustingPosition) {
+			super.render(guiGraphics, Integer.MAX_VALUE, Integer.MAX_VALUE, partialTicks);
 			guiGraphics.fill(0, 0, width, height, 50, 0x80AAAAAA);
 			guiGraphics.pose().pushPose();
 			guiGraphics.pose().translate(0, 0, 50);
-			guiGraphics.drawCenteredString(font, Component.translatable("config.jade.overlay_pos.exit"), width / 2, height / 2 - 7, 0xFFFFFF);
+			guiGraphics.drawCenteredString(
+					font,
+					Component.translatable("config.jade.overlay_pos.exit"),
+					width / 2,
+					height / 2 - 7,
+					0xFFFFFF);
 			guiGraphics.pose().popPose();
 			IWailaConfig.IConfigOverlay config = IWailaConfig.get().getOverlay();
 			Rect2i rect = OverlayRenderer.rect.expectedRect;
@@ -180,6 +198,26 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 				guiGraphics.fill(rect.getX() - 5, height / 2, rect.getX() + rect.getWidth() + 4, height / 2 + 1, 1000, 0xFF0000FF);
 			}
 			deferredTooltipRendering = null;
+		} else {
+			super.render(guiGraphics, mouseX, mouseY, partialTicks);
 		}
+	}
+
+	public void startAdjustingPosition() {
+		adjustingPosition = true;
+	}
+
+	@Override
+	protected void updateNarratedWidget(NarrationElementOutput narrationElementOutput) {
+		if (adjustingPosition) {
+			narrationElementOutput.add(NarratedElementType.USAGE, Component.translatable("narration.jade.adjusting_position"));
+			return;
+		}
+		super.updateNarratedWidget(narrationElementOutput);
+	}
+
+	@Override
+	protected boolean shouldNarrateNavigation() {
+		return !adjustingPosition;
 	}
 }

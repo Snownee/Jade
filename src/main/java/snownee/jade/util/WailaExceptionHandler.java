@@ -37,7 +37,11 @@ public class WailaExceptionHandler {
 			Jade.LOGGER.error("Caught unhandled exception : [{}] {}", provider, e);
 			Jade.LOGGER.error("See JadeErrorOutput.txt for more information");
 			try {
-				FileUtils.writeStringToFile(ERROR_OUTPUT, DATE_FORMAT.format(new Date()) + "\n" + provider + "\n" + ExceptionUtils.getStackTrace(e) + "\n", StandardCharsets.UTF_8, true);
+				FileUtils.writeStringToFile(
+						ERROR_OUTPUT,
+						DATE_FORMAT.format(new Date()) + "\n" + provider + "\n" + ExceptionUtils.getStackTrace(e) + "\n",
+						StandardCharsets.UTF_8,
+						true);
 			} catch (Exception what) {
 				// no
 			}
@@ -48,7 +52,7 @@ public class WailaExceptionHandler {
 				modid = provider.getUid().getNamespace();
 			}
 			if (modid == null || ResourceLocation.DEFAULT_NAMESPACE.equals(modid)) {
-				modid = Jade.MODID;
+				modid = Jade.ID;
 			}
 			tooltip.add(Component.translatable("jade.error", ModIdentification.getModName(modid)).withStyle(ChatFormatting.DARK_RED));
 		}

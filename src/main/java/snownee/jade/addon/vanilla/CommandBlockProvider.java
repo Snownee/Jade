@@ -31,15 +31,17 @@ public enum CommandBlockProvider implements IBlockComponentProvider, IServerData
 		if (!player.canUseGameMasterBlocks()) {
 			return;
 		}
-		BaseCommandBlock logic = ((CommandBlockEntity) accessor.getBlockEntity()).getCommandBlock();
-		String command = logic.getCommand();
-		if (command.isEmpty()) {
-			return;
+		if (accessor.getBlockEntity() instanceof CommandBlockEntity commandBlock) {
+			BaseCommandBlock logic = commandBlock.getCommandBlock();
+			String command = logic.getCommand();
+			if (command.isEmpty()) {
+				return;
+			}
+			if (command.length() > 40) {
+				command = command.substring(0, 37) + "...";
+			}
+			tag.putString("Command", command);
 		}
-		if (command.length() > 40) {
-			command = command.substring(0, 37) + "...";
-		}
-		tag.putString("Command", command);
 	}
 
 	@Override

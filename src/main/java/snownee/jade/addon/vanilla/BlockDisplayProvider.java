@@ -26,11 +26,12 @@ public enum BlockDisplayProvider implements IEntityComponentProvider {
 	public @Nullable IElement getIcon(EntityAccessor accessor, IPluginConfig config, IElement currentIcon) {
 		BlockDisplay itemDisplay = (BlockDisplay) accessor.getEntity();
 		Block block = itemDisplay.getBlockState().getBlock();
-		if (block.asItem() == Items.AIR)
+		if (block.asItem() == Items.AIR) {
 			return null;
+		}
 		IElement icon = ItemStackElement.of(new ItemStack(block));
 		if (RayTracing.isEmptyElement(icon) && block instanceof LiquidBlock) {
-			icon = ClientProxy.elementFromLiquid((LiquidBlock) block);
+			icon = ClientProxy.elementFromLiquid(itemDisplay.getBlockState());
 		}
 		return icon;
 	}

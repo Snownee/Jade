@@ -1,11 +1,12 @@
 package snownee.jade.addon.vanilla;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import com.mojang.serialization.MapCodec;
 
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -23,44 +24,42 @@ import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.util.ServerDataUtil;
 
 public enum StatusEffectsProvider implements IEntityComponentProvider, IServerDataProvider<EntityAccessor> {
 
 	INSTANCE;
 
+	private static final MapCodec<List<MobEffectInstance>> EFFECTS_CODEC = MobEffectInstance.CODEC.listOf().fieldOf("mob_effects");
+
 	public static Component getEffectName(MobEffectInstance mobEffectInstance) {
-		MutableComponent mutableComponent = mobEffectInstance.getEffect().getDisplayName().copy();
+		MutableComponent mutableComponent = mobEffectInstance.getEffect().value().getDisplayName().copy();
 		if (mobEffectInstance.getAmplifier() >= 1 && mobEffectInstance.getAmplifier() <= 9) {
-			mutableComponent.append(CommonComponents.SPACE).append(Component.translatable("enchantment.level." + (mobEffectInstance.getAmplifier() + 1)));
+			mutableComponent.append(CommonComponents.SPACE).append(Component.translatable(
+					"enchantment.level." + (mobEffectInstance.getAmplifier() + 1)));
 		}
 		return mutableComponent;
 	}
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
-		if (!accessor.getServerData().contains("StatusEffects")) {
+		Optional<List<MobEffectInstance>> result = ServerDataUtil.read(accessor.getServerData(), EFFECTS_CODEC);
+		if (result.isEmpty() || result.get().isEmpty()) {
 			return;
 		}
 		IElementHelper helper = IElementHelper.get();
 		ITooltip box = helper.tooltip();
-		ListTag list = accessor.getServerData().getList("StatusEffects", Tag.TAG_COMPOUND);
-		Component[] lines = new Component[list.size()];
-		for (int i = 0; i < lines.length; i++) {
-			CompoundTag compound = list.getCompound(i);
-			MutableComponent name = Component.Serializer.fromJsonLenient(compound.getString("Name"));
-			if (name == null) {
-				continue;
-			}
+		for (var effect : result.get()) {
+			Component name = getEffectName(effect);
 			String duration;
-			if (compound.getBoolean("Infinite")) {
+			if (effect.isInfiniteDuration()) {
 				duration = I18n.get("effect.duration.infinite");
 			} else {
-				float tickrate = accessor.getLevel().tickRateManager().tickrate();
-				duration = StringUtil.formatTickDuration(compound.getInt("Duration"), tickrate);
+				duration = StringUtil.formatTickDuration(effect.getDuration(), accessor.tickRate());
 			}
 			MutableComponent s = Component.translatable("jade.potion", name, duration);
 			IThemeHelper t = IThemeHelper.get();
-			box.add(compound.getBoolean("Bad") ? t.danger(s) : t.success(s));
+			box.add(effect.getEffect().value().getCategory() == MobEffectCategory.HARMFUL ? t.danger(s) : t.success(s));
 		}
 		tooltip.add(helper.box(box, BoxStyle.getNestedBox()));
 	}
@@ -72,19 +71,11 @@ public enum StatusEffectsProvider implements IEntityComponentProvider, IServerDa
 		if (effects.isEmpty()) {
 			return;
 		}
-		ListTag list = new ListTag();
-		for (MobEffectInstance effect : effects) {
-			CompoundTag compound = new CompoundTag();
-			compound.putString("Name", Component.Serializer.toJson(getEffectName(effect)));
-			if (effect.isInfiniteDuration()) {
-				compound.putBoolean("Infinite", true);
-			} else {
-				compound.putInt("Duration", effect.getDuration());
-			}
-			compound.putBoolean("Bad", effect.getEffect().getCategory() == MobEffectCategory.HARMFUL);
-			list.add(compound);
+		List<MobEffectInstance> effectList = effects.stream().filter(MobEffectInstance::isVisible).toList();
+		if (effectList.isEmpty()) {
+			return;
 		}
-		tag.put("StatusEffects", list);
+		ServerDataUtil.write(accessor.getServerData(), EFFECTS_CODEC, effectList);
 	}
 
 	@Override

@@ -75,7 +75,13 @@ public class ElementHelper implements IElementHelper {
 	}
 
 	@Override
-	public IElement progress(float progress, ResourceLocation baseSprite, ResourceLocation progressSprite, int width, int height, boolean canDecrease) {
+	public IElement progress(
+			float progress,
+			ResourceLocation baseSprite,
+			ResourceLocation progressSprite,
+			int width,
+			int height,
+			boolean canDecrease) {
 		ProgressStyle style = progressStyle().fitContentX(false).overlay(sprite(progressSprite, width, height));
 		BoxStyle boxStyle = BoxStyle.getSprite(baseSprite, null);
 		return progress(progress, null, style, boxStyle, canDecrease).size(new Vec2(width, height));

@@ -12,8 +12,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -22,10 +26,10 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import snownee.jade.Jade;
 import snownee.jade.api.AccessorImpl;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IServerDataProvider;
+import snownee.jade.network.ServerPayloadContext;
 import snownee.jade.util.CommonProxy;
 import snownee.jade.util.WailaExceptionHandler;
 
@@ -46,23 +50,25 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 		fakeBlock = builder.fakeBlock;
 	}
 
-	public static void handleRequest(SyncData data, ServerPlayer player, Consumer<Runnable> executor, Consumer<CompoundTag> responseSender) {
-		executor.accept(() -> {
+	public static void handleRequest(SyncData data, ServerPayloadContext context, Consumer<CompoundTag> responseSender) {
+		ServerPlayer player = context.player();
+		context.execute(() -> {
 			BlockAccessor accessor = data.unpack(player);
-			if (accessor == null)
+			if (accessor == null) {
 				return;
+			}
 			BlockPos pos = accessor.getPosition();
 			ServerLevel world = player.serverLevel();
-			if (pos.distSqr(player.blockPosition()) > Jade.MAX_DISTANCE_SQR || !world.isLoaded(pos))
+			double maxDistance = Mth.square(player.blockInteractionRange() + 21);
+			if (pos.distSqr(player.blockPosition()) > maxDistance || !world.isLoaded(pos)) {
 				return;
+			}
 
-			BlockEntity tile = accessor.getBlockEntity();
-			if (tile == null)
+			List<IServerDataProvider<BlockAccessor>> providers = WailaCommonRegistration.instance()
+					.getBlockNBTProviders(accessor.getBlock(), accessor.getBlockEntity());
+			if (providers.isEmpty()) {
 				return;
-
-			List<IServerDataProvider<BlockAccessor>> providers = WailaCommonRegistration.instance().getBlockNBTProviders(tile);
-			if (providers.isEmpty())
-				return;
+			}
 
 			CompoundTag tag = accessor.getServerData();
 			for (IServerDataProvider<BlockAccessor> provider : providers) {
@@ -76,18 +82,9 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 			tag.putInt("x", pos.getX());
 			tag.putInt("y", pos.getY());
 			tag.putInt("z", pos.getZ());
-			tag.putString("id", CommonProxy.getId(tile.getType()).toString());
+			tag.putString("BlockId", CommonProxy.getId(accessor.getBlock()).toString());
 			responseSender.accept(tag);
 		});
-	}
-
-	@Override
-	@Deprecated
-	public void toNetwork(FriendlyByteBuf buf) {
-		buf.writeBoolean(showDetails());
-		buf.writeBlockHitResult(getHitResult());
-		buf.writeVarInt(Block.getId(blockState));
-		buf.writeItem(fakeBlock);
 	}
 
 	@Override
@@ -120,6 +117,7 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 		return CommonProxy.getBlockPickedResult(blockState, getPlayer(), getHitResult());
 	}
 
+	@Nullable
 	@Override
 	public Object getTarget() {
 		return getBlockEntity();
@@ -141,8 +139,9 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 
 	@Override
 	public boolean verifyData(CompoundTag data) {
-		if (!verify)
+		if (!verify) {
 			return true;
+		}
 		int x = data.getInt("x");
 		int y = data.getInt("y");
 		int z = data.getInt("z");
@@ -248,19 +247,20 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 	}
 
 	public record SyncData(boolean showDetails, BlockHitResult hit, BlockState blockState, ItemStack fakeBlock) {
+		public static final StreamCodec<RegistryFriendlyByteBuf, SyncData> STREAM_CODEC = StreamCodec.composite(
+				ByteBufCodecs.BOOL,
+				SyncData::showDetails,
+				StreamCodec.of(FriendlyByteBuf::writeBlockHitResult, FriendlyByteBuf::readBlockHitResult),
+				SyncData::hit,
+				ByteBufCodecs.idMapper(Block.BLOCK_STATE_REGISTRY),
+				SyncData::blockState,
+				ItemStack.OPTIONAL_STREAM_CODEC,
+				SyncData::fakeBlock,
+				SyncData::new
+		);
+
 		public SyncData(BlockAccessor accessor) {
 			this(accessor.showDetails(), accessor.getHitResult(), accessor.getBlockState(), accessor.getFakeBlock());
-		}
-
-		public SyncData(FriendlyByteBuf buffer) {
-			this(buffer.readBoolean(), buffer.readBlockHitResult(), Block.stateById(buffer.readVarInt()), buffer.readItem());
-		}
-
-		public void write(FriendlyByteBuf buffer) {
-			buffer.writeBoolean(showDetails);
-			buffer.writeBlockHitResult(hit);
-			buffer.writeVarInt(Block.getId(blockState));
-			buffer.writeItem(fakeBlock);
 		}
 
 		public BlockAccessor unpack(ServerPlayer player) {

@@ -3,12 +3,13 @@ plugins {
     id 'idea'
     id 'maven-publish'
     id "me.shedaniel.unified-publishing" version "0.1.+"
-    id 'net.neoforged.gradle.userdev' version '7.0.80'
-    id 'net.neoforged.gradle.mixin' version '7.0.80'
+    id 'net.neoforged.gradle.userdev' version '7.0.107'
+    id 'net.neoforged.gradle.mixin' version '7.0.107'
 }
 
-version = "${minecraft_version}-neoforge-${mod_version}"
+version = "${minecraft_version}-NeoForge-${mod_version}"
 group = "snownee.jade" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+var realVersion = project.mod_version + '+neoforge'
 
 repositories {
     mavenLocal()
@@ -18,7 +19,7 @@ base {
     archivesName = "Jade"
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 
 if (System.getenv().BUILD_NUMBER != null) {
@@ -99,10 +100,6 @@ repositories {
     maven {
         url = "https://www.cursemaven.com"
     }
-    //maven {
-    //    name = "tehnut"
-    //    url = "https://maven.tehnut.info"
-    //}
 }
 
 mixin {
@@ -133,7 +130,7 @@ jar {
     manifest {
         attributes([
                 "Implementation-Title"    : project.name,
-                "Implementation-Version"  : "${mod_version}",
+                "Implementation-Version"  : "${realVersion}",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
                 "MixinConfigs"            : "${mod_id}.mixins.json"
         ])
@@ -156,10 +153,10 @@ publishing {
 unifiedPublishing {
     project {
         displayName = "[NeoForge $project.supported_version] $project.mod_version"
-        version = project.mod_version // Optional, Inferred from project by default
+        version = realVersion // Optional, Inferred from project by default
         changelog = file("CHANGELOG.md").exists() ? file("CHANGELOG.md").text : "" // Optional, in markdown format
         releaseType = project.release_type // Optional, use "release", "beta" or "alpha"
-        gameVersions = ["1.20.4"]
+        gameVersions = ["1.20.5"]
         gameLoaders = ["neoforge"]
 
         mainPublication tasks.jar // Declares the publicated jar

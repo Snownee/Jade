@@ -103,7 +103,14 @@ public class DisplayHelper implements IDisplayHelper {
 		RenderSystem.setShaderColor(red, green, blue, alpha);
 	}
 
-	private static void drawTextureWithMasking(Matrix4f matrix, float xCoord, float yCoord, TextureAtlasSprite textureSprite, float maskTop, float maskRight, float zLevel) {
+	private static void drawTextureWithMasking(
+			Matrix4f matrix,
+			float xCoord,
+			float yCoord,
+			TextureAtlasSprite textureSprite,
+			float maskTop,
+			float maskRight,
+			float zLevel) {
 		float uMin = textureSprite.getU0();
 		float uMax = textureSprite.getU1();
 		float vMin = textureSprite.getV0();
@@ -182,7 +189,15 @@ public class DisplayHelper implements IDisplayHelper {
 		drawGradientRect(guiGraphics, left, top, width, height, startColor, endColor, false);
 	}
 
-	public void drawGradientRect(GuiGraphics guiGraphics, float left, float top, float width, float height, int startColor, int endColor, boolean horizontal) {
+	public void drawGradientRect(
+			GuiGraphics guiGraphics,
+			float left,
+			float top,
+			float width,
+			float height,
+			int startColor,
+			int endColor,
+			boolean horizontal) {
 		if (startColor == -1 && endColor == -1) {
 			return;
 		}
@@ -219,7 +234,15 @@ public class DisplayHelper implements IDisplayHelper {
 	}
 
 	@Override
-	public void drawBorder(GuiGraphics guiGraphics, float minX, float minY, float maxX, float maxY, float width, int color, boolean corner) {
+	public void drawBorder(
+			GuiGraphics guiGraphics,
+			float minX,
+			float minY,
+			float maxX,
+			float maxY,
+			float width,
+			int color,
+			boolean corner) {
 		fill(guiGraphics, minX + width, minY, maxX - width, minY + width, color);
 		fill(guiGraphics, minX + width, maxY - width, maxX - width, maxY, color);
 		if (corner) {
@@ -231,7 +254,14 @@ public class DisplayHelper implements IDisplayHelper {
 		}
 	}
 
-	public void drawFluid(GuiGraphics guiGraphics, final float xPosition, final float yPosition, JadeFluidObject fluid, float width, float height, long capacityMb) {
+	public void drawFluid(
+			GuiGraphics guiGraphics,
+			final float xPosition,
+			final float yPosition,
+			JadeFluidObject fluid,
+			float width,
+			float height,
+			long capacityMb) {
 		if (fluid.isEmpty()) {
 			return;
 		}
@@ -261,7 +291,15 @@ public class DisplayHelper implements IDisplayHelper {
 		});
 	}
 
-	private void drawTiledSprite(GuiGraphics guiGraphics, final float xPosition, final float yPosition, final float tiledWidth, final float tiledHeight, int color, float scaledAmount, TextureAtlasSprite sprite) {
+	private void drawTiledSprite(
+			GuiGraphics guiGraphics,
+			final float xPosition,
+			final float yPosition,
+			final float tiledWidth,
+			final float tiledHeight,
+			int color,
+			float scaledAmount,
+			TextureAtlasSprite sprite) {
 		RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
 		Matrix4f matrix = guiGraphics.pose().last().pose();
 		setGLColorFromInt(color);
@@ -315,10 +353,12 @@ public class DisplayHelper implements IDisplayHelper {
 			formatter = dfCommasArray[2];
 		} else {
 			exp = (int) Math.log10(number) / 3;
-			if (exp > 7)
+			if (exp > 7) {
 				exp = 7;
-			if (exp > 0)
+			}
+			if (exp > 0) {
 				number /= Math.pow(1000, exp);
+			}
 			if (formatter == null) {
 				if (number < 10) {
 					formatter = dfCommasArray[0];
@@ -373,7 +413,14 @@ public class DisplayHelper implements IDisplayHelper {
 		betterTextShadow = false;
 	}
 
-	public void drawGradientProgress(GuiGraphics guiGraphics, float left, float top, float width, float height, float progress, int progressColor) {
+	public void drawGradientProgress(
+			GuiGraphics guiGraphics,
+			float left,
+			float top,
+			float width,
+			float height,
+			float progress,
+			int progressColor) {
 		Color color = Color.rgb(progressColor);
 		Color highlight = Color.hsl(color.getHue(), color.getSaturation(), Math.min(color.getLightness() + 0.2, 1), color.getOpacity());
 		if (progress < 0.1F) {
@@ -417,7 +464,17 @@ public class DisplayHelper implements IDisplayHelper {
 	}
 
 	@Override
-	public void blitSprite(GuiGraphics guiGraphics, ResourceLocation resourceLocation, int i, int j, int k, int l, int m, int n, int o, int p) {
+	public void blitSprite(
+			GuiGraphics guiGraphics,
+			ResourceLocation resourceLocation,
+			int i,
+			int j,
+			int k,
+			int l,
+			int m,
+			int n,
+			int o,
+			int p) {
 		RenderSystem.enableBlend();
 		guiGraphics.setColor(1, 1, 1, opacity());
 		guiGraphics.blitSprite(resourceLocation, i, j, k, l, m, n, o, p);
@@ -425,7 +482,18 @@ public class DisplayHelper implements IDisplayHelper {
 	}
 
 	@Override
-	public void blitSprite(GuiGraphics guiGraphics, ResourceLocation resourceLocation, int i, int j, int k, int l, int m, int n, int o, int p, int q) {
+	public void blitSprite(
+			GuiGraphics guiGraphics,
+			ResourceLocation resourceLocation,
+			int i,
+			int j,
+			int k,
+			int l,
+			int m,
+			int n,
+			int o,
+			int p,
+			int q) {
 		RenderSystem.enableBlend();
 		RenderSystem.setShaderColor(1, 1, 1, opacity());
 		guiGraphics.blitSprite(resourceLocation, i, j, k, l, m, n, o, p, q);

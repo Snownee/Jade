@@ -26,11 +26,13 @@ public enum CropProgressProvider implements IBlockComponentProvider {
 
 	@Override
 	public IElement getIcon(BlockAccessor accessor, IPluginConfig config, IElement currentIcon) {
-		if (accessor.getBlock() == Blocks.WHEAT)
+		if (accessor.getBlock() == Blocks.WHEAT) {
 			return IElementHelper.get().item(new ItemStack(Items.WHEAT));
+		}
 
-		if (accessor.getBlock() == Blocks.BEETROOTS)
+		if (accessor.getBlock() == Blocks.BEETROOTS) {
 			return IElementHelper.get().item(new ItemStack(Items.BEETROOT));
+		}
 
 		return null;
 	}
@@ -55,10 +57,13 @@ public enum CropProgressProvider implements IBlockComponentProvider {
 
 	private static void addMaturityTooltip(ITooltip tooltip, float growthValue) {
 		growthValue *= 100.0F;
-		if (growthValue < 100.0F)
+		if (growthValue < 100.0F) {
 			tooltip.add(Component.translatable("tooltip.jade.crop_growth", IThemeHelper.get().info(String.format("%.0f%%", growthValue))));
-		else
-			tooltip.add(Component.translatable("tooltip.jade.crop_growth", IThemeHelper.get().success(Component.translatable("tooltip.jade.crop_mature"))));
+		} else {
+			tooltip.add(Component.translatable(
+					"tooltip.jade.crop_growth",
+					IThemeHelper.get().success(Component.translatable("tooltip.jade.crop_mature"))));
+		}
 	}
 
 	@Override

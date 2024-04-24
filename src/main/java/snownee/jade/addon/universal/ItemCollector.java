@@ -5,13 +5,13 @@ import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 
-import org.jetbrains.annotations.Nullable;
-
 import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
+import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import snownee.jade.api.Accessor;
+import net.minecraft.world.item.component.CustomData;
 import snownee.jade.api.view.ViewGroup;
 
 public class ItemCollector<T> {
@@ -21,10 +21,11 @@ public class ItemCollector<T> {
 		if (stack.isEmpty()) {
 			return false;
 		}
-		CompoundTag tag = stack.getTag();
-		if (tag != null && tag.contains("CustomModelData")) {
-			for (String key : stack.getTag().getAllKeys()) {
-				if (key.toLowerCase(Locale.ENGLISH).endsWith("clear") && stack.getTag().getBoolean(key)) {
+		CustomData customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+		if (customData.contains("CustomModelData")) {
+			CompoundTag tag = customData.getUnsafe();
+			for (String key : tag.getAllKeys()) {
+				if (key.toLowerCase(Locale.ENGLISH).endsWith("clear") && tag.getBoolean(key)) {
 					return false;
 				}
 			}
@@ -41,7 +42,7 @@ public class ItemCollector<T> {
 		this.iterator = iterator;
 	}
 
-	public List<ViewGroup<ItemStack>> update(Accessor<?> target, long gameTime) {
+	public List<ViewGroup<ItemStack>> update(Object target, long gameTime) {
 		if (iterator == null) {
 			return null;
 		}
@@ -100,16 +101,15 @@ public class ItemCollector<T> {
 		return group;
 	}
 
-	public record ItemDefinition(Item item, @Nullable CompoundTag tag) {
+	public record ItemDefinition(Item item, DataComponentPatch components) {
 		ItemDefinition(ItemStack stack) {
-			this(stack.getItem(), stack.getTag());
+			this(stack.getItem(), stack.getComponentsPatch());
 		}
 
 		public ItemStack toStack(int count) {
-			ItemStack stack = new ItemStack(item);
-			stack.setCount(count);
-			stack.setTag(tag);
-			return stack;
+			ItemStack itemStack = new ItemStack(item, count);
+			itemStack.applyComponents(components);
+			return itemStack;
 		}
 	}
 }

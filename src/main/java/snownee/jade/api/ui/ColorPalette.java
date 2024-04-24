@@ -4,7 +4,14 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 public record ColorPalette(int normal, int info, int title, int success, int warning, int danger, int failure) {
-	public static final ColorPalette DEFAULT = new ColorPalette(0xFFA0A0A0, 0xFFFFFFFF, 0xFFFFFFFF, 0xFF55FF55, 0xFFFFF3CD, 0xFFFF5555, 0xFFAA0000);
+	public static final ColorPalette DEFAULT = new ColorPalette(
+			0xFFA0A0A0,
+			0xFFFFFFFF,
+			0xFFFFFFFF,
+			0xFF55FF55,
+			0xFFFFF3CD,
+			0xFFFF5555,
+			0xFFAA0000);
 
 	public static final Codec<ColorPalette> CODEC = RecordCodecBuilder.create(i -> i.group(
 			Color.CODEC.optionalFieldOf("normal", DEFAULT.normal).forGetter(ColorPalette::normal),

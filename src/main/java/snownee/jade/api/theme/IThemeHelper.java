@@ -38,7 +38,7 @@ public interface IThemeHelper {
 
 	MutableComponent modName(Object componentOrString);
 
-	MutableComponent seconds(int ticks);
+	MutableComponent seconds(int ticks, float tickRate);
 
 	default boolean isLightColorScheme() {
 		return theme().lightColorScheme;

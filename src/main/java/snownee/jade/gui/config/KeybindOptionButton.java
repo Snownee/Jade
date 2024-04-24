@@ -10,7 +10,7 @@ public class KeybindOptionButton extends OptionButton {
 	private final KeyMapping keybind;
 
 	public KeybindOptionButton(OptionsList owner, KeyMapping keybind) {
-		super(Component.translatable(keybind.getName()), null);
+		super(Component.translatable(keybind.getName()), (Button) null);
 		this.keybind = keybind;
 		var button = Button.builder(keybind.getTranslatedKeyMessage(), b -> {
 			owner.selectedKey = this.keybind;

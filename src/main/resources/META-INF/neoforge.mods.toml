@@ -1,6 +1,6 @@
 modLoader = "javafml"
 loaderVersion = "[1,)"
-license = "CC BY-NC-SA 4.0"
+license = "CC-BY-NC-SA-4.0"
 
 [[mods]]
 modId = "jade"
@@ -11,10 +11,11 @@ displayURL = "https://minecraft.curseforge.com/projects/jade"
 description = "Minecraft mod shows what you are looking at. (Hwyla fork)"
 logoFile = "icon.png"
 credits = "TehNut, ProfMobius, kalkafox"
+displayTest = "NONE"
 
 [[dependencies.jade]]
 modId = "neoforge"
 type = "required"
-versionRange = "[20.4.72, )"
+versionRange = "[20.5.0-beta, )"
 ordering = "NONE"
 side = "BOTH"

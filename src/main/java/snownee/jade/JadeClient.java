@@ -22,13 +22,13 @@ import net.minecraft.client.renderer.FogRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.block.Block;
@@ -52,12 +52,13 @@ import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
 import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.ColorPalette;
-import snownee.jade.api.ui.Direction2D;
+import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.ui.IBoxElement;
 import snownee.jade.api.ui.TooltipRect;
 import snownee.jade.gui.HomeConfigScreen;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.config.PluginConfig;
+import snownee.jade.impl.config.WailaConfig;
 import snownee.jade.impl.config.WailaConfig.ConfigGeneral;
 import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.overlay.WailaTickHandler;
@@ -67,7 +68,8 @@ import snownee.jade.util.ModIdentification;
 
 public final class JadeClient {
 
-	public static final SystemToast.SystemToastId JADE_TUTORIAL = new SystemToast.SystemToastId(10000L);
+	public static final SystemToast.SystemToastId JADE_TUTORIAL = new SystemToast.SystemToastId(6000L);
+	public static final SystemToast.SystemToastId JADE_PLEASE_WAIT = new SystemToast.SystemToastId(2000L);
 	public static KeyMapping openConfig;
 	public static KeyMapping showOverlay;
 	public static KeyMapping toggleLiquid;
@@ -98,8 +100,8 @@ public final class JadeClient {
 	public static void onKeyPressed(int action) {
 		while (openConfig.consumeClick()) {
 			Jade.CONFIG.invalidate();
-			ItemStorageProvider.INSTANCE.targetCache.invalidateAll();
-			ItemStorageProvider.INSTANCE.containerCache.invalidateAll();
+			ItemStorageProvider.targetCache.invalidateAll();
+			ItemStorageProvider.containerCache.invalidateAll();
 			Minecraft.getInstance().setScreen(new HomeConfigScreen(null));
 		}
 
@@ -108,9 +110,14 @@ public final class JadeClient {
 			DisplayMode mode = general.getDisplayMode();
 			if (mode == IWailaConfig.DisplayMode.TOGGLE) {
 				general.setDisplayTooltip(!general.shouldDisplayTooltip());
-				if (!general.shouldDisplayTooltip() && general.hintOverlayToggle) {
-					SystemToast.add(Minecraft.getInstance().getToasts(), JADE_TUTORIAL, Component.translatable("toast.jade.toggle_hint.1"), Component.translatable("toast.jade.toggle_hint.2", showOverlay.getTranslatedKeyMessage()));
-					general.hintOverlayToggle = false;
+				WailaConfig.ConfigHistory history = Jade.CONFIG.get().getHistory();
+				if (!general.shouldDisplayTooltip() && history.hintOverlayToggle) {
+					SystemToast.add(
+							Minecraft.getInstance().getToasts(),
+							JADE_TUTORIAL,
+							Component.translatable("toast.jade.toggle_hint.1"),
+							Component.translatable("toast.jade.toggle_hint.2", showOverlay.getTranslatedKeyMessage()));
+					history.hintOverlayToggle = false;
 				}
 				Jade.CONFIG.save();
 			}
@@ -124,9 +131,14 @@ public final class JadeClient {
 		while (narrate.consumeClick()) {
 			if (general.getTTSMode() == TTSMode.TOGGLE) {
 				general.toggleTTS();
-				if (general.shouldEnableTextToSpeech() && general.hintNarratorToggle) {
-					SystemToast.add(Minecraft.getInstance().getToasts(), JADE_TUTORIAL, Component.translatable("toast.jade.tts_hint.1"), Component.translatable("toast.jade.tts_hint.2", narrate.getTranslatedKeyMessage()));
-					general.hintNarratorToggle = false;
+				WailaConfig.ConfigHistory history = Jade.CONFIG.get().getHistory();
+				if (general.shouldEnableTextToSpeech() && history.hintNarratorToggle) {
+					SystemToast.add(
+							Minecraft.getInstance().getToasts(),
+							JADE_TUTORIAL,
+							Component.translatable("toast.jade.tts_hint.1"),
+							Component.translatable("toast.jade.tts_hint.2", narrate.getTranslatedKeyMessage()));
+					history.hintNarratorToggle = false;
 				}
 				Jade.CONFIG.save();
 			} else if (WailaTickHandler.instance().rootElement != null) {
@@ -151,18 +163,13 @@ public final class JadeClient {
 		}
 	}
 
-	public static void onTooltip(List<Component> tooltip, ItemStack stack, TooltipFlag context) {
-		appendModName(tooltip, stack, context);
-		if (Jade.CONFIG.get().getGeneral().isDebug() && stack.hasTag()) {
-			tooltip.add(NbtUtils.toPrettyComponent(stack.getTag()));
-		}
-	}
-
-	private static void appendModName(List<Component> tooltip, ItemStack stack, TooltipFlag context) {
-		if (hideModName || !Jade.CONFIG.get().getGeneral().showItemModNameTooltip())
+	public static void appendModName(List<Component> tooltip, ItemStack stack, Item.TooltipContext tooltipContext, TooltipFlag flag) {
+		if (hideModName || !Jade.CONFIG.get().getGeneral().showItemModNameTooltip()) {
 			return;
-		if (Minecraft.getInstance().screen instanceof CreativeModeInventoryScreen screen && screen.hoveredSlot != null && screen.hoveredSlot.getItem() == stack) {
-			if (CreativeModeInventoryScreen.selectedTab.getType() != CreativeModeTab.Type.CATEGORY || !context.isCreative()) {
+		}
+		if (Minecraft.getInstance().screen instanceof CreativeModeInventoryScreen screen && screen.hoveredSlot != null &&
+				screen.hoveredSlot.getItem() == stack) {
+			if (CreativeModeInventoryScreen.selectedTab.getType() != CreativeModeTab.Type.CATEGORY || !flag.isCreative()) {
 				return;
 			}
 		}
@@ -177,14 +184,16 @@ public final class JadeClient {
 	}
 
 	@Nullable
-	public static Accessor<?> builtInOverrides(HitResult hitResult, @Nullable Accessor<?> accessor, @Nullable Accessor<?> originalAccessor) {
+	public static Accessor<?> builtInOverrides(
+			HitResult hitResult, @Nullable Accessor<?> accessor, @Nullable Accessor<?> originalAccessor) {
 		if (WailaClientRegistration.instance().maybeLowVisionUser() || !IWailaConfig.get().getGeneral().getBuiltinCamouflage()) {
 			return accessor;
 		}
 		if (accessor instanceof BlockAccessor target) {
 			Player player = accessor.getPlayer();
-			if (player.isCreative() || player.isSpectator())
+			if (player.isCreative() || player.isSpectator()) {
 				return accessor;
+			}
 			IWailaClientRegistration client = VanillaPlugin.CLIENT_REGISTRATION;
 			if (target.getBlock() instanceof TrappedChestBlock) {
 				BlockState state = VanillaPlugin.getCorrespondingNormalChest(target.getBlockState());
@@ -208,7 +217,8 @@ public final class JadeClient {
 	}
 
 	@Nullable
-	public static Accessor<?> limitMobEffectFog(HitResult hitResult, @Nullable Accessor<?> accessor, @Nullable Accessor<?> originalAccessor) {
+	public static Accessor<?> limitMobEffectFog(
+			HitResult hitResult, @Nullable Accessor<?> accessor, @Nullable Accessor<?> originalAccessor) {
 		if (accessor == null) {
 			return null;
 		}
@@ -226,7 +236,12 @@ public final class JadeClient {
 			return accessor;
 		}
 		FogRenderer.FogData fogData = new FogRenderer.FogData(FogRenderer.FogMode.FOG_TERRAIN);
-		fogFunction.setupFog(fogData, player, player.getEffect(fogFunction.getMobEffect()), Math.max(32, mc.gameRenderer.getRenderDistance()), 1);
+		fogFunction.setupFog(
+				fogData,
+				player,
+				player.getEffect(fogFunction.getMobEffect()),
+				Math.max(32, mc.gameRenderer.getRenderDistance()),
+				1);
 		float dist = (fogData.start + fogData.end) * 0.5F;
 		if (accessor.getHitResult().distanceTo(player) > dist * dist) {
 			return null;
@@ -280,10 +295,10 @@ public final class JadeClient {
 			return;
 		}
 		color = IConfigOverlay.applyAlpha(color, progressAlpha);
-		float offset0 = theme.tooltipStyle.boxProgressOffset(Direction2D.UP);
-		float offset1 = theme.tooltipStyle.boxProgressOffset(Direction2D.RIGHT);
-		float offset2 = theme.tooltipStyle.boxProgressOffset(Direction2D.DOWN);
-		float offset3 = theme.tooltipStyle.boxProgressOffset(Direction2D.LEFT);
+		float offset0 = theme.tooltipStyle.boxProgressOffset(ScreenDirection.UP);
+		float offset1 = theme.tooltipStyle.boxProgressOffset(ScreenDirection.RIGHT);
+		float offset2 = theme.tooltipStyle.boxProgressOffset(ScreenDirection.DOWN);
+		float offset3 = theme.tooltipStyle.boxProgressOffset(ScreenDirection.LEFT);
 		width += offset1 - offset3;
 		DisplayHelper.fill(guiGraphics, offset3, top - 1 + offset0, offset3 + width * savedProgress, top + offset2, color);
 	}
@@ -294,5 +309,13 @@ public final class JadeClient {
 		} catch (Exception e) {
 			return Component.translatable(s, objects);
 		}
+	}
+
+	public static void pleaseWait() {
+		SystemToast.add(
+				Minecraft.getInstance().getToasts(),
+				JADE_PLEASE_WAIT,
+				Component.translatable("toast.jade.please_wait.1"),
+				Component.translatable("toast.jade.please_wait.2"));
 	}
 }

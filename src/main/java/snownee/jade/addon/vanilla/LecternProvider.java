@@ -1,6 +1,7 @@
 package snownee.jade.addon.vanilla;
 
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -16,6 +17,7 @@ import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.util.ServerDataUtil;
 
 public enum LecternProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
 
@@ -24,22 +26,26 @@ public enum LecternProvider implements IBlockComponentProvider, IServerDataProvi
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		BlockState state = accessor.getBlockState();
-		if (state.getValue(LecternBlock.HAS_BOOK) && accessor.getServerData().contains("Book")) {
-			ItemStack stack = ItemStack.of(accessor.getServerData().getCompound("Book"));
-			if (!stack.isEmpty()) {
-				IElementHelper helper = IElementHelper.get();
-				tooltip.add(helper.smallItem(stack));
-				tooltip.append(helper.text(IDisplayHelper.get().stripColor(stack.getHoverName())).message(I18n.get("narration.jade.bookName", stack.getHoverName().getString())));
-			}
+		if (!state.getValue(LecternBlock.HAS_BOOK)) {
+			return;
+		}
+		ItemStack stack = ServerDataUtil.read(accessor.getServerData(), ChiseledBookshelfProvider.BOOK_CODEC).orElse(ItemStack.EMPTY);
+		if (!stack.isEmpty()) {
+			IElementHelper helper = IElementHelper.get();
+			tooltip.add(helper.smallItem(stack));
+			tooltip.append(helper.text(IDisplayHelper.get().stripColor(stack.getHoverName()))
+					.message(I18n.get("narration.jade.bookName", stack.getHoverName().getString())));
 		}
 	}
 
 	@Override
 	public void appendServerData(CompoundTag data, BlockAccessor accessor) {
-		ItemStack stack = ((LecternBlockEntity) accessor.getBlockEntity()).getBook();
-		if (!stack.isEmpty()) {
-			if (stack.hasCustomHoverName() || stack.getItem() != Items.WRITABLE_BOOK) {
-				data.put("Book", stack.save(new CompoundTag()));
+		if (accessor.getBlockEntity() instanceof LecternBlockEntity lectern) {
+			ItemStack stack = lectern.getBook();
+			if (!stack.isEmpty()) {
+				if (stack.has(DataComponents.CUSTOM_NAME) || stack.getItem() != Items.WRITABLE_BOOK) {
+					ServerDataUtil.write(data, ChiseledBookshelfProvider.BOOK_CODEC, stack);
+				}
 			}
 		}
 	}

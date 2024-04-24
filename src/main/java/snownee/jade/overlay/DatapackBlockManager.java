@@ -19,7 +19,6 @@ import snownee.jade.api.Accessor;
 import snownee.jade.impl.BlockAccessorImpl;
 
 public class DatapackBlockManager {
-
 	private static final Set<BlockPos> itemFrames = Sets.newConcurrentHashSet();
 
 	public static void onEntityJoin(Entity entity) {
@@ -43,11 +42,7 @@ public class DatapackBlockManager {
 			if (entities.isEmpty()) {
 				itemFrames.remove(pos);
 			} else {
-				ItemStack stack = entities.get(0).getItem();
-				if (stack.hasTag() && stack.getTag().contains("storedItem")) {
-					stack = ItemStack.of(stack.getTagElement("storedItem"));
-				}
-				return stack;
+				return entities.get(0).getItem();
 			}
 		}
 		return ItemStack.EMPTY;

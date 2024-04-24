@@ -8,14 +8,14 @@ import org.jetbrains.annotations.Nullable;
 
 import com.google.common.math.IntMath;
 
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
 import snownee.jade.addon.universal.ItemIterator;
-import snownee.jade.api.Accessor;
+import snownee.jade.api.fluid.JadeFluidObject;
+import snownee.jade.api.view.FluidView;
 import snownee.jade.api.view.ViewGroup;
 
 public class JadeForgeUtils {
@@ -27,9 +27,11 @@ public class JadeForgeUtils {
 		return fromItemHandler(storage, fromIndex, CommonProxy::findItemHandler);
 	}
 
-	public static ItemIterator<? extends IItemHandler> fromItemHandler(IItemHandler storage, int fromIndex, Function<Accessor<?>, @Nullable IItemHandler> containerFinder) {
+	public static ItemIterator<? extends IItemHandler> fromItemHandler(
+			IItemHandler storage,
+			int fromIndex,
+			Function<Object, @Nullable IItemHandler> containerFinder) {
 		return new ItemIterator.SlottedItemIterator<>(containerFinder, fromIndex) {
-
 			@Override
 			protected int getSlotCount(IItemHandler container) {
 				return container.getSlots();
@@ -42,18 +44,8 @@ public class JadeForgeUtils {
 		};
 	}
 
-	public static CompoundTag fromFluidStack(FluidStack fluidStack, long capacity) {
-		CompoundTag tag = new CompoundTag();
-		if (capacity <= 0) {
-			return tag;
-		}
-		tag.putString("fluid", BuiltInRegistries.FLUID.getKey(fluidStack.getFluid()).toString());
-		tag.putLong("amount", fluidStack.getAmount());
-		tag.putLong("capacity", capacity);
-		if (fluidStack.getTag() != null) {
-			tag.put("tag", fluidStack.getTag());
-		}
-		return tag;
+	public static JadeFluidObject fromFluidStack(FluidStack fluidStack) {
+		return JadeFluidObject.of(fluidStack.getFluid(), fluidStack.getAmount(), fluidStack.getComponentsPatch());
 	}
 
 	public static List<ViewGroup<CompoundTag>> fromFluidHandler(IFluidHandler fluidHandler) {
@@ -61,17 +53,18 @@ public class JadeForgeUtils {
 		int emptyCapacity = 0;
 		for (int i = 0; i < fluidHandler.getTanks(); i++) {
 			int capacity = fluidHandler.getTankCapacity(i);
-			if (capacity <= 0)
+			if (capacity <= 0) {
 				continue;
+			}
 			FluidStack fluidStack = fluidHandler.getFluidInTank(i);
 			if (fluidStack.isEmpty()) {
 				emptyCapacity = IntMath.saturatedAdd(emptyCapacity, capacity);
 				continue;
 			}
-			list.add(fromFluidStack(fluidStack, capacity));
+			list.add(FluidView.writeDefault(fromFluidStack(fluidStack), capacity));
 		}
 		if (list.isEmpty() && emptyCapacity > 0) {
-			list.add(fromFluidStack(FluidStack.EMPTY, emptyCapacity));
+			list.add(FluidView.writeDefault(JadeFluidObject.empty(), emptyCapacity));
 		}
 		if (!list.isEmpty()) {
 			return List.of(new ViewGroup<>(list));

@@ -13,7 +13,7 @@ public abstract class ProgressStyle {
 	protected IElement overlay;
 	protected boolean fitContentX = true;
 	protected boolean fitContentY = true;
-	protected Direction2D direction = Direction2D.RIGHT;
+	protected ScreenDirection direction = ScreenDirection.RIGHT;
 
 	public ProgressStyle color(int color) {
 		return color(color, color);
@@ -23,12 +23,12 @@ public abstract class ProgressStyle {
 
 	public abstract ProgressStyle textColor(int color);
 
-	public ProgressStyle direction(Direction2D direction) {
+	public ProgressStyle direction(ScreenDirection direction) {
 		this.direction = Objects.requireNonNull(direction);
 		return this;
 	}
 
-	public Direction2D direction() {
+	public ScreenDirection direction() {
 		return direction;
 	}
 

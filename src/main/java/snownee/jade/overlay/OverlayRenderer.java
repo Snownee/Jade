@@ -47,11 +47,13 @@ public class OverlayRenderer {
 		}
 
 		ConfigGeneral general = Jade.CONFIG.get().getGeneral();
-		if (!general.shouldDisplayTooltip())
+		if (!general.shouldDisplayTooltip()) {
 			return false;
+		}
 
-		if (general.getDisplayMode() == IWailaConfig.DisplayMode.HOLD_KEY && !JadeClient.showOverlay.isDown())
+		if (general.getDisplayMode() == IWailaConfig.DisplayMode.HOLD_KEY && !JadeClient.showOverlay.isDown()) {
 			return false;
+		}
 
 		BossBarOverlapMode mode = Jade.CONFIG.get().getGeneral().getBossBarOverlapMode();
 		if (mode == BossBarOverlapMode.HIDE_TOOLTIP && ClientProxy.getBossBarRect() != null) {
@@ -64,8 +66,9 @@ public class OverlayRenderer {
 	public static boolean shouldShowImmediately(BoxElement box) {
 		Minecraft mc = Minecraft.getInstance();
 
-		if (mc.level == null)
+		if (mc.level == null) {
 			return false;
+		}
 
 		if (!ClientProxy.shouldShowWithOverlay(mc, mc.screen)) {
 			return false;
@@ -88,11 +91,13 @@ public class OverlayRenderer {
 			}
 		}
 
-		if (mc.gui.getDebugOverlay().showDebugScreen() && general.shouldHideFromDebug())
+		if (mc.gui.getDebugOverlay().showDebugScreen() && general.shouldHideFromDebug()) {
 			return false;
+		}
 
-		if (mc.getOverlay() != null || mc.options.hideGui)
+		if (mc.getOverlay() != null || mc.options.hideGui) {
 			return false;
+		}
 
 		if (mc.gui.getTabList().visible && general.shouldHideFromTabList()) {
 			return false;

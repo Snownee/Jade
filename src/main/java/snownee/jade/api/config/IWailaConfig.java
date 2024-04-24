@@ -8,6 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.ClipContext;
 import snownee.jade.Internals;
+import snownee.jade.api.SimpleStringRepresentable;
 import snownee.jade.api.theme.Theme;
 
 @NonExtendable
@@ -25,19 +26,19 @@ public interface IWailaConfig {
 
 	IPluginConfig getPlugin();
 
-	enum IconMode {
+	enum IconMode implements SimpleStringRepresentable {
 		TOP, CENTERED, HIDE
 	}
 
-	enum TTSMode {
+	enum TTSMode implements SimpleStringRepresentable {
 		TOGGLE, PRESS
 	}
 
-	enum DisplayMode {
+	enum DisplayMode implements SimpleStringRepresentable {
 		HOLD_KEY, TOGGLE, LITE
 	}
 
-	enum FluidMode {
+	enum FluidMode implements SimpleStringRepresentable {
 		NONE(ClipContext.Fluid.NONE), ANY(ClipContext.Fluid.ANY), SOURCE_ONLY(ClipContext.Fluid.SOURCE_ONLY);
 
 		public final ClipContext.Fluid ctx;
@@ -47,7 +48,7 @@ public interface IWailaConfig {
 		}
 	}
 
-	enum BossBarOverlapMode {
+	enum BossBarOverlapMode implements SimpleStringRepresentable {
 		NO_OPERATION, HIDE_BOSS_BAR, HIDE_TOOLTIP, PUSH_DOWN
 	}
 
@@ -102,9 +103,9 @@ public interface IWailaConfig {
 
 		boolean showItemModNameTooltip();
 
-		float getReachDistance();
+		float getExtendedReach();
 
-		void setReachDistance(float reachDistance);
+		void setExtendedReach(float extendedReach);
 
 		BossBarOverlapMode getBossBarOverlapMode();
 
@@ -124,8 +125,9 @@ public interface IWailaConfig {
 
 		static int applyAlpha(int color, float alpha) {
 			int prevAlphaChannel = (color >> 24) & 0xFF;
-			if (prevAlphaChannel > 0)
+			if (prevAlphaChannel > 0) {
 				alpha *= prevAlphaChannel / 256f;
+			}
 			int alphaChannel = Mth.clamp((int) (0xFF * alpha), 4, 255);
 			return (color & 0xFFFFFF) | alphaChannel << 24;
 		}

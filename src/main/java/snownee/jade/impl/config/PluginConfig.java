@@ -46,8 +46,8 @@ import snownee.jade.util.ModIdentification;
 public class PluginConfig implements IPluginConfig {
 
 	public static final PluginConfig INSTANCE = new PluginConfig();
-	public static final String CLIENT_FILE = Jade.MODID + "/plugins.json";
-	public static final String SERVER_FILE = Jade.MODID + "/server-plugin-overrides.json";
+	public static final String CLIENT_FILE = Jade.ID + "/plugins.json";
+	public static final String SERVER_FILE = Jade.ID + "/server-plugin-overrides.json";
 
 	private final Map<ResourceLocation, ConfigEntry<Object>> configs = Maps.newHashMap();
 	private final Multimap<ResourceLocation, Component> categoryOverrides = ArrayListMultimap.create();
@@ -67,7 +67,10 @@ public class PluginConfig implements IPluginConfig {
 	public void addConfig(ConfigEntry<?> entry) {
 		Preconditions.checkArgument(StringUtils.countMatches(entry.getId().getPath(), '.') <= 1);
 		Preconditions.checkArgument(!containsKey(entry.getId()), "Duplicate config key: %s", entry.getId());
-		Preconditions.checkArgument(entry.isValidValue(entry.getDefaultValue()), "Default value of config %s does not pass value check", entry.getId());
+		Preconditions.checkArgument(
+				entry.isValidValue(entry.getDefaultValue()),
+				"Default value of config %s does not pass value check",
+				entry.getId());
 		configs.put(entry.getId(), (ConfigEntry<Object>) entry);
 	}
 
@@ -94,7 +97,8 @@ public class PluginConfig implements IPluginConfig {
 		if (CommonProxy.isPhysicallyClient()) {
 			return (Boolean) getEntry(key).getValue();
 		} else {
-			return Optional.ofNullable(serverConfigs).map($ -> $.getAsJsonObject(key.getNamespace())).map($ -> $.get(key.getPath())).map(JsonElement::getAsBoolean).orElse(false);
+			return Optional.ofNullable(serverConfigs).map($ -> $.getAsJsonObject(key.getNamespace())).map($ -> $.get(key.getPath())).map(
+					JsonElement::getAsBoolean).orElse(false);
 		}
 	}
 
@@ -146,8 +150,9 @@ public class PluginConfig implements IPluginConfig {
 		boolean client = CommonProxy.isPhysicallyClient();
 		File configFile = getFile();
 
-		if (client)
+		if (client) {
 			configs.values().forEach($ -> $.setSynced(false));
+		}
 
 		if (!configFile.exists()) {
 			writeConfig(configFile, true);
@@ -156,10 +161,10 @@ public class PluginConfig implements IPluginConfig {
 		if (client) {
 			Map<String, Map<String, Object>> config;
 			try (FileReader reader = new FileReader(configFile, StandardCharsets.UTF_8)) {
-				config = JsonConfig.DEFAULT_GSON.fromJson(reader, new TypeToken<Map<String, Map<String, Object>>>() {
+				config = JsonConfig.GSON.fromJson(reader, new TypeToken<Map<String, Map<String, Object>>>() {
 				}.getType());
 			} catch (Exception e) {
-				e.printStackTrace();
+				Jade.LOGGER.error("Failed to read client plugin config file", e);
 				config = Maps.newHashMap();
 			}
 
@@ -170,8 +175,9 @@ public class PluginConfig implements IPluginConfig {
 				if (!configs.containsKey(id)) {
 					return;
 				}
-				if (!set(id, value))
+				if (!set(id, value)) {
 					saveFlag.setTrue();
+				}
 				found.add(id);
 			}));
 
@@ -183,13 +189,14 @@ public class PluginConfig implements IPluginConfig {
 				}
 			}
 
-			if (saveFlag.isTrue())
+			if (saveFlag.isTrue()) {
 				save();
+			}
 		} else {
 			try (FileReader reader = new FileReader(configFile, StandardCharsets.UTF_8)) {
-				serverConfigs = JsonConfig.DEFAULT_GSON.fromJson(reader, JsonObject.class);
+				serverConfigs = JsonConfig.GSON.fromJson(reader, JsonObject.class);
 			} catch (Exception e) {
-				e.printStackTrace();
+				Jade.LOGGER.error("Failed to read server plugin config file", e);
 				serverConfigs = null;
 			}
 		}
@@ -206,20 +213,22 @@ public class PluginConfig implements IPluginConfig {
 			Map<String, Map<String, Object>> config = Maps.newHashMap();
 			configs.values().forEach(e -> {
 				Map<String, Object> modConfig = config.computeIfAbsent(e.getId().getNamespace(), k -> Maps.newHashMap());
-				if (reset)
+				if (reset) {
 					e.setValue(e.getDefaultValue());
+				}
 				modConfig.put(e.getId().getPath(), e.getValue());
 			});
-			json = JsonConfig.DEFAULT_GSON.toJson(config);
+			json = JsonConfig.GSON.toJson(config);
 		} else {
 			json = "{}";
 		}
-		if (!file.getParentFile().exists())
+		if (!file.getParentFile().exists()) {
 			file.getParentFile().mkdirs();
+		}
 		try (FileWriter writer = new FileWriter(file, StandardCharsets.UTF_8)) {
 			writer.write(json);
 		} catch (IOException e) {
-			e.printStackTrace();
+			Jade.LOGGER.error("Failed to write plugin config file", e);
 		}
 	}
 
@@ -231,14 +240,15 @@ public class PluginConfig implements IPluginConfig {
 				if (configEntry != null) {
 					JsonPrimitive primitive = entry.getValue().getAsJsonPrimitive();
 					Object v;
-					if (primitive.isBoolean())
+					if (primitive.isBoolean()) {
 						v = primitive.getAsBoolean();
-					else if (primitive.isNumber())
+					} else if (primitive.isNumber()) {
 						v = primitive.getAsNumber();
-					else if (primitive.isString())
+					} else if (primitive.isString()) {
 						v = primitive.getAsString();
-					else
+					} else {
 						return;
+					}
 					if (configEntry.isValidValue(v)) {
 						configEntry.setValue(v);
 						configEntry.setSynced(true);
@@ -294,7 +304,7 @@ public class PluginConfig implements IPluginConfig {
 			}
 			String namespace = key.getNamespace();
 			Optional<String> modName = ModIdentification.getModName(namespace);
-			if (!Jade.MODID.equals(namespace) && modName.isPresent()) {
+			if (!Jade.ID.equals(namespace) && modName.isPresent()) {
 				categoryMap.put(modName.get(), entry);
 			} else {
 				categoryMap.put(I18n.get(OptionsList.Entry.makeKey("plugin_" + namespace)), entry);
@@ -303,7 +313,8 @@ public class PluginConfig implements IPluginConfig {
 
 		return categoryMap.asMap().entrySet().stream()
 				.map(e -> new Category(Component.literal(e.getKey()), e.getValue().stream()
-						.sorted(Comparator.comparingInt($ -> WailaCommonRegistration.instance().priorities.getSortedList().indexOf($.getId())))
+						.sorted(Comparator.comparingInt($ -> WailaCommonRegistration.instance().priorities.getSortedList()
+								.indexOf($.getId())))
 						.toList()
 				))
 				.sorted(Comparator.comparingInt(specialOrder()).thenComparing($ -> $.title.getString()))
@@ -311,8 +322,8 @@ public class PluginConfig implements IPluginConfig {
 	}
 
 	private static ToIntFunction<Category> specialOrder() {
-		String core = I18n.get(OptionsList.Entry.makeKey("plugin_" + Jade.MODID));
-		String debug = I18n.get(OptionsList.Entry.makeKey("plugin_" + Jade.MODID + ".debug"));
+		String core = I18n.get(OptionsList.Entry.makeKey("plugin_" + Jade.ID));
+		String debug = I18n.get(OptionsList.Entry.makeKey("plugin_" + Jade.ID + ".debug"));
 		// core is always the first, debug is always the last
 		return category -> {
 			String title = category.title.getString();

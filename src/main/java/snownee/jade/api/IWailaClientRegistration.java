@@ -45,7 +45,7 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 	 */
 	void addConfig(ResourceLocation key, boolean defaultValue);
 
-	void addConfig(ResourceLocation key, Enum<?> defaultValue);
+	<T extends Enum<T>> void addConfig(ResourceLocation key, T defaultValue);
 
 	void addConfig(ResourceLocation key, String defaultValue, Predicate<String> validator);
 
@@ -65,37 +65,37 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 	 * Register an {@link IJadeProvider} instance to allow overriding the icon for a block via the
 	 * {@link IBlockComponentProvider#getIcon(BlockAccessor, IPluginConfig, IElement)} method.
 	 *
-	 * @param provider The data provider instance
-	 * @param block    The highest level class to apply to
+	 * @param provider   The data provider instance
+	 * @param blockClass The highest level class to apply to
 	 */
-	void registerBlockIcon(IBlockComponentProvider provider, Class<? extends Block> block);
+	void registerBlockIcon(IComponentProvider<BlockAccessor> provider, Class<? extends Block> blockClass);
 
 	/**
 	 * Register an {@link IJadeProvider} instance for appending informations to
 	 * the tooltip.
 	 *
-	 * @param provider The data provider instance
-	 * @param block    The highest level class to apply to
+	 * @param provider   The data provider instance
+	 * @param blockClass The highest level class to apply to
 	 */
-	void registerBlockComponent(IBlockComponentProvider provider, Class<? extends Block> block);
+	void registerBlockComponent(IComponentProvider<BlockAccessor> provider, Class<? extends Block> blockClass);
 
 	/**
 	 * Register an {@link IEntityComponentProvider} instance to allow overriding the icon for a entity via the
 	 * {@link IEntityComponentProvider#getIcon(EntityAccessor, IPluginConfig, IElement)} method.
 	 *
-	 * @param provider The data provider instance
-	 * @param entity   The highest level class to apply to
+	 * @param provider    The data provider instance
+	 * @param entityClass The highest level class to apply to
 	 */
-	void registerEntityIcon(IEntityComponentProvider provider, Class<? extends Entity> entity);
+	void registerEntityIcon(IComponentProvider<EntityAccessor> provider, Class<? extends Entity> entityClass);
 
 	/**
 	 * Register an {@link IEntityComponentProvider} instance for appending {@link net.minecraft.network.chat.Component}
 	 * to the tooltip.
 	 *
-	 * @param provider The data provider instance
-	 * @param entity   The highest level class to apply to
+	 * @param provider    The data provider instance
+	 * @param entityClass The highest level class to apply to
 	 */
-	void registerEntityComponent(IEntityComponentProvider provider, Class<? extends Entity> entity);
+	void registerEntityComponent(IComponentProvider<EntityAccessor> provider, Class<? extends Entity> entityClass);
 
 	/**
 	 * Mark a block as hidden in tooltip.
@@ -165,9 +165,6 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 	}
 
 	void addBeforeTooltipCollectCallback(int priority, JadeBeforeTooltipCollectCallback callback);
-
-	@Deprecated
-	Screen createPluginConfigScreen(@Nullable Screen parent, @Nullable String namespace);
 
 	Screen createPluginConfigScreen(@Nullable Screen parent, @Nullable Component jumpToCategory);
 

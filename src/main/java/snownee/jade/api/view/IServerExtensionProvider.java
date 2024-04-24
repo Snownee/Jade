@@ -7,9 +7,13 @@ import org.jetbrains.annotations.Nullable;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.IJadeProvider;
 
-public interface IServerExtensionProvider<IN, OUT> extends IJadeProvider {
+public interface IServerExtensionProvider<T> extends IJadeProvider {
 
 	@Nullable
-	List<ViewGroup<OUT>> getGroups(Accessor<?> accessor, IN target);
+	List<ViewGroup<T>> getGroups(Accessor<?> accessor);
+
+	default boolean shouldRequestData(Accessor<?> accessor) {
+		return true;
+	}
 
 }

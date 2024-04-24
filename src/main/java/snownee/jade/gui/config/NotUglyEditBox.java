@@ -7,7 +7,6 @@ import java.util.function.Predicate;
 
 import org.jetbrains.annotations.Nullable;
 
-import net.minecraft.SharedConstants;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
@@ -28,6 +27,7 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
+import net.minecraft.util.StringUtil;
 
 public class NotUglyEditBox extends AbstractWidget implements Renderable {
 	private final Font font;
@@ -50,7 +50,9 @@ public class NotUglyEditBox extends AbstractWidget implements Renderable {
 	@Nullable
 	private String suggestion;
 	private Predicate<String> filter = Objects::nonNull;
-	private BiFunction<String, Integer, FormattedCharSequence> formatter = (string, integer) -> FormattedCharSequence.forward(string, Style.EMPTY);
+	private BiFunction<String, Integer, FormattedCharSequence> formatter = (string, integer) -> FormattedCharSequence.forward(
+			string,
+			Style.EMPTY);
 	@Nullable
 	private Component hint;
 	private long focusedTime = Util.getMillis();
@@ -110,7 +112,7 @@ public class NotUglyEditBox extends AbstractWidget implements Renderable {
 		int i = Math.min(this.cursorPos, this.highlightPos);
 		int j = Math.max(this.cursorPos, this.highlightPos);
 		int k = this.maxLength - this.value.length() - (i - j);
-		if (k < (l = (string2 = SharedConstants.filterText(string)).length())) {
+		if (k < (l = (string2 = StringUtil.filterText(string)).length())) {
 			string2 = string2.substring(0, k);
 			l = k;
 		}
@@ -257,46 +259,46 @@ public class NotUglyEditBox extends AbstractWidget implements Renderable {
 			return true;
 		}
 		switch (i) {
-		case 263 -> {
-			if (Screen.hasControlDown()) {
-				this.moveCursorTo(this.getWordPosition(-1));
-			} else {
-				this.moveCursor(-1);
+			case 263 -> {
+				if (Screen.hasControlDown()) {
+					this.moveCursorTo(this.getWordPosition(-1));
+				} else {
+					this.moveCursor(-1);
+				}
+				return true;
 			}
-			return true;
-		}
-		case 262 -> {
-			if (Screen.hasControlDown()) {
-				this.moveCursorTo(this.getWordPosition(1));
-			} else {
-				this.moveCursor(1);
+			case 262 -> {
+				if (Screen.hasControlDown()) {
+					this.moveCursorTo(this.getWordPosition(1));
+				} else {
+					this.moveCursor(1);
+				}
+				return true;
 			}
-			return true;
-		}
-		case 259 -> {
-			if (this.isEditable) {
-				this.shiftPressed = false;
-				this.deleteText(-1);
-				this.shiftPressed = Screen.hasShiftDown();
+			case 259 -> {
+				if (this.isEditable) {
+					this.shiftPressed = false;
+					this.deleteText(-1);
+					this.shiftPressed = Screen.hasShiftDown();
+				}
+				return true;
 			}
-			return true;
-		}
-		case 261 -> {
-			if (this.isEditable) {
-				this.shiftPressed = false;
-				this.deleteText(1);
-				this.shiftPressed = Screen.hasShiftDown();
+			case 261 -> {
+				if (this.isEditable) {
+					this.shiftPressed = false;
+					this.deleteText(1);
+					this.shiftPressed = Screen.hasShiftDown();
+				}
+				return true;
 			}
-			return true;
-		}
-		case 268 -> {
-			this.moveCursorToStart();
-			return true;
-		}
-		case 269 -> {
-			this.moveCursorToEnd();
-			return true;
-		}
+			case 268 -> {
+				this.moveCursorToStart();
+				return true;
+			}
+			case 269 -> {
+				this.moveCursorToEnd();
+				return true;
+			}
 		}
 		return false;
 	}
@@ -310,7 +312,7 @@ public class NotUglyEditBox extends AbstractWidget implements Renderable {
 		if (!this.canConsumeInput()) {
 			return false;
 		}
-		if (SharedConstants.isAllowedChatCharacter(c)) {
+		if (StringUtil.isAllowedChatCharacter(c)) {
 			if (this.isEditable) {
 				this.insertText(Character.toString(c));
 			}
@@ -357,7 +359,7 @@ public class NotUglyEditBox extends AbstractWidget implements Renderable {
 		int m = this.highlightPos - this.displayPos;
 		String string = this.font.plainSubstrByWidth(this.value.substring(this.displayPos), this.getInnerWidth());
 		boolean bl = l >= 0 && l <= string.length();
-        boolean bl2 = this.isFocused() && (Util.getMillis() - this.focusedTime) / 300L % 2L == 0L && bl;
+		boolean bl2 = this.isFocused() && (Util.getMillis() - this.focusedTime) / 300L % 2L == 0L && bl;
 		int n = getX() + paddingLeft;
 		int o = getY() + paddingTop;
 		int p = n;
@@ -462,7 +464,8 @@ public class NotUglyEditBox extends AbstractWidget implements Renderable {
 
 	@Override
 	public boolean isMouseOver(double d, double e) {
-		return this.visible && d >= (double) this.getX() && d < (double) (this.getX() + this.width) && e >= (double) this.getY() && e < (double) (this.getY() + this.height);
+		return this.visible && d >= (double) this.getX() && d < (double) (this.getX() + this.width) && e >= (double) this.getY() &&
+				e < (double) (this.getY() + this.height);
 	}
 
 	@Override
@@ -472,7 +475,7 @@ public class NotUglyEditBox extends AbstractWidget implements Renderable {
 		}
 		super.setFocused(bl);
 		if (bl) {
-            this.focusedTime = Util.getMillis();
+			this.focusedTime = Util.getMillis();
 		}
 	}
 

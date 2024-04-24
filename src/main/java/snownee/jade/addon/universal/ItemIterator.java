@@ -9,22 +9,21 @@ import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
-import snownee.jade.api.Accessor;
 
 public abstract class ItemIterator<T> {
 	public static final AtomicLong version = new AtomicLong();
-	protected final Function<Accessor<?>, @Nullable T> containerFinder;
+	protected final Function<Object, @Nullable T> containerFinder;
 	protected final int fromIndex;
 	protected boolean finished;
 	protected int currentIndex;
 
-	protected ItemIterator(Function<Accessor<?>, @Nullable T> containerFinder, int fromIndex) {
+	protected ItemIterator(Function<Object, @Nullable T> containerFinder, int fromIndex) {
 		this.containerFinder = containerFinder;
 		this.currentIndex = this.fromIndex = fromIndex;
 	}
 
-	public @Nullable T find(Accessor<?> accessor) {
-		return containerFinder.apply(accessor);
+	public @Nullable T find(Object target) {
+		return containerFinder.apply(target);
 	}
 
 	public final boolean isFinished() {
@@ -56,7 +55,7 @@ public abstract class ItemIterator<T> {
 	public static abstract class SlottedItemIterator<T> extends ItemIterator<T> {
 		protected float progress;
 
-		public SlottedItemIterator(Function<Accessor<?>, @Nullable T> containerFinder, int fromIndex) {
+		public SlottedItemIterator(Function<Object, @Nullable T> containerFinder, int fromIndex) {
 			super(containerFinder, fromIndex);
 		}
 
@@ -84,15 +83,10 @@ public abstract class ItemIterator<T> {
 
 	public static class ContainerItemIterator extends SlottedItemIterator<Container> {
 		public ContainerItemIterator(int fromIndex) {
-			this(accessor -> {
-				if (accessor.getTarget() instanceof Container container) {
-					return container;
-				}
-				return null;
-			}, fromIndex);
+			this(Container.class::cast, fromIndex);
 		}
 
-		public ContainerItemIterator(Function<Accessor<?>, @Nullable Container> containerFinder, int fromIndex) {
+		public ContainerItemIterator(Function<Object, @Nullable Container> containerFinder, int fromIndex) {
 			super(containerFinder, fromIndex);
 		}
 
@@ -109,7 +103,7 @@ public abstract class ItemIterator<T> {
 
 	public static abstract class SlotlessItemIterator<T> extends ItemIterator<T> {
 
-		protected SlotlessItemIterator(Function<Accessor<?>, @Nullable T> containerFinder, int fromIndex) {
+		protected SlotlessItemIterator(Function<Object, @Nullable T> containerFinder, int fromIndex) {
 			super(containerFinder, fromIndex);
 		}
 

@@ -4,18 +4,18 @@ import java.util.List;
 import java.util.Optional;
 
 import com.google.common.collect.Lists;
+import com.mojang.serialization.MapCodec;
 
-import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.ContainerHelper;
-import net.minecraft.world.item.EnchantedBookItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.block.ChiseledBookShelfBlock;
-import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.entity.ChiseledBookShelfBlockEntity;
-import net.minecraft.world.phys.Vec2;
 import snownee.jade.addon.universal.ItemStorageProvider;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
@@ -26,63 +26,56 @@ import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.util.ServerDataUtil;
 
 public enum ChiseledBookshelfProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
 
 	INSTANCE;
 
+	public static final MapCodec<ItemStack> BOOK_CODEC = ItemStack.CODEC.fieldOf("book");
+
 	private static ItemStack getHitBook(BlockAccessor accessor) {
-		if (!(accessor.getBlockEntity() instanceof ChiseledBookShelfBlockEntity)) {
+		if (accessor.showDetails()) {
 			return ItemStack.EMPTY;
 		}
-		if (!accessor.getServerData().contains("Bookshelf")) {
-			return ItemStack.EMPTY;
-		}
-		Optional<Vec2> optional = ChiseledBookShelfBlock.getRelativeHitCoordinatesForBlockFace(accessor.getHitResult(), accessor.getBlockState().getValue(HorizontalDirectionalBlock.FACING));
-		if (optional.isEmpty()) {
-			return ItemStack.EMPTY;
-		}
-		int i = ChiseledBookShelfBlock.getHitSlot(optional.get());
-		NonNullList<ItemStack> items = NonNullList.withSize(((ChiseledBookShelfBlockEntity) accessor.getBlockEntity()).getContainerSize(), ItemStack.EMPTY);
-		ContainerHelper.loadAllItems(accessor.getServerData().getCompound("Bookshelf"), items);
-		if (i >= items.size()) {
-			return ItemStack.EMPTY;
-		}
-		return items.get(i);
+		Optional<ItemStack> result = ServerDataUtil.read(accessor.getServerData(), BOOK_CODEC);
+		return result.orElse(ItemStack.EMPTY);
 	}
 
 	@Override
 	public IElement getIcon(BlockAccessor accessor, IPluginConfig config, IElement currentIcon) {
-		if (accessor.showDetails()) {
-			return null;
-		}
 		ItemStack item = getHitBook(accessor);
 		return item.isEmpty() ? null : IElementHelper.get().item(item);
 	}
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		if (accessor.showDetails()) {
-			return;
-		}
 		ItemStack item = getHitBook(accessor);
 		if (item.isEmpty()) {
 			return;
 		}
 		tooltip.remove(Identifiers.UNIVERSAL_ITEM_STORAGE);
 		tooltip.add(IDisplayHelper.get().stripColor(item.getHoverName()));
-		if (item.getTag() != null && item.getTag().contains(EnchantedBookItem.TAG_STORED_ENCHANTMENTS)) {
+		if (item.has(DataComponents.STORED_ENCHANTMENTS)) {
 			List<Component> list = Lists.newArrayList();
-			ItemStack.appendEnchantmentNames(list, EnchantedBookItem.getEnchantments(item));
+			item.getOrDefault(DataComponents.STORED_ENCHANTMENTS, ItemEnchantments.EMPTY)
+					.addToTooltip(Item.TooltipContext.of(accessor.getLevel()), list::add, TooltipFlag.NORMAL);
 			tooltip.addAll(list);
 		}
 	}
 
 	@Override
 	public void appendServerData(CompoundTag data, BlockAccessor accessor) {
-		ChiseledBookShelfBlockEntity be = (ChiseledBookShelfBlockEntity) accessor.getBlockEntity();
-		if (!be.isEmpty()) {
-			data.put("Bookshelf", be.saveWithoutMetadata());
+		if (accessor.getBlockEntity() instanceof ChiseledBookShelfBlockEntity bookshelf) {
+			int slot = ((ChiseledBookShelfBlock) accessor.getBlock()).getHitSlot(accessor.getHitResult(), accessor.getBlockState())
+					.orElse(-1);
+			if (slot == -1) {
+				return;
+			}
+			ItemStack book = bookshelf.getItem(slot);
+			if (!book.isEmpty()) {
+				ServerDataUtil.write(data, BOOK_CODEC, book);
+			}
 		}
 	}
 
@@ -93,7 +86,7 @@ public enum ChiseledBookshelfProvider implements IBlockComponentProvider, IServe
 
 	@Override
 	public int getDefaultPriority() {
-		return ItemStorageProvider.INSTANCE.getDefaultPriority() + 1;
+		return ItemStorageProvider.getBlock().getDefaultPriority() + 1;
 	}
 
 }

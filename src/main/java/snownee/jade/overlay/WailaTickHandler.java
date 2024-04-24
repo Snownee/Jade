@@ -36,6 +36,7 @@ import snownee.jade.impl.Tooltip;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.impl.ui.BoxElement;
+import snownee.jade.track.ProgressTracker;
 import snownee.jade.util.ClientProxy;
 
 public class WailaTickHandler {
@@ -48,14 +49,16 @@ public class WailaTickHandler {
 	public ProgressTracker progressTracker = new ProgressTracker();
 
 	public static WailaTickHandler instance() {
-		if (INSTANCE == null)
+		if (INSTANCE == null) {
 			INSTANCE = new WailaTickHandler();
+		}
 		return INSTANCE;
 	}
 
 	public static void narrate(ITooltip tooltip, boolean dedupe) {
-		if (!NARRATOR.get().active() || tooltip.isEmpty())
+		if (!NARRATOR.get().active() || tooltip.isEmpty()) {
 			return;
+		}
 		if (System.currentTimeMillis() - lastNarrationTime < 500) {
 			return;
 		}
@@ -158,8 +161,9 @@ public class WailaTickHandler {
 			boolean request = handler.shouldRequestData(accessor);
 			if (ObjectDataCenter.isTimeElapsed(ObjectDataCenter.rateLimiter)) {
 				ObjectDataCenter.resetTimer();
-				if (request)
+				if (request) {
 					handler.requestData(accessor);
+				}
 			}
 			if (request && ObjectDataCenter.getServerData() == null) {
 				return;

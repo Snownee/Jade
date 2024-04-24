@@ -31,7 +31,7 @@ public enum FurnaceProvider implements IBlockComponentProvider, IServerDataProvi
 		ListTag furnaceItems = data.getList("furnace", Tag.TAG_COMPOUND);
 		NonNullList<ItemStack> inventory = NonNullList.withSize(3, ItemStack.EMPTY);
 		for (int i = 0; i < furnaceItems.size(); i++)
-			inventory.set(i, ItemStack.of(furnaceItems.getCompound(i)));
+			inventory.set(i, ItemStack.parseOptional(accessor.getLevel().registryAccess(), furnaceItems.getCompound(i)));
 
 		IElementHelper helper = IElementHelper.get();
 		int total = data.getInt("total");
@@ -45,16 +45,18 @@ public enum FurnaceProvider implements IBlockComponentProvider, IServerDataProvi
 
 	@Override
 	public void appendServerData(CompoundTag data, BlockAccessor accessor) {
-		AbstractFurnaceBlockEntity furnace = (AbstractFurnaceBlockEntity) accessor.getBlockEntity();
+		if (!(accessor.getBlockEntity() instanceof AbstractFurnaceBlockEntity furnace)) {
+			return;
+		}
 		if (furnace.isEmpty()) {
 			return;
 		}
 		ListTag items = new ListTag();
 		for (int i = 0; i < 3; i++) {
-			items.add(furnace.getItem(i).save(new CompoundTag()));
+			items.add(furnace.getItem(i).saveOptional(accessor.getLevel().registryAccess()));
 		}
 		data.put("furnace", items);
-		CompoundTag furnaceTag = furnace.saveWithoutMetadata();
+		CompoundTag furnaceTag = furnace.saveWithoutMetadata(accessor.getLevel().registryAccess());
 		data.putInt("progress", furnaceTag.getInt("CookTime"));
 		data.putInt("total", furnaceTag.getInt("CookTimeTotal"));
 	}

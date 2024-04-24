@@ -22,6 +22,7 @@ import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
@@ -32,14 +33,14 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.FluidState;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoadingContext;
-import net.neoforged.neoforge.client.ConfigScreenHandler;
 import net.neoforged.neoforge.client.ItemDecoratorHandler;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent;
@@ -50,6 +51,7 @@ import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import net.neoforged.neoforge.client.settings.KeyModifier;
 import net.neoforged.neoforge.common.NeoForge;
@@ -134,7 +136,9 @@ public final class ClientProxy {
 			keys.forEach(event::register);
 			keys.clear();
 		});
-		ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class, () -> new ConfigScreenHandler.ConfigScreenFactory((minecraft, screen) -> new HomeConfigScreen(screen)));
+		ModLoadingContext.get().registerExtensionPoint(
+				IConfigScreenFactory.class,
+				() -> (minecraft, screen) -> new HomeConfigScreen(screen));
 
 		for (int i = 320; i < 330; i++) {
 			InputConstants.Key key = InputConstants.Type.KEYSYM.getOrCreate(i);
@@ -153,7 +157,7 @@ public final class ClientProxy {
 	}
 
 	private static void onTooltip(ItemTooltipEvent event) {
-		JadeClient.onTooltip(event.getToolTip(), event.getItemStack(), event.getFlags());
+		JadeClient.appendModName(event.getToolTip(), event.getItemStack(), event.getContext(), event.getFlags());
 	}
 
 	public static void onRenderTick(GuiGraphics guiGraphics) {
@@ -181,7 +185,7 @@ public final class ClientProxy {
 	}
 
 	public static void registerCommands(RegisterClientCommandsEvent event) {
-		JadeClientCommand.register(event.getDispatcher());
+		event.getDispatcher().register(JadeClientCommand.create(Commands::literal));
 	}
 
 	private static void onKeyPressed(InputEvent.Key event) {
@@ -199,7 +203,12 @@ public final class ClientProxy {
 	}
 
 	public static KeyMapping registerKeyBinding(String desc, int defaultKey) {
-		KeyMapping key = new KeyMapping("key.jade." + desc, KeyConflictContext.IN_GAME, KeyModifier.NONE, InputConstants.Type.KEYSYM.getOrCreate(defaultKey), "modmenu.nameTranslation.jade");
+		KeyMapping key = new KeyMapping(
+				"key.jade." + desc,
+				KeyConflictContext.IN_GAME,
+				KeyModifier.NONE,
+				InputConstants.Type.KEYSYM.getOrCreate(defaultKey),
+				"modmenu.nameTranslation.jade");
 		keys.add(key);
 		return key;
 	}
@@ -209,16 +218,18 @@ public final class ClientProxy {
 	}
 
 	public static void requestBlockData(BlockAccessor accessor) {
-		Objects.requireNonNull(Minecraft.getInstance().getConnection()).send(new RequestBlockPacket(new BlockAccessorImpl.SyncData(accessor)));
+		Objects.requireNonNull(Minecraft.getInstance().getConnection())
+				.send(new RequestBlockPacket(new BlockAccessorImpl.SyncData(accessor)));
 	}
 
 	public static void requestEntityData(EntityAccessor accessor) {
-		Objects.requireNonNull(Minecraft.getInstance().getConnection()).send(new RequestEntityPacket(new EntityAccessorImpl.SyncData(accessor)));
+		Objects.requireNonNull(Minecraft.getInstance().getConnection()).send(new RequestEntityPacket(new EntityAccessorImpl.SyncData(
+				accessor)));
 	}
 
-	public static IElement elementFromLiquid(LiquidBlock block) {
-		Fluid fluid = block.getFluid();
-		return new FluidStackElement(JadeFluidObject.of(fluid));//.size(new Size(18, 18));
+	public static IElement elementFromLiquid(BlockState blockState) {
+		FluidState fluidState = blockState.getFluidState();
+		return new FluidStackElement(JadeFluidObject.of(fluidState.getType()));//.size(new Size(18, 18));
 	}
 
 	public static void registerReloadListener(ResourceManagerReloadListener listener) {
@@ -227,15 +238,17 @@ public final class ClientProxy {
 
 	private static void onDrawBossBar(CustomizeGuiOverlayEvent.BossEventProgress event) {
 		BossBarOverlapMode mode = Jade.CONFIG.get().getGeneral().getBossBarOverlapMode();
-		if (mode == BossBarOverlapMode.NO_OPERATION)
+		if (mode == BossBarOverlapMode.NO_OPERATION) {
 			return;
+		}
 		if (mode == BossBarOverlapMode.HIDE_BOSS_BAR && OverlayRenderer.shown) {
 			event.setCanceled(true);
 			return;
 		}
 		if (mode == BossBarOverlapMode.PUSH_DOWN) {
-			if (event.isCanceled())
+			if (event.isCanceled()) {
 				return;
+			}
 			bossbarHeight = event.getY() + event.getIncrement();
 			bossbarShown = true;
 		}
@@ -243,8 +256,9 @@ public final class ClientProxy {
 
 	@Nullable
 	public static Rect2i getBossBarRect() {
-		if (!bossbarShown)
+		if (!bossbarShown) {
 			return null;
+		}
 		int i = Minecraft.getInstance().getWindow().getGuiScaledWidth();
 		int k = i / 2 - 91;
 		return new Rect2i(k, 12, 182, bossbarHeight - 12);

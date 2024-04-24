@@ -1,10 +1,13 @@
 package snownee.jade.impl;
 
+import java.util.Objects;
+
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.nbt.CompoundTag;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.AccessorClientHandler;
+import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.overlay.WailaTickHandler;
 
@@ -32,8 +35,11 @@ public final class ObjectDataCenter {
 
 		clientHandler = WailaClientRegistration.instance().getAccessorHandler(accessor.getAccessorType());
 		Object object = accessor.getTarget();
+		if (object == null && accessor instanceof BlockAccessor blockAccessor) {
+			object = blockAccessor.getBlock();
+		}
 
-		if (object != lastObject) {
+		if (!Objects.equals(object, lastObject)) {
 			WailaTickHandler.instance().progressTracker.clear();
 			lastObject = object;
 			serverData = null;
@@ -47,10 +53,12 @@ public final class ObjectDataCenter {
 	}
 
 	public static CompoundTag getServerData() {
-		if (accessor == null || clientHandler == null || serverData == null)
+		if (accessor == null || clientHandler == null || serverData == null) {
 			return null;
-		if (accessor.verifyData(serverData))
+		}
+		if (accessor.verifyData(serverData)) {
 			return serverData;
+		}
 		requestServerData();
 		return null;
 	}
@@ -76,8 +84,9 @@ public final class ObjectDataCenter {
 	}
 
 	public static IElement getIcon() {
-		if (accessor == null || clientHandler == null)
+		if (accessor == null || clientHandler == null) {
 			return null;
+		}
 		return clientHandler.getIcon(accessor);
 	}
 }

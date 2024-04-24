@@ -20,7 +20,7 @@ import net.minecraft.world.phys.Vec2;
 import snownee.jade.Jade;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
-import snownee.jade.api.ui.Direction2D;
+import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElement.Align;
 import snownee.jade.api.ui.IElementHelper;
@@ -38,7 +38,15 @@ public class Tooltip implements ITooltip {
 			Vec2 size = element.getCachedSize();
 			DisplayHelper.INSTANCE.drawBorder(guiGraphics, x, y, x + size.x, y + size.y, 1, 0x88FF0000, true);
 			if (!Vec2.ZERO.equals(translate)) {
-				DisplayHelper.INSTANCE.drawBorder(guiGraphics, x + translate.x, y + translate.y, x + translate.x + size.x, y + translate.y + size.y, 1, 0x880000FF, true);
+				DisplayHelper.INSTANCE.drawBorder(
+						guiGraphics,
+						x + translate.x,
+						y + translate.y,
+						x + translate.x + size.x,
+						y + translate.y + size.y,
+						1,
+						0x880000FF,
+						true);
 			}
 		}
 	}
@@ -60,12 +68,6 @@ public class Tooltip implements ITooltip {
 			line.elements.add(element);
 			line.markDirty();
 		}
-	}
-
-	@Override
-	@Deprecated
-	public IElementHelper getElementHelper() {
-		return IElementHelper.get();
 	}
 
 	@Override
@@ -195,7 +197,7 @@ public class Tooltip implements ITooltip {
 	}
 
 	@Override
-	public void setLineMargin(int index, Direction2D side, int margin) {
+	public void setLineMargin(int index, ScreenDirection side, int margin) {
 		if (index < 0) {
 			index += lines.size();
 		}
@@ -217,8 +219,9 @@ public class Tooltip implements ITooltip {
 		private boolean sorted;
 
 		public void sort() {
-			if (sorted)
+			if (sorted) {
 				return;
+			}
 			sorted = true;
 			Arrays.fill(starts, 0);
 			Arrays.fill(widths, 0);
@@ -290,7 +293,12 @@ public class Tooltip implements ITooltip {
 				Vec2 translate = element.getTranslation();
 				Vec2 size = element.getCachedSize();
 				drawDebugBorder(guiGraphics, ox, y, element);
-				element.render(guiGraphics, ox + translate.x, y + translate.y, (extendable && element == lastElement ? maxX : (ox + size.x)) + translate.x, maxY + translate.y);
+				element.render(
+						guiGraphics,
+						ox + translate.x,
+						y + translate.y,
+						(extendable && element == lastElement ? maxX : (ox + size.x)) + translate.x,
+						maxY + translate.y);
 				ox += size.x;
 			}
 		}

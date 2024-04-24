@@ -13,6 +13,7 @@ import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.IEntityComponentProvider;
+import snownee.jade.api.IToggleableProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
@@ -20,9 +21,33 @@ import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.impl.theme.ThemeHelper;
 
-public enum DistanceProvider implements IBlockComponentProvider, IEntityComponentProvider {
+public abstract class DistanceProvider implements IToggleableProvider {
 
-	INSTANCE;
+	public static ForBlock getBlock() {
+		return ForBlock.INSTANCE;
+	}
+
+	public static ForEntity getEntity() {
+		return ForEntity.INSTANCE;
+	}
+
+	public static class ForBlock extends DistanceProvider implements IBlockComponentProvider {
+		private static final ForBlock INSTANCE = new ForBlock();
+
+		@Override
+		public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
+			append(tooltip, accessor, accessor.getPosition(), config);
+		}
+	}
+
+	public static class ForEntity extends DistanceProvider implements IEntityComponentProvider {
+		private static final ForEntity INSTANCE = new ForEntity();
+
+		@Override
+		public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
+			append(tooltip, accessor, accessor.getEntity().blockPosition(), config);
+		}
+	}
 
 	public static final DecimalFormat fmt = new DecimalFormat("#.#");
 	private static final int[] colors = {0xef9a9a, 0xa5d6a7, 0x90caf9, 0xb02a37, 0x198754, 0x0a58ca};
@@ -38,23 +63,14 @@ public enum DistanceProvider implements IBlockComponentProvider, IEntityComponen
 	}
 
 	public static Component display(int i, int colorIndex) {
-		if (IThemeHelper.get().isLightColorScheme())
+		if (IThemeHelper.get().isLightColorScheme()) {
 			colorIndex += 3;
+		}
 		return Component.literal(Integer.toString(i)).withStyle(ThemeHelper.colorStyle(colors[colorIndex]));
 	}
 
 	public static String narrate(int i) {
 		return i >= 0 ? Integer.toString(i) : I18n.get("narration.jade.negative", -i);
-	}
-
-	@Override
-	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		append(tooltip, accessor, accessor.getPosition(), config);
-	}
-
-	@Override
-	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
-		append(tooltip, accessor, accessor.getEntity().blockPosition(), config);
 	}
 
 	public void append(ITooltip tooltip, Accessor<?> accessor, BlockPos pos, IPluginConfig config) {

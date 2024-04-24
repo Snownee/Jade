@@ -42,8 +42,9 @@ public class EnumConfigEntry<E extends Enum<E>> extends ConfigEntry<E> {
 		return options.choices(optionName, getValue(), e -> PluginConfig.INSTANCE.set(id, e), builder -> {
 			builder.withTooltip(e -> {
 				String key = OptionsList.Entry.makeKey(optionName + "_" + e.name().toLowerCase(Locale.ENGLISH) + "_desc");
-				if (!I18n.exists(key))
+				if (!I18n.exists(key)) {
 					return null;
+				}
 				return Tooltip.create(Component.translatable(key));
 			});
 		});
