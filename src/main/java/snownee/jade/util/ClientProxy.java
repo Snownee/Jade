@@ -22,6 +22,7 @@ import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -185,7 +186,10 @@ public final class ClientProxy {
 	}
 
 	public static void registerCommands(RegisterClientCommandsEvent event) {
-		event.getDispatcher().register(JadeClientCommand.create(Commands::literal));
+		event.getDispatcher().register(JadeClientCommand.create(
+				Commands::literal,
+				(source, component) -> source.sendSuccess(() -> component, false),
+				CommandSourceStack::sendFailure));
 	}
 
 	private static void onKeyPressed(InputEvent.Key event) {
