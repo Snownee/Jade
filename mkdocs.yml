@@ -2,34 +2,36 @@ site_name: Jade
 repo_name: Jade
 repo_url: https://github.com/Snownee/Jade
 site_author: Snownee
-edit_uri: ""
+edit_uri: ''
 
 nav:
-  - "Preface": README.md
-  - "1.20":
-      - "Getting Started": plugins20/getting-started.md
-      - "Overrides": plugins20/overrides.md
-      - "Hiding Target": plugins20/hiding-target.md
-      - "Plugin Configuration": plugins20/plugin-config.md
-  - "1.19 and Fabric 1.17-1.18":
-      - "Getting Started": plugins19/getting-started.md
-      - "Overrides": plugins19/overrides.md
-      - "Hiding Target": plugins19/hiding-target.md
-      - "Plugin Configuration": plugins19/plugin-config.md
-  - "Forge 1.17-1.18":
-      - "Getting Started": plugins17/getting-started.md
-      - "Overrides": plugins17/overrides.md
-      - "Hiding Target": plugins17/hiding-target.md
-  - "Custom Theme":
-      - "1.20.2+": themes/v3.md
-      - "1.20.1": themes/v2.md
-  - "Datapack Support": datapacks/block.md
-  - "Upgrading Guides":
-      - "1.20.4 -> 1.20.5": changes/1205.md
-      - "1.20.1 -> 1.20.2": changes/1202.md
-      - "1.19 -> 1.20": changes/120.md
-      - "1.18 -> 1.19": changes/119.md
-      - "1.16 -> 1.17": changes/117.md
+  - 'Preface': README.md
+  - '1.20':
+      - 'Getting Started': plugins20/getting-started.md
+      - 'Overrides': plugins20/overrides.md
+      - 'Hiding Target': plugins20/hiding-target.md
+      - 'Plugin Configuration': plugins20/plugin-config.md
+  - '1.19 and Fabric 1.17-1.18':
+      - 'Getting Started': plugins19/getting-started.md
+      - 'Overrides': plugins19/overrides.md
+      - 'Hiding Target': plugins19/hiding-target.md
+      - 'Plugin Configuration': plugins19/plugin-config.md
+  - 'Forge 1.17-1.18':
+      - 'Getting Started': plugins17/getting-started.md
+      - 'Overrides': plugins17/overrides.md
+      - 'Hiding Target': plugins17/hiding-target.md
+  - 'Custom Theme':
+      - '1.20.2+': themes/v3.md
+      - '1.20.1': themes/v2.md
+  - 'Datapack Support':
+      - '1.20.5+': datapacks/block21.md
+      - '1.18-1.20.4': datapacks/block.md
+  - 'Upgrading Guides':
+      - '1.20.4 -> 1.20.5': changes/1205.md
+      - '1.20.1 -> 1.20.2': changes/1202.md
+      - '1.19 -> 1.20': changes/120.md
+      - '1.18 -> 1.19': changes/119.md
+      - '1.16 -> 1.17': changes/117.md
 
 theme:
   name: material
@@ -40,12 +42,12 @@ theme:
     - content.code.annotate
     - content.tabs.link
   palette:
-    - media: "(prefers-color-scheme: light)"
+    - media: '(prefers-color-scheme: light)'
       scheme: default
       toggle:
         icon: material/toggle-switch-off-outline
         name: Switch to dark mode
-    - media: "(prefers-color-scheme: dark)"
+    - media: '(prefers-color-scheme: dark)'
       scheme: slate
       toggle:
         icon: material/toggle-switch
