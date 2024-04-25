@@ -131,7 +131,11 @@ public final class UsernameCache {
 	 * Save the cache to file
 	 */
 	public static void save() {
-		new SaveThread(gson.toJson(CODEC.encodeStart(JsonOps.INSTANCE, map))).start();
+		try {
+			new SaveThread(gson.toJson(CODEC.encodeStart(JsonOps.INSTANCE, map).getOrThrow())).start();
+		} catch (Exception e) {
+			Jade.LOGGER.error("Failed to save username cache to file!", e);
+		}
 	}
 
 	/**
@@ -151,12 +155,11 @@ public final class UsernameCache {
 				tempMap.forEach(UsernameCache::setUsername);
 			}
 		} catch (Exception e) {
-			Jade.LOGGER.error("Could not parse username cache file as valid json, deleting file {}", saveFile, e);
-			WailaExceptionHandler.handleErr(e, null, null);
+			Jade.LOGGER.error("Could not parse username cache file as valid json, deleting file %s".formatted(saveFile), e);
 			try {
 				Files.delete(saveFile);
 			} catch (IOException e1) {
-				Jade.LOGGER.error("Could not delete file {}", saveFile.toString());
+				Jade.LOGGER.error("Could not delete file %s".formatted(saveFile), e1);
 			}
 		} finally {
 			loading = false;
