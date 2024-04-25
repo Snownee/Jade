@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -78,9 +79,9 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	public final HierarchyLookup<IComponentProvider<EntityAccessor>> entityComponentProviders;
 
 	public final Set<Block> hideBlocks = Sets.newHashSet();
-	public final Set<Block> hideBlocksReloadable = Sets.newHashSet();
+	private ImmutableSet<Block> hideBlocksReloadable = ImmutableSet.of();
 	public final Set<EntityType<?>> hideEntities = Sets.newHashSet();
-	public final Set<EntityType<?>> hideEntitiesReloadable = Sets.newHashSet();
+	private ImmutableSet<EntityType<?>> hideEntitiesReloadable = ImmutableSet.of();
 	public final Set<Block> pickBlocks = Sets.newHashSet();
 	public final Set<EntityType<?>> pickEntities = Sets.newHashSet();
 
@@ -330,22 +331,28 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 		session = null;
 	}
 
-	public void reloadIgnoreLists() {
-		hideEntitiesReloadable.clear();
-		hideEntitiesReloadable.addAll(hideEntities);
-		for (ResourceKey<EntityType<?>> id : createIgnoreListConfig(
-				"hide-entities",
-				Registries.ENTITY_TYPE,
-				List.of("area_effect_cloud", "firework_rocket", "interaction", "text_display", "lightning_bolt")).get().values) {
-			BuiltInRegistries.ENTITY_TYPE.getOptional(id.location()).ifPresent(hideEntitiesReloadable::add);
+	public synchronized void reloadIgnoreLists() {
+		{
+			ImmutableSet.Builder<EntityType<?>> builder = ImmutableSet.builder();
+			builder.addAll(hideEntities);
+			for (ResourceKey<EntityType<?>> id : createIgnoreListConfig(
+					"hide-entities",
+					Registries.ENTITY_TYPE,
+					List.of("area_effect_cloud", "firework_rocket", "interaction", "text_display", "lightning_bolt")).get().values) {
+				BuiltInRegistries.ENTITY_TYPE.getOptional(id.location()).ifPresent(builder::add);
+			}
+			hideEntitiesReloadable = builder.build();
 		}
-		hideBlocksReloadable.clear();
-		hideBlocksReloadable.addAll(hideBlocks);
-		for (ResourceKey<Block> id : createIgnoreListConfig(
-				"hide-blocks",
-				Registries.BLOCK,
-				List.of("minecraft:barrier")).get().values) {
-			BuiltInRegistries.BLOCK.getOptional(id.location()).ifPresent(hideBlocksReloadable::add);
+		{
+			ImmutableSet.Builder<Block> builder = ImmutableSet.builder();
+			builder.addAll(hideBlocks);
+			for (ResourceKey<Block> id : createIgnoreListConfig(
+					"hide-blocks",
+					Registries.BLOCK,
+					List.of("minecraft:barrier")).get().values) {
+				BuiltInRegistries.BLOCK.getOptional(id.location()).ifPresent(builder::add);
+			}
+			hideBlocksReloadable = builder.build();
 		}
 	}
 
