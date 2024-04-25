@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -99,6 +100,7 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	public final Set<ResourceLocation> clientFeatures = Sets.newHashSet();
 
 	public final Map<Class<Accessor<?>>, AccessorClientHandler<Accessor<?>>> accessorHandlers = Maps.newIdentityHashMap();
+	private ClientRegistrationSession session;
 
 	WailaClientRegistration() {
 		blockIconProviders = new HierarchyLookup<>(Block.class);
@@ -125,26 +127,42 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 
 	@Override
 	public void registerBlockIcon(IComponentProvider<BlockAccessor> provider, Class<? extends Block> blockClass) {
-		blockIconProviders.register(blockClass, provider);
-		tryAddConfig(provider);
+		if (isSessionActive()) {
+			session.registerBlockIcon(provider, blockClass);
+		} else {
+			blockIconProviders.register(blockClass, provider);
+			tryAddConfig(provider);
+		}
 	}
 
 	@Override
 	public void registerBlockComponent(IComponentProvider<BlockAccessor> provider, Class<? extends Block> blockClass) {
-		blockComponentProviders.register(blockClass, provider);
-		tryAddConfig(provider);
+		if (isSessionActive()) {
+			session.registerBlockComponent(provider, blockClass);
+		} else {
+			blockComponentProviders.register(blockClass, provider);
+			tryAddConfig(provider);
+		}
 	}
 
 	@Override
 	public void registerEntityIcon(IComponentProvider<EntityAccessor> provider, Class<? extends Entity> entityClass) {
-		entityIconProviders.register(entityClass, provider);
-		tryAddConfig(provider);
+		if (isSessionActive()) {
+			session.registerEntityIcon(provider, entityClass);
+		} else {
+			entityIconProviders.register(entityClass, provider);
+			tryAddConfig(provider);
+		}
 	}
 
 	@Override
 	public void registerEntityComponent(IComponentProvider<EntityAccessor> provider, Class<? extends Entity> entityClass) {
-		entityComponentProviders.register(entityClass, provider);
-		tryAddConfig(provider);
+		if (isSessionActive()) {
+			session.registerEntityComponent(provider, entityClass);
+		} else {
+			entityComponentProviders.register(entityClass, provider);
+			tryAddConfig(provider);
+		}
 	}
 
 	public List<IComponentProvider<BlockAccessor>> getBlockProviders(
@@ -215,45 +233,78 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 
 	@Override
 	public void addConfig(ResourceLocation key, boolean defaultValue) {
-		PluginConfig.INSTANCE.addConfig(new BooleanConfigEntry(key, defaultValue));
+		if (isSessionActive()) {
+			session.addConfig(key, defaultValue);
+		} else {
+			PluginConfig.INSTANCE.addConfig(new BooleanConfigEntry(key, defaultValue));
+		}
 	}
 
 	@Override
 	public <T extends Enum<T>> void addConfig(ResourceLocation key, T defaultValue) {
 		Objects.requireNonNull(defaultValue);
-		PluginConfig.INSTANCE.addConfig(new EnumConfigEntry<>(key, defaultValue));
+		if (isSessionActive()) {
+			session.addConfig(key, defaultValue);
+		} else {
+			PluginConfig.INSTANCE.addConfig(new EnumConfigEntry<>(key, defaultValue));
+		}
 	}
 
 	@Override
 	public void addConfig(ResourceLocation key, String defaultValue, Predicate<String> validator) {
 		Objects.requireNonNull(defaultValue);
 		Objects.requireNonNull(validator);
-		PluginConfig.INSTANCE.addConfig(new StringConfigEntry(key, defaultValue, validator));
+		if (isSessionActive()) {
+			session.addConfig(key, defaultValue, validator);
+		} else {
+			PluginConfig.INSTANCE.addConfig(new StringConfigEntry(key, defaultValue, validator));
+		}
 	}
 
 	@Override
 	public void addConfig(ResourceLocation key, int defaultValue, int min, int max, boolean slider) {
-		PluginConfig.INSTANCE.addConfig(new IntConfigEntry(key, defaultValue, min, max, slider));
+		if (isSessionActive()) {
+			session.addConfig(key, defaultValue, min, max, slider);
+		} else {
+			PluginConfig.INSTANCE.addConfig(new IntConfigEntry(key, defaultValue, min, max, slider));
+		}
 	}
 
 	@Override
 	public void addConfig(ResourceLocation key, float defaultValue, float min, float max, boolean slider) {
-		PluginConfig.INSTANCE.addConfig(new FloatConfigEntry(key, defaultValue, min, max, slider));
+		if (isSessionActive()) {
+			session.addConfig(key, defaultValue, min, max, slider);
+		} else {
+			PluginConfig.INSTANCE.addConfig(new FloatConfigEntry(key, defaultValue, min, max, slider));
+		}
 	}
 
 	@Override
 	public void addConfigListener(ResourceLocation key, Consumer<ResourceLocation> listener) {
-		PluginConfig.INSTANCE.addConfigListener(key, listener);
+		Objects.requireNonNull(listener);
+		if (isSessionActive()) {
+			session.addConfigListener(key, listener);
+		} else {
+			PluginConfig.INSTANCE.addConfigListener(key, listener);
+		}
 	}
 
 	@Override
 	public void setConfigCategoryOverride(ResourceLocation key, Component override) {
-		PluginConfig.INSTANCE.setCategoryOverride(key, override);
+		if (isSessionActive()) {
+			session.setConfigCategoryOverride(key, override);
+		} else {
+			PluginConfig.INSTANCE.setCategoryOverride(key, override);
+		}
 	}
 
 	@Override
-	public void setConfigCategoryOverride(ResourceLocation key, List<Component> override) {
-		PluginConfig.INSTANCE.setCategoryOverride(key, override);
+	public void setConfigCategoryOverride(ResourceLocation key, List<Component> overrides) {
+		if (isSessionActive()) {
+			session.setConfigCategoryOverride(key, overrides);
+		} else {
+			PluginConfig.INSTANCE.setCategoryOverride(key, overrides);
+		}
 	}
 
 	private void tryAddConfig(IToggleableProvider provider) {
@@ -276,6 +327,7 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 				tooltipCollectedCallback,
 				itemModNameCallback,
 				beforeTooltipCollectCallback).forEach(CallbackContainer::sort);
+		session = null;
 	}
 
 	public void reloadIgnoreLists() {
@@ -299,32 +351,62 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 
 	@Override
 	public void addAfterRenderCallback(int priority, JadeAfterRenderCallback callback) {
-		afterRenderCallback.add(priority, callback);
+		Objects.requireNonNull(callback);
+		if (isSessionActive()) {
+			session.addAfterRenderCallback(priority, callback);
+		} else {
+			afterRenderCallback.add(priority, callback);
+		}
 	}
 
 	@Override
 	public void addBeforeRenderCallback(int priority, JadeBeforeRenderCallback callback) {
-		beforeRenderCallback.add(priority, callback);
+		Objects.requireNonNull(callback);
+		if (isSessionActive()) {
+			session.addBeforeRenderCallback(priority, callback);
+		} else {
+			beforeRenderCallback.add(priority, callback);
+		}
 	}
 
 	@Override
 	public void addRayTraceCallback(int priority, JadeRayTraceCallback callback) {
-		rayTraceCallback.add(priority, callback);
+		Objects.requireNonNull(callback);
+		if (isSessionActive()) {
+			session.addRayTraceCallback(priority, callback);
+		} else {
+			rayTraceCallback.add(priority, callback);
+		}
 	}
 
 	@Override
 	public void addTooltipCollectedCallback(int priority, JadeTooltipCollectedCallback callback) {
-		tooltipCollectedCallback.add(priority, callback);
+		Objects.requireNonNull(callback);
+		if (isSessionActive()) {
+			session.addTooltipCollectedCallback(priority, callback);
+		} else {
+			tooltipCollectedCallback.add(priority, callback);
+		}
 	}
 
 	@Override
 	public void addItemModNameCallback(int priority, JadeItemModNameCallback callback) {
-		itemModNameCallback.add(priority, callback);
+		Objects.requireNonNull(callback);
+		if (isSessionActive()) {
+			session.addItemModNameCallback(priority, callback);
+		} else {
+			itemModNameCallback.add(priority, callback);
+		}
 	}
 
 	@Override
 	public void addBeforeTooltipCollectCallback(int priority, JadeBeforeTooltipCollectCallback callback) {
-		beforeTooltipCollectCallback.add(priority, callback);
+		Objects.requireNonNull(callback);
+		if (isSessionActive()) {
+			session.addBeforeTooltipCollectCallback(priority, callback);
+		} else {
+			beforeTooltipCollectCallback.add(priority, callback);
+		}
 	}
 
 	@Override
@@ -370,25 +452,41 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	@Override
 	public void registerItemStorageClient(IClientExtensionProvider<ItemStack, ItemView> provider) {
 		Objects.requireNonNull(provider.getUid());
-		itemStorageProviders.put(provider.getUid(), provider);
+		if (isSessionActive()) {
+			session.registerItemStorageClient(provider);
+		} else {
+			itemStorageProviders.put(provider.getUid(), provider);
+		}
 	}
 
 	@Override
 	public void registerFluidStorageClient(IClientExtensionProvider<CompoundTag, FluidView> provider) {
 		Objects.requireNonNull(provider.getUid());
-		fluidStorageProviders.put(provider.getUid(), provider);
+		if (isSessionActive()) {
+			session.registerFluidStorageClient(provider);
+		} else {
+			fluidStorageProviders.put(provider.getUid(), provider);
+		}
 	}
 
 	@Override
 	public void registerEnergyStorageClient(IClientExtensionProvider<CompoundTag, EnergyView> provider) {
 		Objects.requireNonNull(provider.getUid());
-		energyStorageProviders.put(provider.getUid(), provider);
+		if (isSessionActive()) {
+			session.registerEnergyStorageClient(provider);
+		} else {
+			energyStorageProviders.put(provider.getUid(), provider);
+		}
 	}
 
 	@Override
 	public void registerProgressClient(IClientExtensionProvider<CompoundTag, ProgressView> provider) {
 		Objects.requireNonNull(provider.getUid());
-		progressProviders.put(provider.getUid(), provider);
+		if (isSessionActive()) {
+			session.registerProgressClient(provider);
+		} else {
+			progressProviders.put(provider.getUid(), provider);
+		}
 	}
 
 	@Override
@@ -447,4 +545,19 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 		return ClientProxy.maybeLowVisionUser || IWailaConfig.get().getGeneral().shouldEnableTextToSpeech();
 	}
 
+	public void startSession() {
+		if (session == null) {
+			session = new ClientRegistrationSession(this);
+		}
+		session.reset();
+	}
+
+	public void endSession() {
+		Preconditions.checkState(session != null, "Session not started");
+		session.end();
+	}
+
+	public boolean isSessionActive() {
+		return session != null && session.isActive();
+	}
 }

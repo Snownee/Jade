@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.google.common.base.Preconditions;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -38,6 +40,7 @@ public class WailaCommonRegistration implements IWailaCommonRegistration {
 	public final WrappedHierarchyLookup<IServerExtensionProvider<CompoundTag>> fluidStorageProviders;
 	public final WrappedHierarchyLookup<IServerExtensionProvider<CompoundTag>> energyStorageProviders;
 	public final WrappedHierarchyLookup<IServerExtensionProvider<CompoundTag>> progressProviders;
+	private CommonRegistrationSession session;
 
 	WailaCommonRegistration() {
 		blockDataProviders = new PairHierarchyLookup<>(new HierarchyLookup<>(Block.class), new HierarchyLookup<>(BlockEntity.class));
@@ -68,12 +71,20 @@ public class WailaCommonRegistration implements IWailaCommonRegistration {
 
 	@Override
 	public void registerBlockDataProvider(IServerDataProvider<BlockAccessor> dataProvider, Class<?> blockOrBlobkEntityClass) {
-		blockDataProviders.register(blockOrBlobkEntityClass, dataProvider);
+		if (isSessionActive()) {
+			session.registerBlockDataProvider(dataProvider, blockOrBlobkEntityClass);
+		} else {
+			blockDataProviders.register(blockOrBlobkEntityClass, dataProvider);
+		}
 	}
 
 	@Override
 	public void registerEntityDataProvider(IServerDataProvider<EntityAccessor> dataProvider, Class<? extends Entity> entityClass) {
-		entityDataProviders.register(entityClass, dataProvider);
+		if (isSessionActive()) {
+			session.registerEntityDataProvider(dataProvider, entityClass);
+		} else {
+			entityDataProviders.register(entityClass, dataProvider);
+		}
 	}
 
 	/* PROVIDER GETTERS */
@@ -96,26 +107,58 @@ public class WailaCommonRegistration implements IWailaCommonRegistration {
 		fluidStorageProviders.loadComplete(priorities);
 		energyStorageProviders.loadComplete(priorities);
 		progressProviders.loadComplete(priorities);
+		session = null;
 	}
 
 	@Override
 	public <T> void registerItemStorage(IServerExtensionProvider<ItemStack> provider, Class<? extends T> clazz) {
-		itemStorageProviders.register(clazz, provider);
+		if (isSessionActive()) {
+			session.registerItemStorage(provider, clazz);
+		} else {
+			itemStorageProviders.register(clazz, provider);
+		}
 	}
 
 	@Override
 	public <T> void registerFluidStorage(IServerExtensionProvider<CompoundTag> provider, Class<? extends T> clazz) {
-		fluidStorageProviders.register(clazz, provider);
+		if (isSessionActive()) {
+			session.registerFluidStorage(provider, clazz);
+		} else {
+			fluidStorageProviders.register(clazz, provider);
+		}
 	}
 
 	@Override
 	public <T> void registerEnergyStorage(IServerExtensionProvider<CompoundTag> provider, Class<? extends T> clazz) {
-		energyStorageProviders.register(clazz, provider);
+		if (isSessionActive()) {
+			session.registerEnergyStorage(provider, clazz);
+		} else {
+			energyStorageProviders.register(clazz, provider);
+		}
 	}
 
 	@Override
 	public <T> void registerProgress(IServerExtensionProvider<CompoundTag> provider, Class<? extends T> clazz) {
-		progressProviders.register(clazz, provider);
+		if (isSessionActive()) {
+			session.registerProgress(provider, clazz);
+		} else {
+			progressProviders.register(clazz, provider);
+		}
 	}
 
+	public void startSession() {
+		if (session == null) {
+			session = new CommonRegistrationSession(this);
+		}
+		session.reset();
+	}
+
+	public void endSession() {
+		Preconditions.checkState(session != null, "Session not started");
+		session.end();
+	}
+
+	public boolean isSessionActive() {
+		return session != null && session.isActive();
+	}
 }
