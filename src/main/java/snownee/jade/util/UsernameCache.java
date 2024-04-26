@@ -8,7 +8,6 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.jetbrains.annotations.Nullable;
@@ -16,17 +15,13 @@ import org.jetbrains.annotations.Nullable;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.mojang.authlib.GameProfile;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.util.ExtraCodecs;
-import net.minecraft.world.level.block.entity.SkullBlockEntity;
 import snownee.jade.Jade;
-import snownee.jade.api.Identifiers;
-import snownee.jade.impl.config.PluginConfig;
 
 public final class UsernameCache {
 
@@ -97,14 +92,7 @@ public final class UsernameCache {
 	@Nullable
 	public static String getLastKnownUsername(UUID uuid) {
 		Objects.requireNonNull(uuid);
-		String name = map.get(uuid);
-		if (name == null && PluginConfig.INSTANCE.get(Identifiers.MC_ANIMAL_OWNER_FETCH_NAMES)) {
-			name = SkullBlockEntity.fetchGameProfile(uuid).getNow(Optional.empty()).map(GameProfile::getName).orElse(null);
-			if (name != null) {
-				setUsername(uuid, name);
-			}
-		}
-		return name;
+		return map.get(uuid);
 	}
 
 	/**

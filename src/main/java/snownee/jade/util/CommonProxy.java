@@ -3,6 +3,7 @@ package snownee.jade.util;
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -14,6 +15,7 @@ import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.cache.Cache;
 import com.google.common.collect.Sets;
+import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
 
 import net.fabricmc.api.EnvType;
@@ -21,7 +23,6 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.block.BlockPickInteractionAware;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.entity.EntityPickInteractionAware;
-import net.fabricmc.fabric.api.entity.FakePlayer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
@@ -83,6 +84,7 @@ import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
+import net.minecraft.world.level.block.entity.SkullBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.BlockHitResult;
@@ -117,7 +119,14 @@ public final class CommonProxy implements ModInitializer {
 
 	@Nullable
 	public static String getLastKnownUsername(UUID uuid) {
-		return UsernameCache.getLastKnownUsername(uuid);
+		Optional<GameProfile> optional = SkullBlockEntity.fetchGameProfile(uuid).getNow(Optional.empty());
+		if (optional.isPresent()) {
+			return optional.get().getName();
+		}
+		if (isPhysicallyClient()) {
+			return UsernameCache.getLastKnownUsername(uuid);
+		}
+		return null;
 	}
 
 	public static File getConfigDirectory() {
@@ -368,9 +377,6 @@ public final class CommonProxy implements ModInitializer {
 			Jade.LOGGER.debug("Syncing config to {} ({})", player.getGameProfile().getName(), player.getGameProfile().getId());
 		}
 		ServerPlayNetworking.send(player, new ServerPingPacket(configs));
-		if (server.isDedicatedServer() && !(player instanceof FakePlayer)) {
-			UsernameCache.setUsername(player.getUUID(), player.getGameProfile().getName());
-		}
 	}
 
 	public static boolean isModLoaded(String modid) {
@@ -540,7 +546,6 @@ public final class CommonProxy implements ModInitializer {
 
 		CommandRegistrationCallback.EVENT.register(CommonProxy::registerServerCommand);
 		ServerPlayConnectionEvents.JOIN.register(CommonProxy::playerJoin);
-		UsernameCache.load();
 		ServerLifecycleEvents.SERVER_STARTED.register(server -> {
 			if (server.isDedicatedServer()) {
 				loadComplete();

@@ -236,7 +236,6 @@
 	"config.jade.plugin_minecraft.lectern": "講台",
 	"config.jade.plugin_minecraft.animal_owner": "動物主人",
 	"config.jade.plugin_minecraft.animal_owner_extra_msg": "馬,寵物",
-	"config.jade.plugin_minecraft.animal_owner.fetch_names": "擷取名字",
 	"jade.owner": "主人：%s",
 	"jade.infinity": "∞",
 	"jade.seconds": "{0} 秒",

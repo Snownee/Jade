@@ -31,7 +31,6 @@ public class Identifiers {
 	public static final ResourceLocation UNIVERSAL_ENERGY_STORAGE_DETAILED = MC("energy_storage.detailed");
 	public static final ResourceLocation UNIVERSAL_PROGRESS = MC("progress");
 	public static final ResourceLocation MC_ANIMAL_OWNER = MC("animal_owner");
-	public static final ResourceLocation MC_ANIMAL_OWNER_FETCH_NAMES = MC("animal_owner.fetch_names");
 	public static final ResourceLocation MC_ARMOR_STAND = MC("armor_stand");
 	public static final ResourceLocation MC_BEEHIVE = MC("beehive");
 	public static final ResourceLocation MC_BLOCK_DISPLAY = MC("block_display");

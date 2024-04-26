@@ -295,5 +295,6 @@ public final class ClientProxy implements ClientModInitializer {
 				.registerReloadListener((IdentifiableResourceReloadListener) ThemeHelper.INSTANCE);
 		ResourceManagerHelper.get(PackType.SERVER_DATA)
 				.registerReloadListener((IdentifiableResourceReloadListener) HarvestToolProvider.INSTANCE);
+		UsernameCache.load();
 	}
 }
