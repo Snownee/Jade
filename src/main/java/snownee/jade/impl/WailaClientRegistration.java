@@ -349,7 +349,7 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 			for (ResourceKey<Block> id : createIgnoreListConfig(
 					"hide-blocks",
 					Registries.BLOCK,
-					List.of("minecraft:barrier")).get().values) {
+					List.of("barrier")).get().values) {
 				BuiltInRegistries.BLOCK.getOptional(id.location()).ifPresent(builder::add);
 			}
 			hideBlocksReloadable = builder.build();
