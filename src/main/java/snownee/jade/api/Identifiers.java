@@ -27,7 +27,6 @@ public class Identifiers {
 	public static final ResourceLocation MC_ITEM_STORAGE_SHOW_NAME_AMOUNT = MC("item_storage.show_name_amount");
 	public static final ResourceLocation MC_ITEM_STORAGE_ITEMS_PER_LINE = MC("item_storage.items_per_line");
 	public static final ResourceLocation MC_ANIMAL_OWNER = MC("animal_owner");
-	public static final ResourceLocation MC_ANIMAL_OWNER_FETCH_NAMES = MC("animal_owner.fetch_names");
 	public static final ResourceLocation MC_ARMOR_STAND = MC("armor_stand");
 	public static final ResourceLocation MC_BEEHIVE = MC("beehive");
 	public static final ResourceLocation MC_BLOCK_STATES = MC("block_states");

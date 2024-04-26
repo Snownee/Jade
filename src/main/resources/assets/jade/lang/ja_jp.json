@@ -213,7 +213,6 @@
   "config.jade.plugin_minecraft.lectern": "書見台",
   "config.jade.plugin_minecraft.animal_owner": "動物の所有者",
   "config.jade.plugin_minecraft.animal_owner_extra_msg": "馬、ペット",
-  "config.jade.plugin_minecraft.animal_owner.fetch_names": "名前の取得",
   "jade.owner": "所有者: %s",
   "jade.infinity": "∞",
   "jade.seconds": "{0}秒",

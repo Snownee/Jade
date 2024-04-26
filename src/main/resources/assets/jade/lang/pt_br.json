@@ -234,7 +234,6 @@
   "config.jade.plugin_minecraft.lectern": "Atril",
   "config.jade.plugin_minecraft.animal_owner": "Dono do Animal",
   "config.jade.plugin_minecraft.animal_owner_extra_msg": "cavalo,pet",
-  "config.jade.plugin_minecraft.animal_owner.fetch_names": "Buscar Nomes",
   "jade.owner": "Dono: %s",
   "jade.infinity": "∞",
   "jade.seconds": "{0}s",

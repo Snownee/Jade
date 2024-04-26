@@ -17,7 +17,6 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.block.BlockPickInteractionAware;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.entity.EntityPickInteractionAware;
-import net.fabricmc.fabric.api.entity.FakePlayer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.mininglevel.v1.FabricMineableTags;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
@@ -200,7 +199,12 @@ public final class CommonProxy implements ModInitializer {
 				return new ItemCollector<>(new ItemIterator.ContainerItemIterator(o -> {
 					if (o instanceof ChestBlockEntity be) {
 						if (be.getBlockState().getBlock() instanceof ChestBlock chestBlock) {
-							Container compound = ChestBlock.getContainer(chestBlock, be.getBlockState(), be.getLevel(), be.getBlockPos(), false);
+							Container compound = ChestBlock.getContainer(
+									chestBlock,
+									be.getBlockState(),
+									be.getLevel(),
+									be.getBlockPos(),
+									false);
 							if (compound != null) {
 								return compound;
 							}
@@ -218,7 +222,11 @@ public final class CommonProxy implements ModInitializer {
 	@Nullable
 	public static List<ViewGroup<ItemStack>> containerGroup(Container container, Accessor<?> accessor) {
 		try {
-			return ItemStorageProvider.INSTANCE.containerCache.get(container, () -> new ItemCollector<>(new ItemIterator.ContainerItemIterator(0))).update(container, accessor.getLevel().getGameTime());
+			return ItemStorageProvider.INSTANCE.containerCache.get(
+					container,
+					() -> new ItemCollector<>(new ItemIterator.ContainerItemIterator(0))).update(
+					container,
+					accessor.getLevel().getGameTime());
 		} catch (ExecutionException e) {
 			return null;
 		}
@@ -228,7 +236,11 @@ public final class CommonProxy implements ModInitializer {
 	@SuppressWarnings("UnstableApiUsage")
 	public static List<ViewGroup<ItemStack>> storageGroup(Object storage, Accessor<?> accessor) {
 		try {
-			return ItemStorageProvider.INSTANCE.containerCache.get(storage, () -> new ItemCollector<>(JadeFabricUtils.fromItemStorage((Storage<ItemVariant>) storage, 0))).update(storage, accessor.getLevel().getGameTime());
+			return ItemStorageProvider.INSTANCE.containerCache.get(
+					storage,
+					() -> new ItemCollector<>(JadeFabricUtils.fromItemStorage((Storage<ItemVariant>) storage, 0))).update(
+					storage,
+					accessor.getLevel().getGameTime());
 		} catch (ExecutionException e) {
 			return null;
 		}
@@ -297,10 +309,14 @@ public final class CommonProxy implements ModInitializer {
 	}
 
 	public static MutableComponent getProfressionName(VillagerProfession profession) {
-		return Component.translatable(EntityType.VILLAGER.getDescriptionId() + "." + BuiltInRegistries.VILLAGER_PROFESSION.getKey(profession).getPath());
+		return Component.translatable(
+				EntityType.VILLAGER.getDescriptionId() + "." + BuiltInRegistries.VILLAGER_PROFESSION.getKey(profession).getPath());
 	}
 
-	private static void registerServerCommand(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext registryAccess, Commands.CommandSelection environment) {
+	private static void registerServerCommand(
+			CommandDispatcher<CommandSourceStack> dispatcher,
+			CommandBuildContext registryAccess,
+			Commands.CommandSelection environment) {
 		JadeServerCommand.register(dispatcher);
 	}
 
@@ -341,10 +357,6 @@ public final class CommonProxy implements ModInitializer {
 		FriendlyByteBuf buf = PacketByteBufs.create();
 		buf.writeUtf(Strings.nullToEmpty(PluginConfig.INSTANCE.getServerConfigs()));
 		ServerPlayNetworking.send(player, Identifiers.PACKET_SERVER_PING, buf);
-
-		if (server.isDedicatedServer() && !(player instanceof FakePlayer)) {
-			UsernameCache.setUsername(player.getUUID(), player.getGameProfile().getName());
-		}
 	}
 
 	public static boolean isModLoaded(String modid) {
@@ -359,8 +371,9 @@ public final class CommonProxy implements ModInitializer {
 			try {
 				IWailaPlugin plugin = entrypoint.getEntrypoint();
 				WailaPlugin a = plugin.getClass().getDeclaredAnnotation(WailaPlugin.class);
-				if (a != null && !Strings.isNullOrEmpty(a.value()) && !isModLoaded(a.value()))
+				if (a != null && !Strings.isNullOrEmpty(a.value()) && !isModLoaded(a.value())) {
 					return;
+				}
 				className = plugin.getClass().getName();
 				plugin.register(WailaCommonRegistration.INSTANCE);
 				if (isPhysicallyClient()) {
@@ -446,7 +459,6 @@ public final class CommonProxy implements ModInitializer {
 
 		CommandRegistrationCallback.EVENT.register(CommonProxy::registerServerCommand);
 		ServerPlayConnectionEvents.JOIN.register(CommonProxy::playerJoin);
-		UsernameCache.load();
 		ServerLifecycleEvents.SERVER_STARTED.register(server -> {
 			if (server.isDedicatedServer()) {
 				loadComplete();

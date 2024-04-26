@@ -2,37 +2,34 @@ package snownee.jade.util;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.google.common.base.Charsets;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.mojang.authlib.GameProfile;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
 
-import net.minecraft.client.Minecraft;
+import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
+import net.minecraft.Util;
+import net.minecraft.core.UUIDUtil;
+import net.minecraft.util.ExtraCodecs;
 import snownee.jade.Jade;
-import snownee.jade.api.Identifiers;
-import snownee.jade.impl.config.PluginConfig;
 
 public final class UsernameCache {
 
-	private static final HashMap<UUID, String> map = new HashMap<>();
-	private static final Set<UUID> downloadingList = Collections.synchronizedSet(new HashSet<>());
-
+	public static final Codec<Map<UUID, String>> CODEC = Codec.unboundedMap(UUIDUtil.STRING_CODEC, ExtraCodecs.NON_EMPTY_STRING);
+	private static final int CACHE_SIZE = 1024;
+	private static final Object2ObjectLinkedOpenHashMap<UUID, String> map = new Object2ObjectLinkedOpenHashMap<>(CACHE_SIZE);
 	private static final Path saveFile = CommonProxy.getConfigDirectory().toPath().resolve(Jade.MODID + "/usernamecache.json");
 	private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 	private static boolean loading = false;
@@ -50,8 +47,13 @@ public final class UsernameCache {
 		Objects.requireNonNull(uuid);
 		Objects.requireNonNull(username);
 
-		if (!isValidName(username))
+		if (!isValidName(username)) {
 			return;
+		}
+
+		if (map.size() >= CACHE_SIZE) {
+			map.removeFirst();
+		}
 
 		String prev = map.put(uuid, username);
 		if (!loading && !Objects.equals(prev, username)) {
@@ -92,11 +94,7 @@ public final class UsernameCache {
 	@Nullable
 	public static String getLastKnownUsername(UUID uuid) {
 		Objects.requireNonNull(uuid);
-		String name = map.get(uuid);
-		if (name == null && PluginConfig.INSTANCE.get(Identifiers.MC_ANIMAL_OWNER_FETCH_NAMES)) {
-			download(uuid);
-		}
-		return name;
+		return map.get(uuid);
 	}
 
 	/**
@@ -116,84 +114,45 @@ public final class UsernameCache {
 	 * @return the map
 	 */
 	public static Map<UUID, String> getMap() {
-		return ImmutableMap.copyOf(map);
+		return Collections.unmodifiableMap(map);
 	}
 
 	/**
 	 * Save the cache to file
 	 */
 	public static void save() {
-		new SaveThread(gson.toJson(map)).start();
+		try {
+			new SaveThread(gson.toJson(Util.getOrThrow(CODEC.encodeStart(JsonOps.INSTANCE, map), IllegalStateException::new))).start();
+		} catch (Exception e) {
+			Jade.LOGGER.error("Failed to save username cache to file!", e);
+		}
 	}
 
 	/**
 	 * Load the cache from file
 	 */
 	public static void load() {
-		if (!Files.exists(saveFile))
+		if (!Files.exists(saveFile)) {
 			return;
+		}
 
 		loading = true;
-		try (final BufferedReader reader = Files.newBufferedReader(saveFile, Charsets.UTF_8)) {
-			@SuppressWarnings("serial")
-			Type type = new TypeToken<Map<UUID, String>>() {
-			}.getType();
-			Map<UUID, String> tempMap = gson.fromJson(reader, type);
+		try (final BufferedReader reader = Files.newBufferedReader(saveFile, StandardCharsets.UTF_8)) {
+			JsonObject json = gson.fromJson(reader, JsonObject.class);
+			Map<UUID, String> tempMap = Util.getOrThrow(CODEC.parse(JsonOps.INSTANCE, json), JsonParseException::new);
 			if (tempMap != null) {
 				map.clear();
 				tempMap.forEach(UsernameCache::setUsername);
 			}
 		} catch (Exception e) {
-			Jade.LOGGER.error("Could not parse username cache file as valid json, deleting file {}", saveFile, e);
-			WailaExceptionHandler.handleErr(e, null, null);
+			Jade.LOGGER.error("Could not parse username cache file as valid json, deleting file %s".formatted(saveFile), e);
 			try {
 				Files.delete(saveFile);
 			} catch (IOException e1) {
-				Jade.LOGGER.error("Could not delete file {}", saveFile.toString());
+				Jade.LOGGER.error("Could not delete file %s".formatted(saveFile), e1);
 			}
 		} finally {
 			loading = false;
-		}
-	}
-
-	/**
-	 * Downloads a Username
-	 * This function can be called repeatedly
-	 * It should only attempt one Download
-	 */
-	private static void download(UUID uuid) {
-		if (downloadingList.contains(uuid)) {
-			return;
-		}
-		downloadingList.add(uuid);
-		new DownloadThread(uuid).start();
-	}
-
-	/**
-	 * Downloads GameProfile by UUID then saves them to disk
-	 * representation of the cache to disk
-	 */
-	private static class DownloadThread extends Thread {
-		private final UUID uuid;
-
-		public DownloadThread(UUID uuid) {
-			this.uuid = uuid;
-		}
-
-		@Override
-		public void run() {
-			try {
-				//if the downloading fails for some reason and throws an error,
-				GameProfile profile = new GameProfile(uuid, "???");
-				profile = Minecraft.getInstance().getMinecraftSessionService().fillProfileProperties(profile, true);
-				if (!(profile.getName() == null || profile.getName().equals("???"))) {
-					//only remove from list if it was successfull
-					//if it failed for some reason leave it in the channel so no repeated tries are made
-					UsernameCache.setUsername(profile.getId(), profile.getName());
-					downloadingList.remove(uuid);
-				}
-			} catch (Exception e) {
-			}
 		}
 	}
 
@@ -217,7 +176,7 @@ public final class UsernameCache {
 			try {
 				// Make sure we don't save when another thread is still saving
 				synchronized (saveFile) {
-					Files.write(saveFile, data.getBytes(StandardCharsets.UTF_8));
+					Files.writeString(saveFile, data, StandardCharsets.UTF_8);
 				}
 			} catch (IOException e) {
 				Jade.LOGGER.error("Failed to save username cache to file!");

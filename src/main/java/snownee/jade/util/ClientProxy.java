@@ -290,8 +290,9 @@ public final class ClientProxy implements ClientModInitializer {
 			client.execute(() -> {
 				ObjectDataCenter.serverConnected = true;
 				PluginConfig.INSTANCE.reload(); // clear the server config last time we applied
-				if (json != null && !json.keySet().isEmpty())
+				if (json != null && !json.keySet().isEmpty()) {
 					PluginConfig.INSTANCE.applyServerConfigs(json);
+				}
 				Jade.LOGGER.info("Received config from the server: {}", s);
 			});
 		});
@@ -310,6 +311,8 @@ public final class ClientProxy implements ClientModInitializer {
 			((KeyAccess) (Object) key).setDisplayName(new LazyLoadedValue<>(() -> Component.translatable(key.getName())));
 		}
 		JadeClient.init();
-		ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener((IdentifiableResourceReloadListener) ThemeHelper.INSTANCE);
+		ResourceManagerHelper.get(PackType.CLIENT_RESOURCES)
+				.registerReloadListener((IdentifiableResourceReloadListener) ThemeHelper.INSTANCE);
+		UsernameCache.load();
 	}
 }
