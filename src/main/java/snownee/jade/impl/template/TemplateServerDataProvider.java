@@ -30,11 +30,6 @@ public class TemplateServerDataProvider<T extends Accessor<?>> implements IServe
 		dataFunction.accept(data, accessor);
 	}
 
-	@Override
-	public boolean shouldRequestData(T accessor) {
-		return shouldRequestData.test(accessor);
-	}
-
 	public void setDataFunction(BiConsumer<CompoundTag, T> dataFunction) {
 		this.dataFunction = dataFunction;
 	}
