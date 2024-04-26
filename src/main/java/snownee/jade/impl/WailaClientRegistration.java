@@ -10,9 +10,11 @@ import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
@@ -70,9 +72,9 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	public final HierarchyLookup<IEntityComponentProvider> entityComponentProviders;
 
 	public final Set<Block> hideBlocks = Sets.newHashSet();
-	public final Set<Block> hideBlocksReloadable = Sets.newHashSet();
+	public ImmutableSet<Block> hideBlocksReloadable = ImmutableSet.of();
 	public final Set<EntityType<?>> hideEntities = Sets.newHashSet();
-	public final Set<EntityType<?>> hideEntitiesReloadable = Sets.newHashSet();
+	public ImmutableSet<EntityType<?>> hideEntitiesReloadable = ImmutableSet.of();
 	public final Set<Block> pickBlocks = Sets.newHashSet();
 	public final Set<EntityType<?>> pickEntities = Sets.newHashSet();
 
@@ -117,7 +119,8 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 											 EntityType.AREA_EFFECT_CLOUD,
 											 EntityType.FIREWORK_ROCKET,
 											 EntityType.INTERACTION,
-											 EntityType.TEXT_DISPLAY
+											 EntityType.TEXT_DISPLAY,
+											 EntityType.LIGHTNING_BOLT
 									 )
 									 .map(EntityType::getKey)
 									 .map(Object::toString)
@@ -282,17 +285,18 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	}
 
 	public void reloadBlocklists() {
-		hideEntitiesReloadable.clear();
-		hideEntitiesReloadable.addAll(hideEntities);
-		for (String id : createEntityBlocklist().get().values) {
-			BuiltInRegistries.ENTITY_TYPE.getOptional(ResourceLocation.tryParse(id))
-										 .ifPresent(hideEntitiesReloadable::add);
-		}
-		hideBlocksReloadable.clear();
-		hideBlocksReloadable.addAll(hideBlocks);
-		for (String id : createBlockBlocklist().get().values) {
-			BuiltInRegistries.BLOCK.getOptional(ResourceLocation.tryParse(id)).ifPresent(hideBlocksReloadable::add);
-		}
+		hideEntitiesReloadable = Util.make(ImmutableSet.<EntityType<?>>builder(), it -> {
+			it.addAll(hideEntities);
+			for (String id : createEntityBlocklist().get().values) {
+				BuiltInRegistries.ENTITY_TYPE.getOptional(ResourceLocation.tryParse(id)).ifPresent(it::add);
+			}
+		}).build();
+		hideBlocksReloadable = Util.make(ImmutableSet.<Block>builder(), it -> {
+			it.addAll(hideBlocks);
+			for (String id : createBlockBlocklist().get().values) {
+				BuiltInRegistries.BLOCK.getOptional(ResourceLocation.tryParse(id)).ifPresent(it::add);
+			}
+		}).build();
 	}
 
 	@Override
