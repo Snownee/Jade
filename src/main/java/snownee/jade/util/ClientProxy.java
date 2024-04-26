@@ -282,7 +282,7 @@ public final class ClientProxy implements ClientModInitializer {
 			String s = buf.readUtf();
 			JsonObject json;
 			try {
-				json = s.isEmpty() ? null : JsonConfig.DEFAULT_GSON.fromJson(s, JsonObject.class);
+				json = s.isEmpty() ? null : JsonConfig.GSON.fromJson(s, JsonObject.class);
 			} catch (Throwable e) {
 				Jade.LOGGER.error("Received malformed config from the server: {}", s);
 				return;
