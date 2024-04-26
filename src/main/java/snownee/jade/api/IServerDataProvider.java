@@ -12,8 +12,4 @@ public interface IServerDataProvider<T extends Accessor<?>> extends IJadeProvide
 	 * @param accessor Contains the relevant information about the current environment.
 	 */
 	void appendServerData(CompoundTag data, T accessor);
-
-	default boolean shouldRequestData(T accessor) {
-		return true;
-	}
 }
