@@ -10,6 +10,7 @@ targetCompatibility = JavaVersion.VERSION_17
 archivesBaseName = project.archives_base_name
 version = project.archive_minecraft_version + "-fabric-" + project.mod_version
 group = project.maven_group
+var realVersion = project.mod_version + '+fabric'
 
 repositories {
     maven { url "https://maven.parchmentmc.org" }
@@ -76,10 +77,10 @@ loom {
 }
 
 processResources {
-    inputs.property "version", project.mod_version
+    inputs.property "version", realVersion
 
     filesMatching("fabric.mod.json") {
-        expand "version": project.mod_version
+        expand "version": realVersion
     }
 }
 
@@ -146,8 +147,8 @@ publishing {
 
 unifiedPublishing {
     project {
-        displayName = project.version
-        version = project.mod_version // Optional, Inferred from project by default
+        displayName = "[Fabric $project.supported_version] $project.mod_version"
+        version = realVersion // Optional, Inferred from project by default
         changelog = file("CHANGELOG.md").exists() ? file("CHANGELOG.md").text : "" // Optional, in markdown format
         releaseType = project.release_type // Optional, use "release", "beta" or "alpha"
         gameVersions = ["1.20", "1.20.1"]
@@ -156,24 +157,25 @@ unifiedPublishing {
         mainPublication tasks.remapJar // Declares the publicated jar
         secondaryPublications.builtBy(tasks.apiJar)
 
-        curseforge {
-            token = System.getenv("CURSE_TOKEN") ?: ''
-            id = "324717" // Required, must be a string, ID of CurseForge project
+        if (System.getenv("CURSE_TOKEN") != null) {
+            curseforge {
+                token = System.getenv("CURSE_TOKEN")
+                id = "324717"
 
-            relations { // Optional, Inferred from the relations above by default
-                //depends "fabric-api"
-                optional "jei"
+                relations { // Optional, Inferred from the relations above by default
+                    optional "jei"
+                }
             }
         }
 
-        modrinth {
-            token = System.getenv("MODRINTH_TOKEN") ?: ''
-            id = "nvQzSEkH" // Required, must be a string, ID of Modrinth project
-            displayName = project.mod_version
+        if (System.getenv("MODRINTH_TOKEN") != null) {
+            modrinth {
+                token = System.getenv("MODRINTH_TOKEN")
+                id = "nvQzSEkH"
 
-            relations { // Optional, Inferred from the relations above by default
-                //depends "fabric-api"
-                optional "jei"
+                relations { // Optional, Inferred from the relations above by default
+                    optional "jei"
+                }
             }
         }
     }
