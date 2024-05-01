@@ -131,7 +131,7 @@ public final class ClientProxy implements ClientModInitializer {
 		try {
 			OverlayRenderer.renderOverlay478757(guiGraphics);
 		} catch (Throwable e) {
-			WailaExceptionHandler.handleErr(e, null, null);
+			WailaExceptionHandler.handleErr(e, null, null, null);
 		}
 	}
 
@@ -139,7 +139,7 @@ public final class ClientProxy implements ClientModInitializer {
 		try {
 			WailaTickHandler.instance().tickClient();
 		} catch (Throwable e) {
-			WailaExceptionHandler.handleErr(e, null, null);
+			WailaExceptionHandler.handleErr(e, null, null, null);
 		}
 	}
 
