@@ -426,6 +426,9 @@ public final class CommonProxy implements ModInitializer {
 			} catch (Throwable e) {
 				Jade.LOGGER.error("Error loading plugin at %s".formatted(className), e);
 				Throwables.throwIfInstanceOf(e, IllegalStateException.class);
+				if (entrypoint.getProvider().getMetadata().getId().equals(Jade.ID)) {
+					throw e;
+				}
 			}
 		});
 		Jade.loadComplete();
