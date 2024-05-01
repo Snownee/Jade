@@ -9,6 +9,7 @@ import java.util.concurrent.ExecutionException;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Strings;
+import com.google.common.base.Throwables;
 import com.google.common.cache.Cache;
 import com.mojang.brigadier.CommandDispatcher;
 
@@ -380,7 +381,11 @@ public final class CommonProxy implements ModInitializer {
 					plugin.registerClient(WailaClientRegistration.INSTANCE);
 				}
 			} catch (Throwable e) {
-				Jade.LOGGER.error("Error loading plugin at {}", className, e);
+				Jade.LOGGER.error("Error loading plugin at %s".formatted(className), e);
+				Throwables.throwIfInstanceOf(e, IllegalStateException.class);
+				if (entrypoint.getProvider().getMetadata().getId().equals(Jade.ID)) {
+					throw e;
+				}
 			}
 		});
 		Jade.loadComplete();

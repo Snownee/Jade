@@ -28,7 +28,7 @@ public class WailaExceptionHandler {
 
 	public static void handleErr(Throwable e, @Nullable IJadeProvider provider, @Nullable ITooltip tooltip) {
 		if (CommonProxy.isDevEnv()) {
-			ExceptionUtils.rethrow(e);
+			ExceptionUtils.wrapAndThrow(e);
 			return;
 		}
 		if (!ERRORS.contains(provider)) {

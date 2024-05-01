@@ -1,6 +1,5 @@
 package snownee.jade.impl;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -43,7 +42,7 @@ public class HierarchyLookup<T extends IJadeProvider> {
 
 	public List<T> get(Object obj) {
 		if (obj == null) {
-			return Collections.EMPTY_LIST;
+			return List.of();
 		}
 		return get(obj.getClass());
 	}
@@ -61,7 +60,7 @@ public class HierarchyLookup<T extends IJadeProvider> {
 		} catch (ExecutionException e) {
 			e.printStackTrace();
 		}
-		return Collections.EMPTY_LIST;
+		return List.of();
 	}
 
 	private void getInternal(Class<?> clazz, List<T> list) {
