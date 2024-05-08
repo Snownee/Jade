@@ -14,6 +14,7 @@ import net.minecraft.world.entity.Display.ItemDisplay;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -50,6 +51,9 @@ public abstract class ObjectNameProvider implements IToggleableProvider {
 				if (stack != null && !stack.isEmpty()) {
 					return stack.getHoverName();
 				}
+			}
+			if (entity instanceof Player) {
+				return entity.getDisplayName();
 			}
 			if (entity instanceof Villager) {
 				return entity.getType().getDescription();
