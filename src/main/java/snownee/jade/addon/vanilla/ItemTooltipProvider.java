@@ -38,10 +38,11 @@ public enum ItemTooltipProvider implements IEntityComponentProvider {
 	@Override
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		ItemStack stack = ((ItemEntity) accessor.getEntity()).getItem();
-		JadeClient.hideModName = true;
+		Item.TooltipContext tooltipContext = Item.TooltipContext.of(accessor.getLevel());
+		JadeClient.hideModNameIn(tooltipContext);
 		List<Either<FormattedText, TooltipComponent>> lines = Lists.newArrayList();
 		try {
-			stack.getTooltipLines(Item.TooltipContext.of(accessor.getLevel()), null, TooltipFlag.Default.NORMAL)
+			stack.getTooltipLines(tooltipContext, null, TooltipFlag.Default.NORMAL)
 					.stream()
 					.peek(component -> {
 						if (component instanceof MutableComponent mutable && mutable.getStyle().getColor() != null) {
@@ -54,7 +55,6 @@ public enum ItemTooltipProvider implements IEntityComponentProvider {
 			String namespace = BuiltInRegistries.ITEM.getKey(stack.getItem()).getNamespace();
 			WailaExceptionHandler.handleErr(e, this, tooltip, namespace);
 		}
-		JadeClient.hideModName = false;
 		if (lines.isEmpty()) {
 			return;
 		}

@@ -3,6 +3,7 @@ package snownee.jade.addon.vanilla;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+
 import com.mojang.serialization.MapCodec;
 
 import net.minecraft.client.resources.language.I18n;
@@ -24,7 +25,6 @@ import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.IElementHelper;
-import snownee.jade.util.ServerDataUtil;
 
 public enum StatusEffectsProvider implements IEntityComponentProvider, IServerDataProvider<EntityAccessor> {
 
@@ -43,7 +43,7 @@ public enum StatusEffectsProvider implements IEntityComponentProvider, IServerDa
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
-		Optional<List<MobEffectInstance>> result = ServerDataUtil.read(accessor.getServerData(), EFFECTS_CODEC);
+		Optional<List<MobEffectInstance>> result = accessor.readData(EFFECTS_CODEC);
 		if (result.isEmpty() || result.get().isEmpty()) {
 			return;
 		}
@@ -75,7 +75,7 @@ public enum StatusEffectsProvider implements IEntityComponentProvider, IServerDa
 		if (effectList.isEmpty()) {
 			return;
 		}
-		ServerDataUtil.write(accessor.getServerData(), EFFECTS_CODEC, effectList);
+		accessor.writeData(EFFECTS_CODEC, effectList);
 	}
 
 	@Override

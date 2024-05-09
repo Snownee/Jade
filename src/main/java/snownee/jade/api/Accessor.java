@@ -1,9 +1,16 @@
 package snownee.jade.api;
 
+import java.util.Optional;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.MapDecoder;
+import com.mojang.serialization.MapEncoder;
+
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -20,6 +27,12 @@ public interface Accessor<T extends HitResult> {
 
 	@NotNull
 	CompoundTag getServerData();
+
+	DynamicOps<Tag> nbtOps();
+
+	<D> Optional<D> readData(MapDecoder<D> codec);
+
+	<D> void writeData(MapEncoder<D> codec, D value);
 
 	T getHitResult();
 

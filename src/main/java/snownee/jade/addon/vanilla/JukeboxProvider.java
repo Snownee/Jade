@@ -17,7 +17,6 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.IDisplayHelper;
-import snownee.jade.util.ServerDataUtil;
 
 public enum JukeboxProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
 
@@ -30,7 +29,7 @@ public enum JukeboxProvider implements IBlockComponentProvider, IServerDataProvi
 		BlockState state = accessor.getBlockState();
 		ItemStack stack = ItemStack.EMPTY;
 		if (state.getValue(JukeboxBlock.HAS_RECORD)) {
-			stack = ServerDataUtil.read(accessor.getServerData(), RECORD_CODEC).orElse(ItemStack.EMPTY);
+			stack = accessor.readData(RECORD_CODEC).orElse(ItemStack.EMPTY);
 		}
 		if (!stack.isEmpty()) {
 			Component name;
@@ -50,7 +49,7 @@ public enum JukeboxProvider implements IBlockComponentProvider, IServerDataProvi
 		if (accessor instanceof JukeboxBlockEntity jukebox) {
 			ItemStack stack = jukebox.getTheItem();
 			if (!stack.isEmpty()) {
-				ServerDataUtil.write(data, RECORD_CODEC, stack);
+				accessor.writeData(RECORD_CODEC, stack);
 			}
 		}
 	}

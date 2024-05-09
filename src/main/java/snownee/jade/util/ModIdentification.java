@@ -12,7 +12,6 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.decoration.Painting;
-import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
@@ -64,15 +63,14 @@ public class ModIdentification implements ResourceManagerReloadListener {
 	}
 
 	public static String getModName(Entity entity) {
-		if (entity instanceof Painting) {
-			PaintingVariant motive = ((Painting) entity).getVariant().value();
-			return getModName(CommonProxy.getId(motive));
+		if (entity instanceof Painting painting) {
+			return getModName(painting.getVariant().unwrapKey().orElseThrow().location());
 		}
-		if (entity instanceof ItemEntity) {
-			return getModName(((ItemEntity) entity).getItem());
+		if (entity instanceof ItemEntity itemEntity) {
+			return getModName(itemEntity.getItem());
 		}
-		if (entity instanceof FallingBlockEntity) {
-			return getModName(((FallingBlockEntity) entity).getBlockState().getBlock());
+		if (entity instanceof FallingBlockEntity fallingBlock) {
+			return getModName(fallingBlock.getBlockState().getBlock());
 		}
 		return getModName(CommonProxy.getId(entity.getType()));
 	}

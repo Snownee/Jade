@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.decoration.Painting;
 import net.minecraft.world.level.material.FluidState;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
@@ -54,7 +55,14 @@ public abstract class RegistryNameProvider implements IToggleableProvider {
 
 		@Override
 		public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
-			append(tooltip, CommonProxy.getId(accessor.getEntity().getType()).toString(), config);
+			if (append(tooltip, CommonProxy.getId(accessor.getEntity().getType()).toString(), config) &&
+					config.get(Identifiers.DEBUG_SPECIAL_REGISTRY_NAME)) {
+				if (accessor.getEntity() instanceof Painting painting) {
+					ResourceLocation id = painting.getVariant().unwrapKey().orElseThrow().location();
+					String s = I18n.get("config.jade.plugin_jade.registry_name.special.painting", id);
+					tooltip.add(IWailaConfig.get().getFormatting().registryName(s), Identifiers.DEBUG_SPECIAL_REGISTRY_NAME);
+				}
+			}
 		}
 	}
 

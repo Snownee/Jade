@@ -11,8 +11,8 @@
 		"BossHealthOverlayMixin",
 		"ClientLevelMixin",
 		"FontMixin",
-		"FullTextSearchTreeMixin",
 		"KeyAccess",
+		"SessionSearchTreesMixin",
 		"StringRenderOutputMixin",
 		"ThemeHelperMixin"
 	],

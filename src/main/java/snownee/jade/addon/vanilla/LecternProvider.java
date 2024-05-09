@@ -17,7 +17,6 @@ import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.IElementHelper;
-import snownee.jade.util.ServerDataUtil;
 
 public enum LecternProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
 
@@ -29,7 +28,7 @@ public enum LecternProvider implements IBlockComponentProvider, IServerDataProvi
 		if (!state.getValue(LecternBlock.HAS_BOOK)) {
 			return;
 		}
-		ItemStack stack = ServerDataUtil.read(accessor.getServerData(), ChiseledBookshelfProvider.BOOK_CODEC).orElse(ItemStack.EMPTY);
+		ItemStack stack = accessor.readData(ChiseledBookshelfProvider.BOOK_CODEC).orElse(ItemStack.EMPTY);
 		if (!stack.isEmpty()) {
 			IElementHelper helper = IElementHelper.get();
 			tooltip.add(helper.smallItem(stack));
@@ -44,7 +43,7 @@ public enum LecternProvider implements IBlockComponentProvider, IServerDataProvi
 			ItemStack stack = lectern.getBook();
 			if (!stack.isEmpty()) {
 				if (stack.has(DataComponents.CUSTOM_NAME) || stack.getItem() != Items.WRITABLE_BOOK) {
-					ServerDataUtil.write(data, ChiseledBookshelfProvider.BOOK_CODEC, stack);
+					accessor.writeData(ChiseledBookshelfProvider.BOOK_CODEC, stack);
 				}
 			}
 		}

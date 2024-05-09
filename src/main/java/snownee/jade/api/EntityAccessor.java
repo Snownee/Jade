@@ -28,7 +28,7 @@ public interface EntityAccessor extends Accessor<EntityHitResult> {
 	}
 
 	@NonExtendable
-	public interface Builder {
+	interface Builder {
 		Builder level(Level level);
 
 		Builder player(Player player);

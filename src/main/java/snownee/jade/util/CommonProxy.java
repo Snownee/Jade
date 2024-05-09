@@ -64,7 +64,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.boss.EnderDragonPart;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.decoration.Painting;
-import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.EnchantedBookItem;
@@ -329,10 +328,6 @@ public final class CommonProxy implements ModInitializer {
 
 	public static ResourceLocation getId(BlockEntityType<?> blockEntityType) {
 		return BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(blockEntityType);
-	}
-
-	public static ResourceLocation getId(PaintingVariant motive) {
-		return BuiltInRegistries.PAINTING_VARIANT.getKey(motive);
 	}
 
 	public static String getPlatformIdentifier() {

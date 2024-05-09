@@ -26,7 +26,6 @@ import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElementHelper;
-import snownee.jade.util.ServerDataUtil;
 
 public enum ChiseledBookshelfProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
 
@@ -38,7 +37,7 @@ public enum ChiseledBookshelfProvider implements IBlockComponentProvider, IServe
 		if (accessor.showDetails()) {
 			return ItemStack.EMPTY;
 		}
-		Optional<ItemStack> result = ServerDataUtil.read(accessor.getServerData(), BOOK_CODEC);
+		Optional<ItemStack> result = accessor.readData(BOOK_CODEC);
 		return result.orElse(ItemStack.EMPTY);
 	}
 
@@ -74,7 +73,7 @@ public enum ChiseledBookshelfProvider implements IBlockComponentProvider, IServe
 			}
 			ItemStack book = bookshelf.getItem(slot);
 			if (!book.isEmpty()) {
-				ServerDataUtil.write(data, BOOK_CODEC, book);
+				accessor.writeData(BOOK_CODEC, book);
 			}
 		}
 	}

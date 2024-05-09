@@ -43,7 +43,7 @@ public interface BlockAccessor extends Accessor<BlockHitResult> {
 	}
 
 	@NonExtendable
-	public interface Builder {
+	interface Builder {
 		Builder level(Level level);
 
 		Builder player(Player player);

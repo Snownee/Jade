@@ -3,10 +3,13 @@ package snownee.jade;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Joiner;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.InputConstants;
 
@@ -52,8 +55,8 @@ import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
 import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.ColorPalette;
-import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.ui.IBoxElement;
+import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.ui.TooltipRect;
 import snownee.jade.gui.HomeConfigScreen;
 import snownee.jade.impl.WailaClientRegistration;
@@ -77,7 +80,9 @@ public final class JadeClient {
 	public static KeyMapping narrate;
 	public static KeyMapping showRecipes;
 	public static KeyMapping showUses;
-	public static boolean hideModName;
+	private static final Cache<Item.TooltipContext, Item.TooltipContext> hideModName = CacheBuilder.newBuilder()
+			.expireAfterAccess(1, TimeUnit.SECONDS)
+			.build();
 	private static boolean translationChecked;
 	private static float savedProgress;
 	private static float progressAlpha;
@@ -163,8 +168,12 @@ public final class JadeClient {
 		}
 	}
 
+	public static void hideModNameIn(Item.TooltipContext context) {
+		hideModName.put(context, context);
+	}
+
 	public static void appendModName(List<Component> tooltip, ItemStack stack, Item.TooltipContext tooltipContext, TooltipFlag flag) {
-		if (hideModName || !Jade.CONFIG.get().getGeneral().showItemModNameTooltip()) {
+		if (hideModName.getIfPresent(tooltipContext) != null || !Jade.CONFIG.get().getGeneral().showItemModNameTooltip()) {
 			return;
 		}
 		if (Minecraft.getInstance().screen instanceof CreativeModeInventoryScreen screen && screen.hoveredSlot != null &&
