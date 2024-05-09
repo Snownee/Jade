@@ -183,8 +183,7 @@ public class WailaConfig implements IWailaConfig {
 			/* off */
 			List<String> names = itemModNameTooltipDisabledByMods.stream()
 					.filter(CommonProxy::isModLoaded)
-					.map(ModIdentification::getModName)
-					.map(Optional::orElseThrow)
+					.map($ -> ModIdentification.getModName($).orElse($))
 					.toList();
 			/* on */
 			itemModNameTooltipDisabledByMods.clear();
