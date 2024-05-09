@@ -1,6 +1,7 @@
 package snownee.jade.util;
 
 import java.util.Map;
+import java.util.Optional;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
@@ -21,21 +22,20 @@ import snownee.jade.impl.WailaClientRegistration;
 
 public class ModIdentification implements ResourceManagerReloadListener {
 
-	public static final Map<String, String> NAMES = Maps.newConcurrentMap();
 	public static final ModIdentification INSTANCE = new ModIdentification();
+	public static final Map<String, String> NAMES = Maps.newConcurrentMap();
 
-	static {
-		init();
-	}
-
-	public static void init() {
+	public static void invalidateCache() {
 		NAMES.clear();
-		ClientProxy.initModNames(NAMES);
 	}
 
 	public static String getModName(String namespace) {
 		return NAMES.computeIfAbsent(namespace, $ -> {
-			String key = "jade.modName." + namespace;
+			Optional<String> optional = ClientProxy.getModName($);
+			if (optional.isPresent()) {
+				return optional;
+			}
+			String key = "jade.modName." + $;
 			if (I18n.exists(key)) {
 				return I18n.get(key);
 			} else {
@@ -78,7 +78,7 @@ public class ModIdentification implements ResourceManagerReloadListener {
 
 	@Override
 	public void onResourceManagerReload(ResourceManager manager) {
-		init();
+		invalidateCache();
 	}
 
 }

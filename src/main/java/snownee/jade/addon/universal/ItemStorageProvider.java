@@ -240,7 +240,7 @@ public enum ItemStorageProvider implements IBlockComponentProvider, IServerDataP
 		try {
 			itemCollector = targetCache.get(target, () -> CommonProxy.createItemStorageCache(target, containerCache));
 		} catch (ExecutionException e) {
-			WailaExceptionHandler.handleErr(e, null, null);
+			WailaExceptionHandler.handleErr(e, null, null, null);
 			return null;
 		}
 		if (itemCollector == ItemCollector.EMPTY) {

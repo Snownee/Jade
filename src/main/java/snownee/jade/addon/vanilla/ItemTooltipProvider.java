@@ -10,6 +10,7 @@ import com.mojang.datafixers.util.Either;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
@@ -27,6 +28,7 @@ import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.impl.ui.TextElement;
 import snownee.jade.util.ModIdentification;
+import snownee.jade.util.WailaExceptionHandler;
 
 public enum ItemTooltipProvider implements IEntityComponentProvider {
 
@@ -37,15 +39,20 @@ public enum ItemTooltipProvider implements IEntityComponentProvider {
 		ItemStack stack = ((ItemEntity) accessor.getEntity()).getItem();
 		JadeClient.hideModName = true;
 		List<Either<FormattedText, TooltipComponent>> lines = Lists.newArrayList();
-		stack.getTooltipLines(null, TooltipFlag.Default.NORMAL)
-				.stream()
-				.peek(component -> {
-					if (component instanceof MutableComponent mutable && mutable.getStyle().getColor() != null) {
-						mutable.setStyle(mutable.getStyle().withColor((TextColor) null));
-					}
-				})
-				.map(Either::<FormattedText, TooltipComponent>left)
-				.forEach(lines::add);
+		try {
+			stack.getTooltipLines(null, TooltipFlag.Default.NORMAL)
+					.stream()
+					.peek(component -> {
+						if (component instanceof MutableComponent mutable && mutable.getStyle().getColor() != null) {
+							mutable.setStyle(mutable.getStyle().withColor((TextColor) null));
+						}
+					})
+					.map(Either::<FormattedText, TooltipComponent>left)
+					.forEach(lines::add);
+		} catch (Throwable e) {
+			String namespace = BuiltInRegistries.ITEM.getKey(stack.getItem()).getNamespace();
+			WailaExceptionHandler.handleErr(e, this, tooltip, namespace);
+		}
 		JadeClient.hideModName = false;
 		if (lines.isEmpty()) {
 			return;

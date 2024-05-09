@@ -104,7 +104,11 @@ public final class JadeClient {
 			if (mode == IWailaConfig.DisplayMode.TOGGLE) {
 				general.setDisplayTooltip(!general.shouldDisplayTooltip());
 				if (!general.shouldDisplayTooltip() && general.hintOverlayToggle) {
-					SystemToast.add(Minecraft.getInstance().getToasts(), SystemToastIds.UNSECURE_SERVER_WARNING, Component.translatable("toast.jade.toggle_hint.1"), Component.translatable("toast.jade.toggle_hint.2", showOverlay.getTranslatedKeyMessage()));
+					SystemToast.add(
+							Minecraft.getInstance().getToasts(),
+							SystemToastIds.UNSECURE_SERVER_WARNING,
+							Component.translatable("toast.jade.toggle_hint.1"),
+							Component.translatable("toast.jade.toggle_hint.2", showOverlay.getTranslatedKeyMessage()));
 					general.hintOverlayToggle = false;
 				}
 				Jade.CONFIG.save();
@@ -120,7 +124,11 @@ public final class JadeClient {
 			if (general.getTTSMode() == TTSMode.TOGGLE) {
 				general.toggleTTS();
 				if (general.shouldEnableTextToSpeech() && general.hintNarratorToggle) {
-					SystemToast.add(Minecraft.getInstance().getToasts(), SystemToastIds.UNSECURE_SERVER_WARNING, Component.translatable("toast.jade.tts_hint.1"), Component.translatable("toast.jade.tts_hint.2", narrate.getTranslatedKeyMessage()));
+					SystemToast.add(
+							Minecraft.getInstance().getToasts(),
+							SystemToastIds.UNSECURE_SERVER_WARNING,
+							Component.translatable("toast.jade.tts_hint.1"),
+							Component.translatable("toast.jade.tts_hint.2", narrate.getTranslatedKeyMessage()));
 					general.hintNarratorToggle = false;
 				}
 				Jade.CONFIG.save();
@@ -154,9 +162,11 @@ public final class JadeClient {
 	}
 
 	private static void appendModName(List<Component> tooltip, ItemStack stack, TooltipFlag context) {
-		if (hideModName || !Jade.CONFIG.get().getGeneral().showItemModNameTooltip())
+		if (hideModName || !Jade.CONFIG.get().getGeneral().showItemModNameTooltip()) {
 			return;
-		if (Minecraft.getInstance().screen instanceof CreativeModeInventoryScreen screen && screen.hoveredSlot != null && screen.hoveredSlot.getItem() == stack) {
+		}
+		if (Minecraft.getInstance().screen instanceof CreativeModeInventoryScreen screen && screen.hoveredSlot != null &&
+				screen.hoveredSlot.getItem() == stack) {
 			if (CreativeModeInventoryScreen.selectedTab.getType() != CreativeModeTab.Type.CATEGORY || !context.isCreative()) {
 				return;
 			}
@@ -173,14 +183,18 @@ public final class JadeClient {
 	}
 
 	@Nullable
-	public static Accessor<?> builtInOverrides(HitResult hitResult, @Nullable Accessor<?> accessor, @Nullable Accessor<?> originalAccessor) {
+	public static Accessor<?> builtInOverrides(
+			HitResult hitResult,
+			@Nullable Accessor<?> accessor,
+			@Nullable Accessor<?> originalAccessor) {
 		if (WailaClientRegistration.INSTANCE.maybeLowVisionUser() || !IWailaConfig.get().getGeneral().getBuiltinCamouflage()) {
 			return accessor;
 		}
 		if (accessor instanceof BlockAccessor target) {
 			Player player = accessor.getPlayer();
-			if (player.isCreative() || player.isSpectator())
+			if (player.isCreative() || player.isSpectator()) {
 				return accessor;
+			}
 			IWailaClientRegistration client = VanillaPlugin.CLIENT_REGISTRATION;
 			if (target.getBlock() instanceof TrappedChestBlock) {
 				BlockState state = VanillaPlugin.getCorrespondingNormalChest(target.getBlockState());

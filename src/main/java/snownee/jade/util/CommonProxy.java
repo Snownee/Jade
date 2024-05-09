@@ -192,7 +192,7 @@ public final class CommonProxy implements ModInitializer {
 					return containerCache.get(storage, () -> new ItemCollector<>(JadeFabricUtils.fromItemStorage(storage, 0)));
 				}
 			} catch (Throwable e) {
-				WailaExceptionHandler.handleErr(e, null, null);
+				WailaExceptionHandler.handleErr(e, null, null, null);
 			}
 		}
 		if (target instanceof Container) {
@@ -256,7 +256,7 @@ public final class CommonProxy implements ModInitializer {
 					return JadeFabricUtils.fromFluidStorage(storage);
 				}
 			} catch (Throwable e) {
-				WailaExceptionHandler.handleErr(e, null, null);
+				WailaExceptionHandler.handleErr(e, null, null, null);
 			}
 		}
 		return null;
@@ -272,7 +272,7 @@ public final class CommonProxy implements ModInitializer {
 					return List.of(group);
 				}
 			} catch (Throwable e) {
-				WailaExceptionHandler.handleErr(e, null, null);
+				WailaExceptionHandler.handleErr(e, null, null, null);
 			}
 		}
 		return null;
@@ -383,7 +383,7 @@ public final class CommonProxy implements ModInitializer {
 			} catch (Throwable e) {
 				Jade.LOGGER.error("Error loading plugin at %s".formatted(className), e);
 				Throwables.throwIfInstanceOf(e, IllegalStateException.class);
-				if (entrypoint.getProvider().getMetadata().getId().equals(Jade.ID)) {
+				if (entrypoint.getProvider().getMetadata().getId().equals(Jade.MODID)) {
 					throw e;
 				}
 			}

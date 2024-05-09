@@ -39,7 +39,7 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 		try {
 			accessor = fromNetwork(buf, player);
 		} catch (Exception e) {
-			WailaExceptionHandler.handleErr(e, null, null);
+			WailaExceptionHandler.handleErr(e, null, null, null);
 			return;
 		}
 		executor.accept(() -> {
@@ -55,7 +55,7 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 				try {
 					provider.appendServerData(tag, accessor);
 				} catch (Exception e) {
-					WailaExceptionHandler.handleErr(e, provider, null);
+					WailaExceptionHandler.handleErr(e, provider, null, null);
 				}
 			}
 
