@@ -75,7 +75,7 @@ public class JadeCodecs {
 							"jade.ignore_list.comment",
 							"This is an ignore list for the target of Jade. You can add registry ids to the \"values\" list.");
 				}),
-				ResourceKey.codec(registryKey).listOf().fieldOf("values").forGetter($ -> $.values),
+				Codec.STRING.listOf().fieldOf("values").forGetter($ -> $.values),
 				ExtraCodecs.POSITIVE_INT.optionalFieldOf("version", 1).forGetter($ -> $.version)
 		).apply(i, (comment, values, version) -> {
 			IgnoreList<T> ignoreList = new IgnoreList<>();

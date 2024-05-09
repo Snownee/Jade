@@ -119,9 +119,10 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 			String file,
 			ResourceKey<Registry<T>> registryKey,
 			List<String> defaultValues) {
+		List<String> values = List.copyOf(defaultValues);
 		return new JsonConfig<>(Jade.ID + "/" + file, JadeCodecs.ignoreList(registryKey), null, () -> {
 			var ignoreList = new IgnoreList<T>();
-			ignoreList.values = defaultValues.stream().map(ResourceLocation::new).map($ -> ResourceKey.create(registryKey, $)).toList();
+			ignoreList.values = values;
 			return ignoreList;
 		});
 	}
@@ -335,23 +336,23 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 		{
 			ImmutableSet.Builder<EntityType<?>> builder = ImmutableSet.builder();
 			builder.addAll(hideEntities);
-			for (ResourceKey<EntityType<?>> id : createIgnoreListConfig(
+			createIgnoreListConfig(
 					"hide-entities",
 					Registries.ENTITY_TYPE,
-					List.of("area_effect_cloud", "firework_rocket", "interaction", "text_display", "lightning_bolt")).get().values) {
-				BuiltInRegistries.ENTITY_TYPE.getOptional(id.location()).ifPresent(builder::add);
-			}
+					List.of("area_effect_cloud", "firework_rocket", "interaction", "text_display", "lightning_bolt")).get().reload(
+					BuiltInRegistries.ENTITY_TYPE,
+					builder::add);
 			hideEntitiesReloadable = builder.build();
 		}
 		{
 			ImmutableSet.Builder<Block> builder = ImmutableSet.builder();
 			builder.addAll(hideBlocks);
-			for (ResourceKey<Block> id : createIgnoreListConfig(
+			createIgnoreListConfig(
 					"hide-blocks",
 					Registries.BLOCK,
-					List.of("barrier")).get().values) {
-				BuiltInRegistries.BLOCK.getOptional(id.location()).ifPresent(builder::add);
-			}
+					List.of("barrier")).get().reload(
+					BuiltInRegistries.BLOCK,
+					builder::add);
 			hideBlocksReloadable = builder.build();
 		}
 	}
