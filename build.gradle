@@ -239,7 +239,7 @@ unifiedPublishing {
         secondaryPublications.builtBy(tasks.apiJar)
 
         curseforge {
-            token = System.getenv("CURSE_TOKEN")
+            token = System.getenv("CURSE_TOKEN") ?: ''
             id = "324717" // Required, must be a string, ID of CurseForge project
 
             relations { // Optional, Inferred from the relations above by default
@@ -248,7 +248,7 @@ unifiedPublishing {
         }
 
         modrinth {
-            token = System.getenv("MODRINTH_TOKEN")
+            token = System.getenv("MODRINTH_TOKEN") ?: ''
             id = "nvQzSEkH" // Required, must be a string, ID of Modrinth project
             displayName = project.mod_version
 

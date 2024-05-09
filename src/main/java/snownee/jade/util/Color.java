@@ -3,8 +3,19 @@ package snownee.jade.util;
 import java.math.BigDecimal;
 import java.util.Objects;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+
 // Modified from: https://github.com/silentsoft/csscolor4j/blob/main/src/main/java/org/silentsoft/csscolor4j/Color.java
 public class Color {
+
+	public static final Codec<Integer> CODEC = Codec.STRING.comapFlatMap($ -> {
+		try {
+			return DataResult.success(Color.valueOf($).toInt());
+		} catch (IllegalArgumentException e) {
+			return DataResult.error(() -> "Invalid color: " + $);
+		}
+	}, $ -> Color.rgb($).getHex());
 
 	private int red;
 	private int green;
@@ -210,58 +221,54 @@ public class Color {
 	}
 
 	/**
-     * Creates a color from a string representation.<br>
-     *
-     * Supported formats are:
-     * <ul>
-     *     <li><code>rgb[a](red, green, blue[, opacity])</code></li>
-     *     <li><code>cmyk[a](cyan, magenta, yellow, black[, opacity])</code></li>
-     *     <li><code>hsl[a](hue, saturation, lightness[, opacity])</code></li>
-     *     <li>{@link NamedColor named color}</li>
-     *     <li>hexadecimal numbers</li>
-     * </ul>
-     *
-     * Examples:
-     * <pre>
-     * Color.valueOf("rgb(255, 0, 153)");
-     * Color.valueOf("rgb(100%, 0%, 60%)");
-     * Color.valueOf("rgb(255 0 153)");
-     * Color.valueOf("rgb(255, 0, 153, 1)");
-     * Color.valueOf("rgb(255, 0, 153, 100%)");
-     * Color.valueOf("rgb(255 0 153 / 1)");
-     * Color.valueOf("rgb(255 0 153 / 100%)");
-     * Color.valueOf("rgb(1e2, .5e1, .5e0, +.25e2%)");
-     *
-     * Color.valueOf("rgba(51, 170, 51, .5)");
-     *
-     * Color.valueOf("cmyk(1, 0, 0, 0)");
-     *
-     * Color.valueOf("hsl(270, 60%, 70%)");
-     * Color.valueOf("hsl(270deg, 60%, 70%)");
-     * Color.valueOf("hsl(4.71239rad, 60%, 70%)");
-     * Color.valueOf("hsl(300grad, 60%, 70%)");
-     * Color.valueOf("hsl(.75turn, 60%, 70%)");
-     *
-     * Color.valueOf("black");
-     * Color.valueOf("rebeccapurple");
-     *
-     * Color.valueOf("#f09");
-     * Color.valueOf("#ff0099");
-     * Color.valueOf("#ff0099ff");
-     * </pre>
-     *
-     * @param value the string to convert
-     * @return a <code>Color</code> object that contains color information such as red, green, blue, cyan, magenta, yellow, black, hue, saturation, lightness, opacity, and hexadecimal numbers
-     * @throws IllegalArgumentException if the given string value cannot be recognized as <code>rgb</code>, <code>cmyk</code>, <code>hsl</code>, {@link NamedColor named color} or hexadecimal numbers
-     * @see #rgb(int, int, int)
-     * @see #rgb(int, int, int, double)
-     * @see #cmyk(double, double, double, double)
-     * @see #cmyk(double, double, double, double, double)
-     * @see #hsl(double, double, double)
-     * @see #hsl(double, double, double, double)
-     * @see org.silentsoft.csscolor4j.NamedColor
-     * @see #hex(String)
-     */
+	 * Creates a color from a string representation.<br>
+	 * <p>
+	 * Supported formats are:
+	 * <ul>
+	 *     <li><code>rgb[a](red, green, blue[, opacity])</code></li>
+	 *     <li><code>cmyk[a](cyan, magenta, yellow, black[, opacity])</code></li>
+	 *     <li><code>hsl[a](hue, saturation, lightness[, opacity])</code></li>
+	 *     <li>hexadecimal numbers</li>
+	 * </ul>
+	 * <p>
+	 * Examples:
+	 * <pre>
+	 * Color.valueOf("rgb(255, 0, 153)");
+	 * Color.valueOf("rgb(100%, 0%, 60%)");
+	 * Color.valueOf("rgb(255 0 153)");
+	 * Color.valueOf("rgb(255, 0, 153, 1)");
+	 * Color.valueOf("rgb(255, 0, 153, 100%)");
+	 * Color.valueOf("rgb(255 0 153 / 1)");
+	 * Color.valueOf("rgb(255 0 153 / 100%)");
+	 * Color.valueOf("rgb(1e2, .5e1, .5e0, +.25e2%)");
+	 *
+	 * Color.valueOf("rgba(51, 170, 51, .5)");
+	 *
+	 * Color.valueOf("cmyk(1, 0, 0, 0)");
+	 *
+	 * Color.valueOf("hsl(270, 60%, 70%)");
+	 * Color.valueOf("hsl(270deg, 60%, 70%)");
+	 * Color.valueOf("hsl(4.71239rad, 60%, 70%)");
+	 * Color.valueOf("hsl(300grad, 60%, 70%)");
+	 * Color.valueOf("hsl(.75turn, 60%, 70%)");
+	 *
+	 * Color.valueOf("black");
+	 * Color.valueOf("rebeccapurple");
+	 *
+	 * Color.valueOf("#f09");
+	 * Color.valueOf("#ff0099");
+	 * Color.valueOf("#ff0099ff");
+	 * </pre>
+	 *
+	 * @param value the string to convert
+	 * @return a <code>Color</code> object that contains color information such as red, green, blue, cyan, magenta, yellow, black, hue, saturation, lightness, opacity, and hexadecimal numbers
+	 * @throws IllegalArgumentException if the given string value cannot be recognized as <code>rgb</code>, <code>cmyk</code>, <code>hsl</code>, {@link NamedColor named color} or hexadecimal numbers
+	 * @see #rgb(int, int, int)
+	 * @see #rgb(int, int, int, double)
+	 * @see #hsl(double, double, double)
+	 * @see #hsl(double, double, double, double)
+	 * @see #hex(String)
+	 */
 	public static Color valueOf(String value) throws IllegalArgumentException {
 		value = value.trim().toLowerCase();
 

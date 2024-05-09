@@ -10,12 +10,15 @@ import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -24,6 +27,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import snownee.jade.Jade;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
@@ -38,6 +42,7 @@ import snownee.jade.api.callback.JadeRayTraceCallback;
 import snownee.jade.api.callback.JadeRenderBackgroundCallback;
 import snownee.jade.api.callback.JadeTooltipCollectedCallback;
 import snownee.jade.api.config.IWailaConfig;
+import snownee.jade.api.config.TargetBlocklist;
 import snownee.jade.api.platform.CustomEnchantPower;
 import snownee.jade.api.view.EnergyView;
 import snownee.jade.api.view.FluidView;
@@ -54,6 +59,8 @@ import snownee.jade.impl.config.entry.StringConfigEntry;
 import snownee.jade.overlay.DatapackBlockManager;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
+import snownee.jade.util.JadeCodecs;
+import snownee.jade.util.JsonConfig;
 
 public class WailaClientRegistration implements IWailaClientRegistration {
 
@@ -66,7 +73,9 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	public final HierarchyLookup<IEntityComponentProvider> entityComponentProviders;
 
 	public final Set<Block> hideBlocks = Sets.newHashSet();
+	public ImmutableSet<Block> hideBlocksReloadable = ImmutableSet.of();
 	public final Set<EntityType<?>> hideEntities = Sets.newHashSet();
+	public ImmutableSet<EntityType<?>> hideEntitiesReloadable = ImmutableSet.of();
 	public final Set<Block> pickBlocks = Sets.newHashSet();
 	public final Set<EntityType<?>> pickEntities = Sets.newHashSet();
 
@@ -78,14 +87,19 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	public final CallbackContainer<JadeRenderBackgroundCallback> renderBackgroundCallback = new CallbackContainer<>();
 
 	public final Map<Block, CustomEnchantPower> customEnchantPowers = Maps.newHashMap();
-	public final Map<ResourceLocation, IClientExtensionProvider<ItemStack, ItemView>> itemStorageProviders = Maps.newHashMap();
-	public final Map<ResourceLocation, IClientExtensionProvider<CompoundTag, FluidView>> fluidStorageProviders = Maps.newHashMap();
-	public final Map<ResourceLocation, IClientExtensionProvider<CompoundTag, EnergyView>> energyStorageProviders = Maps.newHashMap();
-	public final Map<ResourceLocation, IClientExtensionProvider<CompoundTag, ProgressView>> progressProviders = Maps.newHashMap();
+	public final Map<ResourceLocation, IClientExtensionProvider<ItemStack, ItemView>> itemStorageProviders =
+			Maps.newHashMap();
+	public final Map<ResourceLocation, IClientExtensionProvider<CompoundTag, FluidView>> fluidStorageProviders =
+			Maps.newHashMap();
+	public final Map<ResourceLocation, IClientExtensionProvider<CompoundTag, EnergyView>> energyStorageProviders =
+			Maps.newHashMap();
+	public final Map<ResourceLocation, IClientExtensionProvider<CompoundTag, ProgressView>> progressProviders =
+			Maps.newHashMap();
 
 	public final Set<ResourceLocation> clientFeatures = Sets.newHashSet();
 
-	public final Map<Class<Accessor<?>>, Accessor.ClientHandler<Accessor<?>>> accessorHandlers = Maps.newIdentityHashMap();
+	public final Map<Class<Accessor<?>>, Accessor.ClientHandler<Accessor<?>>> accessorHandlers =
+			Maps.newIdentityHashMap();
 
 	WailaClientRegistration() {
 		blockIconProviders = new HierarchyLookup<>(Block.class);
@@ -93,6 +107,35 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 
 		entityIconProviders = new HierarchyLookup<>(Entity.class);
 		entityComponentProviders = new HierarchyLookup<>(Entity.class);
+	}
+
+	public static WailaClientRegistration instance() {
+		return INSTANCE;
+	}
+
+	public static JsonConfig<TargetBlocklist> createEntityBlocklist() {
+		return new JsonConfig<>(Jade.MODID + "/hide-entities", JadeCodecs.TARGET_BLOCKLIST_CODEC, null, () -> {
+			var blocklist = new TargetBlocklist();
+			blocklist.values = Stream.of(
+											 EntityType.AREA_EFFECT_CLOUD,
+											 EntityType.FIREWORK_ROCKET,
+											 EntityType.INTERACTION,
+											 EntityType.TEXT_DISPLAY,
+											 EntityType.LIGHTNING_BOLT
+									 )
+									 .map(EntityType::getKey)
+									 .map(Object::toString)
+									 .toList();
+			return blocklist;
+		});
+	}
+
+	public static JsonConfig<TargetBlocklist> createBlockBlocklist() {
+		return new JsonConfig<>(Jade.MODID + "/hide-blocks", JadeCodecs.TARGET_BLOCKLIST_CODEC, null, () -> {
+			var blocklist = new TargetBlocklist();
+			blocklist.values = List.of("minecraft:barrier");
+			return blocklist;
+		});
 	}
 
 	@Override
@@ -123,15 +166,22 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 		return blockComponentProviders.get(block).stream().filter(filter).toList();
 	}
 
-	public List<IBlockComponentProvider> getBlockIconProviders(Block block, Predicate<IBlockComponentProvider> filter) {
+	public List<IBlockComponentProvider> getBlockIconProviders(Block block,
+                                                               Predicate<IBlockComponentProvider> filter) {
 		return blockIconProviders.get(block).stream().filter(filter).toList();
 	}
 
-	public List<IEntityComponentProvider> getEntityProviders(Entity entity, Predicate<IEntityComponentProvider> filter) {
+	public List<IEntityComponentProvider> getEntityProviders(
+			Entity entity,
+			Predicate<IEntityComponentProvider> filter
+	) {
 		return entityComponentProviders.get(entity).stream().filter(filter).toList();
 	}
 
-	public List<IEntityComponentProvider> getEntityIconProviders(Entity entity, Predicate<IEntityComponentProvider> filter) {
+	public List<IEntityComponentProvider> getEntityIconProviders(
+			Entity entity,
+			Predicate<IEntityComponentProvider> filter
+	) {
 		return entityIconProviders.get(entity).stream().filter(filter).toList();
 	}
 
@@ -161,7 +211,7 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 
 	@Override
 	public boolean shouldHide(BlockState state) {
-		return hideBlocks.contains(state.getBlock());
+		return hideBlocksReloadable.contains(state.getBlock());
 	}
 
 	@Override
@@ -171,7 +221,7 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 
 	@Override
 	public boolean shouldHide(Entity entity) {
-		return hideEntities.contains(entity.getType());
+		return hideEntitiesReloadable.contains(entity.getType());
 	}
 
 	@Override
@@ -220,12 +270,34 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	}
 
 	public void loadComplete() {
+		reloadBlocklists();
 		var priorities = WailaCommonRegistration.INSTANCE.priorities;
 		blockComponentProviders.loadComplete(priorities);
 		blockIconProviders.loadComplete(priorities);
 		entityComponentProviders.loadComplete(priorities);
 		entityIconProviders.loadComplete(priorities);
-		Stream.of(afterRenderCallback, beforeRenderCallback, rayTraceCallback, tooltipCollectedCallback, itemModNameCallback, renderBackgroundCallback).forEach(CallbackContainer::sort);
+		Stream.of(
+				afterRenderCallback,
+				beforeRenderCallback,
+				rayTraceCallback,
+				tooltipCollectedCallback,
+				itemModNameCallback
+		).forEach(CallbackContainer::sort);
+	}
+
+	public void reloadBlocklists() {
+		hideEntitiesReloadable = Util.make(ImmutableSet.<EntityType<?>>builder(), it -> {
+			it.addAll(hideEntities);
+			for (String id : createEntityBlocklist().get().values) {
+				BuiltInRegistries.ENTITY_TYPE.getOptional(ResourceLocation.tryParse(id)).ifPresent(it::add);
+			}
+		}).build();
+		hideBlocksReloadable = Util.make(ImmutableSet.<Block>builder(), it -> {
+			it.addAll(hideBlocks);
+			for (String id : createBlockBlocklist().get().values) {
+				BuiltInRegistries.BLOCK.getOptional(ResourceLocation.tryParse(id)).ifPresent(it::add);
+			}
+		}).build();
 	}
 
 	@Override

@@ -141,7 +141,7 @@ public class PluginConfig implements IPluginConfig {
 		if (client) {
 			Map<String, Map<String, Object>> config;
 			try (FileReader reader = new FileReader(configFile, StandardCharsets.UTF_8)) {
-				config = JsonConfig.DEFAULT_GSON.fromJson(reader, new TypeToken<Map<String, Map<String, Object>>>() {
+				config = JsonConfig.GSON.fromJson(reader, new TypeToken<Map<String, Map<String, Object>>>() {
 				}.getType());
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -172,7 +172,7 @@ public class PluginConfig implements IPluginConfig {
 				save();
 		} else {
 			try (FileReader reader = new FileReader(configFile, StandardCharsets.UTF_8)) {
-				serverConfigs = JsonConfig.DEFAULT_GSON.fromJson(reader, JsonObject.class);
+				serverConfigs = JsonConfig.GSON.fromJson(reader, JsonObject.class);
 			} catch (Exception e) {
 				e.printStackTrace();
 				serverConfigs = null;
@@ -195,7 +195,7 @@ public class PluginConfig implements IPluginConfig {
 					e.setValue(e.getDefaultValue());
 				modConfig.put(e.getId().getPath(), e.getValue());
 			});
-			json = JsonConfig.DEFAULT_GSON.toJson(config);
+			json = JsonConfig.GSON.toJson(config);
 		} else {
 			json = "{}";
 		}

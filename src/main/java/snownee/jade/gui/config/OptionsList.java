@@ -395,6 +395,17 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		return super.keyPressed(i, j, k);
 	}
 
+	@Override
+	public boolean mouseClicked(double d, double e, int i) {
+		if (selectedKey != null) {
+			Options options = Minecraft.getInstance().options;
+			options.setKey(selectedKey, InputConstants.Type.MOUSE.getOrCreate(i));
+			this.selectedKey = null;
+			resetMappingAndUpdateButtons();
+		}
+		return super.mouseClicked(d, e, i);
+	}
+
 	public static class Entry extends ContainerObjectSelectionList.Entry<Entry> {
 
 		protected final Minecraft client;
