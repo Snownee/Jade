@@ -132,7 +132,6 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.addConfig(Identifiers.MC_SHOW_UNBREAKABLE, false);
 		registration.addConfig(Identifiers.MC_HARVEST_TOOL_CREATIVE, false);
 		registration.addConfig(Identifiers.MC_BREAKING_PROGRESS, true);
-		registration.addConfig(Identifiers.MC_ANIMAL_OWNER_FETCH_NAMES, true);
 
 		registration.addConfig(Identifiers.MC_ENTITY_ARMOR_MAX_FOR_RENDER, 40, 0, 100, false);
 		registration.addConfig(Identifiers.MC_ENTITY_HEALTH_MAX_FOR_RENDER, 40, 0, 100, false);
@@ -211,7 +210,6 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.markAsClientFeature(Identifiers.MC_PLAYER_HEAD);
 		registration.markAsClientFeature(Identifiers.MC_VILLAGER_PROFESSION);
 		registration.markAsClientFeature(Identifiers.MC_ITEM_TOOLTIP);
-		registration.markAsClientFeature(Identifiers.MC_ANIMAL_OWNER_FETCH_NAMES);
 		registration.markAsClientFeature(Identifiers.MC_ENTITY_HEALTH);
 		registration.markAsClientFeature(Identifiers.MC_ENTITY_ARMOR);
 		registration.markAsClientFeature(Identifiers.MC_CROP_PROGRESS);

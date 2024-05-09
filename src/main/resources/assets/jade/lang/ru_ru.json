@@ -237,7 +237,6 @@
   "config.jade.plugin_minecraft.lectern": "Кафедра",
   "config.jade.plugin_minecraft.animal_owner": "Владелец животного",
   "config.jade.plugin_minecraft.animal_owner_extra_msg": "лошадь,животное",
-  "config.jade.plugin_minecraft.animal_owner.fetch_names": "Получить имена",
   "jade.owner": "Владелец: %s",
   "jade.infinity": "∞",
   "jade.seconds": "{0}секунд",
