@@ -51,7 +51,7 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 		try {
 			accessor = fromNetwork(buf, player);
 		} catch (Exception e) {
-			WailaExceptionHandler.handleErr(e, null, null);
+			WailaExceptionHandler.handleErr(e, null, null, null);
 			return;
 		}
 		executor.accept(() -> {
@@ -72,8 +72,8 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 			for (IServerDataProvider<BlockAccessor> provider : providers) {
 				try {
 					provider.appendServerData(tag, accessor);
-				} catch (Throwable e) {
-					WailaExceptionHandler.handleErr(e, provider, null);
+				} catch (Exception e) {
+					WailaExceptionHandler.handleErr(e, provider, null, null);
 				}
 			}
 

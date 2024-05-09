@@ -22,11 +22,16 @@ import snownee.jade.api.ITooltip;
 
 public class WailaExceptionHandler {
 
-	private static final Set<IJadeProvider> ERRORS = Sets.newHashSet();
+	private static final Set<IJadeProvider> ERRORS = Sets.newConcurrentHashSet();
 	private static final File ERROR_OUTPUT = new File("logs", "JadeErrorOutput.txt");
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy - HH:mm:ss");
 
+	@Deprecated
 	public static void handleErr(Throwable e, @Nullable IJadeProvider provider, @Nullable ITooltip tooltip) {
+		handleErr(e, provider, tooltip, null);
+	}
+
+	public static void handleErr(Throwable e, @Nullable IJadeProvider provider, @Nullable ITooltip tooltip, @Nullable String whoToBlame) {
 		if (CommonProxy.isDevEnv()) {
 			ExceptionUtils.wrapAndThrow(e);
 			return;
@@ -37,13 +42,16 @@ public class WailaExceptionHandler {
 			Jade.LOGGER.error("Caught unhandled exception : [{}] {}", provider, e);
 			Jade.LOGGER.error("See JadeErrorOutput.txt for more information");
 			try {
-				FileUtils.writeStringToFile(ERROR_OUTPUT, DATE_FORMAT.format(new Date()) + "\n" + provider + "\n" + ExceptionUtils.getStackTrace(e) + "\n", StandardCharsets.UTF_8, true);
-			} catch (Exception what) {
-				// no
+				FileUtils.writeStringToFile(
+						ERROR_OUTPUT,
+						DATE_FORMAT.format(new Date()) + "\n" + provider + "\n" + ExceptionUtils.getStackTrace(e) + "\n",
+						StandardCharsets.UTF_8,
+						true);
+			} catch (Exception ignored) {
 			}
 		}
 		if (tooltip != null) {
-			String modid = null;
+			String modid = whoToBlame;
 			if (provider != null) {
 				modid = provider.getUid().getNamespace();
 			}

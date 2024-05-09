@@ -71,7 +71,7 @@ public class BlockAccessorClientHandler implements Accessor.ClientHandler<BlockA
 				if (!RayTracing.isEmptyElement(element))
 					icon = element;
 			} catch (Throwable e) {
-				WailaExceptionHandler.handleErr(e, provider, null);
+				WailaExceptionHandler.handleErr(e, provider, null, null);
 			}
 		}
 		return icon;
@@ -86,7 +86,7 @@ public class BlockAccessorClientHandler implements Accessor.ClientHandler<BlockA
 				ElementHelper.INSTANCE.setCurrentUid(provider.getUid());
 				provider.appendTooltip(tooltip, accessor, PluginConfig.INSTANCE);
 			} catch (Throwable e) {
-				WailaExceptionHandler.handleErr(e, provider, tooltip);
+				WailaExceptionHandler.handleErr(e, provider, tooltip, null);
 			} finally {
 				ElementHelper.INSTANCE.setCurrentUid(null);
 			}
