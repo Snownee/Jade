@@ -10,6 +10,7 @@ import java.util.concurrent.ExecutionException;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.google.common.base.Throwables;
 import com.google.common.cache.Cache;
 import com.google.common.collect.Sets;
 
@@ -91,12 +92,20 @@ import snownee.jade.network.ShowOverlayPacket;
 
 @Mod(Jade.MODID)
 public final class CommonProxy {
-	public static final SimpleChannel NETWORK = NetworkRegistry.ChannelBuilder.named(new ResourceLocation(Jade.MODID, "networking")).clientAcceptedVersions(s -> true).serverAcceptedVersions(s -> true).networkProtocolVersion(() -> "2").simpleChannel();
+	public static final SimpleChannel NETWORK = NetworkRegistry.ChannelBuilder.named(new ResourceLocation(Jade.MODID, "networking"))
+			.clientAcceptedVersions(s -> true)
+			.serverAcceptedVersions(s -> true)
+			.networkProtocolVersion(() -> "2")
+			.simpleChannel();
 	// Added time: 2023/12/27 - devs please remove by yourself
-	public static final Set<ResourceLocation> BLOCKED_UIDS = Sets.newHashSet(new ResourceLocation("bluepower:machines"), new ResourceLocation("bluepower:parts"));
+	public static final Set<ResourceLocation> BLOCKED_UIDS = Sets.newHashSet(
+			new ResourceLocation("bluepower:machines"),
+			new ResourceLocation("bluepower:parts"));
 
 	public CommonProxy() {
-		ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (a, b) -> true));
+		ModLoadingContext.get().registerExtensionPoint(
+				IExtensionPoint.DisplayTest.class,
+				() -> new IExtensionPoint.DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (a, b) -> true));
 		FMLJavaModLoadingContext.get().getModEventBus().register(JadeCommonConfig.class);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::loadComplete);
@@ -161,11 +170,41 @@ public final class CommonProxy {
 	}
 
 	private void setup(FMLCommonSetupEvent event) {
-		NETWORK.registerMessage(0, ReceiveDataPacket.class, ReceiveDataPacket::write, ReceiveDataPacket::read, ReceiveDataPacket.Handler::onMessage, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-		NETWORK.registerMessage(1, ServerPingPacket.class, ServerPingPacket::write, ServerPingPacket::read, ServerPingPacket.Handler::onMessage, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-		NETWORK.registerMessage(2, RequestEntityPacket.class, RequestEntityPacket::write, RequestEntityPacket::read, RequestEntityPacket.Handler::onMessage, Optional.of(NetworkDirection.PLAY_TO_SERVER));
-		NETWORK.registerMessage(3, RequestTilePacket.class, RequestTilePacket::write, RequestTilePacket::read, RequestTilePacket.Handler::onMessage, Optional.of(NetworkDirection.PLAY_TO_SERVER));
-		NETWORK.registerMessage(4, ShowOverlayPacket.class, ShowOverlayPacket::write, ShowOverlayPacket::read, ShowOverlayPacket.Handler::onMessage, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+		NETWORK.registerMessage(
+				0,
+				ReceiveDataPacket.class,
+				ReceiveDataPacket::write,
+				ReceiveDataPacket::read,
+				ReceiveDataPacket.Handler::onMessage,
+				Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+		NETWORK.registerMessage(
+				1,
+				ServerPingPacket.class,
+				ServerPingPacket::write,
+				ServerPingPacket::read,
+				ServerPingPacket.Handler::onMessage,
+				Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+		NETWORK.registerMessage(
+				2,
+				RequestEntityPacket.class,
+				RequestEntityPacket::write,
+				RequestEntityPacket::read,
+				RequestEntityPacket.Handler::onMessage,
+				Optional.of(NetworkDirection.PLAY_TO_SERVER));
+		NETWORK.registerMessage(
+				3,
+				RequestTilePacket.class,
+				RequestTilePacket::write,
+				RequestTilePacket::read,
+				RequestTilePacket.Handler::onMessage,
+				Optional.of(NetworkDirection.PLAY_TO_SERVER));
+		NETWORK.registerMessage(
+				4,
+				ShowOverlayPacket.class,
+				ShowOverlayPacket::write,
+				ShowOverlayPacket::read,
+				ShowOverlayPacket.Handler::onMessage,
+				Optional.of(NetworkDirection.PLAY_TO_CLIENT));
 	}
 
 	private void loadComplete(FMLLoadCompleteEvent event) {
@@ -196,15 +235,25 @@ public final class CommonProxy {
 					}
 				}
 			} catch (Throwable e) {
-				Jade.LOGGER.error("Error loading plugin at {}", className, e);
+				Jade.LOGGER.error("Error loading plugin at %s".formatted(className), e);
+				Throwables.throwIfInstanceOf(e, IllegalStateException.class);
+				if (className.startsWith("snownee.jade.")) {
+					throw new RuntimeException(e);
+				}
 			}
 		}
 		Jade.loadComplete();
 	}
 
 	private static void playerJoin(PlayerEvent.PlayerLoggedInEvent event) {
-		Jade.LOGGER.info("Syncing config to {} ({})", event.getEntity().getGameProfile().getName(), event.getEntity().getGameProfile().getId());
-		NETWORK.sendTo(new ServerPingPacket(PluginConfig.INSTANCE), ((ServerPlayer) event.getEntity()).connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+		Jade.LOGGER.info(
+				"Syncing config to {} ({})",
+				event.getEntity().getGameProfile().getName(),
+				event.getEntity().getGameProfile().getId());
+		NETWORK.sendTo(
+				new ServerPingPacket(PluginConfig.INSTANCE),
+				((ServerPlayer) event.getEntity()).connection.connection,
+				NetworkDirection.PLAY_TO_CLIENT);
 	}
 
 	@Nullable
@@ -256,7 +305,11 @@ public final class CommonProxy {
 				try {
 					IItemHandler itemHandler = capProvider.getCapability(ForgeCapabilities.ITEM_HANDLER).orElse(null);
 					if (itemHandler != null) {
-						return containerCache.get(itemHandler, () -> new ItemCollector<>(JadeForgeUtils.fromItemHandler(itemHandler, target instanceof AbstractChestedHorse ? 2 : 0)));
+						return containerCache.get(
+								itemHandler,
+								() -> new ItemCollector<>(JadeForgeUtils.fromItemHandler(
+										itemHandler,
+										target instanceof AbstractChestedHorse ? 2 : 0)));
 					}
 				} catch (Throwable e) {
 					WailaExceptionHandler.handleErr(e, null, null);
@@ -268,7 +321,12 @@ public final class CommonProxy {
 				return new ItemCollector<>(new ItemIterator.ContainerItemIterator(o -> {
 					if (o instanceof ChestBlockEntity be) {
 						if (be.getBlockState().getBlock() instanceof ChestBlock chestBlock) {
-							Container compound = ChestBlock.getContainer(chestBlock, be.getBlockState(), be.getLevel(), be.getBlockPos(), false);
+							Container compound = ChestBlock.getContainer(
+									chestBlock,
+									be.getBlockState(),
+									be.getLevel(),
+									be.getBlockPos(),
+									false);
 							if (compound != null) {
 								return compound;
 							}
@@ -286,7 +344,11 @@ public final class CommonProxy {
 	@Nullable
 	public static List<ViewGroup<ItemStack>> containerGroup(Container container, Accessor<?> accessor) {
 		try {
-			return ItemStorageProvider.INSTANCE.containerCache.get(container, () -> new ItemCollector<>(new ItemIterator.ContainerItemIterator(0))).update(container, accessor.getLevel().getGameTime());
+			return ItemStorageProvider.INSTANCE.containerCache.get(
+					container,
+					() -> new ItemCollector<>(new ItemIterator.ContainerItemIterator(0))).update(
+					container,
+					accessor.getLevel().getGameTime());
 		} catch (ExecutionException e) {
 			return null;
 		}
@@ -296,7 +358,11 @@ public final class CommonProxy {
 	@SuppressWarnings("UnstableApiUsage")
 	public static List<ViewGroup<ItemStack>> storageGroup(Object storage, Accessor<?> accessor) {
 		try {
-			return ItemStorageProvider.INSTANCE.containerCache.get(storage, () -> new ItemCollector<>(JadeForgeUtils.fromItemHandler((IItemHandler) storage, 0))).update(storage, accessor.getLevel().getGameTime());
+			return ItemStorageProvider.INSTANCE.containerCache.get(
+					storage,
+					() -> new ItemCollector<>(JadeForgeUtils.fromItemHandler((IItemHandler) storage, 0))).update(
+					storage,
+					accessor.getLevel().getGameTime());
 		} catch (ExecutionException e) {
 			return null;
 		}
@@ -358,7 +424,9 @@ public final class CommonProxy {
 
 	public static MutableComponent getProfressionName(VillagerProfession profession) {
 		ResourceLocation profName = ForgeRegistries.VILLAGER_PROFESSIONS.getKey(profession);
-		return Component.translatable(EntityType.VILLAGER.getDescriptionId() + '.' + (!ResourceLocation.DEFAULT_NAMESPACE.equals(profName.getNamespace()) ? profName.getNamespace() + '.' : "") + profName.getPath());
+		return Component.translatable(EntityType.VILLAGER.getDescriptionId() + '.' +
+				(!ResourceLocation.DEFAULT_NAMESPACE.equals(profName.getNamespace()) ? profName.getNamespace() + '.' : "") +
+				profName.getPath());
 	}
 
 	public static boolean isBoss(Entity entity) {
