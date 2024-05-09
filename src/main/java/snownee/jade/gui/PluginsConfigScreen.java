@@ -1,6 +1,7 @@
 package snownee.jade.gui;
 
 import java.util.Comparator;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang3.mutable.MutableObject;
@@ -48,8 +49,9 @@ public class PluginsConfigScreen extends BaseOptionsScreen {
 		PluginConfig.INSTANCE.getNamespaces().forEach(namespace -> {
 			MutableComponent title;
 			String translationKey = "plugin_" + namespace;
-			if (!Jade.MODID.equals(namespace) && ModIdentification.NAMES.containsKey(namespace)) {
-				title = Component.literal(ModIdentification.getModName(namespace));
+			Optional<String> modName = ModIdentification.getModName(namespace);
+			if (!Jade.MODID.equals(namespace) && modName.isPresent()) {
+				title = Component.literal(modName.get());
 			} else {
 				title = Component.translatable(OptionsList.Entry.makeKey(translationKey));
 			}
