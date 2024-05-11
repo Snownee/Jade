@@ -6,6 +6,7 @@ body:
     attributes:
       label: Mod loader
       options:
+        - Please select
         - Fabric
         - NeoForge
         - Forge
@@ -45,12 +46,12 @@ body:
   - type: checkboxes
     id: reproducible
     attributes:
-      label: "If bug:"
+      label: "[IMPORTANT] If bug:"
       options:
-        - label: "Can you reproduce this issue with relevant mods only?"
+        - label: "I have confirmed this bug is reproducible on a minimal setup, not a modpack with many other mods."
   - type: input
     attributes:
-      label: "If bug: The latest.log file"
+      label: "[IMPORTANT] If bug: The **latest.log** file"
       description: "Please use a paste site such as [gist](https://gist.github.com/) / [pastebin](https://pastebin.com/) / etc."
   - type: textarea
     attributes:
