@@ -162,7 +162,7 @@ public final class JadeClient {
 	}
 
 	private static void appendModName(List<Component> tooltip, ItemStack stack, TooltipFlag context) {
-		if (hideModName || !Jade.CONFIG.get().getGeneral().showItemModNameTooltip()) {
+		if (hideModName || tooltip.isEmpty() || !Jade.CONFIG.get().getGeneral().showItemModNameTooltip()) {
 			return;
 		}
 		if (Minecraft.getInstance().screen instanceof CreativeModeInventoryScreen screen && screen.hoveredSlot != null &&
