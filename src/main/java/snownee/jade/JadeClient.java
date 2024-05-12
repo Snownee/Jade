@@ -52,8 +52,8 @@ import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
 import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.ColorPalette;
-import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.ui.IBoxElement;
+import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.ui.TooltipRect;
 import snownee.jade.gui.HomeConfigScreen;
 import snownee.jade.impl.WailaClientRegistration;
@@ -164,7 +164,7 @@ public final class JadeClient {
 	}
 
 	public static void appendModName(List<Component> tooltip, ItemStack stack, Item.TooltipContext tooltipContext, TooltipFlag flag) {
-		if (hideModName || !Jade.CONFIG.get().getGeneral().showItemModNameTooltip()) {
+		if (hideModName || tooltip.isEmpty() || !Jade.CONFIG.get().getGeneral().showItemModNameTooltip()) {
 			return;
 		}
 		if (Minecraft.getInstance().screen instanceof CreativeModeInventoryScreen screen && screen.hoveredSlot != null &&
