@@ -28,6 +28,7 @@ public class RequestEntityPacket {
 
 	public static void write(RequestEntityPacket message, FriendlyByteBuf buffer) {
 		message.accessor.toNetwork(buffer);
+		message.accessor = null;
 	}
 
 	public static class Handler {
