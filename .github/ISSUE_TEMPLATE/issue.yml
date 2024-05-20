@@ -51,7 +51,7 @@ body:
         - label: "I have confirmed this bug is reproducible on a minimal setup, not a modpack with many other mods."
   - type: input
     attributes:
-      label: "[IMPORTANT] If bug: The **latest.log** file"
+      label: "[IMPORTANT] If bug: The **latest.log** file, not the crash report"
       description: "Please use a paste site such as [gist](https://gist.github.com/) / [pastebin](https://pastebin.com/) / etc."
   - type: textarea
     attributes:
