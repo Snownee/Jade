@@ -161,6 +161,11 @@ public abstract class EnergyStorageProvider<T extends Accessor<?>> implements IC
 		public boolean shouldRequestData(Accessor<?> accessor) {
 			return CommonProxy.hasDefaultEnergyStorage(accessor);
 		}
+
+		@Override
+		public int getDefaultPriority() {
+			return TooltipPosition.BODY + 1000;
+		}
 	}
 
 }

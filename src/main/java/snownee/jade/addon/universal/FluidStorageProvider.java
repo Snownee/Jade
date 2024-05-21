@@ -165,6 +165,11 @@ public abstract class FluidStorageProvider<T extends Accessor<?>> implements ICo
 		public boolean shouldRequestData(Accessor<?> accessor) {
 			return CommonProxy.hasDefaultFluidStorage(accessor);
 		}
+
+		@Override
+		public int getDefaultPriority() {
+			return TooltipPosition.BODY + 1000;
+		}
 	}
 
 }
