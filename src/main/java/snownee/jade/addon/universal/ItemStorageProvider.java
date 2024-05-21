@@ -278,7 +278,7 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 
 		@Override
 		public ResourceLocation getUid() {
-			return Identifiers.UNIVERSAL_FLUID_STORAGE;
+			return Identifiers.UNIVERSAL_ITEM_STORAGE;
 		}
 
 		@Nullable
