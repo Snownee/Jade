@@ -334,6 +334,11 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 		public boolean shouldRequestData(Accessor<?> accessor) {
 			return CommonProxy.hasDefaultItemStorage(accessor);
 		}
+
+		@Override
+		public int getDefaultPriority() {
+			return TooltipPosition.TAIL;
+		}
 	}
 
 }
