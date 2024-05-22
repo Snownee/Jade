@@ -337,7 +337,7 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 
 		@Override
 		public int getDefaultPriority() {
-			return TooltipPosition.BODY + 1000;
+			return TooltipPosition.TAIL;
 		}
 	}
 
