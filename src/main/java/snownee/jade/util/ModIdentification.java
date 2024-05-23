@@ -30,14 +30,18 @@ public class ModIdentification implements ResourceManagerReloadListener {
 	}
 
 	public static Optional<String> getModName(String namespace) {
-		return NAMES.computeIfAbsent(namespace, $ -> ClientProxy.getModName(namespace).or(() -> {
-			String key = "jade.modName." + namespace;
+		return NAMES.computeIfAbsent(namespace, $ -> {
+			Optional<String> optional = ClientProxy.getModName($);
+			if (optional.isPresent()) {
+				return optional;
+			}
+			String key = "jade.modName." + $;
 			if (I18n.exists(key)) {
 				return Optional.of(I18n.get(key));
 			} else {
 				return Optional.empty();
 			}
-		}));
+		});
 	}
 
 	public static String getModName(ResourceLocation id) {

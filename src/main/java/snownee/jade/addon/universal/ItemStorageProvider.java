@@ -316,7 +316,7 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 			try {
 				itemCollector = targetCache.get(target, () -> CommonProxy.createItemCollector(target, containerCache));
 			} catch (ExecutionException e) {
-				WailaExceptionHandler.handleErr(e, null, null);
+				WailaExceptionHandler.handleErr(e, null, null, null);
 				return null;
 			}
 			if (itemCollector == ItemCollector.EMPTY) {
