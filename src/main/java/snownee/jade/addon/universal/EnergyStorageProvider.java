@@ -140,7 +140,7 @@ public abstract class EnergyStorageProvider<T extends Accessor<?>> implements IC
 
 		@Override
 		public ResourceLocation getUid() {
-			return Identifiers.UNIVERSAL_ENERGY_STORAGE;
+			return Identifiers.UNIVERSAL_ENERGY_STORAGE_DEFAULT;
 		}
 
 		@Override
@@ -164,7 +164,7 @@ public abstract class EnergyStorageProvider<T extends Accessor<?>> implements IC
 
 		@Override
 		public int getDefaultPriority() {
-			return TooltipPosition.TAIL;
+			return 9999;
 		}
 	}
 
