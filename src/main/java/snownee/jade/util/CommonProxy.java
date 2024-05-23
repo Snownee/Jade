@@ -142,7 +142,7 @@ public final class CommonProxy implements ModInitializer {
 //		return state.is(FabricMineableTags.SHEARS_MINEABLE); TODO harvest tool api
 	}
 
-	public static boolean isCorrectToolForDrops(BlockState state, Player player) {
+	public static boolean isCorrectToolForDrops(BlockState state, Player player, Level level, BlockPos pos) {
 		return player.hasCorrectToolForDrops(state);
 	}
 
