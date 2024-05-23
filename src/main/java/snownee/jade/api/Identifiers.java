@@ -21,13 +21,16 @@ public class Identifiers {
 	public static final ResourceLocation DEBUG_BLOCK_PROPERTIES = JADE("block_properties");
 	public static final ResourceLocation DEBUG_BLOCK_STATES = JADE("block_states");
 	public static final ResourceLocation UNIVERSAL_ITEM_STORAGE = MC("item_storage");
+	public static final ResourceLocation UNIVERSAL_ITEM_STORAGE_DEFAULT = MC("item_storage.default");
 	public static final ResourceLocation UNIVERSAL_ITEM_STORAGE_DETAILED_AMOUNT = MC("item_storage.detailed_amount");
 	public static final ResourceLocation UNIVERSAL_ITEM_STORAGE_NORMAL_AMOUNT = MC("item_storage.normal_amount");
 	public static final ResourceLocation UNIVERSAL_ITEM_STORAGE_SHOW_NAME_AMOUNT = MC("item_storage.show_name_amount");
 	public static final ResourceLocation UNIVERSAL_ITEM_STORAGE_ITEMS_PER_LINE = MC("item_storage.items_per_line");
 	public static final ResourceLocation UNIVERSAL_FLUID_STORAGE = MC("fluid_storage");
+	public static final ResourceLocation UNIVERSAL_FLUID_STORAGE_DEFAULT = MC("fluid_storage.default");
 	public static final ResourceLocation UNIVERSAL_FLUID_STORAGE_DETAILED = MC("fluid_storage.detailed");
 	public static final ResourceLocation UNIVERSAL_ENERGY_STORAGE = MC("energy_storage");
+	public static final ResourceLocation UNIVERSAL_ENERGY_STORAGE_DEFAULT = MC("energy_storage.default");
 	public static final ResourceLocation UNIVERSAL_ENERGY_STORAGE_DETAILED = MC("energy_storage.detailed");
 	public static final ResourceLocation UNIVERSAL_PROGRESS = MC("progress");
 	public static final ResourceLocation MC_ANIMAL_OWNER = MC("animal_owner");

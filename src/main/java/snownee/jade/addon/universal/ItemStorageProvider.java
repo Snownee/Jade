@@ -292,7 +292,7 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 
 		@Override
 		public ResourceLocation getUid() {
-			return Identifiers.UNIVERSAL_ITEM_STORAGE;
+			return Identifiers.UNIVERSAL_ITEM_STORAGE_DEFAULT;
 		}
 
 		@Nullable
@@ -351,7 +351,7 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 
 		@Override
 		public int getDefaultPriority() {
-			return TooltipPosition.TAIL;
+			return 9999;
 		}
 	}
 

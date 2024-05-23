@@ -166,7 +166,7 @@ public abstract class FluidStorageProvider<T extends Accessor<?>> implements ICo
 
 		@Override
 		public ResourceLocation getUid() {
-			return Identifiers.UNIVERSAL_FLUID_STORAGE;
+			return Identifiers.UNIVERSAL_FLUID_STORAGE_DEFAULT;
 		}
 
 		@Override
@@ -187,7 +187,7 @@ public abstract class FluidStorageProvider<T extends Accessor<?>> implements ICo
 
 		@Override
 		public int getDefaultPriority() {
-			return TooltipPosition.TAIL;
+			return 9999;
 		}
 	}
 
