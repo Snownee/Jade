@@ -252,7 +252,6 @@
 	"config.jade.plugin_minecraft.lectern": "Atril",
 	"config.jade.plugin_minecraft.animal_owner": "Dueño del animal",
 	"config.jade.plugin_minecraft.animal_owner_extra_msg": "caballo,mascota",
-	"config.jade.plugin_minecraft.animal_owner.fetch_names": "Obtener nombres",
 	"jade.owner": "Propietario: %s",
 	"jade.infinity": "∞",
 	"jade.seconds": "{0}s",
