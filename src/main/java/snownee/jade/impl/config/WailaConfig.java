@@ -1,7 +1,6 @@
 package snownee.jade.impl.config;
 
 import java.util.List;
-import java.util.Optional;
 
 import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;

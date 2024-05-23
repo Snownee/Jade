@@ -13,9 +13,12 @@ logoFile = "icon.png"
 credits = "TehNut, ProfMobius, kalkafox"
 displayTest = "NONE"
 
+[[mixins]]
+config = "jade.mixins.json"
+
 [[dependencies.jade]]
 modId = "neoforge"
 type = "required"
-versionRange = "[20.5.0-beta, )"
+versionRange = "[20.6.74-beta, )"
 ordering = "NONE"
 side = "BOTH"

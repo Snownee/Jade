@@ -44,6 +44,7 @@ import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.neoforge.client.ItemDecoratorHandler;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
@@ -56,7 +57,6 @@ import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import net.neoforged.neoforge.client.settings.KeyModifier;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
@@ -171,13 +171,11 @@ public final class ClientProxy {
 		}
 	}
 
-	private static void onClientTick(TickEvent.ClientTickEvent event) {
-		if (event.phase == TickEvent.Phase.END) {
-			try {
-				WailaTickHandler.instance().tickClient();
-			} catch (Throwable e) {
-				WailaExceptionHandler.handleErr(e, null, null, null);
-			}
+	private static void onClientTick(ClientTickEvent.Post event) {
+		try {
+			WailaTickHandler.instance().tickClient();
+		} catch (Throwable e) {
+			WailaExceptionHandler.handleErr(e, null, null, null);
 		}
 	}
 

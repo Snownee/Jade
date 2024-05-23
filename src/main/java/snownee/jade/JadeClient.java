@@ -263,9 +263,10 @@ public final class JadeClient {
 		if (playerController == null || mc.level == null || mc.player == null) {
 			return;
 		}
-		BlockState state = mc.level.getBlockState(playerController.destroyBlockPos);
+		BlockPos pos = playerController.destroyBlockPos;
+		BlockState state = mc.level.getBlockState(pos);
 		if (playerController.isDestroying()) {
-			canHarvest = CommonProxy.isCorrectToolForDrops(state, mc.player);
+			canHarvest = CommonProxy.isCorrectToolForDrops(state, mc.player, mc.level, pos);
 		} else if (progressAlpha == 0) {
 			return;
 		}
@@ -281,7 +282,7 @@ public final class JadeClient {
 		progressAlpha += mc.getDeltaFrameTime() * (playerController.isDestroying() ? 0.1F : -0.1F);
 		if (playerController.isDestroying()) {
 			progressAlpha = Math.min(progressAlpha, 0.6F);
-			float progress = state.getDestroyProgress(mc.player, mc.player.level(), playerController.destroyBlockPos);
+			float progress = state.getDestroyProgress(mc.player, mc.player.level(), pos);
 			if (playerController.destroyProgress + progress >= 1) {
 				progressAlpha = savedProgress = 1;
 			} else {

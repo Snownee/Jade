@@ -54,13 +54,13 @@ import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.EntityCapability;
-import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.IShearable;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.UsernameCache;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.entity.PartEntity;
+import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -213,8 +213,8 @@ public final class CommonProxy {
 		return state.getBlock() instanceof IShearable;
 	}
 
-	public static boolean isCorrectToolForDrops(BlockState state, Player player) {
-		return CommonHooks.isCorrectToolForDrops(state, player);
+	public static boolean isCorrectToolForDrops(BlockState state, Player player, Level level, BlockPos pos) {
+		return EventHooks.doPlayerHarvestCheck(player, state, level, pos);
 	}
 
 	public static String getModIdFromItem(ItemStack stack) {
