@@ -11,6 +11,8 @@ import java.util.concurrent.ExecutionException;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Stopwatch;
+import com.google.common.base.Throwables;
 import com.google.common.cache.Cache;
 
 import net.minecraft.client.resources.language.I18n;
@@ -419,18 +421,35 @@ public final class CommonProxy {
 		/* on */
 
 		for (String className : classNames) {
-			Jade.LOGGER.info("Start loading plugin at {}", className);
+			Jade.LOGGER.info("Start loading plugin from %s".formatted(className));
 			try {
 				Class<?> clazz = Class.forName(className);
 				if (IWailaPlugin.class.isAssignableFrom(clazz)) {
 					IWailaPlugin plugin = (IWailaPlugin) clazz.getDeclaredConstructor().newInstance();
-					plugin.register(WailaCommonRegistration.instance());
-					if (CommonProxy.isPhysicallyClient()) {
-						plugin.registerClient(WailaClientRegistration.instance());
+					Stopwatch stopwatch = null;
+					if (CommonProxy.isDevEnv()) {
+						stopwatch = Stopwatch.createStarted();
+					}
+					WailaCommonRegistration common = WailaCommonRegistration.instance();
+					common.startSession();
+					plugin.register(common);
+					if (isPhysicallyClient()) {
+						WailaClientRegistration client = WailaClientRegistration.instance();
+						client.startSession();
+						plugin.registerClient(client);
+						if (stopwatch != null) {
+							Jade.LOGGER.info("Bootstrapped plugin from %s in %s".formatted(className, stopwatch));
+						}
+						client.endSession();
+					}
+					common.endSession();
+					if (stopwatch != null) {
+						Jade.LOGGER.info("Loaded plugin from %s in %s".formatted(className, stopwatch.stop()));
 					}
 				}
 			} catch (Throwable e) {
-				Jade.LOGGER.error("Error loading plugin at {}", className, e);
+				Jade.LOGGER.error("Error loading plugin at %s".formatted(className), e);
+				Throwables.throwIfInstanceOf(e, IllegalStateException.class);
 			}
 		}
 		Jade.loadComplete();
