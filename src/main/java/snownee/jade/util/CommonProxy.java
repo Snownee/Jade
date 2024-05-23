@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.MoreObjects;
@@ -450,6 +451,9 @@ public final class CommonProxy {
 			} catch (Throwable e) {
 				Jade.LOGGER.error("Error loading plugin at %s".formatted(className), e);
 				Throwables.throwIfInstanceOf(e, IllegalStateException.class);
+				if (className.startsWith("snownee.jade.")) {
+					ExceptionUtils.wrapAndThrow(e);
+				}
 			}
 		}
 		Jade.loadComplete();
