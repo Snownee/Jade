@@ -1,5 +1,6 @@
 package snownee.jade.addon.universal;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -16,12 +17,14 @@ import snownee.jade.api.Identifiers;
 import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.BoxStyle;
-import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.view.ClientViewGroup;
+import snownee.jade.api.view.ProgressView;
 import snownee.jade.api.view.ViewGroup;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
+import snownee.jade.util.WailaExceptionHandler;
 
 public abstract class ProgressProvider<T extends Accessor<?>> implements IComponentProvider<T>, IServerDataProvider<T> {
 
@@ -42,42 +45,59 @@ public abstract class ProgressProvider<T extends Accessor<?>> implements ICompon
 	}
 
 	public static void append(ITooltip tooltip, Accessor<?> accessor, IPluginConfig config) {
-		if (accessor.getServerData().contains("JadeProgress")) {
-			var provider = Optional.ofNullable(ResourceLocation.tryParse(accessor.getServerData().getString("JadeProgressUid"))).map(
-					WailaClientRegistration.instance().progressProviders::get);
-			if (provider.isPresent()) {
-				var groups = provider.get().getClientGroups(
-						accessor,
-						ViewGroup.readList(accessor.getServerData(), "JadeProgress", Function.identity()));
-				if (groups.isEmpty()) {
-					return;
-				}
-
-				IElementHelper helper = IElementHelper.get();
-				boolean renderGroup = groups.size() > 1 || groups.get(0).shouldRenderGroup();
-				BoxStyle.GradientBorder boxStyle = BoxStyle.getTransparent().clone();
-				boxStyle.bgColor = 0x44FFFFFF;
-				ClientViewGroup.tooltip(tooltip, groups, renderGroup, (theTooltip, group) -> {
-					if (renderGroup) {
-						group.renderHeader(theTooltip);
-					}
-					for (var view : group.views) {
-						if (view.text != null) {
-							theTooltip.add(helper.text(view.text).scale(0.75F));
-							theTooltip.setLineMargin(-1, ScreenDirection.DOWN, 0);
-						}
-						theTooltip.add(helper.progress(view.progress, null, view.style, boxStyle, false).size(new Vec2(10, 2)));
-					}
-				});
-			}
+		if (!accessor.getServerData().contains("JadeProgress")) {
+			return;
 		}
+
+		var provider = Optional.ofNullable(ResourceLocation.tryParse(accessor.getServerData().getString("JadeProgressUid"))).map(
+				WailaClientRegistration.instance().progressProviders::get).orElse(null);
+		if (provider == null) {
+			return;
+		}
+
+		List<ClientViewGroup<ProgressView>> groups;
+		try {
+			groups = provider.getClientGroups(
+					accessor,
+					ViewGroup.readList(accessor.getServerData(), "JadeProgress", Function.identity()));
+		} catch (Exception e) {
+			WailaExceptionHandler.handleErr(e, provider, tooltip, provider.getUid().getNamespace());
+			return;
+		}
+
+		if (groups.isEmpty()) {
+			return;
+		}
+
+		IElementHelper helper = IElementHelper.get();
+		boolean renderGroup = groups.size() > 1 || groups.getFirst().shouldRenderGroup();
+		BoxStyle.GradientBorder boxStyle = BoxStyle.getTransparent().clone();
+		boxStyle.bgColor = 0x44FFFFFF;
+		ClientViewGroup.tooltip(tooltip, groups, renderGroup, (theTooltip, group) -> {
+			if (renderGroup) {
+				group.renderHeader(theTooltip);
+			}
+			for (var view : group.views) {
+				if (view.text != null) {
+					theTooltip.add(helper.text(view.text).scale(0.75F));
+					theTooltip.setLineMargin(-1, ScreenDirection.DOWN, 0);
+				}
+				theTooltip.add(helper.progress(view.progress, null, view.style, boxStyle, false).size(new Vec2(10, 2)));
+			}
+		});
 	}
 
 	public static void putData(Accessor<?> accessor) {
 		CompoundTag tag = accessor.getServerData();
 		Object target = accessor.getTarget();
 		for (var provider : WailaCommonRegistration.instance().progressProviders.get(target)) {
-			var groups = provider.getGroups(accessor);
+			List<ViewGroup<CompoundTag>> groups;
+			try {
+				groups = provider.getGroups(accessor);
+			} catch (Exception e) {
+				WailaExceptionHandler.handleErr(e, provider, null, provider.getUid().getNamespace());
+				continue;
+			}
 			if (groups != null) {
 				if (ViewGroup.saveList(tag, "JadeProgress", groups, Function.identity())) {
 					tag.putString("JadeProgressUid", provider.getUid().toString());

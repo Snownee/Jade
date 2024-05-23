@@ -32,6 +32,7 @@ import snownee.jade.api.view.ViewGroup;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.util.CommonProxy;
+import snownee.jade.util.WailaExceptionHandler;
 
 public abstract class FluidStorageProvider<T extends Accessor<?>> implements IComponentProvider<T>, IServerDataProvider<T> {
 
@@ -55,51 +56,69 @@ public abstract class FluidStorageProvider<T extends Accessor<?>> implements ICo
 		if ((!accessor.showDetails() && config.get(Identifiers.UNIVERSAL_FLUID_STORAGE_DETAILED))) {
 			return;
 		}
-		if (accessor.getServerData().contains("JadeFluidStorage")) {
-			var provider = Optional.ofNullable(ResourceLocation.tryParse(accessor.getServerData().getString("JadeFluidStorageUid"))).map(
-					WailaClientRegistration.instance().fluidStorageProviders::get);
-			if (provider.isPresent()) {
-				var groups = provider.get().getClientGroups(
-						accessor,
-						ViewGroup.readList(accessor.getServerData(), "JadeFluidStorage", Function.identity()));
-				if (groups.isEmpty()) {
-					return;
-				}
 
-				IElementHelper helper = IElementHelper.get();
-				boolean renderGroup = groups.size() > 1 || groups.get(0).shouldRenderGroup();
-				ClientViewGroup.tooltip(tooltip, groups, renderGroup, (theTooltip, group) -> {
-					if (renderGroup) {
-						group.renderHeader(theTooltip);
-					}
-					for (var view : group.views) {
-						Component text;
-						if (view.overrideText != null) {
-							text = view.overrideText;
-						} else if (view.fluidName == null) {
-							text = Component.literal(view.current);
-						} else if (accessor.showDetails()) {
-							text = Component.translatable(
-									"jade.fluid2",
-									IDisplayHelper.get().stripColor(view.fluidName).withStyle(ChatFormatting.WHITE),
-									Component.literal(view.current).withStyle(ChatFormatting.WHITE),
-									view.max).withStyle(ChatFormatting.GRAY);
-						} else {
-							text = Component.translatable("jade.fluid", IDisplayHelper.get().stripColor(view.fluidName), view.current);
-						}
-						ProgressStyle progressStyle = helper.progressStyle().overlay(view.overlay);
-						theTooltip.add(helper.progress(view.ratio, text, progressStyle, BoxStyle.getNestedBox(), true));
-					}
-				});
-			}
+		if (!accessor.getServerData().contains("JadeFluidStorage")) {
+			return;
 		}
+
+		var provider = Optional.ofNullable(ResourceLocation.tryParse(accessor.getServerData().getString("JadeFluidStorageUid"))).map(
+				WailaClientRegistration.instance().fluidStorageProviders::get).orElse(null);
+		if (provider == null) {
+			return;
+		}
+
+		List<ClientViewGroup<FluidView>> groups;
+		try {
+			groups = provider.getClientGroups(
+					accessor,
+					ViewGroup.readList(accessor.getServerData(), "JadeFluidStorage", Function.identity()));
+		} catch (Exception e) {
+			WailaExceptionHandler.handleErr(e, provider, tooltip, provider.getUid().getNamespace());
+			return;
+		}
+
+		if (groups.isEmpty()) {
+			return;
+		}
+
+		IElementHelper helper = IElementHelper.get();
+		boolean renderGroup = groups.size() > 1 || groups.getFirst().shouldRenderGroup();
+		ClientViewGroup.tooltip(tooltip, groups, renderGroup, (theTooltip, group) -> {
+			if (renderGroup) {
+				group.renderHeader(theTooltip);
+			}
+			for (var view : group.views) {
+				Component text;
+				if (view.overrideText != null) {
+					text = view.overrideText;
+				} else if (view.fluidName == null) {
+					text = Component.literal(view.current);
+				} else if (accessor.showDetails()) {
+					text = Component.translatable(
+							"jade.fluid2",
+							IDisplayHelper.get().stripColor(view.fluidName).withStyle(ChatFormatting.WHITE),
+							Component.literal(view.current).withStyle(ChatFormatting.WHITE),
+							view.max).withStyle(ChatFormatting.GRAY);
+				} else {
+					text = Component.translatable("jade.fluid", IDisplayHelper.get().stripColor(view.fluidName), view.current);
+				}
+				ProgressStyle progressStyle = helper.progressStyle().overlay(view.overlay);
+				theTooltip.add(helper.progress(view.ratio, text, progressStyle, BoxStyle.getNestedBox(), true));
+			}
+		});
 	}
 
 	public static void putData(Accessor<?> accessor) {
 		CompoundTag tag = accessor.getServerData();
 		Object target = accessor.getTarget();
 		for (var provider : WailaCommonRegistration.instance().fluidStorageProviders.get(target)) {
-			var groups = provider.getGroups(accessor);
+			List<ViewGroup<CompoundTag>> groups;
+			try {
+				groups = provider.getGroups(accessor);
+			} catch (Exception e) {
+				WailaExceptionHandler.handleErr(e, provider, null, provider.getUid().getNamespace());
+				continue;
+			}
 			if (groups != null) {
 				if (ViewGroup.saveList(tag, "JadeFluidStorage", groups, Function.identity())) {
 					tag.putString("JadeFluidStorageUid", provider.getUid().toString());

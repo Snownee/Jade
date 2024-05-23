@@ -38,10 +38,10 @@ import snownee.jade.api.Identifiers;
 import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
-import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.view.ClientViewGroup;
 import snownee.jade.api.view.IClientExtensionProvider;
 import snownee.jade.api.view.IServerExtensionProvider;
@@ -88,18 +88,26 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 			}
 			return;
 		}
+
 		var provider = Optional.ofNullable(ResourceLocation.tryParse(accessor.getServerData().getString("JadeItemStorageUid"))).map(
-				WailaClientRegistration.instance().itemStorageProviders::get);
-		if (provider.isEmpty()) {
+				WailaClientRegistration.instance().itemStorageProviders::get).orElse(null);
+		if (provider == null) {
 			return;
 		}
-		var groups = provider.get().getClientGroups(accessor, ViewGroup.readList(accessor.getServerData(), "JadeItemStorage", itemTag -> {
-			ItemStack item = ItemStack.parseOptional(accessor.getLevel().registryAccess(), itemTag);
-			if (!item.isEmpty() && itemTag.contains("NewCount")) {
-				item.setCount(itemTag.getInt("NewCount"));
-			}
-			return item;
-		}));
+
+		List<ClientViewGroup<ItemView>> groups;
+		try {
+			groups = provider.getClientGroups(accessor, ViewGroup.readList(accessor.getServerData(), "JadeItemStorage", itemTag -> {
+				ItemStack item = ItemStack.parseOptional(accessor.getLevel().registryAccess(), itemTag);
+				if (!item.isEmpty() && itemTag.contains("NewCount")) {
+					item.setCount(itemTag.getInt("NewCount"));
+				}
+				return item;
+			}));
+		} catch (Exception e) {
+			WailaExceptionHandler.handleErr(e, provider, tooltip, provider.getUid().getNamespace());
+			return;
+		}
 
 		if (groups.isEmpty()) {
 			return;
@@ -124,7 +132,7 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 		}
 
 		IElementHelper helper = IElementHelper.get();
-		boolean renderGroup = groups.size() > 1 || groups.get(0).shouldRenderGroup();
+		boolean renderGroup = groups.size() > 1 || groups.getFirst().shouldRenderGroup();
 		ClientViewGroup.tooltip(tooltip, groups, renderGroup, (theTooltip, group) -> {
 			if (renderGroup) {
 				theTooltip.add(new HorizontalLineElement());
@@ -197,7 +205,13 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 		Object target = accessor.getTarget();
 		Player player = accessor.getPlayer();
 		for (var provider : WailaCommonRegistration.instance().itemStorageProviders.get(accessor)) {
-			var groups = provider.getGroups(accessor);
+			List<ViewGroup<ItemStack>> groups;
+			try {
+				groups = provider.getGroups(accessor);
+			} catch (Exception e) {
+				WailaExceptionHandler.handleErr(e, provider, null, provider.getUid().getNamespace());
+				continue;
+			}
 			if (groups == null) {
 				continue;
 			}
