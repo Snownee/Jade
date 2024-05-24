@@ -440,7 +440,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		}
 
 		public static String makeKey(String key) {
-			return Util.makeDescriptionId("config", new ResourceLocation(Jade.ID, key));
+			return Util.makeDescriptionId("config", ResourceLocation.fromNamespaceAndPath(Jade.ID, key));
 		}
 
 		public AbstractWidget getFirstWidget() {

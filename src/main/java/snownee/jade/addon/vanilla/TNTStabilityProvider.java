@@ -7,7 +7,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.ITooltip;
-import snownee.jade.api.Identifiers;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
 
@@ -25,7 +25,7 @@ public enum TNTStabilityProvider implements IBlockComponentProvider {
 
 	@Override
 	public ResourceLocation getUid() {
-		return Identifiers.MC_TNT_STABILITY;
+		return JadeIds.MC_TNT_STABILITY;
 	}
 
 }

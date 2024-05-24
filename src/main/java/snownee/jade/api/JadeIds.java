@@ -2,7 +2,7 @@ package snownee.jade.api;
 
 import net.minecraft.resources.ResourceLocation;
 
-public class Identifiers {
+public class JadeIds {
 
 	public static final ResourceLocation ROOT = MC("root");
 	public static final ResourceLocation PACKET_RECEIVE_DATA = JADE("receive_data");
@@ -81,10 +81,10 @@ public class Identifiers {
 	public static final ResourceLocation MC_ZOMBIE_VILLAGER = MC("zombie_villager");
 
 	public static ResourceLocation JADE(String path) {
-		return new ResourceLocation("jade", path);
+		return ResourceLocation.fromNamespaceAndPath("jade", path);
 	}
 
 	private static ResourceLocation MC(String path) {
-		return new ResourceLocation(path);
+		return ResourceLocation.withDefaultNamespace(path);
 	}
 }

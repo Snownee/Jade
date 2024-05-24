@@ -14,7 +14,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.ITooltip;
-import snownee.jade.api.Identifiers;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.IElement;
@@ -68,7 +68,7 @@ public enum CropProgressProvider implements IBlockComponentProvider {
 
 	@Override
 	public ResourceLocation getUid() {
-		return Identifiers.MC_CROP_PROGRESS;
+		return JadeIds.MC_CROP_PROGRESS;
 	}
 
 }

@@ -5,7 +5,7 @@ import net.minecraft.resources.ResourceLocation;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.ITooltip;
-import snownee.jade.api.Identifiers;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.overlay.DisplayHelper;
@@ -25,7 +25,7 @@ public enum EnchantmentPowerProvider implements IBlockComponentProvider {
 
 	@Override
 	public ResourceLocation getUid() {
-		return Identifiers.MC_ENCHANTMENT_POWER;
+		return JadeIds.MC_ENCHANTMENT_POWER;
 	}
 
 	@Override

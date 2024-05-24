@@ -61,7 +61,7 @@ public class PluginConfig implements IPluginConfig {
 	}
 
 	public static ResourceLocation getPrimaryKey(ResourceLocation key) {
-		return new ResourceLocation(key.getNamespace(), key.getPath().substring(0, key.getPath().indexOf('.')));
+		return key.withPath(key.getPath().substring(0, key.getPath().indexOf('.')));
 	}
 
 	public void addConfig(ConfigEntry<?> entry) {
@@ -171,7 +171,7 @@ public class PluginConfig implements IPluginConfig {
 			MutableBoolean saveFlag = new MutableBoolean();
 			Set<ResourceLocation> found = Sets.newHashSet();
 			config.forEach((namespace, subMap) -> subMap.forEach((path, value) -> {
-				ResourceLocation id = new ResourceLocation(namespace, path);
+				ResourceLocation id = ResourceLocation.fromNamespaceAndPath(namespace, path);
 				if (!configs.containsKey(id)) {
 					return;
 				}
@@ -235,7 +235,7 @@ public class PluginConfig implements IPluginConfig {
 	public void applyServerConfigs(JsonObject json) {
 		json.keySet().forEach(namespace -> {
 			json.getAsJsonObject(namespace).entrySet().forEach(entry -> {
-				ResourceLocation key = new ResourceLocation(namespace, entry.getKey());
+				ResourceLocation key = ResourceLocation.fromNamespaceAndPath(namespace, entry.getKey());
 				ConfigEntry<?> configEntry = getEntry(key);
 				if (configEntry != null) {
 					JsonPrimitive primitive = entry.getValue().getAsJsonPrimitive();

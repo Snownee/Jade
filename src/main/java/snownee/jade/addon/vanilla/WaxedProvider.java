@@ -8,7 +8,7 @@ import net.minecraft.world.level.block.entity.SignBlockEntity;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.ITooltip;
-import snownee.jade.api.Identifiers;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElementHelper;
@@ -42,6 +42,6 @@ public enum WaxedProvider implements IBlockComponentProvider {
 
 	@Override
 	public ResourceLocation getUid() {
-		return Identifiers.MC_WAXED;
+		return JadeIds.MC_WAXED;
 	}
 }

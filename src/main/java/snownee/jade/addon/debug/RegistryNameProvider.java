@@ -12,7 +12,7 @@ import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.IToggleableProvider;
 import snownee.jade.api.ITooltip;
-import snownee.jade.api.Identifiers;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
@@ -34,17 +34,17 @@ public abstract class RegistryNameProvider implements IToggleableProvider {
 		@Override
 		public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 			if (append(tooltip, CommonProxy.getId(accessor.getBlock()).toString(), config) &&
-					config.get(Identifiers.DEBUG_SPECIAL_REGISTRY_NAME)) {
+					config.get(JadeIds.DEBUG_SPECIAL_REGISTRY_NAME)) {
 				if (accessor.getBlockEntity() != null) {
 					ResourceLocation id = CommonProxy.getId(accessor.getBlockEntity().getType());
 					String s = I18n.get("config.jade.plugin_jade.registry_name.special.block_entity_type", id);
-					tooltip.add(IWailaConfig.get().getFormatting().registryName(s), Identifiers.DEBUG_SPECIAL_REGISTRY_NAME);
+					tooltip.add(IWailaConfig.get().getFormatting().registryName(s), JadeIds.DEBUG_SPECIAL_REGISTRY_NAME);
 				}
 				FluidState fluidState = accessor.getBlockState().getFluidState();
 				if (!fluidState.isEmpty()) {
 					ResourceLocation id = BuiltInRegistries.FLUID.getKey(fluidState.getType());
 					String s = I18n.get("config.jade.plugin_jade.registry_name.special.fluid", id);
-					tooltip.add(IWailaConfig.get().getFormatting().registryName(s), Identifiers.DEBUG_SPECIAL_REGISTRY_NAME);
+					tooltip.add(IWailaConfig.get().getFormatting().registryName(s), JadeIds.DEBUG_SPECIAL_REGISTRY_NAME);
 				}
 			}
 		}
@@ -56,18 +56,18 @@ public abstract class RegistryNameProvider implements IToggleableProvider {
 		@Override
 		public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 			if (append(tooltip, CommonProxy.getId(accessor.getEntity().getType()).toString(), config) &&
-					config.get(Identifiers.DEBUG_SPECIAL_REGISTRY_NAME)) {
+					config.get(JadeIds.DEBUG_SPECIAL_REGISTRY_NAME)) {
 				if (accessor.getEntity() instanceof Painting painting) {
 					ResourceLocation id = painting.getVariant().unwrapKey().orElseThrow().location();
 					String s = I18n.get("config.jade.plugin_jade.registry_name.special.painting", id);
-					tooltip.add(IWailaConfig.get().getFormatting().registryName(s), Identifiers.DEBUG_SPECIAL_REGISTRY_NAME);
+					tooltip.add(IWailaConfig.get().getFormatting().registryName(s), JadeIds.DEBUG_SPECIAL_REGISTRY_NAME);
 				}
 			}
 		}
 	}
 
 	public boolean append(ITooltip tooltip, String id, IPluginConfig config) {
-		Mode mode = config.getEnum(Identifiers.DEBUG_REGISTRY_NAME);
+		Mode mode = config.getEnum(JadeIds.DEBUG_REGISTRY_NAME);
 		if (mode == Mode.OFF) {
 			return false;
 		}
@@ -80,7 +80,7 @@ public abstract class RegistryNameProvider implements IToggleableProvider {
 
 	@Override
 	public ResourceLocation getUid() {
-		return Identifiers.DEBUG_REGISTRY_NAME;
+		return JadeIds.DEBUG_REGISTRY_NAME;
 	}
 
 	@Override

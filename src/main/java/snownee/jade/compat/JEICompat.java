@@ -19,7 +19,7 @@ import snownee.jade.impl.ObjectDataCenter;
 @JeiPlugin
 public class JEICompat implements IModPlugin {
 
-	public static final ResourceLocation ID = new ResourceLocation(Jade.ID, "main");
+	public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(Jade.ID, "main");
 	private static IJeiRuntime runtime;
 	private static IJeiHelpers helpers;
 

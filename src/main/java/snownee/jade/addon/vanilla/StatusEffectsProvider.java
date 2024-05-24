@@ -20,7 +20,7 @@ import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
-import snownee.jade.api.Identifiers;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.BoxStyle;
@@ -80,6 +80,6 @@ public enum StatusEffectsProvider implements IEntityComponentProvider, IServerDa
 
 	@Override
 	public ResourceLocation getUid() {
-		return Identifiers.MC_POTION_EFFECTS;
+		return JadeIds.MC_POTION_EFFECTS;
 	}
 }

@@ -16,7 +16,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.block.entity.CampfireBlockEntity;
 import snownee.jade.api.Accessor;
-import snownee.jade.api.Identifiers;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.view.ClientViewGroup;
 import snownee.jade.api.view.IClientExtensionProvider;
@@ -31,7 +31,7 @@ public enum CampfireProvider implements IServerExtensionProvider<ItemStack>, ICl
 
 	@Override
 	public ResourceLocation getUid() {
-		return Identifiers.MC_CAMPFIRE;
+		return JadeIds.MC_CAMPFIRE;
 	}
 
 	@Override

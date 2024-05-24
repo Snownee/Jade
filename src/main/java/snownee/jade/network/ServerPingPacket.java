@@ -7,13 +7,13 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import snownee.jade.Jade;
-import snownee.jade.api.Identifiers;
+import snownee.jade.api.JadeIds;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.util.JsonConfig;
 
 public record ServerPingPacket(String serverConfig) implements CustomPacketPayload {
-	public static final Type<ServerPingPacket> TYPE = new Type<>(Identifiers.PACKET_SERVER_PING);
+	public static final Type<ServerPingPacket> TYPE = new Type<>(JadeIds.PACKET_SERVER_PING);
 	public static final StreamCodec<RegistryFriendlyByteBuf, ServerPingPacket> CODEC = StreamCodec.composite(
 			ByteBufCodecs.STRING_UTF8,
 			ServerPingPacket::serverConfig,

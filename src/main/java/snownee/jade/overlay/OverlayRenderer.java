@@ -13,7 +13,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
-import snownee.jade.api.Identifiers;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.callback.JadeBeforeRenderCallback;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.IWailaConfig.BossBarOverlapMode;
@@ -116,8 +116,7 @@ public class OverlayRenderer {
 	 * Secondly, please notice the license that Jade is using.
 	 * I don't think it is compatible with some open-source licenses.
 	 */
-	public static void renderOverlay478757(GuiGraphics guiGraphics) {
-		float delta = Minecraft.getInstance().getDeltaFrameTime();
+	public static void renderOverlay478757(GuiGraphics guiGraphics, float delta) {
 		ticks += delta;
 		shown = false;
 		BoxElement root = WailaTickHandler.instance().rootElement;
@@ -127,7 +126,7 @@ public class OverlayRenderer {
 			tooltip.add(IThemeHelper.get().title(Blocks.GRASS_BLOCK.getName()));
 			tooltip.add(IThemeHelper.get().modName(ModIdentification.getModName(Blocks.GRASS_BLOCK)));
 			root = new BoxElement(tooltip, IThemeHelper.get().theme().tooltipStyle);
-			root.tag(Identifiers.ROOT);
+			root.tag(JadeIds.ROOT);
 			root.setThemeIcon(ItemStackElement.of(new ItemStack(Blocks.GRASS_BLOCK)), IThemeHelper.get().theme());
 			root.updateExpectedRect(rect);
 			show = true;

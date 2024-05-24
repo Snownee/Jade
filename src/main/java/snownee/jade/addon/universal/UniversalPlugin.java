@@ -6,7 +6,7 @@ import net.minecraft.world.level.block.Block;
 import snownee.jade.api.IWailaClientRegistration;
 import snownee.jade.api.IWailaCommonRegistration;
 import snownee.jade.api.IWailaPlugin;
-import snownee.jade.api.Identifiers;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.WailaPlugin;
 
 @WailaPlugin
@@ -33,12 +33,12 @@ public class UniversalPlugin implements IWailaPlugin {
 
 	@Override
 	public void registerClient(IWailaClientRegistration registration) {
-		registration.addConfig(Identifiers.UNIVERSAL_ITEM_STORAGE_DETAILED_AMOUNT, 54, 0, 54, false);
-		registration.addConfig(Identifiers.UNIVERSAL_ITEM_STORAGE_NORMAL_AMOUNT, 9, 0, 54, false);
-		registration.addConfig(Identifiers.UNIVERSAL_ITEM_STORAGE_SHOW_NAME_AMOUNT, 5, 0, 9, true);
-		registration.addConfig(Identifiers.UNIVERSAL_ITEM_STORAGE_ITEMS_PER_LINE, 9, 3, 27, true);
-		registration.addConfig(Identifiers.UNIVERSAL_ENERGY_STORAGE_DETAILED, false);
-		registration.addConfig(Identifiers.UNIVERSAL_FLUID_STORAGE_DETAILED, false);
+		registration.addConfig(JadeIds.UNIVERSAL_ITEM_STORAGE_DETAILED_AMOUNT, 54, 0, 54, false);
+		registration.addConfig(JadeIds.UNIVERSAL_ITEM_STORAGE_NORMAL_AMOUNT, 9, 0, 54, false);
+		registration.addConfig(JadeIds.UNIVERSAL_ITEM_STORAGE_SHOW_NAME_AMOUNT, 5, 0, 9, true);
+		registration.addConfig(JadeIds.UNIVERSAL_ITEM_STORAGE_ITEMS_PER_LINE, 9, 3, 27, true);
+		registration.addConfig(JadeIds.UNIVERSAL_ENERGY_STORAGE_DETAILED, false);
+		registration.addConfig(JadeIds.UNIVERSAL_FLUID_STORAGE_DETAILED, false);
 
 		registration.registerBlockComponent(ItemStorageProvider.getBlock(), Block.class);
 		registration.registerEntityComponent(ItemStorageProvider.getEntity(), Entity.class);
@@ -56,9 +56,9 @@ public class UniversalPlugin implements IWailaPlugin {
 		registration.registerEntityComponent(ProgressProvider.getEntity(), Entity.class);
 
 		Component category = Component.translatable("config.jade.plugin_jade");
-		registration.setConfigCategoryOverride(Identifiers.UNIVERSAL_ITEM_STORAGE, category);
-		registration.setConfigCategoryOverride(Identifiers.UNIVERSAL_FLUID_STORAGE, category);
-		registration.setConfigCategoryOverride(Identifiers.UNIVERSAL_ENERGY_STORAGE, category);
+		registration.setConfigCategoryOverride(JadeIds.UNIVERSAL_ITEM_STORAGE, category);
+		registration.setConfigCategoryOverride(JadeIds.UNIVERSAL_FLUID_STORAGE, category);
+		registration.setConfigCategoryOverride(JadeIds.UNIVERSAL_ENERGY_STORAGE, category);
 	}
 
 }

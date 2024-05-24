@@ -13,7 +13,7 @@ import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
-import snownee.jade.api.Identifiers;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.util.CommonProxy;
 
@@ -65,7 +65,7 @@ public enum AnimalOwnerProvider implements IEntityComponentProvider, IServerData
 
 	@Override
 	public ResourceLocation getUid() {
-		return Identifiers.MC_ANIMAL_OWNER;
+		return JadeIds.MC_ANIMAL_OWNER;
 	}
 
 }

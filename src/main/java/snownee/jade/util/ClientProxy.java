@@ -62,14 +62,13 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
-import snownee.jade.Jade;
 import snownee.jade.JadeClient;
 import snownee.jade.addon.harvest.HarvestToolProvider;
 import snownee.jade.addon.harvest.SimpleToolHandler;
 import snownee.jade.addon.harvest.ToolHandler;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
-import snownee.jade.api.Identifiers;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.command.JadeClientCommand;
@@ -129,7 +128,7 @@ public final class ClientProxy implements ClientModInitializer {
 
 	public static void onRenderTick(GuiGraphics guiGraphics, float tickDelta) {
 		try {
-			OverlayRenderer.renderOverlay478757(guiGraphics);
+			OverlayRenderer.renderOverlay478757(guiGraphics, tickDelta);
 		} catch (Throwable e) {
 			WailaExceptionHandler.handleErr(e, null, null, null);
 		}
@@ -226,7 +225,7 @@ public final class ClientProxy implements ClientModInitializer {
 	}
 
 	public static ToolHandler createSwordToolHandler() {
-		return SimpleToolHandler.create(Identifiers.JADE("sword"), false, List.of(Items.WOODEN_SWORD))
+		return SimpleToolHandler.create(JadeIds.JADE("sword"), false, List.of(Items.WOODEN_SWORD))
 				.addBlock(Blocks.COBWEB)
 				.addBlock(Blocks.BAMBOO);
 //				.addBlockTag(FabricMineableTags.SWORD_MINEABLE); FIXME
@@ -254,7 +253,7 @@ public final class ClientProxy implements ClientModInitializer {
 		ClientLifecycleEvents.CLIENT_STARTED.register(mc -> CommonProxy.loadComplete());
 		ClientEntityEvents.ENTITY_LOAD.register(ClientProxy::onEntityJoin);
 		ClientEntityEvents.ENTITY_UNLOAD.register(ClientProxy::onEntityLeave);
-		ResourceLocation lowest = new ResourceLocation(Jade.ID, "mod_name");
+		ResourceLocation lowest = JadeIds.CORE_MOD_NAME;
 		ItemTooltipCallback.EVENT.addPhaseOrdering(Event.DEFAULT_PHASE, lowest);
 		ItemTooltipCallback.EVENT.register(lowest, ClientProxy::onTooltip);
 		ClientPlayConnectionEvents.DISCONNECT.register(ClientProxy::onPlayerLeave);
@@ -262,9 +261,9 @@ public final class ClientProxy implements ClientModInitializer {
 		ClientTickEvents.END_CLIENT_TICK.register(ClientProxy::onKeyPressed);
 		ScreenEvents.AFTER_INIT.register((Minecraft client, Screen screen, int scaledWidth, int scaledHeight) -> onGui(screen));
 		ClientCommandRegistrationCallback.EVENT.register(ClientProxy::registerClientCommand);
-		HudRenderCallback.EVENT.register((guiGraphics, tickDelta) -> {
+		HudRenderCallback.EVENT.register((guiGraphics, deltaTracker) -> {
 			if (Minecraft.getInstance().screen == null) {
-				onRenderTick(guiGraphics, tickDelta);
+				onRenderTick(guiGraphics, deltaTracker.getRealtimeDeltaTicks());
 			}
 		});
 		ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {

@@ -8,7 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.ITooltip;
-import snownee.jade.api.Identifiers;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElementHelper;
@@ -19,7 +19,7 @@ public enum BlockFaceProvider implements IBlockComponentProvider {
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		tooltip.replace(Identifiers.CORE_OBJECT_NAME, lists -> {
+		tooltip.replace(JadeIds.CORE_OBJECT_NAME, lists -> {
 			List<IElement> lastList = lists.get(lists.size() - 1);
 			lastList.add(IElementHelper.get()
 					.text(Component.translatable("jade.blockFace", I18n.get("jade." + accessor.getSide().getName()))));
@@ -29,7 +29,7 @@ public enum BlockFaceProvider implements IBlockComponentProvider {
 
 	@Override
 	public ResourceLocation getUid() {
-		return Identifiers.CORE_BLOCK_FACE;
+		return JadeIds.CORE_BLOCK_FACE;
 	}
 
 	@Override

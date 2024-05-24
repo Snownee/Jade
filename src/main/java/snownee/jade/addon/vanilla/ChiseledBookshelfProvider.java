@@ -21,7 +21,7 @@ import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
-import snownee.jade.api.Identifiers;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.IElement;
@@ -53,7 +53,7 @@ public enum ChiseledBookshelfProvider implements IBlockComponentProvider, IServe
 		if (item.isEmpty()) {
 			return;
 		}
-		tooltip.remove(Identifiers.UNIVERSAL_ITEM_STORAGE);
+		tooltip.remove(JadeIds.UNIVERSAL_ITEM_STORAGE);
 		tooltip.add(IDisplayHelper.get().stripColor(item.getHoverName()));
 		if (item.has(DataComponents.STORED_ENCHANTMENTS)) {
 			List<Component> list = Lists.newArrayList();
@@ -80,7 +80,7 @@ public enum ChiseledBookshelfProvider implements IBlockComponentProvider, IServe
 
 	@Override
 	public ResourceLocation getUid() {
-		return Identifiers.MC_CHISELED_BOOKSHELF;
+		return JadeIds.MC_CHISELED_BOOKSHELF;
 	}
 
 	@Override

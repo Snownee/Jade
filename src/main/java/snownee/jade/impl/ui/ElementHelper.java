@@ -9,7 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.ITooltip;
-import snownee.jade.api.Identifiers;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.IBoxElement;
@@ -21,8 +21,8 @@ import snownee.jade.impl.Tooltip;
 
 public class ElementHelper implements IElementHelper {
 	public static final ElementHelper INSTANCE = new ElementHelper();
-	public static final ResourceLocation DEFAULT_PROGRESS = Identifiers.JADE("progress");
-	public static final ResourceLocation DEFAULT_PROGRESS_BASE = Identifiers.JADE("progress_base");
+	public static final ResourceLocation DEFAULT_PROGRESS = JadeIds.JADE("progress");
+	public static final ResourceLocation DEFAULT_PROGRESS_BASE = JadeIds.JADE("progress_base");
 	public static final Vec2 SMALL_ITEM_SIZE = new Vec2(10, 10);
 	public static final Vec2 SMALL_ITEM_OFFSET = new Vec2(0, -1); //Vec2.NEG_UNIT_Y nullified by Saturn mod
 	private ResourceLocation uid;

@@ -13,7 +13,7 @@ import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IComponentProvider;
 import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
-import snownee.jade.api.Identifiers;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.BoxStyle;
@@ -129,7 +129,7 @@ public abstract class ProgressProvider<T extends Accessor<?>> implements ICompon
 
 	@Override
 	public ResourceLocation getUid() {
-		return Identifiers.UNIVERSAL_PROGRESS;
+		return JadeIds.UNIVERSAL_PROGRESS;
 	}
 
 	@Override

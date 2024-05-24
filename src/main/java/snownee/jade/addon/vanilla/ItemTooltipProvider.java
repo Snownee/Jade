@@ -25,7 +25,7 @@ import snownee.jade.JadeClient;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
-import snownee.jade.api.Identifiers;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.impl.ui.TextElement;
 import snownee.jade.util.ModIdentification;
@@ -77,7 +77,7 @@ public enum ItemTooltipProvider implements IEntityComponentProvider {
 
 	@Override
 	public ResourceLocation getUid() {
-		return Identifiers.MC_ITEM_TOOLTIP;
+		return JadeIds.MC_ITEM_TOOLTIP;
 	}
 
 }

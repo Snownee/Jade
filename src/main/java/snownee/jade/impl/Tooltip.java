@@ -19,7 +19,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.Jade;
 import snownee.jade.api.ITooltip;
-import snownee.jade.api.Identifiers;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElement.Align;
@@ -185,7 +185,7 @@ public class Tooltip implements ITooltip {
 			/* off */
 			msgs.add(Joiner.on(' ').join(
 							line.sortedElements().stream()
-									.filter(e -> !Identifiers.CORE_MOD_NAME.equals(e.getTag()))
+									.filter(e -> !JadeIds.CORE_MOD_NAME.equals(e.getTag()))
 									.map(IElement::getCachedMessage)
 									.filter(java.util.Objects::nonNull)
 									.toList()

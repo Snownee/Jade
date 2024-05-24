@@ -28,6 +28,8 @@ import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalEntityTypeTags;
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
@@ -46,7 +48,6 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -55,7 +56,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.Container;
 import net.minecraft.world.WorldlyContainerHolder;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -67,7 +67,6 @@ import net.minecraft.world.entity.decoration.Painting;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.EnchantedBookItem;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ShearsItem;
@@ -112,8 +111,6 @@ import snownee.jade.network.ShowOverlayPacket;
 
 public final class CommonProxy implements ModInitializer {
 
-	public static final TagKey<EntityType<?>> BOSSES = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("c:bosses"));
-	public static final TagKey<Item> SHEARS = TagKey.create(Registries.ITEM, new ResourceLocation("c:shears"));
 	public static boolean hasTechRebornEnergy = isModLoaded("team_reborn_energy");
 
 	@Nullable
@@ -133,7 +130,7 @@ public final class CommonProxy implements ModInitializer {
 	}
 
 	public static boolean isShears(ItemStack tool) {
-		return tool.getItem() instanceof ShearsItem || tool.is(SHEARS);
+		return tool.getItem() instanceof ShearsItem || tool.is(ConventionalItemTags.SHEARS_TOOLS);
 	}
 
 	public static boolean isShearable(BlockState state) {
@@ -346,7 +343,7 @@ public final class CommonProxy implements ModInitializer {
 
 	public static boolean isBoss(Entity entity) {
 		EntityType<?> entityType = entity.getType();
-		return entityType.is(BOSSES) || entityType == EntityType.ENDER_DRAGON || entityType == EntityType.WITHER;
+		return entityType.is(ConventionalEntityTypeTags.BOSSES) || entityType == EntityType.ENDER_DRAGON || entityType == EntityType.WITHER;
 	}
 
 	public static ItemStack getBlockPickedResult(BlockState state, Player player, BlockHitResult hitResult) {

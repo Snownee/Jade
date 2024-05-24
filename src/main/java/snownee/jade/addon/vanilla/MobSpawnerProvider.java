@@ -19,7 +19,7 @@ import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.IToggleableProvider;
 import snownee.jade.api.ITooltip;
-import snownee.jade.api.Identifiers;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
 
@@ -69,12 +69,12 @@ public abstract class MobSpawnerProvider implements IToggleableProvider {
 			return;
 		}
 		name = Component.translatable("jade.spawner", name, displayEntity.getDisplayName());
-		tooltip.replace(Identifiers.CORE_OBJECT_NAME, IThemeHelper.get().title(name));
+		tooltip.replace(JadeIds.CORE_OBJECT_NAME, IThemeHelper.get().title(name));
 	}
 
 	@Override
 	public ResourceLocation getUid() {
-		return Identifiers.MC_MOB_SPAWNER;
+		return JadeIds.MC_MOB_SPAWNER;
 	}
 
 	@Override

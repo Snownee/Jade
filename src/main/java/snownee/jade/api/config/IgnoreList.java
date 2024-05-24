@@ -23,7 +23,7 @@ public class IgnoreList<T> {
 				if (value.startsWith("/") && value.endsWith("/") && value.length() > 1) {
 					patterns.add(Pattern.compile(value.substring(1, value.length() - 1)));
 				} else {
-					ResourceLocation id = new ResourceLocation(value);
+					ResourceLocation id = ResourceLocation.parse(value);
 					Optional<T> optional = registry.getOptional(id);
 					if (optional.isPresent()) {
 						consumer.accept(registry.get(id));

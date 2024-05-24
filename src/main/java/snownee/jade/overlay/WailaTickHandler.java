@@ -22,7 +22,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import snownee.jade.Jade;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.ITooltip;
-import snownee.jade.api.Identifiers;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.callback.JadeRayTraceCallback;
 import snownee.jade.api.callback.JadeTooltipCollectedCallback;
 import snownee.jade.api.config.IWailaConfig;
@@ -195,7 +195,7 @@ public class WailaTickHandler {
 		}
 
 		rootElement = new BoxElement(tooltip, IThemeHelper.get().theme().tooltipStyle);
-		rootElement.tag(Identifiers.ROOT);
+		rootElement.tag(JadeIds.ROOT);
 		rootElement.setThemeIcon(RayTracing.INSTANCE.getIcon(), IThemeHelper.get().theme());
 		for (JadeTooltipCollectedCallback callback : WailaClientRegistration.instance().tooltipCollectedCallback.callbacks()) {
 			callback.onTooltipCollected(rootElement, accessor);

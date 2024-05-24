@@ -10,7 +10,7 @@ import net.minecraft.world.entity.decoration.ArmorStand;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
-import snownee.jade.api.Identifiers;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElementHelper;
@@ -27,16 +27,16 @@ public enum EntityHealthAndArmorProvider implements IEntityComponentProvider {
 		boolean armorText = false;
 		List<IElement> elements = Lists.newArrayListWithExpectedSize(2);
 		LivingEntity living = (LivingEntity) accessor.getEntity();
-		if (config.get(Identifiers.MC_ENTITY_HEALTH) && !(accessor.getEntity() instanceof ArmorStand)) {
+		if (config.get(JadeIds.MC_ENTITY_HEALTH) && !(accessor.getEntity() instanceof ArmorStand)) {
 			float health = living.getHealth();
 			float maxHealth = living.getMaxHealth();
 			HealthElement healthElement = new HealthElement(maxHealth, health);
-			elements.add(healthElement.tag(Identifiers.MC_ENTITY_HEALTH));
+			elements.add(healthElement.tag(JadeIds.MC_ENTITY_HEALTH));
 			healthText = healthElement.showText();
 		}
-		if (config.get(Identifiers.MC_ENTITY_ARMOR) && living.getArmorValue() > 0) {
+		if (config.get(JadeIds.MC_ENTITY_ARMOR) && living.getArmorValue() > 0) {
 			ArmorElement armorElement = new ArmorElement(living.getArmorValue());
-			elements.add(armorElement.tag(Identifiers.MC_ENTITY_ARMOR));
+			elements.add(armorElement.tag(JadeIds.MC_ENTITY_ARMOR));
 			armorText = armorElement.showText();
 		}
 		if (healthText && armorText) {
@@ -50,7 +50,7 @@ public enum EntityHealthAndArmorProvider implements IEntityComponentProvider {
 
 	@Override
 	public ResourceLocation getUid() {
-		return Identifiers.MC_ENTITY_HEALTH;
+		return JadeIds.MC_ENTITY_HEALTH;
 	}
 
 	@Override

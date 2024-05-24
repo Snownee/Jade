@@ -46,7 +46,7 @@ import snownee.jade.addon.vanilla.VanillaPlugin;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IWailaClientRegistration;
-import snownee.jade.api.Identifiers;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.IWailaConfig.DisplayMode;
 import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
@@ -259,7 +259,7 @@ public final class JadeClient {
 	}
 
 	public static void drawBreakingProgress(IBoxElement rootElement, TooltipRect rect, GuiGraphics guiGraphics, Accessor<?> accessor) {
-		if (!PluginConfig.INSTANCE.get(Identifiers.MC_BREAKING_PROGRESS)) {
+		if (!PluginConfig.INSTANCE.get(JadeIds.MC_BREAKING_PROGRESS)) {
 			progressAlpha = 0;
 			return;
 		}
@@ -288,14 +288,14 @@ public final class JadeClient {
 		if (roundCorner && theme.tooltipStyle instanceof BoxStyle.GradientBorder) {
 			top += 1;
 		}
-		progressAlpha += mc.getDeltaFrameTime() * (playerController.isDestroying() ? 0.1F : -0.1F);
+		progressAlpha += mc.getTimer().getGameTimeDeltaTicks() * (playerController.isDestroying() ? 0.1F : -0.1F);
 		if (playerController.isDestroying()) {
 			progressAlpha = Math.min(progressAlpha, 0.6F);
 			float progress = state.getDestroyProgress(mc.player, mc.player.level(), pos);
 			if (playerController.destroyProgress + progress >= 1) {
 				progressAlpha = savedProgress = 1;
 			} else {
-				progress = playerController.destroyProgress + mc.getFrameTime() * progress;
+				progress = playerController.destroyProgress + mc.getTimer().getGameTimeDeltaPartialTick(false) * progress;
 				savedProgress = Mth.clamp(progress, 0, 1);
 			}
 		} else {

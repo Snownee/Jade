@@ -13,7 +13,7 @@ import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
-import snownee.jade.api.Identifiers;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.IElementHelper;
@@ -51,7 +51,7 @@ public enum LecternProvider implements IBlockComponentProvider, IServerDataProvi
 
 	@Override
 	public ResourceLocation getUid() {
-		return Identifiers.MC_LECTERN;
+		return JadeIds.MC_LECTERN;
 	}
 
 }

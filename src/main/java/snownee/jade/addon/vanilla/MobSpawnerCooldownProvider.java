@@ -10,7 +10,7 @@ import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
-import snownee.jade.api.Identifiers;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
 
@@ -20,7 +20,7 @@ public enum MobSpawnerCooldownProvider implements IBlockComponentProvider, IServ
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		if (config.get(Identifiers.MC_MOB_SPAWNER) && accessor.getServerData().contains("Cooldown")) {
+		if (config.get(JadeIds.MC_MOB_SPAWNER) && accessor.getServerData().contains("Cooldown")) {
 			tooltip.add(Component.translatable(
 					"jade.trial_spawner_cd",
 					IThemeHelper.get().seconds(accessor.getServerData().getInt("Cooldown"), accessor.tickRate())));
@@ -40,7 +40,7 @@ public enum MobSpawnerCooldownProvider implements IBlockComponentProvider, IServ
 
 	@Override
 	public ResourceLocation getUid() {
-		return Identifiers.MC_MOB_SPAWNER_COOLDOWN;
+		return JadeIds.MC_MOB_SPAWNER_COOLDOWN;
 	}
 
 	@Override

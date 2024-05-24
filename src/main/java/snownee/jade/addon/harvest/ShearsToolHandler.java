@@ -9,13 +9,13 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import snownee.jade.api.Identifiers;
+import snownee.jade.api.JadeIds;
 import snownee.jade.util.CommonProxy;
 
 public class ShearsToolHandler extends SimpleToolHandler {
 
 	public ShearsToolHandler() {
-		super(Identifiers.JADE("shears"), false, List.of(Items.SHEARS.getDefaultInstance()));
+		super(JadeIds.JADE("shears"), false, List.of(Items.SHEARS.getDefaultInstance()));
 		blocks.addAll(List.of(
 				Blocks.GLOW_LICHEN,
 				Blocks.TRIPWIRE,
