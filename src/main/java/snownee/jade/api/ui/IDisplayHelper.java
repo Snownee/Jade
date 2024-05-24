@@ -11,12 +11,12 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
-import snownee.jade.Internals;
+import snownee.jade.JadeInternals;
 
 public interface IDisplayHelper {
 
 	static IDisplayHelper get() {
-		return Internals.getDisplayHelper();
+		return JadeInternals.getDisplayHelper();
 	}
 
 	void drawItem(GuiGraphics guiGraphics, float x, float y, ItemStack stack, float scale, @Nullable String text);

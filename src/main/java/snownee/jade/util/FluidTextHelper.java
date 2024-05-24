@@ -65,11 +65,11 @@ public class FluidTextHelper {
 			denominator /= 10;
 		}
 
-		return numString.reverse().toString() + FRACTION_BAR + denomString.reverse().toString();
+		return numString.reverse().toString() + FRACTION_BAR + denomString.reverse();
 	}
 
 	/**
-	 * Convert a non negative fluid amount in droplets to a unicode string
+	 * Convert a non-negative fluid amount in droplets to a unicode string
 	 * representing the amount in millibuckets. For example, passing 163 will result
 	 * in
 	 *

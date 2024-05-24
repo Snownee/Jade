@@ -6,11 +6,11 @@ import org.jetbrains.annotations.NotNull;
 
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
-import snownee.jade.Internals;
+import snownee.jade.JadeInternals;
 
 public interface IThemeHelper {
 	static IThemeHelper get() {
-		return Internals.getThemeHelper();
+		return JadeInternals.getThemeHelper();
 	}
 
 	Theme theme();

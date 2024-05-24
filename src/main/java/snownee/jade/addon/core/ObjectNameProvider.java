@@ -106,7 +106,7 @@ public abstract class ObjectNameProvider implements IToggleableProvider {
 			BlockEntity blockEntity = accessor.getBlockEntity();
 			if (blockEntity instanceof Nameable nameable) {
 				Component name = null;
-				if (blockEntity instanceof ChestBlockEntity && accessor.getBlock() instanceof ChestBlock chestBlock) {
+				if (blockEntity instanceof ChestBlockEntity && accessor.getBlock() instanceof ChestBlock) {
 					MenuProvider menuProvider = accessor.getBlockState().getMenuProvider(accessor.getLevel(), accessor.getPosition());
 					if (menuProvider != null) {
 						name = menuProvider.getDisplayName();

@@ -94,7 +94,7 @@ public class BoxElement extends Element implements IBoxElement {
 		}
 		float width = 0, height = 0;
 		int lineCount = tooltip.lines.size();
-		Tooltip.Line line = tooltip.lines.get(0);
+		Tooltip.Line line = tooltip.lines.getFirst();
 		for (int i = 0; i < lineCount; i++) {
 			Vec2 size = line.size();
 			width = Math.max(width, size.x);
@@ -191,7 +191,7 @@ public class BoxElement extends Element implements IBoxElement {
 		{
 			float lineTop = contentTop;
 			int lineCount = tooltip.lines.size();
-			Tooltip.Line line = tooltip.lines.get(0);
+			Tooltip.Line line = tooltip.lines.getFirst();
 			for (int i = 0; i < lineCount; i++) {
 				Vec2 lineSize = line.size();
 				line.render(guiGraphics, contentLeft, lineTop, maxX - x - padding(ScreenDirection.RIGHT), lineTop + lineSize.y);

@@ -78,7 +78,6 @@ public class RayTracing {
 			}
 			if (axisalignedbb.contains(startVec)) {
 				entity = entity1;
-				d0 = 0;
 				break;
 			}
 			Optional<Vec3> optional = axisalignedbb.clip(startVec, endVec);

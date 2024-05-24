@@ -288,7 +288,7 @@ public class Tooltip implements ITooltip {
 			};
 
 			boolean extendable = align == Align.LEFT && alignedElements.size() == elements.size();
-			IElement lastElement = alignedElements.isEmpty() ? null : alignedElements.get(alignedElements.size() - 1);
+			IElement lastElement = alignedElements.isEmpty() ? null : alignedElements.getLast();
 			for (IElement element : alignedElements) {
 				Vec2 translate = element.getTranslation();
 				Vec2 size = element.getCachedSize();

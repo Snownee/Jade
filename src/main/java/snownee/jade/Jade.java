@@ -36,8 +36,7 @@ public class Jade {
 				if (CommonProxy.isPhysicallyClient()) {
 					plugin.registerClient(WailaClientRegistration.instance());
 				}
-			} catch (Throwable e) {
-				// NO-OP
+			} catch (Throwable ignored) {
 			}
 		}
 

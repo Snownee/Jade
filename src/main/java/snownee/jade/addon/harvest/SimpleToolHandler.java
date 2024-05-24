@@ -59,7 +59,7 @@ public class SimpleToolHandler implements ToolHandler {
 					}
 				}
 			} else {
-				return tools.get(0);
+				return tools.getFirst();
 			}
 		}
 		return ItemStack.EMPTY;

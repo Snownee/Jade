@@ -24,6 +24,7 @@ import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec2;
+import snownee.jade.Jade;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.ITooltip;
@@ -139,7 +140,7 @@ public class HarvestToolProvider implements IBlockComponentProvider, ResourceMan
 		try {
 			tools = resultCache.get(state, () -> getTool(state, accessor.getLevel(), accessor.getPosition()));
 		} catch (ExecutionException e) {
-			e.printStackTrace();
+			Jade.LOGGER.error("Failed to get harvest tool", e);
 		}
 		if (tools.isEmpty()) {
 			return List.of();
@@ -155,7 +156,7 @@ public class HarvestToolProvider implements IBlockComponentProvider, ResourceMan
 		}
 
 		if (!elements.isEmpty()) {
-			elements.add(0, IElementHelper.get().spacer(5, 0));
+			elements.addFirst( IElementHelper.get().spacer(5, 0));
 			ItemStack held = accessor.getPlayer().getMainHandItem();
 			boolean canHarvest = held.isCorrectToolForDrops(state);
 			if (CommonProxy.isShearable(state) && CommonProxy.isShears(held)) {

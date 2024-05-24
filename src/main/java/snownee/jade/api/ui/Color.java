@@ -327,7 +327,7 @@ public class Color {
 	private static double parseDouble(String value, double limit) {
 		boolean hasPercent = value.contains("%");
 		value = value.replace("%", "").trim();
-		double number = Double.valueOf(value);
+		double number = Double.parseDouble(value);
 		return hasPercent ? BigDecimal.valueOf(number).multiply(BigDecimal.valueOf((limit / 100.0))).doubleValue() : number;
 	}
 
@@ -363,13 +363,13 @@ public class Color {
 	private static double toDegrees(String value) {
 		value = value.toLowerCase().trim();
 		if (value.contains("deg")) {
-			return Double.valueOf(value.replace("deg", "").trim());
+			return Double.parseDouble(value.replace("deg", "").trim());
 		} else if (value.contains("grad")) {
-			return (Double.valueOf(value.replace("grad", "").trim()) / 400.0) * 360.0;
+			return (Double.parseDouble(value.replace("grad", "").trim()) / 400.0) * 360.0;
 		} else if (value.contains("rad")) {
-			return Double.valueOf(value.replace("rad", "").trim()) * (180.0 / Math.PI);
+			return Double.parseDouble(value.replace("rad", "").trim()) * (180.0 / Math.PI);
 		} else if (value.contains("turn")) {
-			return Double.valueOf(value.replace("turn", "").trim()) * 360.0;
+			return Double.parseDouble(value.replace("turn", "").trim()) * 360.0;
 		}
 		return parseDouble(value, 360);
 	}

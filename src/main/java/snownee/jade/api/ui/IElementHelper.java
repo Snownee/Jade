@@ -5,14 +5,14 @@ import org.jetbrains.annotations.Nullable;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import snownee.jade.Internals;
+import snownee.jade.JadeInternals;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.fluid.JadeFluidObject;
 
 public interface IElementHelper {
 
 	static IElementHelper get() {
-		return Internals.getElementHelper();
+		return JadeInternals.getElementHelper();
 	}
 
 	ITextElement text(Component component);

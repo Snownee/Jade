@@ -20,7 +20,7 @@ public enum BlockFaceProvider implements IBlockComponentProvider {
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		tooltip.replace(JadeIds.CORE_OBJECT_NAME, lists -> {
-			List<IElement> lastList = lists.get(lists.size() - 1);
+			List<IElement> lastList = lists.getLast();
 			lastList.add(IElementHelper.get()
 					.text(Component.translatable("jade.blockFace", I18n.get("jade." + accessor.getSide().getName()))));
 			return lists;

@@ -25,7 +25,7 @@ public enum ExampleProgressProvider implements IServerExtensionProvider<Compound
 	@Override
 	public List<ClientViewGroup<ProgressView>> getClientGroups(Accessor<?> accessor, List<ViewGroup<CompoundTag>> groups) {
 		return ClientViewGroup.map(groups, ProgressView::read, (group, clientGroup) -> {
-			var view = clientGroup.views.get(0);
+			var view = clientGroup.views.getFirst();
 			view.style.color(0xFFCC0000);
 			view.text = Component.literal("Testtttttttttttttttttttttttttttttttt");
 

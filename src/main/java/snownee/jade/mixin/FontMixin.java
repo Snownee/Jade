@@ -2,6 +2,7 @@ package snownee.jade.mixin;
 
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -16,9 +17,13 @@ import snownee.jade.gui.JadeFont;
 @Mixin(Font.class)
 public class FontMixin implements JadeFont {
 
+	@Unique
 	private float glint1 = Float.NaN;
+	@Unique
 	private float glint2 = Float.NaN;
+	@Unique
 	private float glint1Strength = 1;
+	@Unique
 	private float glint2Strength = 1;
 
 	@Inject(method = "renderChar", at = @At("HEAD"), cancellable = true)

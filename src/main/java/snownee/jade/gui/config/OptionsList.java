@@ -444,7 +444,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		}
 
 		public AbstractWidget getFirstWidget() {
-			return widgets.isEmpty() ? null : widgets.get(0);
+			return widgets.isEmpty() ? null : widgets.getFirst();
 		}
 
 		public void addWidget(AbstractWidget widget, int offsetX) {
@@ -561,7 +561,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 			key = makeKey(key + "_desc");
 			if (I18n.exists(key)) {
 				description = List.of(Component.translatable(key));
-				addMessage(description.get(0).getString());
+				addMessage(description.getFirst().getString());
 			}
 			narration = Component.translatable("narration.jade.category", title);
 		}

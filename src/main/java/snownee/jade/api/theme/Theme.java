@@ -23,6 +23,7 @@ public class Theme {
 	public int iconSlotInflation;
 	public IBoxElement iconSlotSpriteCache;
 
+	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 	public Theme(
 			BoxStyle tooltipStyle,
 			BoxStyle nestedBoxStyle,

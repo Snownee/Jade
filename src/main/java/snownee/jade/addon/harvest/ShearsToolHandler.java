@@ -37,7 +37,7 @@ public class ShearsToolHandler extends SimpleToolHandler {
 	@Override
 	public ItemStack test(BlockState state, Level world, BlockPos pos) {
 		if (CommonProxy.isShearable(state)) {
-			return tools.get(0);
+			return tools.getFirst();
 		}
 		return super.test(state, world, pos);
 	}

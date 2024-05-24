@@ -21,8 +21,9 @@ public class ItemCollector<T> {
 		if (stack.isEmpty()) {
 			return false;
 		}
-		CustomData customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
-		if (customData.contains("CustomModelData")) {
+		if (stack.has(DataComponents.CUSTOM_MODEL_DATA)) {
+			CustomData customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+			//noinspection deprecation
 			CompoundTag tag = customData.getUnsafe();
 			for (String key : tag.getAllKeys()) {
 				if (key.toLowerCase(Locale.ENGLISH).endsWith("clear") && tag.getBoolean(key)) {
@@ -70,7 +71,7 @@ public class ItemCollector<T> {
 		});
 		iterator.afterPopulate(count.get());
 		if (mergedResult != null && !iterator.isFinished()) {
-			updateCollectingProgress(mergedResult.get(0));
+			updateCollectingProgress(mergedResult.getFirst());
 			return mergedResult;
 		}
 		List<ItemStack> partialResult = items.object2IntEntrySet().stream().limit(54).map(entry -> {

@@ -224,6 +224,7 @@ public abstract class BoxStyle implements Cloneable {
 		@Nullable
 		public ResourceLocation withIconSprite;
 
+		@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 		public SpriteBase(
 				Optional<float[]> boxProgressOffset,
 				ColorPalette boxProgressColors,
@@ -239,11 +240,9 @@ public abstract class BoxStyle implements Cloneable {
 			GuiSpriteManager sprites = Minecraft.getInstance().getGuiSprites();
 			TextureAtlasSprite textureAtlasSprite = sprites.getSprite(resourceLocation);
 			GuiSpriteScaling guiSpriteScaling = sprites.getSpriteScaling(textureAtlasSprite);
-			if (guiSpriteScaling instanceof GuiSpriteScaling.Stretch) {
-				guiGraphics.blitSprite(resourceLocation, i, j, k, l, m);
-			} else if (guiSpriteScaling instanceof GuiSpriteScaling.Tile) {
-				GuiSpriteScaling.Tile tile = (GuiSpriteScaling.Tile) guiSpriteScaling;
-				guiGraphics.blitTiledSprite(
+			switch (guiSpriteScaling) {
+				case GuiSpriteScaling.Stretch ignored -> guiGraphics.blitSprite(resourceLocation, i, j, k, l, m);
+				case GuiSpriteScaling.Tile tile -> guiGraphics.blitTiledSprite(
 						textureAtlasSprite,
 						i,
 						j,
@@ -256,9 +255,17 @@ public abstract class BoxStyle implements Cloneable {
 						tile.height(),
 						tile.width(),
 						tile.height());
-			} else if (guiSpriteScaling instanceof GuiSpriteScaling.NineSlice) {
-				GuiSpriteScaling.NineSlice nineSlice = (GuiSpriteScaling.NineSlice) guiSpriteScaling;
-				blitNineSlicedSprite(guiGraphics, textureAtlasSprite, nineSlice, i, j, k, l, m);
+				case GuiSpriteScaling.NineSlice nineSlice -> blitNineSlicedSprite(
+						guiGraphics,
+						textureAtlasSprite,
+						nineSlice,
+						i,
+						j,
+						k,
+						l,
+						m);
+				default -> {
+				}
 			}
 		}
 
