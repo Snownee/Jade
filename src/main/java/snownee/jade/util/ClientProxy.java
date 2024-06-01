@@ -237,13 +237,11 @@ public final class ClientProxy {
 			event.setCanceled(true);
 			return;
 		}
-		if (mode == BossBarOverlapMode.PUSH_DOWN) {
-			if (event.isCanceled()) {
-				return;
-			}
-			bossbarHeight = event.getY() + event.getIncrement();
-			bossbarShown = true;
+		if (mode == BossBarOverlapMode.PUSH_DOWN && event.isCanceled()) {
+			return;
 		}
+		bossbarHeight = event.getY() + event.getIncrement();
+		bossbarShown = true;
 	}
 
 	@Nullable
