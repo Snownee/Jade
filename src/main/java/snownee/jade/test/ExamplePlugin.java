@@ -40,7 +40,7 @@ public class ExamplePlugin implements IWailaPlugin {
 	public void registerClient(IWailaClientRegistration registration) {
 		ExamplePlugin.client = registration;
 		registration.registerBlockComponent(ExampleComponentProvider.INSTANCE, AbstractFurnaceBlock.class);
-		registration.addConfig(UID_TEST_STR_CFG, "", ResourceLocation::isValidResourceLocation);
+		registration.addConfig(UID_TEST_STR_CFG, "", $ -> ResourceLocation.tryParse($) != null);
 		registration.addConfigListener(UID_TEST_STR_CFG, $ -> Jade.LOGGER.info("Changed: $: " + PluginConfig.INSTANCE.getString($)));
 		registration.addConfig(UID_TEST_FLOAT_CFG, 0F, 0F, 100F, false);
 
