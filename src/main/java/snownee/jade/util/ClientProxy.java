@@ -215,8 +215,7 @@ public final class ClientProxy implements ClientModInitializer {
 
 	public static void getFluidSpriteAndColor(JadeFluidObject fluid, BiConsumer<@Nullable TextureAtlasSprite, Integer> consumer) {
 		Fluid type = fluid.getType();
-//		FluidVariant variant = FluidVariant.of(type, fluid.getTag()); FIXME
-		FluidVariant variant = FluidVariant.of(type);
+		FluidVariant variant = FluidVariant.of(type, fluid.getComponents());
 		FluidVariantRenderHandler handler = FluidVariantRendering.getHandlerOrDefault(type);
 		TextureAtlasSprite[] sprites = handler.getSprites(variant);
 		TextureAtlasSprite fluidStillSprite = sprites == null ? null : sprites[0];

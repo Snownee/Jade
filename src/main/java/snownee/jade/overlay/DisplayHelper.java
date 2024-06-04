@@ -22,6 +22,7 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.locale.Language;
@@ -110,8 +111,7 @@ public class DisplayHelper implements IDisplayHelper {
 			TextureAtlasSprite textureSprite,
 			float maskTop,
 			float maskRight,
-			float zLevel,
-			int color) {
+			float zLevel) {
 		float uMin = textureSprite.getU0();
 		float uMax = textureSprite.getU1();
 		float vMin = textureSprite.getV0();
@@ -119,7 +119,7 @@ public class DisplayHelper implements IDisplayHelper {
 		uMax = uMax - (maskRight / 16F * (uMax - uMin));
 		vMax = vMax - (maskTop / 16F * (vMax - vMin));
 
-		BufferBuilder buffer = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+		BufferBuilder buffer = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
 		buffer.addVertex(matrix, xCoord, yCoord + 16, zLevel).setUv(uMin, vMax);
 		buffer.addVertex(matrix, xCoord + 16 - maskRight, yCoord + 16, zLevel).setUv(uMax, vMax);
 		buffer.addVertex(matrix, xCoord + 16 - maskRight, yCoord + maskTop, zLevel).setUv(uMax, vMin);
@@ -277,7 +277,11 @@ public class DisplayHelper implements IDisplayHelper {
 			int color,
 			float scaledAmount,
 			TextureAtlasSprite sprite) {
+		if (tiledWidth == 0 || tiledHeight == 0 || scaledAmount == 0) {
+			return;
+		}
 		RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
+		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 		Matrix4f matrix = guiGraphics.pose().last().pose();
 		setGLColorFromInt(color);
 		RenderSystem.enableBlend();
@@ -299,7 +303,7 @@ public class DisplayHelper implements IDisplayHelper {
 					float maskTop = TEX_HEIGHT - height;
 					float maskRight = TEX_WIDTH - width;
 
-					drawTextureWithMasking(matrix, x, y, sprite, maskTop, maskRight, 0, color);
+					drawTextureWithMasking(matrix, x, y, sprite, maskTop, maskRight, 0);
 				}
 			}
 		}
