@@ -99,6 +99,7 @@ import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.view.EnergyView;
 import snownee.jade.api.view.ViewGroup;
 import snownee.jade.command.JadeServerCommand;
+import snownee.jade.compat.TechRebornEnergyCompat;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.impl.config.PluginConfig;

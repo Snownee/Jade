@@ -44,13 +44,14 @@
 	],
 	"accessWidener": "jade.accesswidener",
 	"depends": {
-		"fabric-api": "*",
-		"minecraft": ">=1.20.5"
+		"fabric-api": ">=0.99",
+		"minecraft": ">=1.21-"
 	},
 	"custom": {
 		"modmenu": {
 			"links": {
-				"modmenu.discord": "https://discord.gg/KzGQW7a"
+				"modmenu.discord": "https://discord.gg/KzGQW7a",
+				"modmenu.donate": "https://ko-fi.com/snownee"
 			}
 		}
 	}

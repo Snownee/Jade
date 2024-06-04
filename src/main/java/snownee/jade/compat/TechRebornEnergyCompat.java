@@ -1,4 +1,4 @@
-package snownee.jade.util;
+package snownee.jade.compat;
 
 import org.jetbrains.annotations.Nullable;
 
