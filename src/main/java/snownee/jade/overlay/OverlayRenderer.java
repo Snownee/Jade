@@ -195,12 +195,12 @@ public class OverlayRenderer {
 		{
 			float maxWidth = rect.rect.getWidth();
 			float maxHeight = rect.rect.getHeight();
+			maxWidth = maxWidth / scale;
+			maxHeight = maxHeight / scale;
 			if (root.getStyle().hasRoundCorner()) {
 				maxWidth -= 2;
 				maxHeight -= 2;
 			}
-			maxWidth = maxWidth / scale;
-			maxHeight = maxHeight / scale;
 			root.render(guiGraphics, 0, 0, maxWidth, maxHeight);
 		}
 
