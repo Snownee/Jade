@@ -10,7 +10,7 @@ import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
-import snownee.jade.api.Identifiers;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.IElementHelper;
@@ -49,6 +49,6 @@ public enum BrewingStandProvider implements IBlockComponentProvider, IServerData
 
 	@Override
 	public ResourceLocation getUid() {
-		return Identifiers.MC_BREWING_STAND;
+		return JadeIds.MC_BREWING_STAND;
 	}
 }

@@ -19,7 +19,7 @@ import snownee.jade.impl.ObjectDataCenter;
 @JeiPlugin
 public class JEICompat implements IModPlugin {
 
-	public static final ResourceLocation ID = new ResourceLocation(Jade.ID, "main");
+	public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(Jade.ID, "main");
 	private static IJeiRuntime runtime;
 	private static IJeiHelpers helpers;
 
@@ -39,20 +39,25 @@ public class JEICompat implements IModPlugin {
 	}
 
 	public static void onKeyPressed(int action) {
-		if (runtime == null || JadeClient.showRecipes == null || JadeClient.showUses == null)
+		if (runtime == null || JadeClient.showRecipes == null || JadeClient.showUses == null) {
 			return;
-		if (action != 1)
+		}
+		if (action != 1) {
 			return;
+		}
 		boolean showRecipes = JadeClient.showRecipes.consumeClick();
 		boolean showUses = JadeClient.showUses.consumeClick();
-		if (!showRecipes && !showUses)
+		if (!showRecipes && !showUses) {
 			return;
+		}
 		Accessor<?> accessor = ObjectDataCenter.get();
-		if (accessor == null)
+		if (accessor == null) {
 			return;
+		}
 		ItemStack stack = accessor.getPickedResult();
-		if (stack.isEmpty())
+		if (stack.isEmpty()) {
 			return;
+		}
 
 		IRecipesGui gui = runtime.getRecipesGui();
 		IFocusFactory factory = helpers.getFocusFactory();

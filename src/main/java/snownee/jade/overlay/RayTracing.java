@@ -78,7 +78,6 @@ public class RayTracing {
 			}
 			if (axisalignedbb.contains(startVec)) {
 				entity = entity1;
-				d0 = 0;
 				break;
 			}
 			Optional<Vec3> optional = axisalignedbb.clip(startVec, endVec);
@@ -116,7 +115,7 @@ public class RayTracing {
 		float extendedReach = Jade.CONFIG.get().getGeneral().getExtendedReach();
 		double blockReach = viewPlayer.blockInteractionRange() + extendedReach;
 		double entityReach = viewPlayer.entityInteractionRange() + extendedReach;
-		target = rayTrace(viewEntity, blockReach, entityReach, mc.getFrameTime());
+		target = rayTrace(viewEntity, blockReach, entityReach, mc.getTimer().getGameTimeDeltaPartialTick(true));
 	}
 
 	public HitResult getTarget() {

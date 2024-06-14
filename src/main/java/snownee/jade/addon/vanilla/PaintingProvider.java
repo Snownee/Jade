@@ -6,10 +6,9 @@ import net.minecraft.world.entity.decoration.Painting;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
-import snownee.jade.api.Identifiers;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
-import snownee.jade.util.CommonProxy;
 
 public enum PaintingProvider implements IEntityComponentProvider {
 
@@ -18,13 +17,13 @@ public enum PaintingProvider implements IEntityComponentProvider {
 	@Override
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		Painting painting = (Painting) accessor.getEntity();
-		ResourceLocation id = CommonProxy.getId(painting.getVariant().value());
+		ResourceLocation id = painting.getVariant().unwrapKey().orElseThrow().location();
 		tooltip.add(IThemeHelper.get().warning(Component.translatable(id.toLanguageKey("painting", "title"))));
 		tooltip.add(Component.translatable(id.toLanguageKey("painting", "author")));
 	}
 
 	@Override
 	public ResourceLocation getUid() {
-		return Identifiers.MC_PAINTING;
+		return JadeIds.MC_PAINTING;
 	}
 }

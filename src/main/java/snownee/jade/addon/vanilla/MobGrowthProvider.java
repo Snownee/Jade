@@ -11,7 +11,7 @@ import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
-import snownee.jade.api.Identifiers;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
 
@@ -46,7 +46,7 @@ public enum MobGrowthProvider implements IEntityComponentProvider, IServerDataPr
 
 	@Override
 	public ResourceLocation getUid() {
-		return Identifiers.MC_MOB_GROWTH;
+		return JadeIds.MC_MOB_GROWTH;
 	}
 
 }

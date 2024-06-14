@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
 
@@ -14,16 +13,19 @@ public class MultilineTooltip {
 	}
 
 	public static Tooltip create(List<Component> components, @Nullable List<Component> narration) {
-		Component message = compose(components);
-		Tooltip tooltip = Tooltip.create(message, narration == null ? null : compose(narration));
-		tooltip.cachedTooltip = components.stream().flatMap($ -> Tooltip.splitTooltip(Minecraft.getInstance(), $).stream()).toList();
-		return tooltip;
+		return Tooltip.create(compose(components), narration == null ? null : compose(narration));
 	}
 
 	private static Component compose(List<Component> components) {
+		if (components.isEmpty()) {
+			return Component.empty();
+		}
+		if (components.size() == 1) {
+			return components.getFirst();
+		}
 		Component linebreak = Component.literal("\n");
-		return components.stream().reduce(
-				Component.empty(),
+		return components.stream().skip(1).reduce(
+				components.getFirst().copy(),
 				(a, b) -> a.append(linebreak).append(b),
 				(a, b) -> a.append(linebreak).append(b));
 	}

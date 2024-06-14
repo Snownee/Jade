@@ -20,25 +20,25 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.Jade;
 import snownee.jade.api.ITooltip;
-import snownee.jade.api.Identifiers;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
 import snownee.jade.api.ui.BoxStyle;
-import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.IBoxElement;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.MessageType;
+import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.ui.TooltipRect;
 import snownee.jade.gui.PreviewOptionsScreen;
 import snownee.jade.impl.Tooltip;
 import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.overlay.OverlayRenderer;
-import snownee.jade.track.ProgressTrackInfo;
 import snownee.jade.overlay.WailaTickHandler;
+import snownee.jade.track.ProgressTrackInfo;
 import snownee.jade.util.ClientProxy;
 
 public class BoxElement extends Element implements IBoxElement {
@@ -64,7 +64,7 @@ public class BoxElement extends Element implements IBoxElement {
 			if (diff == 0) {
 				return;
 			}
-			float delta = Minecraft.getInstance().getDeltaFrameTime() * 2;
+			float delta = Minecraft.getInstance().getTimer().getRealtimeDeltaTicks() * 2;
 			if (delta < 1) {
 				diff *= delta;
 			}
@@ -94,7 +94,7 @@ public class BoxElement extends Element implements IBoxElement {
 		}
 		float width = 0, height = 0;
 		int lineCount = tooltip.lines.size();
-		Tooltip.Line line = tooltip.lines.get(0);
+		Tooltip.Line line = tooltip.lines.getFirst();
 		for (int i = 0; i < lineCount; i++) {
 			Vec2 size = line.size();
 			width = Math.max(width, size.x);
@@ -135,7 +135,7 @@ public class BoxElement extends Element implements IBoxElement {
 
 		// render background
 		float alpha = IDisplayHelper.get().opacity();
-		if (Identifiers.ROOT.equals(getTag())) {
+		if (JadeIds.ROOT.equals(getTag())) {
 			alpha *= IWailaConfig.get().getOverlay().getAlpha();
 		}
 		style.render(guiGraphics, this, 0, 0, maxX - x, maxY - y, alpha);
@@ -154,7 +154,7 @@ public class BoxElement extends Element implements IBoxElement {
 			}
 			if (track != null) {
 				track.setProgress(progress);
-				track.update(Minecraft.getInstance().getDeltaFrameTime());
+				track.update(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks());
 				progress = track.getSmoothProgress();
 			}
 			((DisplayHelper) IDisplayHelper.get()).drawGradientProgress(
@@ -191,7 +191,7 @@ public class BoxElement extends Element implements IBoxElement {
 		{
 			float lineTop = contentTop;
 			int lineCount = tooltip.lines.size();
-			Tooltip.Line line = tooltip.lines.get(0);
+			Tooltip.Line line = tooltip.lines.getFirst();
 			for (int i = 0; i < lineCount; i++) {
 				Vec2 lineSize = line.size();
 				line.render(guiGraphics, contentLeft, lineTop, maxX - x - padding(ScreenDirection.RIGHT), lineTop + lineSize.y);

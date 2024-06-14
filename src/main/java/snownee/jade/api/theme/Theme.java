@@ -3,13 +3,13 @@ package snownee.jade.api.theme;
 import java.util.Optional;
 
 import net.minecraft.resources.ResourceLocation;
-import snownee.jade.api.Identifiers;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.IBoxElement;
 
 public class Theme {
 
-	public static final ResourceLocation DEFAULT_THEME_ID = Identifiers.JADE("dark");
+	public static final ResourceLocation DEFAULT_THEME_ID = JadeIds.JADE("dark");
 	public BoxStyle tooltipStyle;
 	public BoxStyle nestedBoxStyle;
 	public BoxStyle viewGroupStyle;
@@ -23,6 +23,7 @@ public class Theme {
 	public int iconSlotInflation;
 	public IBoxElement iconSlotSpriteCache;
 
+	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 	public Theme(
 			BoxStyle tooltipStyle,
 			BoxStyle nestedBoxStyle,

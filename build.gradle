@@ -3,8 +3,8 @@ plugins {
     id 'idea'
     id 'maven-publish'
     id "me.shedaniel.unified-publishing" version "0.1.+"
-    id 'net.neoforged.gradle.userdev' version '7.0.133'
-    id 'net.neoforged.gradle.mixin' version '7.0.133'
+    id 'net.neoforged.gradle.userdev' version '7.0.142'
+    id 'net.neoforged.gradle.mixin' version '7.0.142'
 }
 
 version = "${minecraft_version}-NeoForge-${mod_version}"
@@ -155,7 +155,7 @@ unifiedPublishing {
         version = realVersion // Optional, Inferred from project by default
         changelog = file("CHANGELOG.md").exists() ? file("CHANGELOG.md").text : "" // Optional, in markdown format
         releaseType = project.release_type // Optional, use "release", "beta" or "alpha"
-        gameVersions = ["1.20.6"]
+        gameVersions = [project.archive_minecraft_version]
         gameLoaders = ["neoforge"]
 
         mainPublication tasks.jar // Declares the publicated jar

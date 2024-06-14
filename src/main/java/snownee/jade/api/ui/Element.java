@@ -18,7 +18,7 @@ public abstract class Element implements IElement {
 	protected Vec2 translation = Vec2.ZERO;
 	protected ResourceLocation tag;
 	protected Vec2 size;
-	private static final String DEFAULT_MESSAGE = "";
+	private static final String DEFAULT_MESSAGE = "\u0000";
 	protected String message = DEFAULT_MESSAGE;
 
 	@Override
@@ -72,7 +72,7 @@ public abstract class Element implements IElement {
 
 	@Override
 	public @Nullable String getCachedMessage() {
-		if (message == DEFAULT_MESSAGE) {
+		if (Objects.equals(message, DEFAULT_MESSAGE)) {
 			message = getMessage();
 		}
 		return message;

@@ -42,7 +42,7 @@ public class DatapackBlockManager {
 			if (entities.isEmpty()) {
 				itemFrames.remove(pos);
 			} else {
-				return entities.get(0).getItem();
+				return entities.getFirst().getItem();
 			}
 		}
 		return ItemStack.EMPTY;

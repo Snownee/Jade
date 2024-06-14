@@ -10,7 +10,7 @@ import net.minecraft.world.entity.npc.VillagerProfession;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
-import snownee.jade.api.Identifiers;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.util.CommonProxy;
 
@@ -43,7 +43,7 @@ public enum VillagerProfessionProvider implements IEntityComponentProvider {
 
 	@Override
 	public ResourceLocation getUid() {
-		return Identifiers.MC_VILLAGER_PROFESSION;
+		return JadeIds.MC_VILLAGER_PROFESSION;
 	}
 
 }

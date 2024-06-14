@@ -56,7 +56,7 @@ import snownee.jade.addon.harvest.HarvestToolProvider;
 import snownee.jade.api.IWailaClientRegistration;
 import snownee.jade.api.IWailaCommonRegistration;
 import snownee.jade.api.IWailaPlugin;
-import snownee.jade.api.Identifiers;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.WailaPlugin;
 import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.overlay.DatapackBlockManager;
@@ -74,11 +74,9 @@ public class VanillaPlugin implements IWailaPlugin {
 			return CHEST_CACHE.get(state, () -> {
 				ResourceLocation trappedName = CommonProxy.getId(state.getBlock());
 				if (trappedName.getPath().startsWith("trapped_")) {
-					ResourceLocation chestName = new ResourceLocation(trappedName.getNamespace(), trappedName.getPath().substring(8));
+					ResourceLocation chestName = trappedName.withPath(trappedName.getPath().substring(8));
 					Block block = BuiltInRegistries.BLOCK.get(chestName);
-					if (block != null) {
-						return copyProperties(state, block.defaultBlockState());
-					}
+					return copyProperties(state, block.defaultBlockState());
 				}
 				return state;
 			});
@@ -129,18 +127,18 @@ public class VanillaPlugin implements IWailaPlugin {
 	public void registerClient(IWailaClientRegistration registration) {
 		CLIENT_REGISTRATION = registration;
 
-		registration.addConfig(Identifiers.MC_EFFECTIVE_TOOL, true);
-		registration.addConfig(Identifiers.MC_HARVEST_TOOL_NEW_LINE, false);
-		registration.addConfig(Identifiers.MC_SHOW_UNBREAKABLE, false);
-		registration.addConfig(Identifiers.MC_HARVEST_TOOL_CREATIVE, false);
-		registration.addConfig(Identifiers.MC_BREAKING_PROGRESS, true);
-		registration.addConfig(Identifiers.MC_ENTITY_HEALTH, true);
-		registration.addConfig(Identifiers.MC_ENTITY_ARMOR, true);
+		registration.addConfig(JadeIds.MC_EFFECTIVE_TOOL, true);
+		registration.addConfig(JadeIds.MC_HARVEST_TOOL_NEW_LINE, false);
+		registration.addConfig(JadeIds.MC_SHOW_UNBREAKABLE, false);
+		registration.addConfig(JadeIds.MC_HARVEST_TOOL_CREATIVE, false);
+		registration.addConfig(JadeIds.MC_BREAKING_PROGRESS, true);
+		registration.addConfig(JadeIds.MC_ENTITY_HEALTH, true);
+		registration.addConfig(JadeIds.MC_ENTITY_ARMOR, true);
 
-		registration.addConfig(Identifiers.MC_ENTITY_ARMOR_MAX_FOR_RENDER, 20, 0, 200, false);
-		registration.addConfig(Identifiers.MC_ENTITY_HEALTH_MAX_FOR_RENDER, 40, 0, 200, false);
-		registration.addConfig(Identifiers.MC_ENTITY_HEALTH_ICONS_PER_LINE, 10, 5, 40, false);
-		registration.addConfig(Identifiers.MC_ENTITY_HEALTH_SHOW_FRACTIONS, false);
+		registration.addConfig(JadeIds.MC_ENTITY_ARMOR_MAX_FOR_RENDER, 20, 0, 200, false);
+		registration.addConfig(JadeIds.MC_ENTITY_HEALTH_MAX_FOR_RENDER, 40, 0, 200, false);
+		registration.addConfig(JadeIds.MC_ENTITY_HEALTH_ICONS_PER_LINE, 10, 5, 40, false);
+		registration.addConfig(JadeIds.MC_ENTITY_HEALTH_SHOW_FRACTIONS, false);
 
 		registration.registerBlockComponent(BrewingStandProvider.INSTANCE, BrewingStandBlock.class);
 		registration.registerEntityComponent(HorseStatsProvider.INSTANCE, AbstractHorse.class);
@@ -196,32 +194,32 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.addRayTraceCallback(5000, DatapackBlockManager::override);
 		registration.addAfterRenderCallback(100, JadeClient::drawBreakingProgress);
 
-		registration.markAsClientFeature(Identifiers.MC_EFFECTIVE_TOOL);
-		registration.markAsClientFeature(Identifiers.MC_HARVEST_TOOL_NEW_LINE);
-		registration.markAsClientFeature(Identifiers.MC_SHOW_UNBREAKABLE);
-		registration.markAsClientFeature(Identifiers.MC_HARVEST_TOOL_CREATIVE);
-		registration.markAsClientFeature(Identifiers.MC_BREAKING_PROGRESS);
-		registration.markAsClientFeature(Identifiers.MC_ENTITY_ARMOR_MAX_FOR_RENDER);
-		registration.markAsClientFeature(Identifiers.MC_ENTITY_HEALTH_MAX_FOR_RENDER);
-		registration.markAsClientFeature(Identifiers.MC_ENTITY_HEALTH_ICONS_PER_LINE);
-		registration.markAsClientFeature(Identifiers.MC_ENTITY_HEALTH_SHOW_FRACTIONS);
-		registration.markAsClientFeature(Identifiers.MC_HORSE_STATS);
-		registration.markAsClientFeature(Identifiers.MC_ITEM_FRAME);
-		registration.markAsClientFeature(Identifiers.MC_TNT_STABILITY);
-		registration.markAsClientFeature(Identifiers.MC_NOTE_BLOCK);
-		registration.markAsClientFeature(Identifiers.MC_ARMOR_STAND);
-		registration.markAsClientFeature(Identifiers.MC_PAINTING);
-		registration.markAsClientFeature(Identifiers.MC_HARVEST_TOOL);
-		registration.markAsClientFeature(Identifiers.MC_ENCHANTMENT_POWER);
-		registration.markAsClientFeature(Identifiers.MC_TOTAL_ENCHANTMENT_POWER);
-		registration.markAsClientFeature(Identifiers.MC_PLAYER_HEAD);
-		registration.markAsClientFeature(Identifiers.MC_VILLAGER_PROFESSION);
-		registration.markAsClientFeature(Identifiers.MC_ITEM_TOOLTIP);
-		registration.markAsClientFeature(Identifiers.MC_ENTITY_HEALTH);
-		registration.markAsClientFeature(Identifiers.MC_ENTITY_ARMOR);
-		registration.markAsClientFeature(Identifiers.MC_CROP_PROGRESS);
-		registration.markAsClientFeature(Identifiers.MC_MOB_SPAWNER);
-		registration.markAsClientFeature(Identifiers.MC_WAXED);
+		registration.markAsClientFeature(JadeIds.MC_EFFECTIVE_TOOL);
+		registration.markAsClientFeature(JadeIds.MC_HARVEST_TOOL_NEW_LINE);
+		registration.markAsClientFeature(JadeIds.MC_SHOW_UNBREAKABLE);
+		registration.markAsClientFeature(JadeIds.MC_HARVEST_TOOL_CREATIVE);
+		registration.markAsClientFeature(JadeIds.MC_BREAKING_PROGRESS);
+		registration.markAsClientFeature(JadeIds.MC_ENTITY_ARMOR_MAX_FOR_RENDER);
+		registration.markAsClientFeature(JadeIds.MC_ENTITY_HEALTH_MAX_FOR_RENDER);
+		registration.markAsClientFeature(JadeIds.MC_ENTITY_HEALTH_ICONS_PER_LINE);
+		registration.markAsClientFeature(JadeIds.MC_ENTITY_HEALTH_SHOW_FRACTIONS);
+		registration.markAsClientFeature(JadeIds.MC_HORSE_STATS);
+		registration.markAsClientFeature(JadeIds.MC_ITEM_FRAME);
+		registration.markAsClientFeature(JadeIds.MC_TNT_STABILITY);
+		registration.markAsClientFeature(JadeIds.MC_NOTE_BLOCK);
+		registration.markAsClientFeature(JadeIds.MC_ARMOR_STAND);
+		registration.markAsClientFeature(JadeIds.MC_PAINTING);
+		registration.markAsClientFeature(JadeIds.MC_HARVEST_TOOL);
+		registration.markAsClientFeature(JadeIds.MC_ENCHANTMENT_POWER);
+		registration.markAsClientFeature(JadeIds.MC_TOTAL_ENCHANTMENT_POWER);
+		registration.markAsClientFeature(JadeIds.MC_PLAYER_HEAD);
+		registration.markAsClientFeature(JadeIds.MC_VILLAGER_PROFESSION);
+		registration.markAsClientFeature(JadeIds.MC_ITEM_TOOLTIP);
+		registration.markAsClientFeature(JadeIds.MC_ENTITY_HEALTH);
+		registration.markAsClientFeature(JadeIds.MC_ENTITY_ARMOR);
+		registration.markAsClientFeature(JadeIds.MC_CROP_PROGRESS);
+		registration.markAsClientFeature(JadeIds.MC_MOB_SPAWNER);
+		registration.markAsClientFeature(JadeIds.MC_WAXED);
 
 		registration.usePickedResult(EntityType.BOAT);
 		registration.usePickedResult(EntityType.CHEST_BOAT);
@@ -229,39 +227,39 @@ public class VanillaPlugin implements IWailaPlugin {
 		Component block = Component.translatable("config.jade.plugin_minecraft.block");
 		Component entity = Component.translatable("config.jade.plugin_minecraft.entity");
 		List<Component> both = List.of(block, entity);
-		registration.setConfigCategoryOverride(Identifiers.MC_ANIMAL_OWNER, entity);
-		registration.setConfigCategoryOverride(Identifiers.MC_ARMOR_STAND, both);
-		registration.setConfigCategoryOverride(Identifiers.MC_BEEHIVE, block);
-		registration.setConfigCategoryOverride(Identifiers.MC_BREWING_STAND, block);
-		registration.setConfigCategoryOverride(Identifiers.MC_CHISELED_BOOKSHELF, block);
-		registration.setConfigCategoryOverride(Identifiers.MC_COMMAND_BLOCK, block);
-		registration.setConfigCategoryOverride(Identifiers.MC_CROP_PROGRESS, block);
-		registration.setConfigCategoryOverride(Identifiers.MC_ENCHANTMENT_POWER, block);
-		registration.setConfigCategoryOverride(Identifiers.MC_ENTITY_ARMOR, entity);
-		registration.setConfigCategoryOverride(Identifiers.MC_ENTITY_HEALTH, entity);
-		registration.setConfigCategoryOverride(Identifiers.MC_FURNACE, block);
-		registration.setConfigCategoryOverride(Identifiers.MC_HARVEST_TOOL, block);
-		registration.setConfigCategoryOverride(Identifiers.MC_HORSE_STATS, entity);
-		registration.setConfigCategoryOverride(Identifiers.MC_ITEM_FRAME, both);
-		registration.setConfigCategoryOverride(Identifiers.MC_ITEM_TOOLTIP, entity);
-		registration.setConfigCategoryOverride(Identifiers.MC_JUKEBOX, block);
-		registration.setConfigCategoryOverride(Identifiers.MC_LECTERN, block);
-		registration.setConfigCategoryOverride(Identifiers.MC_MOB_BREEDING, entity);
-		registration.setConfigCategoryOverride(Identifiers.MC_MOB_GROWTH, entity);
-		registration.setConfigCategoryOverride(Identifiers.MC_MOB_SPAWNER, block);
-		registration.setConfigCategoryOverride(Identifiers.MC_NEXT_ENTITY_DROP, entity);
-		registration.setConfigCategoryOverride(Identifiers.MC_NOTE_BLOCK, block);
-		registration.setConfigCategoryOverride(Identifiers.MC_PAINTING, both);
-		registration.setConfigCategoryOverride(Identifiers.MC_PLAYER_HEAD, block);
-		registration.setConfigCategoryOverride(Identifiers.MC_POTION_EFFECTS, entity);
-		registration.setConfigCategoryOverride(Identifiers.MC_REDSTONE, block);
-		registration.setConfigCategoryOverride(Identifiers.MC_TNT_STABILITY, block);
-		registration.setConfigCategoryOverride(Identifiers.MC_TOTAL_ENCHANTMENT_POWER, block);
-		registration.setConfigCategoryOverride(Identifiers.MC_VILLAGER_PROFESSION, entity);
-		registration.setConfigCategoryOverride(Identifiers.MC_WAXED, block);
-		registration.setConfigCategoryOverride(Identifiers.MC_BREAKING_PROGRESS, block);
-		registration.setConfigCategoryOverride(Identifiers.MC_ZOMBIE_VILLAGER, entity);
+		registration.setConfigCategoryOverride(JadeIds.MC_ANIMAL_OWNER, entity);
+		registration.setConfigCategoryOverride(JadeIds.MC_ARMOR_STAND, both);
+		registration.setConfigCategoryOverride(JadeIds.MC_BEEHIVE, block);
+		registration.setConfigCategoryOverride(JadeIds.MC_BREWING_STAND, block);
+		registration.setConfigCategoryOverride(JadeIds.MC_CHISELED_BOOKSHELF, block);
+		registration.setConfigCategoryOverride(JadeIds.MC_COMMAND_BLOCK, block);
+		registration.setConfigCategoryOverride(JadeIds.MC_CROP_PROGRESS, block);
+		registration.setConfigCategoryOverride(JadeIds.MC_ENCHANTMENT_POWER, block);
+		registration.setConfigCategoryOverride(JadeIds.MC_ENTITY_ARMOR, entity);
+		registration.setConfigCategoryOverride(JadeIds.MC_ENTITY_HEALTH, entity);
+		registration.setConfigCategoryOverride(JadeIds.MC_FURNACE, block);
+		registration.setConfigCategoryOverride(JadeIds.MC_HARVEST_TOOL, block);
+		registration.setConfigCategoryOverride(JadeIds.MC_HORSE_STATS, entity);
+		registration.setConfigCategoryOverride(JadeIds.MC_ITEM_FRAME, both);
+		registration.setConfigCategoryOverride(JadeIds.MC_ITEM_TOOLTIP, entity);
+		registration.setConfigCategoryOverride(JadeIds.MC_JUKEBOX, block);
+		registration.setConfigCategoryOverride(JadeIds.MC_LECTERN, block);
+		registration.setConfigCategoryOverride(JadeIds.MC_MOB_BREEDING, entity);
+		registration.setConfigCategoryOverride(JadeIds.MC_MOB_GROWTH, entity);
+		registration.setConfigCategoryOverride(JadeIds.MC_MOB_SPAWNER, block);
+		registration.setConfigCategoryOverride(JadeIds.MC_NEXT_ENTITY_DROP, entity);
+		registration.setConfigCategoryOverride(JadeIds.MC_NOTE_BLOCK, block);
+		registration.setConfigCategoryOverride(JadeIds.MC_PAINTING, both);
+		registration.setConfigCategoryOverride(JadeIds.MC_PLAYER_HEAD, block);
+		registration.setConfigCategoryOverride(JadeIds.MC_POTION_EFFECTS, entity);
+		registration.setConfigCategoryOverride(JadeIds.MC_REDSTONE, block);
+		registration.setConfigCategoryOverride(JadeIds.MC_TNT_STABILITY, block);
+		registration.setConfigCategoryOverride(JadeIds.MC_TOTAL_ENCHANTMENT_POWER, block);
+		registration.setConfigCategoryOverride(JadeIds.MC_VILLAGER_PROFESSION, entity);
+		registration.setConfigCategoryOverride(JadeIds.MC_WAXED, block);
+		registration.setConfigCategoryOverride(JadeIds.MC_BREAKING_PROGRESS, block);
+		registration.setConfigCategoryOverride(JadeIds.MC_ZOMBIE_VILLAGER, entity);
 
-		WailaCommonRegistration.instance().priorities.putUnsafe(Identifiers.MC_ENTITY_ARMOR, -4499);
+		WailaCommonRegistration.instance().priorities.putUnsafe(JadeIds.MC_ENTITY_ARMOR, -4499);
 	}
 }

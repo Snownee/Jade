@@ -68,7 +68,7 @@ import snownee.jade.addon.harvest.SimpleToolHandler;
 import snownee.jade.addon.harvest.ToolHandler;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
-import snownee.jade.api.Identifiers;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.IWailaConfig.BossBarOverlapMode;
 import snownee.jade.api.fluid.JadeFluidObject;
@@ -122,11 +122,11 @@ public final class ClientProxy {
 		NeoForge.EVENT_BUS.addListener(EventPriority.LOWEST, true, ClientProxy::onDrawBossBar);
 		NeoForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, RenderGuiEvent.Post.class, event -> {
 			if (Minecraft.getInstance().screen == null) {
-				onRenderTick(event.getGuiGraphics());
+				onRenderTick(event.getGuiGraphics(), event.getPartialTick().getRealtimeDeltaTicks());
 			}
 		});
 		NeoForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, ScreenEvent.Render.Post.class, event -> {
-			onRenderTick(event.getGuiGraphics());
+			onRenderTick(event.getGuiGraphics(), event.getPartialTick());
 		});
 		modBus.addListener(EventPriority.NORMAL, false, RegisterClientReloadListenersEvent.class, event -> {
 			event.registerReloadListener(ThemeHelper.INSTANCE);
@@ -161,9 +161,9 @@ public final class ClientProxy {
 		JadeClient.appendModName(event.getToolTip(), event.getItemStack(), event.getContext(), event.getFlags());
 	}
 
-	public static void onRenderTick(GuiGraphics guiGraphics) {
+	public static void onRenderTick(GuiGraphics guiGraphics, float tickDelta) {
 		try {
-			OverlayRenderer.renderOverlay478757(guiGraphics);
+			OverlayRenderer.renderOverlay478757(guiGraphics, tickDelta);
 		} catch (Throwable e) {
 			WailaExceptionHandler.handleErr(e, null, null, null);
 		} finally {
@@ -293,7 +293,7 @@ public final class ClientProxy {
 	}
 
 	public static ToolHandler createSwordToolHandler() {
-		return SimpleToolHandler.create(Identifiers.JADE("sword"), false, List.of(Items.WOODEN_SWORD))
+		return SimpleToolHandler.create(JadeIds.JADE("sword"), false, List.of(Items.WOODEN_SWORD))
 				.addBlock(Blocks.COBWEB)
 				.addBlock(Blocks.BAMBOO);
 	}

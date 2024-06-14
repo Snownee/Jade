@@ -10,7 +10,7 @@ import net.minecraft.world.level.block.entity.SkullBlockEntity;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.ITooltip;
-import snownee.jade.api.Identifiers;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
 
@@ -32,13 +32,13 @@ public enum PlayerHeadProvider implements IBlockComponentProvider {
 			if (!name.contains(" ") && !name.contains("§")) {
 				name = I18n.get(Items.PLAYER_HEAD.getDescriptionId() + ".named", name);
 			}
-			tooltip.replace(Identifiers.CORE_OBJECT_NAME, IThemeHelper.get().title(name));
+			tooltip.replace(JadeIds.CORE_OBJECT_NAME, IThemeHelper.get().title(name));
 		}
 	}
 
 	@Override
 	public ResourceLocation getUid() {
-		return Identifiers.MC_PLAYER_HEAD;
+		return JadeIds.MC_PLAYER_HEAD;
 	}
 
 }

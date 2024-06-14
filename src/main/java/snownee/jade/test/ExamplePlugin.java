@@ -18,13 +18,13 @@ import snownee.jade.impl.config.PluginConfig;
 
 public class ExamplePlugin implements IWailaPlugin {
 
-	public static final ResourceLocation UID_TEST_FUEL = new ResourceLocation("debug:furnace_fuel");
-	public static final ResourceLocation UID_TEST_BREWING = new ResourceLocation("debug:item_storage");
-	public static final ResourceLocation UID_TEST_FLUIDS = new ResourceLocation("debug:fluid_storage");
-	public static final ResourceLocation UID_TEST_ENERGY = new ResourceLocation("debug:energy_storage");
-	public static final ResourceLocation UID_TEST_PROGRESS = new ResourceLocation("debug:progress");
-	public static final ResourceLocation UID_TEST_STR_CFG = new ResourceLocation("debug:furnace_fuel.str_cfg");
-	public static final ResourceLocation UID_TEST_FLOAT_CFG = new ResourceLocation("debug:furnace_fuel.float_cfg");
+	public static final ResourceLocation UID_TEST_FUEL = ResourceLocation.parse("debug:furnace_fuel");
+	public static final ResourceLocation UID_TEST_BREWING = ResourceLocation.parse("debug:item_storage");
+	public static final ResourceLocation UID_TEST_FLUIDS = ResourceLocation.parse("debug:fluid_storage");
+	public static final ResourceLocation UID_TEST_ENERGY = ResourceLocation.parse("debug:energy_storage");
+	public static final ResourceLocation UID_TEST_PROGRESS = ResourceLocation.parse("debug:progress");
+	public static final ResourceLocation UID_TEST_STR_CFG = ResourceLocation.parse("debug:furnace_fuel.str_cfg");
+	public static final ResourceLocation UID_TEST_FLOAT_CFG = ResourceLocation.parse("debug:furnace_fuel.float_cfg");
 	private static IWailaClientRegistration client;
 
 	@Override
@@ -40,7 +40,7 @@ public class ExamplePlugin implements IWailaPlugin {
 	public void registerClient(IWailaClientRegistration registration) {
 		ExamplePlugin.client = registration;
 		registration.registerBlockComponent(ExampleComponentProvider.INSTANCE, AbstractFurnaceBlock.class);
-		registration.addConfig(UID_TEST_STR_CFG, "", ResourceLocation::isValidResourceLocation);
+		registration.addConfig(UID_TEST_STR_CFG, "", $ -> ResourceLocation.tryParse($) != null);
 		registration.addConfigListener(UID_TEST_STR_CFG, $ -> Jade.LOGGER.info("Changed: $: " + PluginConfig.INSTANCE.getString($)));
 		registration.addConfig(UID_TEST_FLOAT_CFG, 0F, 0F, 100F, false);
 

@@ -190,7 +190,7 @@ public class HomeConfigScreen extends Screen {
 				if (pendingParticles.isEmpty()) {
 					festival3populateNew();
 				}
-				TextParticle particle = pendingParticles.remove(0);
+				TextParticle particle = pendingParticles.removeFirst();
 				particle.x = mouseX - 5;
 				particle.y = mouseY;
 				particles.add(particle);

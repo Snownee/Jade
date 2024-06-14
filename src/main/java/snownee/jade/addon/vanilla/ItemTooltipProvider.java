@@ -25,7 +25,7 @@ import snownee.jade.JadeClient;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
-import snownee.jade.api.Identifiers;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.impl.ui.TextElement;
 import snownee.jade.util.ModIdentification;
@@ -38,10 +38,11 @@ public enum ItemTooltipProvider implements IEntityComponentProvider {
 	@Override
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		ItemStack stack = ((ItemEntity) accessor.getEntity()).getItem();
-		JadeClient.hideModName = true;
+		Item.TooltipContext tooltipContext = Item.TooltipContext.of(accessor.getLevel());
+		JadeClient.hideModNameIn(tooltipContext);
 		List<Either<FormattedText, TooltipComponent>> lines = Lists.newArrayList();
 		try {
-			stack.getTooltipLines(Item.TooltipContext.of(accessor.getLevel()), null, TooltipFlag.Default.NORMAL)
+			stack.getTooltipLines(tooltipContext, null, TooltipFlag.Default.NORMAL)
 					.stream()
 					.peek(component -> {
 						if (component instanceof MutableComponent mutable && mutable.getStyle().getColor() != null) {
@@ -54,7 +55,6 @@ public enum ItemTooltipProvider implements IEntityComponentProvider {
 			String namespace = BuiltInRegistries.ITEM.getKey(stack.getItem()).getNamespace();
 			WailaExceptionHandler.handleErr(e, this, tooltip, namespace);
 		}
-		JadeClient.hideModName = false;
 		if (lines.isEmpty()) {
 			return;
 		}
@@ -77,7 +77,7 @@ public enum ItemTooltipProvider implements IEntityComponentProvider {
 
 	@Override
 	public ResourceLocation getUid() {
-		return Identifiers.MC_ITEM_TOOLTIP;
+		return JadeIds.MC_ITEM_TOOLTIP;
 	}
 
 }

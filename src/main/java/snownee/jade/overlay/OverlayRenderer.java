@@ -13,13 +13,14 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
-import snownee.jade.api.Identifiers;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.callback.JadeBeforeRenderCallback;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.IWailaConfig.BossBarOverlapMode;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
 import snownee.jade.api.ui.TooltipRect;
+import snownee.jade.gui.BaseOptionsScreen;
 import snownee.jade.gui.PreviewOptionsScreen;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.Tooltip;
@@ -56,7 +57,8 @@ public class OverlayRenderer {
 		}
 
 		BossBarOverlapMode mode = Jade.CONFIG.get().getGeneral().getBossBarOverlapMode();
-		if (mode == BossBarOverlapMode.HIDE_TOOLTIP && ClientProxy.getBossBarRect() != null) {
+		if (mode == BossBarOverlapMode.HIDE_TOOLTIP && !(Minecraft.getInstance().screen instanceof BaseOptionsScreen) &&
+				ClientProxy.getBossBarRect() != null) {
 			return false;
 		}
 
@@ -116,8 +118,7 @@ public class OverlayRenderer {
 	 * Secondly, please notice the license that Jade is using.
 	 * I don't think it is compatible with some open-source licenses.
 	 */
-	public static void renderOverlay478757(GuiGraphics guiGraphics) {
-		float delta = Minecraft.getInstance().getDeltaFrameTime();
+	public static void renderOverlay478757(GuiGraphics guiGraphics, float delta) {
 		ticks += delta;
 		shown = false;
 		BoxElement root = WailaTickHandler.instance().rootElement;
@@ -127,7 +128,7 @@ public class OverlayRenderer {
 			tooltip.add(IThemeHelper.get().title(Blocks.GRASS_BLOCK.getName()));
 			tooltip.add(IThemeHelper.get().modName(ModIdentification.getModName(Blocks.GRASS_BLOCK)));
 			root = new BoxElement(tooltip, IThemeHelper.get().theme().tooltipStyle);
-			root.tag(Identifiers.ROOT);
+			root.tag(JadeIds.ROOT);
 			root.setThemeIcon(ItemStackElement.of(new ItemStack(Blocks.GRASS_BLOCK)), IThemeHelper.get().theme());
 			root.updateExpectedRect(rect);
 			show = true;
@@ -194,12 +195,12 @@ public class OverlayRenderer {
 		{
 			float maxWidth = rect.rect.getWidth();
 			float maxHeight = rect.rect.getHeight();
+			maxWidth = maxWidth / scale;
+			maxHeight = maxHeight / scale;
 			if (root.getStyle().hasRoundCorner()) {
 				maxWidth -= 2;
 				maxHeight -= 2;
 			}
-			maxWidth = maxWidth / scale;
-			maxHeight = maxHeight / scale;
 			root.render(guiGraphics, 0, 0, maxWidth, maxHeight);
 		}
 

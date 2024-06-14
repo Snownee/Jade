@@ -12,7 +12,7 @@ import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
-import snownee.jade.api.Identifiers;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.IElementHelper;
 
@@ -63,7 +63,7 @@ public enum FurnaceProvider implements IBlockComponentProvider, IServerDataProvi
 
 	@Override
 	public ResourceLocation getUid() {
-		return Identifiers.MC_FURNACE;
+		return JadeIds.MC_FURNACE;
 	}
 
 }

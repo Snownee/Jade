@@ -41,7 +41,7 @@ import snownee.jade.util.JsonConfig;
 
 public class ThemeHelper extends SimpleJsonResourceReloadListener implements IThemeHelper {
 	public static final ThemeHelper INSTANCE = new ThemeHelper();
-	public static final ResourceLocation ID = new ResourceLocation(Jade.ID, "themes");
+	public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(Jade.ID, "themes");
 	private static final Int2ObjectMap<Style> styleCache = new Int2ObjectOpenHashMap<>(6);
 	private final Map<ResourceLocation, Theme> themes = Maps.newTreeMap(Comparator.comparing(ResourceLocation::toString));
 	private final MinMaxBounds.Ints allowedVersions = MinMaxBounds.Ints.between(100, 199);

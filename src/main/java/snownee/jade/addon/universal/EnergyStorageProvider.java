@@ -17,7 +17,7 @@ import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IComponentProvider;
 import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
-import snownee.jade.api.Identifiers;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
@@ -53,7 +53,7 @@ public abstract class EnergyStorageProvider<T extends Accessor<?>> implements IC
 	}
 
 	public static void append(ITooltip tooltip, Accessor<?> accessor, IPluginConfig config) {
-		if ((!accessor.showDetails() && config.get(Identifiers.UNIVERSAL_ENERGY_STORAGE_DETAILED))) {
+		if ((!accessor.showDetails() && config.get(JadeIds.UNIVERSAL_ENERGY_STORAGE_DETAILED))) {
 			return;
 		}
 
@@ -123,7 +123,7 @@ public abstract class EnergyStorageProvider<T extends Accessor<?>> implements IC
 
 	@Override
 	public ResourceLocation getUid() {
-		return Identifiers.UNIVERSAL_ENERGY_STORAGE;
+		return JadeIds.UNIVERSAL_ENERGY_STORAGE;
 	}
 
 	@Override
@@ -143,7 +143,7 @@ public abstract class EnergyStorageProvider<T extends Accessor<?>> implements IC
 
 	@Override
 	public boolean shouldRequestData(T accessor) {
-		if (!accessor.showDetails() && IWailaConfig.get().getPlugin().get(Identifiers.UNIVERSAL_ENERGY_STORAGE_DETAILED)) {
+		if (!accessor.showDetails() && IWailaConfig.get().getPlugin().get(JadeIds.UNIVERSAL_ENERGY_STORAGE_DETAILED)) {
 			return false;
 		}
 		for (var provider : WailaCommonRegistration.instance().energyStorageProviders.get(accessor)) {
@@ -159,7 +159,7 @@ public abstract class EnergyStorageProvider<T extends Accessor<?>> implements IC
 
 		@Override
 		public ResourceLocation getUid() {
-			return Identifiers.UNIVERSAL_ENERGY_STORAGE_DEFAULT;
+			return JadeIds.UNIVERSAL_ENERGY_STORAGE_DEFAULT;
 		}
 
 		@Override

@@ -20,7 +20,7 @@ import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
-import snownee.jade.api.Identifiers;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
 
@@ -93,7 +93,7 @@ public enum RedstoneProvider implements IBlockComponentProvider, IServerDataProv
 
 	@Override
 	public ResourceLocation getUid() {
-		return Identifiers.MC_REDSTONE;
+		return JadeIds.MC_REDSTONE;
 	}
 
 }

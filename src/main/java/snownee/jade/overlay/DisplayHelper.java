@@ -16,7 +16,8 @@ import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat.Mode;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.vertex.VertexFormat;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -118,49 +119,37 @@ public class DisplayHelper implements IDisplayHelper {
 		uMax = uMax - (maskRight / 16F * (uMax - uMin));
 		vMax = vMax - (maskTop / 16F * (vMax - vMin));
 
-		Tesselator tessellator = Tesselator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBuilder();
-		RenderSystem.setShader(GameRenderer::getPositionTexShader);
-		bufferBuilder.begin(Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-		bufferBuilder.vertex(matrix, xCoord, yCoord + 16, zLevel).uv(uMin, vMax).endVertex();
-		bufferBuilder.vertex(matrix, xCoord + 16 - maskRight, yCoord + 16, zLevel).uv(uMax, vMax).endVertex();
-		bufferBuilder.vertex(matrix, xCoord + 16 - maskRight, yCoord + maskTop, zLevel).uv(uMax, vMin).endVertex();
-		bufferBuilder.vertex(matrix, xCoord, yCoord + maskTop, zLevel).uv(uMin, vMin).endVertex();
-		BufferUploader.drawWithShader(bufferBuilder.end());
+		BufferBuilder buffer = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+		buffer.addVertex(matrix, xCoord, yCoord + 16, zLevel).setUv(uMin, vMax);
+		buffer.addVertex(matrix, xCoord + 16 - maskRight, yCoord + 16, zLevel).setUv(uMax, vMax);
+		buffer.addVertex(matrix, xCoord + 16 - maskRight, yCoord + maskTop, zLevel).setUv(uMax, vMin);
+		buffer.addVertex(matrix, xCoord, yCoord + maskTop, zLevel).setUv(uMin, vMin);
+		BufferUploader.drawWithShader(buffer.buildOrThrow());
 	}
 
 	public static void fill(GuiGraphics guiGraphics, float minX, float minY, float maxX, float maxY, int color) {
-		fill(guiGraphics.pose().last().pose(), minX, minY, maxX, maxY, color);
+		fill(guiGraphics, RenderType.gui(), minX, minY, maxX, maxY, color);
 	}
 
-	private static void fill(Matrix4f matrix, float minX, float minY, float maxX, float maxY, int color) {
+	public static void fill(GuiGraphics guiGraphics, RenderType renderType, float minX, float minY, float maxX, float maxY, int color) {
+		Matrix4f matrix = guiGraphics.pose().last().pose();
 		if (minX < maxX) {
 			float i = minX;
 			minX = maxX;
 			maxX = i;
 		}
-
 		if (minY < maxY) {
 			float j = minY;
 			minY = maxY;
 			maxY = j;
 		}
-
-		float f3 = (color >> 24 & 255) / 255.0F * OverlayRenderer.alpha;
-		float f = (color >> 16 & 255) / 255.0F;
-		float f1 = (color >> 8 & 255) / 255.0F;
-		float f2 = (color & 255) / 255.0F;
-		BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
-		RenderSystem.enableBlend();
-		RenderSystem.defaultBlendFunc();
-		RenderSystem.setShader(GameRenderer::getPositionColorShader);
-		bufferbuilder.begin(Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-		bufferbuilder.vertex(matrix, minX, maxY, 0.0F).color(f, f1, f2, f3).endVertex();
-		bufferbuilder.vertex(matrix, maxX, maxY, 0.0F).color(f, f1, f2, f3).endVertex();
-		bufferbuilder.vertex(matrix, maxX, minY, 0.0F).color(f, f1, f2, f3).endVertex();
-		bufferbuilder.vertex(matrix, minX, minY, 0.0F).color(f, f1, f2, f3).endVertex();
-		BufferUploader.drawWithShader(bufferbuilder.end());
-		RenderSystem.disableBlend();
+		color = IWailaConfig.IConfigOverlay.applyAlpha(color, OverlayRenderer.alpha);
+		VertexConsumer buffer = guiGraphics.bufferSource().getBuffer(renderType);
+		buffer.addVertex(matrix, minX, maxY, 0.0F).setColor(color);
+		buffer.addVertex(matrix, maxX, maxY, 0.0F).setColor(color);
+		buffer.addVertex(matrix, maxX, minY, 0.0F).setColor(color);
+		buffer.addVertex(matrix, minX, minY, 0.0F).setColor(color);
+		guiGraphics.flush();
 	}
 
 	public static boolean enableBetterTextShadow() {
@@ -204,33 +193,21 @@ public class DisplayHelper implements IDisplayHelper {
 		float zLevel = 0.0F;
 		Matrix4f matrix = guiGraphics.pose().last().pose();
 
-		float f = (startColor >> 24 & 255) / 255.0F * opacity();
-		float f1 = (startColor >> 16 & 255) / 255.0F;
-		float f2 = (startColor >> 8 & 255) / 255.0F;
-		float f3 = (startColor & 255) / 255.0F;
-		float f4 = (endColor >> 24 & 255) / 255.0F * opacity();
-		float f5 = (endColor >> 16 & 255) / 255.0F;
-		float f6 = (endColor >> 8 & 255) / 255.0F;
-		float f7 = (endColor & 255) / 255.0F;
-		RenderSystem.enableBlend();
-		RenderSystem.defaultBlendFunc();
-		RenderSystem.setShader(GameRenderer::getPositionColorShader);
-		Tesselator tessellator = Tesselator.getInstance();
-		BufferBuilder buffer = tessellator.getBuilder();
-		buffer.begin(Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+		startColor = IWailaConfig.IConfigOverlay.applyAlpha(startColor, opacity());
+		endColor = IWailaConfig.IConfigOverlay.applyAlpha(endColor, opacity());
+		VertexConsumer buffer = guiGraphics.bufferSource().getBuffer(RenderType.gui());
 		if (horizontal) {
-			buffer.vertex(matrix, left + width, top, zLevel).color(f5, f6, f7, f4).endVertex();
-			buffer.vertex(matrix, left, top, zLevel).color(f1, f2, f3, f).endVertex();
-			buffer.vertex(matrix, left, top + height, zLevel).color(f1, f2, f3, f).endVertex();
-			buffer.vertex(matrix, left + width, top + height, zLevel).color(f5, f6, f7, f4).endVertex();
+			buffer.addVertex(matrix, left + width, top, zLevel).setColor(endColor);
+			buffer.addVertex(matrix, left, top, zLevel).setColor(startColor);
+			buffer.addVertex(matrix, left, top + height, zLevel).setColor(startColor);
+			buffer.addVertex(matrix, left + width, top + height, zLevel).setColor(endColor);
 		} else {
-			buffer.vertex(matrix, left + width, top, zLevel).color(f1, f2, f3, f).endVertex();
-			buffer.vertex(matrix, left, top, zLevel).color(f1, f2, f3, f).endVertex();
-			buffer.vertex(matrix, left, top + height, zLevel).color(f5, f6, f7, f4).endVertex();
-			buffer.vertex(matrix, left + width, top + height, zLevel).color(f5, f6, f7, f4).endVertex();
+			buffer.addVertex(matrix, left + width, top, zLevel).setColor(startColor);
+			buffer.addVertex(matrix, left, top, zLevel).setColor(startColor);
+			buffer.addVertex(matrix, left, top + height, zLevel).setColor(endColor);
+			buffer.addVertex(matrix, left + width, top + height, zLevel).setColor(endColor);
 		}
-		BufferUploader.drawWithShader(buffer.end());
-		RenderSystem.disableBlend();
+		guiGraphics.flush();
 	}
 
 	@Override
@@ -300,7 +277,11 @@ public class DisplayHelper implements IDisplayHelper {
 			int color,
 			float scaledAmount,
 			TextureAtlasSprite sprite) {
+		if (tiledWidth == 0 || tiledHeight == 0 || scaledAmount == 0) {
+			return;
+		}
 		RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
+		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 		Matrix4f matrix = guiGraphics.pose().last().pose();
 		setGLColorFromInt(color);
 		RenderSystem.enableBlend();
@@ -326,6 +307,7 @@ public class DisplayHelper implements IDisplayHelper {
 				}
 			}
 		}
+
 		RenderSystem.setShaderColor(1, 1, 1, 1);
 		RenderSystem.disableBlend();
 	}

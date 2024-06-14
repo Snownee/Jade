@@ -1,16 +1,16 @@
 {
-  "required": true,
-  "package": "snownee.jade.mixin",
-  "compatibilityLevel": "JAVA_16",
-  "mixins": [
-  ],
-  "client": [
-    "FontMixin",
-    "FullTextSearchTreeMixin",
-    "StringRenderOutputMixin"
-  ],
-  "injectors": {
-    "defaultRequire": 1
-  },
-  "minVersion": "0.8"
+	"required": true,
+	"package": "snownee.jade.mixin",
+	"compatibilityLevel": "JAVA_16",
+	"mixins": [
+	],
+	"client": [
+		"FontMixin",
+		"SessionSearchTreesMixin",
+		"StringRenderOutputMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"minVersion": "0.8"
 }

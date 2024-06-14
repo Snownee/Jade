@@ -26,12 +26,11 @@ import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.IToggleableProvider;
 import snownee.jade.api.ITooltip;
-import snownee.jade.api.Identifiers;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.impl.WailaClientRegistration;
-import snownee.jade.util.ServerDataUtil;
 
 public abstract class ObjectNameProvider implements IToggleableProvider {
 	private static final MapCodec<Component> GIVEN_NAME_CODEC = ComponentSerialization.CODEC.fieldOf("given_name");
@@ -76,7 +75,7 @@ public abstract class ObjectNameProvider implements IToggleableProvider {
 
 		@Override
 		public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-			Component name = ServerDataUtil.read(accessor.getServerData(), GIVEN_NAME_CODEC).orElse(null);
+			Component name = accessor.readData(GIVEN_NAME_CODEC).orElse(null);
 			if (name == null && accessor.isFakeBlock()) {
 				name = accessor.getFakeBlock().getHoverName();
 			}
@@ -107,7 +106,7 @@ public abstract class ObjectNameProvider implements IToggleableProvider {
 			BlockEntity blockEntity = accessor.getBlockEntity();
 			if (blockEntity instanceof Nameable nameable) {
 				Component name = null;
-				if (blockEntity instanceof ChestBlockEntity && accessor.getBlock() instanceof ChestBlock chestBlock) {
+				if (blockEntity instanceof ChestBlockEntity && accessor.getBlock() instanceof ChestBlock) {
 					MenuProvider menuProvider = accessor.getBlockState().getMenuProvider(accessor.getLevel(), accessor.getPosition());
 					if (menuProvider != null) {
 						name = menuProvider.getDisplayName();
@@ -116,7 +115,7 @@ public abstract class ObjectNameProvider implements IToggleableProvider {
 					name = nameable.getDisplayName();
 				}
 				if (name != null) {
-					ServerDataUtil.write(data, GIVEN_NAME_CODEC, name);
+					accessor.writeData(GIVEN_NAME_CODEC, name);
 				}
 			}
 		}
@@ -139,7 +138,7 @@ public abstract class ObjectNameProvider implements IToggleableProvider {
 
 	@Override
 	public ResourceLocation getUid() {
-		return Identifiers.CORE_OBJECT_NAME;
+		return JadeIds.CORE_OBJECT_NAME;
 	}
 
 	@Override

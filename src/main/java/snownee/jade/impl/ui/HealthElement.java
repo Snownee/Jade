@@ -9,7 +9,7 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec2;
-import snownee.jade.api.Identifiers;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.IDisplayHelper;
@@ -20,12 +20,12 @@ import snownee.jade.track.HealthTrackInfo;
 
 public class HealthElement extends Element {
 
-	public static final ResourceLocation HEART = new ResourceLocation("hud/heart/full");
-	public static final ResourceLocation HEART_BLINKING = new ResourceLocation("hud/heart/full_blinking");
-	public static final ResourceLocation HALF_HEART = new ResourceLocation("hud/heart/half");
-	public static final ResourceLocation HALF_HEART_BLINKING = new ResourceLocation("hud/heart/half_blinking");
-	public static final ResourceLocation EMPTY_HEART = new ResourceLocation("hud/heart/container");
-	public static final ResourceLocation EMPTY_HEART_BLINKING = new ResourceLocation("hud/heart/container_blinking");
+	public static final ResourceLocation HEART = ResourceLocation.withDefaultNamespace("hud/heart/full");
+	public static final ResourceLocation HEART_BLINKING = ResourceLocation.withDefaultNamespace("hud/heart/full_blinking");
+	public static final ResourceLocation HALF_HEART = ResourceLocation.withDefaultNamespace("hud/heart/half");
+	public static final ResourceLocation HALF_HEART_BLINKING = ResourceLocation.withDefaultNamespace("hud/heart/half_blinking");
+	public static final ResourceLocation EMPTY_HEART = ResourceLocation.withDefaultNamespace("hud/heart/container");
+	public static final ResourceLocation EMPTY_HEART_BLINKING = ResourceLocation.withDefaultNamespace("hud/heart/container_blinking");
 
 	private final float health;
 	private String text;
@@ -36,15 +36,15 @@ public class HealthElement extends Element {
 
 	public HealthElement(float maxHealth, float health) {
 		this.health = health;
-		if (maxHealth > PluginConfig.INSTANCE.getInt(Identifiers.MC_ENTITY_HEALTH_MAX_FOR_RENDER)) {
-			if (!PluginConfig.INSTANCE.get(Identifiers.MC_ENTITY_HEALTH_SHOW_FRACTIONS)) {
+		if (maxHealth > PluginConfig.INSTANCE.getInt(JadeIds.MC_ENTITY_HEALTH_MAX_FOR_RENDER)) {
+			if (!PluginConfig.INSTANCE.get(JadeIds.MC_ENTITY_HEALTH_SHOW_FRACTIONS)) {
 				maxHealth = Mth.ceil(maxHealth);
 				health = Mth.ceil(health);
 			}
 			text = String.format("%s/%s", DisplayHelper.dfCommas.format(health), DisplayHelper.dfCommas.format(maxHealth));
 		} else {
 			maxHealth *= 0.5f;
-			int maxHeartsPerLine = PluginConfig.INSTANCE.getInt(Identifiers.MC_ENTITY_HEALTH_ICONS_PER_LINE);
+			int maxHeartsPerLine = PluginConfig.INSTANCE.getInt(JadeIds.MC_ENTITY_HEALTH_ICONS_PER_LINE);
 			iconCount = Mth.ceil(maxHealth);
 			iconsPerLine = Math.min(maxHeartsPerLine, iconCount);
 			lineCount = Mth.ceil(maxHealth / maxHeartsPerLine);
@@ -73,7 +73,7 @@ public class HealthElement extends Element {
 		}
 		if (track != null) {
 			track.setHealth(this.health);
-			track.update(Minecraft.getInstance().getDeltaFrameTime());
+			track.update(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks());
 			lastHealth = track.getLastHealth() * 0.5F;
 			blink = track.isBlinking();
 		}

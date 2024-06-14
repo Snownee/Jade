@@ -34,7 +34,7 @@ import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IComponentProvider;
 import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
-import snownee.jade.api.Identifiers;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
@@ -127,7 +127,7 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 				}
 			}
 			if (showName.isTrue()) {
-				showName.setValue(totalSize < PluginConfig.INSTANCE.getInt(Identifiers.UNIVERSAL_ITEM_STORAGE_SHOW_NAME_AMOUNT));
+				showName.setValue(totalSize < PluginConfig.INSTANCE.getInt(JadeIds.UNIVERSAL_ITEM_STORAGE_SHOW_NAME_AMOUNT));
 			}
 		}
 
@@ -156,8 +156,8 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 			}
 			int drawnCount = 0;
 			int realSize = PluginConfig.INSTANCE.getInt(accessor.showDetails() ?
-					Identifiers.UNIVERSAL_ITEM_STORAGE_DETAILED_AMOUNT :
-					Identifiers.UNIVERSAL_ITEM_STORAGE_NORMAL_AMOUNT);
+					JadeIds.UNIVERSAL_ITEM_STORAGE_DETAILED_AMOUNT :
+					JadeIds.UNIVERSAL_ITEM_STORAGE_NORMAL_AMOUNT);
 			realSize = Math.min(group.views.size(), realSize);
 			List<IElement> elements = Lists.newArrayList();
 			for (int i = 0; i < realSize; i++) {
@@ -168,7 +168,7 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 				}
 				if (i > 0 && (
 						showName.isTrue() ||
-								drawnCount >= PluginConfig.INSTANCE.getInt(Identifiers.UNIVERSAL_ITEM_STORAGE_ITEMS_PER_LINE))) {
+								drawnCount >= PluginConfig.INSTANCE.getInt(JadeIds.UNIVERSAL_ITEM_STORAGE_ITEMS_PER_LINE))) {
 					theTooltip.add(elements);
 					theTooltip.setLineMargin(-1, ScreenDirection.DOWN, -1);
 					elements.clear();
@@ -262,9 +262,9 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 		}
 		int amount;
 		if (accessor.showDetails()) {
-			amount = IWailaConfig.get().getPlugin().getInt(Identifiers.UNIVERSAL_ITEM_STORAGE_DETAILED_AMOUNT);
+			amount = IWailaConfig.get().getPlugin().getInt(JadeIds.UNIVERSAL_ITEM_STORAGE_DETAILED_AMOUNT);
 		} else {
-			amount = IWailaConfig.get().getPlugin().getInt(Identifiers.UNIVERSAL_ITEM_STORAGE_NORMAL_AMOUNT);
+			amount = IWailaConfig.get().getPlugin().getInt(JadeIds.UNIVERSAL_ITEM_STORAGE_NORMAL_AMOUNT);
 		}
 		if (amount == 0) {
 			return false;
@@ -279,7 +279,7 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 
 	@Override
 	public ResourceLocation getUid() {
-		return Identifiers.UNIVERSAL_ITEM_STORAGE;
+		return JadeIds.UNIVERSAL_ITEM_STORAGE;
 	}
 
 	@Override
@@ -292,7 +292,7 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 
 		@Override
 		public ResourceLocation getUid() {
-			return Identifiers.UNIVERSAL_ITEM_STORAGE_DEFAULT;
+			return JadeIds.UNIVERSAL_ITEM_STORAGE_DEFAULT;
 		}
 
 		@Nullable

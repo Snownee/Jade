@@ -9,7 +9,7 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec2;
-import snownee.jade.api.Identifiers;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.IDisplayHelper;
@@ -18,9 +18,9 @@ import snownee.jade.overlay.DisplayHelper;
 
 public class ArmorElement extends Element {
 
-	public static final ResourceLocation ARMOR = new ResourceLocation("hud/armor_full");
-	public static final ResourceLocation HALF_ARMOR = new ResourceLocation("hud/armor_half");
-	public static final ResourceLocation EMPTY_ARMOR = new ResourceLocation("hud/armor_empty");
+	public static final ResourceLocation ARMOR = ResourceLocation.withDefaultNamespace("hud/armor_full");
+	public static final ResourceLocation HALF_ARMOR = ResourceLocation.withDefaultNamespace("hud/armor_half");
+	public static final ResourceLocation EMPTY_ARMOR = ResourceLocation.withDefaultNamespace("hud/armor_empty");
 
 	private final float armor;
 	private String text;
@@ -30,14 +30,14 @@ public class ArmorElement extends Element {
 
 	public ArmorElement(float armor) {
 		this.armor = armor;
-		if (armor > PluginConfig.INSTANCE.getInt(Identifiers.MC_ENTITY_ARMOR_MAX_FOR_RENDER)) {
-			if (!PluginConfig.INSTANCE.get(Identifiers.MC_ENTITY_HEALTH_SHOW_FRACTIONS)) {
+		if (armor > PluginConfig.INSTANCE.getInt(JadeIds.MC_ENTITY_ARMOR_MAX_FOR_RENDER)) {
+			if (!PluginConfig.INSTANCE.get(JadeIds.MC_ENTITY_HEALTH_SHOW_FRACTIONS)) {
 				armor = Mth.ceil(armor);
 			}
 			text = DisplayHelper.dfCommas.format(armor);
 		} else {
 			armor *= 0.5F;
-			int maxHeartsPerLine = PluginConfig.INSTANCE.getInt(Identifiers.MC_ENTITY_HEALTH_ICONS_PER_LINE);
+			int maxHeartsPerLine = PluginConfig.INSTANCE.getInt(JadeIds.MC_ENTITY_HEALTH_ICONS_PER_LINE);
 			iconCount = Mth.ceil(armor);
 			iconsPerLine = Math.min(maxHeartsPerLine, iconCount);
 			lineCount = Mth.ceil(armor / maxHeartsPerLine);

@@ -7,7 +7,7 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.ClipContext;
-import snownee.jade.Internals;
+import snownee.jade.JadeInternals;
 import snownee.jade.api.SimpleStringRepresentable;
 import snownee.jade.api.theme.Theme;
 
@@ -15,7 +15,7 @@ import snownee.jade.api.theme.Theme;
 public interface IWailaConfig {
 
 	static IWailaConfig get() {
-		return Internals.getWailaConfig();
+		return JadeInternals.getWailaConfig();
 	}
 
 	IConfigGeneral getGeneral();

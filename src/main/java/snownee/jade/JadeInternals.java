@@ -8,7 +8,7 @@ import snownee.jade.impl.theme.ThemeHelper;
 import snownee.jade.impl.ui.ElementHelper;
 import snownee.jade.overlay.DisplayHelper;
 
-public final class Internals {
+public final class JadeInternals {
 
 	public static IWailaConfig getWailaConfig() {
 		return Jade.CONFIG.get();

@@ -30,7 +30,6 @@ import net.minecraft.world.Container;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.horse.AbstractChestedHorse;
-import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -357,10 +356,6 @@ public final class CommonProxy {
 
 	public static ResourceLocation getId(BlockEntityType<?> blockEntityType) {
 		return BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(blockEntityType);
-	}
-
-	public static ResourceLocation getId(PaintingVariant motive) {
-		return BuiltInRegistries.PAINTING_VARIANT.getKey(motive);
 	}
 
 	public static String getPlatformIdentifier() {

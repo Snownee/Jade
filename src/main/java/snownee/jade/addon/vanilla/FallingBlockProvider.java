@@ -8,7 +8,7 @@ import net.minecraft.world.item.ItemStack;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
-import snownee.jade.api.Identifiers;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.IElement;
@@ -22,7 +22,7 @@ public enum FallingBlockProvider implements IEntityComponentProvider {
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		FallingBlockEntity entity = (FallingBlockEntity) accessor.getEntity();
 		MutableComponent title = IThemeHelper.get().title(I18n.get(entity.getBlockState().getBlock().getDescriptionId()));
-		tooltip.replace(Identifiers.CORE_OBJECT_NAME, title);
+		tooltip.replace(JadeIds.CORE_OBJECT_NAME, title);
 	}
 
 	@Override
@@ -37,7 +37,7 @@ public enum FallingBlockProvider implements IEntityComponentProvider {
 
 	@Override
 	public ResourceLocation getUid() {
-		return Identifiers.MC_FALLING_BLOCK;
+		return JadeIds.MC_FALLING_BLOCK;
 	}
 
 	@Override

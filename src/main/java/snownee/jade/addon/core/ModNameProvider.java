@@ -10,7 +10,7 @@ import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.IToggleableProvider;
 import snownee.jade.api.ITooltip;
-import snownee.jade.api.Identifiers;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
@@ -63,7 +63,7 @@ public abstract class ModNameProvider implements IToggleableProvider {
 
 	@Override
 	public ResourceLocation getUid() {
-		return Identifiers.CORE_MOD_NAME;
+		return JadeIds.CORE_MOD_NAME;
 	}
 
 	@Override

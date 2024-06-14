@@ -15,7 +15,7 @@ import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.IToggleableProvider;
 import snownee.jade.api.ITooltip;
-import snownee.jade.api.Identifiers;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.IElementHelper;
@@ -74,11 +74,11 @@ public abstract class DistanceProvider implements IToggleableProvider {
 	}
 
 	public void append(ITooltip tooltip, Accessor<?> accessor, BlockPos pos, IPluginConfig config) {
-		boolean distance = config.get(Identifiers.CORE_DISTANCE);
+		boolean distance = config.get(JadeIds.CORE_DISTANCE);
 		String distanceVal = distance ? distance(accessor) : null;
 		String distanceMsg = distance ? I18n.get("narration.jade.distance", distanceVal) : null;
-		if (config.get(Identifiers.CORE_COORDINATES)) {
-			if (config.get(Identifiers.CORE_REL_COORDINATES) && Screen.hasControlDown()) {
+		if (config.get(JadeIds.CORE_COORDINATES)) {
+			if (config.get(JadeIds.CORE_REL_COORDINATES) && Screen.hasControlDown()) {
 				xyz(tooltip, pos.subtract(BlockPos.containing(accessor.getPlayer().getEyePosition())));
 			} else {
 				xyz(tooltip, pos);
@@ -93,7 +93,7 @@ public abstract class DistanceProvider implements IToggleableProvider {
 
 	@Override
 	public ResourceLocation getUid() {
-		return Identifiers.CORE_DISTANCE;
+		return JadeIds.CORE_DISTANCE;
 	}
 
 	@Override
