@@ -146,17 +146,15 @@ public class HarvestToolProvider implements IBlockComponentProvider, ResourceMan
 			return List.of();
 		}
 
-		int offsetY = 0;
-		if (!config.get(JadeIds.MC_HARVEST_TOOL_NEW_LINE)) {
-			offsetY = -3;
-		}
+		int offsetY = -3;
+		boolean newLine = config.get(JadeIds.MC_HARVEST_TOOL_NEW_LINE);
 		List<IElement> elements = Lists.newArrayList();
 		for (ItemStack tool : tools) {
 			elements.add(IElementHelper.get().item(tool, 0.75f).translate(new Vec2(-1, offsetY)).size(ITEM_SIZE).message(null));
 		}
 
 		if (!elements.isEmpty()) {
-			elements.addFirst( IElementHelper.get().spacer(5, 0));
+			elements.addFirst(IElementHelper.get().spacer(newLine ? -2 : 5, newLine ? 10 : 0));
 			ItemStack held = accessor.getPlayer().getMainHandItem();
 			boolean canHarvest = held.isCorrectToolForDrops(state);
 			if (CommonProxy.isShearable(state) && CommonProxy.isShears(held)) {
