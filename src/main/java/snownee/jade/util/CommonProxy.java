@@ -205,7 +205,7 @@ public final class CommonProxy {
 	}
 
 	public static boolean isShears(ItemStack tool) {
-		return tool.is(Tags.Items.TOOLS_SHEARS);
+		return tool.is(Tags.Items.TOOLS_SHEAR);
 	}
 
 	public static boolean isShearable(BlockState state) {
