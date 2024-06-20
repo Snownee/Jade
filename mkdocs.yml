@@ -27,11 +27,12 @@ nav:
       - '1.20.5+': datapacks/block21.md
       - '1.18-1.20.4': datapacks/block.md
   - 'Upgrading Guides':
-      - '1.20.4 -> 1.20.5': changes/1205.md
-      - '1.20.1 -> 1.20.2': changes/1202.md
+      - '1.20 -> 1.21': changes/121.md
       - '1.19 -> 1.20': changes/120.md
       - '1.18 -> 1.19': changes/119.md
       - '1.16 -> 1.17': changes/117.md
+      - '1.20.4 -> 1.20.5': changes/1205.md
+      - '1.20.1 -> 1.20.2': changes/1202.md
 
 theme:
   name: material
