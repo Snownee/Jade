@@ -24,8 +24,8 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.HitResult.Type;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import snownee.jade.Jade;
 import snownee.jade.api.Accessor;
+import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.WailaClientRegistration;
@@ -112,7 +112,7 @@ public class RayTracing {
 			}
 		}
 
-		float extendedReach = Jade.CONFIG.get().getGeneral().getExtendedReach();
+		float extendedReach = IWailaConfig.get().getGeneral().getExtendedReach();
 		double blockReach = viewPlayer.blockInteractionRange() + extendedReach;
 		double entityReach = viewPlayer.entityInteractionRange() + extendedReach;
 		target = rayTrace(viewEntity, blockReach, entityReach, mc.getTimer().getGameTimeDeltaPartialTick(true));
@@ -141,8 +141,9 @@ public class RayTracing {
 
 		BlockState eyeBlock = world.getBlockState(BlockPos.containing(eyePosition));
 		ClipContext.Fluid fluidView = ClipContext.Fluid.NONE;
+		IWailaConfig.FluidMode fluidMode = IWailaConfig.get().getGeneral().getDisplayFluids();
 		if (eyeBlock.getFluidState().isEmpty()) {
-			fluidView = Jade.CONFIG.get().getGeneral().getDisplayFluids().ctx;
+			fluidView = fluidMode.ctx;
 		}
 		CollisionContext collisionContext = CollisionContext.of(entity);
 		ClipContext context = new ClipContext(eyePosition, traceEnd, ClipContext.Block.OUTLINE, fluidView, collisionContext);
@@ -162,9 +163,21 @@ public class RayTracing {
 		if (blockResult.getType() == Type.BLOCK) {
 			BlockState state = wrapBlock(world, blockResult, collisionContext);
 			if (WailaClientRegistration.instance().shouldHide(state)) {
+				blockResult = null;
+			}
+		} else if (blockResult.getType() == Type.MISS) {
+			blockResult = null;
+		}
+		if (blockResult == null && fluidMode == IWailaConfig.FluidMode.FALLBACK) {
+			context = new ClipContext(eyePosition, traceEnd, ClipContext.Block.OUTLINE, ClipContext.Fluid.ANY, collisionContext);
+			blockResult = world.clip(context);
+			BlockState state = wrapBlock(world, blockResult, collisionContext);
+			if (WailaClientRegistration.instance().shouldHide(state)) {
 				return null;
 			}
+			return blockResult;
 		}
+
 		return blockResult;
 	}
 

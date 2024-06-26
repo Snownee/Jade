@@ -66,6 +66,8 @@
 	"config.jade.display_fluids_source_only": "Source Only",
 	"config.jade.display_fluids_any": "Any",
 	"config.jade.display_fluids_none": "None",
+	"config.jade.display_fluids_fallback": "Fallback",
+	"config.jade.display_fluids_fallback_desc": "Only show fluid when there is no other target.",
 	"config.jade.display_mode": "Display Mode",
 	"config.jade.display_mode_desc": "The behavior of the tooltip in the usual situation and how the ${SHOW_DETAILS} works.",
 	"config.jade.display_mode_extra_msg": "toggle,hold,lite",
