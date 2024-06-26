@@ -110,6 +110,7 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 		}
 		options.choices("hide_from_debug", general.shouldHideFromDebug(), general::setHideFromDebug);
 		options.choices("hide_from_tab_list", general.shouldHideFromTabList(), general::setHideFromTabList);
+		options.choices("hide_from_guis", general.shouldHideFromGUIs(), general::setHideFromGUIs);
 		options.choices("boss_bar_overlap", general.getBossBarOverlapMode(), general::setBossBarOverlapMode);
 		options.slider("reach_distance", general.getExtendedReach(), general::setExtendedReach, 0, 20, f -> Mth.floor(f * 2) / 2F);
 

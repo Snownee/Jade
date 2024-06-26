@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Strings;
@@ -69,6 +70,7 @@ import snownee.jade.addon.harvest.ToolHandler;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.JadeIds;
+import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.command.JadeClientCommand;
@@ -209,8 +211,17 @@ public final class ClientProxy implements ClientModInitializer {
 		return Screen.hasShiftDown() || JadeClient.showDetails.isDown();
 	}
 
-	public static boolean shouldShowWithOverlay(Minecraft mc, @Nullable Screen screen) {
-		return screen == null || screen instanceof BaseOptionsScreen || screen instanceof ChatScreen;
+	public static boolean shouldShowWithGui(Minecraft mc, @Nullable Screen screen) {
+		return screen == null || shouldShowBeforeGui(mc, screen) || shouldShowAfterGui(mc, screen);
+	}
+
+	public static boolean shouldShowAfterGui(Minecraft mc, @NotNull Screen screen) {
+		return screen instanceof BaseOptionsScreen || screen instanceof ChatScreen;
+	}
+
+	public static boolean shouldShowBeforeGui(Minecraft mc, @NotNull Screen screen) {
+		IWailaConfig.IConfigGeneral config = IWailaConfig.get().getGeneral();
+		return !config.shouldHideFromGUIs();
 	}
 
 	public static void getFluidSpriteAndColor(JadeFluidObject fluid, BiConsumer<@Nullable TextureAtlasSprite, Integer> consumer) {
@@ -266,8 +277,12 @@ public final class ClientProxy implements ClientModInitializer {
 			}
 		});
 		ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
-			if (shouldShowWithOverlay(client, screen)) {
+			if (shouldShowAfterGui(client, screen)) {
 				ScreenEvents.afterRender(screen).register((screen1, guiGraphics, mouseX, mouseY, tickDelta) -> {
+					onRenderTick(guiGraphics, tickDelta);
+				});
+			} else if (shouldShowBeforeGui(client, screen)) {
+				ScreenEvents.beforeRender(screen).register((screen1, guiGraphics, mouseX, mouseY, tickDelta) -> {
 					onRenderTick(guiGraphics, tickDelta);
 				});
 			}

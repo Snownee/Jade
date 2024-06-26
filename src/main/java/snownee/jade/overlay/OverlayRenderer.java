@@ -8,6 +8,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
@@ -72,7 +73,7 @@ public class OverlayRenderer {
 			return false;
 		}
 
-		if (!ClientProxy.shouldShowWithOverlay(mc, mc.screen)) {
+		if (!ClientProxy.shouldShowWithGui(mc, mc.screen)) {
 			return false;
 		}
 
@@ -158,7 +159,11 @@ public class OverlayRenderer {
 			alpha = show ? 1 : 0;
 		}
 
-		if (alpha < 0.1F || root == null || !shouldShowImmediately(root)) {
+		if (root == null) {
+			return;
+		}
+
+		if (alpha < 0.1F || !shouldShowImmediately(root)) {
 			if (!PreviewOptionsScreen.isAdjustingPosition()) {
 				lingerTooltip = null;
 				rect.rect.setWidth(0); // mark dirty
@@ -183,7 +188,16 @@ public class OverlayRenderer {
 
 		PoseStack matrixStack = guiGraphics.pose();
 		matrixStack.pushPose();
-		float z = Minecraft.getInstance().screen == null ? 1 : 100;
+		Minecraft mc = Minecraft.getInstance();
+		Screen screen = mc.screen;
+		float z;
+		if (screen == null) {
+			z = 1;
+		} else if (ClientProxy.shouldShowAfterGui(mc, screen)) {
+			z = 100;
+		} else {
+			z = -999;
+		}
 		matrixStack.translate(rect.rect.getX(), rect.rect.getY(), z);
 
 		float scale = rect.scale;
