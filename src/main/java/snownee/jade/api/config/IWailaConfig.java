@@ -39,7 +39,10 @@ public interface IWailaConfig {
 	}
 
 	enum FluidMode implements SimpleStringRepresentable {
-		NONE(ClipContext.Fluid.NONE), ANY(ClipContext.Fluid.ANY), SOURCE_ONLY(ClipContext.Fluid.SOURCE_ONLY);
+		NONE(ClipContext.Fluid.NONE),
+		ANY(ClipContext.Fluid.ANY),
+		SOURCE_ONLY(ClipContext.Fluid.SOURCE_ONLY),
+		FALLBACK(ClipContext.Fluid.NONE);
 
 		public final ClipContext.Fluid ctx;
 
