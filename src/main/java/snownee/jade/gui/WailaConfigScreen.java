@@ -123,6 +123,10 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 
 		ConfigOverlay overlay = Jade.CONFIG.get().getOverlay();
 		options.title("overlay");
+		Component adjust = Component.translatable(OptionsList.Entry.makeKey("overlay_pos.adjust"));
+		options.add(new OptionButton(Component.translatable(OptionsList.Entry.makeKey("overlay_pos")), Button.builder(adjust, w -> {
+			startAdjustingPosition();
+		}).size(100, 20)));
 		options.choices(
 				"overlay_theme",
 				overlay.getTheme().id,
@@ -150,10 +154,6 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 				0.2f,
 				2,
 				FloatUnaryOperator.identity()));
-		Component adjust = Component.translatable(OptionsList.Entry.makeKey("overlay_pos.adjust"));
-		options.add(new OptionButton(Component.translatable(OptionsList.Entry.makeKey("overlay_pos")), Button.builder(adjust, w -> {
-			startAdjustingPosition();
-		}).size(100, 20)));
 		options.choices("display_item", overlay.getIconMode(), overlay::setIconMode);
 		options.choices("animation", overlay.getAnimation(), overlay::setAnimation);
 
