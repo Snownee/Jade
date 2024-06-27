@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
+import java.util.function.BiConsumer;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -23,6 +24,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.block.BlockPickInteractionAware;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.entity.EntityPickInteractionAware;
+import net.fabricmc.fabric.api.event.lifecycle.v1.CommonLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
@@ -45,6 +47,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -88,6 +91,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import snownee.jade.Jade;
+import snownee.jade.addon.harvest.HarvestToolProvider;
 import snownee.jade.addon.universal.ItemCollector;
 import snownee.jade.addon.universal.ItemIterator;
 import snownee.jade.addon.universal.ItemStorageProvider;
@@ -131,12 +135,7 @@ public final class CommonProxy implements ModInitializer {
 	}
 
 	public static boolean isShears(ItemStack tool) {
-		return tool.getItem() instanceof ShearsItem || tool.is(ConventionalItemTags.SHEARS_TOOLS);
-	}
-
-	public static boolean isShearable(BlockState state) {
-		return false;
-//		return state.is(FabricMineableTags.SHEARS_MINEABLE); TODO harvest tool api
+		return tool.getItem() instanceof ShearsItem || tool.is(ConventionalItemTags.SHEAR_TOOLS);
 	}
 
 	public static boolean isCorrectToolForDrops(BlockState state, Player player, Level level, BlockPos pos) {
@@ -366,10 +365,11 @@ public final class CommonProxy implements ModInitializer {
 	private static void playerJoin(ServerGamePacketListenerImpl handler, PacketSender sender, MinecraftServer server) {
 		ServerPlayer player = handler.player;
 		String configs = PluginConfig.INSTANCE.getServerConfigs();
+		List<Block> shearableBlocks = HarvestToolProvider.INSTANCE.getShearableBlocks();
 		if (!configs.isEmpty()) {
 			Jade.LOGGER.debug("Syncing config to {} ({})", player.getGameProfile().getName(), player.getGameProfile().getId());
 		}
-		ServerPlayNetworking.send(player, new ServerPingPacket(configs));
+		ServerPlayNetworking.send(player, new ServerPingPacket(configs, shearableBlocks));
 	}
 
 	public static boolean isModLoaded(String modid) {
@@ -524,6 +524,10 @@ public final class CommonProxy implements ModInitializer {
 
 	public static long blockVolume() {
 		return FluidConstants.BLOCK;
+	}
+
+	public static void registerTagsUpdatedListener(BiConsumer<RegistryAccess, Boolean> listener) {
+		CommonLifecycleEvents.TAGS_LOADED.register(listener::accept);
 	}
 
 	@Override

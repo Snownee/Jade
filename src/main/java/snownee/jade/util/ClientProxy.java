@@ -56,17 +56,13 @@ import net.minecraft.util.LazyLoadedValue;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.GameType;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import snownee.jade.JadeClient;
 import snownee.jade.addon.harvest.HarvestToolProvider;
-import snownee.jade.addon.harvest.SimpleToolHandler;
-import snownee.jade.addon.harvest.ToolHandler;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.JadeIds;
@@ -232,13 +228,6 @@ public final class ClientProxy implements ClientModInitializer {
 		TextureAtlasSprite fluidStillSprite = sprites == null ? null : sprites[0];
 		int fluidColor = handler.getColor(variant, Minecraft.getInstance().level, null);
 		consumer.accept(fluidStillSprite, fluidColor);
-	}
-
-	public static ToolHandler createSwordToolHandler() {
-		return SimpleToolHandler.create(JadeIds.JADE("sword"), false, List.of(Items.WOODEN_SWORD))
-				.addBlock(Blocks.COBWEB)
-				.addBlock(Blocks.BAMBOO);
-//				.addBlockTag(FabricMineableTags.SWORD_MINEABLE); FIXME
 	}
 
 	public static KeyMapping registerDetailsKeyBinding() {

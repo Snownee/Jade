@@ -1,45 +1,44 @@
 package snownee.jade.addon.harvest;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+
+import com.google.common.collect.Sets;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import snownee.jade.api.JadeIds;
-import snownee.jade.util.CommonProxy;
 
 public class ShearsToolHandler extends SimpleToolHandler {
 
+	private static final ShearsToolHandler INSTANCE = new ShearsToolHandler();
+
+	public static ShearsToolHandler getInstance() {
+		return INSTANCE;
+	}
+
+	private final Set<Block> shearableBlocks = Sets.newIdentityHashSet();
+
 	public ShearsToolHandler() {
-		super(JadeIds.JADE("shears"), false, List.of(Items.SHEARS.getDefaultInstance()));
-		blocks.addAll(List.of(
-				Blocks.GLOW_LICHEN,
-				Blocks.TRIPWIRE,
-				Blocks.VINE,
-				Blocks.SMALL_DRIPLEAF,
-				Blocks.DEAD_BUSH,
-				Blocks.COBWEB,
-				Blocks.SHORT_GRASS,
-				Blocks.TALL_GRASS,
-				Blocks.FERN,
-				Blocks.LARGE_FERN
-		));
-		blockTags.addAll(List.of(
-				BlockTags.WOOL,
-				BlockTags.LEAVES
-		));
+		super(JadeIds.JADE("shears"), List.of(Items.SHEARS.getDefaultInstance()), true);
 	}
 
 	@Override
 	public ItemStack test(BlockState state, Level world, BlockPos pos) {
-		if (CommonProxy.isShearable(state)) {
+		if (state.is(Blocks.TRIPWIRE) || shearableBlocks.contains(state.getBlock())) {
 			return tools.getFirst();
 		}
 		return super.test(state, world, pos);
 	}
 
+	public void setShearableBlocks(Collection<Block> blocks) {
+		shearableBlocks.clear();
+		shearableBlocks.addAll(blocks);
+	}
 }
