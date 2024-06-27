@@ -34,15 +34,23 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 		return Minecraft.getInstance().screen instanceof PreviewOptionsScreen screen && screen.adjustingPosition;
 	}
 
-	private static float calculateAnchor(float center, float size) {
+	private static float calculateAnchor(float center, float size, int rectSize) {
 		float anchor = center / size;
 		if (anchor < 0.25F) {
 			return 0;
-		} else if (anchor < 0.75F) {
-			return 0.5F;
-		} else {
+		}
+		if (anchor > 0.75F) {
 			return 1;
 		}
+		float halfRectSize = rectSize / 2F;
+		float tolerance = Math.min(15, halfRectSize / 2F - 3);
+		if (Math.abs(center + halfRectSize - size / 2F) < tolerance) {
+			return 1;
+		}
+		if (Math.abs(center - halfRectSize - size / 2F) < tolerance) {
+			return 0;
+		}
+		return 0.5F;
 	}
 
 	private static float maybeSnap(float value) {
@@ -155,11 +163,13 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 		if (adjustingPosition && adjustDragging) {
 			float centerX = (float) d - (float) dragOffsetX;
 			float centerY = (float) e - (float) dragOffsetY;
-			float anchorX = calculateAnchor(centerX, width);
-			float anchorY = calculateAnchor(centerY, height);
 			Rect2i rect = OverlayRenderer.rect.expectedRect;
-			float posX = (centerX + rect.getWidth() * (anchorX - 0.5F)) / width;
-			float posY = 1 - (centerY + rect.getHeight() * (anchorY - 0.5F)) / height;
+			int rectWidth = rect.getWidth();
+			int rectHeight = rect.getHeight();
+			float anchorX = calculateAnchor(centerX, width, rectWidth);
+			float anchorY = calculateAnchor(centerY, height, rectHeight);
+			float posX = (centerX + rectWidth * (anchorX - 0.5F)) / width;
+			float posY = 1 - (centerY + rectHeight * (anchorY - 0.5F)) / height;
 			IWailaConfig.IConfigOverlay config = IWailaConfig.get().getOverlay();
 			config.setOverlayPosX(config.tryFlip(maybeSnap(posX)));
 			config.setOverlayPosY(maybeSnap(posY));
