@@ -6,7 +6,6 @@ import java.util.function.Function;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 
-import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.ItemStack;
@@ -16,9 +15,6 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.AlternativesEntry;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
 import net.minecraft.world.level.storage.loot.entries.NestedLootTable;
-import net.minecraft.world.level.storage.loot.predicates.AnyOfCondition;
-import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.minecraft.world.level.storage.loot.predicates.MatchTool;
 import snownee.jade.Jade;
 import snownee.jade.util.CommonProxy;
 
@@ -86,25 +82,7 @@ public class LootTableMineableCollector {
 			LootTable lootTable = nestedLootTable.contents.map(lootRegistry::get, Function.identity());
 			return doLootTable(lootTable);
 		} else {
-			return isCorrectConditions(entry.conditions);
-		}
-		return false;
-	}
-
-	private boolean isCorrectConditions(List<LootItemCondition> conditions) {
-		if (conditions.size() != 1) {
-			return false;
-		}
-		LootItemCondition condition = conditions.getFirst();
-		if (condition instanceof MatchTool matchTool) {
-			ItemPredicate itemPredicate = matchTool.predicate().orElse(null);
-			return itemPredicate != null && itemPredicate.test(toolItem);
-		} else if (condition instanceof AnyOfCondition anyOfCondition) {
-			for (LootItemCondition child : anyOfCondition.terms) {
-				if (isCorrectConditions(List.of(child))) {
-					return true;
-				}
-			}
+			return CommonProxy.isCorrectConditions(entry.conditions, toolItem);
 		}
 		return false;
 	}

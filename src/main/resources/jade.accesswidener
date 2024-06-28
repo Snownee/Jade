@@ -68,10 +68,9 @@ accessible field net/minecraft/world/level/block/state/BlockBehaviour$Properties
 accessible method net/minecraft/world/level/block/FireBlock getBurnOdds (Lnet/minecraft/world/level/block/state/BlockState;)I
 accessible method net/minecraft/world/level/block/FireBlock getIgniteOdds (Lnet/minecraft/world/level/block/state/BlockState;)I
 
-accessible field net/minecraft/client/gui/components/Tooltip cachedTooltip Ljava/util/List;
-
 accessible field net/minecraft/world/level/storage/loot/LootTable pools Ljava/util/List;
 accessible field net/minecraft/world/level/storage/loot/entries/NestedLootTable contents Lcom/mojang/datafixers/util/Either;
 accessible field net/minecraft/world/level/storage/loot/predicates/CompositeLootItemCondition terms Ljava/util/List;
 accessible field net/minecraft/world/level/storage/loot/entries/CompositeEntryBase children Ljava/util/List;
 accessible field net/minecraft/world/level/storage/loot/entries/LootPoolEntryContainer conditions Ljava/util/List;
+accessible field net/minecraft/world/level/storage/loot/LootPool entries Ljava/util/List;

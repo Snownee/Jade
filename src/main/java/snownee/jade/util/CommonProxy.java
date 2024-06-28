@@ -41,6 +41,7 @@ import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.metadata.ModMetadata;
+import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
@@ -88,6 +89,9 @@ import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.entity.SkullBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.storage.loot.predicates.AnyOfCondition;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+import net.minecraft.world.level.storage.loot.predicates.MatchTool;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import snownee.jade.Jade;
@@ -528,6 +532,24 @@ public final class CommonProxy implements ModInitializer {
 
 	public static void registerTagsUpdatedListener(BiConsumer<RegistryAccess, Boolean> listener) {
 		CommonLifecycleEvents.TAGS_LOADED.register(listener::accept);
+	}
+
+	public static boolean isCorrectConditions(List<LootItemCondition> conditions, ItemStack toolItem) {
+		if (conditions.size() != 1) {
+			return false;
+		}
+		LootItemCondition condition = conditions.getFirst();
+		if (condition instanceof MatchTool matchTool) {
+			ItemPredicate itemPredicate = matchTool.predicate().orElse(null);
+			return itemPredicate != null && itemPredicate.test(toolItem);
+		} else if (condition instanceof AnyOfCondition anyOfCondition) {
+			for (LootItemCondition child : anyOfCondition.terms) {
+				if (isCorrectConditions(List.of(child), toolItem)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	@Override
