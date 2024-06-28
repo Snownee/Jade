@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.ChatFormatting;
@@ -107,8 +108,6 @@ public class WailaConfig implements IWailaConfig {
 				StringRepresentable.fromEnum(DisplayMode::values)
 						.fieldOf("displayMode").orElse(DisplayMode.TOGGLE)
 						.forGetter(ConfigGeneral::getDisplayMode),
-				Codec.BOOL.fieldOf("hideFromDebug").orElse(true).forGetter(ConfigGeneral::shouldHideFromDebug),
-				Codec.BOOL.fieldOf("hideFromTabList").orElse(true).forGetter(ConfigGeneral::shouldHideFromTabList),
 				Codec.BOOL.fieldOf("enableTextToSpeech").orElse(false).forGetter(ConfigGeneral::shouldEnableTextToSpeech),
 				StringRepresentable.fromEnum(TTSMode::values)
 						.fieldOf("ttsMode").orElse(TTSMode.PRESS)
@@ -122,7 +121,8 @@ public class WailaConfig implements IWailaConfig {
 				StringRepresentable.fromEnum(BossBarOverlapMode::values)
 						.fieldOf("bossBarOverlapMode").orElse(BossBarOverlapMode.PUSH_DOWN)
 						.forGetter(ConfigGeneral::getBossBarOverlapMode),
-				Codec.BOOL.fieldOf("builtinCamouflage").orElse(true).forGetter(ConfigGeneral::getBuiltinCamouflage)
+				Codec.BOOL.fieldOf("builtinCamouflage").orElse(true).forGetter(ConfigGeneral::getBuiltinCamouflage),
+				ExtraOptions.CODEC.orElseGet(() -> JadeCodecs.createFromEmptyMap(ExtraOptions.CODEC.codec())).forGetter($ -> $.extraOptions)
 		).apply(i, ConfigGeneral::new));
 
 		public static final List<String> itemModNameTooltipDisabledByMods = Lists.newArrayList("emi");
@@ -132,8 +132,6 @@ public class WailaConfig implements IWailaConfig {
 		private boolean displayEntities;
 		private boolean displayBosses;
 		private DisplayMode displayMode;
-		private boolean hideFromDebug;
-		private boolean hideFromTabList;
 		private boolean enableTextToSpeech;
 		private TTSMode ttsMode;
 		private FluidMode fluidMode;
@@ -142,6 +140,49 @@ public class WailaConfig implements IWailaConfig {
 		private boolean itemModNameTooltip;
 		private BossBarOverlapMode bossBarOverlapMode;
 		private boolean builtinCamouflage;
+		private final ExtraOptions extraOptions;
+
+		public static final class ExtraOptions {
+			public static final MapCodec<ExtraOptions> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+					Codec.BOOL.fieldOf("hideFromDebug").orElse(true).forGetter(ExtraOptions::hideFromDebug),
+					Codec.BOOL.fieldOf("hideFromTabList").orElse(true).forGetter(ExtraOptions::hideFromTabList),
+					Codec.BOOL.fieldOf("hideFromGUIs").orElse(true).forGetter(ExtraOptions::hideFromGUIs)
+			).apply(i, ExtraOptions::new));
+
+			private boolean hideFromDebug;
+			private boolean hideFromTabList;
+			private boolean hideFromGUIs;
+
+			public ExtraOptions(boolean hideFromDebug, boolean hideFromTabList, boolean hideFromGUIs) {
+				this.hideFromDebug = hideFromDebug;
+				this.hideFromTabList = hideFromTabList;
+				this.hideFromGUIs = hideFromGUIs;
+			}
+
+			public boolean hideFromDebug() {
+				return hideFromDebug;
+			}
+
+			public boolean hideFromTabList() {
+				return hideFromTabList;
+			}
+
+			public boolean hideFromGUIs() {
+				return hideFromGUIs;
+			}
+
+			public void setHideFromDebug(boolean hideFromDebug) {
+				this.hideFromDebug = hideFromDebug;
+			}
+
+			public void setHideFromTabList(boolean hideFromTabList) {
+				this.hideFromTabList = hideFromTabList;
+			}
+
+			public void setHideFromGUIs(boolean hideFromGUIs) {
+				this.hideFromGUIs = hideFromGUIs;
+			}
+		}
 
 		public ConfigGeneral(
 				boolean previewOverlay,
@@ -150,8 +191,6 @@ public class WailaConfig implements IWailaConfig {
 				boolean displayEntities,
 				boolean displayBosses,
 				DisplayMode displayMode,
-				boolean hideFromDebug,
-				boolean hideFromTabList,
 				boolean enableTextToSpeech,
 				TTSMode ttsMode,
 				FluidMode fluidMode,
@@ -159,15 +198,14 @@ public class WailaConfig implements IWailaConfig {
 				boolean debug,
 				boolean itemModNameTooltip,
 				BossBarOverlapMode bossBarOverlapMode,
-				boolean builtinCamouflage) {
+				boolean builtinCamouflage,
+				ExtraOptions extraOptions) {
 			this.previewOverlay = previewOverlay;
 			this.displayTooltip = displayTooltip;
 			this.displayBlocks = displayBlocks;
 			this.displayEntities = displayEntities;
 			this.displayBosses = displayBosses;
 			this.displayMode = displayMode;
-			this.hideFromDebug = hideFromDebug;
-			this.hideFromTabList = hideFromTabList;
 			this.enableTextToSpeech = enableTextToSpeech;
 			this.ttsMode = ttsMode;
 			this.fluidMode = fluidMode;
@@ -176,6 +214,7 @@ public class WailaConfig implements IWailaConfig {
 			this.itemModNameTooltip = itemModNameTooltip;
 			this.bossBarOverlapMode = bossBarOverlapMode;
 			this.builtinCamouflage = builtinCamouflage;
+			this.extraOptions = extraOptions;
 		}
 
 		public static void init() {
@@ -216,7 +255,7 @@ public class WailaConfig implements IWailaConfig {
 
 		@Override
 		public void setHideFromDebug(boolean hideFromDebug) {
-			this.hideFromDebug = hideFromDebug;
+			this.extraOptions.setHideFromDebug(hideFromDebug);
 		}
 
 		@Override
@@ -241,7 +280,7 @@ public class WailaConfig implements IWailaConfig {
 
 		@Override
 		public boolean shouldHideFromDebug() {
-			return hideFromDebug;
+			return extraOptions.hideFromDebug();
 		}
 
 		@Override
@@ -321,12 +360,22 @@ public class WailaConfig implements IWailaConfig {
 
 		@Override
 		public void setHideFromTabList(boolean hideFromTabList) {
-			this.hideFromTabList = hideFromTabList;
+			this.extraOptions.setHideFromTabList(hideFromTabList);
+		}
+
+		@Override
+		public void setHideFromGUIs(boolean hideFromGUIs) {
+			this.extraOptions.setHideFromGUIs(hideFromGUIs);
 		}
 
 		@Override
 		public boolean shouldHideFromTabList() {
-			return hideFromTabList;
+			return extraOptions.hideFromTabList();
+		}
+
+		@Override
+		public boolean shouldHideFromGUIs() {
+			return extraOptions.hideFromGUIs();
 		}
 
 		@Override

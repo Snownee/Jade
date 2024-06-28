@@ -19,7 +19,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import snownee.jade.Jade;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
@@ -82,14 +81,14 @@ public class WailaTickHandler {
 	public void tickClient() {
 		progressTracker.tick();
 
-		IConfigGeneral config = Jade.CONFIG.get().getGeneral();
+		IConfigGeneral config = IWailaConfig.get().getGeneral();
 		if (!config.shouldDisplayTooltip()) {
 			rootElement = null;
 			return;
 		}
 
 		Minecraft client = Minecraft.getInstance();
-		if (!ClientProxy.shouldShowWithOverlay(client, client.screen)) {
+		if (!ClientProxy.shouldShowWithGui(client, client.screen)) {
 			return;
 		}
 

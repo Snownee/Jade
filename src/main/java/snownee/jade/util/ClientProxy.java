@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Strings;
@@ -270,8 +271,17 @@ public final class ClientProxy {
 		return JadeClient.showDetails.isDown();
 	}
 
-	public static boolean shouldShowWithOverlay(Minecraft mc, @Nullable Screen screen) {
-		return screen == null || screen instanceof BaseOptionsScreen || screen instanceof ChatScreen;
+	public static boolean shouldShowWithGui(Minecraft mc, @Nullable Screen screen) {
+		return screen == null || shouldShowBeforeGui(mc, screen) || shouldShowAfterGui(mc, screen);
+	}
+
+	public static boolean shouldShowAfterGui(Minecraft mc, @NotNull Screen screen) {
+		return screen instanceof BaseOptionsScreen || screen instanceof ChatScreen;
+	}
+
+	public static boolean shouldShowBeforeGui(Minecraft mc, @NotNull Screen screen) {
+		IWailaConfig.IConfigGeneral config = IWailaConfig.get().getGeneral();
+		return !config.shouldHideFromGUIs();
 	}
 
 	public static void getFluidSpriteAndColor(JadeFluidObject fluid, BiConsumer<@Nullable TextureAtlasSprite, Integer> consumer) {

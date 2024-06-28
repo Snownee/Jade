@@ -73,6 +73,8 @@ public interface IWailaConfig {
 
 		void setHideFromTabList(boolean hideFromTabList);
 
+		void setHideFromGUIs(boolean hideFromGUIs);
+
 		void toggleTTS();
 
 		void setItemModNameTooltip(boolean itemModNameTooltip);
@@ -86,6 +88,8 @@ public interface IWailaConfig {
 		boolean shouldHideFromDebug();
 
 		boolean shouldHideFromTabList();
+
+		boolean shouldHideFromGUIs();
 
 		boolean shouldEnableTextToSpeech();
 
