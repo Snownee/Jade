@@ -1,5 +1,7 @@
 package snownee.jade.addon.harvest;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -12,16 +14,18 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.Jade;
@@ -42,38 +46,37 @@ public class HarvestToolProvider implements IBlockComponentProvider, ResourceMan
 
 	public static final HarvestToolProvider INSTANCE = new HarvestToolProvider();
 
-	public static final Cache<BlockState, ImmutableList<ItemStack>> resultCache = CacheBuilder.newBuilder().expireAfterAccess(
+	public final Cache<BlockState, ImmutableList<ItemStack>> resultCache = CacheBuilder.newBuilder().expireAfterAccess(
 			5,
 			TimeUnit.MINUTES).build();
+	private List<Block> shearableBlocks = List.of();
 	public static final Map<ResourceLocation, ToolHandler> TOOL_HANDLERS = Maps.newLinkedHashMap();
 	private static final Component CHECK = Component.literal("✔");
 	private static final Component X = Component.literal("✕");
 	private static final Vec2 ITEM_SIZE = new Vec2(10, 0);
 
 	static {
+		CommonProxy.registerTagsUpdatedListener(HarvestToolProvider.INSTANCE::tagsUpdated);
 		if (CommonProxy.isPhysicallyClient()) {
 			registerHandler(SimpleToolHandler.create(
-							JadeIds.JADE("pickaxe"),
-							true,
-							List.of(Items.WOODEN_PICKAXE, Items.STONE_PICKAXE, Items.IRON_PICKAXE, Items.DIAMOND_PICKAXE, Items.NETHERITE_PICKAXE))
-					.addBlockTag(BlockTags.MINEABLE_WITH_PICKAXE));
+					JadeIds.JADE("pickaxe"),
+					List.of(
+							Items.WOODEN_PICKAXE,
+							Items.STONE_PICKAXE,
+							Items.IRON_PICKAXE,
+							Items.DIAMOND_PICKAXE,
+							Items.NETHERITE_PICKAXE)));
 			registerHandler(SimpleToolHandler.create(
-							JadeIds.JADE("axe"),
-							true,
-							List.of(Items.WOODEN_AXE, Items.STONE_AXE, Items.IRON_AXE, Items.DIAMOND_AXE, Items.NETHERITE_AXE))
-					.addBlockTag(BlockTags.MINEABLE_WITH_AXE));
+					JadeIds.JADE("axe"),
+					List.of(Items.WOODEN_AXE, Items.STONE_AXE, Items.IRON_AXE, Items.DIAMOND_AXE, Items.NETHERITE_AXE)));
 			registerHandler(SimpleToolHandler.create(
-							JadeIds.JADE("shovel"),
-							true,
-							List.of(Items.WOODEN_SHOVEL, Items.STONE_SHOVEL, Items.IRON_SHOVEL, Items.DIAMOND_SHOVEL, Items.NETHERITE_SHOVEL))
-					.addBlockTag(BlockTags.MINEABLE_WITH_SHOVEL));
+					JadeIds.JADE("shovel"),
+					List.of(Items.WOODEN_SHOVEL, Items.STONE_SHOVEL, Items.IRON_SHOVEL, Items.DIAMOND_SHOVEL, Items.NETHERITE_SHOVEL)));
 			registerHandler(SimpleToolHandler.create(
-							JadeIds.JADE("hoe"),
-							true,
-							List.of(Items.WOODEN_HOE, Items.STONE_HOE, Items.IRON_HOE, Items.DIAMOND_HOE, Items.NETHERITE_HOE))
-					.addBlockTag(BlockTags.MINEABLE_WITH_HOE));
-			registerHandler(ClientProxy.createSwordToolHandler());
-			registerHandler(new ShearsToolHandler());
+					JadeIds.JADE("hoe"),
+					List.of(Items.WOODEN_HOE, Items.STONE_HOE, Items.IRON_HOE, Items.DIAMOND_HOE, Items.NETHERITE_HOE)));
+			registerHandler(SimpleToolHandler.create(JadeIds.JADE("sword"), List.of(Items.WOODEN_SWORD)));
+			registerHandler(ShearsToolHandler.getInstance());
 		}
 	}
 
@@ -157,9 +160,6 @@ public class HarvestToolProvider implements IBlockComponentProvider, ResourceMan
 			elements.addFirst(IElementHelper.get().spacer(newLine ? -2 : 5, newLine ? 10 : 0));
 			ItemStack held = accessor.getPlayer().getMainHandItem();
 			boolean canHarvest = held.isCorrectToolForDrops(state);
-			if (CommonProxy.isShearable(state) && CommonProxy.isShears(held)) {
-				canHarvest = true;
-			}
 			if (state.requiresCorrectToolForDrops() || canHarvest) {
 				IThemeHelper t = IThemeHelper.get();
 				Component text = canHarvest ? t.success(CHECK) : t.danger(X);
@@ -178,6 +178,31 @@ public class HarvestToolProvider implements IBlockComponentProvider, ResourceMan
 	@Override
 	public void onResourceManagerReload(ResourceManager resourceManager) {
 		resultCache.invalidateAll();
+	}
+
+	private void tagsUpdated(RegistryAccess registryAccess, boolean client) {
+		if (client) {
+			resultCache.invalidateAll();
+		} else {
+			//TODO execute on a thread?
+			try {
+				shearableBlocks = Collections.unmodifiableList(LootTableMineableCollector.execute(
+						registryAccess.registryOrThrow(Registries.LOOT_TABLE),
+						Items.SHEARS.getDefaultInstance()));
+			} catch (Throwable e) {
+				Jade.LOGGER.error("Failed to collect shearable blocks", e);
+			}
+		}
+	}
+
+	public List<Block> getShearableBlocks() {
+		return shearableBlocks;
+	}
+
+	public void setShearableBlocks(Collection<Block> blocks) {
+		if (TOOL_HANDLERS.get(JadeIds.JADE("shears")) instanceof ShearsToolHandler handler) {
+			handler.setShearableBlocks(blocks);
+		}
 	}
 
 	@Override

@@ -1,65 +1,56 @@
 package snownee.jade.addon.harvest;
 
 import java.util.List;
-import java.util.Set;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.Tool;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class SimpleToolHandler implements ToolHandler {
 
-	public final Set<Block> blocks = Sets.newIdentityHashSet();
-	public final List<TagKey<Block>> blockTags = Lists.newArrayList();
 	protected final List<ItemStack> tools = Lists.newArrayList();
 	private final ResourceLocation uid;
-	private final boolean testIsCorrectTool;
+	private final boolean skipInstaBreakingBlock;
 
-	public SimpleToolHandler(ResourceLocation uid, boolean testIsCorrectTool, List<ItemStack> tools) {
+	protected SimpleToolHandler(ResourceLocation uid, List<ItemStack> tools, boolean skipInstaBreakingBlock) {
 		this.uid = uid;
-		this.testIsCorrectTool = testIsCorrectTool;
-		if (testIsCorrectTool) {
-			Preconditions.checkArgument(!tools.isEmpty(), "tools cannot be empty");
-		} else {
-			Preconditions.checkArgument(tools.size() == 1, "tools must have only one element");
-		}
+		Preconditions.checkArgument(!tools.isEmpty(), "tools cannot be empty");
 		this.tools.addAll(tools);
+		this.skipInstaBreakingBlock = skipInstaBreakingBlock;
 	}
 
-	public static SimpleToolHandler create(ResourceLocation uid, boolean testIsCorrectTool, List<Item> tools) {
-		return new SimpleToolHandler(uid, testIsCorrectTool, Lists.transform(tools, Item::getDefaultInstance));
+	public static SimpleToolHandler create(ResourceLocation uid, List<Item> tools) {
+		return create(uid, tools, true);
 	}
 
-	public boolean matchesBlock(BlockState state) {
-		if (blocks.contains(state.getBlock())) {
-			return true;
-		}
-		return blockTags.stream().anyMatch(state::is);
+	public static SimpleToolHandler create(ResourceLocation uid, List<Item> tools, boolean skipInstaBreakingBlock) {
+		return new SimpleToolHandler(uid, Lists.transform(tools, Item::getDefaultInstance), skipInstaBreakingBlock);
 	}
 
 	@Override
 	public ItemStack test(BlockState state, Level world, BlockPos pos) {
-		if (matchesBlock(state)) {
-			if (testIsCorrectTool) {
-				if (!state.requiresCorrectToolForDrops() && state.getDestroySpeed(world, pos) == 0) {
-					return ItemStack.EMPTY;
-				}
-				for (ItemStack tool : tools) {
-					if (tool.isCorrectToolForDrops(state)) {
-						return tool;
-					}
-				}
-			} else {
-				return tools.getFirst();
+		if (skipInstaBreakingBlock && !state.requiresCorrectToolForDrops() && state.getDestroySpeed(world, pos) == 0) {
+			return ItemStack.EMPTY;
+		}
+		return test(state);
+	}
+
+	protected ItemStack test(BlockState state) {
+		for (ItemStack toolItem : tools) {
+			if (toolItem.isCorrectToolForDrops(state)) {
+				return toolItem;
+			}
+			Tool tool = toolItem.get(DataComponents.TOOL);
+			if (tool != null && tool.getMiningSpeed(state) > tool.defaultMiningSpeed()) {
+				return toolItem;
 			}
 		}
 		return ItemStack.EMPTY;
@@ -73,15 +64,5 @@ public class SimpleToolHandler implements ToolHandler {
 	@Override
 	public ResourceLocation getUid() {
 		return uid;
-	}
-
-	public SimpleToolHandler addBlock(Block block) {
-		blocks.add(block);
-		return this;
-	}
-
-	public SimpleToolHandler addBlockTag(TagKey<Block> tag) {
-		blockTags.add(tag);
-		return this;
 	}
 }

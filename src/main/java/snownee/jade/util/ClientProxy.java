@@ -32,9 +32,7 @@ import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.util.LazyLoadedValue;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
@@ -65,11 +63,8 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforgespi.language.IModInfo;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
-import snownee.jade.addon.harvest.SimpleToolHandler;
-import snownee.jade.addon.harvest.ToolHandler;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
-import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.IWailaConfig.BossBarOverlapMode;
 import snownee.jade.api.fluid.JadeFluidObject;
@@ -300,12 +295,6 @@ public final class ClientProxy {
 
 	public static KeyMapping registerDetailsKeyBinding() {
 		return registerKeyBinding("show_details", InputConstants.KEY_LSHIFT);
-	}
-
-	public static ToolHandler createSwordToolHandler() {
-		return SimpleToolHandler.create(JadeIds.JADE("sword"), false, List.of(Items.WOODEN_SWORD))
-				.addBlock(Blocks.COBWEB)
-				.addBlock(Blocks.BAMBOO);
 	}
 
 	public static void renderItemDecorationsExtra(GuiGraphics guiGraphics, Font font, ItemStack stack, int x, int y, String text) {

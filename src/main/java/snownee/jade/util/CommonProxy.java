@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
+import java.util.function.BiConsumer;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jetbrains.annotations.Nullable;
@@ -16,9 +17,11 @@ import com.google.common.base.Stopwatch;
 import com.google.common.base.Throwables;
 import com.google.common.cache.Cache;
 
+import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -33,6 +36,7 @@ import net.minecraft.world.entity.animal.horse.AbstractChestedHorse;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ShearsItem;
 import net.minecraft.world.item.component.CustomModelData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -42,6 +46,9 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.storage.loot.predicates.AnyOfCondition;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+import net.minecraft.world.level.storage.loot.predicates.MatchTool;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.neoforged.bus.api.IEventBus;
@@ -53,7 +60,7 @@ import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.EntityCapability;
-import net.neoforged.neoforge.common.IShearable;
+import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.UsernameCache;
@@ -61,6 +68,7 @@ import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.entity.PartEntity;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.TagsUpdatedEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
@@ -69,6 +77,7 @@ import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforgespi.language.ModFileScanData;
 import snownee.jade.Jade;
+import snownee.jade.addon.harvest.HarvestToolProvider;
 import snownee.jade.addon.universal.ItemCollector;
 import snownee.jade.addon.universal.ItemIterator;
 import snownee.jade.addon.universal.ItemStorageProvider;
@@ -84,6 +93,7 @@ import snownee.jade.command.JadeServerCommand;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.impl.config.PluginConfig;
+import snownee.jade.mixin.CanItemPerformAbilityAccess;
 import snownee.jade.network.ReceiveDataPacket;
 import snownee.jade.network.RequestBlockPacket;
 import snownee.jade.network.RequestEntityPacket;
@@ -149,6 +159,26 @@ public final class CommonProxy {
 		return FluidType.BUCKET_VOLUME;
 	}
 
+	public static boolean isCorrectConditions(List<LootItemCondition> conditions, ItemStack toolItem) {
+		if (conditions.size() != 1) {
+			return false;
+		}
+		LootItemCondition condition = conditions.getFirst();
+		if (condition instanceof MatchTool matchTool) {
+			ItemPredicate itemPredicate = matchTool.predicate().orElse(null);
+			return itemPredicate != null && itemPredicate.test(toolItem);
+		} else if (condition instanceof AnyOfCondition anyOfCondition) {
+			for (LootItemCondition child : anyOfCondition.terms) {
+				if (isCorrectConditions(List.of(child), toolItem)) {
+					return true;
+				}
+			}
+		} else if (condition instanceof CanItemPerformAbilityAccess canItemPerformAbility) {
+			return canItemPerformAbility.getAbility() == ItemAbilities.SHEARS_DIG;
+		}
+		return false;
+	}
+
 	private void registerPayloadHandlers(RegisterPayloadHandlersEvent event) {
 		event.registrar(Jade.ID)
 				.versioned("3")
@@ -186,13 +216,14 @@ public final class CommonProxy {
 	private static void playerJoin(PlayerEvent.PlayerLoggedInEvent event) {
 		ServerPlayer player = (ServerPlayer) event.getEntity();
 		String configs = PluginConfig.INSTANCE.getServerConfigs();
+		List<Block> shearableBlocks = HarvestToolProvider.INSTANCE.getShearableBlocks();
 		if (!configs.isEmpty()) {
 			Jade.LOGGER.debug(
 					"Syncing config to {} ({})",
 					event.getEntity().getGameProfile().getName(),
 					event.getEntity().getGameProfile().getId());
 		}
-		player.connection.send(new ServerPingPacket(configs));
+		player.connection.send(new ServerPingPacket(configs, shearableBlocks));
 	}
 
 	@Nullable
@@ -205,11 +236,7 @@ public final class CommonProxy {
 	}
 
 	public static boolean isShears(ItemStack tool) {
-		return tool.is(Tags.Items.TOOLS_SHEAR);
-	}
-
-	public static boolean isShearable(BlockState state) {
-		return state.getBlock() instanceof IShearable;
+		return tool.getItem() instanceof ShearsItem || tool.is(Tags.Items.TOOLS_SHEAR);
 	}
 
 	public static boolean isCorrectToolForDrops(BlockState state, Player player, Level level, BlockPos pos) {
@@ -489,5 +516,11 @@ public final class CommonProxy {
 			return parent;
 		}
 		return parts[index];
+	}
+
+	public static void registerTagsUpdatedListener(BiConsumer<RegistryAccess, Boolean> listener) {
+		NeoForge.EVENT_BUS.addListener((TagsUpdatedEvent event) -> listener.accept(
+				event.getRegistryAccess(),
+				event.getUpdateCause() == TagsUpdatedEvent.UpdateCause.CLIENT_PACKET_RECEIVED));
 	}
 }
