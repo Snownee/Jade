@@ -6,7 +6,7 @@ public interface JadeIds {
 
 	ResourceLocation ROOT = MC("root");
 	ResourceLocation PACKET_RECEIVE_DATA = JADE("receive_data");
-	ResourceLocation PACKET_SERVER_PING = JADE("server_ping");
+	ResourceLocation PACKET_SERVER_PING = JADE("server_ping_v1");
 	ResourceLocation PACKET_REQUEST_ENTITY = JADE("request_entity");
 	ResourceLocation PACKET_REQUEST_BLOCK = JADE("request_block");
 	ResourceLocation PACKET_SHOW_OVERLAY = JADE("show_overlay");
