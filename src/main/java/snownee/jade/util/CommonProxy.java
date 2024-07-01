@@ -44,7 +44,6 @@ import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.UsernameCache;
 import net.minecraftforge.common.capabilities.CapabilityProvider;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LogicalSidedProvider;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.entity.PartEntity;
 import net.minecraftforge.event.RegisterCommandsEvent;
@@ -52,7 +51,6 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fml.IExtensionPoint;
-import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -458,10 +456,8 @@ public final class CommonProxy {
 		return new FluidStack(fluid.getType(), (int) fluid.getAmount(), fluid.getTag());
 	}
 
-	public static Void crashAnyway(Throwable e) {
-		LogicalSidedProvider.WORKQUEUE.get(LogicalSide.SERVER).execute(() -> {
-			throw new AssertionError(e);
-		});
+	public static Void handleNetworkingError(Throwable e) {
+		Jade.LOGGER.error("Error receiving packet", e);
 		return null;
 	}
 }

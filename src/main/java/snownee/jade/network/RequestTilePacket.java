@@ -34,7 +34,7 @@ public class RequestTilePacket {
 
 		public static void onMessage(RequestTilePacket message, Supplier<NetworkEvent.Context> context) {
 			BlockAccessorImpl.handleRequest(message.buffer, context.get().getSender(), $ -> {
-				context.get().enqueueWork($).exceptionally(CommonProxy::crashAnyway);
+				context.get().enqueueWork($).exceptionally(CommonProxy::handleNetworkingError);
 			}, tag -> {
 				CommonProxy.NETWORK.sendTo(new ReceiveDataPacket(tag), context.get().getNetworkManager(), NetworkDirection.PLAY_TO_CLIENT);
 			});
