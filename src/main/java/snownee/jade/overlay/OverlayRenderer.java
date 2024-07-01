@@ -1,7 +1,5 @@
 package snownee.jade.overlay;
 
-import org.apache.commons.lang3.mutable.MutableObject;
-
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -19,7 +17,6 @@ import snownee.jade.api.callback.JadeBeforeRenderCallback;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.IWailaConfig.BossBarOverlapMode;
 import snownee.jade.api.theme.IThemeHelper;
-import snownee.jade.api.theme.Theme;
 import snownee.jade.api.ui.TooltipRect;
 import snownee.jade.gui.BaseOptionsScreen;
 import snownee.jade.gui.PreviewOptionsScreen;
@@ -35,7 +32,6 @@ import snownee.jade.util.ModIdentification;
 
 public class OverlayRenderer {
 
-	public static final MutableObject<Theme> theme = new MutableObject<>(IWailaConfig.get().getOverlay().getTheme());
 	public static final TooltipRect rect = new TooltipRect();
 	public static float ticks;
 	public static boolean shown;

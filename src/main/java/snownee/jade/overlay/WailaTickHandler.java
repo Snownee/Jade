@@ -34,6 +34,7 @@ import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.Tooltip;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
+import snownee.jade.impl.theme.ThemeHelper;
 import snownee.jade.impl.ui.BoxElement;
 import snownee.jade.track.ProgressTracker;
 import snownee.jade.util.ClientProxy;
@@ -169,13 +170,14 @@ public class WailaTickHandler {
 			}
 		}
 
-		OverlayRenderer.theme.setValue(IWailaConfig.get().getOverlay().getTheme());
+		Theme theme = IWailaConfig.get().getOverlay().getTheme();
+		ThemeHelper.theme.setValue(theme);
+		Preconditions.checkNotNull(theme, "Theme cannot be null");
 		Accessor<?> accessor0 = accessor;
 		WailaClientRegistration.instance().beforeTooltipCollectCallback.call(callback -> {
-			callback.beforeCollecting(OverlayRenderer.theme, accessor0);
+			callback.beforeCollecting(ThemeHelper.theme, accessor0);
 		});
-		Theme theme = OverlayRenderer.theme.getValue();
-		Preconditions.checkNotNull(theme, "Theme cannot be null");
+		Preconditions.checkNotNull(ThemeHelper.theme.getValue(), "Theme cannot be null");
 
 		if (config.getDisplayMode() == DisplayMode.LITE && !ClientProxy.isShowDetailsPressed()) {
 			Tooltip dummyTooltip = new Tooltip();
