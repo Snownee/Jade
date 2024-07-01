@@ -30,6 +30,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.profiling.ProfilerFiller;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
@@ -40,7 +41,7 @@ import snownee.jade.util.JsonConfig;
 
 public class ThemeHelper extends SimpleJsonResourceReloadListener implements IThemeHelper {
 	public static final ThemeHelper INSTANCE = new ThemeHelper();
-	public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(Jade.ID, "themes");
+	public static final ResourceLocation ID = JadeIds.JADE("themes");
 	public static final MutableObject<Theme> theme = new MutableObject<>();
 	private static final Int2ObjectMap<Style> styleCache = new Int2ObjectOpenHashMap<>(6);
 	private final Map<ResourceLocation, Theme> themes = Maps.newTreeMap(Comparator.comparing(ResourceLocation::toString));
