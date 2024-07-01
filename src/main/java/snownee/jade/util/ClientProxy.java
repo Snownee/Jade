@@ -116,20 +116,29 @@ public final class ClientProxy {
 		NeoForge.EVENT_BUS.addListener(ClientProxy::onKeyPressed);
 		NeoForge.EVENT_BUS.addListener(ClientProxy::onGui);
 		NeoForge.EVENT_BUS.addListener(EventPriority.LOWEST, true, ClientProxy::onDrawBossBar);
-		NeoForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, RenderGuiEvent.Post.class, event -> {
+		NeoForge.EVENT_BUS.addListener(RenderGuiEvent.Post.class, event -> {
 			if (Minecraft.getInstance().screen == null) {
 				onRenderTick(event.getGuiGraphics(), event.getPartialTick().getRealtimeDeltaTicks());
 			}
 		});
-		NeoForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, ScreenEvent.Render.Post.class, event -> {
-			onRenderTick(event.getGuiGraphics(), event.getPartialTick());
+		NeoForge.EVENT_BUS.addListener(ScreenEvent.Render.Pre.class, event -> {
+			Minecraft mc = Minecraft.getInstance();
+			Screen screen = event.getScreen();
+			if (shouldShowBeforeGui(mc, screen) && !shouldShowAfterGui(mc, screen)) {
+				onRenderTick(event.getGuiGraphics(), event.getPartialTick());
+			}
 		});
-		modBus.addListener(EventPriority.NORMAL, false, RegisterClientReloadListenersEvent.class, event -> {
+		NeoForge.EVENT_BUS.addListener(ScreenEvent.Render.Post.class, event -> {
+			if (shouldShowAfterGui(Minecraft.getInstance(), event.getScreen())) {
+				onRenderTick(event.getGuiGraphics(), event.getPartialTick());
+			}
+		});
+		modBus.addListener(RegisterClientReloadListenersEvent.class, event -> {
 			event.registerReloadListener(ThemeHelper.INSTANCE);
 			listeners.forEach(event::registerReloadListener);
 			listeners.clear();
 		});
-		modBus.addListener(EventPriority.NORMAL, false, RegisterKeyMappingsEvent.class, event -> {
+		modBus.addListener(RegisterKeyMappingsEvent.class, event -> {
 			keys.forEach(event::register);
 			keys.clear();
 		});
