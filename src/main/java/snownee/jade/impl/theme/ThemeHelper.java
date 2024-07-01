@@ -35,13 +35,13 @@ import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
 import snownee.jade.impl.config.WailaConfig;
 import snownee.jade.overlay.DisplayHelper;
-import snownee.jade.overlay.OverlayRenderer;
 import snownee.jade.util.JadeCodecs;
 import snownee.jade.util.JsonConfig;
 
 public class ThemeHelper extends SimpleJsonResourceReloadListener implements IThemeHelper {
 	public static final ThemeHelper INSTANCE = new ThemeHelper();
 	public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(Jade.ID, "themes");
+	public static final MutableObject<Theme> theme = new MutableObject<>();
 	private static final Int2ObjectMap<Style> styleCache = new Int2ObjectOpenHashMap<>(6);
 	private final Map<ResourceLocation, Theme> themes = Maps.newTreeMap(Comparator.comparing(ResourceLocation::toString));
 	private final MinMaxBounds.Ints allowedVersions = MinMaxBounds.Ints.between(100, 199);
@@ -58,7 +58,7 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener implements ITh
 
 	@Override
 	public Theme theme() {
-		return OverlayRenderer.theme.getValue();
+		return theme.getValue();
 	}
 
 	@Override
