@@ -10,6 +10,7 @@ import com.mojang.math.Axis;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -183,7 +184,8 @@ public class HomeConfigScreen extends Screen {
 	@Override
 	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		Objects.requireNonNull(minecraft);
-		ticks += partialTicks;
+		float deltaTicks = Minecraft.getInstance().getTimer().getRealtimeDeltaTicks();
+		ticks += deltaTicks;
 		if (ticks > nextParticleIn) {
 			if (festival == 3) {
 				nextParticleIn = ticks + 1;
@@ -204,7 +206,7 @@ public class HomeConfigScreen extends Screen {
 				particles.add(particle);
 			}
 		}
-		super.render(guiGraphics, mouseX, mouseY, partialTicks);
+		super.render(guiGraphics, mouseX, mouseY, deltaTicks);
 		boolean smallUI = minecraft.getWindow().getGuiScale() < 3;
 		int left = width / 2 - 105;
 		int top = height / 4 - 20;
@@ -216,7 +218,7 @@ public class HomeConfigScreen extends Screen {
 		guiGraphics.drawString(font, ModIdentification.getModName(Jade.ID).orElse("Jade"), 0, 0, 0xFFFFFF);
 
 		guiGraphics.pose().scale(0.5F, 0.5F, 0.5F);
-		titleY.tick(partialTicks);
+		titleY.tick(deltaTicks);
 		String desc2 = I18n.get("gui.jade.configuration.desc2");
 		float scaledX, scaledY;
 		if (desc2.isEmpty()) {
@@ -236,7 +238,7 @@ public class HomeConfigScreen extends Screen {
 		guiGraphics.pose().popPose();
 
 		particles.removeIf(p -> {
-			p.tick(partialTicks);
+			p.tick(deltaTicks);
 			if (p.y > height + 20) {
 				return true;
 			}
