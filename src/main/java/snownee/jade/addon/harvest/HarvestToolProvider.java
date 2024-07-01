@@ -41,7 +41,9 @@ public enum HarvestToolProvider implements IBlockComponentProvider, ResourceMana
 
 	INSTANCE;
 
-	public static final Cache<BlockState, ImmutableList<ItemStack>> resultCache = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
+	public static final Cache<BlockState, ImmutableList<ItemStack>> resultCache = CacheBuilder.newBuilder().expireAfterAccess(
+			5,
+			TimeUnit.MINUTES).build();
 	public static final Map<String, ToolHandler> TOOL_HANDLERS = Maps.newLinkedHashMap();
 	private static final Component CHECK = Component.literal("✔");
 	private static final Component X = Component.literal("✕");
@@ -49,10 +51,38 @@ public enum HarvestToolProvider implements IBlockComponentProvider, ResourceMana
 
 	static {
 		if (CommonProxy.isPhysicallyClient()) {
-			registerHandler(new SimpleToolHandler("pickaxe", BlockTags.MINEABLE_WITH_PICKAXE, Items.WOODEN_PICKAXE, Items.STONE_PICKAXE, Items.IRON_PICKAXE, Items.DIAMOND_PICKAXE, Items.NETHERITE_PICKAXE));
-			registerHandler(new SimpleToolHandler("axe", BlockTags.MINEABLE_WITH_AXE, Items.WOODEN_AXE, Items.STONE_AXE, Items.IRON_AXE, Items.DIAMOND_AXE, Items.NETHERITE_AXE));
-			registerHandler(new SimpleToolHandler("shovel", BlockTags.MINEABLE_WITH_SHOVEL, Items.WOODEN_SHOVEL, Items.STONE_SHOVEL, Items.IRON_SHOVEL, Items.DIAMOND_SHOVEL, Items.NETHERITE_SHOVEL));
-			registerHandler(new SimpleToolHandler("hoe", BlockTags.MINEABLE_WITH_HOE, Items.WOODEN_HOE, Items.STONE_HOE, Items.IRON_HOE, Items.DIAMOND_HOE, Items.NETHERITE_HOE));
+			registerHandler(new SimpleToolHandler(
+					"pickaxe",
+					BlockTags.MINEABLE_WITH_PICKAXE,
+					Items.WOODEN_PICKAXE,
+					Items.STONE_PICKAXE,
+					Items.IRON_PICKAXE,
+					Items.DIAMOND_PICKAXE,
+					Items.NETHERITE_PICKAXE));
+			registerHandler(new SimpleToolHandler(
+					"axe",
+					BlockTags.MINEABLE_WITH_AXE,
+					Items.WOODEN_AXE,
+					Items.STONE_AXE,
+					Items.IRON_AXE,
+					Items.DIAMOND_AXE,
+					Items.NETHERITE_AXE));
+			registerHandler(new SimpleToolHandler(
+					"shovel",
+					BlockTags.MINEABLE_WITH_SHOVEL,
+					Items.WOODEN_SHOVEL,
+					Items.STONE_SHOVEL,
+					Items.IRON_SHOVEL,
+					Items.DIAMOND_SHOVEL,
+					Items.NETHERITE_SHOVEL));
+			registerHandler(new SimpleToolHandler(
+					"hoe",
+					BlockTags.MINEABLE_WITH_HOE,
+					Items.WOODEN_HOE,
+					Items.STONE_HOE,
+					Items.IRON_HOE,
+					Items.DIAMOND_HOE,
+					Items.NETHERITE_HOE));
 			registerHandler(ClientProxy.createSwordToolHandler());
 			registerHandler(new ShearsToolHandler());
 		}
@@ -123,17 +153,15 @@ public enum HarvestToolProvider implements IBlockComponentProvider, ResourceMana
 			return List.of();
 		}
 
-		int offsetY = 0;
-		if (!config.get(Identifiers.MC_HARVEST_TOOL_NEW_LINE)) {
-			offsetY = -3;
-		}
+		int offsetY = -3;
+		boolean newLine = config.get(Identifiers.MC_HARVEST_TOOL_NEW_LINE);
 		List<IElement> elements = Lists.newArrayList();
 		for (ItemStack tool : tools) {
 			elements.add(IElementHelper.get().item(tool, 0.75f).translate(new Vec2(-1, offsetY)).size(ITEM_SIZE).message(null));
 		}
 
 		if (!elements.isEmpty()) {
-			elements.add(0, IElementHelper.get().spacer(5, 0));
+			elements.add(0, IElementHelper.get().spacer(newLine ? -2 : 5, newLine ? 10 : 0));
 			ItemStack held = accessor.getPlayer().getMainHandItem();
 			boolean canHarvest = held.isCorrectToolForDrops(state);
 			if (CommonProxy.isShearable(state) && CommonProxy.isShears(held)) {
