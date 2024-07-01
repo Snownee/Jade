@@ -158,7 +158,7 @@ public final class ClientProxy {
 		try {
 			OverlayRenderer.renderOverlay478757(guiGraphics);
 		} catch (Throwable e) {
-			WailaExceptionHandler.handleErr(e, null, null);
+			WailaExceptionHandler.handleErr(e, null, null, null);
 		} finally {
 			bossbarShown = false;
 		}
@@ -169,7 +169,7 @@ public final class ClientProxy {
 			try {
 				WailaTickHandler.instance().tickClient();
 			} catch (Throwable e) {
-				WailaExceptionHandler.handleErr(e, null, null);
+				WailaExceptionHandler.handleErr(e, null, null, null);
 			}
 		}
 	}

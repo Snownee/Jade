@@ -312,7 +312,7 @@ public final class CommonProxy {
 										target instanceof AbstractChestedHorse ? 2 : 0)));
 					}
 				} catch (Throwable e) {
-					WailaExceptionHandler.handleErr(e, null, null);
+					WailaExceptionHandler.handleErr(e, null, null, null);
 				}
 			}
 		}
