@@ -206,7 +206,7 @@ public class HomeConfigScreen extends Screen {
 				particles.add(particle);
 			}
 		}
-		super.render(guiGraphics, mouseX, mouseY, deltaTicks);
+		super.render(guiGraphics, mouseX, mouseY, partialTicks);
 		boolean smallUI = minecraft.getWindow().getGuiScale() < 3;
 		int left = width / 2 - 105;
 		int top = height / 4 - 20;

@@ -166,8 +166,9 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 	}
 
 	@Override
-	public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
-		smoothScroll.tick(delta);
+	public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+		float deltaTicks = Minecraft.getInstance().getTimer().getRealtimeDeltaTicks();
+		smoothScroll.tick(deltaTicks);
 		super.setScrollAmount(smoothScroll.value);
 		hovered = null;
 		if (!PreviewOptionsScreen.isAdjustingPosition()) {
@@ -190,7 +191,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		}
 
 		enableScissor(guiGraphics);
-		renderListItems(guiGraphics, mouseX, mouseY, delta);
+		renderListItems(guiGraphics, mouseX, mouseY, partialTicks);
 		guiGraphics.disableScissor();
 		this.renderListSeparators(guiGraphics);
 		if (this.scrollbarVisible()) {
