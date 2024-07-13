@@ -23,6 +23,8 @@ package snownee.jade.util;
  * SOFTWARE.
  */
 
+import java.text.NumberFormat;
+
 import com.google.common.math.LongMath;
 
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -84,7 +86,7 @@ public class FluidTextHelper {
 		if (!hasDroplets || droplets >= 8100000) {
 			return DisplayHelper.INSTANCE.humanReadableNumber(mb, "B", true);
 		}
-		return mb + " " + getUnicodeFraction(droplets % 81, 81, simplify) + "mB";
+		return NumberFormat.getNumberInstance().format(mb) + " " + getUnicodeFraction(droplets % 81, 81, simplify) + "mB";
 	}
 
 	private static final char[] SUPERSCRIPT = new char[] { '\u2070', '\u00b9', '\u00b2', '\u00b3', '\u2074', '\u2075', '\u2076', '\u2077', '\u2078', '\u2079' };
