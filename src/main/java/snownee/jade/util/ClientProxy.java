@@ -59,7 +59,6 @@ import net.minecraft.util.LazyLoadedValue;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.material.Fluid;
@@ -67,7 +66,7 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.HitResult;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
-import snownee.jade.addon.harvest.SimpleToolHandler;
+import snownee.jade.addon.harvest.SwordToolHandler;
 import snownee.jade.addon.harvest.ToolHandler;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
@@ -227,7 +226,7 @@ public final class ClientProxy implements ClientModInitializer {
 	}
 
 	public static ToolHandler createSwordToolHandler() {
-		return new SimpleToolHandler("sword", FabricMineableTags.SWORD_MINEABLE, Items.WOODEN_SWORD);
+		return new SwordToolHandler(FabricMineableTags.SWORD_MINEABLE);
 	}
 
 	public static KeyMapping registerDetailsKeyBinding() {
