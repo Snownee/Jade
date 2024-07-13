@@ -26,6 +26,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.Jade;
@@ -75,7 +76,9 @@ public class HarvestToolProvider implements IBlockComponentProvider, ResourceMan
 			registerHandler(SimpleToolHandler.create(
 					JadeIds.JADE("hoe"),
 					List.of(Items.WOODEN_HOE, Items.STONE_HOE, Items.IRON_HOE, Items.DIAMOND_HOE, Items.NETHERITE_HOE)));
-			registerHandler(SimpleToolHandler.create(JadeIds.JADE("sword"), List.of(Items.WOODEN_SWORD)));
+			registerHandler(SimpleToolHandler.create(JadeIds.JADE("sword"), List.of(Items.WOODEN_SWORD))
+					.addExtraBlock(Blocks.BAMBOO)
+					.addExtraBlock(Blocks.BAMBOO_SAPLING));
 			registerHandler(ShearsToolHandler.getInstance());
 		}
 	}
