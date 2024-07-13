@@ -12,11 +12,13 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.Tool;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class SimpleToolHandler implements ToolHandler {
 
 	protected final List<ItemStack> tools = Lists.newArrayList();
+	protected final List<Block> extraBlocks = Lists.newArrayListWithExpectedSize(0);
 	private final ResourceLocation uid;
 	private final boolean skipInstaBreakingBlock;
 
@@ -37,6 +39,9 @@ public class SimpleToolHandler implements ToolHandler {
 
 	@Override
 	public ItemStack test(BlockState state, Level world, BlockPos pos) {
+		if (extraBlocks.contains(state.getBlock())) {
+			return tools.getFirst();
+		}
 		if (skipInstaBreakingBlock && !state.requiresCorrectToolForDrops() && state.getDestroySpeed(world, pos) == 0) {
 			return ItemStack.EMPTY;
 		}
@@ -64,5 +69,10 @@ public class SimpleToolHandler implements ToolHandler {
 	@Override
 	public ResourceLocation getUid() {
 		return uid;
+	}
+
+	public SimpleToolHandler addExtraBlock(Block block) {
+		extraBlocks.add(block);
+		return this;
 	}
 }
