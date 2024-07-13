@@ -47,14 +47,17 @@ public class OverlayRenderer {
 		}
 
 		ConfigGeneral general = Jade.CONFIG.get().getGeneral();
-		if (!general.shouldDisplayTooltip())
+		if (!general.shouldDisplayTooltip()) {
 			return false;
+		}
 
-		if (general.getDisplayMode() == IWailaConfig.DisplayMode.HOLD_KEY && !JadeClient.showOverlay.isDown())
+		if (general.getDisplayMode() == IWailaConfig.DisplayMode.HOLD_KEY && !JadeClient.showOverlay.isDown()) {
 			return false;
+		}
 
 		BossBarOverlapMode mode = Jade.CONFIG.get().getGeneral().getBossBarOverlapMode();
-		if (mode == BossBarOverlapMode.HIDE_TOOLTIP && ClientProxy.getBossBarRect() != null) {
+		if (mode == BossBarOverlapMode.HIDE_TOOLTIP && !(Minecraft.getInstance().screen instanceof BaseOptionsScreen) &&
+				ClientProxy.getBossBarRect() != null) {
 			return false;
 		}
 
@@ -64,8 +67,9 @@ public class OverlayRenderer {
 	public static boolean shouldShowImmediately(TooltipRenderer tooltipRenderer) {
 		Minecraft mc = Minecraft.getInstance();
 
-		if (mc.level == null)
+		if (mc.level == null) {
 			return false;
+		}
 
 		if (!ClientProxy.shouldShowWithOverlay(mc, mc.screen)) {
 			return false;
@@ -77,7 +81,7 @@ public class OverlayRenderer {
 			if (!general.previewOverlay && !optionsScreen.forcePreviewOverlay()) {
 				return false;
 			}
-			Rect2i position = tooltipRenderer.getRealRect();
+			Rect2i position = Objects.requireNonNull(tooltipRenderer.getRealRect());
 			Window window = mc.getWindow();
 			double x = mc.mouseHandler.xpos() * window.getGuiScaledWidth() / window.getScreenWidth();
 			double y = mc.mouseHandler.ypos() * window.getGuiScaledHeight() / window.getScreenHeight();
@@ -86,11 +90,13 @@ public class OverlayRenderer {
 			}
 		}
 
-		if (mc.options.renderDebug && general.shouldHideFromDebug())
+		if (mc.options.renderDebug && general.shouldHideFromDebug()) {
 			return false;
+		}
 
-		if (mc.getOverlay() != null || mc.options.hideGui)
+		if (mc.getOverlay() != null || mc.options.hideGui) {
 			return false;
+		}
 
 		if (mc.gui.getTabList().visible && general.shouldHideFromTabList()) {
 			return false;
@@ -199,7 +205,15 @@ public class OverlayRenderer {
 		}
 		RenderSystem.enableBlend();
 		if (doDefault && colorSetting.alpha > 0) {
-			drawTooltipBox(guiGraphics, 0, 0, Mth.ceil(morphRect.getWidth() / scale), Mth.ceil(morphRect.getHeight() / scale), colorSetting.alpha, overlay.getSquare(), tooltip);
+			drawTooltipBox(
+					guiGraphics,
+					0,
+					0,
+					Mth.ceil(morphRect.getWidth() / scale),
+					Mth.ceil(morphRect.getHeight() / scale),
+					colorSetting.alpha,
+					overlay.getSquare(),
+					tooltip);
 		}
 
 		RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
@@ -229,8 +243,9 @@ public class OverlayRenderer {
 				return;
 			}
 			float delta = Minecraft.getInstance().getDeltaFrameTime() * 2;
-			if (delta < 1)
+			if (delta < 1) {
 				diff *= delta;
+			}
 			if (Mth.abs(diff) < 1) {
 				diff = diff > 0 ? 1 : -1;
 			}
@@ -240,7 +255,15 @@ public class OverlayRenderer {
 		}
 	}
 
-	public static void drawTooltipBox(GuiGraphics guiGraphics, int x, int y, int w, int h, float alpha, boolean square, TooltipRenderer tooltip) {
+	public static void drawTooltipBox(
+			GuiGraphics guiGraphics,
+			int x,
+			int y,
+			int w,
+			int h,
+			float alpha,
+			boolean square,
+			TooltipRenderer tooltip) {
 		Theme theme = OverlayRenderer.theme.getValue();
 		if (theme.backgroundTexture != null) {
 			ResourceLocation texture = theme.backgroundTexture;
@@ -280,7 +303,21 @@ public class OverlayRenderer {
 		}
 	}
 
-	public static void blitNineSliced(GuiGraphics guiGraphics, ResourceLocation pAtlasLocation, int pTargetX, int pTargetY, int pTargetWidth, int pTargetHeight, int pCornerWidth, int pCornerHeight, int pEdgeWidth, int pEdgeHeight, int pSourceWidth, int pSourceHeight, int pSourceX, int pSourceY) {
+	public static void blitNineSliced(
+			GuiGraphics guiGraphics,
+			ResourceLocation pAtlasLocation,
+			int pTargetX,
+			int pTargetY,
+			int pTargetWidth,
+			int pTargetHeight,
+			int pCornerWidth,
+			int pCornerHeight,
+			int pEdgeWidth,
+			int pEdgeHeight,
+			int pSourceWidth,
+			int pSourceHeight,
+			int pSourceX,
+			int pSourceY) {
 		pCornerWidth = Math.min(pCornerWidth, pTargetWidth / 2);
 		pEdgeWidth = Math.min(pEdgeWidth, pTargetWidth / 2);
 		pCornerHeight = Math.min(pCornerHeight, pTargetHeight / 2);
@@ -289,22 +326,120 @@ public class OverlayRenderer {
 			guiGraphics.blit(pAtlasLocation, pTargetX, pTargetY, pSourceX, pSourceY, pTargetWidth, pTargetHeight);
 		} else if (pTargetHeight == pSourceHeight) {
 			guiGraphics.blit(pAtlasLocation, pTargetX, pTargetY, pSourceX, pSourceY, pCornerWidth, pTargetHeight);
-			guiGraphics.blitRepeating(pAtlasLocation, pTargetX + pCornerWidth, pTargetY, pTargetWidth - pEdgeWidth - pCornerWidth, pTargetHeight, pSourceX + pCornerWidth, pSourceY, pSourceWidth - pEdgeWidth - pCornerWidth, pSourceHeight);
-			guiGraphics.blit(pAtlasLocation, pTargetX + pTargetWidth - pEdgeWidth, pTargetY, pSourceX + pSourceWidth - pEdgeWidth, pSourceY, pEdgeWidth, pTargetHeight);
+			guiGraphics.blitRepeating(
+					pAtlasLocation,
+					pTargetX + pCornerWidth,
+					pTargetY,
+					pTargetWidth - pEdgeWidth - pCornerWidth,
+					pTargetHeight,
+					pSourceX + pCornerWidth,
+					pSourceY,
+					pSourceWidth - pEdgeWidth - pCornerWidth,
+					pSourceHeight);
+			guiGraphics.blit(
+					pAtlasLocation,
+					pTargetX + pTargetWidth - pEdgeWidth,
+					pTargetY,
+					pSourceX + pSourceWidth - pEdgeWidth,
+					pSourceY,
+					pEdgeWidth,
+					pTargetHeight);
 		} else if (pTargetWidth == pSourceWidth) {
 			guiGraphics.blit(pAtlasLocation, pTargetX, pTargetY, pSourceX, pSourceY, pTargetWidth, pCornerHeight);
-			guiGraphics.blitRepeating(pAtlasLocation, pTargetX, pTargetY + pCornerHeight, pTargetWidth, pTargetHeight - pEdgeHeight - pCornerHeight, pSourceX, pSourceY + pCornerHeight, pSourceWidth, pSourceHeight - pEdgeHeight - pCornerHeight);
-			guiGraphics.blit(pAtlasLocation, pTargetX, pTargetY + pTargetHeight - pEdgeHeight, pSourceX, pSourceY + pSourceHeight - pEdgeHeight, pTargetWidth, pEdgeHeight);
+			guiGraphics.blitRepeating(
+					pAtlasLocation,
+					pTargetX,
+					pTargetY + pCornerHeight,
+					pTargetWidth,
+					pTargetHeight - pEdgeHeight - pCornerHeight,
+					pSourceX,
+					pSourceY + pCornerHeight,
+					pSourceWidth,
+					pSourceHeight - pEdgeHeight - pCornerHeight);
+			guiGraphics.blit(
+					pAtlasLocation,
+					pTargetX,
+					pTargetY + pTargetHeight - pEdgeHeight,
+					pSourceX,
+					pSourceY + pSourceHeight - pEdgeHeight,
+					pTargetWidth,
+					pEdgeHeight);
 		} else {
 			guiGraphics.blit(pAtlasLocation, pTargetX, pTargetY, pSourceX, pSourceY, pCornerWidth, pCornerHeight);
-			guiGraphics.blitRepeating(pAtlasLocation, pTargetX + pCornerWidth, pTargetY, pTargetWidth - pEdgeWidth - pCornerWidth, pCornerHeight, pSourceX + pCornerWidth, pSourceY, pSourceWidth - pEdgeWidth - pCornerWidth, pCornerHeight);
-			guiGraphics.blit(pAtlasLocation, pTargetX + pTargetWidth - pEdgeWidth, pTargetY, pSourceX + pSourceWidth - pEdgeWidth, pSourceY, pEdgeWidth, pCornerHeight);
-			guiGraphics.blit(pAtlasLocation, pTargetX, pTargetY + pTargetHeight - pEdgeHeight, pSourceX, pSourceY + pSourceHeight - pEdgeHeight, pCornerWidth, pEdgeHeight);
-			guiGraphics.blitRepeating(pAtlasLocation, pTargetX + pCornerWidth, pTargetY + pTargetHeight - pEdgeHeight, pTargetWidth - pEdgeWidth - pCornerWidth, pEdgeHeight, pSourceX + pCornerWidth, pSourceY + pSourceHeight - pEdgeHeight, pSourceWidth - pEdgeWidth - pCornerWidth, pEdgeHeight);
-			guiGraphics.blit(pAtlasLocation, pTargetX + pTargetWidth - pEdgeWidth, pTargetY + pTargetHeight - pEdgeHeight, pSourceX + pSourceWidth - pEdgeWidth, pSourceY + pSourceHeight - pEdgeHeight, pEdgeWidth, pEdgeHeight);
-			guiGraphics.blitRepeating(pAtlasLocation, pTargetX, pTargetY + pCornerHeight, pCornerWidth, pTargetHeight - pEdgeHeight - pCornerHeight, pSourceX, pSourceY + pCornerHeight, pCornerWidth, pSourceHeight - pEdgeHeight - pCornerHeight);
-			guiGraphics.blitRepeating(pAtlasLocation, pTargetX + pCornerWidth, pTargetY + pCornerHeight, pTargetWidth - pEdgeWidth - pCornerWidth, pTargetHeight - pEdgeHeight - pCornerHeight, pSourceX + pCornerWidth, pSourceY + pCornerHeight, pSourceWidth - pEdgeWidth - pCornerWidth, pSourceHeight - pEdgeHeight - pCornerHeight);
-			guiGraphics.blitRepeating(pAtlasLocation, pTargetX + pTargetWidth - pEdgeWidth, pTargetY + pCornerHeight, pEdgeWidth, pTargetHeight - pEdgeHeight - pCornerHeight, pSourceX + pSourceWidth - pEdgeWidth, pSourceY + pCornerHeight, pEdgeWidth, pSourceHeight - pEdgeHeight - pCornerHeight);
+			guiGraphics.blitRepeating(
+					pAtlasLocation,
+					pTargetX + pCornerWidth,
+					pTargetY,
+					pTargetWidth - pEdgeWidth - pCornerWidth,
+					pCornerHeight,
+					pSourceX + pCornerWidth,
+					pSourceY,
+					pSourceWidth - pEdgeWidth - pCornerWidth,
+					pCornerHeight);
+			guiGraphics.blit(
+					pAtlasLocation,
+					pTargetX + pTargetWidth - pEdgeWidth,
+					pTargetY,
+					pSourceX + pSourceWidth - pEdgeWidth,
+					pSourceY,
+					pEdgeWidth,
+					pCornerHeight);
+			guiGraphics.blit(
+					pAtlasLocation,
+					pTargetX,
+					pTargetY + pTargetHeight - pEdgeHeight,
+					pSourceX,
+					pSourceY + pSourceHeight - pEdgeHeight,
+					pCornerWidth,
+					pEdgeHeight);
+			guiGraphics.blitRepeating(
+					pAtlasLocation,
+					pTargetX + pCornerWidth,
+					pTargetY + pTargetHeight - pEdgeHeight,
+					pTargetWidth - pEdgeWidth - pCornerWidth,
+					pEdgeHeight,
+					pSourceX + pCornerWidth,
+					pSourceY + pSourceHeight - pEdgeHeight,
+					pSourceWidth - pEdgeWidth - pCornerWidth,
+					pEdgeHeight);
+			guiGraphics.blit(
+					pAtlasLocation,
+					pTargetX + pTargetWidth - pEdgeWidth,
+					pTargetY + pTargetHeight - pEdgeHeight,
+					pSourceX + pSourceWidth - pEdgeWidth,
+					pSourceY + pSourceHeight - pEdgeHeight,
+					pEdgeWidth,
+					pEdgeHeight);
+			guiGraphics.blitRepeating(
+					pAtlasLocation,
+					pTargetX,
+					pTargetY + pCornerHeight,
+					pCornerWidth,
+					pTargetHeight - pEdgeHeight - pCornerHeight,
+					pSourceX,
+					pSourceY + pCornerHeight,
+					pCornerWidth,
+					pSourceHeight - pEdgeHeight - pCornerHeight);
+			guiGraphics.blitRepeating(
+					pAtlasLocation,
+					pTargetX + pCornerWidth,
+					pTargetY + pCornerHeight,
+					pTargetWidth - pEdgeWidth - pCornerWidth,
+					pTargetHeight - pEdgeHeight - pCornerHeight,
+					pSourceX + pCornerWidth,
+					pSourceY + pCornerHeight,
+					pSourceWidth - pEdgeWidth - pCornerWidth,
+					pSourceHeight - pEdgeHeight - pCornerHeight);
+			guiGraphics.blitRepeating(
+					pAtlasLocation,
+					pTargetX + pTargetWidth - pEdgeWidth,
+					pTargetY + pCornerHeight,
+					pEdgeWidth,
+					pTargetHeight - pEdgeHeight - pCornerHeight,
+					pSourceX + pSourceWidth - pEdgeWidth,
+					pSourceY + pCornerHeight,
+					pEdgeWidth,
+					pSourceHeight - pEdgeHeight - pCornerHeight);
 		}
 	}
 }
