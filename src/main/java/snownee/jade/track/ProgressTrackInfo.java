@@ -24,7 +24,7 @@ public class ProgressTrackInfo extends TrackInfo {
 
 	@Override
 	public void update(float pTicks) {
-		if (progress != smoothProgress.getTarget()) {
+		if (progress != smoothProgress.getTarget() && ticksSinceValueChanged > 0) {
 			if (ticksSinceValueChanged > 10) {
 				smoothProgress.withSpeed(0.4F);
 			} else if (canDecrease || progress > smoothProgress.getTarget()) {
