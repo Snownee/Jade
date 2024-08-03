@@ -144,7 +144,7 @@ public final class ClientProxy {
 		});
 		ModLoadingContext.get().registerExtensionPoint(
 				IConfigScreenFactory.class,
-				() -> (minecraft, screen) -> new HomeConfigScreen(screen));
+				() -> (modContainer, screen) -> new HomeConfigScreen(screen));
 
 		for (int i = 320; i < 330; i++) {
 			InputConstants.Key key = InputConstants.Type.KEYSYM.getOrCreate(i);

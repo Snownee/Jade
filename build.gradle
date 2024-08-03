@@ -118,7 +118,7 @@ dependencies {
     implementation "net.neoforged:neoforge:${neo_version}"
     // annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
 
-    compileOnly "mezz.jei:jei-1.20.4-common-api:${jei_version}"
+    compileOnly "mezz.jei:jei-1.21-common-api:${jei_version}"
     //compileOnly "mezz.jei:jei-1.20.2-forge-api:${jei_version}"
     //runtimeOnly "mezz.jei:jei-1.20.2-forge:${jei_version}"
     //implementation "curse.maven:jei-238222:3834070"
