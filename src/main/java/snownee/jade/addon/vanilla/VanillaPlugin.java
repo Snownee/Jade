@@ -33,6 +33,7 @@ import net.minecraft.world.level.block.AbstractFurnaceBlock;
 import net.minecraft.world.level.block.AbstractSkullBlock;
 import net.minecraft.world.level.block.BeehiveBlock;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BrewingStandBlock;
 import net.minecraft.world.level.block.ChiseledBookShelfBlock;
 import net.minecraft.world.level.block.CommandBlock;
@@ -73,9 +74,16 @@ public class VanillaPlugin implements IWailaPlugin {
 		try {
 			return CHEST_CACHE.get(state, () -> {
 				ResourceLocation trappedName = CommonProxy.getId(state.getBlock());
+				Block block = Blocks.AIR;
 				if (trappedName.getPath().startsWith("trapped_")) {
 					ResourceLocation chestName = trappedName.withPath(trappedName.getPath().substring(8));
-					Block block = BuiltInRegistries.BLOCK.get(chestName);
+					block = BuiltInRegistries.BLOCK.get(chestName);
+				} else if (trappedName.getPath().endsWith("_trapped_chest")) {
+					ResourceLocation chestName = trappedName.withPath(
+							trappedName.getPath().substring(0, trappedName.getPath().length() - 14) + "_chest");
+					block = BuiltInRegistries.BLOCK.get(chestName);
+				}
+				if (block != Blocks.AIR) {
 					return copyProperties(state, block.defaultBlockState());
 				}
 				return state;
