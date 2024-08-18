@@ -33,6 +33,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BrushableBlock;
+import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.InfestedBlock;
 import net.minecraft.world.level.block.TrappedChestBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -196,7 +197,7 @@ public final class JadeClient {
 				return accessor;
 			}
 			IWailaClientRegistration client = VanillaPlugin.CLIENT_REGISTRATION;
-			if (target.getBlock() instanceof TrappedChestBlock) {
+			if (target.getBlock() instanceof ChestBlock) {
 				BlockState state = VanillaPlugin.getCorrespondingNormalChest(target.getBlockState());
 				if (state != target.getBlockState()) {
 					return client.blockAccessor().from(target).blockState(state).build();
