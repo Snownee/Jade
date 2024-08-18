@@ -49,12 +49,23 @@ public class SimpleToolHandler implements ToolHandler {
 	}
 
 	protected ItemStack test(BlockState state) {
+		tools:
 		for (ItemStack toolItem : tools) {
-			if (toolItem.isCorrectToolForDrops(state)) {
-				return toolItem;
-			}
 			Tool tool = toolItem.get(DataComponents.TOOL);
-			if (tool != null && tool.getMiningSpeed(state) > tool.defaultMiningSpeed()) {
+			if (tool != null) {
+				for (Tool.Rule rule : tool.rules()) {
+					if (rule.correctForDrops().isPresent() && state.is(rule.blocks())) {
+						if (rule.correctForDrops().get()) {
+							return toolItem;
+						}
+						continue tools;
+					}
+				}
+				if (tool.getMiningSpeed(state) > tool.defaultMiningSpeed()) {
+					return toolItem;
+				}
+			}
+			if (toolItem.isCorrectToolForDrops(state)) {
 				return toolItem;
 			}
 		}

@@ -235,10 +235,6 @@ public final class CommonProxy {
 		return FMLPaths.CONFIGDIR.get().toFile();
 	}
 
-	public static boolean isShears(ItemStack tool) {
-		return tool.getItem() instanceof ShearsItem || tool.is(Tags.Items.TOOLS_SHEAR);
-	}
-
 	public static boolean isCorrectToolForDrops(BlockState state, Player player, Level level, BlockPos pos) {
 		return EventHooks.doPlayerHarvestCheck(player, state, level, pos);
 	}
