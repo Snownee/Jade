@@ -161,9 +161,9 @@ public class HarvestToolProvider implements IBlockComponentProvider, ResourceMan
 
 		if (!elements.isEmpty()) {
 			elements.addFirst(IElementHelper.get().spacer(newLine ? -2 : 5, newLine ? 10 : 0));
-			ItemStack held = accessor.getPlayer().getMainHandItem();
-			boolean canHarvest = held.isCorrectToolForDrops(state);
-			if (state.requiresCorrectToolForDrops() || canHarvest) {
+			Player player = accessor.getPlayer();
+			boolean canHarvest = CommonProxy.isCorrectToolForDrops(state, player, accessor.getLevel(), accessor.getPosition());
+			if (state.requiresCorrectToolForDrops() || !canHarvest) {
 				IThemeHelper t = IThemeHelper.get();
 				Component text = canHarvest ? t.success(CHECK) : t.danger(X);
 				elements.add(IElementHelper.get().text(text)

@@ -31,7 +31,6 @@ import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.tag.convention.v2.ConventionalEntityTypeTags;
-import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
@@ -73,7 +72,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.ShearsItem;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.CustomModelData;
@@ -136,10 +134,6 @@ public final class CommonProxy implements ModInitializer {
 
 	public static File getConfigDirectory() {
 		return FabricLoader.getInstance().getConfigDir().toFile();
-	}
-
-	public static boolean isShears(ItemStack tool) {
-		return tool.getItem() instanceof ShearsItem || tool.is(ConventionalItemTags.SHEAR_TOOLS);
 	}
 
 	public static boolean isCorrectToolForDrops(BlockState state, Player player, Level level, BlockPos pos) {
