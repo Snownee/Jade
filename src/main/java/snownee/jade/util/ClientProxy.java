@@ -282,6 +282,8 @@ public final class ClientProxy {
 
 	public static ToolHandler createSwordToolHandler() {
 		SpecialToolHandler handler = new SpecialToolHandler("sword", Items.WOODEN_SWORD.getDefaultInstance());
+		handler.blocks.add(Blocks.BAMBOO);
+		handler.blocks.add(Blocks.BAMBOO_SAPLING);
 		handler.blocks.add(Blocks.COBWEB);
 		return handler;
 	}
