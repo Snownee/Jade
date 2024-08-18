@@ -54,8 +54,12 @@ public class ViewGroup<T> {
 	}
 
 	public static <T> boolean saveList(CompoundTag tag, String key, List<ViewGroup<T>> groups, Function<T, CompoundTag> writer) {
-		if (groups == null || groups.isEmpty())
+		if (groups == null) {
 			return false;
+		}
+		if (groups.isEmpty()) {
+			return true;
+		}
 		ListTag groupList = new ListTag();
 		for (int i = 0; i < groups.size(); i++) {
 			ViewGroup<T> group = groups.get(i);
@@ -68,9 +72,8 @@ public class ViewGroup<T> {
 		}
 		if (!groupList.isEmpty()) {
 			tag.put(key, groupList);
-			return true;
 		}
-		return false;
+		return true;
 	}
 
 	@Nullable
