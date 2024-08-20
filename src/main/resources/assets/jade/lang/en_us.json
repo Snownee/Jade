@@ -95,6 +95,7 @@
 	"config.jade.display_item_hide": "Hide",
 	"config.jade.display_item_top": "Top",
 	"config.jade.display_item_centered": "Centered",
+	"config.jade.display_item_inline": "In-line",
 	"config.jade.tts_mode": "Text to Speech Mode",
 	"config.jade.tts_mode_extra_msg": "tts,narration,narrate,press,toggle",
 	"config.jade.tts_mode_press": "Press",

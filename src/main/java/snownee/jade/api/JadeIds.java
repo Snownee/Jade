@@ -10,6 +10,7 @@ public interface JadeIds {
 	ResourceLocation PACKET_REQUEST_ENTITY = JADE("request_entity");
 	ResourceLocation PACKET_REQUEST_BLOCK = JADE("request_block");
 	ResourceLocation PACKET_SHOW_OVERLAY = JADE("show_overlay");
+	ResourceLocation CORE_ROOT_ICON = JADE("root_icon");
 	ResourceLocation CORE_OBJECT_NAME = JADE("object_name");
 	ResourceLocation CORE_MOD_NAME = JADE("mod_name");
 	ResourceLocation CORE_DISTANCE = JADE("distance");
