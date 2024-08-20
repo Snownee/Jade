@@ -11,13 +11,13 @@ import snownee.jade.overlay.DisplayHelper;
 
 public class ItemStackElement extends Element {
 
-	private final ItemStack stack;
+	private final ItemStack item;
 	private final float scale;
 	private final String text;
 	public static final ItemStackElement EMPTY = new ItemStackElement(ItemStack.EMPTY, 1, null);
 
-	private ItemStackElement(ItemStack stack, float scale, @Nullable String text) {
-		this.stack = stack;
+	private ItemStackElement(ItemStack item, float scale, @Nullable String text) {
+		this.item = item;
 		this.scale = scale == 0 ? 1 : scale;
 		this.text = text;
 	}
@@ -45,18 +45,21 @@ public class ItemStackElement extends Element {
 
 	@Override
 	public void render(GuiGraphics guiGraphics, float x, float y, float maxX, float maxY) {
-		if (stack.isEmpty()) {
+		if (item.isEmpty()) {
 			return;
 		}
-		DisplayHelper.INSTANCE.drawItem(guiGraphics, x + 1, y + 1, stack, scale, text);
+		DisplayHelper.INSTANCE.drawItem(guiGraphics, x + 1, y + 1, item, scale, text);
 	}
 
 	@Override
 	public @Nullable String getMessage() {
-		if (stack.isEmpty()) {
+		if (item.isEmpty()) {
 			return null;
 		}
-		return "%s %s".formatted(stack.getCount(), stack.getHoverName().getString());
+		return "%s %s".formatted(item.getCount(), item.getHoverName().getString());
 	}
 
+	public ItemStack getItem() {
+		return item;
+	}
 }

@@ -195,11 +195,12 @@ public class WailaTickHandler {
 			handler.gatherComponents(accessor, $ -> tooltip);
 		}
 
-		rootElement = new BoxElement(tooltip, IThemeHelper.get().theme().tooltipStyle);
-		rootElement.tag(JadeIds.ROOT);
-		rootElement.setThemeIcon(RayTracing.INSTANCE.getIcon(), IThemeHelper.get().theme());
+		BoxElement newElement = new BoxElement(tooltip, IThemeHelper.get().theme().tooltipStyle);
+		newElement.tag(JadeIds.ROOT);
+		newElement.setThemeIcon(RayTracing.INSTANCE.getIcon(), IThemeHelper.get().theme());
 		for (JadeTooltipCollectedCallback callback : WailaClientRegistration.instance().tooltipCollectedCallback.callbacks()) {
-			callback.onTooltipCollected(rootElement, accessor);
+			callback.onTooltipCollected(newElement, accessor);
 		}
+		rootElement = newElement;
 	}
 }

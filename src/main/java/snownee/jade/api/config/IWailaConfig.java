@@ -27,7 +27,7 @@ public interface IWailaConfig {
 	IPluginConfig getPlugin();
 
 	enum IconMode implements SimpleStringRepresentable {
-		TOP, CENTERED, HIDE
+		TOP, CENTERED, INLINE, HIDE
 	}
 
 	enum TTSMode implements SimpleStringRepresentable {

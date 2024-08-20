@@ -30,6 +30,7 @@ import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.IBoxElement;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.IElement;
+import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.api.ui.MessageType;
 import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.ui.TooltipRect;
@@ -176,7 +177,8 @@ public class BoxElement extends Element implements IBoxElement {
 			Vec2 offset = icon.getTranslation();
 			float offsetY = offset.y;
 			float min = contentTop + padding(ScreenDirection.DOWN) + iconSize.y;
-			if (IWailaConfig.get().getOverlay().getIconMode() == IWailaConfig.IconMode.TOP && min < getCachedSize().y) {
+			IWailaConfig.IconMode iconMode = IWailaConfig.get().getOverlay().getIconMode();
+			if (iconMode == IWailaConfig.IconMode.TOP && min < getCachedSize().y) {
 				offsetY += contentTop;
 			} else {
 				offsetY += (size.y - iconSize.y) / 2;
@@ -264,10 +266,29 @@ public class BoxElement extends Element implements IBoxElement {
 	}
 
 	public void setThemeIcon(@Nullable IElement icon, Theme theme) {
-		if (!IWailaConfig.get().getOverlay().shouldShowIcon()) {
+		IConfigOverlay overlay = IWailaConfig.get().getOverlay();
+		if (!overlay.shouldShowIcon()) {
 			return;
 		}
-		if (icon != null && theme.iconSlotSprite != null) {
+		if (icon == null) {
+			setIcon(null);
+			return;
+		}
+		IWailaConfig.IconMode iconMode = overlay.getIconMode();
+		if (iconMode == IWailaConfig.IconMode.INLINE) {
+			if (icon instanceof ItemStackElement itemStackElement) {
+				IElement newIcon = IElementHelper.get().smallItem(itemStackElement.getItem()).tag(JadeIds.CORE_ROOT_ICON);
+				newIcon.size(new Vec2(newIcon.getCachedSize().x + 1, newIcon.getCachedSize().y - 1));
+				tooltip.replace(JadeIds.CORE_OBJECT_NAME, list -> {
+					if (!list.isEmpty()) {
+						list.getFirst().addFirst(newIcon);
+					}
+					return list;
+				});
+			}
+			return;
+		}
+		if (theme.iconSlotSprite != null) {
 			if (theme.iconSlotSpriteCache == null) {
 				GuiSpriteManager guiSprites = Minecraft.getInstance().getGuiSprites();
 				TextureAtlasSprite textureAtlasSprite = guiSprites.getSprite(theme.iconSlotSprite);
@@ -288,6 +309,7 @@ public class BoxElement extends Element implements IBoxElement {
 			tooltip1.add(icon);
 			icon = theme.iconSlotSpriteCache.size(null);
 		}
+		icon.tag(JadeIds.CORE_ROOT_ICON);
 		setIcon(icon);
 	}
 
