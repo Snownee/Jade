@@ -6,12 +6,14 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.mutable.MutableBoolean;
+import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
@@ -114,7 +116,9 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 		}
 
 		MutableBoolean showName = new MutableBoolean(true);
+		MutableInt amountWidth = new MutableInt();
 		{
+			int showNameAmount = PluginConfig.INSTANCE.getInt(JadeIds.UNIVERSAL_ITEM_STORAGE_SHOW_NAME_AMOUNT);
 			int totalSize = 0;
 			for (var group : groups) {
 				for (var view : group.views) {
@@ -123,11 +127,15 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 					}
 					if (!view.item.isEmpty()) {
 						++totalSize;
+						if (totalSize == showNameAmount) {
+							showName.setFalse();
+						}
+					}
+					if (showName.isTrue()) {
+						String s = IDisplayHelper.get().humanReadableNumber(view.item.getCount(), "", false, null);
+						amountWidth.setValue(Math.max(amountWidth.intValue(), Minecraft.getInstance().font.width(s)));
 					}
 				}
-			}
-			if (showName.isTrue()) {
-				showName.setValue(totalSize < PluginConfig.INSTANCE.getInt(JadeIds.UNIVERSAL_ITEM_STORAGE_SHOW_NAME_AMOUNT));
 			}
 		}
 
@@ -181,8 +189,12 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 						elements.addAll(itemView.description);
 					} else {
 						elements.add(helper.smallItem(stack).clearCachedMessage());
-						elements.add(helper.text(Component.literal(IDisplayHelper.get()
-										.humanReadableNumber(stack.getCount(), "", false, null))
+						String s = IDisplayHelper.get().humanReadableNumber(stack.getCount(), "", false, null);
+						int width = Minecraft.getInstance().font.width(s);
+						if (width < amountWidth.intValue()) {
+							elements.add(helper.spacer(amountWidth.intValue() - width, 0));
+						}
+						elements.add(helper.text(Component.literal(s)
 								.append("× ")
 								.append(IDisplayHelper.get().stripColor(stack.getHoverName()))).message(null));
 					}
