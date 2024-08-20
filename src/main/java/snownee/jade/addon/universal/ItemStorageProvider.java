@@ -170,7 +170,7 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 						showName.isTrue() ||
 								drawnCount >= PluginConfig.INSTANCE.getInt(JadeIds.UNIVERSAL_ITEM_STORAGE_ITEMS_PER_LINE))) {
 					theTooltip.add(elements);
-					theTooltip.setLineMargin(-1, ScreenDirection.DOWN, -1);
+					theTooltip.setLineMargin(-1, ScreenDirection.DOWN, 0);
 					elements.clear();
 					drawnCount = 0;
 				}
