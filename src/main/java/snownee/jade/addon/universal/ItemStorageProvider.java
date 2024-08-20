@@ -228,14 +228,16 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 				return itemTag;
 			})) {
 				tag.putString("JadeItemStorageUid", provider.getUid().toString());
-			} else if (target instanceof RandomizableContainer containerEntity && containerEntity.getLootTable() != null) {
-				tag.putBoolean("Loot", true);
-			} else if (!player.isCreative() && !player.isSpectator() && target instanceof BaseContainerBlockEntity te) {
-				if (te.lockKey != LockCode.NO_LOCK) {
-					tag.putBoolean("Locked", true);
-				}
+				return;
 			}
 			break;
+		}
+		if (target instanceof RandomizableContainer containerEntity && containerEntity.getLootTable() != null) {
+			tag.putBoolean("Loot", true);
+		} else if (!player.isCreative() && !player.isSpectator() && target instanceof BaseContainerBlockEntity te) {
+			if (te.lockKey != LockCode.NO_LOCK) {
+				tag.putBoolean("Locked", true);
+			}
 		}
 	}
 
@@ -308,18 +310,18 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 				return CommonProxy.containerGroup(container, accessor);
 			}
 			if (target == null) {
-				return List.of();
+				return null;
 			}
 			if (target instanceof RandomizableContainer te && te.getLootTable() != null) {
-				return List.of();
+				return null;
 			}
 			if (target instanceof ContainerEntity containerEntity && containerEntity.getLootTable() != null) {
-				return List.of();
+				return null;
 			}
 			Player player = accessor.getPlayer();
 			if (!player.isCreative() && !player.isSpectator() && target instanceof BaseContainerBlockEntity te) {
 				if (te.lockKey != LockCode.NO_LOCK) {
-					return List.of();
+					return null;
 				}
 			}
 			if (target instanceof EnderChestBlockEntity) {
