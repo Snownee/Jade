@@ -97,7 +97,7 @@
 	"config.jade.display_item_centered": "置中",
 	"config.jade.display_item_inline": "內嵌",
 	"config.jade.tts_mode": "朗讀功能模式",
-	"config.jade.tts_mode_extra_msg": "朗讀功能,朗讀,按下,切換",
+	"config.jade.tts_mode_extra_msg": "按下,切換",
 	"config.jade.tts_mode_press": "按下",
 	"config.jade.tts_mode_toggle": "切換",
 	"config.jade.reach_distance": "加長顯示距離",
