@@ -113,7 +113,7 @@
 	"config.jade.danger_zone": "危険地帯",
 	"config.jade.reset_settings": "設定のリセット",
 	"config.jade.reset_settings.confirm": "設定をリセットしてもよろしいですか？",
-	"config.jade.plugin_jade": "Jadeコア",
+	"config.jade.plugin_jade": "コア機能",
 	"config.jade.plugin_jade.registry_name": "レジストリ名",
 	"config.jade.plugin_jade.registry_name_extra_msg": "id,高度,情報",
 	"config.jade.plugin_jade.registry_name_advanced_tooltips": "高度な情報",

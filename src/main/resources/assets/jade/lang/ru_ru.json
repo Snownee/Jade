@@ -111,7 +111,6 @@
 	"config.jade.danger_zone": "Опасная зона",
 	"config.jade.reset_settings": "Сбросить настройки",
 	"config.jade.reset_settings.confirm": "Вы уверены, что хотите сбросить настройки?",
-	"config.jade.plugin_jade": "Ядро Jade",
 	"config.jade.plugin_jade.debug": "Отладка",
 	"config.jade.plugin_jade.registry_name": "Название реестра",
 	"config.jade.plugin_jade.registry_name_extra_msg": "идентификатор,расширенные,всплывающие подсказки",

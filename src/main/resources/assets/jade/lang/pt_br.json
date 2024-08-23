@@ -107,7 +107,7 @@
 	"config.jade.danger_zone": "Zona de Perigo",
 	"config.jade.reset_settings": "Redefinir configs.",
 	"config.jade.reset_settings.confirm": "Tem certeza de que deseja redefinir as configurações?",
-	"config.jade.plugin_jade": "Núcleo do Jade",
+	"config.jade.plugin_jade": "Funções Básicas",
 	"config.jade.plugin_jade.registry_name": "Nome do Registro",
 	"config.jade.plugin_jade.registry_name_extra_msg": "id,avançado,dicas de ferramentas",
 	"config.jade.plugin_jade.registry_name_advanced_tooltips": "Dicas de ferramentas avançadas",

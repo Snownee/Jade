@@ -120,7 +120,7 @@
 	"config.jade.danger_zone": "Zona de peligro",
 	"config.jade.reset_settings": "Restablecer configuración",
 	"config.jade.reset_settings.confirm": "¿Está seguro de que desea restablecer la configuración?",
-	"config.jade.plugin_jade": "Núcleo de Jade",
+	"config.jade.plugin_jade": "Funciones Básicas",
 	"config.jade.plugin_jade.debug": "Depurar",
 	"config.jade.plugin_jade.registry_name": "Nombre del Registro",
 	"config.jade.plugin_jade.registry_name_extra_msg": "id,avanzado,información sobre herramientas",

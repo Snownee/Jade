@@ -30,10 +30,14 @@ Use "_desc" as a suffix to the option key to make it the description (tooltip) o
 
 Use "_extra_msg" as a suffix to the option key to add extra keywords of the option so that users can search by them.
 
-You should add the keywords according to your language. Please keep them in lowercase. And if you don't need extra keywords, you can leave
+You should add the keywords according to your language. Please keep them in **lowercase**. And if you don't need extra keywords, you can leave
 it empty.
 
 ## Plural form
 
 There are some keys whose parameters are enclosed in curly brackets, like `jade.seconds`. If your language has plural form for describing
 them, you can follow [this guide](https://www.baeldung.com/java-localization-messages-formatting) to display them correctly.
+
+## Extra notes
+
+Please let me know if you have any questions or suggestions, for example the button text is too long to fit in the UI.

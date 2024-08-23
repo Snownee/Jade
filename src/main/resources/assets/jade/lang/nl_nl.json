@@ -120,7 +120,6 @@
 	"config.jade.danger_zone": "Gevarenzone",
 	"config.jade.reset_settings": "Reset Instellingen",
 	"config.jade.reset_settings.confirm": "Weet u zeker dat u de instellingen wilt resetten?",
-	"config.jade.plugin_jade": "Jade Core",
 	"config.jade.plugin_jade.debug": "Foutopsporing",
 	"config.jade.plugin_jade.registry_name": "Registernaam",
 	"config.jade.plugin_jade.registry_name_extra_msg": "id,geavanceerd,tooltips",
