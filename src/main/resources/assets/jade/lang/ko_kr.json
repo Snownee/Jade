@@ -124,7 +124,6 @@
 	"config.jade.danger_zone": "위험 구역",
 	"config.jade.reset_settings": "설정 초기화",
 	"config.jade.reset_settings.confirm": "정말 설정을 초기화하시겠습니까?",
-	"config.jade.plugin_jade": "Jade Core",
 	"config.jade.plugin_jade.debug": "Debug",
 	"config.jade.plugin_jade.registry_name": "레지스트리 이름",
 	"config.jade.plugin_jade.registry_name_extra_msg": "id,advanced,tooltips",
