@@ -25,11 +25,6 @@ public class WailaExceptionHandler {
 	private static boolean NULL_ERROR = false;
 	private static final File ERROR_OUTPUT = new File("logs", "JadeErrorOutput.txt");
 
-	@Deprecated
-	public static void handleErr(Throwable e, @Nullable IJadeProvider provider, @Nullable ITooltip tooltip) {
-		handleErr(e, provider, tooltip, null);
-	}
-
 	public static void handleErr(Throwable e, @Nullable IJadeProvider provider, @Nullable ITooltip tooltip, @Nullable String whoToBlame) {
 		if (CommonProxy.isDevEnv()) {
 			ExceptionUtils.wrapAndThrow(e);
@@ -52,7 +47,8 @@ public class WailaExceptionHandler {
 			if (modid == null || ResourceLocation.DEFAULT_NAMESPACE.equals(modid)) {
 				modid = Jade.MODID;
 			}
-			tooltip.add(Component.translatable("jade.error", ModIdentification.getModName(modid)).withStyle(ChatFormatting.DARK_RED));
+			tooltip.add(Component.translatable("jade.error", ModIdentification.getModName(modid).orElse(modid))
+					.withStyle(ChatFormatting.DARK_RED));
 		}
 	}
 
