@@ -74,3 +74,6 @@ accessible field net/minecraft/world/level/storage/loot/predicates/CompositeLoot
 accessible field net/minecraft/world/level/storage/loot/entries/CompositeEntryBase children Ljava/util/List;
 accessible field net/minecraft/world/level/storage/loot/entries/LootPoolEntryContainer conditions Ljava/util/List;
 accessible field net/minecraft/world/level/storage/loot/LootPool entries Ljava/util/List;
+
+accessible method net/minecraft/client/gui/components/WidgetTooltipHolder createTooltipPositioner (Lnet/minecraft/client/gui/navigation/ScreenRectangle;ZZ)Lnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;
+extendable method net/minecraft/client/gui/components/WidgetTooltipHolder createTooltipPositioner (Lnet/minecraft/client/gui/navigation/ScreenRectangle;ZZ)Lnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;

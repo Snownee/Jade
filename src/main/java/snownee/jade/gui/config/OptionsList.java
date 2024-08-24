@@ -594,7 +594,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 
 		@Override
 		public int getTextX(int width) {
-			return x + (width - client.font.width(title)) / 2;
+			return x + (width - getTextWidth()) / 2;
 		}
 
 		@Override

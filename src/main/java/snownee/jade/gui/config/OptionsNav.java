@@ -1,15 +1,20 @@
 package snownee.jade.gui.config;
 
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector2i;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ObjectSelectionList;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.components.WidgetTooltipHolder;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.navigation.CommonInputs;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.gui.navigation.ScreenDirection;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.network.chat.Component;
 
 public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
@@ -99,10 +104,29 @@ public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
 
 		private final OptionsList.Title title;
 		private final OptionsNav parent;
+		@Nullable
+		private WidgetTooltipHolder tooltip;
 
 		public Entry(OptionsNav parent, OptionsList.Title title) {
 			this.parent = parent;
 			this.title = title;
+			refreshTooltip();
+		}
+
+		protected void refreshTooltip() {
+			if (10 + title.getTextWidth() > parent.getRowWidth()) {
+				tooltip = new WidgetTooltipHolder() {
+					@Override
+					public ClientTooltipPositioner createTooltipPositioner(ScreenRectangle screenRectangle, boolean bl, boolean bl2) {
+						return new FixedTooltipPositioner(new Vector2i(
+								screenRectangle.left() + 10,
+								screenRectangle.top() + (screenRectangle.height() / 2) - (title.client.font.lineHeight / 2)));
+					}
+				};
+				tooltip.set(Tooltip.create(title.getTitle()));
+			} else {
+				tooltip = null;
+			}
 		}
 
 		@Override
@@ -137,6 +161,12 @@ public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
 					parent.ensureVisible(this);
 				}
 				parent.current = index;
+			}
+			if (tooltip != null) {
+				tooltip.refreshTooltipForNextRenderPass(
+						isMouseOver(mouseX, mouseY),
+						isFocused(),
+						new ScreenRectangle(rowLeft, rowTop, width, height));
 			}
 		}
 
