@@ -55,6 +55,7 @@ public class WailaExceptionHandler {
 	private static void writeLog(Throwable e, IJadeProvider provider) {
 		Jade.LOGGER.error("Caught unhandled exception : [{}] {}", provider, e);
 		Jade.LOGGER.error("See JadeErrorOutput.txt for more information");
+		Jade.LOGGER.catching(e);
 		try {
 			FileUtils.writeStringToFile(
 					ERROR_OUTPUT,
