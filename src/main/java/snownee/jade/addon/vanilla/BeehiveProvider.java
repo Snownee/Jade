@@ -35,7 +35,6 @@ public enum BeehiveProvider implements IBlockComponentProvider, IServerDataProvi
 
 	@Override
 	public void appendServerData(CompoundTag tag, BlockAccessor blockAccessor) {
-		tag.getAllKeys().clear();
 		BeehiveBlockEntity beehive = (BeehiveBlockEntity) blockAccessor.getBlockEntity();
 		tag.putByte("Bees", (byte) beehive.getOccupantCount());
 		tag.putBoolean("Full", beehive.isFull());
