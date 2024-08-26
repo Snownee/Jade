@@ -71,7 +71,6 @@ import snownee.jade.util.ModIdentification;
 
 public final class JadeClient {
 
-	public static final SystemToast.SystemToastId JADE_TUTORIAL = new SystemToast.SystemToastId(6000L);
 	public static final SystemToast.SystemToastId JADE_PLEASE_WAIT = new SystemToast.SystemToastId(2000L);
 	public static KeyMapping openConfig;
 	public static KeyMapping showOverlay;
@@ -117,11 +116,17 @@ public final class JadeClient {
 				general.setDisplayTooltip(!general.shouldDisplayTooltip());
 				WailaConfig.ConfigHistory history = Jade.CONFIG.get().getHistory();
 				if (!general.shouldDisplayTooltip() && history.hintOverlayToggle) {
-					SystemToast.add(
-							Minecraft.getInstance().getToasts(),
-							JADE_TUTORIAL,
+//					SystemToast.add(
+//							Minecraft.getInstance().getToasts(),
+//							JADE_TUTORIAL,
+//							Component.translatable("toast.jade.toggle_hint.1"),
+//							Component.translatable("toast.jade.toggle_hint.2", showOverlay.getTranslatedKeyMessage()));
+					Minecraft.getInstance().getChatListener().handleSystemMessage(
 							Component.translatable("toast.jade.toggle_hint.1"),
-							Component.translatable("toast.jade.toggle_hint.2", showOverlay.getTranslatedKeyMessage()));
+							false);
+					Minecraft.getInstance().getChatListener().handleSystemMessage(
+							Component.translatable("toast.jade.toggle_hint.2", showOverlay.getTranslatedKeyMessage()),
+							false);
 					history.hintOverlayToggle = false;
 				}
 				Jade.CONFIG.save();
@@ -138,11 +143,12 @@ public final class JadeClient {
 				general.toggleTTS();
 				WailaConfig.ConfigHistory history = Jade.CONFIG.get().getHistory();
 				if (general.shouldEnableTextToSpeech() && history.hintNarratorToggle) {
-					SystemToast.add(
-							Minecraft.getInstance().getToasts(),
-							JADE_TUTORIAL,
+					Minecraft.getInstance().getChatListener().handleSystemMessage(
 							Component.translatable("toast.jade.tts_hint.1"),
-							Component.translatable("toast.jade.tts_hint.2", narrate.getTranslatedKeyMessage()));
+							false);
+					Minecraft.getInstance().getChatListener().handleSystemMessage(
+							Component.translatable("toast.jade.tts_hint.2", narrate.getTranslatedKeyMessage()),
+							false);
 					history.hintNarratorToggle = false;
 				}
 				Jade.CONFIG.save();
