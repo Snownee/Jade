@@ -13,8 +13,6 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.toasts.SystemToast;
-import net.minecraft.client.gui.components.toasts.SystemToast.SystemToastIds;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
@@ -35,7 +33,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BrushableBlock;
 import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.InfestedBlock;
-import net.minecraft.world.level.block.TrappedChestBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.HitResult;
 import snownee.jade.addon.universal.ItemStorageProvider;
@@ -105,11 +102,12 @@ public final class JadeClient {
 			if (mode == IWailaConfig.DisplayMode.TOGGLE) {
 				general.setDisplayTooltip(!general.shouldDisplayTooltip());
 				if (!general.shouldDisplayTooltip() && general.hintOverlayToggle) {
-					SystemToast.add(
-							Minecraft.getInstance().getToasts(),
-							SystemToastIds.UNSECURE_SERVER_WARNING,
+					Minecraft.getInstance().getChatListener().handleSystemMessage(
 							Component.translatable("toast.jade.toggle_hint.1"),
-							Component.translatable("toast.jade.toggle_hint.2", showOverlay.getTranslatedKeyMessage()));
+							false);
+					Minecraft.getInstance().getChatListener().handleSystemMessage(
+							Component.translatable("toast.jade.toggle_hint.2", showOverlay.getTranslatedKeyMessage()),
+							false);
 					general.hintOverlayToggle = false;
 				}
 				Jade.CONFIG.save();
@@ -125,11 +123,12 @@ public final class JadeClient {
 			if (general.getTTSMode() == TTSMode.TOGGLE) {
 				general.toggleTTS();
 				if (general.shouldEnableTextToSpeech() && general.hintNarratorToggle) {
-					SystemToast.add(
-							Minecraft.getInstance().getToasts(),
-							SystemToastIds.UNSECURE_SERVER_WARNING,
+					Minecraft.getInstance().getChatListener().handleSystemMessage(
 							Component.translatable("toast.jade.tts_hint.1"),
-							Component.translatable("toast.jade.tts_hint.2", narrate.getTranslatedKeyMessage()));
+							false);
+					Minecraft.getInstance().getChatListener().handleSystemMessage(
+							Component.translatable("toast.jade.tts_hint.2", narrate.getTranslatedKeyMessage()),
+							false);
 					general.hintNarratorToggle = false;
 				}
 				Jade.CONFIG.save();
