@@ -240,7 +240,7 @@
 	"jade.owner": "Owner: %s",
 	"jade.infinity": "+∞",
 	"jade.seconds": "{0}s",
-	"jade.error": "<Error from %s mod, plz report>",
+	"jade.error": "<Error occurred, plz report to %s>",
 	"jade.hopper.locked": "Hopper is locked",
 	"jade.blockpos": "%s %s %s",
 	"jade.distance1": " [%s]",
