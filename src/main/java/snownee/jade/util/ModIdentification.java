@@ -7,6 +7,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
@@ -14,6 +15,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.decoration.Painting;
 import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import snownee.jade.api.callback.JadeItemModNameCallback;
@@ -71,6 +73,9 @@ public class ModIdentification implements ResourceManagerReloadListener {
 		}
 		if (entity instanceof FallingBlockEntity fallingBlock) {
 			return getModName(fallingBlock.getBlockState().getBlock());
+		}
+		if (entity instanceof Villager villager) {
+			return getModName(BuiltInRegistries.VILLAGER_PROFESSION.getKey(villager.getVillagerData().getProfession()));
 		}
 		return getModName(CommonProxy.getId(entity.getType()));
 	}
