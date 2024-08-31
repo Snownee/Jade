@@ -305,6 +305,7 @@
 	"jade.access.block.waterlogged": "Waterlogged %s",
 	"jade.access.block.lit": "Lit %s",
 	"jade.access.block.inverted": "Inverted %s",
+	"jade.access.block.eye": "%s with Eye",
 	"jade.access.block.ominous": "Ominous %s",
 	"jade.access.block.active": "Active %s",
 	"config.jade.plugin_jade_access.entity": "Entity Details",
