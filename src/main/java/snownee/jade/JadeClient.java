@@ -7,7 +7,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.google.common.base.Joiner;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
@@ -169,7 +168,7 @@ public final class JadeClient {
 				}
 			}
 			if (!keys.isEmpty()) {
-				throw new AssertionError("Missing config translation: %s".formatted(Joiner.on(',').join(keys)));
+				throw new AssertionError("Missing config translation: %s".formatted(String.join(",", keys)));
 			}
 		}
 	}

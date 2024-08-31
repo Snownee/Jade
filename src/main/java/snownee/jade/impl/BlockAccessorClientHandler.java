@@ -71,7 +71,7 @@ public class BlockAccessorClientHandler implements AccessorClientHandler<BlockAc
 			icon = ClientProxy.elementFromLiquid(blockState);
 		}
 
-		for (var provider : WailaClientRegistration.instance().getBlockIconProviders(block, PluginConfig.INSTANCE::get)) {
+		for (var provider : WailaClientRegistration.instance().getBlockIconProviders(block, this::isEnabled)) {
 			try {
 				IElement element = provider.getIcon(accessor, PluginConfig.INSTANCE, icon);
 				if (!RayTracing.isEmptyElement(element)) {
@@ -86,7 +86,7 @@ public class BlockAccessorClientHandler implements AccessorClientHandler<BlockAc
 
 	@Override
 	public void gatherComponents(BlockAccessor accessor, Function<IJadeProvider, ITooltip> tooltipProvider) {
-		for (var provider : WailaClientRegistration.instance().getBlockProviders(accessor.getBlock(), PluginConfig.INSTANCE::get)) {
+		for (var provider : WailaClientRegistration.instance().getBlockProviders(accessor.getBlock(), this::isEnabled)) {
 			ITooltip tooltip = tooltipProvider.apply(provider);
 			try {
 				ElementHelper.INSTANCE.setCurrentUid(provider.getUid());

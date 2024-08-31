@@ -91,7 +91,7 @@ public final class ClientProxy {
 	public static boolean hasJEI = CommonProxy.isModLoaded("jei");
 	public static boolean hasREI = false; //isModLoaded("roughlyenoughitems");
 	public static boolean hasFastScroll = CommonProxy.isModLoaded("fastscroll");
-	public static boolean maybeLowVisionUser = CommonProxy.isModLoaded("minecraft_access");
+	public static boolean hasAccessibilityMod = CommonProxy.isModLoaded("minecraft_access");
 	private static boolean bossbarShown;
 	private static int bossbarHeight;
 
@@ -317,5 +317,9 @@ public final class ClientProxy {
 	public static GameType getGameMode() {
 		MultiPlayerGameMode gameMode = Minecraft.getInstance().gameMode;
 		return gameMode == null ? GameType.SURVIVAL : gameMode.getPlayerMode();
+	}
+
+	public static boolean hasAccessibilityMod() {
+		return hasAccessibilityMod;
 	}
 }

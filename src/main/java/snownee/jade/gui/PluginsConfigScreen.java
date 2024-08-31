@@ -41,7 +41,7 @@ public class PluginsConfigScreen extends PreviewOptionsScreen {
 		OptionsList options = new OptionsList(this, minecraft, width - 120, height - 32, 0, 26, PluginConfig.INSTANCE::save);
 		boolean noteServerFeature =
 				Minecraft.getInstance().level == null || IWailaConfig.get().getGeneral().isDebug() || !ObjectDataCenter.serverConnected;
-		PluginConfig.INSTANCE.getListView().forEach(category -> {
+		PluginConfig.INSTANCE.getListView(IWailaConfig.get().getGeneral().getEnableAccessibilityPlugin()).forEach(category -> {
 			options.add(new OptionsList.Title(category.title()));
 			MutableObject<OptionValue<?>> lastPrimary = new MutableObject<>();
 			category.entries().forEach(entry -> {

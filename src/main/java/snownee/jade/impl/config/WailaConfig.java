@@ -15,10 +15,12 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.HumanoidArm;
+import snownee.jade.Jade;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
+import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
 import snownee.jade.util.JadeCodecs;
 import snownee.jade.util.ModIdentification;
@@ -146,17 +148,28 @@ public class WailaConfig implements IWailaConfig {
 			public static final MapCodec<ExtraOptions> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
 					Codec.BOOL.fieldOf("hideFromDebug").orElse(true).forGetter(ExtraOptions::hideFromDebug),
 					Codec.BOOL.fieldOf("hideFromTabList").orElse(true).forGetter(ExtraOptions::hideFromTabList),
-					Codec.BOOL.fieldOf("hideFromGUIs").orElse(true).forGetter(ExtraOptions::hideFromGUIs)
+					Codec.BOOL.fieldOf("hideFromGUIs").orElse(true).forGetter(ExtraOptions::hideFromGUIs),
+					Codec.BOOL.fieldOf("accessibilityModMemory").orElse(false).forGetter(ExtraOptions::accessibilityModMemory),
+					Codec.BOOL.fieldOf("enableAccessibilityPlugin").orElse(false).forGetter(ExtraOptions::enableAccessibilityPlugin)
 			).apply(i, ExtraOptions::new));
 
 			private boolean hideFromDebug;
 			private boolean hideFromTabList;
 			private boolean hideFromGUIs;
+			public boolean accessibilityModMemory;
+			public boolean enableAccessibilityPlugin;
 
-			public ExtraOptions(boolean hideFromDebug, boolean hideFromTabList, boolean hideFromGUIs) {
+			public ExtraOptions(
+					boolean hideFromDebug,
+					boolean hideFromTabList,
+					boolean hideFromGUIs,
+					boolean accessibilityModMemory,
+					boolean enableAccessibilityPlugin) {
 				this.hideFromDebug = hideFromDebug;
 				this.hideFromTabList = hideFromTabList;
 				this.hideFromGUIs = hideFromGUIs;
+				this.accessibilityModMemory = accessibilityModMemory;
+				this.enableAccessibilityPlugin = enableAccessibilityPlugin;
 			}
 
 			public boolean hideFromDebug() {
@@ -171,6 +184,14 @@ public class WailaConfig implements IWailaConfig {
 				return hideFromGUIs;
 			}
 
+			public boolean accessibilityModMemory() {
+				return accessibilityModMemory;
+			}
+
+			public boolean enableAccessibilityPlugin() {
+				return enableAccessibilityPlugin;
+			}
+
 			public void setHideFromDebug(boolean hideFromDebug) {
 				this.hideFromDebug = hideFromDebug;
 			}
@@ -181,6 +202,14 @@ public class WailaConfig implements IWailaConfig {
 
 			public void setHideFromGUIs(boolean hideFromGUIs) {
 				this.hideFromGUIs = hideFromGUIs;
+			}
+
+			public void setAccessibilityModMemory(boolean accessibilityModMemory) {
+				this.accessibilityModMemory = accessibilityModMemory;
+			}
+
+			public void setEnableAccessibilityPlugin(boolean enableAccessibilityPlugin) {
+				this.enableAccessibilityPlugin = enableAccessibilityPlugin;
 			}
 		}
 
@@ -226,6 +255,14 @@ public class WailaConfig implements IWailaConfig {
 			/* on */
 			itemModNameTooltipDisabledByMods.clear();
 			itemModNameTooltipDisabledByMods.addAll(names);
+
+			IWailaConfig.IConfigGeneral config = IWailaConfig.get().getGeneral();
+			boolean hasAccessibilityMod = ClientProxy.hasAccessibilityMod();
+			if (config.getAccessibilityModMemory() != hasAccessibilityMod) {
+				config.setAccessibilityModMemory(hasAccessibilityMod);
+				config.setEnableAccessibilityPlugin(hasAccessibilityMod);
+				Jade.CONFIG.save();
+			}
 		}
 
 		@Override
@@ -398,6 +435,25 @@ public class WailaConfig implements IWailaConfig {
 			this.builtinCamouflage = builtinCamouflage;
 		}
 
+		@Override
+		public boolean getAccessibilityModMemory() {
+			return extraOptions.accessibilityModMemory();
+		}
+
+		@Override
+		public void setAccessibilityModMemory(boolean accessibilityModMemory) {
+			extraOptions.setAccessibilityModMemory(accessibilityModMemory);
+		}
+
+		@Override
+		public boolean getEnableAccessibilityPlugin() {
+			return extraOptions.enableAccessibilityPlugin();
+		}
+
+		@Override
+		public void setEnableAccessibilityPlugin(boolean enableAccessibilityPlugin) {
+			extraOptions.setEnableAccessibilityPlugin(enableAccessibilityPlugin);
+		}
 	}
 
 	public static class ConfigOverlay implements IConfigOverlay {

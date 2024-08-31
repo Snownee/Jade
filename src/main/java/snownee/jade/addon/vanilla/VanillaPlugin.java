@@ -191,6 +191,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerEntityIcon(ItemDisplayProvider.INSTANCE, ItemDisplay.class);
 		registration.registerEntityIcon(BlockDisplayProvider.INSTANCE, BlockDisplay.class);
 		registration.registerEntityComponent(ZombieVillagerProvider.INSTANCE, ZombieVillager.class);
+		registration.registerBlockComponent(WaxedProvider.INSTANCE, SignBlock.class);
 		registration.registerBlockIcon(WaxedProvider.INSTANCE, SignBlock.class);
 
 		registration.registerItemStorageClient(CampfireProvider.INSTANCE);

@@ -8,7 +8,6 @@ import java.util.function.UnaryOperator;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 
@@ -20,10 +19,10 @@ import net.minecraft.world.phys.Vec2;
 import snownee.jade.Jade;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
-import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElement.Align;
 import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.impl.ui.ElementHelper;
 import snownee.jade.overlay.DisplayHelper;
 
@@ -183,17 +182,22 @@ public class Tooltip implements ITooltip {
 		List<String> msgs = Lists.newArrayList();
 		for (Line line : lines) {
 			/* off */
-			msgs.add(Joiner.on(' ').join(
-							line.sortedElements().stream()
-									.filter(e -> !JadeIds.CORE_MOD_NAME.equals(e.getTag()))
-									.map(IElement::getCachedMessage)
-									.filter(java.util.Objects::nonNull)
-									.toList()
-					)
-			);
+			msgs.add(String.join(" ", line.sortedElements().stream()
+					.filter(e -> !JadeIds.CORE_MOD_NAME.equals(e.getTag()))
+					.map(IElement::getCachedMessage)
+					.filter(java.util.Objects::nonNull)
+					.toList()));
 			/* on */
 		}
-		return Joiner.on('\n').join(msgs);
+		return String.join("\n", msgs);
+	}
+
+	@Override
+	public String getMessage(ResourceLocation tag) {
+		return String.join(" ", get(tag).stream()
+				.map(IElement::getCachedMessage)
+				.filter(java.util.Objects::nonNull)
+				.toList());
 	}
 
 	@Override

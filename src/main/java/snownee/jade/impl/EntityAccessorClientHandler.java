@@ -65,7 +65,7 @@ public class EntityAccessorClientHandler implements AccessorClientHandler<Entity
 			}
 		}
 
-		for (var provider : WailaClientRegistration.instance().getEntityIconProviders(entity, PluginConfig.INSTANCE::get)) {
+		for (var provider : WailaClientRegistration.instance().getEntityIconProviders(entity, this::isEnabled)) {
 			try {
 				IElement element = provider.getIcon(accessor, PluginConfig.INSTANCE, icon);
 				if (!RayTracing.isEmptyElement(element)) {
@@ -80,7 +80,7 @@ public class EntityAccessorClientHandler implements AccessorClientHandler<Entity
 
 	@Override
 	public void gatherComponents(EntityAccessor accessor, Function<IJadeProvider, ITooltip> tooltipProvider) {
-		for (var provider : WailaClientRegistration.instance().getEntityProviders(accessor.getEntity(), PluginConfig.INSTANCE::get)) {
+		for (var provider : WailaClientRegistration.instance().getEntityProviders(accessor.getEntity(), this::isEnabled)) {
 			ITooltip tooltip = tooltipProvider.apply(provider);
 			try {
 				ElementHelper.INSTANCE.setCurrentUid(provider.getUid());

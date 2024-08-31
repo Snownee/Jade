@@ -4,8 +4,6 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.google.common.base.Joiner;
-
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
@@ -37,7 +35,7 @@ public enum NoteBlockProvider implements IBlockComponentProvider {
 		if (I18n.exists(key)) {
 			name = I18n.get(key);
 		} else {
-			name = Joiner.on(' ').join(Stream.of(instrument.getSerializedName().replace('_', ' ').split(" "))
+			name = String.join(" ", Stream.of(instrument.getSerializedName().replace('_', ' ').split(" "))
 					.map(StringUtils::capitalize)
 					.toList());
 		}
