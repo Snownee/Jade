@@ -1,9 +1,10 @@
 package snownee.jade.impl.config.entry;
 
+import java.util.function.BiConsumer;
+
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.gui.config.OptionsList;
 import snownee.jade.gui.config.value.OptionValue;
-import snownee.jade.impl.config.PluginConfig;
 
 public class BooleanConfigEntry extends ConfigEntry<Boolean> {
 
@@ -17,8 +18,8 @@ public class BooleanConfigEntry extends ConfigEntry<Boolean> {
 	}
 
 	@Override
-	public OptionValue<?> createUI(OptionsList options, String optionName) {
-		return options.choices(optionName, this::getValue, b -> PluginConfig.INSTANCE.set(id, b));
+	public OptionValue<?> createUI(OptionsList options, String optionName, BiConsumer<ResourceLocation, Object> setter) {
+		return options.choices(optionName, this::getValue, b -> setter.accept(id, b));
 	}
 
 }

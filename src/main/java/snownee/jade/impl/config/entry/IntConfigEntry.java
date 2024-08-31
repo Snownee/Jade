@@ -1,11 +1,12 @@
 package snownee.jade.impl.config.entry;
 
+import java.util.function.BiConsumer;
+
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import snownee.jade.gui.config.OptionsList;
 import snownee.jade.gui.config.value.InputOptionValue;
 import snownee.jade.gui.config.value.OptionValue;
-import snownee.jade.impl.config.PluginConfig;
 
 public class IntConfigEntry extends ConfigEntry<Integer> {
 
@@ -31,12 +32,12 @@ public class IntConfigEntry extends ConfigEntry<Integer> {
 	}
 
 	@Override
-	public OptionValue<?> createUI(OptionsList options, String optionName) {
+	public OptionValue<?> createUI(OptionsList options, String optionName, BiConsumer<ResourceLocation, Object> setter) {
 		if (slider) {
 			return options.slider(
 					optionName,
 					() -> Float.valueOf(getValue()),
-					f -> PluginConfig.INSTANCE.set(id, (int) (float) f),
+					f -> setter.accept(id, (int) (float) f),
 					min,
 					max,
 					f -> (float) Math.round(f));
@@ -44,7 +45,7 @@ public class IntConfigEntry extends ConfigEntry<Integer> {
 			return options.input(
 					optionName,
 					this::getValue,
-					i -> PluginConfig.INSTANCE.set(id, Mth.clamp(i, min, max)),
+					i -> setter.accept(id, Mth.clamp(i, min, max)),
 					InputOptionValue.INTEGER.and($ -> isValidValue(Integer.valueOf($))));
 		}
 	}

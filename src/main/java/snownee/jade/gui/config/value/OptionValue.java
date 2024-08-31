@@ -119,8 +119,14 @@ public abstract class OptionValue<T> extends OptionsList.Entry {
 
 	public abstract void setValue(T value);
 
+	public abstract void updateValue();
+
 	public void setId(ResourceLocation id) {
 		this.id = id;
+	}
+
+	public ResourceLocation getId() {
+		return id;
 	}
 
 	@Override

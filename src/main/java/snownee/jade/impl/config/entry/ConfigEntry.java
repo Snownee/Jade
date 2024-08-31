@@ -2,6 +2,7 @@ package snownee.jade.impl.config.entry;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import com.google.common.collect.Lists;
@@ -52,7 +53,7 @@ public abstract class ConfigEntry<T> {
 
 	abstract public boolean isValidValue(Object value);
 
-	abstract public OptionValue<?> createUI(OptionsList options, String optionName);
+	abstract public OptionValue<?> createUI(OptionsList options, String optionName, BiConsumer<ResourceLocation, Object> setter);
 
 	public void addListener(Consumer<ResourceLocation> listener) {
 		if (listeners.isEmpty()) {
