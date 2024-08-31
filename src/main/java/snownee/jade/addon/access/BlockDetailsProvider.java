@@ -29,6 +29,9 @@ public class BlockDetailsProvider implements IBlockComponentProvider {
 		if (blockState.hasProperty(BlockStateProperties.INVERTED) && blockState.getValue(BlockStateProperties.INVERTED)) {
 			AccessibilityPlugin.replaceTitle(tooltip, "block.inverted");
 		}
+		if (blockState.hasProperty(BlockStateProperties.EYE) && blockState.getValue(BlockStateProperties.EYE)) {
+			AccessibilityPlugin.replaceTitle(tooltip, "block.eye");
+		}
 		if (blockState.hasProperty(BlockStateProperties.OMINOUS) && blockState.getValue(BlockStateProperties.OMINOUS)) {
 			AccessibilityPlugin.replaceTitle(tooltip, "block.ominous");
 		}
