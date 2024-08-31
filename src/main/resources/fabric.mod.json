@@ -30,6 +30,7 @@
 			"snownee.jade.addon.core.CorePlugin",
 			"snownee.jade.addon.vanilla.VanillaPlugin",
 			"snownee.jade.addon.universal.UniversalPlugin",
+			"snownee.jade.addon.access.AccessibilityPlugin",
 			"snownee.jade.addon.debug.DebugPlugin"
 		],
 		"modmenu": [

@@ -80,9 +80,22 @@ public interface JadeIds {
 	ResourceLocation MC_VILLAGER_PROFESSION = MC("villager_profession");
 	ResourceLocation MC_WAXED = MC("waxed");
 	ResourceLocation MC_ZOMBIE_VILLAGER = MC("zombie_villager");
+	ResourceLocation ACCESS_SIGN = ACCESS("sign");
+	ResourceLocation ACCESS_BLOCK_DETAILS = ACCESS("block");
+	ResourceLocation ACCESS_ENTITY_DETAILS = ACCESS("entity");
+	ResourceLocation ACCESS_ENTITY_VARIANT = ACCESS("entity_variant");
+	ResourceLocation ACCESS_HELD_ITEM = ACCESS("held_item");
 
 	static ResourceLocation JADE(String path) {
 		return ResourceLocation.fromNamespaceAndPath("jade", path);
+	}
+
+	static ResourceLocation ACCESS(String path) {
+		return ResourceLocation.fromNamespaceAndPath("jade_access", path);
+	}
+
+	static boolean isAccess(ResourceLocation id) {
+		return id.getNamespace().equals("jade_access");
 	}
 
 	private static ResourceLocation MC(String path) {

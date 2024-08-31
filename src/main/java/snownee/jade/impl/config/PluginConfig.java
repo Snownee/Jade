@@ -35,6 +35,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.Jade;
 import snownee.jade.api.IToggleableProvider;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.gui.config.OptionsList;
 import snownee.jade.impl.WailaCommonRegistration;
@@ -271,25 +272,22 @@ public class PluginConfig implements IPluginConfig {
 		configs.get(key).addListener(listener);
 	}
 
-	public void setCategoryOverride(ResourceLocation key, Component override) {
-		Preconditions.checkArgument(containsKey(key), "Unknown config key: %s", key);
-		Preconditions.checkArgument(isPrimaryKey(key), "Only primary config key can be overridden");
-		categoryOverrides.put(key, override);
-	}
-
 	public void setCategoryOverride(ResourceLocation key, List<Component> overrides) {
 		Preconditions.checkArgument(containsKey(key), "Unknown config key: %s", key);
 		Preconditions.checkArgument(isPrimaryKey(key), "Only primary config key can be overridden");
 		categoryOverrides.putAll(key, overrides);
 	}
 
-	public List<Category> getListView() {
+	public List<Category> getListView(boolean enableAccessibilityPlugins) {
 		Multimap<String, ConfigEntry<?>> categoryMap = ArrayListMultimap.create();
 		categoryOverrides.forEach((key, component) -> {
 			categoryMap.put(component.getString(), getEntry(key));
 		});
 		configs.forEach((key, entry) -> {
 			if (categoryOverrides.containsKey(key)) {
+				return;
+			}
+			if (!enableAccessibilityPlugins && JadeIds.isAccess(key)) {
 				return;
 			}
 			if (!isPrimaryKey(key)) {

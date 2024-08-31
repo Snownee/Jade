@@ -171,6 +171,7 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 		options.title("accessibility");
 		options.choices("flip_main_hand", overlay.getFlipMainHand(), overlay::setFlipMainHand);
 		options.choices("tts_mode", general.getTTSMode(), general::setTTSMode);
+		options.choices("accessibility_plugin", general.getEnableAccessibilityPlugin(), general::setEnableAccessibilityPlugin);
 
 		options.title("danger_zone").withStyle(ChatFormatting.RED);
 		Component reset = Component.translatable("controls.reset").withStyle(ChatFormatting.RED);

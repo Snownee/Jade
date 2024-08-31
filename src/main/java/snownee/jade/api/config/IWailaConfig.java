@@ -11,6 +11,7 @@ import snownee.jade.JadeInternals;
 import snownee.jade.api.SimpleStringRepresentable;
 import snownee.jade.api.theme.Theme;
 
+//TODO(1.21.2): split accessibility options into a new class
 @NonExtendable
 public interface IWailaConfig {
 
@@ -125,6 +126,14 @@ public interface IWailaConfig {
 		boolean getBuiltinCamouflage();
 
 		void setBuiltinCamouflage(boolean builtinCamouflage);
+
+		boolean getAccessibilityModMemory();
+
+		void setAccessibilityModMemory(boolean lowVisionMemory);
+
+		boolean getEnableAccessibilityPlugin();
+
+		void setEnableAccessibilityPlugin(boolean showAccessibilityPlugins);
 	}
 
 	@NonExtendable

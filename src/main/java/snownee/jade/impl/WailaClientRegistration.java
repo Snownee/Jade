@@ -40,6 +40,7 @@ import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IComponentProvider;
 import snownee.jade.api.IToggleableProvider;
 import snownee.jade.api.IWailaClientRegistration;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.callback.JadeAfterRenderCallback;
 import snownee.jade.api.callback.JadeBeforeRenderCallback;
 import snownee.jade.api.callback.JadeBeforeTooltipCollectCallback;
@@ -293,15 +294,12 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 
 	@Override
 	public void setConfigCategoryOverride(ResourceLocation key, Component override) {
-		if (isSessionActive()) {
-			session.setConfigCategoryOverride(key, override);
-		} else {
-			PluginConfig.INSTANCE.setCategoryOverride(key, override);
-		}
+		setConfigCategoryOverride(key, List.of(override));
 	}
 
 	@Override
 	public void setConfigCategoryOverride(ResourceLocation key, List<Component> overrides) {
+		Preconditions.checkArgument(!JadeIds.isAccess(key), "Cannot override option from access category");
 		if (isSessionActive()) {
 			session.setConfigCategoryOverride(key, overrides);
 		} else {
@@ -550,7 +548,7 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 
 	@Override
 	public boolean maybeLowVisionUser() {
-		return ClientProxy.maybeLowVisionUser || IWailaConfig.get().getGeneral().shouldEnableTextToSpeech();
+		return ClientProxy.hasAccessibilityMod() || IWailaConfig.get().getGeneral().shouldEnableTextToSpeech();
 	}
 
 	public void startSession() {

@@ -7,10 +7,10 @@ import org.jetbrains.annotations.ApiStatus.NonExtendable;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElement.Align;
 import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.ui.ScreenDirection;
 
 /**
  * Tooltip that you can append text and other render-able stuffs to.
@@ -142,6 +142,8 @@ public interface ITooltip {
 	List<IElement> get(int index, Align align);
 
 	String getMessage();
+
+	String getMessage(ResourceLocation tag);
 
 	void setLineMargin(int index, ScreenDirection side, int margin);
 }

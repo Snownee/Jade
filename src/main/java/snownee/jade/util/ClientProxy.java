@@ -92,7 +92,7 @@ public final class ClientProxy implements ClientModInitializer {
 	public static boolean hasJEI = CommonProxy.isModLoaded("jei");
 	public static boolean hasREI = false; //isModLoaded("roughlyenoughitems");
 	public static boolean hasFastScroll = CommonProxy.isModLoaded("fastscroll");
-	public static boolean maybeLowVisionUser = CommonProxy.isModLoaded("minecraft_access");
+	private static boolean hasAccessibilityMod = CommonProxy.isModLoaded("minecraft_access");
 
 	public static Optional<String> getModName(String namespace) {
 		String modMenuKey = "modmenu.nameTranslation.%s".formatted(namespace);
@@ -245,6 +245,10 @@ public final class ClientProxy implements ClientModInitializer {
 	public static GameType getGameMode() {
 		MultiPlayerGameMode gameMode = Minecraft.getInstance().gameMode;
 		return gameMode == null ? GameType.SURVIVAL : gameMode.getPlayerMode();
+	}
+
+	public static boolean hasAccessibilityMod() {
+		return hasAccessibilityMod;
 	}
 
 	@Override
