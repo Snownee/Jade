@@ -2,6 +2,7 @@ package snownee.jade.gui.config.value;
 
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import com.google.common.collect.Lists;
 
@@ -19,6 +20,7 @@ import snownee.jade.gui.config.OptionsList;
 public abstract class OptionValue<T> extends OptionsList.Entry {
 
 	private static final Component SERVER_FEATURE = Component.literal("*").withStyle(ChatFormatting.GRAY);
+	protected final Supplier<T> getter;
 	protected final Consumer<T> setter;
 	private final Component title;
 	protected ResourceLocation id;
@@ -27,8 +29,9 @@ public abstract class OptionValue<T> extends OptionsList.Entry {
 	protected int indent;
 	private int x;
 
-	public OptionValue(String optionName, Consumer<T> setter) {
+	public OptionValue(String optionName, Supplier<T> getter, Consumer<T> setter) {
 		this.title = makeTitle(optionName);
+		this.getter = getter;
 		this.setter = setter;
 		addMessage(title.getString());
 		addMessageKey(optionName);

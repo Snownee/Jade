@@ -34,11 +34,17 @@ public class FloatConfigEntry extends ConfigEntry<Float> {
 	@Override
 	public OptionValue<?> createUI(OptionsList options, String optionName) {
 		if (slider) {
-			return options.slider(optionName, getValue(), f -> PluginConfig.INSTANCE.set(id, f), min, max, FloatUnaryOperator.identity());
+			return options.slider(
+					optionName,
+					this::getValue,
+					f -> PluginConfig.INSTANCE.set(id, f),
+					min,
+					max,
+					FloatUnaryOperator.identity());
 		} else {
 			return options.input(
 					optionName,
-					getValue(),
+					this::getValue,
 					f -> PluginConfig.INSTANCE.set(id, Mth.clamp(f, min, max)),
 					InputOptionValue.FLOAT.and($ -> isValidValue(Float.valueOf($))));
 		}

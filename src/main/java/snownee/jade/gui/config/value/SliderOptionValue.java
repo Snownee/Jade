@@ -3,6 +3,7 @@ package snownee.jade.gui.config.value;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import it.unimi.dsi.fastutil.floats.FloatUnaryOperator;
 import net.minecraft.client.gui.components.AbstractSliderButton;
@@ -18,9 +19,15 @@ public class SliderOptionValue extends OptionValue<Float> {
 	private float max;
 	private FloatUnaryOperator aligner;
 
-	public SliderOptionValue(String optionName, float value, Consumer<Float> save, float min, float max, FloatUnaryOperator aligner) {
-		super(optionName, save);
-		this.value = value;
+	public SliderOptionValue(
+			String optionName,
+			Supplier<Float> getter,
+			Consumer<Float> setter,
+			float min,
+			float max,
+			FloatUnaryOperator aligner) {
+		super(optionName, getter, setter);
+		this.value = getter.get();
 		this.min = min;
 		this.max = max;
 		this.aligner = aligner;

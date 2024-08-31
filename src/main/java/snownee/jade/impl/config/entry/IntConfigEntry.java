@@ -35,7 +35,7 @@ public class IntConfigEntry extends ConfigEntry<Integer> {
 		if (slider) {
 			return options.slider(
 					optionName,
-					getValue(),
+					() -> Float.valueOf(getValue()),
 					f -> PluginConfig.INSTANCE.set(id, (int) (float) f),
 					min,
 					max,
@@ -43,7 +43,7 @@ public class IntConfigEntry extends ConfigEntry<Integer> {
 		} else {
 			return options.input(
 					optionName,
-					getValue(),
+					this::getValue,
 					i -> PluginConfig.INSTANCE.set(id, Mth.clamp(i, min, max)),
 					InputOptionValue.INTEGER.and($ -> isValidValue(Integer.valueOf($))));
 		}
