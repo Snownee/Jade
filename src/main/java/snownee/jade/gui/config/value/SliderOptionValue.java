@@ -27,17 +27,23 @@ public class SliderOptionValue extends OptionValue<Float> {
 			float max,
 			FloatUnaryOperator aligner) {
 		super(optionName, getter, setter);
-		this.value = getter.get();
+		value = getter.get();
 		this.min = min;
 		this.max = max;
 		this.aligner = aligner;
 		slider = new Slider(this, 0, 0, 100, 20, getTitle());
+		updateValue();
 		addWidget(slider, 0);
 	}
 
 	@Override
 	public void setValue(Float value) {
-		slider.setValue(value);
+		slider.setValue(value, true);
+	}
+
+	@Override
+	public void updateValue() {
+		slider.setValue(value = getter.get(), false);
 	}
 
 	public static class Slider extends AbstractSliderButton {
@@ -47,7 +53,7 @@ public class SliderOptionValue extends OptionValue<Float> {
 		public Slider(SliderOptionValue parent, int x, int y, int width, int height, Component message) {
 			super(x, y, width, height, message, fromScaled(parent.value, parent.min, parent.max));
 			this.parent = parent;
-			applyValue();
+			updateMessage();
 		}
 
 		public static double fromScaled(float f, float min, float max) {
@@ -64,22 +70,27 @@ public class SliderOptionValue extends OptionValue<Float> {
 			}
 		}
 
-		//save?
 		@Override
 		protected void updateMessage() {
-			parent.value = toScaled();
-			parent.save();
-		}
-
-		//get title
-		@Override
-		protected void applyValue() {
 			setMessage(Component.literal(fmt.format(toScaled())));
 		}
 
-		private void setValue(float value) {
-			this.value = fromScaled(value, parent.min, parent.max);
-			applyValue();
+		@Override
+		protected void applyValue() {
+			float scaled = toScaled();
+			if (parent.value != scaled) {
+				parent.value = scaled;
+				parent.save();
+			}
+		}
+
+		private void setValue(float value, boolean applyValue) {
+			if (value != toScaled()) {
+				this.value = fromScaled(value, parent.min, parent.max);
+				if (applyValue) {
+					applyValue();
+				}
+			}
 			updateMessage();
 		}
 

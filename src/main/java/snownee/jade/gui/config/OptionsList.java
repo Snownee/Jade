@@ -386,6 +386,14 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		owner.saveButton.active = true;
 	}
 
+	public void updateOptionValue(@Nullable ResourceLocation key) {
+		for (Entry entry : entries) {
+			if (entry instanceof OptionValue<?> value && (key == null || key.equals(value.getId()))) {
+				value.updateValue();
+			}
+		}
+	}
+
 	public void showOnTop(Entry entry) {
 		setScrollAmount(itemHeight * children().indexOf(entry) + 1);
 		if (entry instanceof Title title) {

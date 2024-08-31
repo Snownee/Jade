@@ -1,5 +1,6 @@
 package snownee.jade.gui;
 
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import org.apache.commons.lang3.mutable.MutableObject;
@@ -9,6 +10,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.gui.config.OptionsList;
 import snownee.jade.gui.config.value.OptionValue;
@@ -41,11 +43,15 @@ public class PluginsConfigScreen extends PreviewOptionsScreen {
 		OptionsList options = new OptionsList(this, minecraft, width - 120, height - 32, 0, 26, PluginConfig.INSTANCE::save);
 		boolean noteServerFeature =
 				Minecraft.getInstance().level == null || IWailaConfig.get().getGeneral().isDebug() || !ObjectDataCenter.serverConnected;
+		BiConsumer<ResourceLocation, Object> setter = (key, value) -> {
+			PluginConfig.INSTANCE.set(key, value);
+			options.updateOptionValue(key);
+		};
 		PluginConfig.INSTANCE.getListView(IWailaConfig.get().getGeneral().getEnableAccessibilityPlugin()).forEach(category -> {
 			options.add(new OptionsList.Title(category.title()));
 			MutableObject<OptionValue<?>> lastPrimary = new MutableObject<>();
 			category.entries().forEach(entry -> {
-				OptionValue<?> option = entry.createUI(options, "plugin_" + entry.getId().toLanguageKey());
+				OptionValue<?> option = entry.createUI(options, "plugin_" + entry.getId().toLanguageKey(), setter);
 				option.setId(entry.getId());
 				if (entry.isSynced()) {
 					option.setDisabled(true);
