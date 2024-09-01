@@ -35,6 +35,9 @@ public class BlockDetailsProvider implements IBlockComponentProvider {
 		if (blockState.hasProperty(BlockStateProperties.OMINOUS) && blockState.getValue(BlockStateProperties.OMINOUS)) {
 			AccessibilityPlugin.replaceTitle(tooltip, "block.ominous");
 		}
+		if (blockState.hasProperty(BlockStateProperties.MOISTURE) && blockState.getValue(BlockStateProperties.MOISTURE) == 7) {
+			AccessibilityPlugin.replaceTitle(tooltip, "block.hydrated");
+		}
 		boolean active = false;
 		if (blockState.hasProperty(BlockStateProperties.VAULT_STATE) &&
 				blockState.getValue(BlockStateProperties.VAULT_STATE) == VaultState.ACTIVE) {

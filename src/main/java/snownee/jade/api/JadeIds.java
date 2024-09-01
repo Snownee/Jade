@@ -82,6 +82,7 @@ public interface JadeIds {
 	ResourceLocation MC_ZOMBIE_VILLAGER = MC("zombie_villager");
 	ResourceLocation ACCESS_SIGN = ACCESS("sign");
 	ResourceLocation ACCESS_BLOCK_DETAILS = ACCESS("block");
+	ResourceLocation ACCESS_BLOCK_AMOUNT = ACCESS("block_amount");
 	ResourceLocation ACCESS_ENTITY_DETAILS = ACCESS("entity");
 	ResourceLocation ACCESS_ENTITY_VARIANT = ACCESS("entity_variant");
 	ResourceLocation ACCESS_HELD_ITEM = ACCESS("held_item");
