@@ -48,7 +48,7 @@ import snownee.jade.api.IWailaClientRegistration;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.IWailaConfig.DisplayMode;
-import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
+import snownee.jade.api.config.IWailaConfig.Overlay;
 import snownee.jade.api.config.IWailaConfig.TTSMode;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
@@ -61,7 +61,6 @@ import snownee.jade.gui.HomeConfigScreen;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.impl.config.WailaConfig;
-import snownee.jade.impl.config.WailaConfig.ConfigGeneral;
 import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.overlay.WailaTickHandler;
 import snownee.jade.util.ClientProxy;
@@ -108,12 +107,12 @@ public final class JadeClient {
 			Minecraft.getInstance().setScreen(new HomeConfigScreen(null));
 		}
 
-		ConfigGeneral general = Jade.CONFIG.get().getGeneral();
 		while (showOverlay.consumeClick()) {
+			IWailaConfig.General general = IWailaConfig.get().general();
 			DisplayMode mode = general.getDisplayMode();
 			if (mode == IWailaConfig.DisplayMode.TOGGLE) {
 				general.setDisplayTooltip(!general.shouldDisplayTooltip());
-				WailaConfig.ConfigHistory history = Jade.CONFIG.get().getHistory();
+				WailaConfig.History history = Jade.CONFIG.get().history();
 				if (!general.shouldDisplayTooltip() && history.hintOverlayToggle) {
 //					SystemToast.add(
 //							Minecraft.getInstance().getToasts(),
@@ -128,20 +127,22 @@ public final class JadeClient {
 							false);
 					history.hintOverlayToggle = false;
 				}
-				Jade.CONFIG.save();
+				IWailaConfig.get().save();
 			}
 		}
 
 		while (toggleLiquid.consumeClick()) {
+			IWailaConfig.General general = IWailaConfig.get().general();
 			general.setDisplayFluids(!general.shouldDisplayFluids());
-			Jade.CONFIG.save();
+			IWailaConfig.get().save();
 		}
 
 		while (narrate.consumeClick()) {
-			if (general.getTTSMode() == TTSMode.TOGGLE) {
-				general.toggleTTS();
-				WailaConfig.ConfigHistory history = Jade.CONFIG.get().getHistory();
-				if (general.shouldEnableTextToSpeech() && history.hintNarratorToggle) {
+			IWailaConfig.Accessibility accessibility = IWailaConfig.get().accessibility();
+			if (accessibility.getTTSMode() == TTSMode.TOGGLE) {
+				accessibility.toggleTTS();
+				WailaConfig.History history = Jade.CONFIG.get().history();
+				if (accessibility.shouldEnableTextToSpeech() && history.hintNarratorToggle) {
 					Minecraft.getInstance().getChatListener().handleSystemMessage(
 							Component.translatable("toast.jade.tts_hint.1"),
 							false);
@@ -150,7 +151,7 @@ public final class JadeClient {
 							false);
 					history.hintNarratorToggle = false;
 				}
-				Jade.CONFIG.save();
+				IWailaConfig.get().save();
 			} else if (WailaTickHandler.instance().rootElement != null) {
 				WailaTickHandler.narrate(WailaTickHandler.instance().rootElement.getTooltip(), false);
 			}
@@ -178,7 +179,7 @@ public final class JadeClient {
 	}
 
 	public static void appendModName(List<Component> tooltip, ItemStack stack, Item.TooltipContext tooltipContext, TooltipFlag flag) {
-		if (hideModName.getIfPresent(tooltipContext) != null || !Jade.CONFIG.get().getGeneral().showItemModNameTooltip()) {
+		if (hideModName.getIfPresent(tooltipContext) != null || !Jade.CONFIG.get().general().showItemModNameTooltip()) {
 			return;
 		}
 		if (Minecraft.getInstance().screen instanceof CreativeModeInventoryScreen screen && screen.hoveredSlot != null &&
@@ -194,13 +195,13 @@ public final class JadeClient {
 				break;
 			}
 		}
-		tooltip.add(i, Component.literal(name).withStyle(Jade.CONFIG.get().getFormatting().getItemModNameStyle()));
+		tooltip.add(i, Component.literal(name).withStyle(Jade.CONFIG.get().formatting().getItemModNameStyle()));
 	}
 
 	@Nullable
 	public static Accessor<?> builtInOverrides(
 			HitResult hitResult, @Nullable Accessor<?> accessor, @Nullable Accessor<?> originalAccessor) {
-		if (WailaClientRegistration.instance().maybeLowVisionUser() || !IWailaConfig.get().getGeneral().getBuiltinCamouflage()) {
+		if (WailaClientRegistration.instance().maybeLowVisionUser() || !IWailaConfig.get().general().getBuiltinCamouflage()) {
 			return accessor;
 		}
 		if (accessor instanceof BlockAccessor target) {
@@ -289,18 +290,18 @@ public final class JadeClient {
 		int color = canHarvest ? colors.normal() : colors.failure();
 		float top = rootElement.getCachedSize().y;
 		float width = rootElement.getCachedSize().x;
-		boolean roundCorner = !IWailaConfig.get().getOverlay().getSquare();
+		boolean roundCorner = !IWailaConfig.get().overlay().getSquare();
 		if (roundCorner && theme.tooltipStyle instanceof BoxStyle.GradientBorder) {
 			top += 1;
 		}
-		progressAlpha += mc.getTimer().getGameTimeDeltaTicks() * (playerController.isDestroying() ? 0.1F : -0.1F);
+		progressAlpha += mc.getDeltaTracker().getGameTimeDeltaTicks() * (playerController.isDestroying() ? 0.1F : -0.1F);
 		if (playerController.isDestroying()) {
 			progressAlpha = Math.min(progressAlpha, 0.6F);
 			float progress = state.getDestroyProgress(mc.player, mc.player.level(), pos);
 			if (playerController.destroyProgress + progress >= 1) {
 				progressAlpha = savedProgress = 1;
 			} else {
-				progress = playerController.destroyProgress + mc.getTimer().getGameTimeDeltaPartialTick(false) * progress;
+				progress = playerController.destroyProgress + mc.getDeltaTracker().getGameTimeDeltaPartialTick(false) * progress;
 				savedProgress = Mth.clamp(progress, 0, 1);
 			}
 		} else {
@@ -309,7 +310,7 @@ public final class JadeClient {
 		if (progressAlpha == 0) {
 			return;
 		}
-		color = IConfigOverlay.applyAlpha(color, progressAlpha);
+		color = Overlay.applyAlpha(color, progressAlpha);
 		float offset0 = theme.tooltipStyle.boxProgressOffset(ScreenDirection.UP);
 		float offset1 = theme.tooltipStyle.boxProgressOffset(ScreenDirection.RIGHT);
 		float offset2 = theme.tooltipStyle.boxProgressOffset(ScreenDirection.DOWN);
@@ -328,7 +329,7 @@ public final class JadeClient {
 
 	public static void pleaseWait() {
 		SystemToast.add(
-				Minecraft.getInstance().getToasts(),
+				Minecraft.getInstance().getToastManager(),
 				JADE_PLEASE_WAIT,
 				Component.translatable("toast.jade.please_wait.1"),
 				Component.translatable("toast.jade.please_wait.2"));

@@ -72,10 +72,10 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 					20,
 					Component.translatable("gui.jade.preview"),
 					(button, value) -> {
-						Jade.CONFIG.get().getGeneral().previewOverlay = value;
+						Jade.CONFIG.get().general().previewOverlay = value;
 						saver.run();
 					});
-			previewButton.setValue(Jade.CONFIG.get().getGeneral().previewOverlay);
+			previewButton.setValue(Jade.CONFIG.get().general().previewOverlay);
 			addRenderableWidget(previewButton);
 		}
 	}
@@ -170,11 +170,12 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 			float anchorY = calculateAnchor(centerY, height, rectHeight);
 			float posX = (centerX + rectWidth * (anchorX - 0.5F)) / width;
 			float posY = 1 - (centerY + rectHeight * (anchorY - 0.5F)) / height;
-			IWailaConfig.IConfigOverlay config = IWailaConfig.get().getOverlay();
-			config.setOverlayPosX(config.tryFlip(maybeSnap(posX)));
-			config.setOverlayPosY(maybeSnap(posY));
-			config.setAnchorX(config.tryFlip(anchorX));
-			config.setAnchorY(anchorY);
+			IWailaConfig.Overlay overlay = IWailaConfig.get().overlay();
+			IWailaConfig.Accessibility accessibility = IWailaConfig.get().accessibility();
+			overlay.setOverlayPosX(accessibility.tryFlip(maybeSnap(posX)));
+			overlay.setOverlayPosY(maybeSnap(posY));
+			overlay.setAnchorX(accessibility.tryFlip(anchorX));
+			overlay.setAnchorY(anchorY);
 			return true;
 		}
 		return super.mouseDragged(d, e, i, f, g);
@@ -194,9 +195,9 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 					height / 2 - 7,
 					0xFFFFFF);
 			guiGraphics.pose().popPose();
-			IWailaConfig.IConfigOverlay config = IWailaConfig.get().getOverlay();
+			IWailaConfig.Overlay config = IWailaConfig.get().overlay();
 			Rect2i rect = OverlayRenderer.rect.expectedRect;
-			if (IWailaConfig.get().getGeneral().isDebug()) {
+			if (IWailaConfig.get().general().isDebug()) {
 				int anchorX = (int) (rect.getX() + rect.getWidth() * config.getAnchorX());
 				int anchorY = (int) (rect.getY() + rect.getHeight() * config.getAnchorY());
 				guiGraphics.fill(anchorX - 2, anchorY - 2, anchorX + 1, anchorY + 1, 1000, 0xFFFF0000);

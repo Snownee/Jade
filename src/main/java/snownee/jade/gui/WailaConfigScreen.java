@@ -23,6 +23,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
+import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
 import snownee.jade.gui.config.OptionButton;
@@ -30,8 +31,7 @@ import snownee.jade.gui.config.OptionsList;
 import snownee.jade.gui.config.value.OptionValue;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.config.PluginConfig;
-import snownee.jade.impl.config.WailaConfig.ConfigGeneral;
-import snownee.jade.impl.config.WailaConfig.ConfigOverlay;
+import snownee.jade.impl.config.WailaConfig.General;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
 
@@ -42,7 +42,7 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 
 	public WailaConfigScreen(Screen parent) {
 		super(parent, Component.translatable("gui.jade.jade_settings"));
-		saver = Jade.CONFIG::save;
+		saver = IWailaConfig.get()::save;
 		ImmutableMap.Builder<KeyMapping, InputConstants.Key> keyMapBuilder = ImmutableMap.builder();
 		for (KeyMapping keyMapping : Minecraft.getInstance().options.keyMappings) {
 			if (JadeClient.openConfig.getCategory().equals(keyMapping.getCategory())) {
@@ -80,9 +80,9 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 	@Override
 	public OptionsList createOptions() {
 		Objects.requireNonNull(minecraft);
-		OptionsList options = new OptionsList(this, minecraft, width - 120, height - 32, 0, 26, Jade.CONFIG::save);
+		OptionsList options = new OptionsList(this, minecraft, width - 120, height - 32, 0, 26, IWailaConfig.get()::save);
 
-		ConfigGeneral general = Jade.CONFIG.get().getGeneral();
+		IWailaConfig.General general = IWailaConfig.get().general();
 		options.title("general");
 		if (CommonProxy.isDevEnv()) {
 			options.choices("debug_mode", general::isDebug, general::setDebug);
@@ -107,10 +107,10 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 			});
 		});
 		OptionValue<?> value = options.choices("item_mod_name", general::showItemModNameTooltip, general::setItemModNameTooltip);
-		if (!ConfigGeneral.itemModNameTooltipDisabledByMods.isEmpty()) {
+		if (!General.itemModNameTooltipDisabledByMods.isEmpty()) {
 			value.setDisabled(true);
 			value.appendDescription(Component.translatable("gui.jade.disabled_by_mods"));
-			ConfigGeneral.itemModNameTooltipDisabledByMods.stream().map(Component::literal).forEach(value::appendDescription);
+			General.itemModNameTooltipDisabledByMods.stream().map(Component::literal).forEach(value::appendDescription);
 			if (value.getFirstWidget() != null && value.getDescription() != null) {
 				value.getFirstWidget().setTooltip(MultilineTooltip.create(value.getDescription()));
 			}
@@ -121,7 +121,7 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 		options.choices("boss_bar_overlap", general::getBossBarOverlapMode, general::setBossBarOverlapMode);
 		options.slider("reach_distance", general::getExtendedReach, general::setExtendedReach, 0, 20, f -> Mth.floor(f * 2) / 2F);
 
-		ConfigOverlay overlay = Jade.CONFIG.get().getOverlay();
+		IWailaConfig.Overlay overlay = IWailaConfig.get().overlay();
 		options.title("overlay");
 		Component adjust = Component.translatable(OptionsList.Entry.makeKey("overlay_pos.adjust"));
 		options.add(new OptionButton(Component.translatable(OptionsList.Entry.makeKey("overlay_pos")), Button.builder(adjust, w -> {
@@ -168,10 +168,11 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 		options.keybind(JadeClient.narrate);
 		options.keybind(JadeClient.showDetails);
 
+		IWailaConfig.Accessibility accessibility = IWailaConfig.get().accessibility();
 		options.title("accessibility");
-		options.choices("flip_main_hand", overlay::getFlipMainHand, overlay::setFlipMainHand);
-		options.choices("tts_mode", general::getTTSMode, general::setTTSMode);
-		options.choices("accessibility_plugin", general::getEnableAccessibilityPlugin, general::setEnableAccessibilityPlugin);
+		options.choices("flip_main_hand", accessibility::getFlipMainHand, accessibility::setFlipMainHand);
+		options.choices("tts_mode", accessibility::getTTSMode, accessibility::setTTSMode);
+		options.choices("accessibility_plugin", accessibility::getEnableAccessibilityPlugin, accessibility::setEnableAccessibilityPlugin);
 
 		options.title("danger_zone").withStyle(ChatFormatting.RED);
 		Component reset = Component.translatable("controls.reset").withStyle(ChatFormatting.RED);
@@ -187,12 +188,12 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 							}
 							minecraft.options.save();
 							try {
-								int themesHash = Jade.CONFIG.get().getHistory().themesHash;
+								int themesHash = Jade.CONFIG.get().history().themesHash;
 								Preconditions.checkState(Jade.CONFIG.getFile().delete());
 								Preconditions.checkState(PluginConfig.INSTANCE.getFile().delete());
 								Jade.CONFIG.invalidate();
-								Jade.CONFIG.get().getHistory().themesHash = themesHash;
-								Jade.CONFIG.save();
+								Jade.CONFIG.get().history().themesHash = themesHash;
+								IWailaConfig.get().save();
 								PluginConfig.INSTANCE.reload();
 								rebuildWidgets();
 							} catch (Throwable e) {

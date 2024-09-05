@@ -18,11 +18,10 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.metadata.gui.GuiSpriteScaling;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec2;
-import snownee.jade.Jade;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IWailaConfig;
-import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
+import snownee.jade.api.config.IWailaConfig.Overlay;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
 import snownee.jade.api.ui.BoxStyle;
@@ -58,14 +57,14 @@ public class BoxElement extends Element implements IBoxElement {
 	}
 
 	private static void chase(TooltipRect rect, ToIntFunction<Rect2i> getter, IntConsumer setter) {
-		if (Jade.CONFIG.get().getOverlay().getAnimation()) {
+		if (IWailaConfig.get().overlay().getAnimation()) {
 			int source = getter.applyAsInt(rect.rect);
 			int target = getter.applyAsInt(rect.expectedRect);
 			float diff = target - source;
 			if (diff == 0) {
 				return;
 			}
-			float delta = Minecraft.getInstance().getTimer().getRealtimeDeltaTicks() * 2;
+			float delta = Minecraft.getInstance().getDeltaTracker().getRealtimeDeltaTicks() * 2;
 			if (delta < 1) {
 				diff *= delta;
 			}
@@ -137,7 +136,7 @@ public class BoxElement extends Element implements IBoxElement {
 		// render background
 		float alpha = IDisplayHelper.get().opacity();
 		if (JadeIds.ROOT.equals(getTag())) {
-			alpha *= IWailaConfig.get().getOverlay().getAlpha();
+			alpha *= IWailaConfig.get().overlay().getAlpha();
 		}
 		style.render(guiGraphics, this, 0, 0, maxX - x, maxY - y, alpha);
 
@@ -155,7 +154,7 @@ public class BoxElement extends Element implements IBoxElement {
 			}
 			if (track != null) {
 				track.setProgress(progress);
-				track.update(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks());
+				track.update(Minecraft.getInstance().getDeltaTracker().getRealtimeDeltaTicks());
 				progress = track.getSmoothProgress();
 			}
 			((DisplayHelper) IDisplayHelper.get()).drawGradientProgress(
@@ -177,7 +176,7 @@ public class BoxElement extends Element implements IBoxElement {
 			Vec2 offset = icon.getTranslation();
 			float offsetY = offset.y;
 			float min = contentTop + padding(ScreenDirection.DOWN) + iconSize.y;
-			IWailaConfig.IconMode iconMode = IWailaConfig.get().getOverlay().getIconMode();
+			IWailaConfig.IconMode iconMode = IWailaConfig.get().overlay().getIconMode();
 			if (iconMode == IWailaConfig.IconMode.TOP && min < getCachedSize().y) {
 				offsetY += contentTop;
 			} else {
@@ -216,7 +215,7 @@ public class BoxElement extends Element implements IBoxElement {
 					Minecraft mc = Minecraft.getInstance();
 					float arrowLeft = contentLeft + (contentSize.x - mc.font.width("▾") + 1) / 2f;
 					guiGraphics.pose().translate(arrowLeft, arrowTop, 0);
-					int color = IConfigOverlay.applyAlpha(IThemeHelper.get().theme().text.colors().info(), alpha);
+					int color = Overlay.applyAlpha(IThemeHelper.get().theme().text.colors().info(), alpha);
 					DisplayHelper.INSTANCE.drawText(guiGraphics, "▾", 0, 0, color);
 					guiGraphics.pose().popPose();
 				}
@@ -266,7 +265,7 @@ public class BoxElement extends Element implements IBoxElement {
 	}
 
 	public void setThemeIcon(@Nullable IElement icon, Theme theme) {
-		IConfigOverlay overlay = IWailaConfig.get().getOverlay();
+		Overlay overlay = IWailaConfig.get().overlay();
 		if (!overlay.shouldShowIcon()) {
 			return;
 		}
@@ -315,9 +314,10 @@ public class BoxElement extends Element implements IBoxElement {
 
 	public void updateExpectedRect(TooltipRect rect) {
 		Window window = Minecraft.getInstance().getWindow();
-		IWailaConfig.IConfigOverlay overlay = Jade.CONFIG.get().getOverlay();
+		Overlay overlay = IWailaConfig.get().overlay();
+		IWailaConfig.Accessibility accessibility = IWailaConfig.get().accessibility();
 		Vec2 size = getCachedSize();
-		float x = window.getGuiScaledWidth() * overlay.tryFlip(overlay.getOverlayPosX());
+		float x = window.getGuiScaledWidth() * accessibility.tryFlip(overlay.getOverlayPosX());
 		float y = window.getGuiScaledHeight() * (1.0F - overlay.getOverlayPosY());
 		float width = size.x;
 		float height = size.y;
@@ -338,14 +338,14 @@ public class BoxElement extends Element implements IBoxElement {
 		Rect2i expectedRect = rect.expectedRect;
 		expectedRect.setWidth((int) (width * rect.scale));
 		expectedRect.setHeight((int) (height * rect.scale));
-		expectedRect.setX((int) (x - expectedRect.getWidth() * overlay.tryFlip(overlay.getAnchorX())));
+		expectedRect.setX((int) (x - expectedRect.getWidth() * accessibility.tryFlip(overlay.getAnchorX())));
 		expectedRect.setY((int) (y - expectedRect.getHeight() * overlay.getAnchorY()));
 
 		if (PreviewOptionsScreen.isAdjustingPosition()) {
 			return;
 		}
 
-		IWailaConfig.BossBarOverlapMode mode = Jade.CONFIG.get().getGeneral().getBossBarOverlapMode();
+		IWailaConfig.BossBarOverlapMode mode = IWailaConfig.get().general().getBossBarOverlapMode();
 		if (mode == IWailaConfig.BossBarOverlapMode.PUSH_DOWN) {
 			Rect2i bossBarRect = ClientProxy.getBossBarRect();
 			if (bossBarRect != null) {

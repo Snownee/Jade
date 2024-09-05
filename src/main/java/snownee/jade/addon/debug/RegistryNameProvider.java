@@ -38,13 +38,13 @@ public abstract class RegistryNameProvider implements IToggleableProvider {
 				if (accessor.getBlockEntity() != null) {
 					ResourceLocation id = CommonProxy.getId(accessor.getBlockEntity().getType());
 					String s = I18n.get("config.jade.plugin_jade.registry_name.special.block_entity_type", id);
-					tooltip.add(IWailaConfig.get().getFormatting().registryName(s), JadeIds.DEBUG_SPECIAL_REGISTRY_NAME);
+					tooltip.add(IWailaConfig.get().formatting().registryName(s), JadeIds.DEBUG_SPECIAL_REGISTRY_NAME);
 				}
 				FluidState fluidState = accessor.getBlockState().getFluidState();
 				if (!fluidState.isEmpty()) {
 					ResourceLocation id = BuiltInRegistries.FLUID.getKey(fluidState.getType());
 					String s = I18n.get("config.jade.plugin_jade.registry_name.special.fluid", id);
-					tooltip.add(IWailaConfig.get().getFormatting().registryName(s), JadeIds.DEBUG_SPECIAL_REGISTRY_NAME);
+					tooltip.add(IWailaConfig.get().formatting().registryName(s), JadeIds.DEBUG_SPECIAL_REGISTRY_NAME);
 				}
 			}
 		}
@@ -60,7 +60,7 @@ public abstract class RegistryNameProvider implements IToggleableProvider {
 				if (accessor.getEntity() instanceof Painting painting) {
 					ResourceLocation id = painting.getVariant().unwrapKey().orElseThrow().location();
 					String s = I18n.get("config.jade.plugin_jade.registry_name.special.painting", id);
-					tooltip.add(IWailaConfig.get().getFormatting().registryName(s), JadeIds.DEBUG_SPECIAL_REGISTRY_NAME);
+					tooltip.add(IWailaConfig.get().formatting().registryName(s), JadeIds.DEBUG_SPECIAL_REGISTRY_NAME);
 				}
 			}
 		}
@@ -74,7 +74,7 @@ public abstract class RegistryNameProvider implements IToggleableProvider {
 		if (mode == Mode.ADVANCED_TOOLTIPS && !Minecraft.getInstance().options.advancedItemTooltips) {
 			return false;
 		}
-		tooltip.add(IWailaConfig.get().getFormatting().registryName(id));
+		tooltip.add(IWailaConfig.get().formatting().registryName(id));
 		return true;
 	}
 

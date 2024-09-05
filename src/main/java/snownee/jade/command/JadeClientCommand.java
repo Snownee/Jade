@@ -31,7 +31,7 @@ public class JadeClientCommand {
 				return 0;
 			}
 		})).then(literalFactory.apply("config").executes(context -> {
-			Minecraft.getInstance().tell(() -> {
+			Minecraft.getInstance().execute(() -> {
 				Jade.CONFIG.invalidate();
 				Minecraft.getInstance().setScreen(new HomeConfigScreen(null));
 			});

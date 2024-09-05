@@ -276,9 +276,9 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 		}
 		int amount;
 		if (accessor.showDetails()) {
-			amount = IWailaConfig.get().getPlugin().getInt(JadeIds.UNIVERSAL_ITEM_STORAGE_DETAILED_AMOUNT);
+			amount = IWailaConfig.get().plugin().getInt(JadeIds.UNIVERSAL_ITEM_STORAGE_DETAILED_AMOUNT);
 		} else {
-			amount = IWailaConfig.get().getPlugin().getInt(JadeIds.UNIVERSAL_ITEM_STORAGE_NORMAL_AMOUNT);
+			amount = IWailaConfig.get().plugin().getInt(JadeIds.UNIVERSAL_ITEM_STORAGE_NORMAL_AMOUNT);
 		}
 		if (amount == 0) {
 			return false;
@@ -327,7 +327,7 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 			if (target instanceof RandomizableContainer te && te.getLootTable() != null) {
 				return null;
 			}
-			if (target instanceof ContainerEntity containerEntity && containerEntity.getLootTable() != null) {
+			if (target instanceof ContainerEntity containerEntity && containerEntity.getContainerLootTable() != null) {
 				return null;
 			}
 			Player player = accessor.getPlayer();

@@ -143,7 +143,7 @@ public abstract class EnergyStorageProvider<T extends Accessor<?>> implements IC
 
 	@Override
 	public boolean shouldRequestData(T accessor) {
-		if (!accessor.showDetails() && IWailaConfig.get().getPlugin().get(JadeIds.UNIVERSAL_ENERGY_STORAGE_DETAILED)) {
+		if (!accessor.showDetails() && IWailaConfig.get().plugin().get(JadeIds.UNIVERSAL_ENERGY_STORAGE_DETAILED)) {
 			return false;
 		}
 		for (var provider : WailaCommonRegistration.instance().energyStorageProviders.get(accessor)) {

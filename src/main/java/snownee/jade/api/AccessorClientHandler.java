@@ -18,9 +18,9 @@ public interface AccessorClientHandler<T extends Accessor<?>> {
 	void gatherComponents(T accessor, Function<IJadeProvider, ITooltip> tooltipProvider);
 
 	default boolean isEnabled(IToggleableProvider provider) {
-		if (!IWailaConfig.get().getGeneral().getEnableAccessibilityPlugin() && JadeIds.isAccess(provider.getUid())) {
+		if (!IWailaConfig.get().accessibility().getEnableAccessibilityPlugin() && JadeIds.isAccess(provider.getUid())) {
 			return false;
 		}
-		return IWailaConfig.get().getPlugin().get(provider);
+		return IWailaConfig.get().plugin().get(provider);
 	}
 }

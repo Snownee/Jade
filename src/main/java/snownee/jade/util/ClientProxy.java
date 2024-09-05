@@ -216,7 +216,7 @@ public final class ClientProxy implements ClientModInitializer {
 	}
 
 	public static boolean shouldShowBeforeGui(Minecraft mc, @NotNull Screen screen) {
-		IWailaConfig.IConfigGeneral config = IWailaConfig.get().getGeneral();
+		IWailaConfig.General config = IWailaConfig.get().general();
 		return !config.shouldHideFromGUIs();
 	}
 

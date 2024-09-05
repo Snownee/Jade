@@ -43,18 +43,5 @@ public interface IDisplayHelper {
 
 	void blitSprite(GuiGraphics guiGraphics, ResourceLocation resourceLocation, int i, int j, int k, int l, int m, int n, int o, int p);
 
-	void blitSprite(
-			GuiGraphics guiGraphics,
-			ResourceLocation resourceLocation,
-			int i,
-			int j,
-			int k,
-			int l,
-			int m,
-			int n,
-			int o,
-			int p,
-			int q);
-
 	float opacity();
 }

@@ -26,7 +26,7 @@ public class IgnoreList<T> {
 					ResourceLocation id = ResourceLocation.parse(value);
 					Optional<T> optional = registry.getOptional(id);
 					if (optional.isPresent()) {
-						consumer.accept(registry.get(id));
+						consumer.accept(optional.get());
 					} else {
 						throw new IllegalArgumentException("Unknown id: " + id);
 					}

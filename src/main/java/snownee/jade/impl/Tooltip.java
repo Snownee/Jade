@@ -16,9 +16,9 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec2;
-import snownee.jade.Jade;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
+import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElement.Align;
 import snownee.jade.api.ui.IElementHelper;
@@ -32,7 +32,7 @@ public class Tooltip implements ITooltip {
 	public boolean sneakyDetails;
 
 	public static void drawDebugBorder(GuiGraphics guiGraphics, float x, float y, IElement element) {
-		if (Jade.CONFIG.get().getGeneral().isDebug() && Screen.hasControlDown()) {
+		if (IWailaConfig.get().general().isDebug() && Screen.hasControlDown()) {
 			Vec2 translate = element.getTranslation();
 			Vec2 size = element.getCachedSize();
 			DisplayHelper.INSTANCE.drawBorder(guiGraphics, x, y, x + size.x, y + size.y, 1, 0x88FF0000, true);

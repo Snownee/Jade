@@ -14,6 +14,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.GuiSpriteManager;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.metadata.gui.GuiSpriteScaling;
 import net.minecraft.resources.ResourceLocation;
@@ -148,7 +149,7 @@ public abstract class BoxStyle implements Cloneable {
 		public void render(GuiGraphics guiGraphics, StyledElement element, float x, float y, float w, float h, float alpha) {
 			boolean roundCorner = hasRoundCorner();
 			if (bgColor != -1) {
-				int bg = IWailaConfig.IConfigOverlay.applyAlpha(bgColor, alpha);
+				int bg = IWailaConfig.Overlay.applyAlpha(bgColor, alpha);
 				DisplayHelper.INSTANCE.drawGradientRect(
 						guiGraphics,
 						x + borderWidth,
@@ -168,7 +169,7 @@ public abstract class BoxStyle implements Cloneable {
 				int[] borderColors = new int[4];
 				for (int i = 0; i < 4; i++) {
 					if (borderColor[i] != -1) {
-						borderColors[i] = IWailaConfig.IConfigOverlay.applyAlpha(borderColor[i], alpha);
+						borderColors[i] = IWailaConfig.Overlay.applyAlpha(borderColor[i], alpha);
 					}
 				}
 				DisplayHelper.INSTANCE.drawGradientRect(
@@ -213,7 +214,7 @@ public abstract class BoxStyle implements Cloneable {
 
 		@Override
 		public boolean hasRoundCorner() {
-			return roundCorner == null ? !IWailaConfig.get().getOverlay().getSquare() : roundCorner;
+			return roundCorner == null ? !IWailaConfig.get().overlay().getSquare() : roundCorner;
 		}
 
 
@@ -241,8 +242,9 @@ public abstract class BoxStyle implements Cloneable {
 			TextureAtlasSprite textureAtlasSprite = sprites.getSprite(resourceLocation);
 			GuiSpriteScaling guiSpriteScaling = sprites.getSpriteScaling(textureAtlasSprite);
 			switch (guiSpriteScaling) {
-				case GuiSpriteScaling.Stretch ignored -> guiGraphics.blitSprite(resourceLocation, i, j, k, l, m);
+				case GuiSpriteScaling.Stretch ignored -> guiGraphics.blitSprite(RenderType::guiTextured, resourceLocation, i, j, k, l, m);
 				case GuiSpriteScaling.Tile tile -> guiGraphics.blitTiledSprite(
+						RenderType::guiTextured,
 						textureAtlasSprite,
 						i,
 						j,
@@ -284,12 +286,35 @@ public abstract class BoxStyle implements Cloneable {
 			int p = Math.min(border.top(), m / 2);
 			int q = Math.min(border.bottom(), m / 2);
 			if (l == nineSlice.width() && m == nineSlice.height()) {
-				guiGraphics.blitSprite(textureAtlasSprite, nineSlice.width(), nineSlice.height(), 0, 0, i, j, k, l, m);
+				guiGraphics.blitSprite(
+						RenderType::guiTextured,
+						textureAtlasSprite,
+						nineSlice.width(),
+						nineSlice.height(),
+						0,
+						0,
+						i,
+						j,
+						k,
+						l,
+						m);
 				return;
 			}
 			if (m == nineSlice.height()) {
-				guiGraphics.blitSprite(textureAtlasSprite, nineSlice.width(), nineSlice.height(), 0, 0, i, j, k, n, m);
+				guiGraphics.blitSprite(
+						RenderType::guiTextured,
+						textureAtlasSprite,
+						nineSlice.width(),
+						nineSlice.height(),
+						0,
+						0,
+						i,
+						j,
+						k,
+						n,
+						m);
 				guiGraphics.blitTiledSprite(
+						RenderType::guiTextured,
 						textureAtlasSprite,
 						i + n,
 						j,
@@ -303,6 +328,7 @@ public abstract class BoxStyle implements Cloneable {
 						nineSlice.width(),
 						nineSlice.height());
 				guiGraphics.blitSprite(
+						RenderType::guiTextured,
 						textureAtlasSprite,
 						nineSlice.width(),
 						nineSlice.height(),
@@ -316,8 +342,20 @@ public abstract class BoxStyle implements Cloneable {
 				return;
 			}
 			if (l == nineSlice.width()) {
-				guiGraphics.blitSprite(textureAtlasSprite, nineSlice.width(), nineSlice.height(), 0, 0, i, j, k, l, p);
+				guiGraphics.blitSprite(
+						RenderType::guiTextured,
+						textureAtlasSprite,
+						nineSlice.width(),
+						nineSlice.height(),
+						0,
+						0,
+						i,
+						j,
+						k,
+						l,
+						p);
 				guiGraphics.blitTiledSprite(
+						RenderType::guiTextured,
 						textureAtlasSprite,
 						i,
 						j + p,
@@ -331,6 +369,7 @@ public abstract class BoxStyle implements Cloneable {
 						nineSlice.width(),
 						nineSlice.height());
 				guiGraphics.blitSprite(
+						RenderType::guiTextured,
 						textureAtlasSprite,
 						nineSlice.width(),
 						nineSlice.height(),
@@ -343,8 +382,9 @@ public abstract class BoxStyle implements Cloneable {
 						q);
 				return;
 			}
-			guiGraphics.blitSprite(textureAtlasSprite, nineSlice.width(), nineSlice.height(), 0, 0, i, j, k, n, p);
+			guiGraphics.blitSprite(RenderType::guiTextured, textureAtlasSprite, nineSlice.width(), nineSlice.height(), 0, 0, i, j, k, n, p);
 			guiGraphics.blitTiledSprite(
+					RenderType::guiTextured,
 					textureAtlasSprite,
 					i + n,
 					j,
@@ -358,6 +398,7 @@ public abstract class BoxStyle implements Cloneable {
 					nineSlice.width(),
 					nineSlice.height());
 			guiGraphics.blitSprite(
+					RenderType::guiTextured,
 					textureAtlasSprite,
 					nineSlice.width(),
 					nineSlice.height(),
@@ -369,6 +410,7 @@ public abstract class BoxStyle implements Cloneable {
 					o,
 					p);
 			guiGraphics.blitSprite(
+					RenderType::guiTextured,
 					textureAtlasSprite,
 					nineSlice.width(),
 					nineSlice.height(),
@@ -380,6 +422,7 @@ public abstract class BoxStyle implements Cloneable {
 					n,
 					q);
 			guiGraphics.blitTiledSprite(
+					RenderType::guiTextured,
 					textureAtlasSprite,
 					i + n,
 					j + m - q,
@@ -393,6 +436,7 @@ public abstract class BoxStyle implements Cloneable {
 					nineSlice.width(),
 					nineSlice.height());
 			guiGraphics.blitSprite(
+					RenderType::guiTextured,
 					textureAtlasSprite,
 					nineSlice.width(),
 					nineSlice.height(),
@@ -404,6 +448,7 @@ public abstract class BoxStyle implements Cloneable {
 					o,
 					q);
 			guiGraphics.blitTiledSprite(
+					RenderType::guiTextured,
 					textureAtlasSprite,
 					i,
 					j + p,
@@ -417,6 +462,7 @@ public abstract class BoxStyle implements Cloneable {
 					nineSlice.width(),
 					nineSlice.height());
 			guiGraphics.blitTiledSprite(
+					RenderType::guiTextured,
 					textureAtlasSprite,
 					i + n,
 					j + p,
@@ -430,6 +476,7 @@ public abstract class BoxStyle implements Cloneable {
 					nineSlice.width(),
 					nineSlice.height());
 			guiGraphics.blitTiledSprite(
+					RenderType::guiTextured,
 					textureAtlasSprite,
 					i + l - o,
 					j + p,
@@ -451,9 +498,9 @@ public abstract class BoxStyle implements Cloneable {
 				texture = withIconSprite;
 			}
 			RenderSystem.enableBlend();
-			guiGraphics.setColor(1, 1, 1, alpha);
+			RenderSystem.setShaderColor(1, 1, 1, alpha);
 			blitSprite(guiGraphics, texture, Math.round(x), Math.round(y), 0, Math.round(w), Math.round(h));
-			guiGraphics.setColor(1, 1, 1, 1);
+			RenderSystem.setShaderColor(1, 1, 1, 1);
 		}
 
 		@Override

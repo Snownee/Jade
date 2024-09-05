@@ -45,7 +45,7 @@ public class ExamplePlugin implements IWailaPlugin {
 		registration.addConfig(UID_TEST_FLOAT_CFG, 0F, 0F, 100F, false);
 
 		registration.addRayTraceCallback((hitResult, accessor, originalAccessor) -> {
-			if (IWailaConfig.get().getGeneral().isDebug() && accessor instanceof BlockAccessor blockAccessor) {
+			if (IWailaConfig.get().general().isDebug() && accessor instanceof BlockAccessor blockAccessor) {
 				if (blockAccessor.getBlock() == Blocks.GRASS_BLOCK) {
 					return client.blockAccessor().from(blockAccessor).blockState(Blocks.TNT.defaultBlockState()).build();
 				}

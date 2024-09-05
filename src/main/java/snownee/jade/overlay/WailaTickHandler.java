@@ -26,7 +26,7 @@ import snownee.jade.api.callback.JadeRayTraceCallback;
 import snownee.jade.api.callback.JadeTooltipCollectedCallback;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.IWailaConfig.DisplayMode;
-import snownee.jade.api.config.IWailaConfig.IConfigGeneral;
+import snownee.jade.api.config.IWailaConfig.General;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
 import snownee.jade.gui.BaseOptionsScreen;
@@ -82,7 +82,7 @@ public class WailaTickHandler {
 	public void tickClient() {
 		progressTracker.tick();
 
-		IConfigGeneral config = IWailaConfig.get().getGeneral();
+		General config = IWailaConfig.get().general();
 		if (!config.shouldDisplayTooltip()) {
 			rootElement = null;
 			return;
@@ -170,7 +170,7 @@ public class WailaTickHandler {
 			}
 		}
 
-		Theme theme = IWailaConfig.get().getOverlay().getTheme();
+		Theme theme = IWailaConfig.get().overlay().getTheme();
 		ThemeHelper.theme.setValue(theme);
 		Preconditions.checkNotNull(theme, "Theme cannot be null");
 		Accessor<?> accessor0 = accessor;

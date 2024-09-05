@@ -26,7 +26,7 @@ public class EntityAccessorClientHandler implements AccessorClientHandler<Entity
 
 	@Override
 	public boolean shouldDisplay(EntityAccessor accessor) {
-		IWailaConfig.IConfigGeneral general = IWailaConfig.get().getGeneral();
+		IWailaConfig.General general = IWailaConfig.get().general();
 		if (!general.getDisplayEntities()) {
 			return false;
 		}

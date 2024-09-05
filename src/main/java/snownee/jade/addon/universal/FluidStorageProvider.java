@@ -150,7 +150,7 @@ public abstract class FluidStorageProvider<T extends Accessor<?>> implements ICo
 
 	@Override
 	public boolean shouldRequestData(T accessor) {
-		if (!accessor.showDetails() && IWailaConfig.get().getPlugin().get(JadeIds.UNIVERSAL_FLUID_STORAGE_DETAILED)) {
+		if (!accessor.showDetails() && IWailaConfig.get().plugin().get(JadeIds.UNIVERSAL_FLUID_STORAGE_DETAILED)) {
 			return false;
 		}
 		for (var provider : WailaCommonRegistration.instance().fluidStorageProviders.get(accessor)) {

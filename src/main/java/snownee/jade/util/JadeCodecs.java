@@ -8,6 +8,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import it.unimi.dsi.fastutil.floats.FloatArrayList;
@@ -36,7 +37,7 @@ public class JadeCodecs {
 			Color.CODEC.optionalFieldOf("itemAmountColor", 0xFFFFFFFF).forGetter(TextSetting::itemAmountColor)
 	).apply(i, TextSetting::new));
 
-	public static final Codec<Theme> THEME = RecordCodecBuilder.create(i -> i.group(
+	public static final MapCodec<Theme> THEME = RecordCodecBuilder.mapCodec(i -> i.group(
 			BoxStyle.CODEC.fieldOf("tooltipStyle").forGetter($ -> $.tooltipStyle),
 			BoxStyle.CODEC.optionalFieldOf("nestedBoxStyle", BoxStyle.GradientBorder.DEFAULT_NESTED_BOX).forGetter($ -> $.nestedBoxStyle),
 			BoxStyle.CODEC.optionalFieldOf("viewGroupStyle", BoxStyle.GradientBorder.DEFAULT_VIEW_GROUP).forGetter($ -> $.viewGroupStyle),
@@ -146,4 +147,6 @@ public class JadeCodecs {
 	public static <T> T createFromEmptyMap(Codec<T> codec) {
 		return codec.parse(JsonOps.INSTANCE, JsonOps.INSTANCE.emptyMap()).getOrThrow();
 	}
+
+	public record ThemeHolder(int version, boolean autoEnable, Theme theme) {}
 }

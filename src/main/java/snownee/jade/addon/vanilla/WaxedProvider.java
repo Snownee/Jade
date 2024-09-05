@@ -41,7 +41,8 @@ public enum WaxedProvider implements IBlockComponentProvider {
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		if (IWailaConfig.get().getGeneral().getEnableAccessibilityPlugin() && accessor.getBlockEntity() instanceof SignBlockEntity sign &&
+		if (IWailaConfig.get().accessibility().getEnableAccessibilityPlugin() &&
+				accessor.getBlockEntity() instanceof SignBlockEntity sign &&
 				sign.isWaxed()) {
 			String message = tooltip.getMessage(JadeIds.CORE_OBJECT_NAME);
 			if (!message.isBlank()) {

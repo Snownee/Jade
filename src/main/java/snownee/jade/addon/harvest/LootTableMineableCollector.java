@@ -3,6 +3,8 @@ package snownee.jade.addon.harvest;
 import java.util.List;
 import java.util.function.Function;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 
@@ -35,10 +37,13 @@ public class LootTableMineableCollector {
 		LootTableMineableCollector collector = new LootTableMineableCollector(lootRegistry, toolItem);
 		List<Block> list = Lists.newArrayList();
 		for (Block block : BuiltInRegistries.BLOCK) {
+			if (block.getLootTable().isEmpty()) {
+				continue;
+			}
 			if (!ShearsToolHandler.getInstance().test(block.defaultBlockState()).isEmpty()) {
 				continue;
 			}
-			LootTable lootTable = lootRegistry.get(block.getLootTable());
+			@Nullable LootTable lootTable = lootRegistry.getValue(block.getLootTable().get());
 			if (collector.doLootTable(lootTable)) {
 				list.add(block);
 //				Jade.LOGGER.info("block: {}", BuiltInRegistries.BLOCK.getKey(block));
@@ -50,7 +55,7 @@ public class LootTableMineableCollector {
 		return list;
 	}
 
-	private boolean doLootTable(LootTable lootTable) {
+	private boolean doLootTable(@Nullable LootTable lootTable) {
 		if (lootTable == null || lootTable == LootTable.EMPTY) {
 			return false;
 		}
@@ -79,7 +84,7 @@ public class LootTableMineableCollector {
 				}
 			}
 		} else if (entry instanceof NestedLootTable nestedLootTable) {
-			LootTable lootTable = nestedLootTable.contents.map(lootRegistry::get, Function.identity());
+			LootTable lootTable = nestedLootTable.contents.map(lootRegistry::getValue, Function.identity());
 			return doLootTable(lootTable);
 		} else {
 			return CommonProxy.isCorrectConditions(entry.conditions, toolItem);

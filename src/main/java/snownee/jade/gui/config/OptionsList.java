@@ -26,7 +26,6 @@ import net.minecraft.Util;
 import net.minecraft.client.InputType;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.Options;
 import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -39,6 +38,7 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.gui.navigation.ScreenDirection;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -157,7 +157,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 	protected void renderListSeparators(GuiGraphics guiGraphics) {
 		RenderSystem.enableBlend();
 		ResourceLocation resourceLocation2 = this.minecraft.level == null ? Screen.FOOTER_SEPARATOR : Screen.INWORLD_FOOTER_SEPARATOR;
-		guiGraphics.blit(resourceLocation2, 0, this.getBottom(), 0.0F, 0.0F, owner.width, 2, 32, 2);
+		guiGraphics.blit(RenderType::guiTextured, resourceLocation2, 0, this.getBottom(), 0.0F, 0.0F, owner.width, 2, 32, 2);
 		RenderSystem.disableBlend();
 	}
 
@@ -168,7 +168,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 
 	@Override
 	public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-		float deltaTicks = Minecraft.getInstance().getTimer().getRealtimeDeltaTicks();
+		float deltaTicks = Minecraft.getInstance().getDeltaTracker().getRealtimeDeltaTicks();
 		smoothScroll.tick(deltaTicks);
 		super.setScrollAmount(smoothScroll.value);
 		hovered = null;
@@ -204,8 +204,8 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 				m = this.getY();
 			}
 			RenderSystem.enableBlend();
-			guiGraphics.blitSprite(SCROLLER_BACKGROUND_SPRITE, k, this.getY(), 6, this.getHeight());
-			guiGraphics.blitSprite(SCROLLER_SPRITE, k, m, 6, l);
+			guiGraphics.blitSprite(RenderType::guiTextured, SCROLLER_BACKGROUND_SPRITE, k, this.getY(), 6, this.getHeight());
+			guiGraphics.blitSprite(RenderType::guiTextured, SCROLLER_SPRITE, k, m, 6, l);
 			RenderSystem.disableBlend();
 		}
 		renderDecorations(guiGraphics, mouseX, mouseY);
@@ -412,11 +412,10 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 	@Override
 	public boolean keyPressed(int i, int j, int k) {
 		if (selectedKey != null) {
-			Options options = Minecraft.getInstance().options;
 			if (i == 256) {
-				options.setKey(selectedKey, InputConstants.UNKNOWN);
+				selectedKey.setKey(InputConstants.UNKNOWN);
 			} else {
-				options.setKey(selectedKey, InputConstants.getKey(i, j));
+				selectedKey.setKey(InputConstants.getKey(i, j));
 			}
 			selectedKey = null;
 			resetMappingAndUpdateButtons();
@@ -428,8 +427,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 	@Override
 	public boolean mouseClicked(double d, double e, int i) {
 		if (selectedKey != null) {
-			Options options = Minecraft.getInstance().options;
-			options.setKey(selectedKey, InputConstants.Type.MOUSE.getOrCreate(i));
+			selectedKey.setKey(InputConstants.Type.MOUSE.getOrCreate(i));
 			this.selectedKey = null;
 			resetMappingAndUpdateButtons();
 		}

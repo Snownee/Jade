@@ -25,7 +25,7 @@ public class BlockAccessorClientHandler implements AccessorClientHandler<BlockAc
 
 	@Override
 	public boolean shouldDisplay(BlockAccessor accessor) {
-		return IWailaConfig.get().getGeneral().getDisplayBlocks();
+		return IWailaConfig.get().general().getDisplayBlocks();
 	}
 
 	@Override

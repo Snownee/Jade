@@ -68,7 +68,7 @@ public class ProgressElement extends Element implements StyledElement {
 		if (track != null) {
 			track.setProgress(progress);
 			track.setExpectedWidth(width);
-			track.update(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks());
+			track.update(Minecraft.getInstance().getDeltaTracker().getRealtimeDeltaTicks());
 			progress = track.getSmoothProgress();
 		}
 		float b = boxStyle.borderWidth();

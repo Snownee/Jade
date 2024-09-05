@@ -22,6 +22,7 @@ import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import snownee.jade.Jade;
@@ -156,7 +157,7 @@ public class HomeConfigScreen extends Screen {
 			text = "✐";
 		} else {
 			for (int i = 0; i < 11; i++) {
-				colors.add(Mth.color(1 - random.nextFloat() * 0.6F, 1, 1));
+				colors.add(ARGB.colorFromFloat(1 - random.nextFloat() * 0.6F, 1, 1, 1));
 			}
 		}
 		for (int color : colors) {
@@ -175,7 +176,7 @@ public class HomeConfigScreen extends Screen {
 
 	@Override
 	public void onClose() {
-		Jade.CONFIG.save();
+		IWailaConfig.get().save();
 		PluginConfig.INSTANCE.save();
 		WailaClientRegistration.instance().reloadIgnoreLists();
 		Objects.requireNonNull(minecraft).setScreen(parent);
@@ -184,7 +185,7 @@ public class HomeConfigScreen extends Screen {
 	@Override
 	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		Objects.requireNonNull(minecraft);
-		float deltaTicks = Minecraft.getInstance().getTimer().getRealtimeDeltaTicks();
+		float deltaTicks = Minecraft.getInstance().getDeltaTracker().getRealtimeDeltaTicks();
 		ticks += deltaTicks;
 		if (ticks > nextParticleIn) {
 			if (festival == 3) {
@@ -198,7 +199,7 @@ public class HomeConfigScreen extends Screen {
 				particles.add(particle);
 			} else if (festival == 1) {
 				nextParticleIn = ticks + 10 + random.nextFloat() * 10;
-				int color = Mth.color(1 - random.nextFloat() * 0.6F, 1, 1);
+				int color = ARGB.colorFromFloat(1 - random.nextFloat() * 0.6F, 1, 1, 1);
 				color |= (random.nextInt(80) + 40) << 24;
 				int x = random.nextIntBetweenInclusive(40, width + 100);
 				var particle = new TextParticle("❄", x, -20, -0.3F, 0.5f, color, 2F + random.nextFloat());
@@ -317,7 +318,7 @@ public class HomeConfigScreen extends Screen {
 		if (distY >= 9) {
 			return;
 		}
-		int color = IWailaConfig.IConfigOverlay.applyAlpha(0xAAAAAA, 1 - distY / 10F);
+		int color = IWailaConfig.Overlay.applyAlpha(0xAAAAAA, 1 - distY / 10F);
 		JadeFont jadeFont = (JadeFont) font;
 		jadeFont.jade$setGlint((ticks - y / 5F) % 90 / 45 * width, mouseX);
 		jadeFont.jade$setGlintStrength(1, 1 - Mth.clamp(Math.abs(mouseY - y) / 20F, 0, 1));

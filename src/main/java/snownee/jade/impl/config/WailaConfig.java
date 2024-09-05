@@ -30,102 +30,141 @@ import snownee.jade.util.ModIdentification;
  */
 public class WailaConfig implements IWailaConfig {
 	public static final Codec<WailaConfig> CODEC = RecordCodecBuilder.create(i -> i.group(
-			ConfigGeneral.CODEC.fieldOf("general")
-					.orElseGet(() -> JadeCodecs.createFromEmptyMap(ConfigGeneral.CODEC))
-					.forGetter(WailaConfig::getGeneral),
-			ConfigOverlay.CODEC.fieldOf("overlay")
-					.orElseGet(() -> JadeCodecs.createFromEmptyMap(ConfigOverlay.CODEC))
-					.forGetter(WailaConfig::getOverlay),
-			ConfigFormatting.CODEC.fieldOf("formatting")
-					.orElseGet(() -> JadeCodecs.createFromEmptyMap(ConfigFormatting.CODEC))
-					.forGetter(WailaConfig::getFormatting),
-			ConfigHistory.CODEC.fieldOf("history")
-					.orElseGet(() -> JadeCodecs.createFromEmptyMap(ConfigHistory.CODEC))
-					.forGetter(WailaConfig::getHistory)
+			General.CODEC.fieldOf("general")
+					.orElseGet(() -> JadeCodecs.createFromEmptyMap(General.CODEC))
+					.forGetter(WailaConfig::general),
+			Overlay.CODEC.fieldOf("overlay")
+					.orElseGet(() -> JadeCodecs.createFromEmptyMap(Overlay.CODEC))
+					.forGetter(WailaConfig::overlay),
+			Formatting.CODEC.fieldOf("formatting")
+					.orElseGet(() -> JadeCodecs.createFromEmptyMap(Formatting.CODEC))
+					.forGetter(WailaConfig::formatting),
+			Accessibility.CODEC.fieldOf("accessibility")
+					.orElseGet(() -> JadeCodecs.createFromEmptyMap(Accessibility.CODEC))
+					.forGetter(WailaConfig::accessibility),
+			History.CODEC.fieldOf("history")
+					.orElseGet(() -> JadeCodecs.createFromEmptyMap(History.CODEC))
+					.forGetter(WailaConfig::history)
 	).apply(i, WailaConfig::new));
 
-	private final ConfigGeneral general;
-	private final ConfigOverlay overlay;
-	private final ConfigFormatting formatting;
-	private final ConfigHistory history;
+	private final General general;
+	private final Overlay overlay;
+	private final Formatting formatting;
+	private final Accessibility accessibility;
+	private final History history;
 
-	public WailaConfig(ConfigGeneral general, ConfigOverlay overlay, ConfigFormatting formatting, ConfigHistory history) {
+	public WailaConfig(
+			General general,
+			Overlay overlay,
+			Formatting formatting,
+			Accessibility accessibility,
+			History history) {
 		this.general = general;
 		this.overlay = overlay;
 		this.formatting = formatting;
+		this.accessibility = accessibility;
 		this.history = history;
 	}
 
 	@Override
-	public ConfigGeneral getGeneral() {
+	public General general() {
 		return general;
 	}
 
 	@Override
-	public ConfigOverlay getOverlay() {
+	public Overlay overlay() {
 		return overlay;
 	}
 
 	@Override
-	public ConfigFormatting getFormatting() {
+	public Formatting formatting() {
 		return formatting;
 	}
 
-	public ConfigHistory getHistory() {
+	@Override
+	public Accessibility accessibility() {
+		return accessibility;
+	}
+
+	public History history() {
 		return history;
 	}
 
 	@Override
-	public IPluginConfig getPlugin() {
+	public IPluginConfig plugin() {
 		return PluginConfig.INSTANCE;
 	}
 
-	public static class ConfigHistory {
+	@Override
+	public void save() {
+		Jade.CONFIG.save();
+	}
 
-		public static final Codec<ConfigHistory> CODEC = RecordCodecBuilder.create(i -> i.group(
+	public static void init() {
+		/* off */
+		List<String> names = General.itemModNameTooltipDisabledByMods.stream()
+				.filter(CommonProxy::isModLoaded)
+				.map($ -> ModIdentification.getModName($).orElse($))
+				.toList();
+		/* on */
+		General.itemModNameTooltipDisabledByMods.clear();
+		General.itemModNameTooltipDisabledByMods.addAll(names);
+
+		IWailaConfig.Accessibility accessibility = IWailaConfig.get().accessibility();
+		History history = Jade.CONFIG.get().history();
+		boolean hasAccessibilityMod = ClientProxy.hasAccessibilityMod();
+		if (history.accessibilityModMemory != hasAccessibilityMod) {
+			history.accessibilityModMemory = hasAccessibilityMod;
+			accessibility.setEnableAccessibilityPlugin(hasAccessibilityMod);
+			IWailaConfig.get().save();
+		}
+	}
+
+	public static class History {
+
+		public static final Codec<History> CODEC = RecordCodecBuilder.create(i -> i.group(
 				Codec.BOOL.optionalFieldOf("hintOverlayToggle", true).forGetter($ -> $.hintOverlayToggle),
 				Codec.BOOL.optionalFieldOf("hintNarratorToggle", true).forGetter($ -> $.hintNarratorToggle),
+				Codec.BOOL.optionalFieldOf("accessibilityModMemory", false).forGetter($ -> $.accessibilityModMemory),
 				Codec.INT.optionalFieldOf("themesHash", 0).forGetter($ -> $.themesHash)
-		).apply(i, ConfigHistory::new));
+		).apply(i, History::new));
 
 		public boolean hintOverlayToggle;
 		public boolean hintNarratorToggle;
+		public boolean accessibilityModMemory;
 		public int themesHash;
 
-		public ConfigHistory(boolean hintOverlayToggle, boolean hintNarratorToggle, int themesHash) {
+		public History(boolean hintOverlayToggle, boolean hintNarratorToggle, boolean accessibilityModMemory, int themesHash) {
 			this.hintOverlayToggle = hintOverlayToggle;
 			this.hintNarratorToggle = hintNarratorToggle;
+			this.accessibilityModMemory = accessibilityModMemory;
 			this.themesHash = themesHash;
 		}
 	}
 
-	public static class ConfigGeneral implements IConfigGeneral {
+	public static class General implements IWailaConfig.General {
 
-		public static final Codec<ConfigGeneral> CODEC = RecordCodecBuilder.create(i -> i.group(
+		public static final Codec<General> CODEC = RecordCodecBuilder.create(i -> i.group(
 				Codec.BOOL.fieldOf("previewOverlay").orElse(true).forGetter($ -> $.previewOverlay),
-				Codec.BOOL.fieldOf("displayTooltip").orElse(true).forGetter(ConfigGeneral::shouldDisplayTooltip),
-				Codec.BOOL.fieldOf("displayBlocks").orElse(true).forGetter(ConfigGeneral::getDisplayBlocks),
-				Codec.BOOL.fieldOf("displayEntities").orElse(true).forGetter(ConfigGeneral::getDisplayEntities),
-				Codec.BOOL.fieldOf("displayBosses").orElse(true).forGetter(ConfigGeneral::getDisplayBosses),
+				Codec.BOOL.fieldOf("displayTooltip").orElse(true).forGetter(General::shouldDisplayTooltip),
+				Codec.BOOL.fieldOf("displayBlocks").orElse(true).forGetter(General::getDisplayBlocks),
+				Codec.BOOL.fieldOf("displayEntities").orElse(true).forGetter(General::getDisplayEntities),
+				Codec.BOOL.fieldOf("displayBosses").orElse(true).forGetter(General::getDisplayBosses),
 				StringRepresentable.fromEnum(DisplayMode::values)
 						.fieldOf("displayMode").orElse(DisplayMode.TOGGLE)
-						.forGetter(ConfigGeneral::getDisplayMode),
-				Codec.BOOL.fieldOf("enableTextToSpeech").orElse(false).forGetter(ConfigGeneral::shouldEnableTextToSpeech),
-				StringRepresentable.fromEnum(TTSMode::values)
-						.fieldOf("ttsMode").orElse(TTSMode.PRESS)
-						.forGetter(ConfigGeneral::getTTSMode),
+						.forGetter(General::getDisplayMode),
 				StringRepresentable.fromEnum(FluidMode::values)
 						.fieldOf("fluidMode").orElse(FluidMode.ANY)
-						.forGetter(ConfigGeneral::getDisplayFluids),
-				Codec.floatRange(0, 20).fieldOf("extendedReach").orElse(0F).forGetter(ConfigGeneral::getExtendedReach),
-				Codec.BOOL.fieldOf("debug").orElse(false).forGetter(ConfigGeneral::isDebug),
-				Codec.BOOL.fieldOf("itemModNameTooltip").orElse(true).forGetter(ConfigGeneral::showItemModNameTooltip),
+						.forGetter(General::getDisplayFluids),
+				Codec.floatRange(0, 20).fieldOf("extendedReach").orElse(0F).forGetter(General::getExtendedReach),
+				Codec.BOOL.fieldOf("debug").orElse(false).forGetter(General::isDebug),
+				Codec.BOOL.fieldOf("itemModNameTooltip").orElse(true).forGetter(General::showItemModNameTooltip),
 				StringRepresentable.fromEnum(BossBarOverlapMode::values)
 						.fieldOf("bossBarOverlapMode").orElse(BossBarOverlapMode.PUSH_DOWN)
-						.forGetter(ConfigGeneral::getBossBarOverlapMode),
-				Codec.BOOL.fieldOf("builtinCamouflage").orElse(true).forGetter(ConfigGeneral::getBuiltinCamouflage),
+						.forGetter(General::getBossBarOverlapMode),
+				Codec.BOOL.fieldOf("builtinCamouflage").orElse(true).forGetter(General::getBuiltinCamouflage),
 				ExtraOptions.CODEC.orElseGet(() -> JadeCodecs.createFromEmptyMap(ExtraOptions.CODEC.codec())).forGetter($ -> $.extraOptions)
-		).apply(i, ConfigGeneral::new));
+		).apply(i, General::new));
 
 		public static final List<String> itemModNameTooltipDisabledByMods = Lists.newArrayList("emi");
 		public boolean previewOverlay;
@@ -134,8 +173,6 @@ public class WailaConfig implements IWailaConfig {
 		private boolean displayEntities;
 		private boolean displayBosses;
 		private DisplayMode displayMode;
-		private boolean enableTextToSpeech;
-		private TTSMode ttsMode;
 		private FluidMode fluidMode;
 		private float extendedReach;
 		private boolean debug;
@@ -148,28 +185,20 @@ public class WailaConfig implements IWailaConfig {
 			public static final MapCodec<ExtraOptions> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
 					Codec.BOOL.fieldOf("hideFromDebug").orElse(true).forGetter(ExtraOptions::hideFromDebug),
 					Codec.BOOL.fieldOf("hideFromTabList").orElse(true).forGetter(ExtraOptions::hideFromTabList),
-					Codec.BOOL.fieldOf("hideFromGUIs").orElse(true).forGetter(ExtraOptions::hideFromGUIs),
-					Codec.BOOL.fieldOf("accessibilityModMemory").orElse(false).forGetter(ExtraOptions::accessibilityModMemory),
-					Codec.BOOL.fieldOf("enableAccessibilityPlugin").orElse(false).forGetter(ExtraOptions::enableAccessibilityPlugin)
+					Codec.BOOL.fieldOf("hideFromGUIs").orElse(true).forGetter(ExtraOptions::hideFromGUIs)
 			).apply(i, ExtraOptions::new));
 
 			private boolean hideFromDebug;
 			private boolean hideFromTabList;
 			private boolean hideFromGUIs;
-			public boolean accessibilityModMemory;
-			public boolean enableAccessibilityPlugin;
 
 			public ExtraOptions(
 					boolean hideFromDebug,
 					boolean hideFromTabList,
-					boolean hideFromGUIs,
-					boolean accessibilityModMemory,
-					boolean enableAccessibilityPlugin) {
+					boolean hideFromGUIs) {
 				this.hideFromDebug = hideFromDebug;
 				this.hideFromTabList = hideFromTabList;
 				this.hideFromGUIs = hideFromGUIs;
-				this.accessibilityModMemory = accessibilityModMemory;
-				this.enableAccessibilityPlugin = enableAccessibilityPlugin;
 			}
 
 			public boolean hideFromDebug() {
@@ -184,14 +213,6 @@ public class WailaConfig implements IWailaConfig {
 				return hideFromGUIs;
 			}
 
-			public boolean accessibilityModMemory() {
-				return accessibilityModMemory;
-			}
-
-			public boolean enableAccessibilityPlugin() {
-				return enableAccessibilityPlugin;
-			}
-
 			public void setHideFromDebug(boolean hideFromDebug) {
 				this.hideFromDebug = hideFromDebug;
 			}
@@ -203,25 +224,15 @@ public class WailaConfig implements IWailaConfig {
 			public void setHideFromGUIs(boolean hideFromGUIs) {
 				this.hideFromGUIs = hideFromGUIs;
 			}
-
-			public void setAccessibilityModMemory(boolean accessibilityModMemory) {
-				this.accessibilityModMemory = accessibilityModMemory;
-			}
-
-			public void setEnableAccessibilityPlugin(boolean enableAccessibilityPlugin) {
-				this.enableAccessibilityPlugin = enableAccessibilityPlugin;
-			}
 		}
 
-		public ConfigGeneral(
+		public General(
 				boolean previewOverlay,
 				boolean displayTooltip,
 				boolean displayBlocks,
 				boolean displayEntities,
 				boolean displayBosses,
 				DisplayMode displayMode,
-				boolean enableTextToSpeech,
-				TTSMode ttsMode,
 				FluidMode fluidMode,
 				float extendedReach,
 				boolean debug,
@@ -235,8 +246,6 @@ public class WailaConfig implements IWailaConfig {
 			this.displayEntities = displayEntities;
 			this.displayBosses = displayBosses;
 			this.displayMode = displayMode;
-			this.enableTextToSpeech = enableTextToSpeech;
-			this.ttsMode = ttsMode;
 			this.fluidMode = fluidMode;
 			this.extendedReach = extendedReach;
 			this.debug = debug;
@@ -244,25 +253,6 @@ public class WailaConfig implements IWailaConfig {
 			this.bossBarOverlapMode = bossBarOverlapMode;
 			this.builtinCamouflage = builtinCamouflage;
 			this.extraOptions = extraOptions;
-		}
-
-		public static void init() {
-			/* off */
-			List<String> names = itemModNameTooltipDisabledByMods.stream()
-					.filter(CommonProxy::isModLoaded)
-					.map($ -> ModIdentification.getModName($).orElse($))
-					.toList();
-			/* on */
-			itemModNameTooltipDisabledByMods.clear();
-			itemModNameTooltipDisabledByMods.addAll(names);
-
-			IWailaConfig.IConfigGeneral config = IWailaConfig.get().getGeneral();
-			boolean hasAccessibilityMod = ClientProxy.hasAccessibilityMod();
-			if (config.getAccessibilityModMemory() != hasAccessibilityMod) {
-				config.setAccessibilityModMemory(hasAccessibilityMod);
-				config.setEnableAccessibilityPlugin(hasAccessibilityMod);
-				Jade.CONFIG.save();
-			}
 		}
 
 		@Override
@@ -296,11 +286,6 @@ public class WailaConfig implements IWailaConfig {
 		}
 
 		@Override
-		public void toggleTTS() {
-			enableTextToSpeech = !enableTextToSpeech;
-		}
-
-		@Override
 		public boolean shouldDisplayTooltip() {
 			return displayTooltip;
 		}
@@ -318,21 +303,6 @@ public class WailaConfig implements IWailaConfig {
 		@Override
 		public boolean shouldHideFromDebug() {
 			return extraOptions.hideFromDebug();
-		}
-
-		@Override
-		public boolean shouldEnableTextToSpeech() {
-			return ttsMode == TTSMode.TOGGLE && enableTextToSpeech;
-		}
-
-		@Override
-		public TTSMode getTTSMode() {
-			return ttsMode;
-		}
-
-		@Override
-		public void setTTSMode(TTSMode ttsMode) {
-			this.ttsMode = ttsMode;
 		}
 
 		@Override
@@ -434,47 +404,26 @@ public class WailaConfig implements IWailaConfig {
 		public void setBuiltinCamouflage(boolean builtinCamouflage) {
 			this.builtinCamouflage = builtinCamouflage;
 		}
-
-		@Override
-		public boolean getAccessibilityModMemory() {
-			return extraOptions.accessibilityModMemory();
-		}
-
-		@Override
-		public void setAccessibilityModMemory(boolean accessibilityModMemory) {
-			extraOptions.setAccessibilityModMemory(accessibilityModMemory);
-		}
-
-		@Override
-		public boolean getEnableAccessibilityPlugin() {
-			return extraOptions.enableAccessibilityPlugin();
-		}
-
-		@Override
-		public void setEnableAccessibilityPlugin(boolean enableAccessibilityPlugin) {
-			extraOptions.setEnableAccessibilityPlugin(enableAccessibilityPlugin);
-		}
 	}
 
-	public static class ConfigOverlay implements IConfigOverlay {
+	public static class Overlay implements IWailaConfig.Overlay {
 
-		public static final Codec<ConfigOverlay> CODEC = RecordCodecBuilder.create(i -> i.group(
+		public static final Codec<Overlay> CODEC = RecordCodecBuilder.create(i -> i.group(
 				ResourceLocation.CODEC.fieldOf("activeTheme").orElse(Theme.DEFAULT_THEME_ID).forGetter($ -> $.activeTheme),
-				Codec.FLOAT.fieldOf("overlayPosX").orElse(0.5F).forGetter(ConfigOverlay::getOverlayPosX),
-				Codec.FLOAT.fieldOf("overlayPosY").orElse(1.0F).forGetter(ConfigOverlay::getOverlayPosY),
-				Codec.floatRange(0.2F, 2F).fieldOf("overlayScale").orElse(1.0F).forGetter(ConfigOverlay::getOverlayScale),
-				Codec.FLOAT.fieldOf("overlayAnchorX").orElse(0.5F).forGetter(ConfigOverlay::getAnchorX),
-				Codec.FLOAT.fieldOf("overlayAnchorY").orElse(0.0F).forGetter(ConfigOverlay::getAnchorY),
-				Codec.BOOL.fieldOf("overlaySquare").orElse(false).forGetter(ConfigOverlay::getSquare),
-				Codec.BOOL.fieldOf("flipMainHand").orElse(false).forGetter(ConfigOverlay::getFlipMainHand),
-				Codec.floatRange(0, 1).fieldOf("autoScaleThreshold").orElse(0.4f).forGetter(ConfigOverlay::getAutoScaleThreshold),
-				Codec.floatRange(0, 1).fieldOf("alpha").orElse(0.7f).forGetter(ConfigOverlay::getAlpha),
+				Codec.FLOAT.fieldOf("overlayPosX").orElse(0.5F).forGetter(Overlay::getOverlayPosX),
+				Codec.FLOAT.fieldOf("overlayPosY").orElse(1.0F).forGetter(Overlay::getOverlayPosY),
+				Codec.floatRange(0.2F, 2F).fieldOf("overlayScale").orElse(1.0F).forGetter(Overlay::getOverlayScale),
+				Codec.FLOAT.fieldOf("overlayAnchorX").orElse(0.5F).forGetter(Overlay::getAnchorX),
+				Codec.FLOAT.fieldOf("overlayAnchorY").orElse(0.0F).forGetter(Overlay::getAnchorY),
+				Codec.BOOL.fieldOf("overlaySquare").orElse(false).forGetter(Overlay::getSquare),
+				Codec.floatRange(0, 1).fieldOf("autoScaleThreshold").orElse(0.4f).forGetter(Overlay::getAutoScaleThreshold),
+				Codec.floatRange(0, 1).fieldOf("alpha").orElse(0.7f).forGetter(Overlay::getAlpha),
 				StringRepresentable.fromEnum(IconMode::values)
 						.fieldOf("iconMode").orElse(IconMode.TOP)
-						.forGetter(ConfigOverlay::getIconMode),
-				Codec.BOOL.fieldOf("animation").orElse(true).forGetter(ConfigOverlay::getAnimation),
-				Codec.floatRange(0, Float.MAX_VALUE).fieldOf("disappearingDelay").orElse(0F).forGetter(ConfigOverlay::getDisappearingDelay)
-		).apply(i, ConfigOverlay::new));
+						.forGetter(Overlay::getIconMode),
+				Codec.BOOL.fieldOf("animation").orElse(true).forGetter(Overlay::getAnimation),
+				Codec.floatRange(0, Float.MAX_VALUE).fieldOf("disappearingDelay").orElse(0F).forGetter(Overlay::getDisappearingDelay)
+		).apply(i, Overlay::new));
 
 		public ResourceLocation activeTheme;
 		private float overlayPosX;
@@ -483,7 +432,6 @@ public class WailaConfig implements IWailaConfig {
 		private float overlayAnchorX;
 		private float overlayAnchorY;
 		private boolean overlaySquare;
-		private boolean flipMainHand;
 		private float autoScaleThreshold;
 		private float alpha;
 		private transient Theme activeThemeInstance;
@@ -491,7 +439,7 @@ public class WailaConfig implements IWailaConfig {
 		private boolean animation;
 		private float disappearingDelay;
 
-		public ConfigOverlay(
+		public Overlay(
 				ResourceLocation activeTheme,
 				float overlayPosX,
 				float overlayPosY,
@@ -499,7 +447,6 @@ public class WailaConfig implements IWailaConfig {
 				float overlayAnchorX,
 				float overlayAnchorY,
 				boolean overlaySquare,
-				boolean flipMainHand,
 				float autoScaleThreshold,
 				float alpha,
 				IconMode iconMode,
@@ -512,7 +459,6 @@ public class WailaConfig implements IWailaConfig {
 			this.overlayAnchorX = overlayAnchorX;
 			this.overlayAnchorY = overlayAnchorY;
 			this.overlaySquare = overlaySquare;
-			this.flipMainHand = flipMainHand;
 			this.autoScaleThreshold = autoScaleThreshold;
 			this.alpha = alpha;
 			this.iconMode = iconMode;
@@ -568,24 +514,6 @@ public class WailaConfig implements IWailaConfig {
 		@Override
 		public void setAnchorY(float overlayAnchorY) {
 			this.overlayAnchorY = Mth.clamp(overlayAnchorY, 0.0F, 1.0F);
-		}
-
-		@Override
-		public boolean getFlipMainHand() {
-			return flipMainHand;
-		}
-
-		@Override
-		public void setFlipMainHand(boolean overlaySquare) {
-			flipMainHand = overlaySquare;
-		}
-
-		@Override
-		public float tryFlip(float f) {
-			if (flipMainHand && Minecraft.getInstance().options.mainHand().get() == HumanoidArm.LEFT) {
-				f = 1 - f;
-			}
-			return f;
 		}
 
 		@Override
@@ -664,17 +592,17 @@ public class WailaConfig implements IWailaConfig {
 
 	}
 
-	public static class ConfigFormatting implements IConfigFormatting {
+	public static class Formatting implements IWailaConfig.Formatting {
 
-		public static final Codec<ConfigFormatting> CODEC = RecordCodecBuilder.create(i -> i.group(
+		public static final Codec<Formatting> CODEC = RecordCodecBuilder.create(i -> i.group(
 				Style.Serializer.CODEC.fieldOf("itemModNameStyle")
 						.orElseGet(() -> Style.EMPTY.applyFormats(ChatFormatting.BLUE, ChatFormatting.ITALIC))
-						.forGetter(ConfigFormatting::getItemModNameStyle)
-		).apply(i, ConfigFormatting::new));
+						.forGetter(Formatting::getItemModNameStyle)
+		).apply(i, Formatting::new));
 
 		private Style itemModNameStyle;
 
-		public ConfigFormatting(Style itemModNameStyle) {
+		public Formatting(Style itemModNameStyle) {
 			this.itemModNameStyle = itemModNameStyle;
 		}
 
@@ -693,6 +621,78 @@ public class WailaConfig implements IWailaConfig {
 			return Component.literal(name).withStyle(IThemeHelper.get().isLightColorScheme() ?
 					ChatFormatting.DARK_GRAY :
 					ChatFormatting.GRAY);
+		}
+	}
+
+	public static class Accessibility implements IWailaConfig.Accessibility {
+
+		public static final Codec<Accessibility> CODEC = RecordCodecBuilder.create(i -> i.group(
+				Codec.BOOL.fieldOf("enableTextToSpeech").orElse(false).forGetter(Accessibility::shouldEnableTextToSpeech),
+				StringRepresentable.fromEnum(TTSMode::values)
+						.fieldOf("ttsMode").orElse(TTSMode.TOGGLE)
+						.forGetter(Accessibility::getTTSMode),
+				Codec.BOOL.fieldOf("enableAccessibilityPlugin").orElse(false).forGetter(Accessibility::getEnableAccessibilityPlugin),
+				Codec.BOOL.fieldOf("flipMainHand").orElse(false).forGetter(Accessibility::getFlipMainHand)
+		).apply(i, Accessibility::new));
+
+		private boolean enableTextToSpeech;
+		private TTSMode ttsMode;
+		private boolean enableAccessibilityPlugin;
+		private boolean flipMainHand;
+
+		public Accessibility(boolean enableTextToSpeech, TTSMode ttsMode, boolean enableAccessibilityPlugin, boolean flipMainHand) {
+			this.enableTextToSpeech = enableTextToSpeech;
+			this.ttsMode = ttsMode;
+			this.enableAccessibilityPlugin = enableAccessibilityPlugin;
+			this.flipMainHand = flipMainHand;
+		}
+
+		@Override
+		public boolean shouldEnableTextToSpeech() {
+			return ttsMode == TTSMode.TOGGLE && enableTextToSpeech;
+		}
+
+		@Override
+		public void toggleTTS() {
+			enableTextToSpeech = !enableTextToSpeech;
+		}
+
+		@Override
+		public TTSMode getTTSMode() {
+			return ttsMode;
+		}
+
+		@Override
+		public void setTTSMode(TTSMode ttsMode) {
+			this.ttsMode = ttsMode;
+		}
+
+		@Override
+		public boolean getEnableAccessibilityPlugin() {
+			return enableAccessibilityPlugin;
+		}
+
+		@Override
+		public void setEnableAccessibilityPlugin(boolean enableAccessibilityPlugin) {
+			this.enableAccessibilityPlugin = enableAccessibilityPlugin;
+		}
+
+		@Override
+		public boolean getFlipMainHand() {
+			return flipMainHand;
+		}
+
+		@Override
+		public void setFlipMainHand(boolean overlaySquare) {
+			flipMainHand = overlaySquare;
+		}
+
+		@Override
+		public float tryFlip(float f) {
+			if (flipMainHand && Minecraft.getInstance().options.mainHand().get() == HumanoidArm.LEFT) {
+				f = 1 - f;
+			}
+			return f;
 		}
 	}
 

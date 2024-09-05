@@ -23,8 +23,7 @@ import snownee.jade.gui.PreviewOptionsScreen;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.Tooltip;
 import snownee.jade.impl.WailaClientRegistration;
-import snownee.jade.impl.config.WailaConfig.ConfigGeneral;
-import snownee.jade.impl.config.WailaConfig.ConfigOverlay;
+import snownee.jade.impl.config.WailaConfig.General;
 import snownee.jade.impl.ui.BoxElement;
 import snownee.jade.impl.ui.ItemStackElement;
 import snownee.jade.util.ClientProxy;
@@ -44,7 +43,7 @@ public class OverlayRenderer {
 			return false;
 		}
 
-		ConfigGeneral general = Jade.CONFIG.get().getGeneral();
+		IWailaConfig.General general = IWailaConfig.get().general();
 		if (!general.shouldDisplayTooltip()) {
 			return false;
 		}
@@ -53,7 +52,7 @@ public class OverlayRenderer {
 			return false;
 		}
 
-		BossBarOverlapMode mode = Jade.CONFIG.get().getGeneral().getBossBarOverlapMode();
+		BossBarOverlapMode mode = Jade.CONFIG.get().general().getBossBarOverlapMode();
 		if (mode == BossBarOverlapMode.HIDE_TOOLTIP && !(Minecraft.getInstance().screen instanceof BaseOptionsScreen) &&
 				ClientProxy.getBossBarRect() != null) {
 			return false;
@@ -74,7 +73,7 @@ public class OverlayRenderer {
 		}
 
 		box.updateExpectedRect(rect);
-		ConfigGeneral general = Jade.CONFIG.get().getGeneral();
+		General general = Jade.CONFIG.get().general();
 		if (mc.screen instanceof PreviewOptionsScreen optionsScreen) {
 			if (optionsScreen.forcePreviewOverlay()) {
 				return true;
@@ -132,8 +131,8 @@ public class OverlayRenderer {
 		} else {
 			show = shouldShow();
 		}
-		ConfigOverlay overlay = Jade.CONFIG.get().getOverlay();
-		ConfigGeneral general = Jade.CONFIG.get().getGeneral();
+		IWailaConfig.Overlay overlay = IWailaConfig.get().overlay();
+		IWailaConfig.General general = IWailaConfig.get().general();
 		if (root != null) {
 			lingerTooltip = root;
 		}
@@ -222,7 +221,7 @@ public class OverlayRenderer {
 		RenderSystem.enableDepthTest();
 		matrixStack.popPose();
 
-		if (Jade.CONFIG.get().getGeneral().shouldEnableTextToSpeech()) {
+		if (IWailaConfig.get().accessibility().shouldEnableTextToSpeech()) {
 			WailaTickHandler.narrate(root.getTooltip(), true);
 		}
 

@@ -9,7 +9,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec2;
-import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
+import snownee.jade.api.config.IWailaConfig.Overlay;
 import snownee.jade.api.ui.Color;
 import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.ui.ProgressStyle;
@@ -139,7 +139,7 @@ public class SimpleProgressStyle extends ProgressStyle {
 				y -= progress;
 				y += font.lineHeight + 2;
 			}
-			int color = IConfigOverlay.applyAlpha(textColor, OverlayRenderer.alpha);
+			int color = Overlay.applyAlpha(textColor, OverlayRenderer.alpha);
 			DisplayHelper.setBetterTextShadow(true);
 			guiGraphics.drawString(font, text, (int) x + 1, (int) y, color);
 			DisplayHelper.setBetterTextShadow(false);

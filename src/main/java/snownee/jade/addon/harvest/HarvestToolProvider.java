@@ -190,7 +190,7 @@ public class HarvestToolProvider implements IBlockComponentProvider, ResourceMan
 			//TODO execute on a thread?
 			try {
 				shearableBlocks = Collections.unmodifiableList(LootTableMineableCollector.execute(
-						registryAccess.registryOrThrow(Registries.LOOT_TABLE),
+						registryAccess.lookupOrThrow(Registries.LOOT_TABLE),
 						Items.SHEARS.getDefaultInstance()));
 			} catch (Throwable e) {
 				Jade.LOGGER.error("Failed to collect shearable blocks", e);

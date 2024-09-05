@@ -112,10 +112,10 @@ public class RayTracing {
 			}
 		}
 
-		float extendedReach = IWailaConfig.get().getGeneral().getExtendedReach();
+		float extendedReach = IWailaConfig.get().general().getExtendedReach();
 		double blockReach = viewPlayer.blockInteractionRange() + extendedReach;
 		double entityReach = viewPlayer.entityInteractionRange() + extendedReach;
-		target = rayTrace(viewEntity, blockReach, entityReach, mc.getTimer().getGameTimeDeltaPartialTick(true));
+		target = rayTrace(viewEntity, blockReach, entityReach, mc.getDeltaTracker().getGameTimeDeltaPartialTick(true));
 	}
 
 	public HitResult getTarget() {
@@ -141,7 +141,7 @@ public class RayTracing {
 
 		BlockState eyeBlock = world.getBlockState(BlockPos.containing(eyePosition));
 		ClipContext.Fluid fluidView = ClipContext.Fluid.NONE;
-		IWailaConfig.FluidMode fluidMode = IWailaConfig.get().getGeneral().getDisplayFluids();
+		IWailaConfig.FluidMode fluidMode = IWailaConfig.get().general().getDisplayFluids();
 		if (eyeBlock.getFluidState().isEmpty()) {
 			fluidView = fluidMode.ctx;
 		}

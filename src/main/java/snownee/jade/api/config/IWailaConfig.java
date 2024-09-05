@@ -11,7 +11,6 @@ import snownee.jade.JadeInternals;
 import snownee.jade.api.SimpleStringRepresentable;
 import snownee.jade.api.theme.Theme;
 
-//TODO(1.21.2): split accessibility options into a new class
 @NonExtendable
 public interface IWailaConfig {
 
@@ -19,13 +18,17 @@ public interface IWailaConfig {
 		return JadeInternals.getWailaConfig();
 	}
 
-	IConfigGeneral getGeneral();
+	General general();
 
-	IConfigOverlay getOverlay();
+	Overlay overlay();
 
-	IConfigFormatting getFormatting();
+	Formatting formatting();
 
-	IPluginConfig getPlugin();
+	Accessibility accessibility();
+
+	IPluginConfig plugin();
+
+	void save();
 
 	enum IconMode implements SimpleStringRepresentable {
 		TOP, CENTERED, INLINE, HIDE
@@ -57,7 +60,7 @@ public interface IWailaConfig {
 	}
 
 	@NonExtendable
-	interface IConfigGeneral {
+	interface General {
 
 		void setDisplayTooltip(boolean displayTooltip);
 
@@ -79,8 +82,6 @@ public interface IWailaConfig {
 
 		void setHideFromGUIs(boolean hideFromGUIs);
 
-		void toggleTTS();
-
 		void setItemModNameTooltip(boolean itemModNameTooltip);
 
 		boolean shouldDisplayTooltip();
@@ -94,12 +95,6 @@ public interface IWailaConfig {
 		boolean shouldHideFromTabList();
 
 		boolean shouldHideFromGUIs();
-
-		boolean shouldEnableTextToSpeech();
-
-		TTSMode getTTSMode();
-
-		void setTTSMode(TTSMode ttsMode);
 
 		boolean shouldDisplayFluids();
 
@@ -126,18 +121,10 @@ public interface IWailaConfig {
 		boolean getBuiltinCamouflage();
 
 		void setBuiltinCamouflage(boolean builtinCamouflage);
-
-		boolean getAccessibilityModMemory();
-
-		void setAccessibilityModMemory(boolean lowVisionMemory);
-
-		boolean getEnableAccessibilityPlugin();
-
-		void setEnableAccessibilityPlugin(boolean showAccessibilityPlugins);
 	}
 
 	@NonExtendable
-	interface IConfigOverlay {
+	interface Overlay {
 
 		static int applyAlpha(int color, float alpha) {
 			int prevAlphaChannel = (color >> 24) & 0xFF;
@@ -167,12 +154,6 @@ public interface IWailaConfig {
 		float getAnchorY();
 
 		void setAnchorY(float overlayAnchorY);
-
-		boolean getFlipMainHand();
-
-		void setFlipMainHand(boolean overlaySquare);
-
-		float tryFlip(float f);
 
 		boolean getSquare();
 
@@ -204,12 +185,34 @@ public interface IWailaConfig {
 	}
 
 	@NonExtendable
-	interface IConfigFormatting {
+	interface Formatting {
 
 		Style getItemModNameStyle();
 
 		void setItemModNameStyle(Style itemModNameStyle);
 
 		Component registryName(String name);
+	}
+
+	@NonExtendable
+	interface Accessibility {
+
+		boolean shouldEnableTextToSpeech();
+
+		void toggleTTS();
+
+		TTSMode getTTSMode();
+
+		void setTTSMode(TTSMode ttsMode);
+
+		boolean getEnableAccessibilityPlugin();
+
+		void setEnableAccessibilityPlugin(boolean showAccessibilityPlugins);
+
+		boolean getFlipMainHand();
+
+		void setFlipMainHand(boolean overlaySquare);
+
+		float tryFlip(float f);
 	}
 }

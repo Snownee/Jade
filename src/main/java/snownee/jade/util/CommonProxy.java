@@ -69,7 +69,6 @@ import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.decoration.Painting;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionContents;
@@ -150,7 +149,7 @@ public final class CommonProxy implements ModInitializer {
 				}
 			}
 		}
-		if (stack.getItem() instanceof EnchantedBookItem) {
+		if (stack.has(DataComponents.STORED_ENCHANTMENTS)) {
 			ItemEnchantments enchantments = stack.getOrDefault(DataComponents.STORED_ENCHANTMENTS, ItemEnchantments.EMPTY);
 			String modid = null;
 			for (Holder<Enchantment> enchantmentHolder : enchantments.keySet()) {

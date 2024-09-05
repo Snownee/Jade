@@ -22,7 +22,7 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.CoreShaders;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.locale.Language;
@@ -35,9 +35,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
-import snownee.jade.Jade;
 import snownee.jade.api.config.IWailaConfig;
-import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
+import snownee.jade.api.config.IWailaConfig.Overlay;
 import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.Color;
@@ -143,8 +142,8 @@ public class DisplayHelper implements IDisplayHelper {
 			minY = maxY;
 			maxY = j;
 		}
-		color = IWailaConfig.IConfigOverlay.applyAlpha(color, OverlayRenderer.alpha);
-		VertexConsumer buffer = guiGraphics.bufferSource().getBuffer(renderType);
+		color = Overlay.applyAlpha(color, OverlayRenderer.alpha);
+		VertexConsumer buffer = guiGraphics.bufferSource.getBuffer(renderType);
 		buffer.addVertex(matrix, minX, maxY, 0.0F).setColor(color);
 		buffer.addVertex(matrix, maxX, maxY, 0.0F).setColor(color);
 		buffer.addVertex(matrix, maxX, minY, 0.0F).setColor(color);
@@ -193,9 +192,9 @@ public class DisplayHelper implements IDisplayHelper {
 		float zLevel = 0.0F;
 		Matrix4f matrix = guiGraphics.pose().last().pose();
 
-		startColor = IWailaConfig.IConfigOverlay.applyAlpha(startColor, opacity());
-		endColor = IWailaConfig.IConfigOverlay.applyAlpha(endColor, opacity());
-		VertexConsumer buffer = guiGraphics.bufferSource().getBuffer(RenderType.gui());
+		startColor = Overlay.applyAlpha(startColor, opacity());
+		endColor = Overlay.applyAlpha(endColor, opacity());
+		VertexConsumer buffer = guiGraphics.bufferSource.getBuffer(RenderType.gui());
 		if (horizontal) {
 			buffer.addVertex(matrix, left + width, top, zLevel).setColor(endColor);
 			buffer.addVertex(matrix, left, top, zLevel).setColor(startColor);
@@ -261,7 +260,7 @@ public class DisplayHelper implements IDisplayHelper {
 				fill(guiGraphics, xPosition, maxY - scaledAmount.floatValue(), xPosition + width, maxY, color);
 			} else {
 				if (opacity() != 1) {
-					color = IWailaConfig.IConfigOverlay.applyAlpha(color, opacity());
+					color = Overlay.applyAlpha(color, opacity());
 				}
 				drawTiledSprite(guiGraphics, xPosition, yPosition, width, height, color, scaledAmount.floatValue(), sprite);
 			}
@@ -281,7 +280,7 @@ public class DisplayHelper implements IDisplayHelper {
 			return;
 		}
 		RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
-		RenderSystem.setShader(GameRenderer::getPositionTexShader);
+		RenderSystem.setShader(CoreShaders.POSITION_TEX);
 		Matrix4f matrix = guiGraphics.pose().last().pose();
 		setGLColorFromInt(color);
 		RenderSystem.enableBlend();
@@ -386,9 +385,9 @@ public class DisplayHelper implements IDisplayHelper {
 
 	@Override
 	public void drawText(GuiGraphics guiGraphics, FormattedCharSequence text, float x, float y, int color) {
-		boolean shadow = Jade.CONFIG.get().getOverlay().getTheme().text.shadow();
+		boolean shadow = IWailaConfig.get().overlay().getTheme().text.shadow();
 		if (opacity() != 1) {
-			color = IConfigOverlay.applyAlpha(color, opacity());
+			color = Overlay.applyAlpha(color, opacity());
 		}
 		betterTextShadow = true;
 		guiGraphics.drawString(CLIENT.font, text, (int) x, (int) y, color, shadow);
@@ -432,17 +431,17 @@ public class DisplayHelper implements IDisplayHelper {
 	@Override
 	public void blitSprite(GuiGraphics guiGraphics, ResourceLocation resourceLocation, int i, int j, int k, int l) {
 		RenderSystem.enableBlend();
-		guiGraphics.setColor(1, 1, 1, opacity());
-		guiGraphics.blitSprite(resourceLocation, i, j, k, l);
-		guiGraphics.setColor(1, 1, 1, 1);
+		RenderSystem.setShaderColor(1, 1, 1, opacity());
+		guiGraphics.blitSprite(RenderType::guiTextured, resourceLocation, i, j, k, l);
+		RenderSystem.setShaderColor(1, 1, 1, 1);
 	}
 
 	@Override
 	public void blitSprite(GuiGraphics guiGraphics, ResourceLocation resourceLocation, int i, int j, int k, int l, int m) {
 		RenderSystem.enableBlend();
-		guiGraphics.setColor(1, 1, 1, opacity());
-		guiGraphics.blitSprite(resourceLocation, i, j, k, l, m);
-		guiGraphics.setColor(1, 1, 1, 1);
+		RenderSystem.setShaderColor(1, 1, 1, opacity());
+		guiGraphics.blitSprite(RenderType::guiTextured, resourceLocation, i, j, k, l, m);
+		RenderSystem.setShaderColor(1, 1, 1, 1);
 	}
 
 	@Override
@@ -458,27 +457,8 @@ public class DisplayHelper implements IDisplayHelper {
 			int o,
 			int p) {
 		RenderSystem.enableBlend();
-		guiGraphics.setColor(1, 1, 1, opacity());
-		guiGraphics.blitSprite(resourceLocation, i, j, k, l, m, n, o, p);
-		guiGraphics.setColor(1, 1, 1, 1);
-	}
-
-	@Override
-	public void blitSprite(
-			GuiGraphics guiGraphics,
-			ResourceLocation resourceLocation,
-			int i,
-			int j,
-			int k,
-			int l,
-			int m,
-			int n,
-			int o,
-			int p,
-			int q) {
-		RenderSystem.enableBlend();
 		RenderSystem.setShaderColor(1, 1, 1, opacity());
-		guiGraphics.blitSprite(resourceLocation, i, j, k, l, m, n, o, p, q);
+		guiGraphics.blitSprite(RenderType::guiTextured, resourceLocation, i, j, k, l, m, n, o, p);
 		RenderSystem.setShaderColor(1, 1, 1, 1);
 	}
 

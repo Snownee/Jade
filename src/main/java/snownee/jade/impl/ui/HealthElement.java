@@ -73,7 +73,7 @@ public class HealthElement extends Element {
 		}
 		if (track != null) {
 			track.setHealth(this.health);
-			track.update(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks());
+			track.update(Minecraft.getInstance().getDeltaTracker().getRealtimeDeltaTicks());
 			lastHealth = track.getLastHealth() * 0.5F;
 			blink = track.isBlinking();
 		}

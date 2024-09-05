@@ -77,11 +77,11 @@ public class VanillaPlugin implements IWailaPlugin {
 				Block block = Blocks.AIR;
 				if (trappedName.getPath().startsWith("trapped_")) {
 					ResourceLocation chestName = trappedName.withPath(trappedName.getPath().substring(8));
-					block = BuiltInRegistries.BLOCK.get(chestName);
+					block = BuiltInRegistries.BLOCK.getValue(chestName);
 				} else if (trappedName.getPath().endsWith("_trapped_chest")) {
 					ResourceLocation chestName = trappedName.withPath(
 							trappedName.getPath().substring(0, trappedName.getPath().length() - 14) + "_chest");
-					block = BuiltInRegistries.BLOCK.get(chestName);
+					block = BuiltInRegistries.BLOCK.getValue(chestName);
 				}
 				if (block != Blocks.AIR) {
 					return copyProperties(state, block.defaultBlockState());
