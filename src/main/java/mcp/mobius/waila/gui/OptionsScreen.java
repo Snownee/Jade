@@ -72,6 +72,7 @@ public abstract class OptionsScreen extends Screen {
 	public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
 		renderBackground(matrixStack);
 		super.render(matrixStack, mouseX, mouseY, partialTicks);
+		drawCenteredString(matrixStack, font, title, width / 2, 12, 16777215);
 
 		if (mouseY < 32 || mouseY > height - 32)
 			return;

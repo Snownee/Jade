@@ -34,7 +34,9 @@ public class JEICompat implements IModPlugin {
 		if (runtime == null) {
 			return;
 		}
-		if (!WailaClient.showRecipes.isDown() && !WailaClient.showUses.isDown()) {
+		boolean showRecipes = WailaClient.showRecipes.consumeClick();
+		boolean showUses = WailaClient.showUses.consumeClick();
+		if (!showRecipes && !showUses) {
 			return;
 		}
 		Accessor<?> accessor = ObjectDataCenter.get();
@@ -48,6 +50,6 @@ public class JEICompat implements IModPlugin {
 
 		IRecipesGui gui = runtime.getRecipesGui();
 		IRecipeManager manager = runtime.getRecipeManager();
-		gui.show(manager.createFocus(WailaClient.showUses.isDown() ? IFocus.Mode.INPUT : IFocus.Mode.OUTPUT, stack));
+		gui.show(manager.createFocus(showUses ? IFocus.Mode.INPUT : IFocus.Mode.OUTPUT, stack));
 	}
 }
