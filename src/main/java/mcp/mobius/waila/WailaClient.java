@@ -93,20 +93,6 @@ public class WailaClient {
 	private static void appendModName(ItemTooltipEvent event) {
 		if (hideModName || !PluginConfig.INSTANCE.get(CorePlugin.CONFIG_ITEM_MOD_NAME, false))
 			return;
-		//		if (hasJEI) {
-		//			if (JEIClientConfig.modNameFormat.modNameFormat != "") {
-		//				StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-		//				int i = 0;
-		//				for (StackTraceElement element : stackTrace) {
-		//					if (++i > 12) {
-		//						break;
-		//					}
-		//					if (element.getMethodName().equals("getIngredientTooltipSafe")) {
-		//						return;
-		//					}
-		//				}
-		//			}
-		//		}
 		String name = String.format(Waila.CONFIG.get().getFormatting().getModName(), ModIdentification.getModName(event.getItemStack()));
 		event.getToolTip().add(new TextComponent(name));
 	}
