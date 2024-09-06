@@ -28,6 +28,8 @@ import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.JukeboxBlock;
 import net.minecraft.world.level.block.LecternBlock;
 import net.minecraft.world.level.block.LeverBlock;
+import net.minecraft.world.level.block.NetherWartBlock;
+import net.minecraft.world.level.block.SweetBerryBushBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.JukeboxBlockEntity;
 import net.minecraft.world.level.block.entity.LecternBlockEntity;
@@ -92,7 +94,11 @@ public class VanillaProvider implements IComponentProvider, IServerDataProvider<
 			} else if (state.hasProperty(BlockStateProperties.AGE_7)) {
 				addMaturityTooltip(tooltip, state.getValue(BlockStateProperties.AGE_7) / 7F);
 			} else if (state.hasProperty(BlockStateProperties.AGE_2)) {
-				addMaturityTooltip(tooltip, state.getValue(BlockStateProperties.AGE_2) / 2.0F);
+				addMaturityTooltip(tooltip, state.getValue(BlockStateProperties.AGE_2) / 2F);
+			} else if (state.hasProperty(BlockStateProperties.AGE_3)) {
+				if (block instanceof SweetBerryBushBlock || block instanceof NetherWartBlock) {
+					addMaturityTooltip(tooltip, state.getValue(BlockStateProperties.AGE_3) / 3F);
+				}
 			}
 		}
 
