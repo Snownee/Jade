@@ -1,5 +1,7 @@
 package snownee.jade.addon.forge;
 
+import com.google.common.math.IntMath;
+
 import mcp.mobius.waila.api.BlockAccessor;
 import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IServerDataProvider;
@@ -99,12 +101,23 @@ public class ForgeCapabilityProvider implements IComponentProvider, IServerDataP
 		IFluidHandler fluidHandler = tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).orElse(null);
 		if (fluidHandler != null) {
 			ListTag list = new ListTag();
+			int emptyCapacity = 0;
 			for (int i = 0; i < fluidHandler.getTanks(); i++) {
 				int capacity = fluidHandler.getTankCapacity(i);
 				if (capacity <= 0)
 					continue;
-				CompoundTag tankData = fluidHandler.getFluidInTank(i).writeToNBT(new CompoundTag());
+				FluidStack fluidStack = fluidHandler.getFluidInTank(i);
+				if (fluidStack.isEmpty()) {
+					emptyCapacity = IntMath.saturatedAdd(emptyCapacity, capacity);
+					continue;
+				}
+				CompoundTag tankData = fluidStack.writeToNBT(new CompoundTag());
 				tankData.putInt("capacity", capacity);
+				list.add(tankData);
+			}
+			if (list.isEmpty() && emptyCapacity > 0) {
+				CompoundTag tankData = FluidStack.EMPTY.writeToNBT(new CompoundTag());
+				tankData.putInt("capacity", emptyCapacity);
 				list.add(tankData);
 			}
 			if (!list.isEmpty()) {
