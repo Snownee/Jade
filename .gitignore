@@ -22,3 +22,5 @@ eclipse
 run
 /logs
 *.log
+/CHANGELOG.md
+/runs/

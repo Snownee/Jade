@@ -28,6 +28,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 
+@SuppressWarnings("removal")
 public class WailaRegistrar implements IRegistrar {
 
 	public static final WailaRegistrar INSTANCE = new WailaRegistrar();

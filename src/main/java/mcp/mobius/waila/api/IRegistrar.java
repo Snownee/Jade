@@ -19,6 +19,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 
+@Deprecated(forRemoval = true, since = "1.19")
 @ScheduledForRemoval(inVersion = "1.19")
 public interface IRegistrar {
 

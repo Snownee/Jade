@@ -11,6 +11,7 @@ public interface IWailaPlugin {
 	/**
 	 * @param registrar - An instance of IWailaRegistrar to register your providers with.
 	 */
+	@Deprecated(forRemoval = true, since = "1.19")
 	@ScheduledForRemoval(inVersion = "1.19")
 	default void register(IRegistrar registrar) {
 
