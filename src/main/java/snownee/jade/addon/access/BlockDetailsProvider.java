@@ -38,6 +38,12 @@ public class BlockDetailsProvider implements IBlockComponentProvider {
 		if (blockState.hasProperty(BlockStateProperties.MOISTURE) && blockState.getValue(BlockStateProperties.MOISTURE) == 7) {
 			AccessibilityPlugin.replaceTitle(tooltip, "block.hydrated");
 		}
+		if (blockState.hasProperty(BlockStateProperties.LOCKED) && blockState.getValue(BlockStateProperties.LOCKED)) {
+			AccessibilityPlugin.replaceTitle(tooltip, "block.locked");
+		}
+		if (blockState.hasProperty(BlockStateProperties.EXTENDED) && blockState.getValue(BlockStateProperties.EXTENDED)) {
+			AccessibilityPlugin.replaceTitle(tooltip, "block.extended");
+		}
 		boolean active = false;
 		if (blockState.hasProperty(BlockStateProperties.VAULT_STATE) &&
 				blockState.getValue(BlockStateProperties.VAULT_STATE) == VaultState.ACTIVE) {

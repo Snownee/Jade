@@ -242,7 +242,6 @@
 	"jade.minutes": "{0}分",
 	"jade.minutes_seconds": "{0}分{1}秒",
 	"jade.error": "<エラーが発生しました。%sに報告してください>",
-	"jade.hopper.locked": "ホッパーはロックされています",
 	"jade.blockpos": "%s %s %s",
 	"jade.distance1": "［%s］",
 	"jade.distance2": "距離：%s",

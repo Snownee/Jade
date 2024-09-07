@@ -20,12 +20,14 @@ public class AccessibilityPlugin implements IWailaPlugin {
 		registration.markAsClientFeature(JadeIds.ACCESS_SIGN);
 
 		registration.registerBlockComponent(new BlockDetailsProvider(), Block.class);
+		registration.registerBlockComponent(new BlockDetailsBodyProvider(), Block.class);
 		registration.markAsClientFeature(JadeIds.ACCESS_BLOCK_DETAILS);
 
 		registration.registerBlockComponent(new BlockAmountProvider(), Block.class);
 		registration.markAsClientFeature(JadeIds.ACCESS_BLOCK_AMOUNT);
 
 		registration.registerEntityComponent(new EntityDetailsProvider(), Entity.class);
+		registration.registerEntityComponent(new EntityDetailsBodyProvider(), Entity.class);
 		registration.markAsClientFeature(JadeIds.ACCESS_ENTITY_DETAILS);
 
 		registration.registerEntityComponent(new EntityVariantProvider(), LivingEntity.class);

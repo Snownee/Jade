@@ -167,7 +167,6 @@
 	"jade.owner": "Власник: %s",
 	"jade.seconds": "{0}с",
 	"jade.error": "<Помилка у моді %s, будь ласка, повідомте розробника>",
-	"jade.hopper.locked": "Лійку заблоковано",
 	"jade.distance2": "Відстань: %s",
 	"jade.up": "Верх",
 	"jade.down": "Низ",
