@@ -228,7 +228,6 @@
 	"jade.infinity": "∞",
 	"jade.seconds": "{0}s",
 	"jade.error": "<Erro do mod %s, informe por favor>",
-	"jade.hopper.locked": "Funil está bloqueado",
 	"jade.blockpos": "%s %s %s",
 	"jade.distance1": " [%s]",
 	"jade.distance2": "Distância: %s",
