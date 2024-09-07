@@ -258,7 +258,6 @@
 	"jade.minutes": "{0}m",
 	"jade.minutes_seconds": "{0}m {1}s",
 	"jade.error": "<Ocurrió un error, por favor informe a %s>",
-	"jade.hopper.locked": "La tolva está bloqueada",
 	"jade.blockpos": "%s %s %s",
 	"jade.distance1": " [%s]",
 	"jade.distance2": "Distancia: %s",

@@ -262,7 +262,6 @@
 	"jade.minutes": "{0}분",
 	"jade.minutes_seconds": "{0}분 {1}초",
 	"jade.error": "<오류가 발생했습니다. %s로 보고해주세요>",
-	"jade.hopper.locked": "호퍼가 잠겨있습니다",
 	"jade.blockpos": "%s %s %s",
 	"jade.distance1": " [%s]",
 	"jade.distance2": "거리: %s",

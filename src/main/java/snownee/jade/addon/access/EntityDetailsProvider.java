@@ -19,9 +19,6 @@ public class EntityDetailsProvider implements IEntityComponentProvider {
 	@Override
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		Entity entity = accessor.getEntity();
-		if (entity.hasCustomName()) {
-			return;
-		}
 		if (entity instanceof Creeper creeper && creeper.isPowered()) {
 			AccessibilityPlugin.replaceTitle(tooltip, "creeper.powered");
 		} else if (entity instanceof WitherBoss witherBoss && witherBoss.isPowered()) {

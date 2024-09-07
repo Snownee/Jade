@@ -258,7 +258,6 @@
 	"jade.minutes": "{0}m",
 	"jade.minutes_seconds": "{0}m {1}s",
 	"jade.error": "<Er is een fout opgetreden, meld dit alstublieft aan %s>",
-	"jade.hopper.locked": "Trechter is Gesloten",
 	"jade.blockpos": "%s %s %s",
 	"jade.distance1": " [%s]",
 	"jade.distance2": "Afstand: %s",

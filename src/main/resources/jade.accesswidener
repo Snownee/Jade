@@ -77,3 +77,5 @@ accessible field net/minecraft/world/level/storage/loot/LootPool entries Ljava/u
 
 accessible method net/minecraft/client/gui/components/WidgetTooltipHolder createTooltipPositioner (Lnet/minecraft/client/gui/navigation/ScreenRectangle;ZZ)Lnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;
 extendable method net/minecraft/client/gui/components/WidgetTooltipHolder createTooltipPositioner (Lnet/minecraft/client/gui/navigation/ScreenRectangle;ZZ)Lnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;
+
+accessible method net/minecraft/world/entity/Entity getTypeName ()Lnet/minecraft/network/chat/Component;
