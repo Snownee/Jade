@@ -354,6 +354,7 @@
 	"jade.access.entity.pose.7": "濒死",
 	"jade.access.entity.pose.10": "坐着",
 	"jade.access.entity.pose.1000": "装死",
+	"jade.access.entity.pose.1001": "蜷缩",
 	"jade.access.entity.leashed_to": "拴绳连接至：%s",
 	"jade.access.held_item.main": "主手：%s",
 	"jade.access.held_item.off": "副手：%s",
