@@ -354,6 +354,7 @@
 	"jade.access.entity.pose.7": "Dying",
 	"jade.access.entity.pose.10": "Sitting",
 	"jade.access.entity.pose.1000": "Playing Dead",
+	"jade.access.entity.pose.1001": "Rolling Up",
 	"jade.access.entity.leashed_to": "Leashed to: %s",
 	"jade.access.held_item.main": "Main Hand: %s",
 	"jade.access.held_item.off": "Off Hand: %s",
