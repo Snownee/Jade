@@ -10,6 +10,7 @@ import net.minecraft.world.entity.Leashable;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.animal.Fox;
+import net.minecraft.world.entity.animal.armadillo.Armadillo;
 import net.minecraft.world.entity.animal.axolotl.Axolotl;
 import net.minecraft.world.entity.decoration.LeashFenceKnotEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -37,6 +38,8 @@ public class EntityDetailsBodyProvider implements IEntityComponentProvider {
 			}
 		} else if (entity instanceof Axolotl axolotl && axolotl.isPlayingDead()) {
 			poseId = 1000;
+		} else if (entity instanceof Armadillo armadillo && armadillo.getState() == Armadillo.ArmadilloState.ROLLING) {
+			poseId = 1001;
 		}
 		if (poseId != Pose.STANDING.id()) {
 			String key = "jade.access.entity.pose.%s".formatted(poseId);
