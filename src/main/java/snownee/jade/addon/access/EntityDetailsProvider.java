@@ -8,6 +8,7 @@ import net.minecraft.world.entity.Shearable;
 import net.minecraft.world.entity.animal.Sheep;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.monster.Creeper;
+import net.minecraft.world.entity.monster.ZombieVillager;
 import snownee.jade.addon.core.ObjectNameProvider;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
@@ -23,6 +24,8 @@ public class EntityDetailsProvider implements IEntityComponentProvider {
 			AccessibilityPlugin.replaceTitle(tooltip, "creeper.powered");
 		} else if (entity instanceof WitherBoss witherBoss && witherBoss.isPowered()) {
 			AccessibilityPlugin.replaceTitle(tooltip, "wither.powered");
+		} else if (entity instanceof ZombieVillager zombieVillager && zombieVillager.isConverting()) {
+			AccessibilityPlugin.replaceTitle(tooltip, "zombie_villager.curing");
 		} else if (entity instanceof Sheep sheep) {
 			AccessibilityPlugin.replaceTitle(tooltip, "entity." + sheep.getColor().getSerializedName());
 		}
