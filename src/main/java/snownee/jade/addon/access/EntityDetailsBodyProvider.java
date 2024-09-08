@@ -8,6 +8,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Leashable;
 import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.TamableAnimal;
+import net.minecraft.world.entity.animal.Fox;
+import net.minecraft.world.entity.animal.axolotl.Axolotl;
 import net.minecraft.world.entity.decoration.LeashFenceKnotEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import snownee.jade.api.EntityAccessor;
@@ -24,6 +27,17 @@ public class EntityDetailsBodyProvider implements IEntityComponentProvider {
 		}
 		Entity entity = accessor.getEntity();
 		int poseId = entity.getPose().id();
+		if (entity instanceof TamableAnimal animal && animal.isInSittingPose()) {
+			poseId = Pose.SITTING.id();
+		} else if (entity instanceof Fox fox) {
+			if (fox.isSleeping()) {
+				poseId = Pose.SLEEPING.id();
+			} else if (fox.isSitting()) {
+				poseId = Pose.SITTING.id();
+			}
+		} else if (entity instanceof Axolotl axolotl && axolotl.isPlayingDead()) {
+			poseId = 1000;
+		}
 		if (poseId != Pose.STANDING.id()) {
 			String key = "jade.access.entity.pose.%s".formatted(poseId);
 			if (I18n.exists(key)) {
