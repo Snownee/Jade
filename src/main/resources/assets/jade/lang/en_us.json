@@ -320,6 +320,7 @@
 	"jade.access.block.redstone_wire.dot": "Shape: Dot",
 	"config.jade.plugin_jade_access.entity": "Entity Details",
 	"jade.access.creeper.powered": "Charged %s",
+	"jade.access.zombie_villager.curing": "Curing %s",
 	"jade.access.wither.powered": "Powered %s",
 	"jade.access.entity.sheared": "Sheared %s",
 	"jade.access.entity.saddled": "Saddled %s",
