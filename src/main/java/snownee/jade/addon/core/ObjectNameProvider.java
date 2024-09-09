@@ -32,6 +32,7 @@ import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.impl.WailaClientRegistration;
+import snownee.jade.mixin.EntityAccess;
 
 public abstract class ObjectNameProvider implements IToggleableProvider {
 	private static final MapCodec<Component> GIVEN_NAME_CODEC = ComponentSerialization.CODEC.fieldOf("given_name");
@@ -62,7 +63,7 @@ public abstract class ObjectNameProvider implements IToggleableProvider {
 				case ItemDisplay itemDisplay when !itemDisplay.getSlot(0).get().isEmpty() -> itemDisplay.getSlot(0).get().getHoverName();
 				case BlockDisplay blockDisplay when !blockDisplay.getBlockState().isAir() ->
 						blockDisplay.getBlockState().getBlock().getName();
-				default -> entity.hasCustomName() ? entity.getTypeName() : null;
+				default -> entity.hasCustomName() ? ((EntityAccess) entity).callGetTypeName() : null;
 			};
 		}
 		if (name != null) {

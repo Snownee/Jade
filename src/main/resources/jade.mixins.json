@@ -5,6 +5,7 @@
 	"refmap": "jade.refmap.json",
 	"mixins": [
 		"AbstractHorseAccess",
+		"EntityAccess",
 		"HarvestToolProviderMixin"
 	],
 	"client": [
