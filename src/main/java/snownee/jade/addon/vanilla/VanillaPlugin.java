@@ -13,7 +13,6 @@ import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.Display.BlockDisplay;
 import net.minecraft.world.entity.Display.ItemDisplay;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.Chicken;
@@ -229,9 +228,6 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.markAsClientFeature(JadeIds.MC_CROP_PROGRESS);
 		registration.markAsClientFeature(JadeIds.MC_MOB_SPAWNER);
 		registration.markAsClientFeature(JadeIds.MC_WAXED);
-
-		registration.usePickedResult(EntityType.BOAT);
-		registration.usePickedResult(EntityType.CHEST_BOAT);
 
 		Component block = Component.translatable("config.jade.plugin_minecraft.block");
 		Component entity = Component.translatable("config.jade.plugin_minecraft.entity");

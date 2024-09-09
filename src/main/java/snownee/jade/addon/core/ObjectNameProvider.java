@@ -46,34 +46,44 @@ public abstract class ObjectNameProvider implements IToggleableProvider {
 	}
 
 	public static Component getEntityName(Entity entity, boolean withType) {
-		Component name = null;
+		Component typeName = null;
 		normally:
 		if (withType || !entity.hasCustomName()) {
 			if (WailaClientRegistration.instance().shouldPick(entity)) {
 				ItemStack stack = entity.getPickResult();
 				if (stack != null && !stack.isEmpty()) {
-					name = stack.getHoverName();
+					typeName = stack.getHoverName();
 					break normally;
 				}
 			}
-			name = switch (entity) {
-				case Player ignored -> entity.getDisplayName();
-				case Villager ignored -> entity.getType().getDescription();
-				case ItemEntity itemEntity -> itemEntity.getItem().getHoverName();
+			typeName = switch (entity) {
+				case Player ignored -> {
+					withType = false;
+					yield entity.getDisplayName();
+				}
+				case Villager ignored -> {
+					withType = false;
+					yield entity.getType().getDescription();
+				}
+				case ItemEntity itemEntity -> {
+					withType = false;
+					yield itemEntity.getItem().getHoverName();
+				}
 				case ItemDisplay itemDisplay when !itemDisplay.getSlot(0).get().isEmpty() -> itemDisplay.getSlot(0).get().getHoverName();
 				case BlockDisplay blockDisplay when !blockDisplay.getBlockState().isAir() ->
 						blockDisplay.getBlockState().getBlock().getName();
 				default -> entity.hasCustomName() ? ((EntityAccess) entity).callGetTypeName() : null;
 			};
 		}
-		if (name != null) {
-			if (withType) {
-				return Component.translatable("jade.customNameEntity", entity.getName(), name);
+		Component displayName = entity.getName();
+		if (typeName != null) {
+			if (withType && !typeName.getString().equals(displayName.getString())) {
+				return Component.translatable("jade.customNameEntity", displayName, typeName);
 			} else {
-				return name;
+				return typeName;
 			}
 		}
-		return entity.getName();
+		return displayName;
 	}
 
 	public static class ForBlock extends ObjectNameProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
