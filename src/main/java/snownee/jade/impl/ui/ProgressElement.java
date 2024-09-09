@@ -13,8 +13,8 @@ import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.ProgressStyle;
-import snownee.jade.track.ProgressTrackInfo;
 import snownee.jade.overlay.WailaTickHandler;
+import snownee.jade.track.ProgressTrackInfo;
 
 public class ProgressElement extends Element implements StyledElement {
 	private final float progress;
@@ -47,6 +47,7 @@ public class ProgressElement extends Element implements StyledElement {
 			track = WailaTickHandler.instance().progressTracker.getOrCreate(getTag(), ProgressTrackInfo.class, () -> {
 				return new ProgressTrackInfo(canDecrease, this.progress, finalWidth);
 			});
+			track.setExpectedWidth(width);
 			width = track.getWidth();
 		}
 		return new Vec2(width, height);
@@ -67,7 +68,6 @@ public class ProgressElement extends Element implements StyledElement {
 		}
 		if (track != null) {
 			track.setProgress(progress);
-			track.setExpectedWidth(width);
 			track.update(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks());
 			progress = track.getSmoothProgress();
 		}
