@@ -1,5 +1,6 @@
 package snownee.jade.addon.access;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -10,13 +11,16 @@ import net.minecraft.world.entity.animal.Sheep;
 import net.minecraft.world.entity.animal.goat.Goat;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.monster.Creeper;
+import net.minecraft.world.entity.monster.Slime;
 import net.minecraft.world.entity.monster.ZombieVillager;
+import snownee.jade.JadeClient;
 import snownee.jade.addon.core.ObjectNameProvider;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.theme.IThemeHelper;
 
 public class EntityDetailsProvider implements IEntityComponentProvider {
 	@Override
@@ -39,6 +43,10 @@ public class EntityDetailsProvider implements IEntityComponentProvider {
 			if (bee.isAngry()) {
 				AccessibilityPlugin.replaceTitle(tooltip, "entity.angry");
 			}
+		} else if (entity instanceof Slime slime) {
+			String message = tooltip.getMessage(JadeIds.CORE_OBJECT_NAME);
+			Component title = IThemeHelper.get().title(JadeClient.format("jade.access.slime.size", message, slime.getSize()));
+			tooltip.replace(JadeIds.CORE_OBJECT_NAME, title);
 		}
 		if (entity instanceof LivingEntity livingEntity && livingEntity.isBaby()) {
 			AccessibilityPlugin.replaceTitle(tooltip, "entity.baby");

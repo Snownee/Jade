@@ -328,6 +328,7 @@
 	"jade.access.entity.baby": "幼年%s",
 	"jade.access.entity.angry": "被激怒的%s",
 	"jade.access.bee.nectar": "带花蜜的%s",
+	"jade.access.slime.size": "{1,choice,1#小|2≤中|4≤大|8≤巨型}{0}",
 	"jade.access.entity.white": "白色%s",
 	"jade.access.entity.light_gray": "淡灰色%s",
 	"jade.access.entity.gray": "灰色%s",
