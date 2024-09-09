@@ -328,6 +328,7 @@
 	"jade.access.entity.baby": "Baby %s",
 	"jade.access.entity.angry": "Angry %s",
 	"jade.access.bee.nectar": "Nectarean %s",
+	"jade.access.slime.size": "{1,choice,1#Small|2≤Medium|4≤Large|8≤Huge} {0}",
 	"jade.access.entity.white": "White %s",
 	"jade.access.entity.light_gray": "Light Gray %s",
 	"jade.access.entity.gray": "Gray %s",
