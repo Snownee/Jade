@@ -85,28 +85,28 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 		ConfigGeneral general = Jade.CONFIG.get().getGeneral();
 		options.title("general");
 		if (CommonProxy.isDevEnv()) {
-			options.choices("debug_mode", general.isDebug(), general::setDebug);
+			options.choices("debug_mode", general::isDebug, general::setDebug);
 		}
-		options.choices("display_tooltip", general.shouldDisplayTooltip(), general::setDisplayTooltip);
-		OptionsList.Entry entry = options.choices("display_entities", general.getDisplayEntities(), general::setDisplayEntities);
+		options.choices("display_tooltip", general::shouldDisplayTooltip, general::setDisplayTooltip);
+		OptionsList.Entry entry = options.choices("display_entities", general::getDisplayEntities, general::setDisplayEntities);
 		editIgnoreList(entry, "hide-entities", () -> WailaClientRegistration.instance().reloadIgnoreLists());
-		options.choices("display_bosses", general.getDisplayBosses(), general::setDisplayBosses).parent(entry);
-		entry = options.choices("display_blocks", general.getDisplayBlocks(), general::setDisplayBlocks);
+		options.choices("display_bosses", general::getDisplayBosses, general::setDisplayBosses).parent(entry);
+		entry = options.choices("display_blocks", general::getDisplayBlocks, general::setDisplayBlocks);
 		editIgnoreList(entry, "hide-blocks", () -> WailaClientRegistration.instance().reloadIgnoreLists());
-		options.choices("display_fluids", general.getDisplayFluids(), general::setDisplayFluids, builder -> {
+		options.choices("display_fluids", general::getDisplayFluids, general::setDisplayFluids, builder -> {
 			builder.withTooltip(mode -> {
 				String key = "display_fluids_" + mode.name().toLowerCase(Locale.ENGLISH) + "_desc";
 				key = OptionsList.Entry.makeKey(key);
 				return I18n.exists(key) ? Tooltip.create(Component.translatable(key)) : null;
 			});
 		}).parent(entry);
-		options.choices("display_mode", general.getDisplayMode(), general::setDisplayMode, builder -> {
+		options.choices("display_mode", general::getDisplayMode, general::setDisplayMode, builder -> {
 			builder.withTooltip(mode -> {
 				String key = "display_mode_" + mode.name().toLowerCase(Locale.ENGLISH) + "_desc";
 				return Tooltip.create(processBuiltInVariables(OptionsList.Entry.makeTitle(key)));
 			});
 		});
-		OptionValue<?> value = options.choices("item_mod_name", general.showItemModNameTooltip(), general::setItemModNameTooltip);
+		OptionValue<?> value = options.choices("item_mod_name", general::showItemModNameTooltip, general::setItemModNameTooltip);
 		if (!ConfigGeneral.itemModNameTooltipDisabledByMods.isEmpty()) {
 			value.setDisabled(true);
 			value.appendDescription(Component.translatable("gui.jade.disabled_by_mods"));
@@ -115,11 +115,11 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 				value.getFirstWidget().setTooltip(MultilineTooltip.create(value.getDescription()));
 			}
 		}
-		options.choices("hide_from_debug", general.shouldHideFromDebug(), general::setHideFromDebug);
-		options.choices("hide_from_tab_list", general.shouldHideFromTabList(), general::setHideFromTabList);
-		options.choices("hide_from_guis", general.shouldHideFromGUIs(), general::setHideFromGUIs);
-		options.choices("boss_bar_overlap", general.getBossBarOverlapMode(), general::setBossBarOverlapMode);
-		options.slider("reach_distance", general.getExtendedReach(), general::setExtendedReach, 0, 20, f -> Mth.floor(f * 2) / 2F);
+		options.choices("hide_from_debug", general::shouldHideFromDebug, general::setHideFromDebug);
+		options.choices("hide_from_tab_list", general::shouldHideFromTabList, general::setHideFromTabList);
+		options.choices("hide_from_guis", general::shouldHideFromGUIs, general::setHideFromGUIs);
+		options.choices("boss_bar_overlap", general::getBossBarOverlapMode, general::setBossBarOverlapMode);
+		options.slider("reach_distance", general::getExtendedReach, general::setExtendedReach, 0, 20, f -> Mth.floor(f * 2) / 2F);
 
 		ConfigOverlay overlay = Jade.CONFIG.get().getOverlay();
 		options.title("overlay");
@@ -129,7 +129,7 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 		}).size(100, 20)));
 		options.choices(
 				"overlay_theme",
-				overlay.getTheme().id,
+				() -> overlay.getTheme().id,
 				IThemeHelper.get().getThemes().stream().filter($ -> !$.hidden).map($ -> $.id).toList(),
 				id -> {
 					if (Objects.equals(id, overlay.getTheme().id)) {
@@ -145,17 +145,17 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 					}
 				},
 				id -> Component.translatable(Util.makeDescriptionId("jade.theme", id)));
-		squareEntry = options.choices("overlay_square", overlay.getSquare(), overlay::setSquare);
-		opacityEntry = options.slider("overlay_alpha", overlay.getAlpha(), overlay::setAlpha);
+		squareEntry = options.choices("overlay_square", overlay::getSquare, overlay::setSquare);
+		opacityEntry = options.slider("overlay_alpha", overlay::getAlpha, overlay::setAlpha);
 		options.forcePreview.add(options.slider(
 				"overlay_scale",
-				overlay.getOverlayScale(),
+				overlay::getOverlayScale,
 				overlay::setOverlayScale,
 				0.2f,
 				2,
 				FloatUnaryOperator.identity()));
-		options.choices("display_item", overlay.getIconMode(), overlay::setIconMode);
-		options.choices("animation", overlay.getAnimation(), overlay::setAnimation);
+		options.choices("display_item", overlay::getIconMode, overlay::setIconMode);
+		options.choices("animation", overlay::getAnimation, overlay::setAnimation);
 
 		options.title("key_binds");
 		options.keybind(JadeClient.openConfig);
@@ -169,9 +169,9 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 		options.keybind(JadeClient.showDetails);
 
 		options.title("accessibility");
-		options.choices("flip_main_hand", overlay.getFlipMainHand(), overlay::setFlipMainHand);
-		options.choices("tts_mode", general.getTTSMode(), general::setTTSMode);
-		options.choices("accessibility_plugin", general.getEnableAccessibilityPlugin(), general::setEnableAccessibilityPlugin);
+		options.choices("flip_main_hand", overlay::getFlipMainHand, overlay::setFlipMainHand);
+		options.choices("tts_mode", general::getTTSMode, general::setTTSMode);
+		options.choices("accessibility_plugin", general::getEnableAccessibilityPlugin, general::setEnableAccessibilityPlugin);
 
 		options.title("danger_zone").withStyle(ChatFormatting.RED);
 		Component reset = Component.translatable("controls.reset").withStyle(ChatFormatting.RED);

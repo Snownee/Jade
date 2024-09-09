@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
@@ -251,54 +252,54 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		return add(new Title(string)).getTitle();
 	}
 
-	public OptionValue<Float> slider(String optionName, float value, Consumer<Float> setter) {
-		return slider(optionName, value, setter, 0, 1, FloatUnaryOperator.identity());
+	public OptionValue<Float> slider(String optionName, Supplier<Float> getter, Consumer<Float> setter) {
+		return slider(optionName, getter, setter, 0, 1, FloatUnaryOperator.identity());
 	}
 
 	public OptionValue<Float> slider(
 			String optionName,
-			float value,
+			Supplier<Float> getter,
 			Consumer<Float> setter,
 			float min,
 			float max,
 			FloatUnaryOperator aligner) {
-		return add(new SliderOptionValue(optionName, value, setter, min, max, aligner));
+		return add(new SliderOptionValue(optionName, getter, setter, min, max, aligner));
 	}
 
-	public <T> OptionValue<T> input(String optionName, T value, Consumer<T> setter, Predicate<String> validator) {
-		return add(new InputOptionValue<>(this::updateSaveState, optionName, value, setter, validator));
+	public <T> OptionValue<T> input(String optionName, Supplier<T> getter, Consumer<T> setter, Predicate<String> validator) {
+		return add(new InputOptionValue<>(this::updateSaveState, optionName, getter, setter, validator));
 	}
 
-	public <T> OptionValue<T> input(String optionName, T value, Consumer<T> setter) {
-		return input(optionName, value, setter, Predicates.alwaysTrue());
+	public <T> OptionValue<T> input(String optionName, Supplier<T> getter, Consumer<T> setter) {
+		return input(optionName, getter, setter, Predicates.alwaysTrue());
 	}
 
-	public OptionValue<Boolean> choices(String optionName, boolean value, BooleanConsumer setter) {
-		return choices(optionName, value, setter, null);
+	public OptionValue<Boolean> choices(String optionName, Supplier<Boolean> getter, BooleanConsumer setter) {
+		return choices(optionName, getter, setter, null);
 	}
 
 	public OptionValue<Boolean> choices(
 			String optionName,
-			boolean value,
+			Supplier<Boolean> getter,
 			BooleanConsumer setter,
 			@Nullable Consumer<CycleButton.Builder<Boolean>> builderConsumer) {
 		CycleButton.Builder<Boolean> builder = CycleButton.booleanBuilder(OPTION_ON, OPTION_OFF);
 		if (builderConsumer != null) {
 			builderConsumer.accept(builder);
 		}
-		return add(new CycleOptionValue<>(optionName, builder, value, setter));
+		return add(new CycleOptionValue<>(optionName, builder, getter, setter));
 	}
 
-	public <T extends Enum<T>> OptionValue<T> choices(String optionName, T value, Consumer<T> setter) {
-		return choices(optionName, value, setter, null);
+	public <T extends Enum<T>> OptionValue<T> choices(String optionName, Supplier<T> getter, Consumer<T> setter) {
+		return choices(optionName, getter, setter, null);
 	}
 
 	public <T extends Enum<T>> OptionValue<T> choices(
 			String optionName,
-			T value,
+			Supplier<T> getter,
 			Consumer<T> setter,
 			@Nullable Consumer<CycleButton.Builder<T>> builderConsumer) {
-		List<T> values = Arrays.asList(value.getDeclaringClass().getEnumConstants());
+		List<T> values = Arrays.asList(getter.get().getDeclaringClass().getEnumConstants());
 		CycleButton.Builder<T> builder = CycleButton.<T>builder(v -> {
 			String name = v.name().toLowerCase(Locale.ENGLISH);
 			return switch (name) {
@@ -310,11 +311,16 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		if (builderConsumer != null) {
 			builderConsumer.accept(builder);
 		}
-		return add(new CycleOptionValue<>(optionName, builder, value, setter));
+		return add(new CycleOptionValue<>(optionName, builder, getter, setter));
 	}
 
-	public <T> OptionValue<T> choices(String optionName, T value, List<T> values, Consumer<T> setter, Function<T, Component> nameProvider) {
-		return add(new CycleOptionValue<>(optionName, CycleButton.builder(nameProvider).withValues(values), value, setter));
+	public <T> OptionValue<T> choices(
+			String optionName,
+			Supplier<T> getter,
+			List<T> values,
+			Consumer<T> setter,
+			Function<T, Component> nameProvider) {
+		return add(new CycleOptionValue<>(optionName, CycleButton.builder(nameProvider).withValues(values), getter, setter));
 	}
 
 	public void keybind(KeyMapping keybind) {

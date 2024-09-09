@@ -18,7 +18,7 @@ public class BooleanConfigEntry extends ConfigEntry<Boolean> {
 
 	@Override
 	public OptionValue<?> createUI(OptionsList options, String optionName) {
-		return options.choices(optionName, getValue(), b -> PluginConfig.INSTANCE.set(id, b));
+		return options.choices(optionName, this::getValue, b -> PluginConfig.INSTANCE.set(id, b));
 	}
 
 }

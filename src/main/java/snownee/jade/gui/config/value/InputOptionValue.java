@@ -2,6 +2,7 @@ package snownee.jade.gui.config.value;
 
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.EditBox;
@@ -14,9 +15,9 @@ public class InputOptionValue<T> extends OptionValue<T> {
 	private final EditBox textField;
 	private final Predicate<String> validator;
 
-	public InputOptionValue(Runnable responder, String optionName, T value, Consumer<T> setter, Predicate<String> validator) {
-		super(optionName, setter);
-		this.value = value;
+	public InputOptionValue(Runnable responder, String optionName, Supplier<T> getter, Consumer<T> setter, Predicate<String> validator) {
+		super(optionName, getter, setter);
+		this.value = getter.get();
 		this.validator = validator;
 		textField = new EditBox(client.font, 0, 0, 98, 18, getTitle());
 		textField.setValue(String.valueOf(value));

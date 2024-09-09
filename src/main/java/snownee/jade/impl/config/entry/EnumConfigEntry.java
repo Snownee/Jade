@@ -39,7 +39,7 @@ public class EnumConfigEntry<E extends Enum<E>> extends ConfigEntry<E> {
 
 	@Override
 	public OptionValue<?> createUI(OptionsList options, String optionName) {
-		return options.choices(optionName, getValue(), e -> PluginConfig.INSTANCE.set(id, e), builder -> {
+		return options.choices(optionName, this::getValue, e -> PluginConfig.INSTANCE.set(id, e), builder -> {
 			builder.withTooltip(e -> {
 				String key = OptionsList.Entry.makeKey(optionName + "_" + e.name().toLowerCase(Locale.ENGLISH) + "_desc");
 				if (!I18n.exists(key)) {

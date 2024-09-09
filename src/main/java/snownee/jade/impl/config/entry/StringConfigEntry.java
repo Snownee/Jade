@@ -23,7 +23,7 @@ public class StringConfigEntry extends ConfigEntry<String> {
 
 	@Override
 	public OptionValue<?> createUI(OptionsList options, String optionName) {
-		return options.input(optionName, getValue(), s -> PluginConfig.INSTANCE.set(id, s), validator);
+		return options.input(optionName, this::getValue, s -> PluginConfig.INSTANCE.set(id, s), validator);
 	}
 
 }
