@@ -10,6 +10,8 @@ import net.minecraft.world.entity.animal.Sheep;
 import net.minecraft.world.entity.animal.goat.Goat;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.monster.Creeper;
+import net.minecraft.world.entity.monster.MagmaCube;
+import net.minecraft.world.entity.monster.Slime;
 import net.minecraft.world.entity.monster.ZombieVillager;
 import snownee.jade.addon.core.ObjectNameProvider;
 import snownee.jade.api.EntityAccessor;
@@ -39,6 +41,8 @@ public class EntityDetailsProvider implements IEntityComponentProvider {
 			if (bee.isAngry()) {
 				AccessibilityPlugin.replaceTitle(tooltip, "entity.angry");
 			}
+		} else if (entity instanceof Slime slime) {
+			AccessibilityPlugin.replaceTitle(tooltip, String.format("entity.size.%d", slime.getSize()));
 		}
 		if (entity instanceof LivingEntity livingEntity && livingEntity.isBaby()) {
 			AccessibilityPlugin.replaceTitle(tooltip, "entity.baby");
