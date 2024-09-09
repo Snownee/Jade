@@ -30,6 +30,9 @@ public class ProgressTracker {
 	}
 
 	public void tick() {
+		if (map.isEmpty()) {
+			return;
+		}
 		map.values().removeIf(info -> {
 			if (info.updatedThisTick && info.alive) {
 				info.tick();
