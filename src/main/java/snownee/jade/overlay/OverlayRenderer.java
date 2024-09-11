@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.util.Mth;
+import net.minecraft.util.profiling.Profiler;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import snownee.jade.Jade;
@@ -167,9 +168,9 @@ public class OverlayRenderer {
 			}
 		}
 
-		Minecraft.getInstance().getProfiler().push("Jade Overlay");
+		Profiler.get().push("Jade Overlay");
 		renderOverlay(root, guiGraphics);
-		Minecraft.getInstance().getProfiler().pop();
+		Profiler.get().pop();
 	}
 
 	public static void renderOverlay(BoxElement root, GuiGraphics guiGraphics) {
