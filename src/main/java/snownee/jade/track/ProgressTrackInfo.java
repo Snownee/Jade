@@ -54,6 +54,10 @@ public class ProgressTrackInfo extends TrackInfo {
 
 	public void setExpectedWidth(float expectedWidth) {
 		this.expectedWidth = expectedWidth;
+		if (expectedWidth > width) {
+			width = expectedWidth;
+			ticksSinceWidthChanged = 0;
+		}
 	}
 
 	public void setProgress(float progress) {
@@ -66,11 +70,9 @@ public class ProgressTrackInfo extends TrackInfo {
 
 	@Override
 	public void tick() {
-		if (width != expectedWidth) {
-			if (expectedWidth > width || ++ticksSinceWidthChanged > 10) {
-				width = expectedWidth;
-				ticksSinceWidthChanged = 0;
-			}
+		if (expectedWidth < width && ++ticksSinceWidthChanged > 10) {
+			width = expectedWidth;
+			ticksSinceWidthChanged = 0;
 		}
 	}
 }

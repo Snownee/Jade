@@ -2,8 +2,9 @@ package snownee.jade.addon.core;
 
 import java.util.List;
 
-import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
@@ -21,8 +22,7 @@ public enum BlockFaceProvider implements IBlockComponentProvider {
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		tooltip.replace(JadeIds.CORE_OBJECT_NAME, lists -> {
 			List<IElement> lastList = lists.getLast();
-			lastList.add(IElementHelper.get()
-					.text(Component.translatable("jade.blockFace", I18n.get("jade." + accessor.getSide().getName()))));
+			lastList.add(IElementHelper.get().text(Component.translatable("jade.blockFace", directionName(accessor.getSide()))));
 			return lists;
 		});
 	}
@@ -40,6 +40,10 @@ public enum BlockFaceProvider implements IBlockComponentProvider {
 	@Override
 	public boolean enabledByDefault() {
 		return false;
+	}
+
+	public static MutableComponent directionName(Direction direction) {
+		return Component.translatable("jade." + direction.getSerializedName());
 	}
 
 }

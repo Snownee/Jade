@@ -264,7 +264,6 @@
 	"jade.minutes": "{0}分",
 	"jade.minutes_seconds": "{0}分{1}秒",
 	"jade.error": "<發生錯誤，請向 %s 報告>",
-	"jade.hopper.locked": "漏斗已鎖定",
 	"jade.blockpos": "%s %s %s",
 	"jade.distance1": " [%s]",
 	"jade.distance2": "距離：%s",

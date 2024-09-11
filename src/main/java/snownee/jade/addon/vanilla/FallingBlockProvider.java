@@ -1,7 +1,5 @@
 package snownee.jade.addon.vanilla;
 
-import net.minecraft.client.resources.language.I18n;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.item.ItemStack;
@@ -10,7 +8,6 @@ import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
-import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElementHelper;
 
@@ -20,9 +17,7 @@ public enum FallingBlockProvider implements IEntityComponentProvider {
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
-		FallingBlockEntity entity = (FallingBlockEntity) accessor.getEntity();
-		MutableComponent title = IThemeHelper.get().title(I18n.get(entity.getBlockState().getBlock().getDescriptionId()));
-		tooltip.replace(JadeIds.CORE_OBJECT_NAME, title);
+
 	}
 
 	@Override

@@ -29,8 +29,10 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.impl.WailaClientRegistration;
+import snownee.jade.mixin.EntityAccess;
 
 public abstract class ObjectNameProvider implements IToggleableProvider {
 	private static final MapCodec<Component> GIVEN_NAME_CODEC = ComponentSerialization.CODEC.fieldOf("given_name");
@@ -43,31 +45,45 @@ public abstract class ObjectNameProvider implements IToggleableProvider {
 		return ForEntity.INSTANCE;
 	}
 
-	public static Component getEntityName(Entity entity) {
-		if (!entity.hasCustomName()) {
+	public static Component getEntityName(Entity entity, boolean withType) {
+		Component typeName = null;
+		normally:
+		if (withType || !entity.hasCustomName()) {
 			if (WailaClientRegistration.instance().shouldPick(entity)) {
 				ItemStack stack = entity.getPickResult();
 				if (stack != null && !stack.isEmpty()) {
-					return stack.getHoverName();
+					typeName = stack.getHoverName();
+					break normally;
 				}
 			}
-			if (entity instanceof Player) {
-				return entity.getDisplayName();
-			}
-			if (entity instanceof Villager) {
-				return entity.getType().getDescription();
-			}
-			if (entity instanceof ItemEntity) {
-				return ((ItemEntity) entity).getItem().getHoverName();
-			}
-			if (entity instanceof ItemDisplay itemDisplay && !itemDisplay.getSlot(0).get().isEmpty()) {
-				return itemDisplay.getSlot(0).get().getHoverName();
-			}
-			if (entity instanceof BlockDisplay blockDisplay && !blockDisplay.getBlockState().isAir()) {
-				return blockDisplay.getBlockState().getBlock().getName();
+			typeName = switch (entity) {
+				case Player ignored -> {
+					withType = false;
+					yield entity.getDisplayName();
+				}
+				case Villager ignored -> {
+					withType = false;
+					yield entity.getType().getDescription();
+				}
+				case ItemEntity itemEntity -> {
+					withType = false;
+					yield itemEntity.getItem().getHoverName();
+				}
+				case ItemDisplay itemDisplay when !itemDisplay.getSlot(0).get().isEmpty() -> itemDisplay.getSlot(0).get().getHoverName();
+				case BlockDisplay blockDisplay when !blockDisplay.getBlockState().isAir() ->
+						blockDisplay.getBlockState().getBlock().getName();
+				default -> entity.hasCustomName() ? ((EntityAccess) entity).callGetTypeName() : null;
+			};
+		}
+		Component displayName = entity.getName();
+		if (typeName != null) {
+			if (withType && !typeName.getString().equals(displayName.getString())) {
+				return Component.translatable("jade.customNameEntity", displayName, typeName);
+			} else {
+				return typeName;
 			}
 		}
-		return entity.getName();
+		return displayName;
 	}
 
 	public static class ForBlock extends ObjectNameProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
@@ -131,7 +147,9 @@ public abstract class ObjectNameProvider implements IToggleableProvider {
 
 		@Override
 		public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
-			Component name = getEntityName(accessor.getEntity());
+			Component name = getEntityName(
+					accessor.getEntity(),
+					IWailaConfig.get().getGeneral().getEnableAccessibilityPlugin() && config.get(JadeIds.ACCESS_ENTITY_DETAILS));
 			tooltip.add(IThemeHelper.get().title(name));
 		}
 	}

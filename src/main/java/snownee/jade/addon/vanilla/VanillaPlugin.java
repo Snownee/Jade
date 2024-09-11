@@ -13,7 +13,6 @@ import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.Display.BlockDisplay;
 import net.minecraft.world.entity.Display.ItemDisplay;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.Chicken;
@@ -39,6 +38,7 @@ import net.minecraft.world.level.block.ChiseledBookShelfBlock;
 import net.minecraft.world.level.block.CommandBlock;
 import net.minecraft.world.level.block.DecoratedPotBlock;
 import net.minecraft.world.level.block.EnchantingTableBlock;
+import net.minecraft.world.level.block.HopperBlock;
 import net.minecraft.world.level.block.JukeboxBlock;
 import net.minecraft.world.level.block.LecternBlock;
 import net.minecraft.world.level.block.NoteBlock;
@@ -49,7 +49,6 @@ import net.minecraft.world.level.block.TrialSpawnerBlock;
 import net.minecraft.world.level.block.entity.CalibratedSculkSensorBlockEntity;
 import net.minecraft.world.level.block.entity.CampfireBlockEntity;
 import net.minecraft.world.level.block.entity.ComparatorBlockEntity;
-import net.minecraft.world.level.block.entity.HopperBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import snownee.jade.JadeClient;
@@ -109,10 +108,10 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerBlockDataProvider(BrewingStandProvider.INSTANCE, BrewingStandBlock.class);
 		registration.registerBlockDataProvider(BeehiveProvider.INSTANCE, BeehiveBlock.class);
 		registration.registerBlockDataProvider(CommandBlockProvider.INSTANCE, CommandBlock.class);
+		registration.registerBlockDataProvider(HopperLockProvider.INSTANCE, HopperBlock.class);
 		registration.registerBlockDataProvider(JukeboxProvider.INSTANCE, JukeboxBlock.class);
 		registration.registerBlockDataProvider(LecternProvider.INSTANCE, LecternBlock.class);
 		registration.registerBlockDataProvider(RedstoneProvider.INSTANCE, ComparatorBlockEntity.class);
-		registration.registerBlockDataProvider(RedstoneProvider.INSTANCE, HopperBlockEntity.class);
 		registration.registerBlockDataProvider(RedstoneProvider.INSTANCE, CalibratedSculkSensorBlockEntity.class);
 		registration.registerBlockDataProvider(FurnaceProvider.INSTANCE, AbstractFurnaceBlock.class);
 		registration.registerBlockDataProvider(ChiseledBookshelfProvider.INSTANCE, ChiseledBookShelfBlock.class);
@@ -175,10 +174,10 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerEntityComponent(ItemTooltipProvider.INSTANCE, ItemEntity.class);
 		registration.registerBlockComponent(FurnaceProvider.INSTANCE, AbstractFurnaceBlock.class);
 		registration.registerEntityComponent(AnimalOwnerProvider.INSTANCE, Entity.class);
-		registration.registerEntityComponent(FallingBlockProvider.INSTANCE, FallingBlockEntity.class);
 		registration.registerEntityIcon(FallingBlockProvider.INSTANCE, FallingBlockEntity.class);
 		registration.registerEntityComponent(EntityHealthAndArmorProvider.INSTANCE, LivingEntity.class);
 		registration.registerBlockComponent(RedstoneProvider.INSTANCE, Block.class);
+		registration.registerBlockComponent(HopperLockProvider.INSTANCE, HopperBlock.class);
 		registration.registerBlockComponent(CropProgressProvider.INSTANCE, Block.class);
 		registration.registerBlockComponent(JukeboxProvider.INSTANCE, JukeboxBlock.class);
 		registration.registerBlockComponent(LecternProvider.INSTANCE, LecternBlock.class);
@@ -229,9 +228,6 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.markAsClientFeature(JadeIds.MC_CROP_PROGRESS);
 		registration.markAsClientFeature(JadeIds.MC_MOB_SPAWNER);
 		registration.markAsClientFeature(JadeIds.MC_WAXED);
-
-		registration.usePickedResult(EntityType.BOAT);
-		registration.usePickedResult(EntityType.CHEST_BOAT);
 
 		Component block = Component.translatable("config.jade.plugin_minecraft.block");
 		Component entity = Component.translatable("config.jade.plugin_minecraft.entity");

@@ -7,12 +7,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CalibratedSculkSensorBlock;
-import net.minecraft.world.level.block.HopperBlock;
 import net.minecraft.world.level.block.LeverBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.CalibratedSculkSensorBlockEntity;
 import net.minecraft.world.level.block.entity.ComparatorBlockEntity;
-import net.minecraft.world.level.block.entity.HopperBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.ComparatorMode;
@@ -68,10 +66,6 @@ public enum RedstoneProvider implements IBlockComponentProvider, IServerDataProv
 		if (state.hasProperty(BlockStateProperties.POWER)) {
 			tooltip.add(Component.translatable("tooltip.jade.power", t.info(state.getValue(BlockStateProperties.POWER))));
 		}
-
-		if (state.getBlock() instanceof HopperBlock && accessor.getServerData().contains("HopperLocked")) {
-			tooltip.add(t.danger(Component.translatable("jade.hopper.locked")));
-		}
 	}
 
 	@Override
@@ -79,11 +73,6 @@ public enum RedstoneProvider implements IBlockComponentProvider, IServerDataProv
 		BlockEntity blockEntity = accessor.getBlockEntity();
 		if (blockEntity instanceof ComparatorBlockEntity comparator) {
 			data.putInt("Signal", comparator.getOutputSignal());
-		} else if (blockEntity instanceof HopperBlockEntity) {
-			BlockState state = accessor.getBlockState();
-			if (state.hasProperty(BlockStateProperties.ENABLED) && !state.getValue(BlockStateProperties.ENABLED)) {
-				data.putBoolean("HopperLocked", true);
-			}
 		} else if (blockEntity instanceof CalibratedSculkSensorBlockEntity) {
 			Direction direction = accessor.getBlockState().getValue(CalibratedSculkSensorBlock.FACING).getOpposite();
 			int signal = accessor.getLevel().getSignal(accessor.getPosition().relative(direction), direction);

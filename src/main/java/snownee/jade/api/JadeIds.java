@@ -58,6 +58,7 @@ public interface JadeIds {
 	ResourceLocation MC_EFFECTIVE_TOOL = MC("harvest_tool.effective_tool");
 	ResourceLocation MC_SHOW_UNBREAKABLE = MC("harvest_tool.show_unbreakable");
 	ResourceLocation MC_HARVEST_TOOL_CREATIVE = MC("harvest_tool.creative");
+	ResourceLocation MC_HOPPER_LOCK = MC("hopper_lock");
 	ResourceLocation MC_HORSE_STATS = MC("horse_stats");
 	ResourceLocation MC_ITEM_BER = MC("item_ber");
 	ResourceLocation MC_ITEM_DISPLAY = MC("item_display");
@@ -82,8 +83,10 @@ public interface JadeIds {
 	ResourceLocation MC_ZOMBIE_VILLAGER = MC("zombie_villager");
 	ResourceLocation ACCESS_SIGN = ACCESS("sign");
 	ResourceLocation ACCESS_BLOCK_DETAILS = ACCESS("block");
+	ResourceLocation ACCESS_BLOCK_DETAILS_BODY = ACCESS("block_body");
 	ResourceLocation ACCESS_BLOCK_AMOUNT = ACCESS("block_amount");
 	ResourceLocation ACCESS_ENTITY_DETAILS = ACCESS("entity");
+	ResourceLocation ACCESS_ENTITY_DETAILS_BODY = ACCESS("entity_body");
 	ResourceLocation ACCESS_ENTITY_VARIANT = ACCESS("entity_variant");
 	ResourceLocation ACCESS_HELD_ITEM = ACCESS("held_item");
 

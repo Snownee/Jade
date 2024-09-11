@@ -264,7 +264,6 @@
 	"jade.minutes": "{0}минут",
 	"jade.minutes_seconds": "{0}минут {1}секунд",
 	"jade.error": "<Ошибка с модификацией %s, предоставьте отчёт>",
-	"jade.hopper.locked": "Воронка заблокирована",
 	"jade.blockpos": "%s %s %s",
 	"jade.distance1": " [%s]",
 	"jade.distance2": "Расстояние: %s",
