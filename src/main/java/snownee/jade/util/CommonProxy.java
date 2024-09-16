@@ -251,7 +251,7 @@ public final class CommonProxy implements ModInitializer {
 	public static List<ViewGroup<ItemStack>> containerGroup(Container container, Accessor<?> accessor) {
 		try {
 			return ItemStorageProvider.containerCache.get(container, () -> new ItemCollector<>(new ItemIterator.ContainerItemIterator(0)))
-					.update(accessor, accessor.getLevel().getGameTime());
+					.update(accessor);
 		} catch (ExecutionException e) {
 			return null;
 		}
@@ -263,8 +263,8 @@ public final class CommonProxy implements ModInitializer {
 			return ItemStorageProvider.containerCache.get(
 					storage,
 					() -> new ItemCollector<>(JadeFabricUtils.fromItemStorage((Storage<ItemVariant>) storage, 0))).update(
-					accessor,
-					accessor.getLevel().getGameTime());
+					accessor
+			);
 		} catch (ExecutionException e) {
 			return null;
 		}

@@ -313,7 +313,7 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 		public List<ViewGroup<ItemStack>> getGroups(Accessor<?> accessor) {
 			Object target = accessor.getTarget();
 			if (target == null) {
-				return CommonProxy.createItemCollector(accessor, containerCache).update(accessor, accessor.getLevel().getGameTime());
+				return CommonProxy.createItemCollector(accessor, containerCache).update(accessor);
 			}
 			if (target instanceof RandomizableContainer te && te.getLootTable() != null) {
 				return null;
@@ -330,8 +330,8 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 			if (target instanceof EnderChestBlockEntity) {
 				PlayerEnderChestContainer inventory = player.getEnderChestInventory();
 				return new ItemCollector<>(new ItemIterator.ContainerItemIterator($ -> inventory, 0)).update(
-						accessor,
-						accessor.getLevel().getGameTime());
+						accessor
+				);
 			}
 			ItemCollector<?> itemCollector;
 			try {
@@ -340,7 +340,7 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 				WailaExceptionHandler.handleErr(e, null, null, null);
 				return null;
 			}
-			return itemCollector.update(accessor, accessor.getLevel().getGameTime());
+			return itemCollector.update(accessor);
 		}
 
 		@Override
