@@ -16,6 +16,7 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Stopwatch;
 import com.google.common.base.Throwables;
 import com.google.common.cache.Cache;
+import com.mojang.authlib.GameProfile;
 
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.client.resources.language.I18n;
@@ -43,6 +44,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
+import net.minecraft.world.level.block.entity.SkullBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.storage.loot.predicates.AnyOfCondition;
@@ -231,6 +233,10 @@ public final class CommonProxy {
 
 	@Nullable
 	public static String getLastKnownUsername(UUID uuid) {
+		Optional<GameProfile> optional = SkullBlockEntity.fetchGameProfile(uuid).getNow(Optional.empty());
+		if (optional.isPresent()) {
+			return optional.get().getName();
+		}
 		return UsernameCache.getLastKnownUsername(uuid);
 	}
 

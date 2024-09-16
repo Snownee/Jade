@@ -5,10 +5,8 @@ import java.util.UUID;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.OwnableEntity;
-import net.minecraft.world.entity.TamableAnimal;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.IServerDataProvider;
@@ -27,11 +25,7 @@ public enum AnimalOwnerProvider implements IEntityComponentProvider, IServerData
 		if (accessor.getServerData().contains("OwnerName")) {
 			name = accessor.getServerData().getString("OwnerName");
 		} else {
-			Entity entity = accessor.getEntity();
-			UUID ownerUUID = null;
-			if (entity instanceof OwnableEntity) {
-				ownerUUID = ((OwnableEntity) entity).getOwnerUUID();
-			}
+			UUID ownerUUID = getOwnerUUID(accessor.getEntity());
 			if (ownerUUID == null) {
 				return;
 			}
@@ -45,22 +39,26 @@ public enum AnimalOwnerProvider implements IEntityComponentProvider, IServerData
 
 	@Override
 	public void appendServerData(CompoundTag data, EntityAccessor accessor) {
-		MinecraftServer server = accessor.getLevel().getServer();
-		if (server != null && server.isSingleplayerOwner(accessor.getPlayer().getGameProfile()) &&
-				accessor.getEntity() instanceof TamableAnimal) {
-			return;
-		}
-		Entity entity = accessor.getEntity();
-		UUID ownerUUID = null;
-		if (entity instanceof OwnableEntity) {
-			ownerUUID = ((OwnableEntity) entity).getOwnerUUID();
-		}
+		UUID ownerUUID = getOwnerUUID(accessor.getEntity());
 		if (ownerUUID != null) {
 			String name = CommonProxy.getLastKnownUsername(ownerUUID);
 			if (name != null) {
 				data.putString("OwnerName", name);
 			}
 		}
+	}
+
+	public static UUID getOwnerUUID(Entity entity) {
+		if (entity instanceof OwnableEntity ownableEntity) {
+			return ownableEntity.getOwnerUUID();
+		}
+		return null;
+	}
+
+	@Override
+	public boolean shouldRequestData(EntityAccessor accessor) {
+		Entity entity = accessor.getEntity();
+		return entity instanceof OwnableEntity && getOwnerUUID(entity) == null;
 	}
 
 	@Override
