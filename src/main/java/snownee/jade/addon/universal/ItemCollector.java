@@ -44,7 +44,7 @@ public class ItemCollector<T> {
 		this.iterator = iterator;
 	}
 
-	public List<ViewGroup<ItemStack>> update(Accessor<?> accessor, long gameTime) {
+	public List<ViewGroup<ItemStack>> update(Accessor<?> accessor) {
 		if (iterator == null) {
 			return null;
 		}
@@ -53,6 +53,7 @@ public class ItemCollector<T> {
 			return null;
 		}
 		long currentVersion = iterator.getVersion(container);
+		long gameTime = accessor.getLevel().getGameTime();
 		if (mergedResult != null && iterator.isFinished()) {
 			if (version == currentVersion) {
 				return mergedResult; // content not changed
