@@ -30,18 +30,17 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
+import net.minecraft.world.WorldlyContainerHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.horse.AbstractChestedHorse;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ShearsItem;
 import net.minecraft.world.item.component.CustomModelData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ChestBlock;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -140,6 +139,10 @@ public final class CommonProxy {
 	}
 
 	public static boolean hasDefaultItemStorage(Accessor<?> accessor) {
+		if (accessor.getTarget() == null && accessor instanceof BlockAccessor blockAccessor &&
+				blockAccessor.getBlock() instanceof WorldlyContainerHolder) {
+			return true;
+		}
 		return hasDefaultStorage(accessor, Capabilities.ItemHandler.BLOCK, Capabilities.ItemHandler.ENTITY);
 	}
 
@@ -260,10 +263,11 @@ public final class CommonProxy {
 		JadeServerCommand.register(event.getDispatcher());
 	}
 
-	public static ItemCollector<?> createItemCollector(Object target, Cache<Object, ItemCollector<?>> containerCache) {
+	public static ItemCollector<?> createItemCollector(Accessor<?> accessor, Cache<Object, ItemCollector<?>> containerCache) {
+		final Object target = accessor.getTarget();
 		if (!(target instanceof Entity) || target instanceof AbstractChestedHorse) {
 			try {
-				IItemHandler itemHandler = findItemHandler(target);
+				IItemHandler itemHandler = findItemHandler(accessor);
 				if (itemHandler != null) {
 					return containerCache.get(
 							itemHandler,
@@ -275,10 +279,17 @@ public final class CommonProxy {
 				WailaExceptionHandler.handleErr(e, null, null, null);
 			}
 		}
-		if (target instanceof Container) {
-			if (target instanceof ChestBlockEntity) {
+		final Object wrappedTarget;
+		if (target == null && accessor instanceof BlockAccessor blockAccessor &&
+				blockAccessor.getBlock() instanceof WorldlyContainerHolder holder) {
+			wrappedTarget = holder.getContainer(blockAccessor.getBlockState(), accessor.getLevel(), blockAccessor.getPosition());
+		} else {
+			wrappedTarget = target;
+		}
+		if (wrappedTarget instanceof Container) {
+			if (wrappedTarget instanceof ChestBlockEntity) {
 				return new ItemCollector<>(new ItemIterator.ContainerItemIterator(a -> {
-					if (target instanceof ChestBlockEntity be) {
+					if (wrappedTarget instanceof ChestBlockEntity be) {
 						if (be.getBlockState().getBlock() instanceof ChestBlock chestBlock) {
 							Container compound = ChestBlock.getContainer(
 									chestBlock,
@@ -304,7 +315,7 @@ public final class CommonProxy {
 	public static List<ViewGroup<ItemStack>> containerGroup(Container container, Accessor<?> accessor) {
 		try {
 			return ItemStorageProvider.containerCache.get(container, () -> new ItemCollector<>(new ItemIterator.ContainerItemIterator(0)))
-					.update(container, accessor.getLevel().getGameTime());
+					.update(accessor, accessor.getLevel().getGameTime());
 		} catch (ExecutionException e) {
 			return null;
 		}
@@ -324,16 +335,16 @@ public final class CommonProxy {
 	}
 
 	@Nullable
-	public static IItemHandler findItemHandler(Object target) {
-		if (target instanceof BlockEntity be) {
-			return Objects.requireNonNull(be.getLevel()).getCapability(
+	public static IItemHandler findItemHandler(Accessor<?> accessor) {
+		if (accessor instanceof BlockAccessor blockAccessor) {
+			return accessor.getLevel().getCapability(
 					Capabilities.ItemHandler.BLOCK,
-					be.getBlockPos(),
-					be.getBlockState(),
-					be,
+					blockAccessor.getPosition(),
+					blockAccessor.getBlockState(),
+					blockAccessor.getBlockEntity(),
 					null);
-		} else if (target instanceof Entity entity) {
-			return entity.getCapability(Capabilities.ItemHandler.ENTITY);
+		} else if (accessor instanceof EntityAccessor entityAccessor) {
+			return entityAccessor.getEntity().getCapability(Capabilities.ItemHandler.ENTITY);
 		}
 		return null;
 	}

@@ -22,6 +22,7 @@ public class UniversalPlugin implements IWailaPlugin {
 		registration.registerBlockDataProvider(FluidStorageProvider.getBlock(), Block.class);
 		registration.registerEntityDataProvider(FluidStorageProvider.getEntity(), Entity.class);
 		registration.registerFluidStorage(FluidStorageProvider.Extension.INSTANCE, Object.class);
+		registration.registerFluidStorage(FluidStorageProvider.Extension.INSTANCE, Block.class);
 
 		registration.registerBlockDataProvider(EnergyStorageProvider.getBlock(), Block.class);
 		registration.registerEntityDataProvider(EnergyStorageProvider.getEntity(), Entity.class);

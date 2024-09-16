@@ -14,6 +14,7 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
 import snownee.jade.addon.universal.ItemIterator;
+import snownee.jade.api.Accessor;
 import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.view.FluidView;
 import snownee.jade.api.view.ViewGroup;
@@ -30,7 +31,7 @@ public class JadeForgeUtils {
 	public static ItemIterator<? extends IItemHandler> fromItemHandler(
 			IItemHandler storage,
 			int fromIndex,
-			Function<Object, @Nullable IItemHandler> containerFinder) {
+			Function<Accessor<?>, @Nullable IItemHandler> containerFinder) {
 		return new ItemIterator.SlottedItemIterator<>(containerFinder, fromIndex) {
 			@Override
 			protected int getSlotCount(IItemHandler container) {

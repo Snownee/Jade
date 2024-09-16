@@ -29,7 +29,7 @@ public class ItemView {
 	}
 
 	/**
-	 * @param storage  On Fabric, it accepts {@code Storage<ItemVariant>}. On Forge/NeoForge, it accepts {@code IItemHandler}.
+	 * @param storage  On Fabric, it accepts {@code Storage<ItemVariant>}. On NeoForge, it accepts {@code IItemHandler}.
 	 * @param accessor
 	 */
 	public static List<ViewGroup<ItemStack>> groupOf(Object storage, Accessor<?> accessor) {

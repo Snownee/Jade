@@ -89,8 +89,7 @@ public abstract class ProgressProvider<T extends Accessor<?>> implements ICompon
 
 	public static void putData(Accessor<?> accessor) {
 		CompoundTag tag = accessor.getServerData();
-		Object target = accessor.getTarget();
-		for (var provider : WailaCommonRegistration.instance().progressProviders.get(target)) {
+		for (var provider : WailaCommonRegistration.instance().progressProviders.get(accessor)) {
 			List<ViewGroup<CompoundTag>> groups;
 			try {
 				groups = provider.getGroups(accessor);

@@ -7,23 +7,26 @@ import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.google.common.math.IntMath;
+
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
+import snownee.jade.api.Accessor;
 
 public abstract class ItemIterator<T> {
 	public static final AtomicLong version = new AtomicLong();
-	protected final Function<Object, @Nullable T> containerFinder;
+	protected final Function<Accessor<?>, @Nullable T> containerFinder;
 	protected final int fromIndex;
 	protected boolean finished;
 	protected int currentIndex;
 
-	protected ItemIterator(Function<Object, @Nullable T> containerFinder, int fromIndex) {
+	protected ItemIterator(Function<Accessor<?>, @Nullable T> containerFinder, int fromIndex) {
 		this.containerFinder = containerFinder;
 		this.currentIndex = this.fromIndex = fromIndex;
 	}
 
-	public @Nullable T find(Object target) {
-		return containerFinder.apply(target);
+	public @Nullable T find(Accessor<?> accessor) {
+		return containerFinder.apply(accessor);
 	}
 
 	public final boolean isFinished() {
@@ -34,7 +37,7 @@ public abstract class ItemIterator<T> {
 		return version.getAndIncrement();
 	}
 
-	public abstract Stream<ItemStack> populate(T container);
+	public abstract Stream<ItemStack> populate(T container, int amount);
 
 	public void reset() {
 		currentIndex = fromIndex;
@@ -55,7 +58,7 @@ public abstract class ItemIterator<T> {
 	public static abstract class SlottedItemIterator<T> extends ItemIterator<T> {
 		protected float progress;
 
-		public SlottedItemIterator(Function<Object, @Nullable T> containerFinder, int fromIndex) {
+		public SlottedItemIterator(Function<Accessor<?>, @Nullable T> containerFinder, int fromIndex) {
 			super(containerFinder, fromIndex);
 		}
 
@@ -64,9 +67,9 @@ public abstract class ItemIterator<T> {
 		protected abstract ItemStack getItemInSlot(T container, int slot);
 
 		@Override
-		public Stream<ItemStack> populate(T container) {
+		public Stream<ItemStack> populate(T container, int amount) {
 			int slotCount = getSlotCount(container);
-			int toIndex = currentIndex + ItemCollector.MAX_SIZE * 2;
+			int toIndex = IntMath.saturatedAdd(currentIndex, amount);
 			if (toIndex >= slotCount) {
 				toIndex = slotCount;
 				finished = true;
@@ -83,10 +86,10 @@ public abstract class ItemIterator<T> {
 
 	public static class ContainerItemIterator extends SlottedItemIterator<Container> {
 		public ContainerItemIterator(int fromIndex) {
-			this(Container.class::cast, fromIndex);
+			this($ -> ((Container) $.getTarget()), fromIndex);
 		}
 
-		public ContainerItemIterator(Function<Object, @Nullable Container> containerFinder, int fromIndex) {
+		public ContainerItemIterator(Function<Accessor<?>, @Nullable Container> containerFinder, int fromIndex) {
 			super(containerFinder, fromIndex);
 		}
 
@@ -103,13 +106,13 @@ public abstract class ItemIterator<T> {
 
 	public static abstract class SlotlessItemIterator<T> extends ItemIterator<T> {
 
-		protected SlotlessItemIterator(Function<Object, @Nullable T> containerFinder, int fromIndex) {
+		protected SlotlessItemIterator(Function<Accessor<?>, @Nullable T> containerFinder, int fromIndex) {
 			super(containerFinder, fromIndex);
 		}
 
 		@Override
-		public Stream<ItemStack> populate(T container) {
-			return populateRaw(container).skip(currentIndex).limit(ItemCollector.MAX_SIZE * 2L);
+		public Stream<ItemStack> populate(T container, int amount) {
+			return populateRaw(container).skip(currentIndex).limit(amount);
 		}
 
 		protected abstract Stream<ItemStack> populateRaw(T container);
