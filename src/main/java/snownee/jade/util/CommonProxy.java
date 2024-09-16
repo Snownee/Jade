@@ -285,17 +285,11 @@ public final class CommonProxy {
 				WailaExceptionHandler.handleErr(e, null, null, null);
 			}
 		}
-		final Object wrappedTarget;
-		if (target == null && accessor instanceof BlockAccessor blockAccessor &&
-				blockAccessor.getBlock() instanceof WorldlyContainerHolder holder) {
-			wrappedTarget = holder.getContainer(blockAccessor.getBlockState(), accessor.getLevel(), blockAccessor.getPosition());
-		} else {
-			wrappedTarget = target;
-		}
-		if (wrappedTarget instanceof Container) {
-			if (wrappedTarget instanceof ChestBlockEntity) {
+		final Container container = findContainer(accessor);
+		if (container != null) {
+			if (container instanceof ChestBlockEntity) {
 				return new ItemCollector<>(new ItemIterator.ContainerItemIterator(a -> {
-					if (wrappedTarget instanceof ChestBlockEntity be) {
+					if (a.getTarget() instanceof ChestBlockEntity be) {
 						if (be.getBlockState().getBlock() instanceof ChestBlock chestBlock) {
 							Container compound = ChestBlock.getContainer(
 									chestBlock,
@@ -321,7 +315,7 @@ public final class CommonProxy {
 	public static List<ViewGroup<ItemStack>> containerGroup(Container container, Accessor<?> accessor) {
 		try {
 			return ItemStorageProvider.containerCache.get(container, () -> new ItemCollector<>(new ItemIterator.ContainerItemIterator(0)))
-					.update(accessor, accessor.getLevel().getGameTime());
+					.update(accessor);
 		} catch (ExecutionException e) {
 			return null;
 		}
@@ -333,8 +327,8 @@ public final class CommonProxy {
 			return ItemStorageProvider.containerCache.get(
 					storage,
 					() -> new ItemCollector<>(JadeForgeUtils.fromItemHandler((IItemHandler) storage, 0))).update(
-					accessor,
-					accessor.getLevel().getGameTime());
+					accessor
+			);
 		} catch (ExecutionException e) {
 			return null;
 		}
@@ -351,6 +345,18 @@ public final class CommonProxy {
 					null);
 		} else if (accessor instanceof EntityAccessor entityAccessor) {
 			return entityAccessor.getEntity().getCapability(Capabilities.ItemHandler.ENTITY);
+		}
+		return null;
+	}
+
+	@Nullable
+	public static Container findContainer(Accessor<?> accessor) {
+		Object target = accessor.getTarget();
+		if (target == null && accessor instanceof BlockAccessor blockAccessor &&
+				blockAccessor.getBlock() instanceof WorldlyContainerHolder holder) {
+			return holder.getContainer(blockAccessor.getBlockState(), accessor.getLevel(), blockAccessor.getPosition());
+		} else if (target instanceof Container container) {
+			return container;
 		}
 		return null;
 	}

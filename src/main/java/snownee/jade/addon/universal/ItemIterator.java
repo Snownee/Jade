@@ -12,6 +12,7 @@ import com.google.common.math.IntMath;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import snownee.jade.api.Accessor;
+import snownee.jade.util.CommonProxy;
 
 public abstract class ItemIterator<T> {
 	public static final AtomicLong version = new AtomicLong();
@@ -86,7 +87,7 @@ public abstract class ItemIterator<T> {
 
 	public static class ContainerItemIterator extends SlottedItemIterator<Container> {
 		public ContainerItemIterator(int fromIndex) {
-			this($ -> ((Container) $.getTarget()), fromIndex);
+			this(CommonProxy::findContainer, fromIndex);
 		}
 
 		public ContainerItemIterator(Function<Accessor<?>, @Nullable Container> containerFinder, int fromIndex) {
