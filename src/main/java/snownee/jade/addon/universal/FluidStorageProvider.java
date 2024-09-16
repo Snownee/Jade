@@ -110,8 +110,7 @@ public abstract class FluidStorageProvider<T extends Accessor<?>> implements ICo
 
 	public static void putData(Accessor<?> accessor) {
 		CompoundTag tag = accessor.getServerData();
-		Object target = accessor.getTarget();
-		for (var provider : WailaCommonRegistration.instance().fluidStorageProviders.get(target)) {
+		for (var provider : WailaCommonRegistration.instance().fluidStorageProviders.get(accessor)) {
 			List<ViewGroup<CompoundTag>> groups;
 			try {
 				groups = provider.getGroups(accessor);

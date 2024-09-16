@@ -11,7 +11,6 @@ import com.google.common.collect.Streams;
 import com.google.common.math.LongMath;
 
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
-import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.SlottedStorage;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
@@ -19,8 +18,8 @@ import net.fabricmc.fabric.api.transfer.v1.storage.base.SingleSlotStorage;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import snownee.jade.addon.universal.ItemIterator;
+import snownee.jade.api.Accessor;
 import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.view.FluidView;
 import snownee.jade.api.view.ViewGroup;
@@ -57,21 +56,16 @@ public final class JadeFabricUtils {
 	}
 
 	public static ItemIterator<? extends Storage<ItemVariant>> fromItemStorage(Storage<ItemVariant> storage, int fromIndex) {
-		return fromItemStorage(storage, fromIndex, target -> {
-			if (target instanceof BlockEntity be) {
-				return ItemStorage.SIDED.find(be.getLevel(), be.getBlockPos(), be.getBlockState(), be, null);
-			}
-			return null;
-		});
+		return fromItemStorage(storage, fromIndex, CommonProxy::findItemHandler);
 	}
 
 	public static ItemIterator<? extends Storage<ItemVariant>> fromItemStorage(
 			Storage<ItemVariant> storage,
 			int fromIndex,
-			Function<Object, @Nullable Storage<ItemVariant>> containerFinder) {
+			Function<Accessor<?>, @Nullable Storage<ItemVariant>> containerFinder) {
 		if (storage instanceof SlottedStorage) {
-			return new ItemIterator.SlottedItemIterator<>(target -> {
-				if (containerFinder.apply(target) instanceof SlottedStorage<ItemVariant> slotted) {
+			return new ItemIterator.SlottedItemIterator<>(accessor -> {
+				if (containerFinder.apply(accessor) instanceof SlottedStorage<ItemVariant> slotted) {
 					return slotted;
 				}
 				return null;
