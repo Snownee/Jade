@@ -12,6 +12,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
+import snownee.jade.api.Accessor;
 import snownee.jade.api.view.ViewGroup;
 
 public class ItemCollector<T> {
@@ -43,11 +44,11 @@ public class ItemCollector<T> {
 		this.iterator = iterator;
 	}
 
-	public List<ViewGroup<ItemStack>> update(Object target, long gameTime) {
+	public List<ViewGroup<ItemStack>> update(Accessor<?> accessor, long gameTime) {
 		if (iterator == null) {
 			return null;
 		}
-		T container = iterator.find(target);
+		T container = iterator.find(accessor);
 		if (container == null) {
 			return null;
 		}
@@ -62,7 +63,7 @@ public class ItemCollector<T> {
 			iterator.reset();
 		}
 		AtomicInteger count = new AtomicInteger();
-		iterator.populate(container).forEach(stack -> {
+		iterator.populate(container, MAX_SIZE * 2).forEach(stack -> {
 			count.incrementAndGet();
 			if (NON_EMPTY.test(stack)) {
 				ItemDefinition def = new ItemDefinition(stack);

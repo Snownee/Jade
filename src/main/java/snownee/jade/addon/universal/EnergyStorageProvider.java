@@ -103,8 +103,7 @@ public abstract class EnergyStorageProvider<T extends Accessor<?>> implements IC
 
 	public static void putData(Accessor<?> accessor) {
 		CompoundTag tag = accessor.getServerData();
-		Object target = accessor.getTarget();
-		for (var provider : WailaCommonRegistration.instance().energyStorageProviders.get(target)) {
+		for (var provider : WailaCommonRegistration.instance().energyStorageProviders.get(accessor)) {
 			List<ViewGroup<CompoundTag>> groups;
 			try {
 				groups = provider.getGroups(accessor);

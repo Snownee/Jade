@@ -3,6 +3,7 @@ package snownee.jade.util;
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -81,7 +82,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ChestBlock;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.entity.SkullBlockEntity;
@@ -205,8 +205,8 @@ public final class CommonProxy implements ModInitializer {
 		return FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT;
 	}
 
-	public static ItemCollector<?> createItemCollector(Object target, Cache<Object, ItemCollector<?>> containerCache) {
-		if (target instanceof AbstractHorseAccess) {
+	public static ItemCollector<?> createItemCollector(Accessor<?> accessor, Cache<Object, ItemCollector<?>> containerCache) {
+		if (accessor.getTarget() instanceof AbstractHorseAccess) {
 			return new ItemCollector<>(new ItemIterator.ContainerItemIterator(o -> {
 				if (o instanceof AbstractHorseAccess horse) {
 					return horse.getInventory();
@@ -214,25 +214,24 @@ public final class CommonProxy implements ModInitializer {
 				return null;
 			}, 2));
 		}
-		if (target instanceof BlockEntity be) {
-			try {
-				var storage = ItemStorage.SIDED.find(be.getLevel(), be.getBlockPos(), be.getBlockState(), be, null);
-				if (storage != null) {
-					return containerCache.get(storage, () -> new ItemCollector<>(JadeFabricUtils.fromItemStorage(storage, 0)));
-				}
-			} catch (Throwable e) {
-				WailaExceptionHandler.handleErr(e, null, null, null);
+		try {
+			var storage = findItemHandler(accessor);
+			if (storage != null) {
+				return containerCache.get(storage, () -> new ItemCollector<>(JadeFabricUtils.fromItemStorage(storage, 0)));
 			}
+		} catch (Throwable e) {
+			WailaExceptionHandler.handleErr(e, null, null, null);
 		}
-		if (target instanceof Container) {
-			if (target instanceof ChestBlockEntity) {
-				return new ItemCollector<>(new ItemIterator.ContainerItemIterator(o -> {
-					if (o instanceof ChestBlockEntity be) {
+		final Container container = findContainer(accessor);
+		if (container != null) {
+			if (container instanceof ChestBlockEntity) {
+				return new ItemCollector<>(new ItemIterator.ContainerItemIterator(a -> {
+					if (a.getTarget() instanceof ChestBlockEntity be) {
 						if (be.getBlockState().getBlock() instanceof ChestBlock chestBlock) {
 							Container compound = ChestBlock.getContainer(
 									chestBlock,
 									be.getBlockState(),
-									be.getLevel(),
+									Objects.requireNonNull(be.getLevel()),
 									be.getBlockPos(),
 									false);
 							if (compound != null) {
@@ -253,7 +252,7 @@ public final class CommonProxy implements ModInitializer {
 	public static List<ViewGroup<ItemStack>> containerGroup(Container container, Accessor<?> accessor) {
 		try {
 			return ItemStorageProvider.containerCache.get(container, () -> new ItemCollector<>(new ItemIterator.ContainerItemIterator(0)))
-					.update(container, accessor.getLevel().getGameTime());
+					.update(accessor, accessor.getLevel().getGameTime());
 		} catch (ExecutionException e) {
 			return null;
 		}
@@ -265,17 +264,47 @@ public final class CommonProxy implements ModInitializer {
 			return ItemStorageProvider.containerCache.get(
 					storage,
 					() -> new ItemCollector<>(JadeFabricUtils.fromItemStorage((Storage<ItemVariant>) storage, 0))).update(
-					storage,
+					accessor,
 					accessor.getLevel().getGameTime());
 		} catch (ExecutionException e) {
 			return null;
 		}
 	}
 
+	@Nullable
+	public static Storage<ItemVariant> findItemHandler(Accessor<?> accessor) {
+		if (accessor instanceof BlockAccessor blockAccessor) {
+			return ItemStorage.SIDED.find(
+					blockAccessor.getLevel(),
+					blockAccessor.getPosition(),
+					blockAccessor.getBlockState(),
+					blockAccessor.getBlockEntity(),
+					null);
+		}
+		return null;
+	}
+
+	@Nullable
+	public static Container findContainer(Accessor<?> accessor) {
+		Object target = accessor.getTarget();
+		if (target == null && accessor instanceof BlockAccessor blockAccessor &&
+				blockAccessor.getBlock() instanceof WorldlyContainerHolder holder) {
+			return holder.getContainer(blockAccessor.getBlockState(), accessor.getLevel(), blockAccessor.getPosition());
+		} else if (target instanceof Container container) {
+			return container;
+		}
+		return null;
+	}
+
 	public static List<ViewGroup<CompoundTag>> wrapFluidStorage(Accessor<?> accessor) {
-		if (accessor.getTarget() instanceof BlockEntity be) {
+		if (accessor instanceof BlockAccessor blockAccessor) {
 			try {
-				var storage = FluidStorage.SIDED.find(be.getLevel(), be.getBlockPos(), be.getBlockState(), be, null);
+				var storage = FluidStorage.SIDED.find(
+						accessor.getLevel(),
+						blockAccessor.getPosition(),
+						blockAccessor.getBlockState(),
+						blockAccessor.getBlockEntity(),
+						null);
 				if (storage != null) {
 					return JadeFabricUtils.fromFluidStorage(storage);
 				}
@@ -287,9 +316,14 @@ public final class CommonProxy implements ModInitializer {
 	}
 
 	public static List<ViewGroup<CompoundTag>> wrapEnergyStorage(Accessor<?> accessor) {
-		if (hasTechRebornEnergy && accessor.getTarget() instanceof BlockEntity be) {
+		if (hasTechRebornEnergy && accessor instanceof BlockAccessor blockAccessor) {
 			try {
-				var storage = TechRebornEnergyCompat.getSided().find(be.getLevel(), be.getBlockPos(), be.getBlockState(), be, null);
+				var storage = TechRebornEnergyCompat.getSided().find(
+						accessor.getLevel(),
+						blockAccessor.getPosition(),
+						blockAccessor.getBlockState(),
+						blockAccessor.getBlockEntity(),
+						null);
 				if (storage != null && storage.getCapacity() > 0) {
 					var group = new ViewGroup<>(List.of(EnergyView.of(storage.getAmount(), storage.getCapacity())));
 					group.getExtraData().putString("Unit", "E");

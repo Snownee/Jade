@@ -19,10 +19,9 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.Container;
 import net.minecraft.world.LockCode;
 import net.minecraft.world.RandomizableContainer;
-import net.minecraft.world.WorldlyContainer;
-import net.minecraft.world.WorldlyContainerHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.ContainerEntity;
 import net.minecraft.world.inventory.PlayerEnderChestContainer;
@@ -313,16 +312,8 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 		@Override
 		public List<ViewGroup<ItemStack>> getGroups(Accessor<?> accessor) {
 			Object target = accessor.getTarget();
-			if (target == null && accessor instanceof BlockAccessor blockAccessor &&
-					blockAccessor.getBlock() instanceof WorldlyContainerHolder holder) {
-				WorldlyContainer container = holder.getContainer(
-						blockAccessor.getBlockState(),
-						accessor.getLevel(),
-						blockAccessor.getPosition());
-				return CommonProxy.containerGroup(container, accessor);
-			}
 			if (target == null) {
-				return null;
+				return CommonProxy.createItemCollector(accessor, containerCache).update(accessor, accessor.getLevel().getGameTime());
 			}
 			if (target instanceof RandomizableContainer te && te.getLootTable() != null) {
 				return null;
@@ -338,19 +329,18 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 			}
 			if (target instanceof EnderChestBlockEntity) {
 				PlayerEnderChestContainer inventory = player.getEnderChestInventory();
-				return new ItemCollector<>(new ItemIterator.ContainerItemIterator(0)).update(inventory, accessor.getLevel().getGameTime());
+				return new ItemCollector<>(new ItemIterator.ContainerItemIterator($ -> inventory, 0)).update(
+						accessor,
+						accessor.getLevel().getGameTime());
 			}
 			ItemCollector<?> itemCollector;
 			try {
-				itemCollector = targetCache.get(target, () -> CommonProxy.createItemCollector(target, containerCache));
+				itemCollector = targetCache.get(target, () -> CommonProxy.createItemCollector(accessor, containerCache));
 			} catch (ExecutionException e) {
 				WailaExceptionHandler.handleErr(e, null, null, null);
 				return null;
 			}
-			if (itemCollector == ItemCollector.EMPTY) {
-				return null;
-			}
-			return itemCollector.update(target, accessor.getLevel().getGameTime());
+			return itemCollector.update(accessor, accessor.getLevel().getGameTime());
 		}
 
 		@Override
@@ -360,6 +350,10 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 
 		@Override
 		public boolean shouldRequestData(Accessor<?> accessor) {
+			Object target = accessor.getTarget();
+			if (target instanceof EnderChestBlockEntity || target instanceof Container) {
+				return true;
+			}
 			return CommonProxy.hasDefaultItemStorage(accessor);
 		}
 
