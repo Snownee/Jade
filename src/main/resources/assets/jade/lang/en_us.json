@@ -311,6 +311,8 @@
 	"jade.access.block.hydrated": "Hydrated %s",
 	"jade.access.block.locked": "Locked %s",
 	"jade.access.block.extended": "Extended %s",
+	"jade.access.block.powered": "Powered %s",
+	"jade.access.block.summonable": "Summonable %s",
 	"jade.access.block.amount": "Amount: %s",
 	"jade.access.block.level": "Level: %s",
 	"jade.access.block.layers": "Layers: %s",
