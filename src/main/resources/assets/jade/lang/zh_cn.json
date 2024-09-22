@@ -311,6 +311,8 @@
 	"jade.access.block.hydrated": "湿润的%s",
 	"jade.access.block.locked": "上锁的%s",
 	"jade.access.block.extended": "伸长的%s",
+	"jade.access.block.powered": "充能的%s",
+	"jade.access.block.summonable": "可生怪的%s",
 	"jade.access.block.amount": "数量：%s",
 	"jade.access.block.level": "等级：%s",
 	"jade.access.block.layers": "水位：%s",

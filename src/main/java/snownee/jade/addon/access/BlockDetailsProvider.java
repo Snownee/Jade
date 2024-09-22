@@ -2,6 +2,9 @@ package snownee.jade.addon.access;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.BarrelBlock;
+import net.minecraft.world.level.block.BaseRailBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RepeaterBlock;
 import net.minecraft.world.level.block.entity.trialspawner.TrialSpawnerState;
 import net.minecraft.world.level.block.entity.vault.VaultState;
 import net.minecraft.world.level.block.state.BlockState;
@@ -17,7 +20,8 @@ public class BlockDetailsProvider implements IBlockComponentProvider {
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		BlockState blockState = accessor.getBlockState();
-		if (blockState.hasProperty(BlockStateProperties.OPEN) && !(blockState.getBlock() instanceof BarrelBlock)) {
+		Block block = blockState.getBlock();
+		if (blockState.hasProperty(BlockStateProperties.OPEN) && !(block instanceof BarrelBlock)) {
 			AccessibilityPlugin.replaceTitle(tooltip, "block.door_" + (blockState.getValue(BlockStateProperties.OPEN) ? "open" : "closed"));
 		}
 		if (blockState.hasProperty(BlockStateProperties.WATERLOGGED) && blockState.getValue(BlockStateProperties.WATERLOGGED)) {
@@ -43,6 +47,14 @@ public class BlockDetailsProvider implements IBlockComponentProvider {
 		}
 		if (blockState.hasProperty(BlockStateProperties.EXTENDED) && blockState.getValue(BlockStateProperties.EXTENDED)) {
 			AccessibilityPlugin.replaceTitle(tooltip, "block.extended");
+		}
+		if (blockState.hasProperty(BlockStateProperties.CAN_SUMMON) && blockState.getValue(BlockStateProperties.CAN_SUMMON)) {
+			AccessibilityPlugin.replaceTitle(tooltip, "block.summonable");
+		}
+		if (blockState.hasProperty(BlockStateProperties.POWERED) && blockState.getValue(BlockStateProperties.POWERED)) {
+			if (block instanceof RepeaterBlock || block instanceof BaseRailBlock) {
+				AccessibilityPlugin.replaceTitle(tooltip, "block.powered");
+			}
 		}
 		boolean active = false;
 		if (blockState.hasProperty(BlockStateProperties.VAULT_STATE) &&
