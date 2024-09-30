@@ -5,6 +5,7 @@ import java.util.function.Predicate;
 
 import org.jetbrains.annotations.Nullable;
 
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
@@ -61,7 +62,13 @@ public class RayTracing {
 
 	// from ProjectileUtil
 	@Nullable
-	public static EntityHitResult getEntityHitResult(Level worldIn, Entity projectile, Vec3 startVec, Vec3 endVec, AABB boundingBox, Predicate<Entity> filter) {
+	public static EntityHitResult getEntityHitResult(
+			Level worldIn,
+			Entity projectile,
+			Vec3 startVec,
+			Vec3 endVec,
+			AABB boundingBox,
+			Predicate<Entity> filter) {
 		double d0 = Double.MAX_VALUE;
 		Entity entity = null;
 
@@ -94,8 +101,9 @@ public class RayTracing {
 
 	public void fire() {
 		Entity viewpoint = mc.getCameraEntity();
-		if (viewpoint == null)
+		if (viewpoint == null || mc.gameMode == null) {
 			return;
+		}
 
 		if (mc.hitResult != null && mc.hitResult.getType() == Type.ENTITY) {
 			Entity targetEntity = ((EntityHitResult) mc.hitResult).getEntity();
@@ -106,32 +114,42 @@ public class RayTracing {
 		}
 
 		float reach = mc.gameMode.getPickRange() + Jade.CONFIG.get().getGeneral().getReachDistance();
-		target = rayTrace(viewpoint, reach, mc.getFrameTime());
+		target = rayTrace(viewpoint, reach);
 	}
 
 	public HitResult getTarget() {
 		return target;
 	}
 
-	public HitResult rayTrace(Entity entity, double playerReach, float partialTicks) {
-		Vec3 eyePosition = entity.getEyePosition(partialTicks);
+	public HitResult rayTrace(Entity entity, double playerReach) {
+		Camera camera = mc.gameRenderer.getMainCamera();
+		Vec3 eyePosition = entity.getEyePosition();
+		Vec3 cameraPosition = camera.getPosition();
+		if (!eyePosition.equals(cameraPosition)) {
+			playerReach += eyePosition.distanceTo(cameraPosition);
+		}
 		Vec3 traceEnd;
-		if (mc.hitResult != null && mc.hitResult.getType() == Type.BLOCK) {
+		// when it comes to a block hit, we only need to find entities that closer than the block
+		if (mc.hitResult == null) {
+			Vec3 lookVector = new Vec3(camera.getLookVector().mul((float) playerReach));
+			traceEnd = cameraPosition.add(lookVector);
+		} else if (mc.hitResult.getType() != Type.BLOCK) {
 			traceEnd = mc.hitResult.getLocation();
-			traceEnd = eyePosition.add(traceEnd.subtract(eyePosition).scale(1.01));
+			traceEnd = cameraPosition.add(traceEnd.subtract(cameraPosition).normalize().scale(playerReach * 1.001));
 		} else {
-			Vec3 lookVector = entity.getViewVector(partialTicks);
-			traceEnd = eyePosition.add(lookVector.x * playerReach, lookVector.y * playerReach, lookVector.z * playerReach);
+			traceEnd = mc.hitResult.getLocation();
+			traceEnd = cameraPosition.add(traceEnd.subtract(cameraPosition));
 		}
 
 		Level world = entity.level();
-		AABB bound = new AABB(eyePosition, traceEnd);
+		AABB bound = new AABB(cameraPosition, traceEnd);
 		Predicate<Entity> predicate = e -> canBeTarget(e, entity);
-		EntityHitResult entityResult = getEntityHitResult(world, entity, eyePosition, traceEnd, bound, predicate);
+		EntityHitResult entityResult = getEntityHitResult(world, entity, cameraPosition, traceEnd, bound, predicate);
 
+		// after getting entities, we still need to extend the endpoint in case we want a liquid target
 		if (mc.hitResult != null && mc.hitResult.getType() == Type.BLOCK) {
-			Vec3 lookVector = entity.getViewVector(partialTicks);
-			traceEnd = eyePosition.add(lookVector.x * playerReach, lookVector.y * playerReach, lookVector.z * playerReach);
+			traceEnd = mc.hitResult.getLocation();
+			traceEnd = cameraPosition.add(traceEnd.subtract(cameraPosition).normalize().scale(playerReach * 1.001));
 		}
 
 		BlockState eyeBlock = world.getBlockState(BlockPos.containing(eyePosition));
@@ -139,19 +157,23 @@ public class RayTracing {
 		if (eyeBlock.getFluidState().isEmpty()) {
 			fluidView = Jade.CONFIG.get().getGeneral().getDisplayFluids().ctx;
 		}
-		ClipContext context = new ClipContext(eyePosition, traceEnd, ClipContext.Block.OUTLINE, fluidView, entity);
+		ClipContext context = new ClipContext(cameraPosition, traceEnd, ClipContext.Block.OUTLINE, fluidView, entity);
 
 		BlockHitResult blockResult = world.clip(context);
 		if (entityResult != null) {
 			if (blockResult.getType() == Type.BLOCK) {
-				double entityDist = entityResult.getLocation().distanceToSqr(eyePosition);
-				double blockDist = blockResult.getLocation().distanceToSqr(eyePosition);
+				double entityDist = entityResult.getLocation().distanceToSqr(cameraPosition);
+				double blockDist = blockResult.getLocation().distanceToSqr(cameraPosition);
 				if (entityDist < blockDist) {
 					return entityResult;
 				}
 			} else {
 				return entityResult;
 			}
+		}
+		if (blockResult.getType() == Type.MISS && mc.hitResult instanceof BlockHitResult hit) {
+			// weird, we didn't hit a block in our way. try the vanilla result
+			blockResult = hit;
 		}
 		if (blockResult.getType() == Type.BLOCK) {
 			CollisionContext collisionContext = CollisionContext.of(entity);
@@ -164,38 +186,48 @@ public class RayTracing {
 	}
 
 	private boolean canBeTarget(Entity target, Entity viewEntity) {
-		if (target.isRemoved())
+		if (target.isRemoved()) {
 			return false;
-		if (target.isSpectator())
+		}
+		if (target.isSpectator()) {
 			return false;
-		if (target == viewEntity.getVehicle())
+		}
+		if (target == viewEntity.getVehicle()) {
 			return false;
-		if (target instanceof Projectile projectile && projectile.tickCount <= 10)
+		}
+		if (target instanceof Projectile projectile && projectile.tickCount <= 10) {
 			return false;
-		if (CommonProxy.isMultipartEntity(target) && !target.isPickable())
+		}
+		if (CommonProxy.isMultipartEntity(target) && !target.isPickable()) {
 			return false;
+		}
 		if (viewEntity instanceof Player player) {
-			if (target.isInvisibleTo(player))
+			if (target.isInvisibleTo(player)) {
 				return false;
-			if (mc.gameMode.isDestroying() && target.getType() == EntityType.ITEM)
+			}
+			if (mc.gameMode != null && mc.gameMode.isDestroying() && target.getType() == EntityType.ITEM) {
 				return false;
+			}
 		} else {
-			if (target.isInvisible())
+			if (target.isInvisible()) {
 				return false;
+			}
 		}
 		return !WailaClientRegistration.INSTANCE.shouldHide(target) && ENTITY_FILTER.test(target);
 	}
 
 	public IElement getIcon() {
 		Accessor<?> accessor = ObjectDataCenter.get();
-		if (accessor == null)
+		if (accessor == null) {
 			return null;
+		}
 
 		IElement icon = ObjectDataCenter.getIcon();
-		if (isEmptyElement(icon))
+		if (isEmptyElement(icon)) {
 			return null;
-		else
+		} else {
 			return icon;
+		}
 	}
 
 }
