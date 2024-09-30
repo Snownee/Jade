@@ -216,7 +216,7 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 
 	@Override
 	public boolean shouldHide(BlockState state) {
-		return hideBlocksReloadable.contains(state.getBlock());
+		return state.isAir() || hideBlocksReloadable.contains(state.getBlock());
 	}
 
 	@Override
