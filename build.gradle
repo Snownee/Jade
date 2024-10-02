@@ -8,7 +8,7 @@ plugins {
     id 'org.spongepowered.mixin' version '0.7.+'
 }
 
-version = "${minecraft_version}-forge-${mod_version}"
+version = "${minecraft_version}-Forge-${mod_version}"
 group = "snownee.jade" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 var realVersion = project.mod_version + '+forge'
 
