@@ -2,7 +2,6 @@ package snownee.jade;
 
 import java.text.MessageFormat;
 import java.util.List;
-import java.util.Objects;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -171,15 +170,9 @@ public final class JadeClient {
 				return;
 			}
 		}
-		int i = 1;
 		String name = ModIdentification.getModName(stack);
-		for (; i < tooltip.size(); i++) {
-			if (Objects.equals(tooltip.get(i).getString(), name)) {
-				break;
-			}
-		}
 		name = String.format(Jade.CONFIG.get().getFormatting().getModName(), name);
-		tooltip.add(i, Component.literal(name));
+		tooltip.add(Component.literal(name));
 	}
 
 	@Nullable
