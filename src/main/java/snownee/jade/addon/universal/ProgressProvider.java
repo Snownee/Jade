@@ -61,7 +61,7 @@ public abstract class ProgressProvider<T extends Accessor<?>> implements ICompon
 					accessor,
 					ViewGroup.readList(accessor.getServerData(), "JadeProgress", Function.identity()));
 		} catch (Exception e) {
-			WailaExceptionHandler.handleErr(e, provider, tooltip, provider.getUid().getNamespace());
+			WailaExceptionHandler.handleErr(e, provider, tooltip::add);
 			return;
 		}
 
@@ -94,7 +94,7 @@ public abstract class ProgressProvider<T extends Accessor<?>> implements ICompon
 			try {
 				groups = provider.getGroups(accessor);
 			} catch (Exception e) {
-				WailaExceptionHandler.handleErr(e, provider, null, provider.getUid().getNamespace());
+				WailaExceptionHandler.handleErr(e, provider, null);
 				continue;
 			}
 			if (groups != null) {

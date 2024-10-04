@@ -18,6 +18,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
+import snownee.jade.api.TraceableException;
 import snownee.jade.api.callback.JadeItemModNameCallback;
 import snownee.jade.impl.WailaClientRegistration;
 
@@ -50,17 +51,28 @@ public class ModIdentification implements ResourceManagerReloadListener {
 	}
 
 	public static String getModName(Block block) {
-		return getModName(CommonProxy.getId(block));
+		ResourceLocation id;
+		try {
+			id = CommonProxy.getId(block);
+		} catch (Throwable e) {
+			throw TraceableException.create(e, BuiltInRegistries.BLOCK.getKey(block).getNamespace());
+		}
+		return getModName(id);
 	}
 
 	public static String getModName(ItemStack stack) {
-		for (JadeItemModNameCallback callback : WailaClientRegistration.instance().itemModNameCallback.callbacks()) {
-			String s = callback.gatherItemModName(stack);
-			if (!Strings.isNullOrEmpty(s)) {
-				return s;
+		String id;
+		try {
+			for (JadeItemModNameCallback callback : WailaClientRegistration.instance().itemModNameCallback.callbacks()) {
+				String s = callback.gatherItemModName(stack);
+				if (!Strings.isNullOrEmpty(s)) {
+					return s;
+				}
 			}
+			id = CommonProxy.getModIdFromItem(stack);
+		} catch (Throwable e) {
+			throw TraceableException.create(e, BuiltInRegistries.ITEM.getKey(stack.getItem()).getNamespace());
 		}
-		String id = CommonProxy.getModIdFromItem(stack);
 		return getModName(id).orElse(id);
 	}
 
@@ -77,7 +89,13 @@ public class ModIdentification implements ResourceManagerReloadListener {
 		if (entity instanceof Villager villager) {
 			return getModName(BuiltInRegistries.VILLAGER_PROFESSION.getKey(villager.getVillagerData().getProfession()));
 		}
-		return getModName(CommonProxy.getId(entity.getType()));
+		ResourceLocation id;
+		try {
+			id = CommonProxy.getId(entity.getType());
+		} catch (Throwable e) {
+			throw TraceableException.create(e, BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).getNamespace());
+		}
+		return getModName(id);
 	}
 
 	@Override

@@ -106,7 +106,7 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 				return item;
 			}));
 		} catch (Exception e) {
-			WailaExceptionHandler.handleErr(e, provider, tooltip, provider.getUid().getNamespace());
+			WailaExceptionHandler.handleErr(e, provider, tooltip::add);
 			return;
 		}
 
@@ -220,7 +220,7 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 			try {
 				groups = provider.getGroups(accessor);
 			} catch (Exception e) {
-				WailaExceptionHandler.handleErr(e, provider, null, provider.getUid().getNamespace());
+				WailaExceptionHandler.handleErr(e, provider, null);
 				continue;
 			}
 			if (groups == null) {
@@ -337,7 +337,7 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 			try {
 				itemCollector = targetCache.get(target, () -> CommonProxy.createItemCollector(accessor, containerCache));
 			} catch (ExecutionException e) {
-				WailaExceptionHandler.handleErr(e, null, null, null);
+				WailaExceptionHandler.handleErr(e, this, null);
 				return null;
 			}
 			return itemCollector.update(accessor);
