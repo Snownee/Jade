@@ -2,7 +2,6 @@ package snownee.jade;
 
 import java.text.MessageFormat;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import org.jetbrains.annotations.Nullable;
@@ -200,13 +199,7 @@ public final class JadeClient {
 					tooltip::add);
 			return;
 		}
-		int i = 1;
-		for (; i < tooltip.size(); i++) {
-			if (Objects.equals(tooltip.get(i).getString(), name)) {
-				break;
-			}
-		}
-		tooltip.add(i, Component.literal(name).withStyle(Jade.CONFIG.get().getFormatting().getItemModNameStyle()));
+		tooltip.add(Component.literal(name).withStyle(Jade.CONFIG.get().getFormatting().getItemModNameStyle()));
 	}
 
 	@Nullable
