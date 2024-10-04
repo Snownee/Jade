@@ -220,7 +220,7 @@ public final class CommonProxy implements ModInitializer {
 				return containerCache.get(storage, () -> new ItemCollector<>(JadeFabricUtils.fromItemStorage(storage, 0)));
 			}
 		} catch (Throwable e) {
-			WailaExceptionHandler.handleErr(e, null, null, null);
+			WailaExceptionHandler.handleErr(e, null, null);
 		}
 		final Container container = findContainer(accessor);
 		if (container != null) {
@@ -309,7 +309,7 @@ public final class CommonProxy implements ModInitializer {
 					return JadeFabricUtils.fromFluidStorage(storage);
 				}
 			} catch (Throwable e) {
-				WailaExceptionHandler.handleErr(e, null, null, null);
+				WailaExceptionHandler.handleErr(e, null, null);
 			}
 		}
 		return null;
@@ -330,7 +330,7 @@ public final class CommonProxy implements ModInitializer {
 					return List.of(group);
 				}
 			} catch (Throwable e) {
-				WailaExceptionHandler.handleErr(e, null, null, null);
+				WailaExceptionHandler.handleErr(e, null, null);
 			}
 		}
 		return null;
