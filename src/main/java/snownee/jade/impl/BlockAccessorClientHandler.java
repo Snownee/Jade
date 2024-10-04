@@ -78,7 +78,7 @@ public class BlockAccessorClientHandler implements AccessorClientHandler<BlockAc
 					icon = element;
 				}
 			} catch (Throwable e) {
-				WailaExceptionHandler.handleErr(e, provider, null, null);
+				WailaExceptionHandler.handleErr(e, provider, null);
 			}
 		}
 		return icon;
@@ -92,7 +92,7 @@ public class BlockAccessorClientHandler implements AccessorClientHandler<BlockAc
 				ElementHelper.INSTANCE.setCurrentUid(provider.getUid());
 				provider.appendTooltip(tooltip, accessor, PluginConfig.INSTANCE);
 			} catch (Throwable e) {
-				WailaExceptionHandler.handleErr(e, provider, tooltip, null);
+				WailaExceptionHandler.handleErr(e, provider, tooltip::add);
 			} finally {
 				ElementHelper.INSTANCE.setCurrentUid(null);
 			}

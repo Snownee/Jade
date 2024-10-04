@@ -75,7 +75,7 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 				try {
 					provider.appendServerData(tag, accessor);
 				} catch (Exception e) {
-					WailaExceptionHandler.handleErr(e, provider, null, null);
+					WailaExceptionHandler.handleErr(e, provider, null);
 				}
 			}
 

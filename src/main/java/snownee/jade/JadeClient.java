@@ -24,6 +24,7 @@ import net.minecraft.client.renderer.FogRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -46,6 +47,7 @@ import snownee.jade.api.Accessor;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IWailaClientRegistration;
 import snownee.jade.api.JadeIds;
+import snownee.jade.api.TraceableException;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.IWailaConfig.DisplayMode;
 import snownee.jade.api.config.IWailaConfig.Overlay;
@@ -65,6 +67,7 @@ import snownee.jade.overlay.WailaTickHandler;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
 import snownee.jade.util.ModIdentification;
+import snownee.jade.util.WailaExceptionHandler;
 
 public final class JadeClient {
 
@@ -185,8 +188,17 @@ public final class JadeClient {
 				return;
 			}
 		}
+		String name;
+		try {
+			name = ModIdentification.getModName(stack);
+		} catch (Throwable e) {
+			WailaExceptionHandler.handleErr(
+					TraceableException.create(e, BuiltInRegistries.ITEM.getKey(stack.getItem()).getNamespace()),
+					null,
+					tooltip::add);
+			return;
+		}
 		int i = 1;
-		String name = ModIdentification.getModName(stack);
 		for (; i < tooltip.size(); i++) {
 			if (Objects.equals(tooltip.get(i).getString(), name)) {
 				break;

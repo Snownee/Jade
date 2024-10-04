@@ -26,6 +26,7 @@ import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
+import snownee.jade.api.TraceableException;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.impl.ui.TextElement;
 import snownee.jade.util.ModIdentification;
@@ -53,7 +54,7 @@ public enum ItemTooltipProvider implements IEntityComponentProvider {
 					.forEach(lines::add);
 		} catch (Throwable e) {
 			String namespace = BuiltInRegistries.ITEM.getKey(stack.getItem()).getNamespace();
-			WailaExceptionHandler.handleErr(e, this, tooltip, namespace);
+			WailaExceptionHandler.handleErr(TraceableException.create(e, namespace), this, tooltip::add);
 		}
 		if (lines.isEmpty()) {
 			return;

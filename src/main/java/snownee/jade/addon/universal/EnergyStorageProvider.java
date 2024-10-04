@@ -73,7 +73,7 @@ public abstract class EnergyStorageProvider<T extends Accessor<?>> implements IC
 					accessor,
 					ViewGroup.readList(accessor.getServerData(), "JadeEnergyStorage", Function.identity()));
 		} catch (Exception e) {
-			WailaExceptionHandler.handleErr(e, provider, tooltip, provider.getUid().getNamespace());
+			WailaExceptionHandler.handleErr(e, provider, tooltip::add);
 			return;
 		}
 
@@ -108,7 +108,7 @@ public abstract class EnergyStorageProvider<T extends Accessor<?>> implements IC
 			try {
 				groups = provider.getGroups(accessor);
 			} catch (Exception e) {
-				WailaExceptionHandler.handleErr(e, provider, null, provider.getUid().getNamespace());
+				WailaExceptionHandler.handleErr(e, provider, null);
 				continue;
 			}
 			if (groups != null) {
