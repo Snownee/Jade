@@ -3,7 +3,7 @@ package snownee.jade.addon.vanilla;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.entity.TrialSpawnerBlockEntity;
 import net.minecraft.world.level.block.entity.trialspawner.TrialSpawnerData;
 import snownee.jade.api.BlockAccessor;
@@ -31,7 +31,7 @@ public enum MobSpawnerCooldownProvider implements IBlockComponentProvider, IServ
 	public void appendServerData(CompoundTag data, BlockAccessor accessor) {
 		if (accessor.getBlockEntity() instanceof TrialSpawnerBlockEntity spawner) {
 			TrialSpawnerData spawnerData = spawner.getTrialSpawner().getData();
-			Level level = accessor.getLevel();
+			ServerLevel level = ((ServerLevel) accessor.getLevel());
 			if (spawner.getTrialSpawner().canSpawnInLevel(level) && level.getGameTime() < spawnerData.cooldownEndsAt) {
 				data.putInt("Cooldown", (int) (spawnerData.cooldownEndsAt - level.getGameTime()));
 			}

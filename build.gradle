@@ -51,7 +51,7 @@ dependencies {
     //modApi("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}") {
     //    exclude(group: "net.fabricmc.fabric-api")
     //}
-    modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
+//    modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
 
     //modCompileOnly "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
     //modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
@@ -111,6 +111,7 @@ java {
 jar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     exclude '/snownee/jade/test'
+    exclude '/com' // com.terraformersmc.modmenu
     exclude '**/*.bat'
     from("LICENSE") {
         rename { "${it}_${project.archivesBaseName}" }

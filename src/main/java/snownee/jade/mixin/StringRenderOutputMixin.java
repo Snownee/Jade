@@ -11,51 +11,40 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.util.ARGB;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.overlay.DisplayHelper;
 
 @Mixin(Font.StringRenderOutput.class)
 public class StringRenderOutputMixin {
 
-	@Final
 	@Mutable
 	@Shadow
+	@Final
 	private float dimFactor;
-	@Final
 	@Mutable
 	@Shadow
-	private float r;
 	@Final
-	@Mutable
-	@Shadow
-	private float g;
-	@Final
-	@Mutable
-	@Shadow
-	private float b;
-	@Final
-	@Mutable
-	@Shadow
-	private float a;
+	private int color;
 
-	@Inject(method = "<init>", at = @At("RETURN"))
+	@Inject(
+			method = "<init>(Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/renderer/MultiBufferSource;FFIIZLorg/joml/Matrix4f;Lnet/minecraft/client/gui/Font$DisplayMode;I)V",
+			at = @At("RETURN"))
 	private void jade$init(
 			Font font,
 			MultiBufferSource multiBufferSource,
 			float f,
 			float g,
 			int i,
+			int j,
 			boolean bl,
 			Matrix4f matrix4f,
 			Font.DisplayMode displayMode,
-			int j,
+			int k,
 			CallbackInfo ci) {
 		if (bl && DisplayHelper.enableBetterTextShadow() && IThemeHelper.get().isLightColorScheme()) {
 			dimFactor = 1;
-			this.r = (float) (i >> 16 & 0xFF) / 255.0f;
-			this.g = (float) (i >> 8 & 0xFF) / 255.0f;
-			this.b = (float) (i & 0xFF) / 255.0f;
-			this.a = (float) (i >> 24 & 0xFF) / 255.0f * 0.15f;
+			color = ARGB.scaleRGB(i, dimFactor);
 		}
 	}
 
