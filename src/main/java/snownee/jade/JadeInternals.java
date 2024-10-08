@@ -11,7 +11,7 @@ import snownee.jade.overlay.DisplayHelper;
 public final class JadeInternals {
 
 	public static IWailaConfig getWailaConfig() {
-		return Jade.CONFIG.get();
+		return Jade.config();
 	}
 
 	public static IElementHelper getElementHelper() {

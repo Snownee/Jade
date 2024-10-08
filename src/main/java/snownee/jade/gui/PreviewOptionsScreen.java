@@ -72,10 +72,10 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 					20,
 					Component.translatable("gui.jade.preview"),
 					(button, value) -> {
-						Jade.CONFIG.get().general().previewOverlay = value;
+						Jade.history().previewOverlay = value;
 						saver.run();
 					});
-			previewButton.setValue(Jade.CONFIG.get().general().previewOverlay);
+			previewButton.setValue(Jade.history().previewOverlay);
 			addRenderableWidget(previewButton);
 		}
 	}

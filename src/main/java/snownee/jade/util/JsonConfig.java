@@ -65,12 +65,11 @@ public class JsonConfig<T> {
 			}
 		});
 		configGetter.onUpdate = onUpdate;
+		mkdirs();
 	}
 
 	public JsonConfig(String fileName, Codec<T> codec, @Nullable Runnable onUpdate) {
-		this(fileName, codec, onUpdate, () -> {
-			return JadeCodecs.createFromEmptyMap(codec);
-		});
+		this(fileName, codec, onUpdate, () -> JadeCodecs.createFromEmptyMap(codec));
 		JadeCodecs.createFromEmptyMap(codec); // make sure it works
 	}
 
@@ -83,10 +82,7 @@ public class JsonConfig<T> {
 	}
 
 	public void write(T t, boolean invalidate) {
-		if (!file.getParentFile().exists()) {
-			//noinspection ResultOfMethodCallIgnored
-			file.getParentFile().mkdirs();
-		}
+		mkdirs();
 
 		try (FileWriter writer = new FileWriter(file, StandardCharsets.UTF_8)) {
 			writer.write(GSON.toJson(codec.encodeStart(JsonOps.INSTANCE, t).getOrThrow()));
@@ -95,6 +91,13 @@ public class JsonConfig<T> {
 			}
 		} catch (Throwable e) {
 			Jade.LOGGER.error("Failed to write config file %s".formatted(file), e);
+		}
+	}
+
+	private void mkdirs() {
+		if (!file.getParentFile().exists()) {
+			//noinspection ResultOfMethodCallIgnored
+			file.getParentFile().mkdirs();
 		}
 	}
 

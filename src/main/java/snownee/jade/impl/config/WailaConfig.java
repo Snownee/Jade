@@ -29,7 +29,8 @@ import snownee.jade.util.ModIdentification;
  * Get this instance from {@link IWailaConfig#get()}
  */
 public class WailaConfig implements IWailaConfig {
-	public static final Codec<WailaConfig> CODEC = RecordCodecBuilder.create(i -> i.group(
+	public static final MapCodec<WailaConfig> MAP_CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+			Codec.string(0, 32).optionalFieldOf("name", "").forGetter(IWailaConfig::getName),
 			General.CODEC.fieldOf("general")
 					.orElseGet(() -> JadeCodecs.createFromEmptyMap(General.CODEC))
 					.forGetter(WailaConfig::general),
@@ -41,29 +42,26 @@ public class WailaConfig implements IWailaConfig {
 					.forGetter(WailaConfig::formatting),
 			Accessibility.CODEC.fieldOf("accessibility")
 					.orElseGet(() -> JadeCodecs.createFromEmptyMap(Accessibility.CODEC))
-					.forGetter(WailaConfig::accessibility),
-			History.CODEC.fieldOf("history")
-					.orElseGet(() -> JadeCodecs.createFromEmptyMap(History.CODEC))
-					.forGetter(WailaConfig::history)
+					.forGetter(WailaConfig::accessibility)
 	).apply(i, WailaConfig::new));
 
+	private String name;
 	private final General general;
 	private final Overlay overlay;
 	private final Formatting formatting;
 	private final Accessibility accessibility;
-	private final History history;
 
 	public WailaConfig(
+			String name,
 			General general,
 			Overlay overlay,
 			Formatting formatting,
-			Accessibility accessibility,
-			History history) {
+			Accessibility accessibility) {
+		this.name = name;
 		this.general = general;
 		this.overlay = overlay;
 		this.formatting = formatting;
 		this.accessibility = accessibility;
-		this.history = history;
 	}
 
 	@Override
@@ -86,10 +84,6 @@ public class WailaConfig implements IWailaConfig {
 		return accessibility;
 	}
 
-	public History history() {
-		return history;
-	}
-
 	@Override
 	public IPluginConfig plugin() {
 		return PluginConfig.INSTANCE;
@@ -97,7 +91,22 @@ public class WailaConfig implements IWailaConfig {
 
 	@Override
 	public void save() {
-		Jade.CONFIG.save();
+		Jade.saveConfig();
+	}
+
+	@Override
+	public void invalidate() {
+		Jade.invalidateConfig();
+	}
+
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	@Override
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public static void init() {
@@ -111,10 +120,10 @@ public class WailaConfig implements IWailaConfig {
 		General.itemModNameTooltipDisabledByMods.addAll(names);
 
 		IWailaConfig.Accessibility accessibility = IWailaConfig.get().accessibility();
-		History history = Jade.CONFIG.get().history();
 		boolean hasAccessibilityMod = ClientProxy.hasAccessibilityMod();
-		if (history.accessibilityModMemory != hasAccessibilityMod) {
-			history.accessibilityModMemory = hasAccessibilityMod;
+		if (Jade.history().accessibilityModMemory != hasAccessibilityMod) {
+			Jade.history().accessibilityModMemory = hasAccessibilityMod;
+			//TODO apply it to all the config profiles
 			accessibility.setEnableAccessibilityPlugin(hasAccessibilityMod);
 			IWailaConfig.get().save();
 		}
@@ -123,18 +132,25 @@ public class WailaConfig implements IWailaConfig {
 	public static class History {
 
 		public static final Codec<History> CODEC = RecordCodecBuilder.create(i -> i.group(
+				Codec.BOOL.fieldOf("previewOverlay").orElse(true).forGetter($ -> $.previewOverlay),
 				Codec.BOOL.optionalFieldOf("hintOverlayToggle", true).forGetter($ -> $.hintOverlayToggle),
 				Codec.BOOL.optionalFieldOf("hintNarratorToggle", true).forGetter($ -> $.hintNarratorToggle),
 				Codec.BOOL.optionalFieldOf("accessibilityModMemory", false).forGetter($ -> $.accessibilityModMemory),
 				Codec.INT.optionalFieldOf("themesHash", 0).forGetter($ -> $.themesHash)
 		).apply(i, History::new));
 
+		public boolean previewOverlay;
 		public boolean hintOverlayToggle;
 		public boolean hintNarratorToggle;
 		public boolean accessibilityModMemory;
 		public int themesHash;
 
-		public History(boolean hintOverlayToggle, boolean hintNarratorToggle, boolean accessibilityModMemory, int themesHash) {
+		public History(
+				boolean previewOverlay,
+				boolean hintOverlayToggle,
+				boolean hintNarratorToggle,
+				boolean accessibilityModMemory,
+				int themesHash) {
 			this.hintOverlayToggle = hintOverlayToggle;
 			this.hintNarratorToggle = hintNarratorToggle;
 			this.accessibilityModMemory = accessibilityModMemory;
@@ -145,7 +161,6 @@ public class WailaConfig implements IWailaConfig {
 	public static class General implements IWailaConfig.General {
 
 		public static final Codec<General> CODEC = RecordCodecBuilder.create(i -> i.group(
-				Codec.BOOL.fieldOf("previewOverlay").orElse(true).forGetter($ -> $.previewOverlay),
 				Codec.BOOL.fieldOf("displayTooltip").orElse(true).forGetter(General::shouldDisplayTooltip),
 				Codec.BOOL.fieldOf("displayBlocks").orElse(true).forGetter(General::getDisplayBlocks),
 				Codec.BOOL.fieldOf("displayEntities").orElse(true).forGetter(General::getDisplayEntities),
@@ -167,7 +182,6 @@ public class WailaConfig implements IWailaConfig {
 		).apply(i, General::new));
 
 		public static final List<String> itemModNameTooltipDisabledByMods = Lists.newArrayList("emi");
-		public boolean previewOverlay;
 		private boolean displayTooltip;
 		private boolean displayBlocks;
 		private boolean displayEntities;
@@ -227,7 +241,6 @@ public class WailaConfig implements IWailaConfig {
 		}
 
 		public General(
-				boolean previewOverlay,
 				boolean displayTooltip,
 				boolean displayBlocks,
 				boolean displayEntities,
@@ -240,7 +253,6 @@ public class WailaConfig implements IWailaConfig {
 				BossBarOverlapMode bossBarOverlapMode,
 				boolean builtinCamouflage,
 				ExtraOptions extraOptions) {
-			this.previewOverlay = previewOverlay;
 			this.displayTooltip = displayTooltip;
 			this.displayBlocks = displayBlocks;
 			this.displayEntities = displayEntities;
@@ -693,6 +705,39 @@ public class WailaConfig implements IWailaConfig {
 				f = 1 - f;
 			}
 			return f;
+		}
+	}
+
+	public static class Root extends WailaConfig {
+		public static final Codec<Root> CODEC = RecordCodecBuilder.create(i -> i.group(
+				Codec.BOOL.fieldOf("enableProfiles").orElse(false).forGetter($ -> $.enableProfiles),
+				Codec.intRange(0, 3).fieldOf("profileIndex").orElse(0).forGetter($ -> $.profileIndex),
+				WailaConfig.MAP_CODEC.forGetter($ -> $),
+				WailaConfig.History.CODEC.fieldOf("history")
+						.orElseGet(() -> JadeCodecs.createFromEmptyMap(WailaConfig.History.CODEC))
+						.forGetter($ -> $.history)
+		).apply(i, WailaConfig.Root::new));
+
+		private boolean enableProfiles;
+		public int profileIndex;
+		public History history;
+
+		public Root(boolean enableProfiles, int profileIndex, WailaConfig config, History history) {
+			super(config.name, config.general, config.overlay, config.formatting, config.accessibility);
+			this.enableProfiles = enableProfiles;
+			this.profileIndex = profileIndex;
+			this.history = history;
+		}
+
+		public void setEnableProfiles(boolean enableProfiles) {
+			this.enableProfiles = enableProfiles;
+			if (!enableProfiles) {
+				profileIndex = 0;
+			}
+		}
+
+		public boolean isEnableProfiles() {
+			return enableProfiles;
 		}
 	}
 

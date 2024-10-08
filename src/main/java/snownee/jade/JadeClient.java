@@ -60,7 +60,6 @@ import snownee.jade.api.ui.TooltipRect;
 import snownee.jade.gui.HomeConfigScreen;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.config.PluginConfig;
-import snownee.jade.impl.config.WailaConfig;
 import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.overlay.WailaTickHandler;
 import snownee.jade.util.ClientProxy;
@@ -101,7 +100,7 @@ public final class JadeClient {
 
 	public static void onKeyPressed(int action) {
 		while (openConfig.consumeClick()) {
-			Jade.CONFIG.invalidate();
+			IWailaConfig.get().invalidate();
 			ItemStorageProvider.targetCache.invalidateAll();
 			ItemStorageProvider.containerCache.invalidateAll();
 			Minecraft.getInstance().setScreen(new HomeConfigScreen(null));
@@ -112,8 +111,7 @@ public final class JadeClient {
 			DisplayMode mode = general.getDisplayMode();
 			if (mode == IWailaConfig.DisplayMode.TOGGLE) {
 				general.setDisplayTooltip(!general.shouldDisplayTooltip());
-				WailaConfig.History history = Jade.CONFIG.get().history();
-				if (!general.shouldDisplayTooltip() && history.hintOverlayToggle) {
+				if (!general.shouldDisplayTooltip() && Jade.history().hintOverlayToggle) {
 //					SystemToast.add(
 //							Minecraft.getInstance().getToasts(),
 //							JADE_TUTORIAL,
@@ -125,7 +123,7 @@ public final class JadeClient {
 					Minecraft.getInstance().getChatListener().handleSystemMessage(
 							Component.translatable("toast.jade.toggle_hint.2", showOverlay.getTranslatedKeyMessage()),
 							false);
-					history.hintOverlayToggle = false;
+					Jade.history().hintOverlayToggle = false;
 				}
 				IWailaConfig.get().save();
 			}
@@ -141,15 +139,14 @@ public final class JadeClient {
 			IWailaConfig.Accessibility accessibility = IWailaConfig.get().accessibility();
 			if (accessibility.getTTSMode() == TTSMode.TOGGLE) {
 				accessibility.toggleTTS();
-				WailaConfig.History history = Jade.CONFIG.get().history();
-				if (accessibility.shouldEnableTextToSpeech() && history.hintNarratorToggle) {
+				if (accessibility.shouldEnableTextToSpeech() && Jade.history().hintNarratorToggle) {
 					Minecraft.getInstance().getChatListener().handleSystemMessage(
 							Component.translatable("toast.jade.tts_hint.1"),
 							false);
 					Minecraft.getInstance().getChatListener().handleSystemMessage(
 							Component.translatable("toast.jade.tts_hint.2", narrate.getTranslatedKeyMessage()),
 							false);
-					history.hintNarratorToggle = false;
+					Jade.history().hintNarratorToggle = false;
 				}
 				IWailaConfig.get().save();
 			} else if (WailaTickHandler.instance().rootElement != null) {
@@ -179,7 +176,7 @@ public final class JadeClient {
 	}
 
 	public static void appendModName(List<Component> tooltip, ItemStack stack, Item.TooltipContext tooltipContext, TooltipFlag flag) {
-		if (hideModName.getIfPresent(tooltipContext) != null || !Jade.CONFIG.get().general().showItemModNameTooltip()) {
+		if (hideModName.getIfPresent(tooltipContext) != null || !IWailaConfig.get().general().showItemModNameTooltip()) {
 			return;
 		}
 		if (Minecraft.getInstance().screen instanceof CreativeModeInventoryScreen screen && screen.hoveredSlot != null &&
@@ -195,7 +192,7 @@ public final class JadeClient {
 				break;
 			}
 		}
-		tooltip.add(i, Component.literal(name).withStyle(Jade.CONFIG.get().formatting().getItemModNameStyle()));
+		tooltip.add(i, Component.literal(name).withStyle(IWailaConfig.get().formatting().getItemModNameStyle()));
 	}
 
 	@Nullable

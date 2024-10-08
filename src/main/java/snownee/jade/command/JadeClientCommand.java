@@ -11,6 +11,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import snownee.jade.Jade;
+import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.gui.HomeConfigScreen;
 import snownee.jade.util.DumpGenerator;
 
@@ -32,7 +33,7 @@ public class JadeClientCommand {
 			}
 		})).then(literalFactory.apply("config").executes(context -> {
 			Minecraft.getInstance().execute(() -> {
-				Jade.CONFIG.invalidate();
+				IWailaConfig.get().invalidate();
 				Minecraft.getInstance().setScreen(new HomeConfigScreen(null));
 			});
 			return 1;

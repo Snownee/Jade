@@ -30,6 +30,12 @@ public interface IWailaConfig {
 
 	void save();
 
+	void invalidate();
+
+	String getName();
+
+	void setName(String name);
+
 	enum IconMode implements SimpleStringRepresentable {
 		TOP, CENTERED, INLINE, HIDE
 	}

@@ -53,7 +53,7 @@ public class OverlayRenderer {
 			return false;
 		}
 
-		BossBarOverlapMode mode = Jade.CONFIG.get().general().getBossBarOverlapMode();
+		BossBarOverlapMode mode = general.getBossBarOverlapMode();
 		if (mode == BossBarOverlapMode.HIDE_TOOLTIP && !(Minecraft.getInstance().screen instanceof BaseOptionsScreen) &&
 				ClientProxy.getBossBarRect() != null) {
 			return false;
@@ -74,12 +74,11 @@ public class OverlayRenderer {
 		}
 
 		box.updateExpectedRect(rect);
-		General general = Jade.CONFIG.get().general();
 		if (mc.screen instanceof PreviewOptionsScreen optionsScreen) {
 			if (optionsScreen.forcePreviewOverlay()) {
 				return true;
 			}
-			if (!general.previewOverlay) {
+			if (!Jade.history().previewOverlay) {
 				return false;
 			}
 			Window window = mc.getWindow();
@@ -90,6 +89,7 @@ public class OverlayRenderer {
 			}
 		}
 
+		General general = Jade.config().general();
 		if (mc.gui.getDebugOverlay().showDebugScreen() && general.shouldHideFromDebug()) {
 			return false;
 		}

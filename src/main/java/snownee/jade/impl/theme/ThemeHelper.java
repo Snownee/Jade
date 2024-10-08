@@ -170,8 +170,8 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener<JadeCodecs.The
 			ProfilerFiller profilerFiller) {
 		Set<ResourceLocation> existingKeys = Set.copyOf(themes.keySet());
 		MutableObject<Theme> enable = new MutableObject<>();
-		WailaConfig.Overlay config = Jade.CONFIG.get().overlay();
-		WailaConfig.History history = Jade.CONFIG.get().history();
+		WailaConfig.Overlay config = Jade.config().overlay();
+		WailaConfig.History history = Jade.history();
 		themes.clear();
 		map.forEach((id, holder) -> {
 			if (!allowedVersions.matches(holder.version())) {

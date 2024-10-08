@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.Locale;
 import java.util.Objects;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.platform.InputConstants;
 
@@ -30,7 +29,7 @@ import snownee.jade.gui.config.OptionButton;
 import snownee.jade.gui.config.OptionsList;
 import snownee.jade.gui.config.value.OptionValue;
 import snownee.jade.impl.WailaClientRegistration;
-import snownee.jade.impl.config.PluginConfig;
+import snownee.jade.impl.config.WailaConfig;
 import snownee.jade.impl.config.WailaConfig.General;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
@@ -51,7 +50,7 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 		}
 		var keyMap = keyMapBuilder.build();
 		canceller = () -> {
-			Jade.CONFIG.invalidate();
+			IWailaConfig.get().invalidate();
 			keyMap.forEach(KeyMapping::setKey);
 			Minecraft.getInstance().options.save();
 		};
@@ -174,6 +173,13 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 		options.choices("tts_mode", accessibility::getTTSMode, accessibility::setTTSMode);
 		options.choices("accessibility_plugin", accessibility::getEnableAccessibilityPlugin, accessibility::setEnableAccessibilityPlugin);
 
+		// TODO
+//		WailaConfig.Root root = Jade.rootConfig();
+//		options.title("config_profiles");
+//		options.choices("enable_profiles", root::isEnableProfiles, root::setEnableProfiles);
+//		if (root.isEnableProfiles()) {
+//		}
+
 		options.title("danger_zone").withStyle(ChatFormatting.RED);
 		Component reset = Component.translatable("controls.reset").withStyle(ChatFormatting.RED);
 		Component title = Component.translatable(OptionsList.Entry.makeKey("reset_settings")).withStyle(ChatFormatting.RED);
@@ -188,13 +194,7 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 							}
 							minecraft.options.save();
 							try {
-								int themesHash = Jade.CONFIG.get().history().themesHash;
-								Preconditions.checkState(Jade.CONFIG.getFile().delete());
-								Preconditions.checkState(PluginConfig.INSTANCE.getFile().delete());
-								Jade.CONFIG.invalidate();
-								Jade.CONFIG.get().history().themesHash = themesHash;
-								IWailaConfig.get().save();
-								PluginConfig.INSTANCE.reload();
+								Jade.resetConfig();
 								rebuildWidgets();
 							} catch (Throwable e) {
 								Jade.LOGGER.error("", e);
