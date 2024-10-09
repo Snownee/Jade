@@ -25,8 +25,8 @@ public class PluginsConfigScreen extends PreviewOptionsScreen {
 
 	public PluginsConfigScreen(Screen parent) {
 		super(parent, Component.translatable("gui.jade.plugin_settings"));
-		saver = PluginConfig.INSTANCE::save;
-		canceller = PluginConfig.INSTANCE::reload;
+		saver = IWailaConfig.get()::save;
+		canceller = IWailaConfig.get()::invalidate;
 	}
 
 	public static Screen createPluginConfigScreen(
@@ -40,34 +40,40 @@ public class PluginsConfigScreen extends PreviewOptionsScreen {
 
 	@Override
 	public OptionsList createOptions() {
-		OptionsList options = new OptionsList(this, minecraft, width - 120, height - 32, 0, 26, PluginConfig.INSTANCE::save);
+		OptionsList options = new OptionsList(this, minecraft, width - 120, height - 32, 0, 26, IWailaConfig.get()::save);
 		boolean noteServerFeature =
 				Minecraft.getInstance().level == null || IWailaConfig.get().general().isDebug() || !ObjectDataCenter.serverConnected;
 		BiConsumer<ResourceLocation, Object> setter = (key, value) -> {
-			PluginConfig.INSTANCE.set(key, value);
+			IWailaConfig.get().plugin().set(key, value);
 			options.updateOptionValue(key);
 		};
-		PluginConfig.INSTANCE.getListView(IWailaConfig.get().accessibility().getEnableAccessibilityPlugin()).forEach(category -> {
-			options.add(new OptionsList.Title(category.title()));
-			MutableObject<OptionValue<?>> lastPrimary = new MutableObject<>();
-			category.entries().forEach(entry -> {
-				OptionValue<?> option = entry.createUI(options, "plugin_" + entry.getId().toLanguageKey(), setter);
-				option.setId(entry.getId());
-				if (entry.isSynced()) {
-					option.setDisabled(true);
-					option.appendDescription(Component.translatable("gui.jade.forced_plugin_config").withStyle(ChatFormatting.DARK_RED));
-				} else if (noteServerFeature && !WailaClientRegistration.instance().isClientFeature(entry.getId())) {
-					option.serverFeature = true;
-				}
-				if (!PluginConfig.isPrimaryKey(entry.getId())) {
-					if (lastPrimary.getValue() != null) {
-						option.parent(lastPrimary.getValue());
-					}
-				} else {
-					lastPrimary.setValue(option);
-				}
-			});
-		});
+		WailaClientRegistration.instance().getConfigListView(IWailaConfig.get().accessibility().getEnableAccessibilityPlugin()).forEach(
+				category -> {
+					options.add(new OptionsList.Title(category.title()));
+					MutableObject<OptionValue<?>> lastPrimary = new MutableObject<>();
+					category.entries().forEach(entry -> {
+						OptionValue<?> option = entry.createUI(
+								options,
+								"plugin_" + entry.getId().toLanguageKey(),
+								IWailaConfig.get().plugin(),
+								setter);
+						option.setId(entry.getId());
+						if (entry.isSynced()) {
+							option.setDisabled(true);
+							option.appendDescription(Component.translatable("gui.jade.forced_plugin_config")
+									.withStyle(ChatFormatting.DARK_RED));
+						} else if (noteServerFeature && !WailaClientRegistration.instance().isClientFeature(entry.getId())) {
+							option.serverFeature = true;
+						}
+						if (!PluginConfig.isPrimaryKey(entry.getId())) {
+							if (lastPrimary.getValue() != null) {
+								option.parent(lastPrimary.getValue());
+							}
+						} else {
+							lastPrimary.setValue(option);
+						}
+					});
+				});
 		return options;
 	}
 

@@ -1,29 +1,41 @@
 package snownee.jade.impl;
 
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.ToIntFunction;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
+import com.mojang.datafixers.util.Pair;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -59,6 +71,7 @@ import snownee.jade.gui.PluginsConfigScreen;
 import snownee.jade.gui.config.OptionsList;
 import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.impl.config.entry.BooleanConfigEntry;
+import snownee.jade.impl.config.entry.ConfigEntry;
 import snownee.jade.impl.config.entry.EnumConfigEntry;
 import snownee.jade.impl.config.entry.FloatConfigEntry;
 import snownee.jade.impl.config.entry.IntConfigEntry;
@@ -68,6 +81,7 @@ import snownee.jade.overlay.DatapackBlockManager;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.JadeCodecs;
 import snownee.jade.util.JsonConfig;
+import snownee.jade.util.ModIdentification;
 
 public class WailaClientRegistration implements IWailaClientRegistration {
 
@@ -92,6 +106,10 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	public final CallbackContainer<JadeTooltipCollectedCallback> tooltipCollectedCallback = new CallbackContainer<>();
 	public final CallbackContainer<JadeItemModNameCallback> itemModNameCallback = new CallbackContainer<>();
 	public final CallbackContainer<JadeBeforeTooltipCollectCallback> beforeTooltipCollectCallback = new CallbackContainer<>();
+
+	public final Map<ResourceLocation, ConfigEntry<?>> configEntries = Maps.newHashMap();
+	public final List<Pair<ResourceLocation, Consumer<ResourceLocation>>> configListeners = Lists.newArrayList();
+	public final Multimap<ResourceLocation, Component> configCategoryOverrides = ArrayListMultimap.create();
 
 	public final Map<Block, CustomEnchantPower> customEnchantPowers = Maps.newHashMap();
 	public final Map<ResourceLocation, IClientExtensionProvider<ItemStack, ItemView>> itemStorageProviders = Maps.newHashMap();
@@ -234,12 +252,23 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 		return pickEntities.contains(entity.getType());
 	}
 
+	public void addConfig(ConfigEntry<?> entry) {
+		Preconditions.checkNotNull(entry);
+		Preconditions.checkArgument(StringUtils.countMatches(entry.getId().getPath(), '.') <= 1);
+		Preconditions.checkArgument(!hasConfig(entry.getId()), "Duplicate config key: %s", entry.getId());
+		Preconditions.checkArgument(
+				entry.isValidValue(entry.getDefaultValue()),
+				"Default value of config %s does not pass value check",
+				entry.getId());
+		configEntries.put(entry.getId(), entry);
+	}
+
 	@Override
 	public void addConfig(ResourceLocation key, boolean defaultValue) {
 		if (isSessionActive()) {
 			session.addConfig(key, defaultValue);
 		} else {
-			PluginConfig.INSTANCE.addConfig(new BooleanConfigEntry(key, defaultValue));
+			addConfig(new BooleanConfigEntry(key, defaultValue));
 		}
 	}
 
@@ -249,7 +278,7 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 		if (isSessionActive()) {
 			session.addConfig(key, defaultValue);
 		} else {
-			PluginConfig.INSTANCE.addConfig(new EnumConfigEntry<>(key, defaultValue));
+			addConfig(new EnumConfigEntry<>(key, defaultValue));
 		}
 	}
 
@@ -260,7 +289,7 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 		if (isSessionActive()) {
 			session.addConfig(key, defaultValue, validator);
 		} else {
-			PluginConfig.INSTANCE.addConfig(new StringConfigEntry(key, defaultValue, validator));
+			addConfig(new StringConfigEntry(key, defaultValue, validator));
 		}
 	}
 
@@ -269,7 +298,7 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 		if (isSessionActive()) {
 			session.addConfig(key, defaultValue, min, max, slider);
 		} else {
-			PluginConfig.INSTANCE.addConfig(new IntConfigEntry(key, defaultValue, min, max, slider));
+			addConfig(new IntConfigEntry(key, defaultValue, min, max, slider));
 		}
 	}
 
@@ -278,7 +307,7 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 		if (isSessionActive()) {
 			session.addConfig(key, defaultValue, min, max, slider);
 		} else {
-			PluginConfig.INSTANCE.addConfig(new FloatConfigEntry(key, defaultValue, min, max, slider));
+			addConfig(new FloatConfigEntry(key, defaultValue, min, max, slider));
 		}
 	}
 
@@ -288,29 +317,113 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 		if (isSessionActive()) {
 			session.addConfigListener(key, listener);
 		} else {
-			PluginConfig.INSTANCE.addConfigListener(key, listener);
+			configListeners.add(Pair.of(key, listener));
 		}
 	}
 
 	@Override
 	public void setConfigCategoryOverride(ResourceLocation key, Component override) {
-		setConfigCategoryOverride(key, List.of(override));
+		Preconditions.checkArgument(!JadeIds.isAccess(key), "Cannot override option from access category");
+		Preconditions.checkArgument(PluginConfig.isPrimaryKey(key), "Only primary config key can be overridden");
+		if (isSessionActive()) {
+			session.setConfigCategoryOverride(key, override);
+		} else {
+			Preconditions.checkArgument(hasConfig(key), "Unknown config key: %s", key);
+			configCategoryOverrides.put(key, override);
+		}
 	}
 
 	@Override
 	public void setConfigCategoryOverride(ResourceLocation key, List<Component> overrides) {
-		Preconditions.checkArgument(!JadeIds.isAccess(key), "Cannot override option from access category");
-		if (isSessionActive()) {
-			session.setConfigCategoryOverride(key, overrides);
-		} else {
-			PluginConfig.INSTANCE.setCategoryOverride(key, overrides);
+		for (Component override : overrides) {
+			setConfigCategoryOverride(key, override);
 		}
 	}
 
 	private void tryAddConfig(IToggleableProvider provider) {
-		if (!provider.isRequired() && !PluginConfig.INSTANCE.containsKey(provider.getUid())) {
+		if (!provider.isRequired() && !hasConfig(provider.getUid())) {
 			addConfig(provider.getUid(), provider.enabledByDefault());
 		}
+	}
+
+	@Override
+	public Set<ResourceLocation> getConfigKeys(String namespace) {
+		return getConfigKeys().stream().filter(id -> id.getNamespace().equals(namespace)).collect(Collectors.toSet());
+	}
+
+	@Override
+	public Set<ResourceLocation> getConfigKeys() {
+		return configEntries.keySet();
+	}
+
+	@Override
+	public boolean hasConfig(ResourceLocation key) {
+		return getConfigKeys().contains(key);
+	}
+
+	@Nullable
+	public ConfigEntry<?> getConfigEntry(ResourceLocation key) {
+		return configEntries.get(key);
+	}
+
+	public List<Category> getConfigListView(boolean enableAccessibilityPlugins) {
+		Multimap<String, ConfigEntry<?>> categoryMap = ArrayListMultimap.create();
+		configCategoryOverrides.forEach((key, component) -> {
+			categoryMap.put(component.getString(), getConfigEntry(key));
+		});
+		configEntries.forEach((key, entry) -> {
+			if (configCategoryOverrides.containsKey(key)) {
+				return;
+			}
+			if (!enableAccessibilityPlugins && JadeIds.isAccess(key)) {
+				return;
+			}
+			if (!PluginConfig.isPrimaryKey(key)) {
+				ResourceLocation primaryKey = PluginConfig.getPrimaryKey(key);
+				Collection<Component> components = configCategoryOverrides.get(primaryKey);
+				if (!components.isEmpty()) {
+					for (Component component : components) {
+						categoryMap.put(component.getString(), entry);
+					}
+					return;
+				}
+			}
+			String namespace = key.getNamespace();
+			Optional<String> modName = ModIdentification.getModName(namespace);
+			if (!Jade.ID.equals(namespace) && modName.isPresent()) {
+				categoryMap.put(modName.get(), entry);
+			} else {
+				categoryMap.put(I18n.get(OptionsList.Entry.makeKey("plugin_" + namespace)), entry);
+			}
+		});
+
+		return categoryMap.asMap().entrySet().stream()
+				.map(e -> new Category(Component.literal(e.getKey()), e.getValue().stream()
+						.sorted(Comparator.comparingInt($ -> WailaCommonRegistration.instance().priorities.getSortedList()
+								.indexOf($.getId())))
+						.toList()
+				))
+				.sorted(Comparator.comparingInt(specialOrder()).thenComparing($ -> $.title().getString()))
+				.toList();
+	}
+
+	private static ToIntFunction<Category> specialOrder() {
+		String core = I18n.get(OptionsList.Entry.makeKey("plugin_" + Jade.ID));
+		String debug = I18n.get(OptionsList.Entry.makeKey("plugin_" + Jade.ID + ".debug"));
+		// core is always the first, debug is always the last
+		return category -> {
+			String title = category.title().getString();
+			if (core.equals(title)) {
+				return -1;
+			}
+			if (debug.equals(title)) {
+				return 1;
+			}
+			return 0;
+		};
+	}
+
+	public record Category(MutableComponent title, List<ConfigEntry<?>> entries) {
 	}
 
 	public void loadComplete() {

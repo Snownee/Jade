@@ -5,6 +5,7 @@ import org.jetbrains.annotations.ApiStatus.NonExtendable;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.ClipContext;
 import snownee.jade.JadeInternals;
@@ -133,12 +134,12 @@ public interface IWailaConfig {
 	interface Overlay {
 
 		static int applyAlpha(int color, float alpha) {
-			int prevAlphaChannel = (color >> 24) & 0xFF;
+			int prevAlphaChannel = ARGB.alpha(color);
 			if (prevAlphaChannel > 0) {
 				alpha *= prevAlphaChannel / 256f;
 			}
 			int alphaChannel = Mth.clamp((int) (0xFF * alpha), 4, 255);
-			return (color & 0xFFFFFF) | alphaChannel << 24;
+			return ARGB.color(alphaChannel, color);
 		}
 
 		float getOverlayPosX();

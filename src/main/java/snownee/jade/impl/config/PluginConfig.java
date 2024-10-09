@@ -1,57 +1,50 @@
 package snownee.jade.impl.config;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.ToIntFunction;
-import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.mutable.MutableBoolean;
-
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.reflect.TypeToken;
+import com.mojang.serialization.Codec;
 
-import net.minecraft.client.resources.language.I18n;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.Jade;
 import snownee.jade.api.IToggleableProvider;
-import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
-import snownee.jade.gui.config.OptionsList;
-import snownee.jade.impl.WailaCommonRegistration;
+import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.config.entry.ConfigEntry;
-import snownee.jade.util.CommonProxy;
-import snownee.jade.util.JsonConfig;
-import snownee.jade.util.ModIdentification;
+import snownee.jade.impl.config.entry.EnumConfigEntry;
+import snownee.jade.util.JadeCodecs;
 
 public class PluginConfig implements IPluginConfig {
 
-	public static final PluginConfig INSTANCE = new PluginConfig();
-	public static final String CLIENT_FILE = Jade.ID + "/plugins.json";
-	public static final String SERVER_FILE = Jade.ID + "/server-plugin-overrides.json";
+	public static final Codec<PluginConfig> CODEC = Codec.unboundedMap(Codec.STRING, Codec.unboundedMap(Codec.STRING, JadeCodecs.PRIMITIVE))
+			.xmap($ -> {
+				PluginConfig config = new PluginConfig();
+				$.forEach((namespace, subMap) -> subMap.forEach((path, value) -> {
+					try {
+						ResourceLocation key = ResourceLocation.fromNamespaceAndPath(namespace, path);
+						config.values.put(key, value);
+					} catch (Exception ignored) {
+					}
+				}));
+				return config;
+			}, $ -> {
+				Map<String, Map<String, Object>> map = Maps.newHashMap();
+				$.values.forEach((key, value) -> {
+					String namespace = key.getNamespace();
+					String path = key.getPath();
+					Map<String, Object> subMap = map.computeIfAbsent(namespace, k -> Maps.newHashMap());
+					//noinspection rawtypes
+					if (value instanceof Enum e) {
+						value = e.name();
+					}
+					subMap.put(path, value);
+				});
+				return map;
+			});
 
-	private final Map<ResourceLocation, ConfigEntry<Object>> configs = Maps.newHashMap();
-	private final Multimap<ResourceLocation, Component> categoryOverrides = ArrayListMultimap.create();
+	private final Map<ResourceLocation, Object> values = Maps.newHashMap();
 	private JsonObject serverConfigs;
 
 	private PluginConfig() {
@@ -65,26 +58,6 @@ public class PluginConfig implements IPluginConfig {
 		return key.withPath(key.getPath().substring(0, key.getPath().indexOf('.')));
 	}
 
-	public void addConfig(ConfigEntry<?> entry) {
-		Preconditions.checkArgument(StringUtils.countMatches(entry.getId().getPath(), '.') <= 1);
-		Preconditions.checkArgument(!containsKey(entry.getId()), "Duplicate config key: %s", entry.getId());
-		Preconditions.checkArgument(
-				entry.isValidValue(entry.getDefaultValue()),
-				"Default value of config %s does not pass value check",
-				entry.getId());
-		configs.put(entry.getId(), (ConfigEntry<Object>) entry);
-	}
-
-	@Override
-	public Set<ResourceLocation> getKeys(String namespace) {
-		return getKeys().stream().filter(id -> id.getNamespace().equals(namespace)).collect(Collectors.toSet());
-	}
-
-	@Override
-	public Set<ResourceLocation> getKeys() {
-		return configs.keySet();
-	}
-
 	@Override
 	public boolean get(IToggleableProvider provider) {
 		if (provider.isRequired()) {
@@ -95,247 +68,101 @@ public class PluginConfig implements IPluginConfig {
 
 	@Override
 	public boolean get(ResourceLocation key) {
-		if (CommonProxy.isPhysicallyClient()) {
-			return (Boolean) getEntry(key).getValue();
-		} else {
-			return Optional.ofNullable(serverConfigs).map($ -> $.getAsJsonObject(key.getNamespace())).map($ -> $.get(key.getPath())).map(
-					JsonElement::getAsBoolean).orElse(false);
-		}
+		return (Boolean) Objects.requireNonNull(values.get(key));
 	}
 
 	@Override
 	public <T extends Enum<T>> T getEnum(ResourceLocation key) {
-		return (T) getEntry(key).getValue();
+		//noinspection unchecked
+		return (T) Objects.requireNonNull(values.get(key));
 	}
 
 	@Override
 	public int getInt(ResourceLocation key) {
-		return (Integer) getEntry(key).getValue();
+		return ((Number) values.get(key)).intValue();
 	}
 
 	@Override
 	public float getFloat(ResourceLocation key) {
-		return (Float) getEntry(key).getValue();
+		return ((Number) values.get(key)).floatValue();
 	}
 
 	@Override
 	public String getString(ResourceLocation key) {
-		return (String) getEntry(key).getValue();
+		return (String) Objects.requireNonNull(values.get(key));
 	}
 
-	public ConfigEntry<?> getEntry(ResourceLocation key) {
-		return configs.get(key);
-	}
-
+	@Override
 	public boolean set(ResourceLocation key, Object value) {
 		Objects.requireNonNull(value);
-		ConfigEntry<?> entry = getEntry(key);
+		ConfigEntry<?> entry = WailaClientRegistration.instance().getConfigEntry(key);
 		if (entry == null) {
 			Jade.LOGGER.warn("Skip setting value for unknown option: {}, {}", key, value);
+			return false;
+		}
+		try {
+			value = entry.convertValue(value);
+		} catch (Exception e) {
+			Jade.LOGGER.warn("Skip setting illegal value for option: {}, {}", key, value);
 			return false;
 		}
 		if (!entry.isValidValue(value)) {
 			Jade.LOGGER.warn("Skip setting illegal value for option: {}, {}", key, value);
 			return false;
 		}
-		entry.setValue(value);
+		Object old = values.put(key, value);
+		if (!Objects.equals(old, value)) {
+			entry.notifyChange();
+		}
 		return true;
 	}
 
-	public File getFile() {
-		boolean client = CommonProxy.isPhysicallyClient();
-		return new File(CommonProxy.getConfigDirectory(), client ? CLIENT_FILE : SERVER_FILE);
-	}
-
-	public void reload() {
-		boolean client = CommonProxy.isPhysicallyClient();
-		File configFile = getFile();
-
-		if (client) {
-			configs.values().forEach($ -> $.setSynced(false));
-		}
-
-		if (!configFile.exists()) {
-			writeConfig(configFile, true);
-		}
-
-		if (client) {
-			Map<String, Map<String, Object>> config;
-			try (FileReader reader = new FileReader(configFile, StandardCharsets.UTF_8)) {
-				config = JsonConfig.GSON.fromJson(reader, new TypeToken<Map<String, Map<String, Object>>>() {
-				}.getType());
-			} catch (Exception e) {
-				Jade.LOGGER.error("Failed to read client plugin config file", e);
-				config = Maps.newHashMap();
-			}
-
-			MutableBoolean saveFlag = new MutableBoolean();
-			Set<ResourceLocation> found = Sets.newHashSet();
-			config.forEach((namespace, subMap) -> subMap.forEach((path, value) -> {
-				ResourceLocation id = ResourceLocation.fromNamespaceAndPath(namespace, path);
-				if (!configs.containsKey(id)) {
-					return;
-				}
-				if (!set(id, value)) {
-					saveFlag.setTrue();
-				}
-				found.add(id);
-			}));
-
-			Set<ResourceLocation> allKeys = getKeys();
-			for (ResourceLocation id : allKeys) {
-				if (!found.contains(id)) {
-					set(id, getEntry(id).getDefaultValue());
-					saveFlag.setTrue();
-				}
-			}
-
-			if (saveFlag.isTrue()) {
-				save();
-			}
-		} else {
-			try (FileReader reader = new FileReader(configFile, StandardCharsets.UTF_8)) {
-				serverConfigs = JsonConfig.GSON.fromJson(reader, JsonObject.class);
-			} catch (Exception e) {
-				Jade.LOGGER.error("Failed to read server plugin config file", e);
-				serverConfigs = null;
-			}
-		}
-	}
-
-	public void save() {
-		writeConfig(getFile(), false);
-	}
-
-	private void writeConfig(File file, boolean reset) {
-		boolean client = CommonProxy.isPhysicallyClient();
-		String json;
-		if (client) {
-			Map<String, Map<String, Object>> config = Maps.newHashMap();
-			configs.values().forEach(e -> {
-				Map<String, Object> modConfig = config.computeIfAbsent(e.getId().getNamespace(), k -> Maps.newHashMap());
-				if (reset) {
-					e.setValue(e.getDefaultValue());
-				}
-				modConfig.put(e.getId().getPath(), e.getValue());
-			});
-			json = JsonConfig.GSON.toJson(config);
-		} else {
-			json = "{}";
-		}
-		if (!file.getParentFile().exists()) {
-			file.getParentFile().mkdirs();
-		}
-		try (FileWriter writer = new FileWriter(file, StandardCharsets.UTF_8)) {
-			writer.write(json);
-		} catch (IOException e) {
-			Jade.LOGGER.error("Failed to write plugin config file", e);
-		}
-	}
-
-	public void applyServerConfigs(JsonObject json) {
-		json.keySet().forEach(namespace -> {
-			json.getAsJsonObject(namespace).entrySet().forEach(entry -> {
-				ResourceLocation key = ResourceLocation.fromNamespaceAndPath(namespace, entry.getKey());
-				ConfigEntry<?> configEntry = getEntry(key);
-				if (configEntry != null) {
-					JsonPrimitive primitive = entry.getValue().getAsJsonPrimitive();
-					Object v;
-					if (primitive.isBoolean()) {
-						v = primitive.getAsBoolean();
-					} else if (primitive.isNumber()) {
-						v = primitive.getAsNumber();
-					} else if (primitive.isString()) {
-						v = primitive.getAsString();
-					} else {
-						return;
-					}
-					if (configEntry.isValidValue(v)) {
-						configEntry.setValue(v);
-						configEntry.setSynced(true);
-					}
-				}
-			});
-		});
-	}
+//	public void applyServerConfigs(JsonObject json) {
+//		json.keySet().forEach(namespace -> {
+//			json.getAsJsonObject(namespace).entrySet().forEach(entry -> {
+//				ResourceLocation key = ResourceLocation.fromNamespaceAndPath(namespace, entry.getKey());
+//				ConfigEntry<?> configEntry = getEntry(key);
+//				if (configEntry != null) {
+//					JsonPrimitive primitive = entry.getValue().getAsJsonPrimitive();
+//					Object v;
+//					if (primitive.isBoolean()) {
+//						v = primitive.getAsBoolean();
+//					} else if (primitive.isNumber()) {
+//						v = primitive.getAsNumber();
+//					} else if (primitive.isString()) {
+//						v = primitive.getAsString();
+//					} else {
+//						return;
+//					}
+//					if (configEntry.isValidValue(v)) {
+//						configEntry.convertValue(v);
+//						configEntry.setSynced(true);
+//					}
+//				}
+//			});
+//		});
+//	}
 
 	public String getServerConfigs() {
 		return serverConfigs == null ? "" : serverConfigs.toString();
 	}
 
-	public boolean containsKey(ResourceLocation uid) {
-		return configs.containsKey(uid);
+	public void ensureEntry(ConfigEntry<?> entry) {
+		ResourceLocation key = entry.getId();
+		if (!values.containsKey(key)) {
+			values.put(key, entry.getDefaultValue());
+		} else if (entry instanceof EnumConfigEntry<?> enumEntry && values.get(key) instanceof String s) {
+			try {
+				values.put(key, enumEntry.convertValue(s));
+			} catch (Exception e) {
+				values.put(key, entry.getDefaultValue());
+			}
+		}
 	}
 
-	public void addConfigListener(ResourceLocation key, Consumer<ResourceLocation> listener) {
-		Preconditions.checkArgument(containsKey(key));
-		configs.get(key).addListener(listener);
-	}
-
-	public void setCategoryOverride(ResourceLocation key, List<Component> overrides) {
-		Preconditions.checkArgument(containsKey(key), "Unknown config key: %s", key);
-		Preconditions.checkArgument(isPrimaryKey(key), "Only primary config key can be overridden");
-		categoryOverrides.putAll(key, overrides);
-	}
-
-	public List<Category> getListView(boolean enableAccessibilityPlugins) {
-		Multimap<String, ConfigEntry<?>> categoryMap = ArrayListMultimap.create();
-		categoryOverrides.forEach((key, component) -> {
-			categoryMap.put(component.getString(), getEntry(key));
-		});
-		configs.forEach((key, entry) -> {
-			if (categoryOverrides.containsKey(key)) {
-				return;
-			}
-			if (!enableAccessibilityPlugins && JadeIds.isAccess(key)) {
-				return;
-			}
-			if (!isPrimaryKey(key)) {
-				ResourceLocation primaryKey = getPrimaryKey(key);
-				Collection<Component> components = categoryOverrides.get(primaryKey);
-				if (!components.isEmpty()) {
-					for (Component component : components) {
-						categoryMap.put(component.getString(), entry);
-					}
-					return;
-				}
-			}
-			String namespace = key.getNamespace();
-			Optional<String> modName = ModIdentification.getModName(namespace);
-			if (!Jade.ID.equals(namespace) && modName.isPresent()) {
-				categoryMap.put(modName.get(), entry);
-			} else {
-				categoryMap.put(I18n.get(OptionsList.Entry.makeKey("plugin_" + namespace)), entry);
-			}
-		});
-
-		return categoryMap.asMap().entrySet().stream()
-				.map(e -> new Category(Component.literal(e.getKey()), e.getValue().stream()
-						.sorted(Comparator.comparingInt($ -> WailaCommonRegistration.instance().priorities.getSortedList()
-								.indexOf($.getId())))
-						.toList()
-				))
-				.sorted(Comparator.comparingInt(specialOrder()).thenComparing($ -> $.title.getString()))
-				.toList();
-	}
-
-	private static ToIntFunction<Category> specialOrder() {
-		String core = I18n.get(OptionsList.Entry.makeKey("plugin_" + Jade.ID));
-		String debug = I18n.get(OptionsList.Entry.makeKey("plugin_" + Jade.ID + ".debug"));
-		// core is always the first, debug is always the last
-		return category -> {
-			String title = category.title.getString();
-			if (core.equals(title)) {
-				return -1;
-			}
-			if (debug.equals(title)) {
-				return 1;
-			}
-			return 0;
-		};
-	}
-
-	public record Category(MutableComponent title, List<ConfigEntry<?>> entries) {
-	}
+//	public void addConfigListener(ResourceLocation key, Consumer<ResourceLocation> listener) {
+//		Preconditions.checkArgument(containsKey(key));
+//		configs.get(key).addListener(listener);
+//	}
 
 }

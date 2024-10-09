@@ -1,6 +1,7 @@
 package snownee.jade.api;
 
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -134,6 +135,12 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 		addAfterRenderCallback(0, callback);
 	}
 
+	Set<ResourceLocation> getConfigKeys(String namespace);
+
+	Set<ResourceLocation> getConfigKeys();
+
+	boolean hasConfig(ResourceLocation key);
+
 	void addAfterRenderCallback(int priority, JadeAfterRenderCallback callback);
 
 	default void addBeforeRenderCallback(JadeBeforeRenderCallback callback) {
@@ -197,5 +204,4 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 	<T extends Accessor<?>> void registerAccessorHandler(Class<T> clazz, AccessorClientHandler<T> handler);
 
 	AccessorClientHandler<Accessor<?>> getAccessorHandler(Class<? extends Accessor<?>> clazz);
-
 }

@@ -13,7 +13,6 @@ import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
-import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.impl.config.WailaConfig;
 import snownee.jade.test.ExamplePlugin;
 import snownee.jade.util.CommonProxy;
@@ -22,41 +21,50 @@ import snownee.jade.util.JsonConfig;
 public class Jade {
 	public static final String ID = "jade";
 	public static final Logger LOGGER = LogUtils.getLogger();
-	private static final JsonConfig<WailaConfig.Root> config = new JsonConfig<>(Jade.ID + "/" + Jade.ID, WailaConfig.Root.CODEC, null);
+	public static final String SERVER_FILE = Jade.ID + "/server-plugin-overrides.json";
+	private static final JsonConfig<WailaConfig.Root> config = new JsonConfig<>(
+			Jade.ID + "/" + Jade.ID,
+			WailaConfig.Root.CODEC,
+			WailaConfig::fixData);
 	private static List<JsonConfig<? extends WailaConfig>> configs = List.of();
 	private static boolean frozen;
+
+	private static JsonConfig<? extends WailaConfig> configHolder() {
+		WailaConfig.Root root = rootConfig();
+		if (root.isEnableProfiles() && root.profileIndex > 0 && root.profileIndex < configs.size()) {
+			return configs.get(root.profileIndex);
+		}
+		return config;
+	}
 
 	/**
 	 * addons: Use {@link IWailaConfig#get()}
 	 */
 	public static WailaConfig config() {
-		WailaConfig.Root root = config.get();
-		if (root.isEnableProfiles() && root.profileIndex > 0 && root.profileIndex < configs.size()) {
-			return configs.get(root.profileIndex).get();
-		}
-		return root;
-	}
-
-	public static WailaConfig.History history() {
-		return config.get().history;
+		return configHolder().get();
 	}
 
 	public static void saveConfig() {
-		config.save();
+		configHolder().save();
 	}
 
 	public static void invalidateConfig() {
-		config.invalidate();
+		configHolder().invalidate();
+	}
+
+	public static WailaConfig.History history() {
+		return rootConfig().history;
 	}
 
 	public static void resetConfig() {
+		rootConfig().setEnableProfiles(false);
 		int themesHash = history().themesHash;
 		Preconditions.checkState(config.getFile().delete());
-		Preconditions.checkState(PluginConfig.INSTANCE.getFile().delete());
 		invalidateConfig();
 		history().themesHash = themesHash;
 		saveConfig();
-		PluginConfig.INSTANCE.reload();
+		//FIXME reapply server config
+//		PluginConfig.INSTANCE.reload();
 	}
 
 	public static WailaConfig.Root rootConfig() {
@@ -79,7 +87,7 @@ public class Jade {
 			}
 		}
 
-		WailaCommonRegistration.instance().priorities.sort(PluginConfig.INSTANCE.getKeys());
+		WailaCommonRegistration.instance().priorities.sort(WailaClientRegistration.instance().getConfigKeys());
 		WailaCommonRegistration.instance().loadComplete();
 		if (CommonProxy.isPhysicallyClient()) {
 			WailaClientRegistration.instance().loadComplete();
@@ -88,12 +96,18 @@ public class Jade {
 			ImmutableList.Builder<JsonConfig<? extends WailaConfig>> list = ImmutableList.builderWithExpectedSize(4);
 			list.add(config);
 			for (int i = 1; i < 4; ++i) {
-				list.add(new JsonConfig<>("%s/profiles/%s/%s".formatted(Jade.ID, i, Jade.ID), codec, null));
+				list.add(new JsonConfig<>("%s/profiles/%s/%s".formatted(Jade.ID, i, Jade.ID), codec, WailaConfig::fixData));
 			}
 			configs = list.build();
-
+			rootConfig().fixData();
+			for (JsonConfig<? extends WailaConfig> config : configs) {
+				config.save();
+			}
 			WailaConfig.init();
 		}
-		PluginConfig.INSTANCE.reload();
+	}
+
+	public static List<JsonConfig<? extends WailaConfig>> configs() {
+		return configs;
 	}
 }

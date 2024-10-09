@@ -10,10 +10,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.JadeIds;
+import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.IDisplayHelper;
-import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.overlay.WailaTickHandler;
 import snownee.jade.track.HealthTrackInfo;
@@ -36,15 +37,16 @@ public class HealthElement extends Element {
 
 	public HealthElement(float maxHealth, float health) {
 		this.health = health;
-		if (maxHealth > PluginConfig.INSTANCE.getInt(JadeIds.MC_ENTITY_HEALTH_MAX_FOR_RENDER)) {
-			if (!PluginConfig.INSTANCE.get(JadeIds.MC_ENTITY_HEALTH_SHOW_FRACTIONS)) {
+		IPluginConfig config = IWailaConfig.get().plugin();
+		if (maxHealth > config.getInt(JadeIds.MC_ENTITY_HEALTH_MAX_FOR_RENDER)) {
+			if (!config.get(JadeIds.MC_ENTITY_HEALTH_SHOW_FRACTIONS)) {
 				maxHealth = Mth.ceil(maxHealth);
 				health = Mth.ceil(health);
 			}
 			text = String.format("%s/%s", DisplayHelper.dfCommas.format(health), DisplayHelper.dfCommas.format(maxHealth));
 		} else {
 			maxHealth *= 0.5f;
-			int maxHeartsPerLine = PluginConfig.INSTANCE.getInt(JadeIds.MC_ENTITY_HEALTH_ICONS_PER_LINE);
+			int maxHeartsPerLine = config.getInt(JadeIds.MC_ENTITY_HEALTH_ICONS_PER_LINE);
 			iconCount = Mth.ceil(maxHealth);
 			iconsPerLine = Math.min(maxHeartsPerLine, iconCount);
 			lineCount = Mth.ceil(maxHealth / maxHeartsPerLine);

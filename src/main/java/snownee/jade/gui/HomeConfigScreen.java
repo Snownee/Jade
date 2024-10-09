@@ -32,7 +32,6 @@ import net.minecraft.util.StringDecomposer;
 import snownee.jade.Jade;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.impl.WailaClientRegistration;
-import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.util.ModIdentification;
 import snownee.jade.util.SmoothChasingValue;
 
@@ -133,7 +132,7 @@ public class HomeConfigScreen extends Screen {
 		int btnWidth = font.width(title);
 		int btnX = (int) (width * 0.5F - btnWidth * 0.5F);
 		int btnY = (int) (height * 0.9F - 5);
-		Component narration = Component.translatable("narration.jade.by");
+		Component narration = Component.translatable(festival == 99 ? "narration.jade.by.lunar" : "narration.jade.by");
 		creditButton = addRenderableWidget(new CreditButton(
 				btnX,
 				btnY,
@@ -161,7 +160,7 @@ public class HomeConfigScreen extends Screen {
 			text = "✐";
 		} else {
 			for (int i = 0; i < 11; i++) {
-				colors.add(ARGB.colorFromFloat(1 - random.nextFloat() * 0.6F, 1, 1, 1));
+				colors.add(ARGB.colorFromFloat(1, 1 - random.nextFloat() * 0.6F, 1, 1));
 			}
 		}
 		for (int color : colors) {
@@ -181,7 +180,6 @@ public class HomeConfigScreen extends Screen {
 	@Override
 	public void onClose() {
 		IWailaConfig.get().save();
-		PluginConfig.INSTANCE.save();
 		WailaClientRegistration.instance().reloadIgnoreLists();
 		Objects.requireNonNull(minecraft).setScreen(parent);
 	}
@@ -203,7 +201,7 @@ public class HomeConfigScreen extends Screen {
 				particles.add(particle);
 			} else if (festival == 1) {
 				nextParticleIn = ticks + 10 + random.nextFloat() * 10;
-				int color = ARGB.colorFromFloat(1 - random.nextFloat() * 0.6F, 1, 1, 1);
+				int color = ARGB.colorFromFloat(1, 1 - random.nextFloat() * 0.6F, 1, 1);
 				color |= (random.nextInt(80) + 40) << 24;
 				int x = random.nextIntBetweenInclusive(40, width + 100);
 				var particle = new TextParticle("❄", x, -20, -0.3F, 0.5f, color, 2F + random.nextFloat());
@@ -371,6 +369,7 @@ public class HomeConfigScreen extends Screen {
 			this.motionY = motionY;
 			this.color = color;
 			this.scale = scale;
+//			System.out.println(Color.rgb(color).getHex());
 		}
 
 		private void tick(float partialTicks) {

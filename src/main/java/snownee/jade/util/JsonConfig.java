@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
@@ -34,7 +35,7 @@ public class JsonConfig<T> {
 	private final Codec<T> codec;
 	private final CachedSupplier<T> configGetter;
 
-	public JsonConfig(String fileName, Codec<T> codec, @Nullable Runnable onUpdate, Supplier<T> defaultFactory) {
+	public JsonConfig(String fileName, Codec<T> codec, @Nullable Consumer<T> onUpdate, Supplier<T> defaultFactory) {
 		this.file = new File(CommonProxy.getConfigDirectory(), fileName + (fileName.endsWith(".json") ? "" : ".json"));
 		this.codec = codec;
 		this.configGetter = new CachedSupplier<>(() -> {
@@ -68,7 +69,7 @@ public class JsonConfig<T> {
 		mkdirs();
 	}
 
-	public JsonConfig(String fileName, Codec<T> codec, @Nullable Runnable onUpdate) {
+	public JsonConfig(String fileName, Codec<T> codec, @Nullable Consumer<T> onUpdate) {
 		this(fileName, codec, onUpdate, () -> JadeCodecs.createFromEmptyMap(codec));
 		JadeCodecs.createFromEmptyMap(codec); // make sure it works
 	}
@@ -113,7 +114,7 @@ public class JsonConfig<T> {
 
 		private final Supplier<T> supplier;
 		private T value;
-		private Runnable onUpdate;
+		private Consumer<T> onUpdate;
 
 		public CachedSupplier(Supplier<T> supplier) {
 			this.supplier = supplier;
@@ -122,10 +123,10 @@ public class JsonConfig<T> {
 		public T get() {
 			if (value == null) {
 				synchronized (this) {
-					value = supplier.get();
-					Objects.requireNonNull(value);
+					T _value = value = supplier.get();
+					Objects.requireNonNull(_value);
 					if (onUpdate != null) {
-						onUpdate.run();
+						onUpdate.accept(_value);
 					}
 				}
 			}

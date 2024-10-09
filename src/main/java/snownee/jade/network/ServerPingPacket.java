@@ -38,10 +38,11 @@ public record ServerPingPacket(String serverConfig, List<Block> shearableBlocks)
 		}
 		context.execute(() -> {
 			ObjectDataCenter.serverConnected = true;
-			PluginConfig.INSTANCE.reload(); // clear the server config last time we applied
-			if (json != null && !json.keySet().isEmpty()) {
-				PluginConfig.INSTANCE.applyServerConfigs(json);
-			}
+			//FIXME
+//			PluginConfig.INSTANCE.reload(); // clear the server config last time we applied
+//			if (json != null && !json.keySet().isEmpty()) {
+//				PluginConfig.INSTANCE.applyServerConfigs(json);
+//			}
 			HarvestToolProvider.INSTANCE.setShearableBlocks(message.shearableBlocks);
 			Jade.LOGGER.info("Received config from the server: {}", s);
 		});

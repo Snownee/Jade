@@ -1,7 +1,5 @@
 package snownee.jade.api.config;
 
-import java.util.Set;
-
 import org.jetbrains.annotations.ApiStatus.NonExtendable;
 
 import net.minecraft.resources.ResourceLocation;
@@ -16,21 +14,6 @@ import snownee.jade.api.IToggleableProvider;
 @NonExtendable
 public interface IPluginConfig {
 
-	/**
-	 * Gets a collection of all the keys for a given namespace.
-	 *
-	 * @param namespace The namespace to get keys from
-	 * @return all the keys for a given namespace.
-	 */
-	Set<ResourceLocation> getKeys(String namespace);
-
-	/**
-	 * Gets a collection of all keys.
-	 *
-	 * @return all registered keys.
-	 */
-	Set<ResourceLocation> getKeys();
-
 	boolean get(IToggleableProvider provider);
 
 	boolean get(ResourceLocation key);
@@ -43,4 +26,5 @@ public interface IPluginConfig {
 
 	String getString(ResourceLocation key);
 
+	boolean set(ResourceLocation key, Object value);
 }

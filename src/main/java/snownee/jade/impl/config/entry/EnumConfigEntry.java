@@ -7,6 +7,7 @@ import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.gui.config.OptionsList;
 import snownee.jade.gui.config.value.OptionValue;
 
@@ -18,28 +19,27 @@ public class EnumConfigEntry<E extends Enum<E>> extends ConfigEntry<E> {
 
 	@Override
 	public boolean isValidValue(Object value) {
-		if (value.getClass() == String.class) {
-			try {
-				Enum.valueOf(getDefaultValue().getClass(), (String) value);
-				return true;
-			} catch (Throwable e) {
-				return false;
-			}
-		}
 		return value.getClass() == getDefaultValue().getClass();
 	}
 
 	@Override
-	public void setValue(Object value) {
+	public E convertValue(Object value) {
 		if (value.getClass() == String.class) {
-			value = Enum.valueOf(getDefaultValue().getClass(), (String) value);
+			//noinspection unchecked
+			return (E) Enum.valueOf(getDefaultValue().getClass(), (String) value);
 		}
-		super.setValue(value);
+		//noinspection unchecked
+		return (E) value;
 	}
 
 	@Override
-	public OptionValue<?> createUI(OptionsList options, String optionName, BiConsumer<ResourceLocation, Object> setter) {
-		return options.choices(optionName, this::getValue, e -> setter.accept(id, e), builder -> {
+	public OptionValue<?> createUI(
+			OptionsList options,
+			String optionName,
+			IPluginConfig config,
+			BiConsumer<ResourceLocation, Object> setter) {
+		//noinspection unchecked
+		return options.choices(optionName, () -> (E) config.getEnum(id), e -> setter.accept(id, e), builder -> {
 			builder.withTooltip(e -> {
 				String key = OptionsList.Entry.makeKey(optionName + "_" + e.name().toLowerCase(Locale.ENGLISH) + "_desc");
 				if (!I18n.exists(key)) {

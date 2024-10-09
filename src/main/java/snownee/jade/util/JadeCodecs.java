@@ -9,6 +9,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import it.unimi.dsi.fastutil.floats.FloatArrayList;
@@ -66,6 +67,43 @@ public class JadeCodecs {
 			} else {
 				return DataResult.success(ops.empty());
 			}
+		}
+	};
+
+	public static final PrimitiveCodec<Object> PRIMITIVE = new PrimitiveCodec<>() {
+		@Override
+		public <T> DataResult<Object> read(DynamicOps<T> ops, T input) {
+			{
+				DataResult<Boolean> result = ops.getBooleanValue(input);
+				if (result.isSuccess()) {
+					return result.map($ -> $);
+				}
+			}
+			{
+				DataResult<Number> result = ops.getNumberValue(input);
+				if (result.isSuccess()) {
+					return result.map($ -> $);
+				}
+			}
+			{
+				DataResult<String> result = ops.getStringValue(input);
+				if (result.isSuccess()) {
+					return result.map($ -> $);
+				}
+			}
+			return DataResult.error(() -> "Not a primitive value: " + input);
+		}
+
+		@Override
+		public <T> T write(DynamicOps<T> ops, Object value) {
+			if (value instanceof Boolean) {
+				return ops.createBoolean((Boolean) value);
+			} else if (value instanceof Number) {
+				return ops.createNumeric((Number) value);
+			} else if (value instanceof String) {
+				return ops.createString((String) value);
+			}
+			throw new IllegalArgumentException("Not a primitive value: " + value);
 		}
 	};
 

@@ -16,13 +16,15 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.HumanoidArm;
 import snownee.jade.Jade;
-import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
+import snownee.jade.impl.WailaClientRegistration;
+import snownee.jade.impl.config.entry.ConfigEntry;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
 import snownee.jade.util.JadeCodecs;
+import snownee.jade.util.JsonConfig;
 import snownee.jade.util.ModIdentification;
 
 /**
@@ -42,7 +44,10 @@ public class WailaConfig implements IWailaConfig {
 					.forGetter(WailaConfig::formatting),
 			Accessibility.CODEC.fieldOf("accessibility")
 					.orElseGet(() -> JadeCodecs.createFromEmptyMap(Accessibility.CODEC))
-					.forGetter(WailaConfig::accessibility)
+					.forGetter(WailaConfig::accessibility),
+			PluginConfig.CODEC.fieldOf("plugin")
+					.orElseGet(() -> JadeCodecs.createFromEmptyMap(PluginConfig.CODEC))
+					.forGetter(WailaConfig::plugin)
 	).apply(i, WailaConfig::new));
 
 	private String name;
@@ -50,18 +55,21 @@ public class WailaConfig implements IWailaConfig {
 	private final Overlay overlay;
 	private final Formatting formatting;
 	private final Accessibility accessibility;
+	private final PluginConfig plugin;
 
 	public WailaConfig(
 			String name,
 			General general,
 			Overlay overlay,
 			Formatting formatting,
-			Accessibility accessibility) {
+			Accessibility accessibility,
+			PluginConfig plugin) {
 		this.name = name;
 		this.general = general;
 		this.overlay = overlay;
 		this.formatting = formatting;
 		this.accessibility = accessibility;
+		this.plugin = plugin;
 	}
 
 	@Override
@@ -85,8 +93,8 @@ public class WailaConfig implements IWailaConfig {
 	}
 
 	@Override
-	public IPluginConfig plugin() {
-		return PluginConfig.INSTANCE;
+	public PluginConfig plugin() {
+		return plugin;
 	}
 
 	@Override
@@ -97,6 +105,12 @@ public class WailaConfig implements IWailaConfig {
 	@Override
 	public void invalidate() {
 		Jade.invalidateConfig();
+	}
+
+	public void fixData() {
+		for (ConfigEntry<?> entry : WailaClientRegistration.instance().configEntries.values()) {
+			plugin.ensureEntry(entry);
+		}
 	}
 
 	@Override
@@ -119,13 +133,13 @@ public class WailaConfig implements IWailaConfig {
 		General.itemModNameTooltipDisabledByMods.clear();
 		General.itemModNameTooltipDisabledByMods.addAll(names);
 
-		IWailaConfig.Accessibility accessibility = IWailaConfig.get().accessibility();
 		boolean hasAccessibilityMod = ClientProxy.hasAccessibilityMod();
 		if (Jade.history().accessibilityModMemory != hasAccessibilityMod) {
 			Jade.history().accessibilityModMemory = hasAccessibilityMod;
-			//TODO apply it to all the config profiles
-			accessibility.setEnableAccessibilityPlugin(hasAccessibilityMod);
-			IWailaConfig.get().save();
+			for (JsonConfig<? extends WailaConfig> config : Jade.configs()) {
+				config.get().accessibility().setEnableAccessibilityPlugin(hasAccessibilityMod);
+				config.save();
+			}
 		}
 	}
 
@@ -133,10 +147,10 @@ public class WailaConfig implements IWailaConfig {
 
 		public static final Codec<History> CODEC = RecordCodecBuilder.create(i -> i.group(
 				Codec.BOOL.fieldOf("previewOverlay").orElse(true).forGetter($ -> $.previewOverlay),
-				Codec.BOOL.optionalFieldOf("hintOverlayToggle", true).forGetter($ -> $.hintOverlayToggle),
-				Codec.BOOL.optionalFieldOf("hintNarratorToggle", true).forGetter($ -> $.hintNarratorToggle),
-				Codec.BOOL.optionalFieldOf("accessibilityModMemory", false).forGetter($ -> $.accessibilityModMemory),
-				Codec.INT.optionalFieldOf("themesHash", 0).forGetter($ -> $.themesHash)
+				Codec.BOOL.fieldOf("hintOverlayToggle").orElse(true).forGetter($ -> $.hintOverlayToggle),
+				Codec.BOOL.fieldOf("hintNarratorToggle").orElse(true).forGetter($ -> $.hintNarratorToggle),
+				Codec.BOOL.fieldOf("accessibilityModMemory").orElse(false).forGetter($ -> $.accessibilityModMemory),
+				Codec.INT.fieldOf("themesHash").orElse(0).forGetter($ -> $.themesHash)
 		).apply(i, History::new));
 
 		public boolean previewOverlay;
@@ -151,6 +165,7 @@ public class WailaConfig implements IWailaConfig {
 				boolean hintNarratorToggle,
 				boolean accessibilityModMemory,
 				int themesHash) {
+			this.previewOverlay = previewOverlay;
 			this.hintOverlayToggle = hintOverlayToggle;
 			this.hintNarratorToggle = hintNarratorToggle;
 			this.accessibilityModMemory = accessibilityModMemory;
@@ -723,7 +738,7 @@ public class WailaConfig implements IWailaConfig {
 		public History history;
 
 		public Root(boolean enableProfiles, int profileIndex, WailaConfig config, History history) {
-			super(config.name, config.general, config.overlay, config.formatting, config.accessibility);
+			super(config.name, config.general, config.overlay, config.formatting, config.accessibility, config.plugin);
 			this.enableProfiles = enableProfiles;
 			this.profileIndex = profileIndex;
 			this.history = history;

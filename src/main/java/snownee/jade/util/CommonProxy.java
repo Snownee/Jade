@@ -107,7 +107,6 @@ import snownee.jade.command.JadeServerCommand;
 import snownee.jade.compat.TechRebornEnergyCompat;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
-import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.mixin.AbstractHorseAccess;
 import snownee.jade.network.ReceiveDataPacket;
 import snownee.jade.network.RequestBlockPacket;
@@ -395,7 +394,7 @@ public final class CommonProxy implements ModInitializer {
 
 	private static void playerJoin(ServerGamePacketListenerImpl handler, PacketSender sender, MinecraftServer server) {
 		ServerPlayer player = handler.player;
-		String configs = PluginConfig.INSTANCE.getServerConfigs();
+		String configs = ""; //FIXME
 		List<Block> shearableBlocks = HarvestToolProvider.INSTANCE.getShearableBlocks();
 		if (!configs.isEmpty()) {
 			Jade.LOGGER.debug("Syncing config to {} ({})", player.getGameProfile().getName(), player.getGameProfile().getId());

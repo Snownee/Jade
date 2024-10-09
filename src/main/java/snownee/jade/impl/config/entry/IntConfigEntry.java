@@ -4,6 +4,7 @@ import java.util.function.BiConsumer;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.gui.config.OptionsList;
 import snownee.jade.gui.config.value.InputOptionValue;
 import snownee.jade.gui.config.value.OptionValue;
@@ -27,16 +28,20 @@ public class IntConfigEntry extends ConfigEntry<Integer> {
 	}
 
 	@Override
-	public void setValue(Object value) {
-		super.setValue(((Number) value).intValue());
+	public Integer convertValue(Object value) {
+		return ((Number) value).intValue();
 	}
 
 	@Override
-	public OptionValue<?> createUI(OptionsList options, String optionName, BiConsumer<ResourceLocation, Object> setter) {
+	public OptionValue<?> createUI(
+			OptionsList options,
+			String optionName,
+			IPluginConfig config,
+			BiConsumer<ResourceLocation, Object> setter) {
 		if (slider) {
 			return options.slider(
 					optionName,
-					() -> Float.valueOf(getValue()),
+					() -> config.getFloat(id),
 					f -> setter.accept(id, (int) (float) f),
 					min,
 					max,
@@ -44,7 +49,7 @@ public class IntConfigEntry extends ConfigEntry<Integer> {
 		} else {
 			return options.input(
 					optionName,
-					this::getValue,
+					() -> config.getInt(id),
 					i -> setter.accept(id, Mth.clamp(i, min, max)),
 					InputOptionValue.INTEGER.and($ -> isValidValue(Integer.valueOf($))));
 		}

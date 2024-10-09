@@ -48,6 +48,7 @@
 	"narration.jade.category": "%s category",
 	"narration.jade.clear_content.usage": "Left click to clear content",
 	"narration.jade.by": "Made with Love by Snownee. Press button to check out all my works!",
+	"narration.jade.by.lunar": "Happy Lunar New Year! Press button to check out all my works!",
 	"narration.jade.adjusting_position": "Drag to adjust position. Press ESC to exit",
 	"config.jade.key_name_n_bind_0": "[%s](currently unbound)",
 	"config.jade.key_name_n_bind_1": "[%s](currently %s)",

@@ -14,7 +14,6 @@ import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.ui.IElement;
-import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.impl.ui.ElementHelper;
 import snownee.jade.impl.ui.ItemStackElement;
 import snownee.jade.overlay.RayTracing;
@@ -73,7 +72,7 @@ public class BlockAccessorClientHandler implements AccessorClientHandler<BlockAc
 
 		for (var provider : WailaClientRegistration.instance().getBlockIconProviders(block, this::isEnabled)) {
 			try {
-				IElement element = provider.getIcon(accessor, PluginConfig.INSTANCE, icon);
+				IElement element = provider.getIcon(accessor, IWailaConfig.get().plugin(), icon);
 				if (!RayTracing.isEmptyElement(element)) {
 					icon = element;
 				}
@@ -90,7 +89,7 @@ public class BlockAccessorClientHandler implements AccessorClientHandler<BlockAc
 			ITooltip tooltip = tooltipProvider.apply(provider);
 			try {
 				ElementHelper.INSTANCE.setCurrentUid(provider.getUid());
-				provider.appendTooltip(tooltip, accessor, PluginConfig.INSTANCE);
+				provider.appendTooltip(tooltip, accessor, IWailaConfig.get().plugin());
 			} catch (Throwable e) {
 				WailaExceptionHandler.handleErr(e, provider, tooltip::add);
 			} finally {

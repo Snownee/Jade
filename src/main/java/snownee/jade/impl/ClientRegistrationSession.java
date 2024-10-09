@@ -139,15 +139,9 @@ public class ClientRegistrationSession {
 
 	public void setConfigCategoryOverride(ResourceLocation key, Component override) {
 		Preconditions.checkNotNull(override, "Override cannot be null");
-		Preconditions.checkArgument(configIds.contains(key) || PluginConfig.INSTANCE.containsKey(key), "Unknown config key: %s", key);
+		Preconditions.checkArgument(configIds.contains(key) || registration.hasConfig(key), "Unknown config key: %s", key);
 		Preconditions.checkArgument(PluginConfig.isPrimaryKey(key), "Only primary config key can be overridden");
 		configCategoryOverrides.add(Pair.of(key, override));
-	}
-
-	public void setConfigCategoryOverride(ResourceLocation key, List<Component> overrides) {
-		for (Component override : overrides) {
-			setConfigCategoryOverride(key, override);
-		}
 	}
 
 	public void registerItemStorageClient(IClientExtensionProvider<ItemStack, ItemView> provider) {
@@ -219,7 +213,7 @@ public class ClientRegistrationSession {
 		blockComponentProviders.forEach(pair -> registration.registerBlockComponent(pair.getFirst(), pair.getSecond()));
 		entityIconProviders.forEach(pair -> registration.registerEntityIcon(pair.getFirst(), pair.getSecond()));
 		entityComponentProviders.forEach(pair -> registration.registerEntityComponent(pair.getFirst(), pair.getSecond()));
-		configEntries.forEach(PluginConfig.INSTANCE::addConfig);
+		configEntries.forEach(registration::addConfig);
 		configListeners.forEach(pair -> registration.addConfigListener(pair.getFirst(), pair.getSecond()));
 		configCategoryOverrides.forEach(pair -> registration.setConfigCategoryOverride(pair.getFirst(), pair.getSecond()));
 		itemStorageProviders.forEach(registration::registerItemStorageClient);

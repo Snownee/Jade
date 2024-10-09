@@ -60,7 +60,6 @@ import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.ui.TooltipRect;
 import snownee.jade.gui.HomeConfigScreen;
 import snownee.jade.impl.WailaClientRegistration;
-import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.overlay.WailaTickHandler;
 import snownee.jade.util.ClientProxy;
@@ -102,7 +101,7 @@ public final class JadeClient {
 
 	public static void onKeyPressed(int action) {
 		while (openConfig.consumeClick()) {
-			IWailaConfig.get().invalidate();
+			Jade.invalidateConfig();
 			ItemStorageProvider.targetCache.invalidateAll();
 			ItemStorageProvider.containerCache.invalidateAll();
 			Minecraft.getInstance().setScreen(new HomeConfigScreen(null));
@@ -161,7 +160,7 @@ public final class JadeClient {
 		if (!translationChecked && screen instanceof TitleScreen && CommonProxy.isDevEnv()) {
 			translationChecked = true;
 			List<String> keys = Lists.newArrayList();
-			for (ResourceLocation id : PluginConfig.INSTANCE.getKeys()) {
+			for (ResourceLocation id : WailaClientRegistration.instance().getConfigKeys()) {
 				String key = "config.jade.plugin_%s.%s".formatted(id.getNamespace(), id.getPath());
 				if (!I18n.exists(key)) {
 					keys.add(key);
@@ -267,7 +266,7 @@ public final class JadeClient {
 	}
 
 	public static void drawBreakingProgress(IBoxElement rootElement, TooltipRect rect, GuiGraphics guiGraphics, Accessor<?> accessor) {
-		if (!PluginConfig.INSTANCE.get(JadeIds.MC_BREAKING_PROGRESS)) {
+		if (!IWailaConfig.get().plugin().get(JadeIds.MC_BREAKING_PROGRESS)) {
 			progressAlpha = 0;
 			return;
 		}
