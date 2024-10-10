@@ -11,12 +11,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.gui.config.OptionsList;
 import snownee.jade.gui.config.value.OptionValue;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.WailaClientRegistration;
-import snownee.jade.impl.config.PluginConfig;
 
 public class PluginsConfigScreen extends PreviewOptionsScreen {
 
@@ -54,18 +54,18 @@ public class PluginsConfigScreen extends PreviewOptionsScreen {
 					category.entries().forEach(entry -> {
 						OptionValue<?> option = entry.createUI(
 								options,
-								"plugin_" + entry.getId().toLanguageKey(),
+								"plugin_" + entry.id().toLanguageKey(),
 								IWailaConfig.get().plugin(),
 								setter);
-						option.setId(entry.getId());
+						option.setId(entry.id());
 						if (entry.isSynced()) {
 							option.setDisabled(true);
 							option.appendDescription(Component.translatable("gui.jade.forced_plugin_config")
 									.withStyle(ChatFormatting.DARK_RED));
-						} else if (noteServerFeature && !WailaClientRegistration.instance().isClientFeature(entry.getId())) {
+						} else if (noteServerFeature && !WailaClientRegistration.instance().isClientFeature(entry.id())) {
 							option.serverFeature = true;
 						}
-						if (!PluginConfig.isPrimaryKey(entry.getId())) {
+						if (!IPluginConfig.isPrimaryKey(entry.id())) {
 							if (lastPrimary.getValue() != null) {
 								option.parent(lastPrimary.getValue());
 							}

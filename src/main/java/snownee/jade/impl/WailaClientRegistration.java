@@ -59,6 +59,7 @@ import snownee.jade.api.callback.JadeBeforeTooltipCollectCallback;
 import snownee.jade.api.callback.JadeItemModNameCallback;
 import snownee.jade.api.callback.JadeRayTraceCallback;
 import snownee.jade.api.callback.JadeTooltipCollectedCallback;
+import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.IgnoreList;
 import snownee.jade.api.platform.CustomEnchantPower;
@@ -69,7 +70,6 @@ import snownee.jade.api.view.ItemView;
 import snownee.jade.api.view.ProgressView;
 import snownee.jade.gui.PluginsConfigScreen;
 import snownee.jade.gui.config.OptionsList;
-import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.impl.config.entry.BooleanConfigEntry;
 import snownee.jade.impl.config.entry.ConfigEntry;
 import snownee.jade.impl.config.entry.EnumConfigEntry;
@@ -253,14 +253,14 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	}
 
 	public void addConfig(ConfigEntry<?> entry) {
-		Preconditions.checkNotNull(entry);
-		Preconditions.checkArgument(StringUtils.countMatches(entry.getId().getPath(), '.') <= 1);
-		Preconditions.checkArgument(!hasConfig(entry.getId()), "Duplicate config key: %s", entry.getId());
+		Objects.requireNonNull(entry);
+		Preconditions.checkArgument(StringUtils.countMatches(entry.id().getPath(), '.') <= 1);
+		Preconditions.checkArgument(!hasConfig(entry.id()), "Duplicate config key: %s", entry.id());
 		Preconditions.checkArgument(
-				entry.isValidValue(entry.getDefaultValue()),
+				entry.isValidValue(entry.defaultValue()),
 				"Default value of config %s does not pass value check",
-				entry.getId());
-		configEntries.put(entry.getId(), entry);
+				entry.id());
+		configEntries.put(entry.id(), entry);
 	}
 
 	@Override
@@ -317,14 +317,15 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 		if (isSessionActive()) {
 			session.addConfigListener(key, listener);
 		} else {
-			configListeners.add(Pair.of(key, listener));
+			Preconditions.checkArgument(hasConfig(key), "Unknown config key: %s", key);
+			Objects.requireNonNull(getConfigEntry(key)).addListener(listener);
 		}
 	}
 
 	@Override
 	public void setConfigCategoryOverride(ResourceLocation key, Component override) {
 		Preconditions.checkArgument(!JadeIds.isAccess(key), "Cannot override option from access category");
-		Preconditions.checkArgument(PluginConfig.isPrimaryKey(key), "Only primary config key can be overridden");
+		Preconditions.checkArgument(IPluginConfig.isPrimaryKey(key), "Only primary config key can be overridden");
 		if (isSessionActive()) {
 			session.setConfigCategoryOverride(key, override);
 		} else {
@@ -378,8 +379,8 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 			if (!enableAccessibilityPlugins && JadeIds.isAccess(key)) {
 				return;
 			}
-			if (!PluginConfig.isPrimaryKey(key)) {
-				ResourceLocation primaryKey = PluginConfig.getPrimaryKey(key);
+			if (!IPluginConfig.isPrimaryKey(key)) {
+				ResourceLocation primaryKey = IPluginConfig.getPrimaryKey(key);
 				Collection<Component> components = configCategoryOverrides.get(primaryKey);
 				if (!components.isEmpty()) {
 					for (Component component : components) {
@@ -400,7 +401,7 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 		return categoryMap.asMap().entrySet().stream()
 				.map(e -> new Category(Component.literal(e.getKey()), e.getValue().stream()
 						.sorted(Comparator.comparingInt($ -> WailaCommonRegistration.instance().priorities.getSortedList()
-								.indexOf($.getId())))
+								.indexOf($.id())))
 						.toList()
 				))
 				.sorted(Comparator.comparingInt(specialOrder()).thenComparing($ -> $.title().getString()))
@@ -421,6 +422,27 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 			}
 			return 0;
 		};
+	}
+
+	public void setServerConfig(Map<ResourceLocation, Object> config) {
+		for (ConfigEntry<?> entry : configEntries.values()) {
+			entry.setSyncedValue(null);
+		}
+		config.forEach((key, value) -> {
+			//noinspection rawtypes
+			ConfigEntry entry = getConfigEntry(key);
+			if (entry != null) {
+				try {
+					value = entry.convertValue(value);
+					if (entry.isValidValue(value)) {
+						//noinspection unchecked
+						entry.setSyncedValue(value);
+					}
+				} catch (Exception ignored) {
+				}
+			}
+		});
+		Jade.config().fixData();
 	}
 
 	public record Category(MutableComponent title, List<ConfigEntry<?>> entries) {

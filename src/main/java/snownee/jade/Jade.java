@@ -21,7 +21,6 @@ import snownee.jade.util.JsonConfig;
 public class Jade {
 	public static final String ID = "jade";
 	public static final Logger LOGGER = LogUtils.getLogger();
-	public static final String SERVER_FILE = Jade.ID + "/server-plugin-overrides.json";
 	private static final JsonConfig<WailaConfig.Root> config = new JsonConfig<>(
 			Jade.ID + "/" + Jade.ID,
 			WailaConfig.Root.CODEC,
@@ -63,8 +62,6 @@ public class Jade {
 		invalidateConfig();
 		history().themesHash = themesHash;
 		saveConfig();
-		//FIXME reapply server config
-//		PluginConfig.INSTANCE.reload();
 	}
 
 	public static WailaConfig.Root rootConfig() {

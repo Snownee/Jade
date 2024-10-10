@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.google.common.collect.Lists;
 
 import net.minecraft.resources.ResourceLocation;
@@ -13,9 +15,10 @@ import snownee.jade.gui.config.value.OptionValue;
 
 public abstract class ConfigEntry<T> {
 
-	public final ResourceLocation id;
+	protected final ResourceLocation id;
 	private final T defaultValue;
-	private boolean synced;
+	@Nullable
+	private T syncedValue;
 	private List<Consumer<ResourceLocation>> listeners = List.of();
 
 	public ConfigEntry(ResourceLocation id, T defaultValue) {
@@ -23,20 +26,25 @@ public abstract class ConfigEntry<T> {
 		this.defaultValue = defaultValue;
 	}
 
-	public ResourceLocation getId() {
+	public ResourceLocation id() {
 		return id;
 	}
 
-	public T getDefaultValue() {
+	public T defaultValue() {
 		return defaultValue;
 	}
 
-	public boolean isSynced() {
-		return synced;
+	@Nullable
+	public T syncedValue() {
+		return syncedValue;
 	}
 
-	public void setSynced(boolean synced) {
-		this.synced = synced;
+	public boolean isSynced() {
+		return syncedValue != null;
+	}
+
+	public void setSyncedValue(@Nullable T value) {
+		syncedValue = value;
 	}
 
 	public T convertValue(Object value) {

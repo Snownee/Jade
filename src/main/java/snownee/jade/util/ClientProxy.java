@@ -1,6 +1,7 @@
 package snownee.jade.util;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
@@ -75,6 +76,7 @@ import snownee.jade.gui.BaseOptionsScreen;
 import snownee.jade.impl.BlockAccessorImpl;
 import snownee.jade.impl.EntityAccessorImpl;
 import snownee.jade.impl.ObjectDataCenter;
+import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.theme.ThemeHelper;
 import snownee.jade.impl.ui.FluidStackElement;
 import snownee.jade.mixin.KeyAccess;
@@ -142,6 +144,7 @@ public final class ClientProxy implements ClientModInitializer {
 
 	private static void onPlayerLeave(ClientPacketListener handler, Minecraft client) {
 		ObjectDataCenter.serverConnected = false;
+		WailaClientRegistration.instance().setServerConfig(Map.of());
 	}
 
 	private static void onKeyPressed(Minecraft mc) {

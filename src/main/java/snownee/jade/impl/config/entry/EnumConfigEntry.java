@@ -19,14 +19,14 @@ public class EnumConfigEntry<E extends Enum<E>> extends ConfigEntry<E> {
 
 	@Override
 	public boolean isValidValue(Object value) {
-		return value.getClass() == getDefaultValue().getClass();
+		return value.getClass() == defaultValue().getClass();
 	}
 
 	@Override
 	public E convertValue(Object value) {
 		if (value.getClass() == String.class) {
 			//noinspection unchecked
-			return (E) Enum.valueOf(getDefaultValue().getClass(), (String) value);
+			return (E) Enum.valueOf(defaultValue().getClass(), (String) value);
 		}
 		//noinspection unchecked
 		return (E) value;

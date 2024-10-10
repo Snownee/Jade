@@ -45,8 +45,8 @@ public class WailaConfig implements IWailaConfig {
 			Accessibility.CODEC.fieldOf("accessibility")
 					.orElseGet(() -> JadeCodecs.createFromEmptyMap(Accessibility.CODEC))
 					.forGetter(WailaConfig::accessibility),
-			PluginConfig.CODEC.fieldOf("plugin")
-					.orElseGet(() -> JadeCodecs.createFromEmptyMap(PluginConfig.CODEC))
+			ClientPluginConfig.CODEC.fieldOf("plugin")
+					.orElseGet(() -> JadeCodecs.createFromEmptyMap(ClientPluginConfig.CODEC))
 					.forGetter(WailaConfig::plugin)
 	).apply(i, WailaConfig::new));
 
@@ -55,7 +55,7 @@ public class WailaConfig implements IWailaConfig {
 	private final Overlay overlay;
 	private final Formatting formatting;
 	private final Accessibility accessibility;
-	private final PluginConfig plugin;
+	private final ClientPluginConfig plugin;
 
 	public WailaConfig(
 			String name,
@@ -63,7 +63,7 @@ public class WailaConfig implements IWailaConfig {
 			Overlay overlay,
 			Formatting formatting,
 			Accessibility accessibility,
-			PluginConfig plugin) {
+			ClientPluginConfig plugin) {
 		this.name = name;
 		this.general = general;
 		this.overlay = overlay;
@@ -93,7 +93,7 @@ public class WailaConfig implements IWailaConfig {
 	}
 
 	@Override
-	public PluginConfig plugin() {
+	public ClientPluginConfig plugin() {
 		return plugin;
 	}
 

@@ -35,9 +35,9 @@ import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
 import snownee.jade.impl.config.WailaConfig;
 import snownee.jade.overlay.DisplayHelper;
-import snownee.jade.util.JadeCodecs;
+import snownee.jade.util.JadeClientCodecs;
 
-public class ThemeHelper extends SimpleJsonResourceReloadListener<JadeCodecs.ThemeHolder> implements IThemeHelper {
+public class ThemeHelper extends SimpleJsonResourceReloadListener<JadeClientCodecs.ThemeHolder> implements IThemeHelper {
 	public static final ThemeHelper INSTANCE = new ThemeHelper();
 	public static final ResourceLocation ID = JadeIds.JADE("themes");
 	public static final MutableObject<Theme> theme = new MutableObject<>();
@@ -49,10 +49,10 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener<JadeCodecs.The
 
 	public ThemeHelper() {
 		super(RecordCodecBuilder.create(i -> i.group(
-				ExtraCodecs.NON_NEGATIVE_INT.fieldOf("version").forGetter(JadeCodecs.ThemeHolder::version),
-				Codec.BOOL.optionalFieldOf("autoEnable", false).forGetter(JadeCodecs.ThemeHolder::autoEnable),
-				JadeCodecs.THEME.forGetter(JadeCodecs.ThemeHolder::theme)
-		).apply(i, JadeCodecs.ThemeHolder::new)), "jade_themes");
+				ExtraCodecs.NON_NEGATIVE_INT.fieldOf("version").forGetter(JadeClientCodecs.ThemeHolder::version),
+				Codec.BOOL.optionalFieldOf("autoEnable", false).forGetter(JadeClientCodecs.ThemeHolder::autoEnable),
+				JadeClientCodecs.THEME.forGetter(JadeClientCodecs.ThemeHolder::theme)
+		).apply(i, JadeClientCodecs.ThemeHolder::new)), "jade_themes");
 	}
 
 	public static Style colorStyle(int color) {
@@ -165,7 +165,7 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener<JadeCodecs.The
 
 	@Override
 	protected void apply(
-			Map<ResourceLocation, JadeCodecs.ThemeHolder> map,
+			Map<ResourceLocation, JadeClientCodecs.ThemeHolder> map,
 			ResourceManager resourceManager,
 			ProfilerFiller profilerFiller) {
 		Set<ResourceLocation> existingKeys = Set.copyOf(themes.keySet());

@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.entity.monster.creaking.Creaking;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
@@ -27,7 +28,7 @@ public enum EntityHealthAndArmorProvider implements IEntityComponentProvider {
 		boolean armorText = false;
 		List<IElement> elements = Lists.newArrayListWithExpectedSize(2);
 		LivingEntity living = (LivingEntity) accessor.getEntity();
-		if (config.get(JadeIds.MC_ENTITY_HEALTH) && !(accessor.getEntity() instanceof ArmorStand)) {
+		if (config.get(JadeIds.MC_ENTITY_HEALTH) && isHealthVisible(living)) {
 			float health = living.getHealth();
 			float maxHealth = living.getMaxHealth();
 			HealthElement healthElement = new HealthElement(maxHealth, health);
@@ -61,6 +62,10 @@ public enum EntityHealthAndArmorProvider implements IEntityComponentProvider {
 	@Override
 	public int getDefaultPriority() {
 		return -4500;
+	}
+
+	private static boolean isHealthVisible(LivingEntity entity) {
+		return !(entity instanceof ArmorStand || entity instanceof Creaking);
 	}
 
 }

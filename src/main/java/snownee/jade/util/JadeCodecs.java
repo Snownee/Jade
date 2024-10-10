@@ -3,53 +3,30 @@ package snownee.jade.util;
 import java.util.Optional;
 import java.util.OptionalInt;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
-import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.floats.FloatArrayList;
 import it.unimi.dsi.fastutil.floats.FloatList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.core.Registry;
 import net.minecraft.locale.Language;
-import net.minecraft.network.chat.Style;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ExtraCodecs;
 import snownee.jade.api.config.IgnoreList;
-import snownee.jade.api.theme.TextSetting;
-import snownee.jade.api.theme.Theme;
-import snownee.jade.api.ui.BoxStyle;
-import snownee.jade.api.ui.Color;
-import snownee.jade.api.ui.ColorPalette;
 
 public class JadeCodecs {
-
-	public static final Codec<TextSetting> TEXT_SETTING = RecordCodecBuilder.create(i -> i.group(
-			ColorPalette.CODEC.optionalFieldOf("colors", ColorPalette.DEFAULT).forGetter(TextSetting::colors),
-			Codec.BOOL.optionalFieldOf("shadow", true).forGetter(TextSetting::shadow),
-			Style.Serializer.CODEC.optionalFieldOf("modNameStyle").forGetter($ -> Optional.ofNullable($.modNameStyle())),
-			Color.CODEC.optionalFieldOf("itemAmountColor", 0xFFFFFFFF).forGetter(TextSetting::itemAmountColor)
-	).apply(i, TextSetting::new));
-
-	public static final MapCodec<Theme> THEME = RecordCodecBuilder.mapCodec(i -> i.group(
-			BoxStyle.CODEC.fieldOf("tooltipStyle").forGetter($ -> $.tooltipStyle),
-			BoxStyle.CODEC.optionalFieldOf("nestedBoxStyle", BoxStyle.GradientBorder.DEFAULT_NESTED_BOX).forGetter($ -> $.nestedBoxStyle),
-			BoxStyle.CODEC.optionalFieldOf("viewGroupStyle", BoxStyle.GradientBorder.DEFAULT_VIEW_GROUP).forGetter($ -> $.viewGroupStyle),
-			TEXT_SETTING.optionalFieldOf("text", TextSetting.DEFAULT).forGetter($ -> $.text),
-			Codec.BOOL.optionalFieldOf("changeRoundCorner").forGetter($ -> Optional.ofNullable($.changeRoundCorner)),
-			Codec.floatRange(0, 1).optionalFieldOf("changeOpacity", 0F).forGetter($ -> $.changeOpacity),
-			Codec.BOOL.optionalFieldOf("lightColorScheme", false).forGetter($ -> $.lightColorScheme),
-			Codec.BOOL.optionalFieldOf("hidden", false).forGetter($ -> $.hidden),
-			ResourceLocation.CODEC.optionalFieldOf("iconSlotSprite").forGetter($ -> Optional.ofNullable($.iconSlotSprite)),
-			Codec.INT.optionalFieldOf("iconSlotInflation", 0).forGetter($ -> $.iconSlotInflation)
-	).apply(i, Theme::new));
 
 	public static final Codec<OptionalInt> OPTIONAL_INT = new Codec<>() {
 		@Override
@@ -104,6 +81,56 @@ public class JadeCodecs {
 				return ops.createString((String) value);
 			}
 			throw new IllegalArgumentException("Not a primitive value: " + value);
+		}
+	};
+	public static final StreamCodec<ByteBuf, Object> PRIMITIVE_STREAM_CODEC = new StreamCodec<>() {
+		@Override
+		public @NotNull Object decode(ByteBuf buf) {
+			byte b = buf.readByte();
+			if (b == 0) {
+				return false;
+			} else if (b == 1) {
+				return true;
+			} else if (b == 2) {
+				return ByteBufCodecs.VAR_INT.decode(buf);
+			} else if (b == 3) {
+				return ByteBufCodecs.FLOAT.decode(buf);
+			} else if (b == 4) {
+				return ByteBufCodecs.STRING_UTF8.decode(buf);
+			} else if (b > 20) {
+				return b - 20;
+			}
+			throw new IllegalArgumentException("Unknown primitive type: " + b);
+		}
+
+		@Override
+		public void encode(ByteBuf buf, Object o) {
+			switch (o) {
+				case Boolean b -> buf.writeByte(b ? 1 : 0);
+				case Number n -> {
+					float f = n.floatValue();
+					if (f != (int) f) {
+						buf.writeByte(3);
+						ByteBufCodecs.FLOAT.encode(buf, f);
+					}
+					int i = n.intValue();
+					if (i <= Byte.MAX_VALUE - 20 && i >= 0) {
+						buf.writeByte(i + 20);
+					} else {
+						ByteBufCodecs.VAR_INT.encode(buf, i);
+					}
+				}
+				case String s -> {
+					buf.writeByte(4);
+					ByteBufCodecs.STRING_UTF8.encode(buf, s);
+				}
+				case Enum<?> anEnum -> {
+					buf.writeByte(4);
+					ByteBufCodecs.STRING_UTF8.encode(buf, anEnum.name());
+				}
+				case null -> throw new NullPointerException();
+				default -> throw new IllegalArgumentException("Unknown primitive type: %s (%s)".formatted(o, o.getClass()));
+			}
 		}
 	};
 
@@ -185,6 +212,4 @@ public class JadeCodecs {
 	public static <T> T createFromEmptyMap(Codec<T> codec) {
 		return codec.parse(JsonOps.INSTANCE, JsonOps.INSTANCE.emptyMap()).getOrThrow();
 	}
-
-	public record ThemeHolder(int version, boolean autoEnable, Theme theme) {}
 }

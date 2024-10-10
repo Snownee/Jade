@@ -22,8 +22,8 @@ import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IJadeProvider;
 import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.IWailaCommonRegistration;
+import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.view.IServerExtensionProvider;
-import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.impl.lookup.HierarchyLookup;
 import snownee.jade.impl.lookup.PairHierarchyLookup;
 import snownee.jade.impl.lookup.WrappedHierarchyLookup;
@@ -48,11 +48,11 @@ public class WailaCommonRegistration implements IWailaCommonRegistration {
 		priorities = new PriorityStore<>(IJadeProvider::getDefaultPriority, IJadeProvider::getUid);
 		priorities.setSortingFunction((store, allKeys) -> {
 			List<ResourceLocation> keys = allKeys.stream()
-					.filter(PluginConfig::isPrimaryKey)
+					.filter(IPluginConfig::isPrimaryKey)
 					.sorted(Comparator.comparingInt(store::byKey))
 					.collect(Collectors.toCollection(ArrayList::new));
-			allKeys.stream().filter(Predicate.not(PluginConfig::isPrimaryKey)).forEach($ -> {
-				int index = keys.indexOf(PluginConfig.getPrimaryKey($));
+			allKeys.stream().filter(Predicate.not(IPluginConfig::isPrimaryKey)).forEach($ -> {
+				int index = keys.indexOf(IPluginConfig.getPrimaryKey($));
 				keys.add(index + 1, $);
 			});
 			return keys;

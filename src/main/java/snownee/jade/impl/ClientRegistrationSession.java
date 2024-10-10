@@ -28,12 +28,12 @@ import snownee.jade.api.callback.JadeBeforeTooltipCollectCallback;
 import snownee.jade.api.callback.JadeItemModNameCallback;
 import snownee.jade.api.callback.JadeRayTraceCallback;
 import snownee.jade.api.callback.JadeTooltipCollectedCallback;
+import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.view.EnergyView;
 import snownee.jade.api.view.FluidView;
 import snownee.jade.api.view.IClientExtensionProvider;
 import snownee.jade.api.view.ItemView;
 import snownee.jade.api.view.ProgressView;
-import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.impl.config.entry.BooleanConfigEntry;
 import snownee.jade.impl.config.entry.ConfigEntry;
 import snownee.jade.impl.config.entry.EnumConfigEntry;
@@ -140,7 +140,7 @@ public class ClientRegistrationSession {
 	public void setConfigCategoryOverride(ResourceLocation key, Component override) {
 		Preconditions.checkNotNull(override, "Override cannot be null");
 		Preconditions.checkArgument(configIds.contains(key) || registration.hasConfig(key), "Unknown config key: %s", key);
-		Preconditions.checkArgument(PluginConfig.isPrimaryKey(key), "Only primary config key can be overridden");
+		Preconditions.checkArgument(IPluginConfig.isPrimaryKey(key), "Only primary config key can be overridden");
 		configCategoryOverrides.add(Pair.of(key, override));
 	}
 

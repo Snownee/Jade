@@ -1,5 +1,7 @@
 package snownee.jade.api.config;
 
+import java.util.Map;
+
 import org.jetbrains.annotations.ApiStatus.NonExtendable;
 
 import net.minecraft.resources.ResourceLocation;
@@ -14,7 +16,20 @@ import snownee.jade.api.IToggleableProvider;
 @NonExtendable
 public interface IPluginConfig {
 
-	boolean get(IToggleableProvider provider);
+	static boolean isPrimaryKey(ResourceLocation key) {
+		return !key.getPath().contains(".");
+	}
+
+	static ResourceLocation getPrimaryKey(ResourceLocation key) {
+		return key.withPath(key.getPath().substring(0, key.getPath().indexOf('.')));
+	}
+
+	default boolean get(IToggleableProvider provider) {
+		if (provider.isRequired()) {
+			return true;
+		}
+		return get(provider.getUid());
+	}
 
 	boolean get(ResourceLocation key);
 
@@ -27,4 +42,6 @@ public interface IPluginConfig {
 	String getString(ResourceLocation key);
 
 	boolean set(ResourceLocation key, Object value);
+
+	Map<ResourceLocation, Object> values();
 }
