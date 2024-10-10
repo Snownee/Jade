@@ -26,8 +26,6 @@
 	"config.jade.display_entities": "Visualizza entità",
 	"config.jade.display_blocks": "Visualizza blocchi",
 	"config.jade.display_fluids": "Visualizza fluidi",
-	"config.jade.display_fluids_desc": "Prova a visualizzare fluidi",
-	"config.jade.display_fluids_source_only": "Source Only",
 	"config.jade.display_fluids_any": "Qualunque",
 	"config.jade.display_fluids_none": "Nessuno",
 	"config.jade.display_mode": "Modalità di visualizzazione",

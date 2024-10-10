@@ -62,8 +62,6 @@
 	"config.jade.display_bosses": "보스 표시",
 	"config.jade.display_blocks": "블록 표시",
 	"config.jade.display_fluids": "액체 표시",
-	"config.jade.display_fluids_desc": "액체를 표시합니다",
-	"config.jade.display_fluids_source_only": "근원만",
 	"config.jade.display_fluids_any": "전부",
 	"config.jade.display_fluids_none": "아니요",
 	"config.jade.display_fluids_fallback": "대체",
