@@ -150,7 +150,8 @@ public class WailaConfig implements IWailaConfig {
 				Codec.BOOL.fieldOf("hintOverlayToggle").orElse(true).forGetter($ -> $.hintOverlayToggle),
 				Codec.BOOL.fieldOf("hintNarratorToggle").orElse(true).forGetter($ -> $.hintNarratorToggle),
 				Codec.BOOL.fieldOf("accessibilityModMemory").orElse(false).forGetter($ -> $.accessibilityModMemory),
-				Codec.INT.fieldOf("themesHash").orElse(0).forGetter($ -> $.themesHash)
+				Codec.INT.fieldOf("themesHash").orElse(0).forGetter($ -> $.themesHash),
+				JadeCodecs.intArrayCodec(0, Codec.INT).fieldOf("usersHash").orElse(new int[0]).forGetter($ -> $.usersHash)
 		).apply(i, History::new));
 
 		public boolean previewOverlay;
@@ -158,18 +159,39 @@ public class WailaConfig implements IWailaConfig {
 		public boolean hintNarratorToggle;
 		public boolean accessibilityModMemory;
 		public int themesHash;
+		public int[] usersHash;
 
 		public History(
 				boolean previewOverlay,
 				boolean hintOverlayToggle,
 				boolean hintNarratorToggle,
 				boolean accessibilityModMemory,
-				int themesHash) {
+				int themesHash,
+				int[] usersHash) {
 			this.previewOverlay = previewOverlay;
 			this.hintOverlayToggle = hintOverlayToggle;
 			this.hintNarratorToggle = hintNarratorToggle;
 			this.accessibilityModMemory = accessibilityModMemory;
 			this.themesHash = themesHash;
+			this.usersHash = usersHash;
+		}
+
+		public void checkNewUser(int hash) {
+			if (usersHash.length > 0 && usersHash[0] == 0) {
+				return;
+			}
+			for (int i : usersHash) {
+				if (i == hash) {
+					return;
+				}
+			}
+			int[] newUsersHash = new int[usersHash.length + 1];
+			System.arraycopy(usersHash, 0, newUsersHash, 0, usersHash.length);
+			newUsersHash[usersHash.length] = hash;
+			usersHash = newUsersHash;
+			previewOverlay = true;
+			hintOverlayToggle = true;
+			hintNarratorToggle = true;
 		}
 	}
 

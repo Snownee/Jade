@@ -96,6 +96,7 @@ public class Jade {
 				list.add(new JsonConfig<>("%s/profiles/%s/%s".formatted(Jade.ID, i, Jade.ID), codec, WailaConfig::fixData));
 			}
 			configs = list.build();
+			rootConfig().history.checkNewUser(CommonProxy.getConfigDirectory().getAbsolutePath().hashCode());
 			rootConfig().fixData();
 			for (JsonConfig<? extends WailaConfig> config : configs) {
 				config.save();

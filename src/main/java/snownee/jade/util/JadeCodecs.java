@@ -153,19 +153,19 @@ public class JadeCodecs {
 
 	public static Codec<int[]> intArrayCodec(int size, Codec<Integer> codec) {
 		return Codec.list(codec).flatXmap($ -> {
-			if ($.size() != size) {
+			if (size != 0 && size != $.size()) {
 				return DataResult.error(() -> "Expected array of length " + size + ", got " + $.size());
 			}
-			int[] array = new int[size];
+			int[] array = new int[size == 0 ? $.size() : size];
 			for (int i = 0; i < array.length; i++) {
 				array[i] = $.get(i);
 			}
 			return DataResult.success(array);
 		}, $ -> {
-			if ($.length != size) {
+			if (size != 0 && size != $.length) {
 				return DataResult.error(() -> "Expected array of length " + size + ", got " + $.length);
 			}
-			IntList list = new IntArrayList(size);
+			IntList list = new IntArrayList($.length);
 			for (int i : $) {
 				list.add(i);
 			}
@@ -175,19 +175,19 @@ public class JadeCodecs {
 
 	public static Codec<float[]> floatArrayCodec(int size, Codec<Float> codec) {
 		return Codec.list(codec).flatXmap($ -> {
-			if ($.size() != size) {
+			if (size != 0 && size != $.size()) {
 				return DataResult.error(() -> "Expected array of length " + size + ", got " + $.size());
 			}
-			float[] array = new float[size];
+			float[] array = new float[size == 0 ? $.size() : size];
 			for (int i = 0; i < array.length; i++) {
 				array[i] = $.get(i);
 			}
 			return DataResult.success(array);
 		}, $ -> {
-			if ($.length != size) {
+			if (size != 0 && size != $.length) {
 				return DataResult.error(() -> "Expected array of length " + size + ", got " + $.length);
 			}
-			FloatList list = new FloatArrayList(size);
+			FloatList list = new FloatArrayList($.length);
 			for (float f : $) {
 				list.add(f);
 			}
