@@ -136,6 +136,7 @@
 	"config.jade.plugin_jade.registry_name.special_desc": "Show special IDs like BlockEntity and Fluid.",
 	"config.jade.plugin_jade.registry_name.special.block_entity_type": "BlockEntity: %s",
 	"config.jade.plugin_jade.registry_name.special.fluid": "Fluid: %s",
+	"config.jade.plugin_jade.registry_name.special.poi": "POI: %s",
 	"config.jade.plugin_jade.registry_name.special.painting": "Painting: %s",
 	"config.jade.plugin_jade.block_states": "Block States",
 	"config.jade.plugin_minecraft.block": "Minecraft - Block",

@@ -1,9 +1,14 @@
 package snownee.jade.addon.debug;
 
+import java.util.Optional;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.ai.village.poi.PoiType;
+import net.minecraft.world.entity.ai.village.poi.PoiTypes;
 import net.minecraft.world.entity.decoration.Painting;
 import net.minecraft.world.level.material.FluidState;
 import snownee.jade.api.BlockAccessor;
@@ -44,6 +49,12 @@ public abstract class RegistryNameProvider implements IToggleableProvider {
 				if (!fluidState.isEmpty()) {
 					ResourceLocation id = BuiltInRegistries.FLUID.getKey(fluidState.getType());
 					String s = I18n.get("config.jade.plugin_jade.registry_name.special.fluid", id);
+					tooltip.add(IWailaConfig.get().getFormatting().registryName(s), JadeIds.DEBUG_SPECIAL_REGISTRY_NAME);
+				}
+				Optional<Holder<PoiType>> poiTypeHolder = PoiTypes.forState(accessor.getBlockState());
+				if (poiTypeHolder.isPresent()) {
+					ResourceLocation id = poiTypeHolder.get().unwrapKey().orElseThrow().location();
+					String s = I18n.get("config.jade.plugin_jade.registry_name.special.poi", id);
 					tooltip.add(IWailaConfig.get().getFormatting().registryName(s), JadeIds.DEBUG_SPECIAL_REGISTRY_NAME);
 				}
 			}
