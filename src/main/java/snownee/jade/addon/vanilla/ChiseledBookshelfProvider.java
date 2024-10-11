@@ -1,14 +1,14 @@
 package snownee.jade.addon.vanilla;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.OptionalInt;
 
 import com.google.common.collect.Lists;
-import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -19,26 +19,35 @@ import net.minecraft.world.level.block.entity.ChiseledBookShelfBlockEntity;
 import snownee.jade.addon.universal.ItemStorageProvider;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
-import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
+import snownee.jade.api.StreamServerDataProvider;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElementHelper;
 
-public enum ChiseledBookshelfProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
+public enum ChiseledBookshelfProvider implements IBlockComponentProvider, StreamServerDataProvider<BlockAccessor, ItemStack> {
 
 	INSTANCE;
 
-	public static final MapCodec<ItemStack> BOOK_CODEC = ItemStack.CODEC.fieldOf("book");
-
-	private static ItemStack getHitBook(BlockAccessor accessor) {
+	private ItemStack getHitBook(BlockAccessor accessor) {
 		if (accessor.showDetails()) {
 			return ItemStack.EMPTY;
 		}
-		Optional<ItemStack> result = accessor.readData(BOOK_CODEC);
-		return result.orElse(ItemStack.EMPTY);
+		return decodeFromData(accessor).orElse(ItemStack.EMPTY);
+	}
+
+	@Override
+	public boolean shouldRequestData(BlockAccessor accessor) {
+		if (accessor.showDetails()) {
+			return false;
+		}
+		OptionalInt slot = ((ChiseledBookShelfBlock) accessor.getBlock()).getHitSlot(accessor.getHitResult(), accessor.getBlockState());
+		if (slot.isEmpty() || slot.getAsInt() >= ChiseledBookShelfBlock.SLOT_OCCUPIED_PROPERTIES.size()) {
+			return false;
+		}
+		return accessor.getBlockState().getValue(ChiseledBookShelfBlock.SLOT_OCCUPIED_PROPERTIES.get(slot.getAsInt()));
 	}
 
 	@Override
@@ -64,18 +73,17 @@ public enum ChiseledBookshelfProvider implements IBlockComponentProvider, IServe
 	}
 
 	@Override
-	public void appendServerData(CompoundTag data, BlockAccessor accessor) {
-		if (accessor.getBlockEntity() instanceof ChiseledBookShelfBlockEntity bookshelf) {
-			int slot = ((ChiseledBookShelfBlock) accessor.getBlock()).getHitSlot(accessor.getHitResult(), accessor.getBlockState())
-					.orElse(-1);
-			if (slot == -1) {
-				return;
-			}
-			ItemStack book = bookshelf.getItem(slot);
-			if (!book.isEmpty()) {
-				accessor.writeData(BOOK_CODEC, book);
-			}
+	public ItemStack streamData(BlockAccessor accessor) {
+		int slot = ((ChiseledBookShelfBlock) accessor.getBlock()).getHitSlot(accessor.getHitResult(), accessor.getBlockState()).orElse(-1);
+		if (slot == -1) {
+			return null;
 		}
+		return ((ChiseledBookShelfBlockEntity) accessor.getBlockEntity()).getItem(slot);
+	}
+
+	@Override
+	public StreamCodec<RegistryFriendlyByteBuf, ItemStack> streamCodec() {
+		return ItemStack.OPTIONAL_STREAM_CODEC;
 	}
 
 	@Override

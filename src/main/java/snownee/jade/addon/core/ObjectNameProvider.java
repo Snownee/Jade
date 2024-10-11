@@ -1,11 +1,12 @@
 package snownee.jade.addon.core;
 
-import com.mojang.serialization.MapCodec;
+import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.Nameable;
@@ -17,16 +18,15 @@ import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.ChestBlock;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.IEntityComponentProvider;
-import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.IToggleableProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
+import snownee.jade.api.StreamServerDataProvider;
 import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
@@ -35,7 +35,6 @@ import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.mixin.EntityAccess;
 
 public abstract class ObjectNameProvider implements IToggleableProvider {
-	private static final MapCodec<Component> GIVEN_NAME_CODEC = ComponentSerialization.CODEC.fieldOf("given_name");
 
 	public static ForBlock getBlock() {
 		return ForBlock.INSTANCE;
@@ -86,12 +85,12 @@ public abstract class ObjectNameProvider implements IToggleableProvider {
 		return displayName;
 	}
 
-	public static class ForBlock extends ObjectNameProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
+	public static class ForBlock extends ObjectNameProvider implements IBlockComponentProvider, StreamServerDataProvider<BlockAccessor, Component> {
 		private static final ForBlock INSTANCE = new ForBlock();
 
 		@Override
 		public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-			Component name = accessor.readData(GIVEN_NAME_CODEC).orElse(null);
+			Component name = decodeFromData(accessor).orElse(null);
 			if (name == null && accessor.isFakeBlock()) {
 				name = accessor.getFakeBlock().getHoverName();
 			}
@@ -118,22 +117,25 @@ public abstract class ObjectNameProvider implements IToggleableProvider {
 		}
 
 		@Override
-		public void appendServerData(CompoundTag data, BlockAccessor accessor) {
-			BlockEntity blockEntity = accessor.getBlockEntity();
-			if (blockEntity instanceof Nameable nameable) {
-				Component name = null;
-				if (blockEntity instanceof ChestBlockEntity && accessor.getBlock() instanceof ChestBlock) {
-					MenuProvider menuProvider = accessor.getBlockState().getMenuProvider(accessor.getLevel(), accessor.getPosition());
-					if (menuProvider != null) {
-						name = menuProvider.getDisplayName();
-					}
-				} else if (nameable.hasCustomName()) {
-					name = nameable.getDisplayName();
-				}
-				if (name != null) {
-					accessor.writeData(GIVEN_NAME_CODEC, name);
-				}
+		@Nullable
+		public Component streamData(BlockAccessor accessor) {
+			if (!(accessor.getBlockEntity() instanceof Nameable nameable)) {
+				return null;
 			}
+			if (nameable instanceof ChestBlockEntity && accessor.getBlock() instanceof ChestBlock) {
+				MenuProvider menuProvider = accessor.getBlockState().getMenuProvider(accessor.getLevel(), accessor.getPosition());
+				if (menuProvider != null) {
+					return menuProvider.getDisplayName();
+				}
+			} else if (nameable.hasCustomName()) {
+				return nameable.getDisplayName();
+			}
+			return null;
+		}
+
+		@Override
+		public StreamCodec<RegistryFriendlyByteBuf, Component> streamCodec() {
+			return ComponentSerialization.STREAM_CODEC;
 		}
 
 		@Override

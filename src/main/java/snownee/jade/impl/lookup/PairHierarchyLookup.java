@@ -9,12 +9,14 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.Nullable;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 
+import net.minecraft.core.IdMapper;
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.Jade;
 import snownee.jade.api.IJadeProvider;
@@ -25,6 +27,9 @@ public class PairHierarchyLookup<T extends IJadeProvider> implements IHierarchyL
 	public final IHierarchyLookup<T> first;
 	public final IHierarchyLookup<T> second;
 	private final Cache<Pair<Class<?>, Class<?>>, List<T>> mergedCache = CacheBuilder.newBuilder().build();
+	protected boolean idMapped;
+	@Nullable
+	protected IdMapper<T> idMapper;
 
 	public PairHierarchyLookup(IHierarchyLookup<T> first, IHierarchyLookup<T> second) {
 		this.first = first;
@@ -53,6 +58,16 @@ public class PairHierarchyLookup<T extends IJadeProvider> implements IHierarchyL
 			Jade.LOGGER.error("", e);
 		}
 		return List.of();
+	}
+
+	@Override
+	public void idMapped() {
+		idMapped = true;
+	}
+
+	@Override
+	public @Nullable IdMapper<T> idMapper() {
+		return idMapper;
 	}
 
 	@Override
@@ -101,5 +116,8 @@ public class PairHierarchyLookup<T extends IJadeProvider> implements IHierarchyL
 	public void loadComplete(PriorityStore<ResourceLocation, IJadeProvider> priorityStore) {
 		first.loadComplete(priorityStore);
 		second.loadComplete(priorityStore);
+		if (idMapped) {
+			idMapper = createIdMapper();
+		}
 	}
 }

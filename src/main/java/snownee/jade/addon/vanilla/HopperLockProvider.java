@@ -1,26 +1,27 @@
 package snownee.jade.addon.vanilla;
 
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import snownee.jade.addon.access.AccessibilityPlugin;
 import snownee.jade.addon.core.ObjectNameProvider;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
-import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
+import snownee.jade.api.StreamServerDataProvider;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
 
-public enum HopperLockProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
+public enum HopperLockProvider implements IBlockComponentProvider, StreamServerDataProvider<BlockAccessor, Boolean> {
 
 	INSTANCE;
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		if (accessor.getServerData().contains("HopperLocked")) {
+		if (decodeFromData(accessor).orElse(false)) {
 			if (config.get(JadeIds.MC_REDSTONE)) {
 				AccessibilityPlugin.replaceTitle(tooltip, "block.locked");
 			} else if (IWailaConfig.get().getGeneral().getEnableAccessibilityPlugin() && config.get(JadeIds.ACCESS_BLOCK_DETAILS)) {
@@ -30,11 +31,13 @@ public enum HopperLockProvider implements IBlockComponentProvider, IServerDataPr
 	}
 
 	@Override
-	public void appendServerData(CompoundTag data, BlockAccessor accessor) {
-		BlockState blockState = accessor.getBlockState();
-		if (blockState.hasProperty(BlockStateProperties.ENABLED) && !blockState.getValue(BlockStateProperties.ENABLED)) {
-			data.putBoolean("HopperLocked", true);
-		}
+	public Boolean streamData(BlockAccessor accessor) {
+		return !accessor.getBlockState().getValue(BlockStateProperties.ENABLED);
+	}
+
+	@Override
+	public StreamCodec<RegistryFriendlyByteBuf, Boolean> streamCodec() {
+		return ByteBufCodecs.BOOL.cast();
 	}
 
 	@Override

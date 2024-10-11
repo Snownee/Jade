@@ -65,6 +65,7 @@ import snownee.jade.Jade;
 import snownee.jade.JadeClient;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
+import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.IWailaConfig.BossBarOverlapMode;
 import snownee.jade.api.fluid.JadeFluidObject;
@@ -224,14 +225,14 @@ public final class ClientProxy {
 		return hasJEI || hasREI;
 	}
 
-	public static void requestBlockData(BlockAccessor accessor) {
+	public static void requestBlockData(BlockAccessor accessor, List<IServerDataProvider<BlockAccessor>> providers) {
 		Objects.requireNonNull(Minecraft.getInstance().getConnection())
-				.send(new RequestBlockPacket(new BlockAccessorImpl.SyncData(accessor)));
+				.send((new RequestBlockPacket(new BlockAccessorImpl.SyncData(accessor), providers)));
 	}
 
-	public static void requestEntityData(EntityAccessor accessor) {
-		Objects.requireNonNull(Minecraft.getInstance().getConnection()).send(new RequestEntityPacket(new EntityAccessorImpl.SyncData(
-				accessor)));
+	public static void requestEntityData(EntityAccessor accessor, List<IServerDataProvider<EntityAccessor>> providers) {
+		Objects.requireNonNull(Minecraft.getInstance().getConnection()).send((
+				new RequestEntityPacket(new EntityAccessorImpl.SyncData(accessor), providers)));
 	}
 
 	public static IElement elementFromLiquid(BlockState blockState) {

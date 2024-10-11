@@ -3,6 +3,7 @@ package snownee.jade.addon.vanilla;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Chicken;
 import net.minecraft.world.entity.animal.armadillo.Armadillo;
 import snownee.jade.api.Accessor;
@@ -44,6 +45,14 @@ public enum NextEntityDropProvider implements IEntityComponentProvider, IServerD
 				tag.putInt("NextScuteIn", armadillo.scuteTime);
 			}
 		}
+	}
+
+	@Override
+	public boolean shouldRequestData(EntityAccessor accessor) {
+		if (accessor.getEntity() instanceof LivingEntity living) {
+			return !living.isBaby();
+		}
+		return true;
 	}
 
 	@Override

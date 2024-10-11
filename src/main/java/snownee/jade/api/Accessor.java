@@ -11,6 +11,10 @@ import com.mojang.serialization.MapEncoder;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.codec.StreamDecoder;
+import net.minecraft.network.codec.StreamEncoder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -33,6 +37,10 @@ public interface Accessor<T extends HitResult> {
 	<D> Optional<D> readData(MapDecoder<D> codec);
 
 	<D> void writeData(MapEncoder<D> codec, D value);
+
+	<D> Optional<D> decodeFromNbt(StreamDecoder<RegistryFriendlyByteBuf, D> codec, Tag tag);
+
+	<D> Tag encodeAsNbt(StreamEncoder<RegistryFriendlyByteBuf, D> codec, D value);
 
 	T getHitResult();
 

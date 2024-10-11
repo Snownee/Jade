@@ -1,69 +1,70 @@
 package snownee.jade.addon.vanilla;
 
-import net.minecraft.core.NonNullList;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
+import java.util.List;
+
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
-import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
+import snownee.jade.api.StreamServerDataProvider;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.mixin.AbstractFurnaceBlockEntityAccess;
 
-public enum FurnaceProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
+public enum FurnaceProvider implements IBlockComponentProvider, StreamServerDataProvider<BlockAccessor, FurnaceProvider.Data> {
 
 	INSTANCE;
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		CompoundTag data = accessor.getServerData();
-		if (!data.contains("progress")) {
+		Data data = decodeFromData(accessor).orElse(null);
+		if (data == null) {
 			return;
 		}
-		int progress = data.getInt("progress");
-
-		ListTag furnaceItems = data.getList("furnace", Tag.TAG_COMPOUND);
-		NonNullList<ItemStack> inventory = NonNullList.withSize(3, ItemStack.EMPTY);
-		for (int i = 0; i < furnaceItems.size(); i++)
-			inventory.set(i, ItemStack.parseOptional(accessor.getLevel().registryAccess(), furnaceItems.getCompound(i)));
-
 		IElementHelper helper = IElementHelper.get();
-		int total = data.getInt("total");
-
-		tooltip.add(helper.item(inventory.get(0)));
-		tooltip.append(helper.item(inventory.get(1)));
+		tooltip.add(helper.item(data.inventory.get(0)));
+		tooltip.append(helper.item(data.inventory.get(1)));
 		tooltip.append(helper.spacer(4, 0));
-		tooltip.append(helper.progress((float) progress / total).translate(new Vec2(-2, 0)));
-		tooltip.append(helper.item(inventory.get(2)));
+		tooltip.append(helper.progress((float) data.progress / data.total).translate(new Vec2(-2, 0)));
+		tooltip.append(helper.item(data.inventory.get(2)));
 	}
 
 	@Override
-	public void appendServerData(CompoundTag data, BlockAccessor accessor) {
-		if (!(accessor.getBlockEntity() instanceof AbstractFurnaceBlockEntity furnace)) {
-			return;
-		}
-		if (furnace.isEmpty()) {
-			return;
-		}
-		ListTag items = new ListTag();
-		for (int i = 0; i < 3; i++) {
-			items.add(furnace.getItem(i).saveOptional(accessor.getLevel().registryAccess()));
-		}
-		data.put("furnace", items);
-		CompoundTag furnaceTag = furnace.saveWithoutMetadata(accessor.getLevel().registryAccess());
-		data.putInt("progress", furnaceTag.getInt("CookTime"));
-		data.putInt("total", furnaceTag.getInt("CookTimeTotal"));
+	public Data streamData(BlockAccessor accessor) {
+		AbstractFurnaceBlockEntityAccess access = (AbstractFurnaceBlockEntityAccess) accessor.getBlockEntity();
+		AbstractFurnaceBlockEntity furnace = (AbstractFurnaceBlockEntity) accessor.getBlockEntity();
+		return new Data(
+				access.getCookingProgress(),
+				access.getCookingTotalTime(),
+				List.of(furnace.getItem(0), furnace.getItem(1), furnace.getItem(2)));
+	}
+
+	@Override
+	public StreamCodec<RegistryFriendlyByteBuf, Data> streamCodec() {
+		return Data.STREAM_CODEC;
 	}
 
 	@Override
 	public ResourceLocation getUid() {
 		return JadeIds.MC_FURNACE;
+	}
+
+	public record Data(int progress, int total, List<ItemStack> inventory) {
+		public static final StreamCodec<RegistryFriendlyByteBuf, Data> STREAM_CODEC = StreamCodec.composite(
+				ByteBufCodecs.VAR_INT,
+				Data::progress,
+				ByteBufCodecs.VAR_INT,
+				Data::total,
+				ItemStack.OPTIONAL_LIST_STREAM_CODEC,
+				Data::inventory,
+				Data::new);
 	}
 
 }

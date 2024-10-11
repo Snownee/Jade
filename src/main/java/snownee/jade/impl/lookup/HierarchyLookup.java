@@ -9,6 +9,8 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.google.common.base.Preconditions;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -19,6 +21,7 @@ import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
+import net.minecraft.core.IdMapper;
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.Jade;
 import snownee.jade.api.IJadeProvider;
@@ -29,6 +32,9 @@ public class HierarchyLookup<T extends IJadeProvider> implements IHierarchyLooku
 	private final Class<?> baseClass;
 	private final Cache<Class<?>, List<T>> resultCache = CacheBuilder.newBuilder().build();
 	private final boolean singleton;
+	protected boolean idMapped;
+	@Nullable
+	protected IdMapper<T> idMapper;
 	private ListMultimap<Class<?>, T> objects = ArrayListMultimap.create();
 
 	public HierarchyLookup(Class<?> baseClass) {
@@ -38,6 +44,17 @@ public class HierarchyLookup<T extends IJadeProvider> implements IHierarchyLooku
 	public HierarchyLookup(Class<?> baseClass, boolean singleton) {
 		this.baseClass = baseClass;
 		this.singleton = singleton;
+	}
+
+	@Override
+	public void idMapped() {
+		this.idMapped = true;
+	}
+
+	@Override
+	@Nullable
+	public IdMapper<T> idMapper() {
+		return idMapper;
 	}
 
 	@Override
@@ -116,6 +133,10 @@ public class HierarchyLookup<T extends IJadeProvider> implements IHierarchyLooku
 				.orderValuesBy(Comparator.comparingInt(priorityStore::byValue))
 				.putAll(objects)
 				.build();
+
+		if (idMapped) {
+			idMapper = createIdMapper();
+		}
 	}
 
 }

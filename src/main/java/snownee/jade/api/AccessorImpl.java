@@ -10,9 +10,14 @@ import com.mojang.serialization.MapDecoder;
 import com.mojang.serialization.MapEncoder;
 import com.mojang.serialization.MapLike;
 
+import io.netty.buffer.Unpooled;
+import net.minecraft.nbt.ByteArrayTag;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamDecoder;
+import net.minecraft.network.codec.StreamEncoder;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -32,6 +37,7 @@ public abstract class AccessorImpl<T extends HitResult> implements Accessor<T> {
 	private final boolean showDetails;
 	protected boolean verify;
 	private DynamicOps<Tag> ops;
+	private RegistryFriendlyByteBuf buffer;
 
 	public AccessorImpl(Level level, Player player, CompoundTag serverData, Supplier<T> hit, boolean serverConnected, boolean showDetails) {
 		this.level = level;
@@ -75,6 +81,37 @@ public abstract class AccessorImpl<T extends HitResult> implements Accessor<T> {
 	public <D> void writeData(MapEncoder<D> codec, D value) {
 		Tag tag = codec.encode(value, nbtOps(), nbtOps().mapBuilder()).build(new CompoundTag()).getOrThrow();
 		serverData.merge((CompoundTag) tag);
+	}
+
+	private RegistryFriendlyByteBuf buffer() {
+		if (buffer == null) {
+			buffer = new RegistryFriendlyByteBuf(Unpooled.buffer(), level.registryAccess());
+		}
+		buffer.clear();
+		return buffer;
+	}
+
+	@Override
+	public <D> Optional<D> decodeFromNbt(StreamDecoder<RegistryFriendlyByteBuf, D> codec, Tag tag) {
+		try {
+			RegistryFriendlyByteBuf buffer = buffer();
+			buffer.writeBytes(((ByteArrayTag) tag).getAsByteArray());
+			D decoded = codec.decode(buffer);
+			return Optional.of(decoded);
+		} catch (Exception e) {
+			return Optional.empty();
+		} finally {
+			buffer.clear();
+		}
+	}
+
+	@Override
+	public <D> Tag encodeAsNbt(StreamEncoder<RegistryFriendlyByteBuf, D> streamCodec, D value) {
+		RegistryFriendlyByteBuf buffer = buffer();
+		streamCodec.encode(buffer, value);
+		ByteArrayTag tag = new ByteArrayTag(buffer.array().clone());
+		buffer.clear();
+		return tag;
 	}
 
 	@Override

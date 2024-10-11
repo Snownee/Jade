@@ -186,7 +186,7 @@ public final class CommonProxy {
 
 	private void registerPayloadHandlers(RegisterPayloadHandlersEvent event) {
 		event.registrar(Jade.ID)
-				.versioned("3")
+				.versioned("4")
 				.optional()
 				.playToClient(
 						ReceiveDataPacket.TYPE,
@@ -228,11 +228,16 @@ public final class CommonProxy {
 					event.getEntity().getGameProfile().getName(),
 					event.getEntity().getGameProfile().getId());
 		}
-		player.connection.send(new ServerPingPacket(configs, shearableBlocks));
+		List<ResourceLocation> blockProviderIds = WailaCommonRegistration.instance().blockDataProviders.mappedIds();
+		List<ResourceLocation> entityProviderIds = WailaCommonRegistration.instance().entityDataProviders.mappedIds();
+		player.connection.send(new ServerPingPacket(configs, shearableBlocks, blockProviderIds, entityProviderIds));
 	}
 
 	@Nullable
-	public static String getLastKnownUsername(UUID uuid) {
+	public static String getLastKnownUsername(@Nullable UUID uuid) {
+		if (uuid == null) {
+			return null;
+		}
 		Optional<GameProfile> optional = SkullBlockEntity.fetchGameProfile(uuid).getNow(Optional.empty());
 		if (optional.isPresent()) {
 			return optional.get().getName();

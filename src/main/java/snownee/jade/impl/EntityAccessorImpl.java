@@ -23,6 +23,7 @@ import net.minecraft.world.phys.Vec3;
 import snownee.jade.api.AccessorImpl;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IServerDataProvider;
+import snownee.jade.network.RequestEntityPacket;
 import snownee.jade.network.ServerPayloadContext;
 import snownee.jade.util.CommonProxy;
 import snownee.jade.util.WailaExceptionHandler;
@@ -39,10 +40,10 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 		entity = builder.entity;
 	}
 
-	public static void handleRequest(SyncData data, ServerPayloadContext context, Consumer<CompoundTag> responseSender) {
+	public static void handleRequest(RequestEntityPacket message, ServerPayloadContext context, Consumer<CompoundTag> responseSender) {
 		ServerPlayer player = context.player();
 		context.execute(() -> {
-			EntityAccessor accessor = data.unpack(player);
+			EntityAccessor accessor = message.data().unpack(player);
 			if (accessor == null) {
 				return;
 			}
@@ -52,12 +53,11 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 				return;
 			}
 			List<IServerDataProvider<EntityAccessor>> providers = WailaCommonRegistration.instance().getEntityNBTProviders(entity);
-			if (providers.isEmpty()) {
-				return;
-			}
-
 			CompoundTag tag = accessor.getServerData();
 			for (IServerDataProvider<EntityAccessor> provider : providers) {
+				if (!message.dataProviders().contains(provider)) {
+					continue;
+				}
 				try {
 					provider.appendServerData(tag, accessor);
 				} catch (Exception e) {

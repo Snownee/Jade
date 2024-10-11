@@ -99,11 +99,7 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 		List<ClientViewGroup<ItemView>> groups;
 		try {
 			groups = provider.getClientGroups(accessor, ViewGroup.readList(accessor.getServerData(), "JadeItemStorage", itemTag -> {
-				ItemStack item = ItemStack.parseOptional(accessor.getLevel().registryAccess(), itemTag);
-				if (!item.isEmpty() && itemTag.contains("NewCount")) {
-					item.setCount(itemTag.getInt("NewCount"));
-				}
-				return item;
+				return accessor.decodeFromNbt(ItemStack.OPTIONAL_STREAM_CODEC, itemTag.get("Item")).orElseThrow();
 			}));
 		} catch (Exception e) {
 			WailaExceptionHandler.handleErr(e, provider, tooltip::add);
@@ -227,16 +223,10 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 				continue;
 			}
 			if (ViewGroup.saveList(tag, "JadeItemStorage", groups, item -> {
-				int count = item.getCount();
-				if (count > item.getMaxStackSize()) {
-					item.setCount(1);
-				}
-				CompoundTag itemTag = (CompoundTag) item.save(accessor.getLevel().registryAccess());
-				if (count > item.getMaxStackSize()) {
-					itemTag.putInt("NewCount", count);
-					item.setCount(count);
-				}
-				return itemTag;
+				Tag itemTag = accessor.encodeAsNbt(ItemStack.OPTIONAL_STREAM_CODEC, item);
+				CompoundTag tag1 = new CompoundTag();
+				tag1.put("Item", itemTag);
+				return tag1;
 			})) {
 				tag.putString("JadeItemStorageUid", provider.getUid().toString());
 				return;

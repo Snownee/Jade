@@ -1,47 +1,54 @@
 package snownee.jade.addon.vanilla;
 
-import net.minecraft.nbt.CompoundTag;
+import org.jetbrains.annotations.Nullable;
+
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.BaseCommandBlock;
 import net.minecraft.world.level.block.entity.CommandBlockEntity;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
-import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
+import snownee.jade.api.StreamServerDataProvider;
 import snownee.jade.api.config.IPluginConfig;
 
-public enum CommandBlockProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
+public enum CommandBlockProvider implements IBlockComponentProvider, StreamServerDataProvider<BlockAccessor, String> {
 
 	INSTANCE;
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		if (!accessor.getServerData().contains("Command")) {
+		String command = decodeFromData(accessor).orElse("");
+		if (command.isBlank()) {
 			return;
 		}
-		tooltip.add(Component.literal("> " + accessor.getServerData().getString("Command")));
+		tooltip.add(Component.literal("> " + command));
 	}
 
 	@Override
-	public void appendServerData(CompoundTag tag, BlockAccessor accessor) {
-		Player player = accessor.getPlayer();
-		if (!player.canUseGameMasterBlocks()) {
-			return;
+	@Nullable
+	public String streamData(BlockAccessor accessor) {
+		if (!accessor.getPlayer().canUseGameMasterBlocks()) {
+			return null;
 		}
-		if (accessor.getBlockEntity() instanceof CommandBlockEntity commandBlock) {
-			BaseCommandBlock logic = commandBlock.getCommandBlock();
-			String command = logic.getCommand();
-			if (command.isEmpty()) {
-				return;
-			}
-			if (command.length() > 40) {
-				command = command.substring(0, 37) + "...";
-			}
-			tag.putString("Command", command);
+		String command = ((CommandBlockEntity) accessor.getBlockEntity()).getCommandBlock().getCommand();
+		if (command.length() > 40) {
+			command = command.substring(0, 37) + "...";
 		}
+		return command;
+	}
+
+	@Override
+	public StreamCodec<RegistryFriendlyByteBuf, String> streamCodec() {
+		return ByteBufCodecs.STRING_UTF8.cast();
+	}
+
+	@Override
+	public boolean shouldRequestData(BlockAccessor accessor) {
+		return accessor.getPlayer().canUseGameMasterBlocks();
 	}
 
 	@Override

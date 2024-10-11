@@ -3,6 +3,7 @@
 	"package": "snownee.jade.mixin",
 	"compatibilityLevel": "JAVA_16",
 	"mixins": [
+		"AbstractFurnaceBlockEntityAccess",
 		"CanItemPerformAbilityAccess",
 		"EntityAccess"
 	],
