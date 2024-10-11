@@ -66,6 +66,7 @@ import snownee.jade.JadeClient;
 import snownee.jade.addon.harvest.HarvestToolProvider;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
+import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.fluid.JadeFluidObject;
@@ -171,12 +172,12 @@ public final class ClientProxy implements ClientModInitializer {
 		return hasJEI || hasREI;
 	}
 
-	public static void requestBlockData(BlockAccessor accessor) {
-		ClientPlayNetworking.send(new RequestBlockPacket(new BlockAccessorImpl.SyncData(accessor)));
+	public static void requestBlockData(BlockAccessor accessor, List<IServerDataProvider<BlockAccessor>> providers) {
+		ClientPlayNetworking.send(new RequestBlockPacket(new BlockAccessorImpl.SyncData(accessor), providers));
 	}
 
-	public static void requestEntityData(EntityAccessor accessor) {
-		ClientPlayNetworking.send(new RequestEntityPacket(new EntityAccessorImpl.SyncData(accessor)));
+	public static void requestEntityData(EntityAccessor accessor, List<IServerDataProvider<EntityAccessor>> providers) {
+		ClientPlayNetworking.send(new RequestEntityPacket(new EntityAccessorImpl.SyncData(accessor), providers));
 	}
 
 	public static IElement elementFromLiquid(BlockState blockState) {

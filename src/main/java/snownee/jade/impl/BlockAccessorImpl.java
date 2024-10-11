@@ -29,6 +29,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import snownee.jade.api.AccessorImpl;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IServerDataProvider;
+import snownee.jade.network.RequestBlockPacket;
 import snownee.jade.network.ServerPayloadContext;
 import snownee.jade.util.CommonProxy;
 import snownee.jade.util.WailaExceptionHandler;
@@ -50,10 +51,10 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 		fakeBlock = builder.fakeBlock;
 	}
 
-	public static void handleRequest(SyncData data, ServerPayloadContext context, Consumer<CompoundTag> responseSender) {
+	public static void handleRequest(RequestBlockPacket message, ServerPayloadContext context, Consumer<CompoundTag> responseSender) {
 		ServerPlayer player = context.player();
 		context.execute(() -> {
-			BlockAccessor accessor = data.unpack(player);
+			BlockAccessor accessor = message.data().unpack(player);
 			if (accessor == null) {
 				return;
 			}
@@ -66,12 +67,11 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 
 			List<IServerDataProvider<BlockAccessor>> providers = WailaCommonRegistration.instance()
 					.getBlockNBTProviders(accessor.getBlock(), accessor.getBlockEntity());
-			if (providers.isEmpty()) {
-				return;
-			}
-
 			CompoundTag tag = accessor.getServerData();
 			for (IServerDataProvider<BlockAccessor> provider : providers) {
+				if (!message.dataProviders().contains(provider)) {
+					continue;
+				}
 				try {
 					provider.appendServerData(tag, accessor);
 				} catch (Exception e) {

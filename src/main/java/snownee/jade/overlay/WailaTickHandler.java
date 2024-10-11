@@ -1,5 +1,6 @@
 package snownee.jade.overlay;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
@@ -20,6 +21,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import snownee.jade.api.Accessor;
+import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.callback.JadeRayTraceCallback;
@@ -158,14 +160,14 @@ public class WailaTickHandler {
 			if (!accessor.verifyData(accessor.getServerData())) {
 				accessor.getServerData().getAllKeys().clear();
 			}
-			boolean request = handler.shouldRequestData(accessor);
+			List<IServerDataProvider<Accessor<?>>> providers = handler.shouldRequestData(accessor);
 			if (ObjectDataCenter.isTimeElapsed(ObjectDataCenter.rateLimiter)) {
 				ObjectDataCenter.resetTimer();
-				if (request) {
-					handler.requestData(accessor);
+				if (!providers.isEmpty()) {
+					handler.requestData(accessor, providers);
 				}
 			}
-			if (request && ObjectDataCenter.getServerData() == null) {
+			if (!providers.isEmpty() && ObjectDataCenter.getServerData() == null) {
 				return;
 			}
 		}

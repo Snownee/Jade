@@ -1,5 +1,6 @@
 package snownee.jade.api;
 
+import java.util.List;
 import java.util.function.Function;
 
 import snownee.jade.api.config.IWailaConfig;
@@ -9,9 +10,9 @@ public interface AccessorClientHandler<T extends Accessor<?>> {
 
 	boolean shouldDisplay(T accessor);
 
-	boolean shouldRequestData(T accessor);
+	List<IServerDataProvider<T>> shouldRequestData(T accessor);
 
-	void requestData(T accessor);
+	void requestData(T accessor, List<IServerDataProvider<T>> providers);
 
 	IElement getIcon(T accessor);
 

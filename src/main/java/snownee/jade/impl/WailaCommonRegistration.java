@@ -44,7 +44,9 @@ public class WailaCommonRegistration implements IWailaCommonRegistration {
 
 	WailaCommonRegistration() {
 		blockDataProviders = new PairHierarchyLookup<>(new HierarchyLookup<>(Block.class), new HierarchyLookup<>(BlockEntity.class));
+		blockDataProviders.idMapped();
 		entityDataProviders = new HierarchyLookup<>(Entity.class);
+		entityDataProviders.idMapped();
 		priorities = new PriorityStore<>(IJadeProvider::getDefaultPriority, IJadeProvider::getUid);
 		priorities.setSortingFunction((store, allKeys) -> {
 			List<ResourceLocation> keys = allKeys.stream()
