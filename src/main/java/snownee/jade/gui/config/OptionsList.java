@@ -346,12 +346,12 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 			return;
 		}
 		Set<Entry> matches = Sets.newLinkedHashSet();
-		String[] keywords = search.split("\\s+");
+		String[] keywords = search.toLowerCase(Locale.ENGLISH).split("\\s+");
 		for (Entry entry : entries) {
 			int bingo = 0;
+			List<String> messages = entry.getMessages();
 			for (String keyword : keywords) {
-				keyword = keyword.toLowerCase(Locale.ENGLISH);
-				for (String message : entry.getMessages()) {
+				for (String message : messages) {
 					if (message.contains(keyword)) {
 						bingo++;
 						break;
@@ -550,7 +550,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		}
 
 		public void addMessage(String message) {
-			messages.add(StringUtil.stripColor(message));
+			messages.add(StringUtil.stripColor(message).toLowerCase(Locale.ENGLISH));
 		}
 
 		public void addMessageKey(String key) {
