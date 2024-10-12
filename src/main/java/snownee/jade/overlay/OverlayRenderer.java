@@ -90,10 +90,6 @@ public class OverlayRenderer {
 		}
 
 		General general = Jade.config().general();
-		if (mc.gui.getDebugOverlay().showDebugScreen() && general.shouldHideFromDebug()) {
-			return false;
-		}
-
 		if (mc.getOverlay() != null || mc.options.hideGui) {
 			return false;
 		}

@@ -21,7 +21,7 @@ import snownee.jade.util.JsonConfig;
 public class Jade {
 	public static final String ID = "jade";
 	public static final Logger LOGGER = LogUtils.getLogger();
-	private static final JsonConfig<WailaConfig.Root> config = new JsonConfig<>(
+	private static final JsonConfig<WailaConfig.Root> rootConfig = new JsonConfig<>(
 			Jade.ID + "/" + Jade.ID,
 			WailaConfig.Root.CODEC,
 			WailaConfig::fixData);
@@ -33,7 +33,7 @@ public class Jade {
 		if (root.isEnableProfiles() && root.profileIndex > 0 && root.profileIndex < configs.size()) {
 			return configs.get(root.profileIndex);
 		}
-		return config;
+		return rootConfig;
 	}
 
 	/**
@@ -45,6 +45,9 @@ public class Jade {
 
 	public static void saveConfig() {
 		configHolder().save();
+		if (config() != rootConfig()) {
+			rootConfig.save();
+		}
 	}
 
 	public static void invalidateConfig() {
@@ -58,14 +61,14 @@ public class Jade {
 	public static void resetConfig() {
 		rootConfig().setEnableProfiles(false);
 		int themesHash = history().themesHash;
-		Preconditions.checkState(config.getFile().delete());
+		Preconditions.checkState(rootConfig.getFile().delete());
 		invalidateConfig();
 		history().themesHash = themesHash;
-		saveConfig();
+		rootConfig.save();
 	}
 
 	public static WailaConfig.Root rootConfig() {
-		return config.get();
+		return rootConfig.get();
 	}
 
 	public static void loadComplete() {
@@ -91,7 +94,7 @@ public class Jade {
 
 			Codec<WailaConfig> codec = WailaConfig.MAP_CODEC.codec();
 			ImmutableList.Builder<JsonConfig<? extends WailaConfig>> list = ImmutableList.builderWithExpectedSize(4);
-			list.add(config);
+			list.add(rootConfig);
 			for (int i = 1; i < 4; ++i) {
 				list.add(new JsonConfig<>("%s/profiles/%s/%s".formatted(Jade.ID, i, Jade.ID), codec, WailaConfig::fixData));
 			}
@@ -107,5 +110,11 @@ public class Jade {
 
 	public static List<JsonConfig<? extends WailaConfig>> configs() {
 		return configs;
+	}
+
+	public static void useProfile(int index) {
+		rootConfig().setEnableProfiles(true);
+		rootConfig().profileIndex = index;
+		rootConfig.save();
 	}
 }

@@ -106,19 +106,22 @@ public class HomeConfigScreen extends Screen {
 		particles.clear();
 		Component modSettings = Component.translatable("gui.jade.jade_settings");
 		Component pluginSettings = Component.translatable("gui.jade.plugin_settings");
+		Component profileSettings = Component.translatable("gui.jade.profile_settings");
 		int maxWidth = Math.max(100, Math.max(font.width(modSettings) + 8, font.width(pluginSettings) + 8));
 		maxWidth = Math.min(maxWidth, Math.min(240, width / 2 - 40));
 
 		addRenderableWidget(Button.builder(modSettings, w -> {
-			titleY.set(titleY.getTarget());
+			visitedChildScreen();
 			minecraft.setScreen(new WailaConfigScreen(HomeConfigScreen.this));
-			showTranslators = true;
 		}).bounds(width / 2 - 5 - maxWidth, height / 2 - 10, maxWidth, 20).build());
 		addRenderableWidget(Button.builder(pluginSettings, w -> {
-			titleY.set(titleY.getTarget());
+			visitedChildScreen();
 			minecraft.setScreen(new PluginsConfigScreen(HomeConfigScreen.this));
-			showTranslators = true;
 		}).bounds(width / 2 + 5, height / 2 - 10, maxWidth, 20).build());
+		addRenderableWidget(Button.builder(profileSettings, w -> {
+			visitedChildScreen();
+			minecraft.setScreen(new ProfileConfigScreen(HomeConfigScreen.this));
+		}).bounds(width / 2 + 10 + maxWidth, height / 2 - 10, 20, 20).build());
 		addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, w -> {
 			onClose();
 		}).bounds(width / 2 - 50, height / 2 + 20, 100, 20).build());
@@ -146,6 +149,11 @@ public class HomeConfigScreen extends Screen {
 		if (showTranslators) {
 			creditButton.showTranslators();
 		}
+	}
+
+	private void visitedChildScreen() {
+		titleY.set(titleY.getTarget());
+		showTranslators = true;
 	}
 
 	private void triggerAuthorButton(Button button) {

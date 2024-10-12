@@ -111,6 +111,7 @@ public final class ClientProxy implements ClientModInitializer {
 	public static void registerClientCommand(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandBuildContext registryAccess) {
 		dispatcher.register(JadeClientCommand.create(
 				ClientCommandManager::literal,
+				ClientCommandManager::argument,
 				FabricClientCommandSource::sendFeedback,
 				FabricClientCommandSource::sendError));
 	}

@@ -234,26 +234,16 @@ public class WailaConfig implements IWailaConfig {
 
 		public static final class ExtraOptions {
 			public static final MapCodec<ExtraOptions> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
-					Codec.BOOL.fieldOf("hideFromDebug").orElse(true).forGetter(ExtraOptions::hideFromDebug),
 					Codec.BOOL.fieldOf("hideFromTabList").orElse(true).forGetter(ExtraOptions::hideFromTabList),
 					Codec.BOOL.fieldOf("hideFromGUIs").orElse(true).forGetter(ExtraOptions::hideFromGUIs)
 			).apply(i, ExtraOptions::new));
 
-			private boolean hideFromDebug;
 			private boolean hideFromTabList;
 			private boolean hideFromGUIs;
 
-			public ExtraOptions(
-					boolean hideFromDebug,
-					boolean hideFromTabList,
-					boolean hideFromGUIs) {
-				this.hideFromDebug = hideFromDebug;
+			public ExtraOptions(boolean hideFromTabList, boolean hideFromGUIs) {
 				this.hideFromTabList = hideFromTabList;
 				this.hideFromGUIs = hideFromGUIs;
-			}
-
-			public boolean hideFromDebug() {
-				return hideFromDebug;
 			}
 
 			public boolean hideFromTabList() {
@@ -262,10 +252,6 @@ public class WailaConfig implements IWailaConfig {
 
 			public boolean hideFromGUIs() {
 				return hideFromGUIs;
-			}
-
-			public void setHideFromDebug(boolean hideFromDebug) {
-				this.hideFromDebug = hideFromDebug;
 			}
 
 			public void setHideFromTabList(boolean hideFromTabList) {
@@ -330,11 +316,6 @@ public class WailaConfig implements IWailaConfig {
 		}
 
 		@Override
-		public void setHideFromDebug(boolean hideFromDebug) {
-			this.extraOptions.setHideFromDebug(hideFromDebug);
-		}
-
-		@Override
 		public boolean shouldDisplayTooltip() {
 			return displayTooltip;
 		}
@@ -347,11 +328,6 @@ public class WailaConfig implements IWailaConfig {
 		@Override
 		public void setDisplayMode(DisplayMode displayMode) {
 			this.displayMode = displayMode;
-		}
-
-		@Override
-		public boolean shouldHideFromDebug() {
-			return extraOptions.hideFromDebug();
 		}
 
 		@Override

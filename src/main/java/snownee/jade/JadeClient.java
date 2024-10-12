@@ -3,11 +3,13 @@ package snownee.jade;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.InputConstants;
 
@@ -77,6 +79,7 @@ public final class JadeClient {
 	public static KeyMapping narrate;
 	public static KeyMapping showRecipes;
 	public static KeyMapping showUses;
+	public static final KeyMapping[] profiles = new KeyMapping[4];
 	private static final Cache<Item.TooltipContext, Item.TooltipContext> hideModName = CacheBuilder.newBuilder()
 			.expireAfterAccess(1, TimeUnit.SECONDS)
 			.build();
@@ -95,6 +98,9 @@ public final class JadeClient {
 		}
 		narrate = ClientProxy.registerKeyBinding("narrate", InputConstants.KEY_NUMPAD5);
 		showDetails = ClientProxy.registerDetailsKeyBinding();
+		for (int i = 0; i < 4; i++) {
+			profiles[i] = ClientProxy.registerKeyBinding("profile." + i, InputConstants.UNKNOWN.getValue());
+		}
 
 		ClientProxy.registerReloadListener(ModIdentification.INSTANCE);
 	}
@@ -334,5 +340,19 @@ public final class JadeClient {
 				JADE_PLEASE_WAIT,
 				Component.translatable("toast.jade.please_wait.1"),
 				Component.translatable("toast.jade.please_wait.2"));
+	}
+
+	public static Runnable recoverKeysAction(Predicate<KeyMapping> predicate) {
+		ImmutableMap.Builder<KeyMapping, InputConstants.Key> keyMapBuilder = ImmutableMap.builder();
+		for (KeyMapping keyMapping : Minecraft.getInstance().options.keyMappings) {
+			if (predicate.test(keyMapping)) {
+				keyMapBuilder.put(keyMapping, ClientProxy.getBoundKeyOf(keyMapping));
+			}
+		}
+		var keyMap = keyMapBuilder.build();
+		return () -> {
+			keyMap.forEach(KeyMapping::setKey);
+			Minecraft.getInstance().options.save();
+		};
 	}
 }

@@ -4,14 +4,10 @@ import java.io.File;
 import java.util.Locale;
 import java.util.Objects;
 
-import com.google.common.collect.ImmutableMap;
-import com.mojang.blaze3d.platform.InputConstants;
-
 import it.unimi.dsi.fastutil.floats.FloatUnaryOperator;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.ConfirmScreen;
@@ -29,7 +25,6 @@ import snownee.jade.gui.config.OptionButton;
 import snownee.jade.gui.config.OptionsList;
 import snownee.jade.gui.config.value.OptionValue;
 import snownee.jade.impl.WailaClientRegistration;
-import snownee.jade.impl.config.WailaConfig;
 import snownee.jade.impl.config.WailaConfig.General;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
@@ -42,17 +37,10 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 	public WailaConfigScreen(Screen parent) {
 		super(parent, Component.translatable("gui.jade.jade_settings"));
 		saver = IWailaConfig.get()::save;
-		ImmutableMap.Builder<KeyMapping, InputConstants.Key> keyMapBuilder = ImmutableMap.builder();
-		for (KeyMapping keyMapping : Minecraft.getInstance().options.keyMappings) {
-			if (JadeClient.openConfig.getCategory().equals(keyMapping.getCategory())) {
-				keyMapBuilder.put(keyMapping, ClientProxy.getBoundKeyOf(keyMapping));
-			}
-		}
-		var keyMap = keyMapBuilder.build();
+		Runnable runnable = JadeClient.recoverKeysAction($ -> JadeClient.openConfig.getCategory().equals($.getCategory()));
 		canceller = () -> {
 			IWailaConfig.get().invalidate();
-			keyMap.forEach(KeyMapping::setKey);
-			Minecraft.getInstance().options.save();
+			runnable.run();
 		};
 	}
 
@@ -114,8 +102,6 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 				value.getFirstWidget().setTooltip(MultilineTooltip.create(value.getDescription()));
 			}
 		}
-		options.choices("hide_from_debug", general::shouldHideFromDebug, general::setHideFromDebug);
-		options.choices("hide_from_tab_list", general::shouldHideFromTabList, general::setHideFromTabList);
 		options.choices("hide_from_guis", general::shouldHideFromGUIs, general::setHideFromGUIs);
 		options.choices("boss_bar_overlap", general::getBossBarOverlapMode, general::setBossBarOverlapMode);
 		options.slider("reach_distance", general::getExtendedReach, general::setExtendedReach, 0, 20, f -> Mth.floor(f * 2) / 2F);
@@ -169,9 +155,9 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 
 		IWailaConfig.Accessibility accessibility = IWailaConfig.get().accessibility();
 		options.title("accessibility");
-		options.choices("flip_main_hand", accessibility::getFlipMainHand, accessibility::setFlipMainHand);
-		options.choices("tts_mode", accessibility::getTTSMode, accessibility::setTTSMode);
 		options.choices("accessibility_plugin", accessibility::getEnableAccessibilityPlugin, accessibility::setEnableAccessibilityPlugin);
+		options.choices("tts_mode", accessibility::getTTSMode, accessibility::setTTSMode);
+		options.choices("flip_main_hand", accessibility::getFlipMainHand, accessibility::setFlipMainHand);
 
 		// TODO
 //		WailaConfig.Root root = Jade.rootConfig();
