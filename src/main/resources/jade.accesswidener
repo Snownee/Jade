@@ -42,6 +42,7 @@ accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScr
 accessible method net/minecraft/client/gui/GuiGraphics blitTiledSprite (Ljava/util/function/Function;Lnet/minecraft/client/renderer/texture/TextureAtlasSprite;IIIIIIIIIII)V
 accessible method net/minecraft/client/gui/GuiGraphics blitSprite (Ljava/util/function/Function;Lnet/minecraft/client/renderer/texture/TextureAtlasSprite;IIIIIIIII)V
 accessible field net/minecraft/client/gui/GuiGraphics bufferSource Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;
+accessible method net/minecraft/client/gui/GuiGraphics blitNineSliceInnerSegment (Ljava/util/function/Function;Lnet/minecraft/client/resources/metadata/gui/GuiSpriteScaling$NineSlice;Lnet/minecraft/client/renderer/texture/TextureAtlasSprite;IIIIIIIIIII)V
 
 accessible field net/minecraft/client/gui/components/EditBox SPRITES Lnet/minecraft/client/gui/components/WidgetSprites;
 accessible field net/minecraft/client/gui/components/AbstractSelectionList SCROLLER_SPRITE Lnet/minecraft/resources/ResourceLocation;

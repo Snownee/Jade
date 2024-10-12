@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.util.ARGB;
+import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.overlay.DisplayHelper;
 
@@ -44,7 +44,7 @@ public class StringRenderOutputMixin {
 			CallbackInfo ci) {
 		if (bl && DisplayHelper.enableBetterTextShadow() && IThemeHelper.get().isLightColorScheme()) {
 			dimFactor = 1;
-			color = ARGB.scaleRGB(i, dimFactor);
+			color = IWailaConfig.Overlay.applyAlpha(i, 0.15F);
 		}
 	}
 
