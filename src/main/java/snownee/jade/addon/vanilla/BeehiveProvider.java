@@ -21,6 +21,11 @@ public enum BeehiveProvider implements IBlockComponentProvider, StreamServerData
 
 	INSTANCE;
 
+//	@Override
+//	public @Nullable IElement getIcon(BlockAccessor accessor, IPluginConfig config, IElement currentIcon) {
+//		// https://bugs.mojang.com/browse/MC-159508
+//	}
+
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		BlockState state = accessor.getBlockState();

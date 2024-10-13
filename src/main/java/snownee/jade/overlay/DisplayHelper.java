@@ -5,6 +5,7 @@ import java.text.DecimalFormat;
 import java.text.Format;
 import java.text.NumberFormat;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.mutable.MutableFloat;
@@ -12,17 +13,11 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.BufferUploader;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.blaze3d.vertex.VertexFormat;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.CoreShaders;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.locale.Language;
@@ -105,12 +100,14 @@ public class DisplayHelper implements IDisplayHelper {
 
 	private static void drawTextureWithMasking(
 			Matrix4f matrix,
+			VertexConsumer vertexConsumer,
 			float xCoord,
 			float yCoord,
 			TextureAtlasSprite textureSprite,
 			float maskTop,
 			float maskRight,
-			float zLevel) {
+			float zLevel,
+			int color) {
 		float uMin = textureSprite.getU0();
 		float uMax = textureSprite.getU1();
 		float vMin = textureSprite.getV0();
@@ -118,12 +115,10 @@ public class DisplayHelper implements IDisplayHelper {
 		uMax = uMax - (maskRight / 16F * (uMax - uMin));
 		vMax = vMax - (maskTop / 16F * (vMax - vMin));
 
-		BufferBuilder buffer = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-		buffer.addVertex(matrix, xCoord, yCoord + 16, zLevel).setUv(uMin, vMax);
-		buffer.addVertex(matrix, xCoord + 16 - maskRight, yCoord + 16, zLevel).setUv(uMax, vMax);
-		buffer.addVertex(matrix, xCoord + 16 - maskRight, yCoord + maskTop, zLevel).setUv(uMax, vMin);
-		buffer.addVertex(matrix, xCoord, yCoord + maskTop, zLevel).setUv(uMin, vMin);
-		BufferUploader.drawWithShader(buffer.buildOrThrow());
+		vertexConsumer.addVertex(matrix, xCoord, yCoord + 16, zLevel).setUv(uMin, vMax).setColor(color);
+		vertexConsumer.addVertex(matrix, xCoord + 16 - maskRight, yCoord + 16, zLevel).setUv(uMax, vMax).setColor(color);
+		vertexConsumer.addVertex(matrix, xCoord + 16 - maskRight, yCoord + maskTop, zLevel).setUv(uMax, vMin).setColor(color);
+		vertexConsumer.addVertex(matrix, xCoord, yCoord + maskTop, zLevel).setUv(uMin, vMin).setColor(color);
 	}
 
 	public static void fill(GuiGraphics guiGraphics, float minX, float minY, float maxX, float maxY, int color) {
@@ -262,13 +257,23 @@ public class DisplayHelper implements IDisplayHelper {
 				if (opacity() != 1) {
 					color = Overlay.applyAlpha(color, opacity());
 				}
-				drawTiledSprite(guiGraphics, xPosition, yPosition, width, height, color, scaledAmount.floatValue(), sprite);
+				drawTiledSprite(
+						guiGraphics,
+						RenderType::guiTextured,
+						xPosition,
+						yPosition,
+						width,
+						height,
+						color,
+						scaledAmount.floatValue(),
+						sprite);
 			}
 		});
 	}
 
 	private void drawTiledSprite(
 			GuiGraphics guiGraphics,
+			Function<ResourceLocation, RenderType> function,
 			final float xPosition,
 			final float yPosition,
 			final float tiledWidth,
@@ -279,11 +284,8 @@ public class DisplayHelper implements IDisplayHelper {
 		if (tiledWidth == 0 || tiledHeight == 0 || scaledAmount == 0) {
 			return;
 		}
-		RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
-		RenderSystem.setShader(CoreShaders.POSITION_TEX);
 		Matrix4f matrix = guiGraphics.pose().last().pose();
-		setGLColorFromInt(color);
-		RenderSystem.enableBlend();
+		VertexConsumer vertexConsumer = guiGraphics.bufferSource.getBuffer(function.apply(InventoryMenu.BLOCK_ATLAS));
 
 		final int xTileCount = (int) (tiledWidth / TEX_WIDTH);
 		final float xRemainder = tiledWidth - (xTileCount * TEX_WIDTH);
@@ -302,13 +304,10 @@ public class DisplayHelper implements IDisplayHelper {
 					float maskTop = TEX_HEIGHT - height;
 					float maskRight = TEX_WIDTH - width;
 
-					drawTextureWithMasking(matrix, x, y, sprite, maskTop, maskRight, 0);
+					drawTextureWithMasking(matrix, vertexConsumer, x, y, sprite, maskTop, maskRight, 0, color);
 				}
 			}
 		}
-
-		RenderSystem.setShaderColor(1, 1, 1, 1);
-		RenderSystem.disableBlend();
 	}
 
 	@Override
