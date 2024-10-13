@@ -83,7 +83,6 @@ public class DisplayHelper implements IDisplayHelper {
 		}
 
 		if (stack.isBarVisible()) {
-			RenderSystem.disableDepthTest();
 			int k = stack.getBarWidth();
 			int l = stack.getBarColor();
 			int m = i + 2;
@@ -392,6 +391,7 @@ public class DisplayHelper implements IDisplayHelper {
 		}
 		betterTextShadow = true;
 		guiGraphics.drawString(CLIENT.font, text, (int) x, (int) y, color, shadow);
+		guiGraphics.bufferSource.endLastBatch();
 		betterTextShadow = false;
 	}
 

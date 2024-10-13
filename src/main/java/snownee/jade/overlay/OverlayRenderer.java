@@ -65,7 +65,7 @@ public class OverlayRenderer {
 	public static boolean shouldShowImmediately(BoxElement box) {
 		Minecraft mc = Minecraft.getInstance();
 
-		if (mc.level == null) {
+		if (mc.level == null) { //TODO probably can be removed
 			return false;
 		}
 
@@ -196,8 +196,6 @@ public class OverlayRenderer {
 		if (scale != 1) {
 			matrixStack.scale(scale, scale, 1.0F);
 		}
-
-		RenderSystem.enableBlend();
 		{
 			float maxWidth = rect.rect.getWidth();
 			float maxHeight = rect.rect.getHeight();
@@ -214,8 +212,6 @@ public class OverlayRenderer {
 			callback.afterRender(root, rect, guiGraphics, ObjectDataCenter.get());
 		});
 
-		RenderSystem.enableBlend();
-		RenderSystem.enableDepthTest();
 		matrixStack.popPose();
 
 		if (IWailaConfig.get().accessibility().shouldEnableTextToSpeech()) {

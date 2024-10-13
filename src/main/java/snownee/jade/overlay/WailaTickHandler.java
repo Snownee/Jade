@@ -90,13 +90,13 @@ public class WailaTickHandler {
 			return;
 		}
 
-		Minecraft client = Minecraft.getInstance();
-		if (!ClientProxy.shouldShowWithGui(client, client.screen)) {
+		Minecraft mc = Minecraft.getInstance();
+		if (!ClientProxy.shouldShowWithGui(mc, mc.screen)) {
 			return;
 		}
 
-		Level world = client.level;
-		Entity entity = client.getCameraEntity();
+		Level world = mc.level;
+		Entity entity = mc.getCameraEntity();
 		if (world == null || entity == null) {
 			rootElement = null;
 			return;
@@ -132,7 +132,7 @@ public class WailaTickHandler {
 					.requireVerification()
 					.build();
 			/* on */
-		} else if (client.screen instanceof BaseOptionsScreen) {
+		} else if (mc.screen instanceof BaseOptionsScreen) {
 			/* off */
 			accessor = WailaClientRegistration.instance().blockAccessor()
 					.blockState(Blocks.GRASS_BLOCK.defaultBlockState())

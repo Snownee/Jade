@@ -8,7 +8,6 @@ import java.util.function.ToIntFunction;
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.blaze3d.platform.Window;
-import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -129,7 +128,6 @@ public class BoxElement extends Element implements IBoxElement {
 		if (tooltip.isEmpty()) {
 			return;
 		}
-		RenderSystem.enableBlend();
 		guiGraphics.pose().pushPose();
 		guiGraphics.pose().translate(x, y, 0);
 

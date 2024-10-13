@@ -17,7 +17,6 @@ import com.google.common.base.Predicates;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.systems.RenderSystem;
 
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import it.unimi.dsi.fastutil.floats.FloatUnaryOperator;
@@ -155,10 +154,8 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 
 	@Override
 	protected void renderListSeparators(GuiGraphics guiGraphics) {
-		RenderSystem.enableBlend();
 		ResourceLocation resourceLocation2 = this.minecraft.level == null ? Screen.FOOTER_SEPARATOR : Screen.INWORLD_FOOTER_SEPARATOR;
 		guiGraphics.blit(RenderType::guiTextured, resourceLocation2, 0, this.getBottom(), 0.0F, 0.0F, owner.width, 2, 32, 2);
-		RenderSystem.disableBlend();
 	}
 
 	@Override
@@ -203,13 +200,10 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 			if (m < this.getY()) {
 				m = this.getY();
 			}
-			RenderSystem.enableBlend();
 			guiGraphics.blitSprite(RenderType::guiTextured, SCROLLER_BACKGROUND_SPRITE, k, this.getY(), 6, this.getHeight());
 			guiGraphics.blitSprite(RenderType::guiTextured, SCROLLER_SPRITE, k, m, 6, l);
-			RenderSystem.disableBlend();
 		}
 		renderDecorations(guiGraphics, mouseX, mouseY);
-		RenderSystem.disableBlend();
 	}
 
 	public void save() {

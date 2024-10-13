@@ -73,7 +73,7 @@ import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.command.JadeClientCommand;
 import snownee.jade.compat.JEICompat;
-import snownee.jade.gui.BaseOptionsScreen;
+import snownee.jade.gui.PreviewOptionsScreen;
 import snownee.jade.impl.BlockAccessorImpl;
 import snownee.jade.impl.EntityAccessorImpl;
 import snownee.jade.impl.ObjectDataCenter;
@@ -213,17 +213,17 @@ public final class ClientProxy implements ClientModInitializer {
 	}
 
 	public static boolean shouldShowWithGui(Minecraft mc, @Nullable Screen screen) {
+		if (mc.level == null) {
+			return false;
+		}
 		return screen == null || shouldShowBeforeGui(mc, screen) || shouldShowAfterGui(mc, screen);
 	}
 
 	public static boolean shouldShowAfterGui(Minecraft mc, @NotNull Screen screen) {
-		return screen instanceof BaseOptionsScreen || screen instanceof ChatScreen;
+		return screen instanceof PreviewOptionsScreen || screen instanceof ChatScreen;
 	}
 
 	public static boolean shouldShowBeforeGui(Minecraft mc, @NotNull Screen screen) {
-		if (mc.level == null) {
-			return false; // avoid config being loaded too early
-		}
 		IWailaConfig.General config = IWailaConfig.get().general();
 		return !config.shouldHideFromGUIs();
 	}
@@ -278,6 +278,9 @@ public final class ClientProxy implements ClientModInitializer {
 			}
 		});
 		ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
+			if (client.level == null) {
+				return;
+			}
 			if (shouldShowAfterGui(client, screen)) {
 				ScreenEvents.afterRender(screen).register((screen1, guiGraphics, mouseX, mouseY, tickDelta) -> {
 					onRenderTick(guiGraphics, tickDelta);
