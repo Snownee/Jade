@@ -51,6 +51,14 @@ public class BlockDetailsProvider implements IBlockComponentProvider {
 		if (blockState.hasProperty(BlockStateProperties.CAN_SUMMON) && blockState.getValue(BlockStateProperties.CAN_SUMMON)) {
 			AccessibilityPlugin.replaceTitle(tooltip, "block.summonable");
 		}
+		if (blockState.hasProperty(BlockStateProperties.HATCH)) {
+			int i = blockState.getValue(BlockStateProperties.HATCH);
+			if (i == 1) {
+				AccessibilityPlugin.replaceTitle(tooltip, "block.hatch.1");
+			} else if (i == 2) {
+				AccessibilityPlugin.replaceTitle(tooltip, "block.hatch.2");
+			}
+		}
 		if (blockState.hasProperty(BlockStateProperties.CREAKING)) {
 			AccessibilityPlugin.replaceTitle(
 					tooltip,

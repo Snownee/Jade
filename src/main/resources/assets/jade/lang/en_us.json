@@ -331,6 +331,8 @@
 	"jade.access.block.creaking.disabled": "Disabled %s",
 	"jade.access.block.creaking.dormant": "Dormant %s",
 	"jade.access.block.creaking.active": "Active %s",
+	"jade.access.block.hatch.1": "Slightly Cracked %s",
+	"jade.access.block.hatch.2": "Cracked %s",
 	"jade.access.block.amount": "Amount: %s",
 	"jade.access.block.level": "Level: %s",
 	"jade.access.block.layers": "Layers: %s",
