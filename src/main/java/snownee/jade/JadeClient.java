@@ -60,6 +60,7 @@ import snownee.jade.api.ui.ColorPalette;
 import snownee.jade.api.ui.IBoxElement;
 import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.ui.TooltipRect;
+import snownee.jade.conditional_key_mapping.ConditionalKeyMapping;
 import snownee.jade.gui.HomeConfigScreen;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.overlay.DisplayHelper;
@@ -158,6 +159,14 @@ public final class JadeClient {
 				IWailaConfig.get().save();
 			} else if (WailaTickHandler.instance().rootElement != null) {
 				WailaTickHandler.narrate(WailaTickHandler.instance().rootElement.getTooltip(), false);
+			}
+		}
+
+		if (Jade.rootConfig().isEnableProfiles()) {
+			for (int i = 0; i < 4; i++) {
+				while (profiles[i].consumeClick()) {
+					Jade.useProfile(i);
+				}
 			}
 		}
 	}
@@ -350,9 +359,13 @@ public final class JadeClient {
 			}
 		}
 		var keyMap = keyMapBuilder.build();
-		return () -> {
-			keyMap.forEach(KeyMapping::setKey);
-			Minecraft.getInstance().options.save();
-		};
+		return () -> keyMap.forEach(KeyMapping::setKey);
+	}
+
+	public static void refreshKeyState() {
+		boolean enabled = Jade.rootConfig().isEnableProfiles();
+		for (KeyMapping keyMapping : profiles) {
+			ConditionalKeyMapping.set(keyMapping, enabled);
+		}
 	}
 }

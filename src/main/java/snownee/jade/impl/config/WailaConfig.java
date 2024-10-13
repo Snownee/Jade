@@ -16,6 +16,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.HumanoidArm;
 import snownee.jade.Jade;
+import snownee.jade.JadeClient;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
@@ -744,6 +745,7 @@ public class WailaConfig implements IWailaConfig {
 
 		public void setEnableProfiles(boolean enableProfiles) {
 			this.enableProfiles = enableProfiles;
+			JadeClient.refreshKeyState();
 			if (!enableProfiles) {
 				profileIndex = 0;
 			}

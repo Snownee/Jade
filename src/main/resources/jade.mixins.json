@@ -13,10 +13,11 @@
 		"BossHealthOverlayMixin",
 		"ClientLevelMixin",
 		"KeyAccess",
-		"KeyBindsListMixin",
 		"SessionSearchTreesMixin",
 		"StringRenderOutputMixin",
-		"ThemeHelperMixin"
+		"ThemeHelperMixin",
+		"conditional_key_mapping.KeyBindsListMixin",
+		"conditional_key_mapping.KeyMappingMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

@@ -105,6 +105,7 @@ public class Jade {
 				config.save();
 			}
 			WailaConfig.init();
+			JadeClient.refreshKeyState();
 		}
 	}
 
@@ -116,5 +117,11 @@ public class Jade {
 		rootConfig().setEnableProfiles(true);
 		rootConfig().profileIndex = index;
 		rootConfig.save();
+	}
+
+	public static void saveProfile(int index) {
+		JsonConfig<? extends WailaConfig> dest = configs().get(index);
+		configHolder().saveTo(dest.getFile());
+		dest.invalidate();
 	}
 }

@@ -8,6 +8,7 @@ import it.unimi.dsi.fastutil.floats.FloatUnaryOperator;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.ConfirmScreen;
@@ -36,7 +37,11 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 
 	public WailaConfigScreen(Screen parent) {
 		super(parent, Component.translatable("gui.jade.jade_settings"));
-		saver = IWailaConfig.get()::save;
+		saver = () -> {
+			IWailaConfig.get().save();
+			KeyMapping.resetMapping();
+			Minecraft.getInstance().options.save();
+		};
 		Runnable runnable = JadeClient.recoverKeysAction($ -> JadeClient.openConfig.getCategory().equals($.getCategory()));
 		canceller = () -> {
 			IWailaConfig.get().invalidate();
@@ -158,13 +163,6 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 		options.choices("accessibility_plugin", accessibility::getEnableAccessibilityPlugin, accessibility::setEnableAccessibilityPlugin);
 		options.choices("tts_mode", accessibility::getTTSMode, accessibility::setTTSMode);
 		options.choices("flip_main_hand", accessibility::getFlipMainHand, accessibility::setFlipMainHand);
-
-		// TODO
-//		WailaConfig.Root root = Jade.rootConfig();
-//		options.title("config_profiles");
-//		options.choices("enable_profiles", root::isEnableProfiles, root::setEnableProfiles);
-//		if (root.isEnableProfiles()) {
-//		}
 
 		options.title("danger_zone").withStyle(ChatFormatting.RED);
 		Component reset = Component.translatable("controls.reset").withStyle(ChatFormatting.RED);

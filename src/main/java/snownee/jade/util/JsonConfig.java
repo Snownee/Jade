@@ -41,14 +41,14 @@ public class JsonConfig<T> {
 		this.configGetter = new CachedSupplier<>(() -> {
 			if (!file.exists()) {
 				T def = defaultFactory.get();
-				write(def, false);
+				write(file, def, false);
 				return def;
 			}
 			try (FileReader reader = new FileReader(file, StandardCharsets.UTF_8)) {
 				T ret = codec.parse(JsonOps.INSTANCE, GSON.fromJson(reader, JsonElement.class)).getOrThrow();
 				if (ret == null) {
 					ret = defaultFactory.get();
-					write(ret, false);
+					write(file, ret, false);
 				}
 				return ret;
 			} catch (Throwable e) {
@@ -61,12 +61,12 @@ public class JsonConfig<T> {
 					}
 				}
 				T def = defaultFactory.get();
-				write(def, false);
+				write(file, def, false);
 				return def;
 			}
 		});
 		configGetter.onUpdate = onUpdate;
-		mkdirs();
+		mkdirs(file);
 	}
 
 	public JsonConfig(String fileName, Codec<T> codec, @Nullable Consumer<T> onUpdate) {
@@ -79,11 +79,15 @@ public class JsonConfig<T> {
 	}
 
 	public void save() {
-		write(get(), false); // Does not need to invalidate since the saved instance already has updated values
+		saveTo(getFile());
 	}
 
-	public void write(T t, boolean invalidate) {
-		mkdirs();
+	public void saveTo(File file) {
+		write(file, get(), false); // Does not need to invalidate since the saved instance already has updated values
+	}
+
+	public void write(File file, T t, boolean invalidate) {
+		mkdirs(file);
 
 		try (FileWriter writer = new FileWriter(file, StandardCharsets.UTF_8)) {
 			writer.write(GSON.toJson(codec.encodeStart(JsonOps.INSTANCE, t).getOrThrow()));
@@ -95,7 +99,7 @@ public class JsonConfig<T> {
 		}
 	}
 
-	private void mkdirs() {
+	private void mkdirs(File file) {
 		if (!file.getParentFile().exists()) {
 			//noinspection ResultOfMethodCallIgnored
 			file.getParentFile().mkdirs();

@@ -16,6 +16,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
@@ -29,6 +30,8 @@ import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringDecomposer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import snownee.jade.Jade;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.impl.WailaClientRegistration;
@@ -118,13 +121,23 @@ public class HomeConfigScreen extends Screen {
 			visitedChildScreen();
 			minecraft.setScreen(new PluginsConfigScreen(HomeConfigScreen.this));
 		}).bounds(width / 2 + 5, height / 2 - 10, maxWidth, 20).build());
-		addRenderableWidget(Button.builder(profileSettings, w -> {
-			visitedChildScreen();
-			minecraft.setScreen(new ProfileConfigScreen(HomeConfigScreen.this));
-		}).bounds(width / 2 + 10 + maxWidth, height / 2 - 10, 20, 20).build());
-		addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, w -> {
-			onClose();
-		}).bounds(width / 2 - 50, height / 2 + 20, 100, 20).build());
+		ItemButton profileButton = new ItemButton(
+				width / 2 + 10 + maxWidth,
+				height / 2 - 10,
+				20,
+				20,
+				new ItemStack(Items.PAPER, 2),
+				profileSettings,
+				w -> {
+					visitedChildScreen();
+					minecraft.setScreen(new ProfileConfigScreen(HomeConfigScreen.this));
+				},
+				Button.DEFAULT_NARRATION);
+		profileButton.setTooltip(Tooltip.create(profileSettings));
+		addRenderableWidget(profileButton);
+		addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, w -> onClose())
+				.bounds(width / 2 - 50, height / 2 + 20, 100, 20)
+				.build());
 
 		Style style = Style.EMPTY;
 		if (festival != 0 && festival != 1) {

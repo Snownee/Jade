@@ -35,6 +35,7 @@ accessible field net/minecraft/world/entity/animal/horse/AbstractHorse MAX_JUMP_
 accessible class net/minecraft/client/gui/Font$StringRenderOutput
 
 accessible field net/minecraft/client/gui/components/CycleButton onValueChange Lnet/minecraft/client/gui/components/CycleButton$OnValueChange;
+accessible field net/minecraft/client/gui/components/Button DEFAULT_NARRATION Lnet/minecraft/client/gui/components/Button$CreateNarration;
 
 accessible field net/minecraft/client/gui/screens/inventory/CreativeModeInventoryScreen selectedTab Lnet/minecraft/world/item/CreativeModeTab;
 accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen hoveredSlot Lnet/minecraft/world/inventory/Slot;

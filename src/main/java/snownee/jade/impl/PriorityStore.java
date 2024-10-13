@@ -99,7 +99,7 @@ public class PriorityStore<K, V> {
 				}
 				if (changed) {
 					newMap.putAll(map);
-					config.write(newMap, false);
+					config.write(config.getFile(), newMap, false);
 				}
 			}).start();
 		}
