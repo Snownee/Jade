@@ -74,8 +74,10 @@ public abstract class ItemIterator<T> {
 			if (toIndex >= slotCount) {
 				toIndex = slotCount;
 				finished = true;
+				progress = 1;
+			} else {
+				progress = (float) (currentIndex - fromIndex) / (slotCount - fromIndex);
 			}
-			progress = (float) (currentIndex - fromIndex) / (slotCount - fromIndex);
 			return IntStream.range(currentIndex, toIndex).mapToObj(slot -> getItemInSlot(container, slot));
 		}
 
