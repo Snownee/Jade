@@ -25,6 +25,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.HitResult.Type;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import snownee.jade.Jade;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.ui.IElement;
@@ -131,6 +132,7 @@ public class RayTracing {
 		Vec3 cameraPosition = camera.getPosition();
 		if (!eyePosition.equals(cameraPosition)) {
 			double distance = eyePosition.distanceTo(cameraPosition);
+//			Jade.LOGGER.error("{}", distance);
 			blockReach += distance;
 			entityReach += distance;
 		}
@@ -144,10 +146,11 @@ public class RayTracing {
 			traceEnd = mc.hitResult.getLocation().subtract(cameraPosition);
 			lookVector = traceEnd.normalize();
 			// when it comes to a block hit, we only need to find entities that closer than the block
-			if (mc.hitResult.getType() != Type.ENTITY && traceEnd.lengthSqr() > entityReach * entityReach) {
-				traceEnd = lookVector.scale(entityReach * 1.001);
+			if (mc.hitResult.getType() == Type.BLOCK && traceEnd.lengthSqr() < entityReach * entityReach) {
+				traceEnd = mc.hitResult.getLocation();
+			} else {
+				traceEnd = cameraPosition.add(lookVector.scale(entityReach * 1.001));
 			}
-			traceEnd = cameraPosition.add(traceEnd);
 		}
 
 		Level world = entity.level();
