@@ -1,23 +1,23 @@
 package snownee.jade.addon.universal;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Function;
 
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IComponentProvider;
-import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
+import snownee.jade.api.StreamServerDataProvider;
 import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
@@ -31,10 +31,13 @@ import snownee.jade.api.view.IServerExtensionProvider;
 import snownee.jade.api.view.ViewGroup;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
+import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
-import snownee.jade.util.WailaExceptionHandler;
 
-public abstract class EnergyStorageProvider<T extends Accessor<?>> implements IComponentProvider<T>, IServerDataProvider<T> {
+public abstract class EnergyStorageProvider<T extends Accessor<?>> implements IComponentProvider<T>, StreamServerDataProvider<T, Map.Entry<ResourceLocation, List<ViewGroup<EnergyView.Data>>>> {
+
+	private static final StreamCodec<RegistryFriendlyByteBuf, Map.Entry<ResourceLocation, List<ViewGroup<EnergyView.Data>>>> STREAM_CODEC = ViewGroup.listCodec(
+			EnergyView.Data.STREAM_CODEC).cast();
 
 	public static ForBlock getBlock() {
 		return ForBlock.INSTANCE;
@@ -52,32 +55,39 @@ public abstract class EnergyStorageProvider<T extends Accessor<?>> implements IC
 		private static final ForEntity INSTANCE = new ForEntity();
 	}
 
-	public static void append(ITooltip tooltip, Accessor<?> accessor, IPluginConfig config) {
+	@Override
+	public @Nullable Map.Entry<ResourceLocation, List<ViewGroup<EnergyView.Data>>> streamData(T accessor) {
+		return CommonProxy.getServerExtensionData(accessor, WailaCommonRegistration.instance().energyStorageProviders);
+	}
+
+	@Override
+	public StreamCodec<RegistryFriendlyByteBuf, Map.Entry<ResourceLocation, List<ViewGroup<EnergyView.Data>>>> streamCodec() {
+		return STREAM_CODEC;
+	}
+
+	@Override
+	public ResourceLocation getUid() {
+		return JadeIds.UNIVERSAL_ENERGY_STORAGE;
+	}
+
+	@Override
+	public int getDefaultPriority() {
+		return TooltipPosition.BODY + 1000;
+	}
+
+	@Override
+	public void appendTooltip(ITooltip tooltip, T accessor, IPluginConfig config) {
 		if ((!accessor.showDetails() && config.get(JadeIds.UNIVERSAL_ENERGY_STORAGE_DETAILED))) {
 			return;
 		}
 
-		if (!accessor.getServerData().contains("JadeEnergyStorage")) {
-			return;
-		}
-
-		var provider = Optional.ofNullable(ResourceLocation.tryParse(accessor.getServerData().getString("JadeEnergyStorageUid"))).map(
-				WailaClientRegistration.instance().energyStorageProviders::get).orElse(null);
-		if (provider == null) {
-			return;
-		}
-
-		List<ClientViewGroup<EnergyView>> groups;
-		try {
-			groups = provider.getClientGroups(
-					accessor,
-					ViewGroup.readList(accessor.getServerData(), "JadeEnergyStorage", Function.identity()));
-		} catch (Exception e) {
-			WailaExceptionHandler.handleErr(e, provider, tooltip::add);
-			return;
-		}
-
-		if (groups.isEmpty()) {
+		List<ClientViewGroup<EnergyView>> groups = ClientProxy.mapToClientGroups(
+				accessor,
+				JadeIds.UNIVERSAL_ENERGY_STORAGE,
+				STREAM_CODEC,
+				WailaClientRegistration.instance().energyStorageProviders::get,
+				tooltip);
+		if (groups == null || groups.isEmpty()) {
 			return;
 		}
 
@@ -101,59 +111,15 @@ public abstract class EnergyStorageProvider<T extends Accessor<?>> implements IC
 		});
 	}
 
-	public static void putData(Accessor<?> accessor) {
-		CompoundTag tag = accessor.getServerData();
-		for (var provider : WailaCommonRegistration.instance().energyStorageProviders.get(accessor)) {
-			List<ViewGroup<CompoundTag>> groups;
-			try {
-				groups = provider.getGroups(accessor);
-			} catch (Exception e) {
-				WailaExceptionHandler.handleErr(e, provider, null);
-				continue;
-			}
-			if (groups != null) {
-				if (ViewGroup.saveList(tag, "JadeEnergyStorage", groups, Function.identity())) {
-					tag.putString("JadeEnergyStorageUid", provider.getUid().toString());
-				}
-				return;
-			}
-		}
-	}
-
-	@Override
-	public ResourceLocation getUid() {
-		return JadeIds.UNIVERSAL_ENERGY_STORAGE;
-	}
-
-	@Override
-	public int getDefaultPriority() {
-		return TooltipPosition.BODY + 1000;
-	}
-
-	@Override
-	public void appendTooltip(ITooltip tooltip, T accessor, IPluginConfig config) {
-		append(tooltip, accessor, config);
-	}
-
-	@Override
-	public void appendServerData(CompoundTag data, T accessor) {
-		putData(accessor);
-	}
-
 	@Override
 	public boolean shouldRequestData(T accessor) {
 		if (!accessor.showDetails() && IWailaConfig.get().plugin().get(JadeIds.UNIVERSAL_ENERGY_STORAGE_DETAILED)) {
 			return false;
 		}
-		for (var provider : WailaCommonRegistration.instance().energyStorageProviders.get(accessor)) {
-			if (provider.shouldRequestData(accessor)) {
-				return true;
-			}
-		}
-		return false;
+		return WailaCommonRegistration.instance().energyStorageProviders.hitsAny(accessor, IServerExtensionProvider::shouldRequestData);
 	}
 
-	public enum Extension implements IServerExtensionProvider<CompoundTag>, IClientExtensionProvider<CompoundTag, EnergyView> {
+	public enum Extension implements IServerExtensionProvider<EnergyView.Data>, IClientExtensionProvider<EnergyView.Data, EnergyView> {
 		INSTANCE;
 
 		@Override
@@ -162,16 +128,16 @@ public abstract class EnergyStorageProvider<T extends Accessor<?>> implements IC
 		}
 
 		@Override
-		public List<ClientViewGroup<EnergyView>> getClientGroups(Accessor<?> accessor, List<ViewGroup<CompoundTag>> groups) {
+		public List<ClientViewGroup<EnergyView>> getClientGroups(Accessor<?> accessor, List<ViewGroup<EnergyView.Data>> groups) {
 			return groups.stream().map($ -> {
 				String unit = $.getExtraData().getString("Unit");
-				return new ClientViewGroup<>($.views.stream().map(tag -> EnergyView.read(tag, unit)).filter(Objects::nonNull).toList());
+				return new ClientViewGroup<>($.views.stream().map(data -> EnergyView.read(data, unit)).filter(Objects::nonNull).toList());
 			}).toList();
 		}
 
 		@Nullable
 		@Override
-		public List<ViewGroup<CompoundTag>> getGroups(Accessor<?> accessor) {
+		public List<ViewGroup<EnergyView.Data>> getGroups(Accessor<?> accessor) {
 			return CommonProxy.wrapEnergyStorage(accessor);
 		}
 

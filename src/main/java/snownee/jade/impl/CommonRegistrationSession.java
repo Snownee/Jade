@@ -7,14 +7,16 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IJadeProvider;
 import snownee.jade.api.IServerDataProvider;
+import snownee.jade.api.view.EnergyView;
+import snownee.jade.api.view.FluidView;
 import snownee.jade.api.view.IServerExtensionProvider;
+import snownee.jade.api.view.ProgressView;
 import snownee.jade.impl.lookup.IHierarchyLookup;
 
 public class CommonRegistrationSession {
@@ -23,9 +25,9 @@ public class CommonRegistrationSession {
 	private final List<Pair<IServerDataProvider<BlockAccessor>, Class<?>>> blockDataProviders = Lists.newArrayList();
 	private final List<Pair<IServerDataProvider<EntityAccessor>, Class<? extends Entity>>> entityDataProviders = Lists.newArrayList();
 	private final List<Pair<IServerExtensionProvider<ItemStack>, Class<?>>> itemStorageProviders = Lists.newArrayList();
-	private final List<Pair<IServerExtensionProvider<CompoundTag>, Class<?>>> fluidStorageProviders = Lists.newArrayList();
-	private final List<Pair<IServerExtensionProvider<CompoundTag>, Class<?>>> energyStorageProviders = Lists.newArrayList();
-	private final List<Pair<IServerExtensionProvider<CompoundTag>, Class<?>>> progressProviders = Lists.newArrayList();
+	private final List<Pair<IServerExtensionProvider<FluidView.Data>, Class<?>>> fluidStorageProviders = Lists.newArrayList();
+	private final List<Pair<IServerExtensionProvider<EnergyView.Data>, Class<?>>> energyStorageProviders = Lists.newArrayList();
+	private final List<Pair<IServerExtensionProvider<ProgressView.Data>, Class<?>>> progressProviders = Lists.newArrayList();
 
 	public CommonRegistrationSession(WailaCommonRegistration registration) {
 		this.registration = registration;
@@ -52,7 +54,7 @@ public class CommonRegistrationSession {
 		register(dataProvider, entityDataProviders, registration.entityDataProviders, entityClass);
 	}
 
-	public <T> void registerEnergyStorage(IServerExtensionProvider<CompoundTag> provider, Class<? extends T> clazz) {
+	public <T> void registerEnergyStorage(IServerExtensionProvider<EnergyView.Data> provider, Class<? extends T> clazz) {
 		register(provider, energyStorageProviders, registration.energyStorageProviders, clazz);
 	}
 
@@ -60,11 +62,11 @@ public class CommonRegistrationSession {
 		register(provider, itemStorageProviders, registration.itemStorageProviders, clazz);
 	}
 
-	public <T> void registerFluidStorage(IServerExtensionProvider<CompoundTag> provider, Class<? extends T> clazz) {
+	public <T> void registerFluidStorage(IServerExtensionProvider<FluidView.Data> provider, Class<? extends T> clazz) {
 		register(provider, fluidStorageProviders, registration.fluidStorageProviders, clazz);
 	}
 
-	public <T> void registerProgress(IServerExtensionProvider<CompoundTag> provider, Class<? extends T> clazz) {
+	public <T> void registerProgress(IServerExtensionProvider<ProgressView.Data> provider, Class<? extends T> clazz) {
 		register(provider, progressProviders, registration.progressProviders, clazz);
 	}
 

@@ -5,9 +5,10 @@ import java.util.Objects;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.level.material.Fluids;
 import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.ui.IElement;
@@ -34,12 +35,11 @@ public class FluidView {
 	}
 
 	@Nullable
-	public static FluidView readDefault(CompoundTag tag) {
-		long capacity = tag.getLong("capacity");
-		if (capacity <= 0) {
+	public static FluidView readDefault(Data data) {
+		if (data.capacity <= 0) {
 			return null;
 		}
-		JadeFluidObject fluidObject = JadeFluidObject.CODEC.parse(NbtOps.INSTANCE, tag.get("fluid")).result().orElse(null);
+		JadeFluidObject fluidObject = data.fluid;
 		if (fluidObject == null) {
 			return null;
 		}
@@ -47,8 +47,8 @@ public class FluidView {
 		FluidView fluidView = new FluidView(IElementHelper.get().fluid(fluidObject));
 		fluidView.fluidName = CommonProxy.getFluidName(fluidObject);
 		fluidView.current = FluidTextHelper.getUnicodeMillibuckets(amount, true);
-		fluidView.max = FluidTextHelper.getUnicodeMillibuckets(capacity, true);
-		fluidView.ratio = (float) ((double) amount / capacity);
+		fluidView.max = FluidTextHelper.getUnicodeMillibuckets(data.capacity, true);
+		fluidView.ratio = (float) ((double) amount / data.capacity);
 		if (fluidObject.getType().isSame(Fluids.EMPTY)) {
 			fluidView.overrideText = Component.translatable(
 					"jade.fluid",
@@ -58,14 +58,13 @@ public class FluidView {
 		return fluidView;
 	}
 
-	public static CompoundTag writeDefault(JadeFluidObject fluidObject, long capacity) {
-		CompoundTag tag = new CompoundTag();
-		if (capacity <= 0) {
-			return tag;
-		}
-		tag.put("fluid", JadeFluidObject.CODEC.encodeStart(NbtOps.INSTANCE, fluidObject).result().orElseThrow());
-		tag.putLong("capacity", capacity);
-		return tag;
+	public record Data(JadeFluidObject fluid, long capacity) {
+		public static final StreamCodec<RegistryFriendlyByteBuf, Data> STREAM_CODEC = StreamCodec.composite(
+				JadeFluidObject.STREAM_CODEC,
+				Data::fluid,
+				ByteBufCodecs.LONG,
+				Data::capacity,
+				Data::new);
 	}
 
 }

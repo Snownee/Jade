@@ -2,10 +2,12 @@ package snownee.jade.api;
 
 import org.jetbrains.annotations.ApiStatus.NonExtendable;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
+import snownee.jade.api.view.EnergyView;
+import snownee.jade.api.view.FluidView;
 import snownee.jade.api.view.IServerExtensionProvider;
+import snownee.jade.api.view.ProgressView;
 
 @NonExtendable
 public interface IWailaCommonRegistration {
@@ -28,10 +30,10 @@ public interface IWailaCommonRegistration {
 
 	<T> void registerItemStorage(IServerExtensionProvider<ItemStack> provider, Class<? extends T> clazz);
 
-	<T> void registerFluidStorage(IServerExtensionProvider<CompoundTag> provider, Class<? extends T> clazz);
+	<T> void registerFluidStorage(IServerExtensionProvider<FluidView.Data> provider, Class<? extends T> clazz);
 
-	<T> void registerEnergyStorage(IServerExtensionProvider<CompoundTag> provider, Class<? extends T> clazz);
+	<T> void registerEnergyStorage(IServerExtensionProvider<EnergyView.Data> provider, Class<? extends T> clazz);
 
-	<T> void registerProgress(IServerExtensionProvider<CompoundTag> provider, Class<? extends T> clazz);
+	<T> void registerProgress(IServerExtensionProvider<ProgressView.Data> provider, Class<? extends T> clazz);
 
 }

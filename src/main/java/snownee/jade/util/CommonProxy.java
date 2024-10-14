@@ -53,7 +53,6 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceKey;
@@ -103,12 +102,15 @@ import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.WailaPlugin;
 import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.view.EnergyView;
+import snownee.jade.api.view.FluidView;
+import snownee.jade.api.view.IServerExtensionProvider;
 import snownee.jade.api.view.ViewGroup;
 import snownee.jade.command.JadeServerCommand;
 import snownee.jade.compat.TechRebornEnergyCompat;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.impl.config.ServerPluginConfig;
+import snownee.jade.impl.lookup.WrappedHierarchyLookup;
 import snownee.jade.mixin.AbstractHorseAccess;
 import snownee.jade.network.ReceiveDataPacket;
 import snownee.jade.network.RequestBlockPacket;
@@ -299,7 +301,7 @@ public final class CommonProxy implements ModInitializer {
 		return null;
 	}
 
-	public static List<ViewGroup<CompoundTag>> wrapFluidStorage(Accessor<?> accessor) {
+	public static List<ViewGroup<FluidView.Data>> wrapFluidStorage(Accessor<?> accessor) {
 		if (accessor instanceof BlockAccessor blockAccessor) {
 			try {
 				var storage = FluidStorage.SIDED.find(
@@ -318,7 +320,7 @@ public final class CommonProxy implements ModInitializer {
 		return null;
 	}
 
-	public static List<ViewGroup<CompoundTag>> wrapEnergyStorage(Accessor<?> accessor) {
+	public static List<ViewGroup<EnergyView.Data>> wrapEnergyStorage(Accessor<?> accessor) {
 		if (hasTechRebornEnergy && accessor instanceof BlockAccessor blockAccessor) {
 			try {
 				var storage = TechRebornEnergyCompat.getSided().find(
@@ -328,7 +330,7 @@ public final class CommonProxy implements ModInitializer {
 						blockAccessor.getBlockEntity(),
 						null);
 				if (storage != null && storage.getCapacity() > 0) {
-					var group = new ViewGroup<>(List.of(EnergyView.of(storage.getAmount(), storage.getCapacity())));
+					var group = new ViewGroup<>(List.of(new EnergyView.Data(storage.getAmount(), storage.getCapacity())));
 					group.getExtraData().putString("Unit", "E");
 					return List.of(group);
 				}
@@ -583,6 +585,24 @@ public final class CommonProxy implements ModInitializer {
 			}
 		}
 		return false;
+	}
+
+	public static <T> Map.Entry<ResourceLocation, List<ViewGroup<T>>> getServerExtensionData(
+			Accessor<?> accessor,
+			WrappedHierarchyLookup<IServerExtensionProvider<T>> lookup) {
+		for (var provider : lookup.wrappedGet(accessor)) {
+			List<ViewGroup<T>> groups;
+			try {
+				groups = provider.getGroups(accessor);
+			} catch (Exception e) {
+				WailaExceptionHandler.handleErr(e, provider, null);
+				continue;
+			}
+			if (groups != null) {
+				return Map.entry(provider.getUid(), groups);
+			}
+		}
+		return null;
 	}
 
 	@Override

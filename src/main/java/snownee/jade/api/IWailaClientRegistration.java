@@ -177,11 +177,11 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 
 	void registerItemStorageClient(IClientExtensionProvider<ItemStack, ItemView> provider);
 
-	void registerFluidStorageClient(IClientExtensionProvider<CompoundTag, FluidView> provider);
+	void registerFluidStorageClient(IClientExtensionProvider<FluidView.Data, FluidView> provider);
 
-	void registerEnergyStorageClient(IClientExtensionProvider<CompoundTag, EnergyView> provider);
+	void registerEnergyStorageClient(IClientExtensionProvider<EnergyView.Data, EnergyView> provider);
 
-	void registerProgressClient(IClientExtensionProvider<CompoundTag, ProgressView> provider);
+	void registerProgressClient(IClientExtensionProvider<ProgressView.Data, ProgressView> provider);
 
 	boolean isServerConnected();
 

@@ -11,7 +11,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Pair;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -54,9 +53,9 @@ public class ClientRegistrationSession {
 	private final List<Pair<ResourceLocation, Consumer<ResourceLocation>>> configListeners = Lists.newArrayList();
 	private final List<Pair<ResourceLocation, Component>> configCategoryOverrides = Lists.newArrayList();
 	private final List<IClientExtensionProvider<ItemStack, ItemView>> itemStorageProviders = Lists.newArrayList();
-	private final List<IClientExtensionProvider<CompoundTag, FluidView>> fluidStorageProviders = Lists.newArrayList();
-	private final List<IClientExtensionProvider<CompoundTag, EnergyView>> energyStorageProviders = Lists.newArrayList();
-	private final List<IClientExtensionProvider<CompoundTag, ProgressView>> progressProviders = Lists.newArrayList();
+	private final List<IClientExtensionProvider<FluidView.Data, FluidView>> fluidStorageProviders = Lists.newArrayList();
+	private final List<IClientExtensionProvider<EnergyView.Data, EnergyView>> energyStorageProviders = Lists.newArrayList();
+	private final List<IClientExtensionProvider<ProgressView.Data, ProgressView>> progressProviders = Lists.newArrayList();
 	private final List<Pair<Integer, JadeAfterRenderCallback>> afterRenderCallback = Lists.newArrayList();
 	private final List<Pair<Integer, JadeBeforeRenderCallback>> beforeRenderCallback = Lists.newArrayList();
 	private final List<Pair<Integer, JadeRayTraceCallback>> rayTraceCallback = Lists.newArrayList();
@@ -148,15 +147,15 @@ public class ClientRegistrationSession {
 		itemStorageProviders.add(provider);
 	}
 
-	public void registerFluidStorageClient(IClientExtensionProvider<CompoundTag, FluidView> provider) {
+	public void registerFluidStorageClient(IClientExtensionProvider<FluidView.Data, FluidView> provider) {
 		fluidStorageProviders.add(provider);
 	}
 
-	public void registerEnergyStorageClient(IClientExtensionProvider<CompoundTag, EnergyView> provider) {
+	public void registerEnergyStorageClient(IClientExtensionProvider<EnergyView.Data, EnergyView> provider) {
 		energyStorageProviders.add(provider);
 	}
 
-	public void registerProgressClient(IClientExtensionProvider<CompoundTag, ProgressView> provider) {
+	public void registerProgressClient(IClientExtensionProvider<ProgressView.Data, ProgressView> provider) {
 		progressProviders.add(provider);
 	}
 

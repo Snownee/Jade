@@ -2,8 +2,10 @@ package snownee.jade.api.view;
 
 import org.jetbrains.annotations.Nullable;
 
-import net.minecraft.nbt.CompoundTag;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import snownee.jade.api.ui.IDisplayHelper;
 
 public class EnergyView {
@@ -15,24 +17,24 @@ public class EnergyView {
 	public Component overrideText;
 
 	@Nullable
-	public static EnergyView read(CompoundTag tag, String unit) {
-		long capacity = tag.getLong("Capacity");
-		if (capacity <= 0) {
+	public static EnergyView read(Data data, String unit) {
+		if (data.capacity <= 0) {
 			return null;
 		}
-		long cur = tag.getLong("Cur");
 		EnergyView energyView = new EnergyView();
-		energyView.current = IDisplayHelper.get().humanReadableNumber(cur, unit, false);
-		energyView.max = IDisplayHelper.get().humanReadableNumber(capacity, unit, false);
-		energyView.ratio = (float) cur / capacity;
+		energyView.current = IDisplayHelper.get().humanReadableNumber(data.current, unit, false);
+		energyView.max = IDisplayHelper.get().humanReadableNumber(data.capacity, unit, false);
+		energyView.ratio = (float) data.current / data.capacity;
 		return energyView;
 	}
 
-	public static CompoundTag of(long current, long capacity) {
-		CompoundTag tag = new CompoundTag();
-		tag.putLong("Capacity", capacity);
-		tag.putLong("Cur", current);
-		return tag;
+	public record Data(long current, long capacity) {
+		public static final StreamCodec<ByteBuf, Data> STREAM_CODEC = StreamCodec.composite(
+				ByteBufCodecs.LONG,
+				Data::current,
+				ByteBufCodecs.LONG,
+				Data::capacity,
+				Data::new);
 	}
 
 }

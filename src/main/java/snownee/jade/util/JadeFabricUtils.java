@@ -15,7 +15,6 @@ import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.SlottedStorage;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.fabricmc.fabric.api.transfer.v1.storage.base.SingleSlotStorage;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import snownee.jade.addon.universal.ItemIterator;
@@ -29,8 +28,8 @@ public final class JadeFabricUtils {
 	private JadeFabricUtils() {
 	}
 
-	public static List<ViewGroup<CompoundTag>> fromFluidStorage(Storage<FluidVariant> storage) {
-		List<CompoundTag> list = Lists.newArrayList();
+	public static List<ViewGroup<FluidView.Data>> fromFluidStorage(Storage<FluidVariant> storage) {
+		List<FluidView.Data> list = Lists.newArrayList();
 		long emptyCapacity = 0;
 		for (var view : storage) {
 			long capacity = view.getCapacity();
@@ -41,13 +40,13 @@ public final class JadeFabricUtils {
 				emptyCapacity = LongMath.saturatedAdd(emptyCapacity, capacity);
 				continue;
 			}
-			list.add(FluidView.writeDefault(JadeFluidObject.of(
+			list.add(new FluidView.Data(JadeFluidObject.of(
 					view.getResource().getFluid(),
 					view.getAmount(),
 					view.getResource().getComponents()), capacity));
 		}
 		if (list.isEmpty() && emptyCapacity > 0) {
-			list.add(FluidView.writeDefault(JadeFluidObject.empty(), emptyCapacity));
+			list.add(new FluidView.Data(JadeFluidObject.empty(), emptyCapacity));
 		}
 		if (!list.isEmpty()) {
 			return List.of(new ViewGroup<>(list));

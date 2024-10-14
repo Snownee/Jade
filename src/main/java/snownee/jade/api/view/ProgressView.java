@@ -4,8 +4,10 @@ import java.util.Objects;
 
 import org.jetbrains.annotations.Nullable;
 
-import net.minecraft.nbt.CompoundTag;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import snownee.jade.api.ui.ProgressStyle;
 import snownee.jade.impl.ui.SlimProgressStyle;
 
@@ -21,16 +23,17 @@ public class ProgressView {
 		Objects.requireNonNull(style);
 	}
 
-	public static ProgressView read(CompoundTag tag) {
+	public static ProgressView read(Data data) {
 		ProgressView progressView = new ProgressView(new SlimProgressStyle());
-		progressView.progress = tag.getFloat("Progress");
+		progressView.progress = data.progress;
 		return progressView;
 	}
 
-	public static CompoundTag create(float progress) {
-		CompoundTag tag = new CompoundTag();
-		tag.putFloat("Progress", progress);
-		return tag;
+	public record Data(float progress) {
+		public static final StreamCodec<ByteBuf, Data> STREAM_CODEC = StreamCodec.composite(
+				ByteBufCodecs.FLOAT,
+				Data::progress,
+				Data::new);
 	}
 
 }

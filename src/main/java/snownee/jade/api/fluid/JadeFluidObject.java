@@ -7,6 +7,10 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import snownee.jade.util.CommonProxy;
@@ -17,6 +21,15 @@ public class JadeFluidObject {
 					Codec.LONG.fieldOf("amount").forGetter(JadeFluidObject::getAmount),
 					DataComponentPatch.CODEC.optionalFieldOf("components", DataComponentPatch.EMPTY).forGetter(JadeFluidObject::getComponents))
 			.apply(instance, JadeFluidObject::of));
+
+	public static final StreamCodec<RegistryFriendlyByteBuf, JadeFluidObject> STREAM_CODEC = StreamCodec.composite(
+			ByteBufCodecs.registry(Registries.FLUID),
+			JadeFluidObject::getType,
+			ByteBufCodecs.LONG,
+			JadeFluidObject::getAmount,
+			DataComponentPatch.STREAM_CODEC,
+			JadeFluidObject::getComponents,
+			JadeFluidObject::of);
 
 	public static long bucketVolume() {
 		return CommonProxy.bucketVolume();

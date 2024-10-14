@@ -2,7 +2,6 @@ package snownee.jade.test;
 
 import java.util.List;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
@@ -13,8 +12,8 @@ import snownee.jade.api.view.IServerExtensionProvider;
 import snownee.jade.api.view.ProgressView;
 import snownee.jade.api.view.ViewGroup;
 
-public enum ExampleProgressProvider implements IServerExtensionProvider<CompoundTag>,
-		IClientExtensionProvider<CompoundTag, ProgressView> {
+public enum ExampleProgressProvider implements IServerExtensionProvider<ProgressView.Data>,
+		IClientExtensionProvider<ProgressView.Data, ProgressView> {
 	INSTANCE;
 
 	@Override
@@ -23,7 +22,7 @@ public enum ExampleProgressProvider implements IServerExtensionProvider<Compound
 	}
 
 	@Override
-	public List<ClientViewGroup<ProgressView>> getClientGroups(Accessor<?> accessor, List<ViewGroup<CompoundTag>> groups) {
+	public List<ClientViewGroup<ProgressView>> getClientGroups(Accessor<?> accessor, List<ViewGroup<ProgressView.Data>> groups) {
 		return ClientViewGroup.map(groups, ProgressView::read, (group, clientGroup) -> {
 			var view = clientGroup.views.getFirst();
 			view.style.color(0xFFCC0000);
@@ -36,12 +35,12 @@ public enum ExampleProgressProvider implements IServerExtensionProvider<Compound
 	}
 
 	@Override
-	public List<ViewGroup<CompoundTag>> getGroups(Accessor<?> accessor) {
+	public List<ViewGroup<ProgressView.Data>> getGroups(Accessor<?> accessor) {
 		Level world = accessor.getLevel();
 		float period = 40;
-		var progress1 = ProgressView.create(((world.getGameTime() % period) + 1) / period);
+		var progress1 = new ProgressView.Data(((world.getGameTime() % period) + 1) / period);
 		period = 200;
-		var progress2 = ProgressView.create(((world.getGameTime() % period) + 1) / period);
+		var progress2 = new ProgressView.Data(((world.getGameTime() % period) + 1) / period);
 		var group = new ViewGroup<>(List.of(progress1, progress2));
 		return List.of(group);
 	}

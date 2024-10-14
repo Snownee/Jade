@@ -113,9 +113,9 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 
 	public final Map<Block, CustomEnchantPower> customEnchantPowers = Maps.newHashMap();
 	public final Map<ResourceLocation, IClientExtensionProvider<ItemStack, ItemView>> itemStorageProviders = Maps.newHashMap();
-	public final Map<ResourceLocation, IClientExtensionProvider<CompoundTag, FluidView>> fluidStorageProviders = Maps.newHashMap();
-	public final Map<ResourceLocation, IClientExtensionProvider<CompoundTag, EnergyView>> energyStorageProviders = Maps.newHashMap();
-	public final Map<ResourceLocation, IClientExtensionProvider<CompoundTag, ProgressView>> progressProviders = Maps.newHashMap();
+	public final Map<ResourceLocation, IClientExtensionProvider<FluidView.Data, FluidView>> fluidStorageProviders = Maps.newHashMap();
+	public final Map<ResourceLocation, IClientExtensionProvider<EnergyView.Data, EnergyView>> energyStorageProviders = Maps.newHashMap();
+	public final Map<ResourceLocation, IClientExtensionProvider<ProgressView.Data, ProgressView>> progressProviders = Maps.newHashMap();
 
 	public final Set<ResourceLocation> clientFeatures = Sets.newHashSet();
 
@@ -601,7 +601,7 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	}
 
 	@Override
-	public void registerFluidStorageClient(IClientExtensionProvider<CompoundTag, FluidView> provider) {
+	public void registerFluidStorageClient(IClientExtensionProvider<FluidView.Data, FluidView> provider) {
 		Objects.requireNonNull(provider.getUid());
 		if (isSessionActive()) {
 			session.registerFluidStorageClient(provider);
@@ -611,7 +611,7 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	}
 
 	@Override
-	public void registerEnergyStorageClient(IClientExtensionProvider<CompoundTag, EnergyView> provider) {
+	public void registerEnergyStorageClient(IClientExtensionProvider<EnergyView.Data, EnergyView> provider) {
 		Objects.requireNonNull(provider.getUid());
 		if (isSessionActive()) {
 			session.registerEnergyStorageClient(provider);
@@ -621,7 +621,7 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	}
 
 	@Override
-	public void registerProgressClient(IClientExtensionProvider<CompoundTag, ProgressView> provider) {
+	public void registerProgressClient(IClientExtensionProvider<ProgressView.Data, ProgressView> provider) {
 		Objects.requireNonNull(provider.getUid());
 		if (isSessionActive()) {
 			session.registerProgressClient(provider);

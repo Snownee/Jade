@@ -10,7 +10,6 @@ import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Preconditions;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
@@ -23,7 +22,10 @@ import snownee.jade.api.IJadeProvider;
 import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.IWailaCommonRegistration;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.view.EnergyView;
+import snownee.jade.api.view.FluidView;
 import snownee.jade.api.view.IServerExtensionProvider;
+import snownee.jade.api.view.ProgressView;
 import snownee.jade.impl.lookup.HierarchyLookup;
 import snownee.jade.impl.lookup.PairHierarchyLookup;
 import snownee.jade.impl.lookup.WrappedHierarchyLookup;
@@ -37,9 +39,9 @@ public class WailaCommonRegistration implements IWailaCommonRegistration {
 	public final PriorityStore<ResourceLocation, IJadeProvider> priorities;
 
 	public final WrappedHierarchyLookup<IServerExtensionProvider<ItemStack>> itemStorageProviders;
-	public final WrappedHierarchyLookup<IServerExtensionProvider<CompoundTag>> fluidStorageProviders;
-	public final WrappedHierarchyLookup<IServerExtensionProvider<CompoundTag>> energyStorageProviders;
-	public final WrappedHierarchyLookup<IServerExtensionProvider<CompoundTag>> progressProviders;
+	public final WrappedHierarchyLookup<IServerExtensionProvider<FluidView.Data>> fluidStorageProviders;
+	public final WrappedHierarchyLookup<IServerExtensionProvider<EnergyView.Data>> energyStorageProviders;
+	public final WrappedHierarchyLookup<IServerExtensionProvider<ProgressView.Data>> progressProviders;
 	private CommonRegistrationSession session;
 
 	WailaCommonRegistration() {
@@ -122,7 +124,7 @@ public class WailaCommonRegistration implements IWailaCommonRegistration {
 	}
 
 	@Override
-	public <T> void registerFluidStorage(IServerExtensionProvider<CompoundTag> provider, Class<? extends T> clazz) {
+	public <T> void registerFluidStorage(IServerExtensionProvider<FluidView.Data> provider, Class<? extends T> clazz) {
 		if (isSessionActive()) {
 			session.registerFluidStorage(provider, clazz);
 		} else {
@@ -131,7 +133,7 @@ public class WailaCommonRegistration implements IWailaCommonRegistration {
 	}
 
 	@Override
-	public <T> void registerEnergyStorage(IServerExtensionProvider<CompoundTag> provider, Class<? extends T> clazz) {
+	public <T> void registerEnergyStorage(IServerExtensionProvider<EnergyView.Data> provider, Class<? extends T> clazz) {
 		if (isSessionActive()) {
 			session.registerEnergyStorage(provider, clazz);
 		} else {
@@ -140,7 +142,7 @@ public class WailaCommonRegistration implements IWailaCommonRegistration {
 	}
 
 	@Override
-	public <T> void registerProgress(IServerExtensionProvider<CompoundTag> provider, Class<? extends T> clazz) {
+	public <T> void registerProgress(IServerExtensionProvider<ProgressView.Data> provider, Class<? extends T> clazz) {
 		if (isSessionActive()) {
 			session.registerProgress(provider, clazz);
 		} else {

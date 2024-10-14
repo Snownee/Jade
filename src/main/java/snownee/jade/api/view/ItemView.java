@@ -28,14 +28,6 @@ public class ItemView {
 		return CommonProxy.containerGroup(container, accessor);
 	}
 
-	/**
-	 * @param storage  On Fabric, it accepts {@code Storage<ItemVariant>}. On NeoForge, it accepts {@code IItemHandler}.
-	 * @param accessor
-	 */
-	public static List<ViewGroup<ItemStack>> groupOf(Object storage, Accessor<?> accessor) {
-		return CommonProxy.storageGroup(storage, accessor);
-	}
-
 	public ItemView amountText(String amountText) {
 		this.amountText = amountText;
 		return this;

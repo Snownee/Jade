@@ -1,32 +1,39 @@
 package snownee.jade.addon.universal;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
+import java.util.Map;
 
-import net.minecraft.nbt.CompoundTag;
+import org.jetbrains.annotations.Nullable;
+
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IComponentProvider;
-import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
+import snownee.jade.api.StreamServerDataProvider;
 import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.view.ClientViewGroup;
+import snownee.jade.api.view.IServerExtensionProvider;
 import snownee.jade.api.view.ProgressView;
 import snownee.jade.api.view.ViewGroup;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
-import snownee.jade.util.WailaExceptionHandler;
+import snownee.jade.util.ClientProxy;
+import snownee.jade.util.CommonProxy;
 
-public abstract class ProgressProvider<T extends Accessor<?>> implements IComponentProvider<T>, IServerDataProvider<T> {
+public abstract class ProgressProvider<T extends Accessor<?>> implements IComponentProvider<T>, StreamServerDataProvider<T, Map.Entry<ResourceLocation, List<ViewGroup<ProgressView.Data>>>> {
+
+	private static final StreamCodec<RegistryFriendlyByteBuf, Map.Entry<ResourceLocation, List<ViewGroup<ProgressView.Data>>>> STREAM_CODEC = ViewGroup.listCodec(
+			ProgressView.Data.STREAM_CODEC).cast();
 
 	public static ForBlock getBlock() {
 		return ForBlock.INSTANCE;
@@ -44,28 +51,15 @@ public abstract class ProgressProvider<T extends Accessor<?>> implements ICompon
 		private static final ForEntity INSTANCE = new ForEntity();
 	}
 
-	public static void append(ITooltip tooltip, Accessor<?> accessor, IPluginConfig config) {
-		if (!accessor.getServerData().contains("JadeProgress")) {
-			return;
-		}
-
-		var provider = Optional.ofNullable(ResourceLocation.tryParse(accessor.getServerData().getString("JadeProgressUid"))).map(
-				WailaClientRegistration.instance().progressProviders::get).orElse(null);
-		if (provider == null) {
-			return;
-		}
-
-		List<ClientViewGroup<ProgressView>> groups;
-		try {
-			groups = provider.getClientGroups(
-					accessor,
-					ViewGroup.readList(accessor.getServerData(), "JadeProgress", Function.identity()));
-		} catch (Exception e) {
-			WailaExceptionHandler.handleErr(e, provider, tooltip::add);
-			return;
-		}
-
-		if (groups.isEmpty()) {
+	@Override
+	public void appendTooltip(ITooltip tooltip, T accessor, IPluginConfig config) {
+		List<ClientViewGroup<ProgressView>> groups = ClientProxy.mapToClientGroups(
+				accessor,
+				JadeIds.UNIVERSAL_PROGRESS,
+				STREAM_CODEC,
+				WailaClientRegistration.instance().progressProviders::get,
+				tooltip);
+		if (groups == null || groups.isEmpty()) {
 			return;
 		}
 
@@ -87,43 +81,19 @@ public abstract class ProgressProvider<T extends Accessor<?>> implements ICompon
 		});
 	}
 
-	public static void putData(Accessor<?> accessor) {
-		CompoundTag tag = accessor.getServerData();
-		for (var provider : WailaCommonRegistration.instance().progressProviders.get(accessor)) {
-			List<ViewGroup<CompoundTag>> groups;
-			try {
-				groups = provider.getGroups(accessor);
-			} catch (Exception e) {
-				WailaExceptionHandler.handleErr(e, provider, null);
-				continue;
-			}
-			if (groups != null) {
-				if (ViewGroup.saveList(tag, "JadeProgress", groups, Function.identity())) {
-					tag.putString("JadeProgressUid", provider.getUid().toString());
-				}
-				return;
-			}
-		}
+	@Override
+	public @Nullable Map.Entry<ResourceLocation, List<ViewGroup<ProgressView.Data>>> streamData(T accessor) {
+		return CommonProxy.getServerExtensionData(accessor, WailaCommonRegistration.instance().progressProviders);
 	}
 
 	@Override
-	public void appendTooltip(ITooltip tooltip, T accessor, IPluginConfig config) {
-		append(tooltip, accessor, config);
-	}
-
-	@Override
-	public void appendServerData(CompoundTag data, T accessor) {
-		putData(accessor);
+	public StreamCodec<RegistryFriendlyByteBuf, Map.Entry<ResourceLocation, List<ViewGroup<ProgressView.Data>>>> streamCodec() {
+		return STREAM_CODEC;
 	}
 
 	@Override
 	public boolean shouldRequestData(T accessor) {
-		for (var provider : WailaCommonRegistration.instance().progressProviders.get(accessor)) {
-			if (provider.shouldRequestData(accessor)) {
-				return true;
-			}
-		}
-		return false;
+		return WailaCommonRegistration.instance().progressProviders.hitsAny(accessor, IServerExtensionProvider::shouldRequestData);
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package snownee.jade.impl.lookup;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -32,7 +33,7 @@ public class WrappedHierarchyLookup<T extends IJadeProvider> extends HierarchyLo
 		}));
 	}
 
-	public List<T> get(Accessor<?> accessor) {
+	public List<T> wrappedGet(Accessor<?> accessor) {
 		List<T> list = Lists.newArrayList();
 		for (var override : overrides) {
 			Object o = override.getRight().apply(accessor);
@@ -42,6 +43,15 @@ public class WrappedHierarchyLookup<T extends IJadeProvider> extends HierarchyLo
 		}
 		list.addAll(get(accessor.getTarget()));
 		return list;
+	}
+
+	public boolean hitsAny(Accessor<?> accessor, BiPredicate<T, Accessor<?>> predicate) {
+		for (T provider : wrappedGet(accessor)) {
+			if (predicate.test(provider, accessor)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override
