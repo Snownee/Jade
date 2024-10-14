@@ -210,5 +210,6 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener<JadeClientCode
 			IWailaConfig.get().save();
 		}
 		config.applyTheme(config.activeTheme);
+		theme.setValue(config.getTheme());
 	}
 }

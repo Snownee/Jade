@@ -222,9 +222,6 @@ public final class ClientProxy implements ClientModInitializer {
 	}
 
 	public static boolean shouldShowWithGui(Minecraft mc, @Nullable Screen screen) {
-		if (mc.level == null) {
-			return false;
-		}
 		return screen == null || shouldShowBeforeGui(mc, screen) || shouldShowAfterGui(mc, screen);
 	}
 
@@ -233,6 +230,9 @@ public final class ClientProxy implements ClientModInitializer {
 	}
 
 	public static boolean shouldShowBeforeGui(Minecraft mc, @NotNull Screen screen) {
+		if (mc.level == null) {
+			return false;
+		}
 		IWailaConfig.General config = IWailaConfig.get().general();
 		return !config.shouldHideFromGUIs();
 	}
@@ -314,9 +314,6 @@ public final class ClientProxy implements ClientModInitializer {
 			}
 		});
 		ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
-			if (client.level == null) {
-				return;
-			}
 			if (shouldShowAfterGui(client, screen)) {
 				ScreenEvents.afterRender(screen).register((screen1, guiGraphics, mouseX, mouseY, tickDelta) -> {
 					onRenderTick(guiGraphics, tickDelta);
