@@ -90,9 +90,14 @@ public abstract class BaseOptionsScreen extends Screen {
 
 		saveButton = addRenderableWidget(Button.builder(Component.translatable("gui.jade.save_and_quit")
 				.withStyle(style -> style.withColor(0xFFB9F6CA)), w -> {
-			options.save();
-			saver.run();
-			minecraft.setScreen(parent);
+			if (options.invalidEntry == null) {
+				options.save();
+				saver.run();
+				minecraft.setScreen(parent);
+			} else {
+				changeFocus(ComponentPath.path(options.invalidEntry.getFirstWidget(), options.invalidEntry, options, this));
+				options.ensureVisible(options.invalidEntry);
+			}
 		}).bounds(width - 100, height - 25, 90, 20).build());
 		if (canceller != null) {
 			addRenderableWidget(Button.builder(CommonComponents.GUI_CANCEL, w -> {

@@ -146,34 +146,26 @@ public class WailaConfig implements IWailaConfig {
 
 		public static final class ExtraOptions {
 			public static final MapCodec<ExtraOptions> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
-					Codec.BOOL.fieldOf("hideFromDebug").orElse(true).forGetter(ExtraOptions::hideFromDebug),
 					Codec.BOOL.fieldOf("hideFromTabList").orElse(true).forGetter(ExtraOptions::hideFromTabList),
 					Codec.BOOL.fieldOf("hideFromGUIs").orElse(true).forGetter(ExtraOptions::hideFromGUIs),
 					Codec.BOOL.fieldOf("accessibilityModMemory").orElse(false).forGetter(ExtraOptions::accessibilityModMemory),
 					Codec.BOOL.fieldOf("enableAccessibilityPlugin").orElse(false).forGetter(ExtraOptions::enableAccessibilityPlugin)
 			).apply(i, ExtraOptions::new));
 
-			private boolean hideFromDebug;
 			private boolean hideFromTabList;
 			private boolean hideFromGUIs;
 			public boolean accessibilityModMemory;
 			public boolean enableAccessibilityPlugin;
 
 			public ExtraOptions(
-					boolean hideFromDebug,
 					boolean hideFromTabList,
 					boolean hideFromGUIs,
 					boolean accessibilityModMemory,
 					boolean enableAccessibilityPlugin) {
-				this.hideFromDebug = hideFromDebug;
 				this.hideFromTabList = hideFromTabList;
 				this.hideFromGUIs = hideFromGUIs;
 				this.accessibilityModMemory = accessibilityModMemory;
 				this.enableAccessibilityPlugin = enableAccessibilityPlugin;
-			}
-
-			public boolean hideFromDebug() {
-				return hideFromDebug;
 			}
 
 			public boolean hideFromTabList() {
@@ -190,10 +182,6 @@ public class WailaConfig implements IWailaConfig {
 
 			public boolean enableAccessibilityPlugin() {
 				return enableAccessibilityPlugin;
-			}
-
-			public void setHideFromDebug(boolean hideFromDebug) {
-				this.hideFromDebug = hideFromDebug;
 			}
 
 			public void setHideFromTabList(boolean hideFromTabList) {
@@ -291,11 +279,6 @@ public class WailaConfig implements IWailaConfig {
 		}
 
 		@Override
-		public void setHideFromDebug(boolean hideFromDebug) {
-			this.extraOptions.setHideFromDebug(hideFromDebug);
-		}
-
-		@Override
 		public void toggleTTS() {
 			enableTextToSpeech = !enableTextToSpeech;
 		}
@@ -313,11 +296,6 @@ public class WailaConfig implements IWailaConfig {
 		@Override
 		public void setDisplayMode(DisplayMode displayMode) {
 			this.displayMode = displayMode;
-		}
-
-		@Override
-		public boolean shouldHideFromDebug() {
-			return extraOptions.hideFromDebug();
 		}
 
 		@Override

@@ -73,8 +73,6 @@ public interface IWailaConfig {
 
 		void setDisplayBlocks(boolean displayBlocks);
 
-		void setHideFromDebug(boolean hideFromDebug);
-
 		void setHideFromTabList(boolean hideFromTabList);
 
 		void setHideFromGUIs(boolean hideFromGUIs);
@@ -88,8 +86,6 @@ public interface IWailaConfig {
 		DisplayMode getDisplayMode();
 
 		void setDisplayMode(DisplayMode displayMode);
-
-		boolean shouldHideFromDebug();
 
 		boolean shouldHideFromTabList();
 

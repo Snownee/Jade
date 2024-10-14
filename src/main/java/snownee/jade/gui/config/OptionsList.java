@@ -33,6 +33,7 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -64,6 +65,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 	protected final List<Entry> entries = Lists.newArrayList();
 	private final Runnable diskWriter;
 	public Title currentTitle;
+	public OptionValue<?> invalidEntry;
 	public KeyMapping selectedKey;
 	private BaseOptionsScreen owner;
 	private final SmoothChasingValue smoothScroll;
@@ -377,13 +379,18 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 	}
 
 	public void updateSaveState() {
+		invalidEntry = null;
 		for (Entry entry : entries) {
 			if (entry instanceof OptionValue<?> value && !value.isValidValue()) {
-				owner.saveButton.active = false;
-				return;
+				invalidEntry = value;
+				break;
 			}
 		}
-		owner.saveButton.active = true;
+		if (invalidEntry == null) {
+			owner.saveButton.setTooltip(null);
+		} else {
+			owner.saveButton.setTooltip(Tooltip.create(Component.translatable("gui.jade.invalid_value_cant_save")));
+		}
 	}
 
 	public void updateOptionValue(@Nullable ResourceLocation key) {
@@ -439,9 +446,9 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 	public static class Entry extends ContainerObjectSelectionList.Entry<Entry> {
 
 		protected final Minecraft client;
-		private final List<String> messages = Lists.newArrayList();
-		private final List<AbstractWidget> widgets = Lists.newArrayList();
-		private final List<Vector2i> widgetOffsets = Lists.newArrayList();
+		protected final List<String> messages = Lists.newArrayList();
+		protected final List<AbstractWidget> widgets = Lists.newArrayList();
+		protected final List<Vector2i> widgetOffsets = Lists.newArrayList();
 		protected List<Component> description = List.of();
 		private Entry parent;
 		private List<Entry> children = List.of();

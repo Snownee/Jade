@@ -7,7 +7,7 @@ import net.minecraft.network.chat.Component;
 
 public class OptionButton extends OptionsList.Entry {
 
-	protected final Component title;
+	protected Component title;
 
 	public OptionButton(String titleKey, Button button) {
 		this(makeTitle(titleKey), button);

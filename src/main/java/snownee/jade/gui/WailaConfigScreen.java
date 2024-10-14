@@ -119,8 +119,6 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 				value.getFirstWidget().setTooltip(MultilineTooltip.create(value.getDescription()));
 			}
 		}
-		options.choices("hide_from_debug", general::shouldHideFromDebug, general::setHideFromDebug);
-		options.choices("hide_from_tab_list", general::shouldHideFromTabList, general::setHideFromTabList);
 		options.choices("hide_from_guis", general::shouldHideFromGUIs, general::setHideFromGUIs);
 		options.choices("boss_bar_overlap", general::getBossBarOverlapMode, general::setBossBarOverlapMode);
 		options.slider("reach_distance", general::getExtendedReach, general::setExtendedReach, 0, 20, f -> Mth.floor(f * 2) / 2F);
@@ -173,9 +171,9 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 		options.keybind(JadeClient.showDetails);
 
 		options.title("accessibility");
-		options.choices("flip_main_hand", overlay::getFlipMainHand, overlay::setFlipMainHand);
-		options.choices("tts_mode", general::getTTSMode, general::setTTSMode);
 		options.choices("accessibility_plugin", general::getEnableAccessibilityPlugin, general::setEnableAccessibilityPlugin);
+		options.choices("tts_mode", general::getTTSMode, general::setTTSMode);
+		options.choices("flip_main_hand", overlay::getFlipMainHand, overlay::setFlipMainHand);
 
 		options.title("danger_zone").withStyle(ChatFormatting.RED);
 		Component reset = Component.translatable("controls.reset").withStyle(ChatFormatting.RED);
