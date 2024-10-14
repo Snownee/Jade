@@ -1,5 +1,6 @@
 package snownee.jade.impl;
 
+import java.util.List;
 import java.util.function.Function;
 
 import net.minecraft.world.item.ItemStack;
@@ -29,20 +30,19 @@ public class BlockAccessorClientHandler implements AccessorClientHandler<BlockAc
 	}
 
 	@Override
-	public boolean shouldRequestData(BlockAccessor accessor) {
-		for (IServerDataProvider<BlockAccessor> provider : WailaCommonRegistration.instance().getBlockNBTProviders(
+	public List<IServerDataProvider<BlockAccessor>> shouldRequestData(BlockAccessor accessor) {
+		List<IServerDataProvider<BlockAccessor>> providers = WailaCommonRegistration.instance().getBlockNBTProviders(
 				accessor.getBlock(),
-				accessor.getBlockEntity())) {
-			if (provider.shouldRequestData(accessor)) {
-				return true;
-			}
+				accessor.getBlockEntity());
+		if (providers.isEmpty()) {
+			return List.of();
 		}
-		return false;
+		return providers.stream().filter(provider -> provider.shouldRequestData(accessor)).toList();
 	}
 
 	@Override
-	public void requestData(BlockAccessor accessor) {
-		ClientProxy.requestBlockData(accessor);
+	public void requestData(BlockAccessor accessor, List<IServerDataProvider<BlockAccessor>> providers) {
+		ClientProxy.requestBlockData(accessor, providers);
 	}
 
 	@Override

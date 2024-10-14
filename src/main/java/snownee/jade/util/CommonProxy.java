@@ -121,7 +121,10 @@ public final class CommonProxy implements ModInitializer {
 	public static boolean hasTechRebornEnergy = isModLoaded("team_reborn_energy");
 
 	@Nullable
-	public static String getLastKnownUsername(UUID uuid) {
+	public static String getLastKnownUsername(@Nullable UUID uuid) {
+		if (uuid == null) {
+			return null;
+		}
 		Optional<GameProfile> optional = SkullBlockEntity.fetchGameProfile(uuid).getNow(Optional.empty());
 		if (optional.isPresent()) {
 			return optional.get().getName();
@@ -401,7 +404,9 @@ public final class CommonProxy implements ModInitializer {
 		if (!configs.isEmpty()) {
 			Jade.LOGGER.debug("Syncing config to {} ({})", player.getGameProfile().getName(), player.getGameProfile().getId());
 		}
-		ServerPlayNetworking.send(player, new ServerPingPacket(configs, shearableBlocks));
+		List<ResourceLocation> blockProviderIds = WailaCommonRegistration.instance().blockDataProviders.mappedIds();
+		List<ResourceLocation> entityProviderIds = WailaCommonRegistration.instance().entityDataProviders.mappedIds();
+		ServerPlayNetworking.send(player, new ServerPingPacket(configs, shearableBlocks, blockProviderIds, entityProviderIds));
 	}
 
 	public static boolean isModLoaded(String modid) {

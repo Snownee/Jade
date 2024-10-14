@@ -1,5 +1,6 @@
 package snownee.jade.impl;
 
+import java.util.List;
 import java.util.function.Function;
 
 import net.minecraft.world.entity.Entity;
@@ -37,19 +38,18 @@ public class EntityAccessorClientHandler implements AccessorClientHandler<Entity
 	}
 
 	@Override
-	public boolean shouldRequestData(EntityAccessor accessor) {
-		for (IServerDataProvider<EntityAccessor> provider : WailaCommonRegistration.instance()
-				.getEntityNBTProviders(accessor.getEntity())) {
-			if (provider.shouldRequestData(accessor)) {
-				return true;
-			}
+	public List<IServerDataProvider<EntityAccessor>> shouldRequestData(EntityAccessor accessor) {
+		List<IServerDataProvider<EntityAccessor>> providers = WailaCommonRegistration.instance()
+				.getEntityNBTProviders(accessor.getEntity());
+		if (providers.isEmpty()) {
+			return List.of();
 		}
-		return false;
+		return providers.stream().filter(provider -> provider.shouldRequestData(accessor)).toList();
 	}
 
 	@Override
-	public void requestData(EntityAccessor accessor) {
-		ClientProxy.requestEntityData(accessor);
+	public void requestData(EntityAccessor accessor, List<IServerDataProvider<EntityAccessor>> providers) {
+		ClientProxy.requestEntityData(accessor, providers);
 	}
 
 	@Override
