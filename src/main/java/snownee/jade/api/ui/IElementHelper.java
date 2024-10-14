@@ -1,7 +1,10 @@
 package snownee.jade.api.ui;
 
+import java.util.function.Function;
+
 import org.jetbrains.annotations.Nullable;
 
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -52,6 +55,8 @@ public interface IElementHelper {
 	ITooltip tooltip();
 
 	ProgressStyle progressStyle();
+
+	IElement sprite(Function<ResourceLocation, RenderType> function, ResourceLocation sprite, int width, int height);
 
 	IElement sprite(ResourceLocation sprite, int width, int height);
 }

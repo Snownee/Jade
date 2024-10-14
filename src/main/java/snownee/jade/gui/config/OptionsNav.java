@@ -15,10 +15,14 @@ import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.gui.navigation.ScreenDirection;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import snownee.jade.api.JadeIds;
 
 public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
-
+	private static final ResourceLocation NAVBAR_BACKGROUND = JadeIds.JADE("navbar_background");
+	private static final ResourceLocation INWORLD_NAVBAR_BACKGROUND = JadeIds.JADE("inworld_navbar_background");
 	private final OptionsList options;
 	private int current;
 
@@ -43,6 +47,12 @@ public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
 		guiGraphics.pose().translate(0, top, 0);
 		guiGraphics.fill(left, 0, left + 2, itemHeight - 4, 0xFFFFFFFF);
 		guiGraphics.pose().popPose();
+	}
+
+	@Override
+	protected void renderListBackground(GuiGraphics guiGraphics) {
+		ResourceLocation resourceLocation = minecraft.level == null ? NAVBAR_BACKGROUND : INWORLD_NAVBAR_BACKGROUND;
+		guiGraphics.blitSprite(RenderType::guiTextured, resourceLocation, getX(), getY(), getWidth(), getHeight());
 	}
 
 	@Override

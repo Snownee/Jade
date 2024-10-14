@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -86,20 +87,20 @@ public class HealthElement extends Element {
 		for (int i = iconCount; i > 0; --i) {
 			int xPos = (int) (x + xOffset);
 			int yPos = (int) (y + yOffset);
-			helper.blitSprite(guiGraphics, blink ? EMPTY_HEART_BLINKING : EMPTY_HEART, xPos, yPos, 9, 9);
+			helper.blitSprite(guiGraphics, RenderType::guiTextured, blink ? EMPTY_HEART_BLINKING : EMPTY_HEART, xPos, yPos, 9, 9);
 
 			if (i <= Mth.floor(health)) {
-				helper.blitSprite(guiGraphics, HEART, xPos, yPos, 9, 9);
+				helper.blitSprite(guiGraphics, RenderType::guiTextured, HEART, xPos, yPos, 9, 9);
 			}
 
 			if (i > health) {
 				if (i <= Mth.floor(lastHealth)) {
-					helper.blitSprite(guiGraphics, HEART_BLINKING, xPos, yPos, 9, 9);
+					helper.blitSprite(guiGraphics, RenderType::guiTextured, HEART_BLINKING, xPos, yPos, 9, 9);
 				} else if ((i > lastHealth) && (i < lastHealth + 1)) {
-					helper.blitSprite(guiGraphics, HALF_HEART_BLINKING, xPos, yPos, 9, 9);
+					helper.blitSprite(guiGraphics, RenderType::guiTextured, HALF_HEART_BLINKING, xPos, yPos, 9, 9);
 				}
 				if (i < health + 1) {
-					helper.blitSprite(guiGraphics, HALF_HEART, xPos, yPos, 9, 9);
+					helper.blitSprite(guiGraphics, RenderType::guiTextured, HALF_HEART, xPos, yPos, 9, 9);
 				}
 			}
 

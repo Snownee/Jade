@@ -15,6 +15,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
@@ -38,7 +39,8 @@ public class NotUglyEditBox extends AbstractWidget implements Renderable {
 	public Consumer<String> responder;
 	private String value = "";
 	private int maxLength = 32;
-	private boolean bordered = true;
+	@Nullable
+	private WidgetSprites background = EditBox.SPRITES;
 	private boolean canLoseFocus = true;
 	private boolean isEditable = true;
 	private boolean shiftPressed;
@@ -343,8 +345,8 @@ public class NotUglyEditBox extends AbstractWidget implements Renderable {
 		if (!this.isVisible()) {
 			return;
 		}
-		if (this.isBordered()) {
-			ResourceLocation resourceLocation = EditBox.SPRITES.get(this.isActive(), this.isFocused());
+		if (background != null) {
+			ResourceLocation resourceLocation = background.get(this.isActive(), this.isFocused());
 			guiGraphics.blitSprite(RenderType::guiTextured, resourceLocation, this.getX(), this.getY(), this.getWidth(), this.getHeight());
 		} else {
 			guiGraphics.fill(this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), 0xC0000000);
@@ -437,12 +439,13 @@ public class NotUglyEditBox extends AbstractWidget implements Renderable {
 		this.cursorPos = Mth.clamp(i, 0, this.value.length());
 	}
 
-	public boolean isBordered() {
-		return this.bordered;
+	@Nullable
+	public WidgetSprites getBackground() {
+		return background;
 	}
 
-	public void setBordered(boolean bl) {
-		this.bordered = bl;
+	public void setBackground(@Nullable WidgetSprites background) {
+		this.background = background;
 	}
 
 	public void setTextColor(int i) {

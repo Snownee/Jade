@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -62,14 +63,14 @@ public class ArmorElement extends Element {
 		int xOffset = (iconCount - 1) % iconsPerLine * 8;
 		int yOffset = lineCount * 4 - 4;
 		for (int i = iconCount; i > 0; --i) {
-			helper.blitSprite(guiGraphics, EMPTY_ARMOR, (int) (x + xOffset), (int) (y + yOffset), 9, 9);
+			helper.blitSprite(guiGraphics, RenderType::guiTextured, EMPTY_ARMOR, (int) (x + xOffset), (int) (y + yOffset), 9, 9);
 
 			if (i <= Mth.floor(armor)) {
-				helper.blitSprite(guiGraphics, ARMOR, (int) (x + xOffset), (int) (y + yOffset), 9, 9);
+				helper.blitSprite(guiGraphics, RenderType::guiTextured, ARMOR, (int) (x + xOffset), (int) (y + yOffset), 9, 9);
 			}
 
 			if ((i > armor) && (i < armor + 1)) {
-				helper.blitSprite(guiGraphics, HALF_ARMOR, (int) (x + xOffset), (int) (y + yOffset), 9, 9);
+				helper.blitSprite(guiGraphics, RenderType::guiTextured, HALF_ARMOR, (int) (x + xOffset), (int) (y + yOffset), 9, 9);
 			}
 
 			xOffset -= 8;

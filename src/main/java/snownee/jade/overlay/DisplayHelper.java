@@ -429,19 +429,23 @@ public class DisplayHelper implements IDisplayHelper {
 	}
 
 	@Override
-	public void blitSprite(GuiGraphics guiGraphics, ResourceLocation resourceLocation, int i, int j, int k, int l) {
+	public void blitSprite(GuiGraphics guiGraphics,
+			Function<ResourceLocation, RenderType> function,
+			ResourceLocation resourceLocation, int i, int j, int k, int l) {
 		guiGraphics.blitSprite(RenderType::guiTextured, resourceLocation, i, j, k, l, ARGB.white(opacity()));
 	}
 
 	@Override
-	public void blitSprite(GuiGraphics guiGraphics, ResourceLocation resourceLocation, int i, int j, int k, int l, int m) {
+	public void blitSprite(GuiGraphics guiGraphics,
+			Function<ResourceLocation, RenderType> function,
+			ResourceLocation resourceLocation, int i, int j, int k, int l, int m) {
 		guiGraphics.blitSprite(RenderType::guiTextured, resourceLocation, i, j, k, l, ARGB.color(ARGB.as8BitChannel(opacity()), m));
 	}
 
 	@Override
 	public void blitSprite(
 			GuiGraphics guiGraphics,
-			ResourceLocation resourceLocation,
+			Function<ResourceLocation, RenderType> function, ResourceLocation resourceLocation,
 			int i,
 			int j,
 			int k,

@@ -1,10 +1,12 @@
 package snownee.jade.api.ui;
 
 import java.text.Format;
+import java.util.function.Function;
 
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
@@ -37,11 +39,37 @@ public interface IDisplayHelper {
 
 	MutableComponent stripColor(Component component);
 
-	void blitSprite(GuiGraphics guiGraphics, ResourceLocation resourceLocation, int i, int j, int k, int l);
+	void blitSprite(
+			GuiGraphics guiGraphics,
+			Function<ResourceLocation, RenderType> function,
+			ResourceLocation resourceLocation,
+			int i,
+			int j,
+			int k,
+			int l);
 
-	void blitSprite(GuiGraphics guiGraphics, ResourceLocation resourceLocation, int i, int j, int k, int l, int m);
+	void blitSprite(
+			GuiGraphics guiGraphics,
+			Function<ResourceLocation, RenderType> function,
+			ResourceLocation resourceLocation,
+			int i,
+			int j,
+			int k,
+			int l,
+			int m);
 
-	void blitSprite(GuiGraphics guiGraphics, ResourceLocation resourceLocation, int i, int j, int k, int l, int m, int n, int o, int p);
+	void blitSprite(
+			GuiGraphics guiGraphics,
+			Function<ResourceLocation, RenderType> function,
+			ResourceLocation resourceLocation,
+			int i,
+			int j,
+			int k,
+			int l,
+			int m,
+			int n,
+			int o,
+			int p);
 
 	float opacity();
 }
