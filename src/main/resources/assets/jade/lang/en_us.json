@@ -315,6 +315,8 @@
 	"jade.access.block.extended": "Extended %s",
 	"jade.access.block.powered": "Powered %s",
 	"jade.access.block.summonable": "Summonable %s",
+	"jade.access.block.hatch.1": "Slightly Cracked %s",
+	"jade.access.block.hatch.2": "Cracked %s",
 	"jade.access.block.amount": "Amount: %s",
 	"jade.access.block.level": "Level: %s",
 	"jade.access.block.layers": "Layers: %s",
