@@ -65,10 +65,6 @@ public class OverlayRenderer {
 	public static boolean shouldShowImmediately(BoxElement box) {
 		Minecraft mc = Minecraft.getInstance();
 
-		if (mc.level == null) {
-			return false;
-		}
-
 		if (!ClientProxy.shouldShowWithGui(mc, mc.screen)) {
 			return false;
 		}
@@ -223,5 +219,10 @@ public class OverlayRenderer {
 		}
 
 		shown = true;
+	}
+
+	public static void clearState() {
+		lingerTooltip = null;
+		WailaTickHandler.clearLastNarration();
 	}
 }

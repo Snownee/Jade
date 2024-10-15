@@ -212,5 +212,6 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener implements ITh
 			Jade.CONFIG.save();
 		}
 		config.applyTheme(config.activeTheme);
+		theme.setValue(config.getTheme());
 	}
 }

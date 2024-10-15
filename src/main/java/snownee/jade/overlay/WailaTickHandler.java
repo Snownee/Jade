@@ -28,10 +28,9 @@ import snownee.jade.api.callback.JadeRayTraceCallback;
 import snownee.jade.api.callback.JadeTooltipCollectedCallback;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.IWailaConfig.DisplayMode;
-import snownee.jade.api.config.IWailaConfig.IConfigGeneral;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
-import snownee.jade.gui.BaseOptionsScreen;
+import snownee.jade.gui.PreviewOptionsScreen;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.Tooltip;
 import snownee.jade.impl.WailaClientRegistration;
@@ -82,22 +81,29 @@ public class WailaTickHandler {
 	}
 
 	public void tickClient() {
+		Minecraft mc = Minecraft.getInstance();
+		Level level = mc.level;
+		if (level == null) {
+			rootElement = null;
+			progressTracker.clear();
+			OverlayRenderer.clearState();
+			return;
+		}
+
 		progressTracker.tick();
 
-		IConfigGeneral config = IWailaConfig.get().getGeneral();
+		IWailaConfig.IConfigGeneral config = IWailaConfig.get().getGeneral();
 		if (!config.shouldDisplayTooltip()) {
 			rootElement = null;
 			return;
 		}
 
-		Minecraft client = Minecraft.getInstance();
-		if (!ClientProxy.shouldShowWithGui(client, client.screen)) {
+		if (!ClientProxy.shouldShowWithGui(mc, mc.screen)) {
 			return;
 		}
 
-		Level world = client.level;
-		Entity entity = client.getCameraEntity();
-		if (world == null || entity == null) {
+		Entity entity = mc.getCameraEntity();
+		if (entity == null) {
 			rootElement = null;
 			return;
 		}
@@ -114,8 +120,8 @@ public class WailaTickHandler {
 
 		Accessor<?> accessor = null;
 		if (target instanceof BlockHitResult blockTarget && blockTarget.getType() != HitResult.Type.MISS) {
-			BlockState state = RayTracing.wrapBlock(world, blockTarget, CollisionContext.of(entity));
-			BlockEntity tileEntity = world.getBlockEntity(blockTarget.getBlockPos());
+			BlockState state = RayTracing.wrapBlock(level, blockTarget, CollisionContext.of(entity));
+			BlockEntity tileEntity = level.getBlockEntity(blockTarget.getBlockPos());
 			/* off */
 			accessor = WailaClientRegistration.instance().blockAccessor()
 					.blockState(state)
@@ -132,7 +138,7 @@ public class WailaTickHandler {
 					.requireVerification()
 					.build();
 			/* on */
-		} else if (client.screen instanceof BaseOptionsScreen) {
+		} else if (mc.screen instanceof PreviewOptionsScreen) {
 			/* off */
 			accessor = WailaClientRegistration.instance().blockAccessor()
 					.blockState(Blocks.GRASS_BLOCK.defaultBlockState())
@@ -204,5 +210,6 @@ public class WailaTickHandler {
 			callback.onTooltipCollected(newElement, accessor);
 		}
 		rootElement = newElement;
+		ThemeHelper.theme.setValue(theme);
 	}
 }
