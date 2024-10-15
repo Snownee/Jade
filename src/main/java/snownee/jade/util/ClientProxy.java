@@ -1,9 +1,11 @@
 package snownee.jade.util;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import org.jetbrains.annotations.NotNull;
@@ -25,7 +27,10 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
@@ -63,13 +68,18 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforgespi.language.IModInfo;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
+import snownee.jade.api.Accessor;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IServerDataProvider;
+import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.IWailaConfig.BossBarOverlapMode;
 import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.ui.IElement;
+import snownee.jade.api.view.ClientViewGroup;
+import snownee.jade.api.view.IClientExtensionProvider;
+import snownee.jade.api.view.ViewGroup;
 import snownee.jade.command.JadeClientCommand;
 import snownee.jade.compat.JEICompat;
 import snownee.jade.gui.BaseOptionsScreen;
@@ -322,5 +332,32 @@ public final class ClientProxy {
 
 	public static boolean hasAccessibilityMod() {
 		return hasAccessibilityMod;
+	}
+
+	@Nullable
+	public static <IN, OUT> List<ClientViewGroup<OUT>> mapToClientGroups(
+			Accessor<?> accessor,
+			ResourceLocation key,
+			StreamCodec<RegistryFriendlyByteBuf, Map.Entry<ResourceLocation, List<ViewGroup<IN>>>> codec,
+			Function<ResourceLocation, IClientExtensionProvider<IN, OUT>> mapper,
+			ITooltip tooltip) {
+		Tag tag = accessor.getServerData().get(key.toString());
+		if (tag == null) {
+			return null;
+		}
+		Map.Entry<ResourceLocation, List<ViewGroup<IN>>> entry = accessor.decodeFromNbt(codec, tag).orElse(null);
+		if (entry == null) {
+			return null;
+		}
+		IClientExtensionProvider<IN, OUT> provider = mapper.apply(entry.getKey());
+		if (provider == null) {
+			return null;
+		}
+		try {
+			return provider.getClientGroups(accessor, entry.getValue());
+		} catch (Exception e) {
+			WailaExceptionHandler.handleErr(e, provider, tooltip::add);
+			return null;
+		}
 	}
 }

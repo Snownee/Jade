@@ -9,7 +9,6 @@ import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.ui.IElement;
-import snownee.jade.util.CommonProxy;
 
 public class ItemView {
 
@@ -24,16 +23,17 @@ public class ItemView {
 		this.item = item;
 	}
 
+	@Deprecated
 	public static List<ViewGroup<ItemStack>> groupOf(Container container, Accessor<?> accessor) {
-		return CommonProxy.containerGroup(container, accessor);
+		return ItemViewUtils.groupOf(container, accessor);
 	}
 
 	/**
-	 * @param storage  On Fabric, it accepts {@code Storage<ItemVariant>}. On NeoForge, it accepts {@code IItemHandler}.
-	 * @param accessor
+	 * @param storage On Fabric, it accepts {@code Storage<ItemVariant>}. On NeoForge, it accepts {@code IItemHandler}.
 	 */
+	@Deprecated
 	public static List<ViewGroup<ItemStack>> groupOf(Object storage, Accessor<?> accessor) {
-		return CommonProxy.storageGroup(storage, accessor);
+		return ItemViewUtils.groupOf(storage, accessor);
 	}
 
 	public ItemView amountText(String amountText) {
