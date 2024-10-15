@@ -17,7 +17,6 @@ import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
-import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
@@ -26,9 +25,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
 import snownee.jade.JadeClient;
-import snownee.jade.api.JadeIds;
 import snownee.jade.gui.config.BelowOrAboveListEntryTooltipPositioner;
 import snownee.jade.gui.config.NotUglyEditBox;
 import snownee.jade.gui.config.OptionsList;
@@ -75,8 +72,7 @@ public abstract class BaseOptionsScreen extends Screen {
 				return super.nextFocusPath(event);
 			}
 		};
-		ResourceLocation searchBoxBackground = JadeIds.JADE("search_box_background");
-		searchBox.setBackground(new WidgetSprites(searchBoxBackground, searchBoxBackground));
+		searchBox.setBordered(false);
 		searchBox.setHint(Component.translatable("gui.jade.search.hint"));
 		searchBox.responder = s -> {
 			options.updateSearch(s);
