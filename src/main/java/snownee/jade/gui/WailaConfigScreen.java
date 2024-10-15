@@ -122,6 +122,12 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 		options.choices("hide_from_guis", general::shouldHideFromGUIs, general::setHideFromGUIs);
 		options.choices("boss_bar_overlap", general::getBossBarOverlapMode, general::setBossBarOverlapMode);
 		options.slider("reach_distance", general::getExtendedReach, general::setExtendedReach, 0, 20, f -> Mth.floor(f * 2) / 2F);
+		options.choices("perspective_mode", general::getPerspectiveMode, general::setPerspectiveMode, builder -> {
+			builder.withTooltip(mode -> {
+				String key = "perspective_mode_" + mode.name().toLowerCase(Locale.ENGLISH) + "_desc";
+				return Tooltip.create(OptionsList.Entry.makeTitle(key));
+			});
+		});
 
 		ConfigOverlay overlay = Jade.CONFIG.get().getOverlay();
 		options.title("overlay");
