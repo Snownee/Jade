@@ -56,6 +56,10 @@ public interface IWailaConfig {
 		NO_OPERATION, HIDE_BOSS_BAR, HIDE_TOOLTIP, PUSH_DOWN
 	}
 
+	enum PerspectiveMode implements SimpleStringRepresentable {
+		CAMERA, EYE
+	}
+
 	@NonExtendable
 	interface IConfigGeneral {
 
@@ -130,6 +134,10 @@ public interface IWailaConfig {
 		boolean getEnableAccessibilityPlugin();
 
 		void setEnableAccessibilityPlugin(boolean showAccessibilityPlugins);
+
+		PerspectiveMode getPerspectiveMode();
+
+		void setPerspectiveMode(PerspectiveMode perspectiveMode);
 	}
 
 	@NonExtendable

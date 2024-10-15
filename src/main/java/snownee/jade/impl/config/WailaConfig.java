@@ -117,6 +117,9 @@ public class WailaConfig implements IWailaConfig {
 				StringRepresentable.fromEnum(FluidMode::values)
 						.fieldOf("fluidMode").orElse(FluidMode.ANY)
 						.forGetter(ConfigGeneral::getDisplayFluids),
+				StringRepresentable.fromEnum(PerspectiveMode::values)
+						.fieldOf("perspectiveMode").orElse(PerspectiveMode.CAMERA)
+						.forGetter(ConfigGeneral::getPerspectiveMode),
 				Codec.floatRange(0, 20).fieldOf("extendedReach").orElse(0F).forGetter(ConfigGeneral::getExtendedReach),
 				Codec.BOOL.fieldOf("debug").orElse(false).forGetter(ConfigGeneral::isDebug),
 				Codec.BOOL.fieldOf("itemModNameTooltip").orElse(true).forGetter(ConfigGeneral::showItemModNameTooltip),
@@ -142,6 +145,7 @@ public class WailaConfig implements IWailaConfig {
 		private boolean itemModNameTooltip;
 		private BossBarOverlapMode bossBarOverlapMode;
 		private boolean builtinCamouflage;
+		private PerspectiveMode perspectiveMode;
 		private final ExtraOptions extraOptions;
 
 		public static final class ExtraOptions {
@@ -211,6 +215,7 @@ public class WailaConfig implements IWailaConfig {
 				boolean enableTextToSpeech,
 				TTSMode ttsMode,
 				FluidMode fluidMode,
+				PerspectiveMode perspectiveMode,
 				float extendedReach,
 				boolean debug,
 				boolean itemModNameTooltip,
@@ -226,6 +231,7 @@ public class WailaConfig implements IWailaConfig {
 			this.enableTextToSpeech = enableTextToSpeech;
 			this.ttsMode = ttsMode;
 			this.fluidMode = fluidMode;
+			this.perspectiveMode = perspectiveMode;
 			this.extendedReach = extendedReach;
 			this.debug = debug;
 			this.itemModNameTooltip = itemModNameTooltip;
@@ -431,6 +437,16 @@ public class WailaConfig implements IWailaConfig {
 		@Override
 		public void setEnableAccessibilityPlugin(boolean enableAccessibilityPlugin) {
 			extraOptions.setEnableAccessibilityPlugin(enableAccessibilityPlugin);
+		}
+
+		@Override
+		public PerspectiveMode getPerspectiveMode() {
+			return perspectiveMode;
+		}
+
+		@Override
+		public void setPerspectiveMode(PerspectiveMode perspectiveMode) {
+			this.perspectiveMode = perspectiveMode;
 		}
 	}
 

@@ -2,6 +2,7 @@ package snownee.jade.addon.core;
 
 import java.text.DecimalFormat;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
@@ -53,7 +54,8 @@ public abstract class DistanceProvider implements IToggleableProvider {
 	private static final int[] colors = {0xef9a9a, 0xa5d6a7, 0x90caf9, 0xb02a37, 0x198754, 0x0a58ca};
 
 	public static String distance(Accessor<?> accessor) {
-		return fmt.format(accessor.getPlayer().getEyePosition().distanceTo(accessor.getHitResult().getLocation()));
+		float partialTick = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
+		return fmt.format(accessor.getPlayer().getEyePosition(partialTick).distanceTo(accessor.getHitResult().getLocation()));
 	}
 
 	public static void xyz(ITooltip tooltip, Vec3i pos) {
