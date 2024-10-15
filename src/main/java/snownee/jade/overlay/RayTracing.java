@@ -127,7 +127,7 @@ public class RayTracing {
 
 	public HitResult rayTrace(Entity entity, double blockReach, double entityReach) {
 		Camera camera = mc.gameRenderer.getMainCamera();
-		float f = mc.getDeltaTracker().getGameTimeDeltaPartialTick(true);
+		float f = mc.getTimer().getGameTimeDeltaPartialTick(true);
 		Vec3 eyePosition = entity.getEyePosition(f);
 		boolean startFromEye = false;
 		Vec3 traceStart = startFromEye ? eyePosition : camera.getPosition();

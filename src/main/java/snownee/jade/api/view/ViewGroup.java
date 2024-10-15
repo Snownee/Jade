@@ -38,7 +38,7 @@ public class ViewGroup<T> {
 				Map::entry);
 	}
 
-	public final List<T> views;
+	public List<T> views;
 	@Nullable
 	public String id;
 	@Nullable

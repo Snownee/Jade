@@ -15,7 +15,7 @@ import snownee.jade.api.JadeIds;
 import snownee.jade.impl.ObjectDataCenter;
 
 public record ReceiveDataPacket(CompoundTag tag) implements CustomPacketPayload {
-	public static final int MAX_SIZE = 12 * 1024;
+	public static final int MAX_SIZE = 16 * 1024;
 	public static final Type<ReceiveDataPacket> TYPE = new Type<>(JadeIds.PACKET_RECEIVE_DATA);
 	public static final StreamCodec<FriendlyByteBuf, ReceiveDataPacket> CODEC = StreamCodec.composite(
 			ByteBufCodecs.COMPOUND_TAG,
@@ -38,7 +38,7 @@ public record ReceiveDataPacket(CompoundTag tag) implements CustomPacketPayload 
 	public static void send(CompoundTag tag, ServerPayloadContext context) {
 		int size = tag.sizeInBytes();
 		if (size > MAX_SIZE) {
-			if (spamCount++ < 10) {
+			if (spamCount++ < 3) {
 				Jade.LOGGER.error("Data size is too large: {}, max: {}, data: {}", size, MAX_SIZE, tag);
 			}
 			int c = 0;
