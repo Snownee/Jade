@@ -3,6 +3,7 @@ package snownee.jade.api;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 
 import com.mojang.serialization.DynamicOps;
@@ -109,7 +110,7 @@ public abstract class AccessorImpl<T extends HitResult> implements Accessor<T> {
 	public <D> Tag encodeAsNbt(StreamEncoder<RegistryFriendlyByteBuf, D> streamCodec, D value) {
 		RegistryFriendlyByteBuf buffer = buffer();
 		streamCodec.encode(buffer, value);
-		ByteArrayTag tag = new ByteArrayTag(buffer.array().clone());
+		ByteArrayTag tag = new ByteArrayTag(ArrayUtils.subarray(buffer.array(), 0, buffer.readableBytes()));
 		buffer.clear();
 		return tag;
 	}

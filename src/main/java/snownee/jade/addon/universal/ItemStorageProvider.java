@@ -52,7 +52,6 @@ import snownee.jade.api.view.ItemView;
 import snownee.jade.api.view.ViewGroup;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
-import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.impl.ui.HorizontalLineElement;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
@@ -108,7 +107,7 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 		MutableBoolean showName = new MutableBoolean(true);
 		MutableInt amountWidth = new MutableInt();
 		{
-			int showNameAmount = PluginConfig.INSTANCE.getInt(JadeIds.UNIVERSAL_ITEM_STORAGE_SHOW_NAME_AMOUNT);
+			int showNameAmount = config.getInt(JadeIds.UNIVERSAL_ITEM_STORAGE_SHOW_NAME_AMOUNT);
 			int totalSize = 0;
 			for (var group : groups) {
 				for (var view : group.views) {
@@ -153,7 +152,7 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 				}
 			}
 			int drawnCount = 0;
-			int realSize = PluginConfig.INSTANCE.getInt(accessor.showDetails() ?
+			int realSize = config.getInt(accessor.showDetails() ?
 					JadeIds.UNIVERSAL_ITEM_STORAGE_DETAILED_AMOUNT :
 					JadeIds.UNIVERSAL_ITEM_STORAGE_NORMAL_AMOUNT);
 			realSize = Math.min(group.views.size(), realSize);
@@ -166,7 +165,7 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 				}
 				if (i > 0 && (
 						showName.isTrue() ||
-								drawnCount >= PluginConfig.INSTANCE.getInt(JadeIds.UNIVERSAL_ITEM_STORAGE_ITEMS_PER_LINE))) {
+								drawnCount >= config.getInt(JadeIds.UNIVERSAL_ITEM_STORAGE_ITEMS_PER_LINE))) {
 					theTooltip.add(elements);
 					theTooltip.setLineMargin(-1, ScreenDirection.DOWN, 0);
 					elements.clear();
@@ -206,19 +205,18 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 		CompoundTag tag = accessor.getServerData();
 		Object target = accessor.getTarget();
 		Player player = accessor.getPlayer();
-		for (var provider : WailaCommonRegistration.instance().itemStorageProviders.wrappedGet(accessor)) {
-			List<ViewGroup<ItemStack>> groups;
-			try {
-				groups = provider.getGroups(accessor);
-			} catch (Exception e) {
-				WailaExceptionHandler.handleErr(e, provider, null);
-				continue;
+		Map.Entry<ResourceLocation, List<ViewGroup<ItemStack>>> entry = CommonProxy.getServerExtensionData(
+				accessor,
+				WailaCommonRegistration.instance().itemStorageProviders);
+		if (entry != null) {
+			List<ViewGroup<ItemStack>> groups = entry.getValue();
+			for (ViewGroup<ItemStack> group : groups) {
+				if (group.views.size() > ItemCollector.MAX_SIZE) {
+					group.views = group.views.subList(0, ItemCollector.MAX_SIZE);
+				}
 			}
-			if (groups == null) {
-				continue;
-			}
-			tag.put(JadeIds.UNIVERSAL_ITEM_STORAGE.toString(), accessor.encodeAsNbt(STREAM_CODEC, Map.entry(provider.getUid(), groups)));
-			break;
+			tag.put(JadeIds.UNIVERSAL_ITEM_STORAGE.toString(), accessor.encodeAsNbt(STREAM_CODEC, entry));
+			return;
 		}
 		if (target instanceof RandomizableContainer containerEntity && containerEntity.getLootTable() != null) {
 			tag.putBoolean("Loot", true);
