@@ -209,6 +209,9 @@ public class WailaConfig implements IWailaConfig {
 				StringRepresentable.fromEnum(FluidMode::values)
 						.fieldOf("fluidMode").orElse(FluidMode.ANY)
 						.forGetter(General::getDisplayFluids),
+				StringRepresentable.fromEnum(PerspectiveMode::values)
+						.fieldOf("perspectiveMode").orElse(PerspectiveMode.CAMERA)
+						.forGetter(General::getPerspectiveMode),
 				Codec.floatRange(0, 20).fieldOf("extendedReach").orElse(0F).forGetter(General::getExtendedReach),
 				Codec.BOOL.fieldOf("debug").orElse(false).forGetter(General::isDebug),
 				Codec.BOOL.fieldOf("itemModNameTooltip").orElse(true).forGetter(General::showItemModNameTooltip),
@@ -231,6 +234,7 @@ public class WailaConfig implements IWailaConfig {
 		private boolean itemModNameTooltip;
 		private BossBarOverlapMode bossBarOverlapMode;
 		private boolean builtinCamouflage;
+		private PerspectiveMode perspectiveMode;
 		private final ExtraOptions extraOptions;
 
 		public static final class ExtraOptions {
@@ -271,6 +275,7 @@ public class WailaConfig implements IWailaConfig {
 				boolean displayBosses,
 				DisplayMode displayMode,
 				FluidMode fluidMode,
+				PerspectiveMode perspectiveMode,
 				float extendedReach,
 				boolean debug,
 				boolean itemModNameTooltip,
@@ -283,6 +288,7 @@ public class WailaConfig implements IWailaConfig {
 			this.displayBosses = displayBosses;
 			this.displayMode = displayMode;
 			this.fluidMode = fluidMode;
+			this.perspectiveMode = perspectiveMode;
 			this.extendedReach = extendedReach;
 			this.debug = debug;
 			this.itemModNameTooltip = itemModNameTooltip;
@@ -429,6 +435,16 @@ public class WailaConfig implements IWailaConfig {
 		@Override
 		public void setBuiltinCamouflage(boolean builtinCamouflage) {
 			this.builtinCamouflage = builtinCamouflage;
+		}
+
+		@Override
+		public PerspectiveMode getPerspectiveMode() {
+			return perspectiveMode;
+		}
+
+		@Override
+		public void setPerspectiveMode(PerspectiveMode perspectiveMode) {
+			this.perspectiveMode = perspectiveMode;
 		}
 	}
 

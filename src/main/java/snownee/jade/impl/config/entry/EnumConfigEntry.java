@@ -1,11 +1,7 @@
 package snownee.jade.impl.config.entry;
 
-import java.util.Locale;
 import java.util.function.BiConsumer;
 
-import net.minecraft.client.gui.components.Tooltip;
-import net.minecraft.client.resources.language.I18n;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.gui.config.OptionsList;
@@ -39,15 +35,7 @@ public class EnumConfigEntry<E extends Enum<E>> extends ConfigEntry<E> {
 			IPluginConfig config,
 			BiConsumer<ResourceLocation, Object> setter) {
 		//noinspection unchecked
-		return options.choices(optionName, () -> (E) config.getEnum(id), e -> setter.accept(id, e), builder -> {
-			builder.withTooltip(e -> {
-				String key = OptionsList.Entry.makeKey(optionName + "_" + e.name().toLowerCase(Locale.ENGLISH) + "_desc");
-				if (!I18n.exists(key)) {
-					return null;
-				}
-				return Tooltip.create(Component.translatable(key));
-			});
-		});
+		return options.choices(optionName, () -> (E) config.getEnum(id), e -> setter.accept(id, e));
 	}
 
 }

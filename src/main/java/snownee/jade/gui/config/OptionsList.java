@@ -49,6 +49,7 @@ import net.minecraft.util.StringUtil;
 import snownee.jade.Jade;
 import snownee.jade.gui.BaseOptionsScreen;
 import snownee.jade.gui.PreviewOptionsScreen;
+import snownee.jade.gui.WailaConfigScreen;
 import snownee.jade.gui.config.value.CycleOptionValue;
 import snownee.jade.gui.config.value.InputOptionValue;
 import snownee.jade.gui.config.value.OptionValue;
@@ -304,6 +305,13 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 				default -> Entry.makeTitle(optionName + "_" + name);
 			};
 		}).withValues(values);
+		builder.withTooltip(v -> {
+			String key = OptionsList.Entry.makeKey(optionName + "_" + v.name().toLowerCase(Locale.ENGLISH) + "_desc");
+			if (!I18n.exists(key)) {
+				return null;
+			}
+			return Tooltip.create(WailaConfigScreen.processBuiltInVariables(Component.translatable(key)));
+		});
 		if (builderConsumer != null) {
 			builderConsumer.accept(builder);
 		}

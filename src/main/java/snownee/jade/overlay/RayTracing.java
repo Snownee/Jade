@@ -127,9 +127,9 @@ public class RayTracing {
 
 	public HitResult rayTrace(Entity entity, double blockReach, double entityReach) {
 		Camera camera = mc.gameRenderer.getMainCamera();
-		float f = mc.getDeltaTracker().getGameTimeDeltaPartialTick(true);
-		Vec3 eyePosition = entity.getEyePosition(f);
-		boolean startFromEye = false;
+		float partialTick = mc.getDeltaTracker().getGameTimeDeltaPartialTick(true);
+		Vec3 eyePosition = entity.getEyePosition(partialTick);
+		boolean startFromEye = IWailaConfig.get().general().getPerspectiveMode() == IWailaConfig.PerspectiveMode.EYE;
 		Vec3 traceStart = startFromEye ? eyePosition : camera.getPosition();
 		double distance = startFromEye ? 0 : eyePosition.distanceToSqr(traceStart);
 		if (distance > 1e-5) {
@@ -141,16 +141,17 @@ public class RayTracing {
 		Vec3 traceEnd;
 		Vec3 lookVector;
 		if (mc.hitResult == null) {
-			lookVector = startFromEye ? entity.getViewVector(f) : new Vec3(camera.getLookVector());
+			lookVector = startFromEye ? entity.getViewVector(partialTick) : new Vec3(camera.getLookVector());
 			traceEnd = traceStart.add(lookVector.scale(entityReach));
 		} else {
 			traceEnd = mc.hitResult.getLocation().subtract(traceStart);
-			lookVector = traceEnd.normalize();
+			lookVector = startFromEye ? entity.getViewVector(partialTick) : traceEnd.normalize();
 			// when it comes to a block hit, we only need to find entities that closer than the block
 			if (mc.hitResult.getType() == Type.BLOCK && traceEnd.lengthSqr() < entityReach * entityReach) {
-				traceEnd = mc.hitResult.getLocation();
+				traceEnd = startFromEye ? traceStart.add(lookVector.scale(traceEnd.length() + 1e-5)) : mc.hitResult.getLocation().add(
+						lookVector.scale(1e-5));
 			} else {
-				traceEnd = traceStart.add(lookVector.scale(entityReach * 1.001));
+				traceEnd = traceStart.add(lookVector.scale(entityReach));
 			}
 		}
 

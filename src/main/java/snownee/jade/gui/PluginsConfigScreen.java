@@ -1,5 +1,6 @@
 package snownee.jade.gui;
 
+import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -7,7 +8,6 @@ import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -40,9 +40,15 @@ public class PluginsConfigScreen extends PreviewOptionsScreen {
 
 	@Override
 	public OptionsList createOptions() {
-		OptionsList options = new OptionsList(this, minecraft, width - 120, height - 32, 0, 26, IWailaConfig.get()::save);
-		boolean noteServerFeature =
-				Minecraft.getInstance().level == null || IWailaConfig.get().general().isDebug() || !ObjectDataCenter.serverConnected;
+		OptionsList options = new OptionsList(
+				this,
+				Objects.requireNonNull(minecraft),
+				width - 120,
+				height - 32,
+				0,
+				26,
+				IWailaConfig.get()::save);
+		boolean noteServerFeature = minecraft.level == null || IWailaConfig.get().general().isDebug() || !ObjectDataCenter.serverConnected;
 		BiConsumer<ResourceLocation, Object> setter = (key, value) -> {
 			IWailaConfig.get().plugin().set(key, value);
 			options.updateOptionValue(key);

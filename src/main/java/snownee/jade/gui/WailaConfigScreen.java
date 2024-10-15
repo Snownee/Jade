@@ -1,7 +1,6 @@
 package snownee.jade.gui;
 
 import java.io.File;
-import java.util.Locale;
 import java.util.Objects;
 
 import it.unimi.dsi.fastutil.floats.FloatUnaryOperator;
@@ -13,7 +12,6 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
@@ -85,19 +83,8 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 		options.choices("display_bosses", general::getDisplayBosses, general::setDisplayBosses).parent(entry);
 		entry = options.choices("display_blocks", general::getDisplayBlocks, general::setDisplayBlocks);
 		editIgnoreList(entry, "hide-blocks", () -> WailaClientRegistration.instance().reloadIgnoreLists());
-		options.choices("display_fluids", general::getDisplayFluids, general::setDisplayFluids, builder -> {
-			builder.withTooltip(mode -> {
-				String key = "display_fluids_" + mode.name().toLowerCase(Locale.ENGLISH) + "_desc";
-				key = OptionsList.Entry.makeKey(key);
-				return I18n.exists(key) ? Tooltip.create(Component.translatable(key)) : null;
-			});
-		}).parent(entry);
-		options.choices("display_mode", general::getDisplayMode, general::setDisplayMode, builder -> {
-			builder.withTooltip(mode -> {
-				String key = "display_mode_" + mode.name().toLowerCase(Locale.ENGLISH) + "_desc";
-				return Tooltip.create(processBuiltInVariables(OptionsList.Entry.makeTitle(key)));
-			});
-		});
+		options.choices("display_fluids", general::getDisplayFluids, general::setDisplayFluids).parent(entry);
+		options.choices("display_mode", general::getDisplayMode, general::setDisplayMode);
 		OptionValue<?> value = options.choices("item_mod_name", general::showItemModNameTooltip, general::setItemModNameTooltip);
 		if (!General.itemModNameTooltipDisabledByMods.isEmpty()) {
 			value.setDisabled(true);
@@ -110,6 +97,7 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 		options.choices("hide_from_guis", general::shouldHideFromGUIs, general::setHideFromGUIs);
 		options.choices("boss_bar_overlap", general::getBossBarOverlapMode, general::setBossBarOverlapMode);
 		options.slider("reach_distance", general::getExtendedReach, general::setExtendedReach, 0, 20, f -> Mth.floor(f * 2) / 2F);
+		options.choices("perspective_mode", general::getPerspectiveMode, general::setPerspectiveMode);
 
 		IWailaConfig.Overlay overlay = IWailaConfig.get().overlay();
 		options.title("overlay");
