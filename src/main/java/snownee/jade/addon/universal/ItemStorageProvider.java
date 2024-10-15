@@ -1,7 +1,7 @@
 package snownee.jade.addon.universal;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -16,8 +16,10 @@ import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.LockCode;
@@ -52,6 +54,7 @@ import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.impl.ui.HorizontalLineElement;
+import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
 import snownee.jade.util.WailaExceptionHandler;
 
@@ -63,6 +66,8 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 	public static final Cache<Object, ItemCollector<?>> containerCache = CacheBuilder.newBuilder().weakKeys().expireAfterAccess(
 			120,
 			TimeUnit.SECONDS).build();
+	private static final StreamCodec<RegistryFriendlyByteBuf, Map.Entry<ResourceLocation, List<ViewGroup<ItemStack>>>> STREAM_CODEC = ViewGroup.listCodec(
+			ItemStack.OPTIONAL_STREAM_CODEC);
 
 	public static ForBlock getBlock() {
 		return ForBlock.INSTANCE;
@@ -81,7 +86,7 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 	}
 
 	public static void append(ITooltip tooltip, Accessor<?> accessor, IPluginConfig config) {
-		if (!accessor.getServerData().contains("JadeItemStorage")) {
+		if (!accessor.getServerData().contains(JadeIds.UNIVERSAL_ITEM_STORAGE.toString())) {
 			if (accessor.getServerData().getBoolean("Loot")) {
 				tooltip.add(Component.translatable("jade.loot_not_generated"));
 			} else if (accessor.getServerData().getBoolean("Locked")) {
@@ -90,23 +95,13 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 			return;
 		}
 
-		var provider = Optional.ofNullable(ResourceLocation.tryParse(accessor.getServerData().getString("JadeItemStorageUid"))).map(
-				WailaClientRegistration.instance().itemStorageProviders::get).orElse(null);
-		if (provider == null) {
-			return;
-		}
-
-		List<ClientViewGroup<ItemView>> groups;
-		try {
-			groups = provider.getClientGroups(accessor, ViewGroup.readList(accessor.getServerData(), "JadeItemStorage", itemTag -> {
-				return accessor.decodeFromNbt(ItemStack.OPTIONAL_STREAM_CODEC, itemTag.get("Item")).orElseThrow();
-			}));
-		} catch (Exception e) {
-			WailaExceptionHandler.handleErr(e, provider, tooltip::add);
-			return;
-		}
-
-		if (groups.isEmpty()) {
+		List<ClientViewGroup<ItemView>> groups = ClientProxy.mapToClientGroups(
+				accessor,
+				JadeIds.UNIVERSAL_ITEM_STORAGE,
+				STREAM_CODEC,
+				WailaClientRegistration.instance().itemStorageProviders::get,
+				tooltip);
+		if (groups == null || groups.isEmpty()) {
 			return;
 		}
 
@@ -211,7 +206,7 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 		CompoundTag tag = accessor.getServerData();
 		Object target = accessor.getTarget();
 		Player player = accessor.getPlayer();
-		for (var provider : WailaCommonRegistration.instance().itemStorageProviders.get(accessor)) {
+		for (var provider : WailaCommonRegistration.instance().itemStorageProviders.wrappedGet(accessor)) {
 			List<ViewGroup<ItemStack>> groups;
 			try {
 				groups = provider.getGroups(accessor);
@@ -222,15 +217,7 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 			if (groups == null) {
 				continue;
 			}
-			if (ViewGroup.saveList(tag, "JadeItemStorage", groups, item -> {
-				Tag itemTag = accessor.encodeAsNbt(ItemStack.OPTIONAL_STREAM_CODEC, item);
-				CompoundTag tag1 = new CompoundTag();
-				tag1.put("Item", itemTag);
-				return tag1;
-			})) {
-				tag.putString("JadeItemStorageUid", provider.getUid().toString());
-				return;
-			}
+			tag.put(JadeIds.UNIVERSAL_ITEM_STORAGE.toString(), accessor.encodeAsNbt(STREAM_CODEC, Map.entry(provider.getUid(), groups)));
 			break;
 		}
 		if (target instanceof RandomizableContainer containerEntity && containerEntity.getLootTable() != null) {
@@ -272,12 +259,7 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 		if (amount == 0) {
 			return false;
 		}
-		for (var provider : WailaCommonRegistration.instance().itemStorageProviders.get(accessor)) {
-			if (provider.shouldRequestData(accessor)) {
-				return true;
-			}
-		}
-		return false;
+		return WailaCommonRegistration.instance().itemStorageProviders.hitsAny(accessor, IServerExtensionProvider::shouldRequestData);
 	}
 
 	@Override

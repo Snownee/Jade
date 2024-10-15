@@ -3,6 +3,7 @@ package snownee.jade.util;
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -103,12 +104,14 @@ import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.WailaPlugin;
 import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.view.EnergyView;
+import snownee.jade.api.view.IServerExtensionProvider;
 import snownee.jade.api.view.ViewGroup;
 import snownee.jade.command.JadeServerCommand;
 import snownee.jade.compat.TechRebornEnergyCompat;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.impl.config.PluginConfig;
+import snownee.jade.impl.lookup.WrappedHierarchyLookup;
 import snownee.jade.mixin.AbstractHorseAccess;
 import snownee.jade.network.ReceiveDataPacket;
 import snownee.jade.network.RequestBlockPacket;
@@ -583,6 +586,24 @@ public final class CommonProxy implements ModInitializer {
 			}
 		}
 		return false;
+	}
+
+	public static <T> Map.Entry<ResourceLocation, List<ViewGroup<T>>> getServerExtensionData(
+			Accessor<?> accessor,
+			WrappedHierarchyLookup<IServerExtensionProvider<T>> lookup) {
+		for (var provider : lookup.wrappedGet(accessor)) {
+			List<ViewGroup<T>> groups;
+			try {
+				groups = provider.getGroups(accessor);
+			} catch (Exception e) {
+				WailaExceptionHandler.handleErr(e, provider, null);
+				continue;
+			}
+			if (groups != null) {
+				return Map.entry(provider.getUid(), groups);
+			}
+		}
+		return null;
 	}
 
 	@Override
