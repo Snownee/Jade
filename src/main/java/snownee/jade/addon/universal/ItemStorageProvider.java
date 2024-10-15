@@ -205,19 +205,18 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 		CompoundTag tag = accessor.getServerData();
 		Object target = accessor.getTarget();
 		Player player = accessor.getPlayer();
-		for (var provider : WailaCommonRegistration.instance().itemStorageProviders.wrappedGet(accessor)) {
-			List<ViewGroup<ItemStack>> groups;
-			try {
-				groups = provider.getGroups(accessor);
-			} catch (Exception e) {
-				WailaExceptionHandler.handleErr(e, provider, null);
-				continue;
+		Map.Entry<ResourceLocation, List<ViewGroup<ItemStack>>> entry = CommonProxy.getServerExtensionData(
+				accessor,
+				WailaCommonRegistration.instance().itemStorageProviders);
+		if (entry != null) {
+			List<ViewGroup<ItemStack>> groups = entry.getValue();
+			for (ViewGroup<ItemStack> group : groups) {
+				if (group.views.size() > ItemCollector.MAX_SIZE) {
+					group.views = group.views.subList(0, ItemCollector.MAX_SIZE);
+				}
 			}
-			if (groups == null) {
-				continue;
-			}
-			tag.put(JadeIds.UNIVERSAL_ITEM_STORAGE.toString(), accessor.encodeAsNbt(STREAM_CODEC, Map.entry(provider.getUid(), groups)));
-			break;
+			tag.put(JadeIds.UNIVERSAL_ITEM_STORAGE.toString(), accessor.encodeAsNbt(STREAM_CODEC, entry));
+			return;
 		}
 		if (target instanceof RandomizableContainer containerEntity && containerEntity.getLootTable() != null) {
 			tag.putBoolean("Loot", true);
