@@ -26,9 +26,12 @@ public class StringRenderOutputMixin {
 	@Shadow
 	@Final
 	private int color;
+	@Shadow
+	@Final
+	private boolean dropShadow;
 
 	@Inject(
-			method = "<init>(Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/renderer/MultiBufferSource;FFIIZLorg/joml/Matrix4f;Lnet/minecraft/client/gui/Font$DisplayMode;I)V",
+			method = "<init>(Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/renderer/MultiBufferSource;FFIIZLorg/joml/Matrix4f;Lnet/minecraft/client/gui/Font$DisplayMode;IZ)V",
 			at = @At("RETURN"))
 	private void jade$init(
 			Font font,
@@ -41,8 +44,9 @@ public class StringRenderOutputMixin {
 			Matrix4f matrix4f,
 			Font.DisplayMode displayMode,
 			int k,
+			boolean bl2,
 			CallbackInfo ci) {
-		if (bl && DisplayHelper.enableBetterTextShadow() && IThemeHelper.get().isLightColorScheme()) {
+		if (dropShadow && DisplayHelper.enableBetterTextShadow() && IThemeHelper.get().isLightColorScheme()) {
 			dimFactor = 1;
 			color = IWailaConfig.Overlay.applyAlpha(i, 0.15F);
 		}
