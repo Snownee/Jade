@@ -11,8 +11,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.config.IWailaConfig.Overlay;
 import snownee.jade.api.ui.Color;
-import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.ui.ProgressStyle;
+import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.overlay.OverlayRenderer;
 
@@ -68,7 +68,9 @@ public class SimpleProgressStyle extends ProgressStyle {
 
 	@Override
 	public ProgressStyle direction(ScreenDirection direction) {
-		Preconditions.checkArgument(direction == ScreenDirection.UP || direction == ScreenDirection.RIGHT, "Only UP and RIGHT are supported");
+		Preconditions.checkArgument(
+				direction == ScreenDirection.UP || direction == ScreenDirection.RIGHT,
+				"Only UP and RIGHT are supported");
 		super.direction(direction);
 		vertical = direction.isVertical();
 		return this;
@@ -141,7 +143,17 @@ public class SimpleProgressStyle extends ProgressStyle {
 			}
 			int color = Overlay.applyAlpha(textColor, OverlayRenderer.alpha);
 			DisplayHelper.setBetterTextShadow(true);
-			guiGraphics.drawString(font, text, (int) x + 1, (int) y, color);
+			Minecraft.getInstance().font.drawInBatch(
+					text,
+					(int) x + 1,
+					(int) y - 1,
+					color,
+					true,
+					guiGraphics.pose().last().pose(),
+					guiGraphics.bufferSource,
+					Font.DisplayMode.NORMAL,
+					0x50000000,
+					0xF000F0);
 			DisplayHelper.setBetterTextShadow(false);
 		}
 	}
