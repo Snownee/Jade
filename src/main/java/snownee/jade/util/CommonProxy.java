@@ -8,8 +8,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -255,23 +255,45 @@ public final class CommonProxy implements ModInitializer {
 
 	@Nullable
 	public static List<ViewGroup<ItemStack>> containerGroup(Container container, Accessor<?> accessor) {
+		return containerGroup(container, accessor, CommonProxy::findContainer);
+	}
+
+	@Nullable
+	public static List<ViewGroup<ItemStack>> containerGroup(
+			Container container,
+			Accessor<?> accessor,
+			Function<Accessor<?>, Container> containerFinder) {
 		try {
-			return ItemStorageProvider.containerCache.get(container, () -> new ItemCollector<>(new ItemIterator.ContainerItemIterator(0)))
+			return ItemStorageProvider.containerCache.get(
+							container,
+							() -> new ItemCollector<>(new ItemIterator.ContainerItemIterator(containerFinder, 0)))
 					.update(accessor);
-		} catch (ExecutionException e) {
+		} catch (Exception e) {
 			return null;
 		}
 	}
 
 	@Nullable
 	public static List<ViewGroup<ItemStack>> storageGroup(Object storage, Accessor<?> accessor) {
+		return storageGroup(storage, accessor, CommonProxy::findItemHandler);
+	}
+
+	@Nullable
+	public static List<ViewGroup<ItemStack>> storageGroup(
+			Object storage,
+			Accessor<?> accessor,
+			Function<Accessor<?>, Object> storageFinder) {
 		try {
+			//noinspection unchecked
 			return ItemStorageProvider.containerCache.get(
 					storage,
-					() -> new ItemCollector<>(JadeFabricUtils.fromItemStorage((Storage<ItemVariant>) storage, 0))).update(
+					() -> new ItemCollector<>(JadeFabricUtils.fromItemStorage(
+							(Storage<ItemVariant>) storage,
+							0,
+							(Function<Accessor<?>, @Nullable Storage<ItemVariant>>) (Object) storageFinder))).update(
 					accessor
 			);
-		} catch (ExecutionException e) {
+		} catch (Exception e) {
 			return null;
 		}
 	}
