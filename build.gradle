@@ -112,6 +112,7 @@ jar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     exclude '/snownee/jade/test'
     exclude '/com' // com.terraformersmc.modmenu
+    exclude '/dummy' // dummy.com.terraformersmc.modmenu
     exclude '**/*.bat'
     from("LICENSE") {
         rename { "${it}_${project.archivesBaseName}" }

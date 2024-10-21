@@ -27,17 +27,13 @@ import java.text.NumberFormat;
 
 import com.google.common.math.LongMath;
 
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.world.level.material.Fluid;
 import snownee.jade.overlay.DisplayHelper;
 
 /**
  * A few helpers to display fluids.
  */
 public class FluidTextHelper {
-	public static String toString(Fluid fluid) {
-		return BuiltInRegistries.FLUID.getKey(fluid).toString();
-	}
+	public static final long BUCKET = 81000;
 
 	/**
 	 * Return a unicode string representing a fraction, like ¹⁄₈₁.
@@ -83,11 +79,23 @@ public class FluidTextHelper {
 	 */
 	public static String getUnicodeMillibuckets(long droplets, boolean simplify) {
 		long mb = droplets / 81;
-		boolean hasDroplets = droplets % 81 != 0;
-		if (!hasDroplets || droplets >= 8100000) {
+		long leftover = droplets % BUCKET;
+		if (leftover == 0 || droplets >= BUCKET * 100) {
 			return DisplayHelper.INSTANCE.humanReadableNumber(mb, "B", true);
 		}
-		return NumberFormat.getNumberInstance().format(mb) + " " + getUnicodeFraction(droplets % 81, 81, simplify) + "mB";
+		if (droplets % 81 == 0) {
+			return NumberFormat.getNumberInstance().format(mb) + "mB";
+		}
+		if (simplify) {
+			long g = LongMath.gcd(leftover, BUCKET);
+			if (g >= 1000) {
+				long b = mb / 1000;
+				String text = b == 0 ? "" : NumberFormat.getNumberInstance().format(b) + " ";
+				return text + getUnicodeFraction(leftover, BUCKET, true) + "B";
+			}
+		}
+		String text = mb == 0 ? "" : NumberFormat.getNumberInstance().format(mb) + " ";
+		return text + getUnicodeFraction(droplets % 81, 81, simplify) + "mB";
 	}
 
 	private static final char[] SUPERSCRIPT = new char[]{
