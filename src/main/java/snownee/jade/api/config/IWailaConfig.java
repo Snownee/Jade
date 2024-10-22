@@ -137,6 +137,9 @@ public interface IWailaConfig {
 	interface Overlay {
 
 		static int applyAlpha(int color, float alpha) {
+			if (alpha == 0) {
+				return -1;
+			}
 			int prevAlphaChannel = ARGB.alpha(color);
 			if (prevAlphaChannel > 0) {
 				alpha *= prevAlphaChannel / 256f;

@@ -136,7 +136,9 @@ public class BoxElement extends Element implements IBoxElement {
 		if (JadeIds.ROOT.equals(getTag())) {
 			alpha *= IWailaConfig.get().overlay().getAlpha();
 		}
-		style.render(guiGraphics, this, 0, 0, maxX - x, maxY - y, alpha);
+		if (alpha > 0) {
+			style.render(guiGraphics, this, 0, 0, maxX - x, maxY - y, alpha);
+		}
 
 		// render box progress
 		if (boxProgressType != null) {
