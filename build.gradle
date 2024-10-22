@@ -1,163 +1,143 @@
 plugins {
-    id 'fabric-loom' version '1.7-SNAPSHOT'
+    id 'java-library'
     id 'maven-publish'
+    id 'net.neoforged.moddev' version '1.0.21'
     id "me.shedaniel.unified-publishing" version "0.1.+"
 }
 
-sourceCompatibility = JavaVersion.VERSION_21
-targetCompatibility = JavaVersion.VERSION_21
+tasks.named('wrapper', Wrapper).configure {
+    // Define wrapper values here so as to not have to always do so when updating gradlew.properties.
+    // Switching this to Wrapper.DistributionType.ALL will download the full gradle sources that comes with
+    // documentation attached on cursor hover of gradle classes and methods. However, this comes with increased
+    // file size for Gradle. If you do switch this to ALL, run the Gradle wrapper task twice afterwards.
+    // (Verify by checking gradle/wrapper/gradle-wrapper.properties to see if distributionUrl now points to `-all`)
+    distributionType = Wrapper.DistributionType.BIN
+}
 
-archivesBaseName = project.archives_base_name
-version = project.archive_minecraft_version + "-Fabric-" + project.mod_version
+version = project.minecraft_version + "-NeoForge-" + project.mod_version
 group = project.maven_group
-var realVersion = project.mod_version + '+fabric'
+var realVersion = project.mod_version + '+neoforge'
 
 repositories {
-    maven { url "https://maven.parchmentmc.org" }
-    maven { url "https://maven.shedaniel.me/" }
-    maven { url "https://maven.terraformersmc.com/releases/" }
+    mavenLocal()
+    maven { url "https://api.modrinth.com/maven" }
+    // jei
     maven { url "https://maven.blamejared.com/" }
-    maven {
-        url "https://cursemaven.com"
-        content {
-            includeGroup "curse.maven"
+    maven { url "https://modmaven.dev" }
+    flatDir { dir 'libs' }
+}
+
+base {
+    archivesName = project.archives_base_name
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
+
+neoForge {
+    // Specify the version of NeoForge to use.
+    version = project.neo_version
+
+//    parchment {
+//        mappingsVersion = project.parchment_mappings_version
+//        minecraftVersion = project.parchment_minecraft_version
+//    }
+
+    // This line is optional. Access Transformers are automatically detected
+    // accessTransformers = project.files('src/main/resources/META-INF/accesstransformer.cfg')
+
+    // Default run configurations.
+    // These can be tweaked, removed, or duplicated as needed.
+    runs {
+        client {
+            client()
+            ideName = "Run ${project.mod_id} - Client"
+            // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+
+        server {
+            server()
+            ideName = "Run ${project.mod_id} - Server"
+            programArgument '--nogui'
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+
+        // This run config launches GameTestServer and runs all registered gametests, then exits.
+        // By default, the server will crash when no gametests are provided.
+        // The gametest system is also enabled by default for other run configs under the /test command.
+        gameTestServer {
+            type = "gameTestServer"
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+
+        data {
+            data()
+            ideName = "Run ${project.mod_id} - Data"
+            // example of overriding the workingDirectory set in configureEach above, uncomment if you want to use it
+            // gameDirectory = project.file('run-data')
+
+            // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
+            programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
+        }
+
+        // applies to all the run configs above
+        configureEach {
+            // Recommended logging data for a userdev environment
+            // The markers can be added/remove as needed separated by commas.
+            // "SCAN": For mods scan.
+            // "REGISTRIES": For firing of registry events.
+            // "REGISTRYDUMP": For getting the contents of all registries.
+            systemProperty 'forge.logging.markers', 'REGISTRIES'
+
+            // Recommended logging level for the console
+            // You can set various levels here.
+            // Please read: https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels
+            logLevel = org.slf4j.event.Level.DEBUG
         }
     }
-    flatDir { dir 'libs' }
-    // Add repositories to retrieve artifacts from in here.
-    // You should only use this when depending on other mods because
-    // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
-    // See https://docs.gradle.org/current/userguide/declaring_repositories.html
-    // for more information about repositories.
+
+    mods {
+        // define mod <-> source bindings
+        // these are used to tell the game which sources are for which mod
+        // mostly optional in a single mod project
+        // but multi mod projects should define one per mod
+        "${mod_id}" {
+            sourceSet(sourceSets.main)
+        }
+    }
 }
 
 // Include resources generated by data generators.
-sourceSets {
-    main.resources.srcDirs += "src/generated/resources"
+sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+// Sets up a dependency configuration called 'localRuntime'.
+// This configuration should be used instead of 'runtimeOnly' to declare
+// a dependency that will be present for runtime testing but that is
+// "optional", meaning it will not be pulled by dependents of this mod.
+configurations {
+    runtimeClasspath.extendsFrom localRuntime
 }
 
 dependencies {
-    // To change the versions see the gradle.properties file
-    minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings loom.officialMojangMappings()
-    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-
-    // Fabric API. This is technically optional, but you probably want it anyway.
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-
-    // PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
-    // You may need to force-disable transitiveness on them.
-
-    //modApi("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}") {
-    //    exclude(group: "net.fabricmc.fabric-api")
-    //}
-    modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
-
-    //modCompileOnly "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
-    //modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
-
-    modCompileOnlyApi "mezz.jei:jei-1.21.1-common-api:${jei_version}"
-    modCompileOnlyApi "mezz.jei:jei-1.21.1-fabric-api:${jei_version}"
-    //modRuntimeOnly "mezz.jei:jei-1.20.1-fabric:${jei_version}"
-
-    modApi("teamreborn:energy:${project.tr_energy_version}") {
-        exclude(group: "net.fabricmc.fabric-api")
-    }
-}
-
-loom {
-    mixin {
-        defaultRefmapName = "${project.mod_id}.refmap.json"
-    }
-
-    accessWidenerPath = file("src/main/resources/${project.mod_id}.accesswidener")
-}
-
-processResources {
-    inputs.property "version", realVersion
-
-    filesMatching("fabric.mod.json") {
-        expand "version": realVersion
-    }
-}
-
-tasks.withType(JavaCompile).configureEach {
-    // ensure that the encoding is set to UTF-8, no matter what the system default is
-    // this fixes some edge cases with special characters not displaying correctly
-    // see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
-    // If Javadoc is generated, this must be specified in that task too.
-    it.options.encoding = "UTF-8"
-    it.options.release = 21
-}
-
-task apiJar(type: Jar) {
-    archiveClassifier = 'api'
-    include 'snownee/jade/api/**/*'
-    from sourceSets.main.allSource
-    from sourceSets.main.output
-}
-
-artifacts {
-    archives apiJar
-}
-
-java {
-    // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
-    // if it is present.
-    // If you remove this line, sources will not be generated.
-    // withSourcesJar()
-}
-
-jar {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    exclude '/snownee/jade/test'
-    exclude '/com' // com.terraformersmc.modmenu
-    exclude '/dummy' // dummy.com.terraformersmc.modmenu
-    exclude '**/*.bat'
-    from("LICENSE") {
-        rename { "${it}_${project.archivesBaseName}" }
-    }
-}
-
-// configure the maven publication
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            // add all the jars that should be included when publishing to maven
-            artifact(remapJar) {
-                builtBy remapJar
-            }
-            //artifact(sourcesJar) {
-            //  builtBy remapSourcesJar
-            //}
-        }
-    }
-
-    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
-    repositories {
-        // Add repositories to publish to here.
-        // Notice: This block does NOT have the same function as the block in the top level.
-        // The repositories here will be used for publishing your artifact, not for
-        // retrieving dependencies.
-    }
+    compileOnly "mezz.jei:jei-1.21.1-common-api:${jei_version}"
 }
 
 unifiedPublishing {
     project {
-        displayName = "[Fabric $project.supported_version] $project.mod_version"
+        displayName = "[NeoForge $project.supported_version] $project.mod_version"
         version = realVersion // Optional, Inferred from project by default
         changelog = file("CHANGELOG.md").exists() ? file("CHANGELOG.md").text : "" // Optional, in markdown format
         releaseType = project.release_type // Optional, use "release", "beta" or "alpha"
-        gameVersions = [project.archive_minecraft_version]
-        gameLoaders = ["fabric", "quilt"]
+        gameVersions = [project.minecraft_version]
+        gameLoaders = ["neoforge"]
 
-        mainPublication tasks.remapJar // Declares the publicated jar
-        secondaryPublications.builtBy(tasks.apiJar)
+        mainPublication tasks.jar // Declares the publicated jar
 
         if (System.getenv("CURSE_TOKEN") != null) {
             curseforge {
                 token = System.getenv("CURSE_TOKEN")
-                id = "324717"
+                id = "324717" // Required, must be a string, ID of CurseForge project
 
                 relations { // Optional, Inferred from the relations above by default
                     optional "jei"
@@ -168,7 +148,7 @@ unifiedPublishing {
         if (System.getenv("MODRINTH_TOKEN") != null) {
             modrinth {
                 token = System.getenv("MODRINTH_TOKEN")
-                id = "nvQzSEkH"
+                id = "nvQzSEkH" // Required, must be a string, ID of Modrinth project
 
                 relations { // Optional, Inferred from the relations above by default
                     optional "jei"
@@ -176,4 +156,41 @@ unifiedPublishing {
             }
         }
     }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+}
+
+// IDEA no longer automatically downloads sources/javadoc jars for dependencies, so we need to explicitly enable the behavior.
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
+    }
+}
+
+jar {
+    exclude '/snownee/jade/test'
+    exclude '/com' // com.terraformersmc.modmenu
+    exclude '/dummy' // dummy.com.terraformersmc.modmenu
+    exclude("/assets/${project.mod_id}/lang/en_us.existing.json")
+    manifest {
+        attributes([
+                "Implementation-Title"    : project.name,
+                "Implementation-Version"  : realVersion,
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
+}
+
+tasks.register('apiJar', Jar) {
+    archiveClassifier = 'api'
+    include 'snownee/jade/api/**/*'
+    from sourceSets.main.allSource
+    from sourceSets.main.output
+}
+
+artifacts {
+    archives apiJar
 }

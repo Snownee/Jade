@@ -8,7 +8,8 @@ import org.jetbrains.annotations.Nullable;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 
-import net.minecraft.core.Registry;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
@@ -21,15 +22,15 @@ import snownee.jade.Jade;
 import snownee.jade.util.CommonProxy;
 
 public class LootTableMineableCollector {
-	private final Registry<LootTable> lootRegistry;
+	private final HolderLookup.RegistryLookup<LootTable> lootRegistry;
 	private final ItemStack toolItem;
 
-	public LootTableMineableCollector(Registry<LootTable> lootRegistry, ItemStack toolItem) {
+	public LootTableMineableCollector(HolderLookup.RegistryLookup<LootTable> lootRegistry, ItemStack toolItem) {
 		this.lootRegistry = lootRegistry;
 		this.toolItem = toolItem;
 	}
 
-	public static List<Block> execute(Registry<LootTable> lootRegistry, ItemStack toolItem) {
+	public static List<Block> execute(HolderLookup.RegistryLookup<LootTable> lootRegistry, ItemStack toolItem) {
 		Stopwatch stopwatch = null;
 		if (CommonProxy.isDevEnv()) {
 			stopwatch = Stopwatch.createStarted();
@@ -43,7 +44,7 @@ public class LootTableMineableCollector {
 			if (!ShearsToolHandler.getInstance().test(block.defaultBlockState()).isEmpty()) {
 				continue;
 			}
-			@Nullable LootTable lootTable = lootRegistry.getValue(block.getLootTable().get());
+			@Nullable LootTable lootTable = lootRegistry.get(block.getLootTable().get()).map(Holder::value).orElse(null);
 			if (collector.doLootTable(lootTable)) {
 				list.add(block);
 //				Jade.LOGGER.info("block: {}", BuiltInRegistries.BLOCK.getKey(block));
@@ -84,7 +85,9 @@ public class LootTableMineableCollector {
 				}
 			}
 		} else if (entry instanceof NestedLootTable nestedLootTable) {
-			LootTable lootTable = nestedLootTable.contents.map(lootRegistry::getValue, Function.identity());
+			LootTable lootTable = nestedLootTable.contents.map(
+					$ -> lootRegistry.get($).map(Holder::value).orElse(null),
+					Function.identity());
 			return doLootTable(lootTable);
 		} else {
 			return CommonProxy.isCorrectConditions(entry.conditions, toolItem);

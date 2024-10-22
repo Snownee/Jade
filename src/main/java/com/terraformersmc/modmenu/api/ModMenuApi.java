@@ -1,4 +1,4 @@
-package dummy.com.terraformersmc.modmenu.api;
+package com.terraformersmc.modmenu.api;
 
 public interface ModMenuApi {
 	ConfigScreenFactory<?> getModConfigScreenFactory();
