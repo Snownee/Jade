@@ -49,7 +49,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
-import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -587,7 +587,7 @@ public final class CommonProxy implements ModInitializer {
 		return FluidConstants.BLOCK;
 	}
 
-	public static void registerTagsUpdatedListener(BiConsumer<RegistryAccess, Boolean> listener) {
+	public static void registerTagsUpdatedListener(BiConsumer<HolderLookup.Provider, Boolean> listener) {
 		CommonLifecycleEvents.TAGS_LOADED.register(listener::accept);
 	}
 

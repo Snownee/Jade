@@ -14,6 +14,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -183,14 +184,14 @@ public class HarvestToolProvider implements IBlockComponentProvider, ResourceMan
 		resultCache.invalidateAll();
 	}
 
-	private void tagsUpdated(RegistryAccess registryAccess, boolean client) {
+	private void tagsUpdated(HolderLookup.Provider lookupProvider, boolean client) {
 		if (client) {
 			resultCache.invalidateAll();
 		} else {
 			//TODO execute on a thread?
 			try {
 				shearableBlocks = Collections.unmodifiableList(LootTableMineableCollector.execute(
-						registryAccess.lookupOrThrow(Registries.LOOT_TABLE),
+						lookupProvider.lookupOrThrow(Registries.LOOT_TABLE),
 						Items.SHEARS.getDefaultInstance()));
 			} catch (Throwable e) {
 				Jade.LOGGER.error("Failed to collect shearable blocks", e);

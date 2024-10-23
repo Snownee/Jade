@@ -104,7 +104,7 @@ public final class ClientProxy implements ClientModInitializer {
 	public static boolean hasJEI = CommonProxy.isModLoaded("jei");
 	public static boolean hasREI = false; //isModLoaded("roughlyenoughitems");
 	public static boolean hasFastScroll = CommonProxy.isModLoaded("fastscroll");
-	private static boolean hasAccessibilityMod = CommonProxy.isModLoaded("minecraft_access");
+	public static boolean hasAccessibilityMod = CommonProxy.isModLoaded("minecraft_access");
 
 	public static Optional<String> getModName(String namespace) {
 		String modMenuKey = "modmenu.nameTranslation.%s".formatted(namespace);
