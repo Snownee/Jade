@@ -33,6 +33,7 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.util.Mth;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
 import snownee.jade.Jade;
@@ -320,6 +321,9 @@ public class DisplayHelper implements IDisplayHelper {
 	// https://programming.guide/worlds-most-copied-so-snippet.html
 	@Override
 	public String humanReadableNumber(double number, String unit, boolean milli, @Nullable Format formatter) {
+		if (Mth.equal(number, 0)) {
+			return "0" + unit;
+		}
 		StringBuilder sb = new StringBuilder();
 		boolean n = number < 0;
 		if (n) {
@@ -330,25 +334,20 @@ public class DisplayHelper implements IDisplayHelper {
 			number /= 1000;
 			milli = false;
 		}
-		int exp = 0;
-		if (number < 1000 || formatter == null && number < 10000) {
-			formatter = dfCommasArray[2];
-		} else {
-			exp = (int) Math.log10(number) / 3;
-			if (exp > 7) {
-				exp = 7;
-			}
-			if (exp > 0) {
-				number /= Math.pow(1000, exp);
-			}
-			if (formatter == null) {
-				if (number < 10) {
-					formatter = dfCommasArray[0];
-				} else if (number < 100) {
-					formatter = dfCommasArray[1];
-				} else {
-					formatter = dfCommasArray[2];
-				}
+		int exp = formatter == null && number < 10000 ? 0 : (int) Math.log10(number) / 3;
+		if (exp > 7) {
+			exp = 7;
+		}
+		if (exp > 0) {
+			number /= Math.pow(1000, exp);
+		}
+		if (formatter == null) {
+			if (number < 10) {
+				formatter = dfCommasArray[0];
+			} else if (number < 100) {
+				formatter = dfCommasArray[1];
+			} else {
+				formatter = dfCommasArray[2];
 			}
 		}
 		if (formatter instanceof NumberFormat numberFormat) {
@@ -357,7 +356,7 @@ public class DisplayHelper implements IDisplayHelper {
 			sb.append(formatter.format(new Object[]{number}));
 		}
 		if (exp == 0) {
-			if (milli && number != 0) {
+			if (milli) {
 				sb.append('m');
 			}
 		} else {
