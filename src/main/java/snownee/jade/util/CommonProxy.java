@@ -11,6 +11,7 @@ import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Stopwatch;
@@ -111,10 +112,12 @@ import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.impl.config.ServerPluginConfig;
 import snownee.jade.impl.lookup.WrappedHierarchyLookup;
 import snownee.jade.mixin.AbstractHorseAccess;
+import snownee.jade.network.ClientHandshakePacket;
 import snownee.jade.network.ReceiveDataPacket;
 import snownee.jade.network.RequestBlockPacket;
 import snownee.jade.network.RequestEntityPacket;
-import snownee.jade.network.ServerPingPacket;
+import snownee.jade.network.ServerConfigurePacket;
+import snownee.jade.network.ServerHandshakePacket;
 import snownee.jade.network.ShowOverlayPacket;
 
 public final class CommonProxy implements ModInitializer {
@@ -413,8 +416,15 @@ public final class CommonProxy implements ModInitializer {
 		return stack == null ? ItemStack.EMPTY : stack;
 	}
 
-	private static void playerJoin(ServerGamePacketListenerImpl handler, PacketSender sender, MinecraftServer server) {
-		ServerPlayer player = handler.player;
+	public static void playerHandshake(int clientVersion, @NotNull ServerPlayer player) {
+		if (clientVersion >= 160004) {
+			ServerPlayNetworking.send(player, new ServerHandshakePacket(Jade.VERSION, true));
+			// TODO and save clientVersion to player
+			playerConfigure(player);
+		}
+	}
+
+	private static void playerConfigure(@NotNull ServerPlayer player) {
 		Map<ResourceLocation, Object> configs = ServerPluginConfig.instance().values();
 		List<Block> shearableBlocks = HarvestToolProvider.INSTANCE.getShearableBlocks();
 		if (!configs.isEmpty()) {
@@ -422,7 +432,7 @@ public final class CommonProxy implements ModInitializer {
 		}
 		List<ResourceLocation> blockProviderIds = WailaCommonRegistration.instance().blockDataProviders.mappedIds();
 		List<ResourceLocation> entityProviderIds = WailaCommonRegistration.instance().entityDataProviders.mappedIds();
-		ServerPlayNetworking.send(player, new ServerPingPacket(configs, shearableBlocks, blockProviderIds, entityProviderIds));
+		ServerPlayNetworking.send(player, new ServerConfigurePacket(configs, shearableBlocks, blockProviderIds, entityProviderIds));
 	}
 
 	public static boolean isModLoaded(String modid) {
@@ -624,7 +634,9 @@ public final class CommonProxy implements ModInitializer {
 		PayloadTypeRegistry.playS2C().register(ReceiveDataPacket.TYPE, ReceiveDataPacket.CODEC);
 		PayloadTypeRegistry.playC2S().register(RequestBlockPacket.TYPE, RequestBlockPacket.CODEC);
 		PayloadTypeRegistry.playC2S().register(RequestEntityPacket.TYPE, RequestEntityPacket.CODEC);
-		PayloadTypeRegistry.playS2C().register(ServerPingPacket.TYPE, ServerPingPacket.CODEC);
+		PayloadTypeRegistry.playC2S().register(ClientHandshakePacket.TYPE, ClientHandshakePacket.CODEC);
+		PayloadTypeRegistry.playS2C().register(ServerHandshakePacket.TYPE, ServerHandshakePacket.CODEC);
+		PayloadTypeRegistry.playS2C().register(ServerConfigurePacket.TYPE, ServerConfigurePacket.CODEC);
 		PayloadTypeRegistry.playS2C().register(ShowOverlayPacket.TYPE, ShowOverlayPacket.CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(RequestEntityPacket.TYPE, (payload, context) -> {
 			RequestEntityPacket.handle(payload, context::player);
@@ -632,9 +644,11 @@ public final class CommonProxy implements ModInitializer {
 		ServerPlayNetworking.registerGlobalReceiver(RequestBlockPacket.TYPE, (payload, context) -> {
 			RequestBlockPacket.handle(payload, context::player);
 		});
+		ServerPlayNetworking.registerGlobalReceiver(ClientHandshakePacket.TYPE, (payload, context) -> {
+			ClientHandshakePacket.handle(payload, context::player);
+		});
 
 		CommandRegistrationCallback.EVENT.register(CommonProxy::registerServerCommand);
-		ServerPlayConnectionEvents.JOIN.register(CommonProxy::playerJoin);
 		ServerLifecycleEvents.SERVER_STARTED.register(server -> {
 			if (server.isDedicatedServer()) {
 				loadComplete();

@@ -16,31 +16,29 @@ import net.minecraft.world.level.block.Block;
 import snownee.jade.Jade;
 import snownee.jade.addon.harvest.HarvestToolProvider;
 import snownee.jade.api.JadeIds;
-import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.util.JadeCodecs;
 
-public record ServerPingPacket(
+public record ServerConfigurePacket(
 		Map<ResourceLocation, Object> serverConfig,
 		List<Block> shearableBlocks,
 		List<ResourceLocation> blockProviderIds,
 		List<ResourceLocation> entityProviderIds) implements CustomPacketPayload {
-	public static final Type<ServerPingPacket> TYPE = new Type<>(JadeIds.PACKET_SERVER_PING);
-	public static final StreamCodec<RegistryFriendlyByteBuf, ServerPingPacket> CODEC = StreamCodec.composite(
+	public static final Type<ServerConfigurePacket> TYPE = new Type<>(JadeIds.PACKET_SERVER_CONFIGURE);
+	public static final StreamCodec<RegistryFriendlyByteBuf, ServerConfigurePacket> CODEC = StreamCodec.composite(
 			ByteBufCodecs.map(Maps::newHashMapWithExpectedSize, ResourceLocation.STREAM_CODEC, JadeCodecs.PRIMITIVE_STREAM_CODEC),
-			ServerPingPacket::serverConfig,
+			ServerConfigurePacket::serverConfig,
 			ByteBufCodecs.registry(Registries.BLOCK).apply(ByteBufCodecs.list()),
-			ServerPingPacket::shearableBlocks,
+			ServerConfigurePacket::shearableBlocks,
 			ByteBufCodecs.<ByteBuf, ResourceLocation>list().apply(ResourceLocation.STREAM_CODEC),
-			ServerPingPacket::blockProviderIds,
+			ServerConfigurePacket::blockProviderIds,
 			ByteBufCodecs.<ByteBuf, ResourceLocation>list().apply(ResourceLocation.STREAM_CODEC),
-			ServerPingPacket::entityProviderIds,
-			ServerPingPacket::new);
+			ServerConfigurePacket::entityProviderIds,
+			ServerConfigurePacket::new);
 
-	public static void handle(ServerPingPacket message, ClientPayloadContext context) {
+	public static void handle(ServerConfigurePacket message, ClientPayloadContext context) {
 		context.execute(() -> {
-			ObjectDataCenter.serverConnected = true;
 			HarvestToolProvider.INSTANCE.setShearableBlocks(message.shearableBlocks);
 			WailaClientRegistration.instance().setServerConfig(message.serverConfig);
 			WailaCommonRegistration.instance().blockDataProviders.remapIds(message.blockProviderIds);

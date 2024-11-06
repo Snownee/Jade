@@ -18,10 +18,12 @@ import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.impl.config.WailaConfig;
 import snownee.jade.test.ExamplePlugin;
 import snownee.jade.util.CommonProxy;
+import snownee.jade.util.JadeFabricUtils;
 import snownee.jade.util.JsonConfig;
 
 public class Jade {
 	public static final String ID = "jade";
+	public static final String VERSION = JadeFabricUtils.getModVersion(ID);
 	public static final Logger LOGGER = LogUtils.getLogger();
 	private static final JsonConfig<WailaConfig.Root> rootConfig = new JsonConfig<>(
 			Jade.ID + "/" + Jade.ID,

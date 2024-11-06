@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.ModContainer;
+
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.Lists;
@@ -101,4 +104,12 @@ public final class JadeFabricUtils {
 		}
 	}
 
+	public static String getModVersion(String modId) {
+		for (ModContainer container : FabricLoader.getInstance().getAllMods()) {
+			if (container.getMetadata().getId().equals(modId)) {
+				return container.getMetadata().getVersion().getFriendlyString();
+			}
+		}
+		return "UNKNOWN";
+	}
 }
