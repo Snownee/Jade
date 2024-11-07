@@ -23,7 +23,7 @@ import snownee.jade.util.JsonConfig;
 
 public class Jade {
 	public static final String ID = "jade";
-	public static final String VERSION = JadeFabricUtils.getModVersion(ID);
+	public static final String PROTOCOL_VERSION = "1.0.0";
 	public static final Logger LOGGER = LogUtils.getLogger();
 	private static final JsonConfig<WailaConfig.Root> rootConfig = new JsonConfig<>(
 			Jade.ID + "/" + Jade.ID,

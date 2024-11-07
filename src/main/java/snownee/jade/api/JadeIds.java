@@ -8,7 +8,6 @@ public interface JadeIds {
 	ResourceLocation PACKET_RECEIVE_DATA = JADE("receive_data");
 	ResourceLocation PACKET_SERVER_HANDSHAKE = JADE("server_handshake");
 	ResourceLocation PACKET_CLIENT_HANDSHAKE = JADE("client_handshake");
-	ResourceLocation PACKET_SERVER_CONFIGURE = JADE("server_configure_v1");
 	ResourceLocation PACKET_REQUEST_ENTITY = JADE("request_entity");
 	ResourceLocation PACKET_REQUEST_BLOCK = JADE("request_block");
 	ResourceLocation PACKET_SHOW_OVERLAY = JADE("show_overlay");

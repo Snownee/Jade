@@ -98,7 +98,6 @@ import snownee.jade.network.ClientHandshakePacket;
 import snownee.jade.network.ReceiveDataPacket;
 import snownee.jade.network.RequestBlockPacket;
 import snownee.jade.network.RequestEntityPacket;
-import snownee.jade.network.ServerConfigurePacket;
 import snownee.jade.network.ServerHandshakePacket;
 import snownee.jade.network.ShowOverlayPacket;
 import snownee.jade.overlay.DatapackBlockManager;
@@ -338,7 +337,7 @@ public final class ClientProxy implements ClientModInitializer {
 			}
 		});
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
-			ClientPlayNetworking.send(new ClientHandshakePacket(Jade.VERSION));
+			ClientPlayNetworking.send(new ClientHandshakePacket(Jade.PROTOCOL_VERSION));
 		});
 
 		ClientPlayNetworking.registerGlobalReceiver(ReceiveDataPacket.TYPE, (payload, context) -> {
@@ -346,9 +345,6 @@ public final class ClientProxy implements ClientModInitializer {
 		});
 		ClientPlayNetworking.registerGlobalReceiver(ServerHandshakePacket.TYPE, (payload, context) -> {
 			ServerHandshakePacket.handle(payload, context.client()::execute);
-		});
-		ClientPlayNetworking.registerGlobalReceiver(ServerConfigurePacket.TYPE, (payload, context) -> {
-			ServerConfigurePacket.handle(payload, context.client()::execute);
 		});
 		ClientPlayNetworking.registerGlobalReceiver(ShowOverlayPacket.TYPE, (payload, context) -> {
 			ShowOverlayPacket.handle(payload, context.client()::execute);

@@ -21,18 +21,14 @@ public record ClientHandshakePacket(String clientVersion) implements CustomPacke
 
 	public static void handle(ClientHandshakePacket message, ServerPayloadContext context) {
 		context.execute(() -> {
-			Jade.LOGGER.info("{} try connect from the client version {}", context.player().getScoreboardName(), message.clientVersion);
-			CommonProxy.playerHandshake(ClientHandshakePacket.getVersionInt(message.clientVersion), context.player());
+			Jade.LOGGER.info("{} try connect from protocol version {}", context.player().getScoreboardName(), message.clientVersion);
+			CommonProxy.playerHandshake(message.clientVersion, context.player());
 		});
 	}
 
 	@Override
+	@NotNull
 	public Type<ClientHandshakePacket> type() {
 		return TYPE;
-	}
-
-	public static int getVersionInt(@NotNull String version) {
-		String[] versions = version.split("\\+")[0].split("-")[0].split("\\.");
-		return Integer.parseInt(versions[0]) * 10000 + Integer.parseInt(versions[1]) * 100 + Integer.parseInt(versions[2]);
 	}
 }
