@@ -6,6 +6,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
+import com.ibm.icu.text.DisplayContext;
+
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.ChatFormatting;
@@ -23,6 +25,7 @@ import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.ui.BoxStyle;
+import snownee.jade.api.ui.DisplayStyle;
 import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.api.ui.ProgressStyle;
 import snownee.jade.api.view.ClientViewGroup;
@@ -96,11 +99,19 @@ public abstract class EnergyStorageProvider<T extends Accessor<?>> implements IC
 					text = Component.translatable("jade.fe", ChatFormatting.WHITE + view.current, view.max)
 							.withStyle(ChatFormatting.GRAY);
 				}
-				if (config.get(JadeIds.UNIVERSAL_ENERGY_STORAGE_MINIMAL)) {
-					theTooltip.add(Component.translatable("jade.energy.minimal").append(text));
-				} else {
-					ProgressStyle progressStyle = helper.progressStyle().color(0xFFAA0000, 0xFF660000);
-					theTooltip.add(helper.progress(view.ratio, text, progressStyle, BoxStyle.getNestedBox(), true));
+
+				DisplayStyle style = config.getEnum(JadeIds.UNIVERSAL_ENERGY_STORAGE_STYLE);
+				switch(style) {
+					case TEXT -> theTooltip.add(Component.translatable("jade.energy.text").append(text));
+					case SYMBOL -> {
+						ResourceLocation location = JadeIds.JADE("energy");
+						theTooltip.add(helper.sprite(location, 7, 7));
+						theTooltip.append(text);
+					}
+					default -> {
+						ProgressStyle progressStyle = helper.progressStyle().color(0xFFAA0000, 0xFF660000);
+						theTooltip.add(helper.progress(view.ratio, text, progressStyle, BoxStyle.getNestedBox(), true));
+					}
 				}
 			}
 		});

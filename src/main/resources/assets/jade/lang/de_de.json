@@ -109,7 +109,7 @@
 	"config.jade.plugin_minecraft.item_tooltip": "Item-Tooltip",
 	"jade.locked": "Inventar ist gesperrt",
 	"jade.fe": "%s / %s",
-	"jade.energy.minimal": "Energie: ",
+	"jade.energy.text": "Energie: ",
 	"jade.fluid": "%s %s",
 	"jade.fluid.empty": "Leer",
 	"config.jade.plugin_minecraft.lectern": "Lesepult",
