@@ -105,8 +105,12 @@ public abstract class EnergyStorageProvider<T extends Accessor<?>> implements IC
 					text = Component.translatable("jade.fe", ChatFormatting.WHITE + view.current, view.max)
 							.withStyle(ChatFormatting.GRAY);
 				}
-				ProgressStyle progressStyle = helper.progressStyle().color(0xFFAA0000, 0xFF660000);
-				theTooltip.add(helper.progress(view.ratio, text, progressStyle, BoxStyle.getNestedBox(), true));
+				if (config.get(JadeIds.UNIVERSAL_ENERGY_STORAGE_MINIMAL)) {
+					theTooltip.add(Component.translatable("jade.energy.minimal").append(text));
+				} else {
+					ProgressStyle progressStyle = helper.progressStyle().color(0xFFAA0000, 0xFF660000);
+					theTooltip.add(helper.progress(view.ratio, text, progressStyle, BoxStyle.getNestedBox(), true));
+				}
 			}
 		});
 	}

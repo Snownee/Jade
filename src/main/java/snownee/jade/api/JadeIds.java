@@ -35,6 +35,7 @@ public interface JadeIds {
 	ResourceLocation UNIVERSAL_ENERGY_STORAGE = MC("energy_storage");
 	ResourceLocation UNIVERSAL_ENERGY_STORAGE_DEFAULT = MC("energy_storage.default");
 	ResourceLocation UNIVERSAL_ENERGY_STORAGE_DETAILED = MC("energy_storage.detailed");
+	ResourceLocation UNIVERSAL_ENERGY_STORAGE_MINIMAL = MC("energy_storage.minimal");
 	ResourceLocation UNIVERSAL_PROGRESS = MC("progress");
 	ResourceLocation MC_ANIMAL_OWNER = MC("animal_owner");
 	ResourceLocation MC_ARMOR_STAND = MC("armor_stand");
