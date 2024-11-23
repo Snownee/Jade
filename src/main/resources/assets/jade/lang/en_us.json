@@ -261,7 +261,7 @@
 	"config.jade.plugin_minecraft.energy_storage.style_text": "Text",
 	"config.jade.plugin_minecraft.energy_storage.style_symbol": "Symbol",
 	"config.jade.plugin_minecraft.energy_storage.style_progressbar": "Progressbar",
-	"config.jade.plugin_minecraft.energy_storage.style_desc": "Choose between, Text, Symbol and Progressbar for the Display stale of Energy.",
+	"config.jade.plugin_minecraft.energy_storage.style_desc": "Choose between the following Display Styles:\n- Progressbar\n- Text\n- Symbol",
 	"jade.energy.text": "Energy: ",
 	"jade.fe": "%s / %s",
 	"config.jade.plugin_minecraft.fluid_storage": "Fluid Storage",
