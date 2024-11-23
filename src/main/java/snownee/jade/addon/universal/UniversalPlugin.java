@@ -8,6 +8,7 @@ import snownee.jade.api.IWailaCommonRegistration;
 import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.WailaPlugin;
+import snownee.jade.api.ui.DisplayStyle;
 
 @WailaPlugin
 public class UniversalPlugin implements IWailaPlugin {
@@ -39,7 +40,7 @@ public class UniversalPlugin implements IWailaPlugin {
 		registration.addConfig(JadeIds.UNIVERSAL_ITEM_STORAGE_SHOW_NAME_AMOUNT, 5, 0, 9, true);
 		registration.addConfig(JadeIds.UNIVERSAL_ITEM_STORAGE_ITEMS_PER_LINE, 9, 3, 27, true);
 		registration.addConfig(JadeIds.UNIVERSAL_ENERGY_STORAGE_DETAILED, false);
-		registration.addConfig(JadeIds.UNIVERSAL_ENERGY_STORAGE_MINIMAL, false);
+		registration.addConfig(JadeIds.UNIVERSAL_ENERGY_STORAGE_STYLE, DisplayStyle.PROGRESSBAR);
 		registration.addConfig(JadeIds.UNIVERSAL_FLUID_STORAGE_DETAILED, false);
 
 		registration.registerBlockComponent(ItemStorageProvider.getBlock(), Block.class);
