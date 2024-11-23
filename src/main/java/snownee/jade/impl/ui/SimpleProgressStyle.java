@@ -4,7 +4,6 @@ import org.joml.Vector3f;
 
 import com.google.common.base.Preconditions;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -128,7 +127,7 @@ public class SimpleProgressStyle extends ProgressStyle {
 			}
 		}
 		if (text != null) {
-			Font font = Minecraft.getInstance().font;
+			Font font = DisplayHelper.font();
 			if (autoTextColor) {
 				autoTextColor = false;
 				if (overlay == null && RGBtoHSV(color2).z() > 0.75f) {
@@ -145,9 +144,17 @@ public class SimpleProgressStyle extends ProgressStyle {
 				y += font.lineHeight + 2;
 			}
 			int color = IConfigOverlay.applyAlpha(textColor, OverlayRenderer.alpha);
-			DisplayHelper.setBetterTextShadow(true);
-			guiGraphics.drawString(font, text, (int) x + 1, (int) y, color);
-			DisplayHelper.setBetterTextShadow(false);
+			DisplayHelper.font().drawInBatch(
+					text,
+					(int) x + 1,
+					(int) y - 1,
+					color,
+					true,
+					guiGraphics.pose().last().pose(),
+					guiGraphics.bufferSource,
+					Font.DisplayMode.NORMAL,
+					ARGB.as8BitChannel(IWailaConfig.get().accessibility().getTextBackgroundOpacity()) << 24,
+					0xF000F0);
 		}
 	}
 

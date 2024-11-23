@@ -155,9 +155,10 @@ public class BoxElement extends Element implements IBoxElement {
 			float height = 1 + style.boxProgressOffset(ScreenDirection.DOWN);
 			float progress = boxProgress;
 			if (track == null && tag != null) {
-				track = WailaTickHandler.instance().progressTracker.getOrCreate(tag, ProgressTrackInfo.class, () -> {
-					return new ProgressTrackInfo(false, boxProgress, 0);
-				});
+				track = WailaTickHandler.instance().progressTracker.getOrCreate(
+						tag, ProgressTrackInfo.class, () -> {
+							return new ProgressTrackInfo(false, boxProgress, 0);
+						});
 			}
 			if (track != null) {
 				track.setProgress(progress);
@@ -219,8 +220,7 @@ public class BoxElement extends Element implements IBoxElement {
 				if (alpha > 0.016) {
 					guiGraphics.pose().pushPose();
 					arrowTop += size.y - 6;
-					Minecraft mc = Minecraft.getInstance();
-					float arrowLeft = contentLeft + (contentSize.x - mc.font.width("▾") + 1) / 2f;
+					float arrowLeft = contentLeft + (contentSize.x - DisplayHelper.font().width("▾") + 1) / 2f;
 					guiGraphics.pose().translate(arrowLeft, arrowTop, 0);
 					int color = IConfigOverlay.applyAlpha(IThemeHelper.get().theme().text.colors().info(), alpha);
 					DisplayHelper.INSTANCE.drawText(guiGraphics, "▾", 0, 0, color);
@@ -285,12 +285,13 @@ public class BoxElement extends Element implements IBoxElement {
 			if (icon instanceof ItemStackElement itemStackElement) {
 				IElement newIcon = IElementHelper.get().smallItem(itemStackElement.getItem()).tag(JadeIds.CORE_ROOT_ICON);
 				newIcon.size(new Vec2(newIcon.getCachedSize().x + 1, newIcon.getCachedSize().y - 1));
-				tooltip.replace(JadeIds.CORE_OBJECT_NAME, list -> {
-					if (!list.isEmpty()) {
-						list.getFirst().addFirst(newIcon);
-					}
-					return list;
-				});
+				tooltip.replace(
+						JadeIds.CORE_OBJECT_NAME, list -> {
+							if (!list.isEmpty()) {
+								list.getFirst().addFirst(newIcon);
+							}
+							return list;
+						});
 			}
 			return;
 		}
