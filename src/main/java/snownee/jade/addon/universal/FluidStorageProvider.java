@@ -5,6 +5,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.ChatFormatting;
@@ -91,11 +94,13 @@ public abstract class FluidStorageProvider<T extends Accessor<?>> implements ICo
 			}
 			for (var view : group.views) {
 				Component text;
+				DisplayStyle style = config.getEnum(JadeIds.UNIVERSAL_FLUID_STORAGE_STYLE);
+
 				if (view.overrideText != null) {
 					text = view.overrideText;
 				} else if (view.fluidName == null) {
 					text = Component.literal(view.current);
-				} else if (accessor.showDetails()) {
+				} else if (accessor.showDetails() || style != DisplayStyle.PROGRESSBAR) {
 					text = Component.translatable(
 							"jade.fluid2",
 							IDisplayHelper.get().stripColor(view.fluidName).withStyle(ChatFormatting.WHITE),
@@ -105,12 +110,11 @@ public abstract class FluidStorageProvider<T extends Accessor<?>> implements ICo
 					text = Component.translatable("jade.fluid", IDisplayHelper.get().stripColor(view.fluidName), view.current);
 				}
 
-				DisplayStyle style = config.getEnum(JadeIds.UNIVERSAL_FLUID_STORAGE_STYLE);
 				switch(style) {
 					case TEXT -> theTooltip.add(Component.translatable("jade.fluid.text").append(text));
 					case SYMBOL -> {
 						ResourceLocation location = JadeIds.JADE("fluid");
-						theTooltip.add(helper.sprite(location, 8, 8));
+						theTooltip.add(helper.smallItem(new ItemStack(Items.BUCKET)));
 						theTooltip.append(text);
 					}
 					default -> {
