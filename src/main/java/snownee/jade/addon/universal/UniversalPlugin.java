@@ -42,6 +42,7 @@ public class UniversalPlugin implements IWailaPlugin {
 		registration.addConfig(JadeIds.UNIVERSAL_ENERGY_STORAGE_DETAILED, false);
 		registration.addConfig(JadeIds.UNIVERSAL_ENERGY_STORAGE_STYLE, DisplayStyle.PROGRESSBAR);
 		registration.addConfig(JadeIds.UNIVERSAL_FLUID_STORAGE_DETAILED, false);
+		registration.addConfig(JadeIds.UNIVERSAL_FLUID_STORAGE_STYLE, DisplayStyle.PROGRESSBAR);
 
 		registration.registerBlockComponent(ItemStorageProvider.getBlock(), Block.class);
 		registration.registerEntityComponent(ItemStorageProvider.getEntity(), Entity.class);

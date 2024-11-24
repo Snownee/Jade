@@ -22,6 +22,7 @@ import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.ui.BoxStyle;
+import snownee.jade.api.ui.DisplayStyle;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.api.ui.ProgressStyle;
@@ -103,8 +104,20 @@ public abstract class FluidStorageProvider<T extends Accessor<?>> implements ICo
 				} else {
 					text = Component.translatable("jade.fluid", IDisplayHelper.get().stripColor(view.fluidName), view.current);
 				}
-				ProgressStyle progressStyle = helper.progressStyle().overlay(view.overlay);
-				theTooltip.add(helper.progress(view.ratio, text, progressStyle, BoxStyle.getNestedBox(), true));
+
+				DisplayStyle style = config.getEnum(JadeIds.UNIVERSAL_FLUID_STORAGE_STYLE);
+				switch(style) {
+					case TEXT -> theTooltip.add(Component.translatable("jade.fluid.text").append(text));
+					case SYMBOL -> {
+						ResourceLocation location = JadeIds.JADE("fluid");
+						theTooltip.add(helper.sprite(location, 8, 8));
+						theTooltip.append(text);
+					}
+					default -> {
+						ProgressStyle progressStyle = helper.progressStyle().overlay(view.overlay);
+						theTooltip.add(helper.progress(view.ratio, text, progressStyle, BoxStyle.getNestedBox(), true));
+					}
+				}
 			}
 		});
 	}
