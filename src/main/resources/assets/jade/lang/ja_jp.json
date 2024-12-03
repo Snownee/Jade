@@ -311,7 +311,7 @@
 	"jade.zombieConversion.time": "変化まで: %s",
 	"config.jade.plugin_minecraft.waxed": "蝋の状態",
 	"config.jade.plugin_minecraft.waxed_desc": "蝋が引かれた看板など、ブロックの蝋の状態を表示します。",
-	"jade.waxed": "錆止めされた%s",
+	"jade.waxed": "蝋引きされた%s",
 	"config.jade.accessibility_plugin": "アクセシビリティプラグイン",
 	"config.jade.accessibility_plugin_desc": "アクセシビリティ機能を有効にしてより詳細な情報を表示および解説します。その後、プラグイン設定で詳細を制御できます。",
 	"config.jade.plugin_jade_access": "アクセシビリティ",
