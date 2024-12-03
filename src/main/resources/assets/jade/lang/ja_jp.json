@@ -326,7 +326,7 @@
 	"jade.access.block.door_open": "%s",
 	"jade.access.block.door_closed": "閉じた%s",
 	"jade.access.block.waterlogged": "浸水した%s",
-	"jade.access.block.lit": "点灯した%s",
+	"jade.access.block.lit": "点火した%s",
 	"jade.access.block.inverted": "反転した%s",
 	"jade.access.block.eye": "目の付いた%s",
 	"jade.access.block.ominous": "不吉な%s",
