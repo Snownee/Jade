@@ -1,16 +1,17 @@
 package snownee.jade.addon.access;
 
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SignBlock;
+import snownee.jade.JadeClient;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.IWailaClientRegistration;
 import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.WailaPlugin;
 import snownee.jade.api.theme.IThemeHelper;
+import snownee.jade.util.JadeLanguages;
 
 @WailaPlugin
 public class AccessibilityPlugin implements IWailaPlugin {
@@ -37,10 +38,11 @@ public class AccessibilityPlugin implements IWailaPlugin {
 		registration.markAsClientFeature(JadeIds.ACCESS_HELD_ITEM);
 	}
 
-	public static void replaceTitle(ITooltip tooltip, String key) {
+	public static void replaceTitle(ITooltip tooltip, String objectName, String key) {
 		String message = tooltip.getMessage(JadeIds.CORE_OBJECT_NAME);
 		if (!message.isBlank()) {
-			var title = IThemeHelper.get().title(Component.translatable("jade.access." + key, message));
+			var nameClass = JadeLanguages.INSTANCE.getNameClass(objectName);
+			var title = IThemeHelper.get().title(JadeClient.format("jade.access." + key, message, nameClass));
 			tooltip.replace(JadeIds.CORE_OBJECT_NAME, title);
 		}
 	}

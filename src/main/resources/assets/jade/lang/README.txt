@@ -38,6 +38,31 @@ it empty.
 There are some keys whose parameters are enclosed in curly brackets, like `jade.seconds`. If your language has plural form for describing
 them, you can follow [this guide](https://www.baeldung.com/java-localization-messages-formatting) to display them correctly.
 
+## Grammatical genders
+
+Some entries starting with “jade.access.” require the correct adjective form based on the noun. For example in German:
+
+> Angry Bee -> Wütende Biene (feminine)
+>
+> Angry Zombified Piglin -> Wütender Zombifizierter Piglin (masculine)
+
+To determine is a noun is masculine or feminine, you need to define them in the metadata in the translation file:
+
+```json
+{
+    "jade.metadata": "{lang:[de_de],nameClasses:{feminine:\"Biene|More|And More\",masculine:\"Zombifizierter Piglin\",more:\"regex support .+\"}}"
+}
+```
+
+Then use [the correct International Components for Unicode message format](https://unicode-org.github.io/icu-docs/apidoc/dev/icu4j/com/ibm/icu/text/SelectFormat.html)
+in the translation:
+
+```json
+{
+    "jade.access.entity.angry": "{1,select,feminine {Wütende} masculine {Wütender} other {Wütendes}} {0}"
+}
+```
+
 ## Extra notes
 
 Please let me know if you have any questions or suggestions, for example the button text is too long to fit in the UI.

@@ -22,10 +22,10 @@ public enum HopperLockProvider implements IBlockComponentProvider, StreamServerD
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		if (decodeFromData(accessor).orElse(false)) {
-			if (config.get(JadeIds.MC_REDSTONE)) {
-				AccessibilityPlugin.replaceTitle(tooltip, "block.locked");
-			} else if (IWailaConfig.get().accessibility().getEnableAccessibilityPlugin() && config.get(JadeIds.ACCESS_BLOCK_DETAILS)) {
-				AccessibilityPlugin.replaceTitle(tooltip, "block.locked");
+			if (config.get(JadeIds.MC_REDSTONE) ||
+					(IWailaConfig.get().accessibility().getEnableAccessibilityPlugin() && config.get(JadeIds.ACCESS_BLOCK_DETAILS))) {
+				String objectName = tooltip.getMessage(JadeIds.CORE_OBJECT_NAME);
+				AccessibilityPlugin.replaceTitle(tooltip, objectName, "block.locked");
 			}
 		}
 	}

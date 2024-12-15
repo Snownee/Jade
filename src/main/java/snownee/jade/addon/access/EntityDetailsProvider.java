@@ -26,22 +26,23 @@ public class EntityDetailsProvider implements IEntityComponentProvider {
 	@Override
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		Entity entity = accessor.getEntity();
+		String objectName = tooltip.getMessage(JadeIds.CORE_OBJECT_NAME);
 		if (entity instanceof Creeper creeper && creeper.isPowered()) {
-			AccessibilityPlugin.replaceTitle(tooltip, "creeper.powered");
+			AccessibilityPlugin.replaceTitle(tooltip, objectName, "creeper.powered");
 		} else if (entity instanceof WitherBoss witherBoss && witherBoss.isPowered()) {
-			AccessibilityPlugin.replaceTitle(tooltip, "wither.powered");
+			AccessibilityPlugin.replaceTitle(tooltip, objectName, "wither.powered");
 		} else if (entity instanceof ZombieVillager zombieVillager && zombieVillager.isConverting()) {
-			AccessibilityPlugin.replaceTitle(tooltip, "zombie_villager.curing");
+			AccessibilityPlugin.replaceTitle(tooltip, objectName, "zombie_villager.curing");
 		} else if (entity instanceof Goat goat && !goat.hasLeftHorn() && !goat.hasRightHorn()) {
-			AccessibilityPlugin.replaceTitle(tooltip, "goat.hornless");
+			AccessibilityPlugin.replaceTitle(tooltip, objectName, "goat.hornless");
 		} else if (entity instanceof Sheep sheep) {
-			AccessibilityPlugin.replaceTitle(tooltip, "entity." + sheep.getColor().getSerializedName());
+			AccessibilityPlugin.replaceTitle(tooltip, objectName, "entity." + sheep.getColor().getSerializedName());
 		} else if (entity instanceof Bee bee) {
 			if (bee.hasNectar()) {
-				AccessibilityPlugin.replaceTitle(tooltip, "bee.nectar");
+				AccessibilityPlugin.replaceTitle(tooltip, objectName, "bee.nectar");
 			}
 			if (bee.isAngry()) {
-				AccessibilityPlugin.replaceTitle(tooltip, "entity.angry");
+				AccessibilityPlugin.replaceTitle(tooltip, objectName, "entity.angry");
 			}
 		} else if (entity instanceof Slime slime) {
 			String message = tooltip.getMessage(JadeIds.CORE_OBJECT_NAME);
@@ -49,13 +50,13 @@ public class EntityDetailsProvider implements IEntityComponentProvider {
 			tooltip.replace(JadeIds.CORE_OBJECT_NAME, title);
 		}
 		if (entity instanceof LivingEntity livingEntity && livingEntity.isBaby()) {
-			AccessibilityPlugin.replaceTitle(tooltip, "entity.baby");
+			AccessibilityPlugin.replaceTitle(tooltip, objectName, "entity.baby");
 		}
 		if (entity instanceof Shearable shearable && !shearable.readyForShearing()) {
-			AccessibilityPlugin.replaceTitle(tooltip, "entity.sheared");
+			AccessibilityPlugin.replaceTitle(tooltip, objectName, "entity.sheared");
 		}
 		if (entity instanceof Saddleable saddleable && saddleable.isSaddled()) {
-			AccessibilityPlugin.replaceTitle(tooltip, "entity.saddled");
+			AccessibilityPlugin.replaceTitle(tooltip, objectName, "entity.saddled");
 		}
 	}
 

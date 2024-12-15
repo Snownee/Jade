@@ -1,6 +1,5 @@
 package snownee.jade;
 
-import java.text.MessageFormat;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
@@ -11,6 +10,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
+import com.ibm.icu.text.MessageFormat;
 import com.mojang.blaze3d.platform.InputConstants;
 
 import net.minecraft.client.KeyMapping;
@@ -67,12 +67,14 @@ import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.overlay.WailaTickHandler;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
+import snownee.jade.util.JadeLanguages;
 import snownee.jade.util.ModIdentification;
 import snownee.jade.util.WailaExceptionHandler;
 
 public final class JadeClient {
 
 	public static final SystemToast.SystemToastId JADE_PLEASE_WAIT = new SystemToast.SystemToastId(2000L);
+	public static final KeyMapping[] profiles = new KeyMapping[4];
 	public static KeyMapping openConfig;
 	public static KeyMapping showOverlay;
 	public static KeyMapping toggleLiquid;
@@ -80,7 +82,6 @@ public final class JadeClient {
 	public static KeyMapping narrate;
 	public static KeyMapping showRecipes;
 	public static KeyMapping showUses;
-	public static final KeyMapping[] profiles = new KeyMapping[4];
 	private static final Cache<Item.TooltipContext, Item.TooltipContext> hideModName = CacheBuilder.newBuilder()
 			.expireAfterAccess(1, TimeUnit.SECONDS)
 			.build();
@@ -104,6 +105,7 @@ public final class JadeClient {
 		}
 
 		ClientProxy.registerReloadListener(ModIdentification.INSTANCE);
+		ClientProxy.registerReloadListener(JadeLanguages.INSTANCE);
 	}
 
 	public static void onKeyPressed(int action) {
