@@ -149,6 +149,7 @@
 	"config.jade.reset_settings.confirm": "Are you sure you wish to reset settings?",
 	"config.jade.plugin_jade": "Core Features",
 	"jade.customNameEntity": "%s (%s)",
+	"jade.typeNameEntity": "%s (%s)",
 	"config.jade.plugin_jade.debug": "Debug",
 	"config.jade.plugin_jade.registry_name": "Registry Name",
 	"config.jade.plugin_jade.registry_name_extra_msg": "id,advanced,tooltips",

@@ -1,5 +1,7 @@
 package snownee.jade.addon.core;
 
+import java.util.Objects;
+
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.client.resources.language.I18n;
@@ -48,42 +50,50 @@ public abstract class ObjectNameProvider implements IToggleableProvider {
 		return ForEntity.INSTANCE;
 	}
 
-	public static Component getEntityName(Entity entity, boolean withType) {
-		Component typeName = null;
-		normally:
-		if (withType || !entity.hasCustomName()) {
-			if (WailaClientRegistration.instance().shouldPick(entity)) {
-				ItemStack stack = entity.getPickResult();
-				if (stack != null && !stack.isEmpty()) {
-					typeName = stack.getHoverName();
-					break normally;
-				}
+	public static Component getEntityName(Entity entity, boolean accessibilityDetails) {
+		Component customName = entity.getCustomName();
+		if (customName != null && !accessibilityDetails) {
+			return customName;
+		}
+		Component displayName = null;
+		boolean wantTypeName = accessibilityDetails;
+		if (WailaClientRegistration.instance().shouldPick(entity)) {
+			ItemStack stack = entity.getPickResult();
+			if (stack != null && !stack.isEmpty()) {
+				displayName = stack.getHoverName();
 			}
-			typeName = switch (entity) {
+		}
+		if (displayName == null) {
+			displayName = switch (entity) {
 				case Player ignored -> {
-					withType = false;
+					wantTypeName = false;
 					yield entity.getDisplayName();
 				}
 				case Villager ignored -> {
-					withType = false;
+					wantTypeName = false;
 					yield entity.getType().getDescription();
 				}
-				case ItemEntity itemEntity -> {
-					withType = false;
-					yield itemEntity.getItem().getHoverName();
-				}
+				case ItemEntity itemEntity -> itemEntity.getItem().getHoverName();
 				case ItemDisplay itemDisplay when !itemDisplay.getSlot(0).get().isEmpty() -> itemDisplay.getSlot(0).get().getHoverName();
 				case BlockDisplay blockDisplay when !blockDisplay.getBlockState().isAir() ->
 						blockDisplay.getBlockState().getBlock().getName();
-				default -> entity.hasCustomName() ? ((EntityAccess) entity).callGetTypeName() : null;
+				default -> entity.getName();
 			};
 		}
-		Component displayName = entity.getName();
-		if (typeName != null) {
-			if (withType && !typeName.getString().equals(displayName.getString())) {
-				return Component.translatable("jade.customNameEntity", displayName, typeName);
-			} else {
-				return typeName;
+		Objects.requireNonNull(displayName);
+		if (accessibilityDetails) {
+			if (customName != null && displayName.getString().equals(customName.getString())) {
+				displayName = customName;
+				customName = null;
+			}
+			if (wantTypeName) {
+				Component typeName = ((EntityAccess) entity).callGetTypeName();
+				if (!displayName.getString().equals(typeName.getString())) {
+					displayName = Component.translatable("jade.typeNameEntity", displayName, typeName);
+				}
+			}
+			if (customName != null) {
+				return Component.translatable("jade.customNameEntity", customName, displayName);
 			}
 		}
 		return displayName;
