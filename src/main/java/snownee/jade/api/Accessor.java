@@ -31,10 +31,13 @@ public interface Accessor<T extends HitResult> {
 	@NotNull
 	CompoundTag getServerData();
 
+	@Deprecated
 	DynamicOps<Tag> nbtOps();
 
+	@Deprecated
 	<D> Optional<D> readData(MapDecoder<D> codec);
 
+	@Deprecated
 	<D> void writeData(MapEncoder<D> codec, D value);
 
 	<D> Optional<D> decodeFromNbt(StreamDecoder<RegistryFriendlyByteBuf, D> codec, Tag tag);

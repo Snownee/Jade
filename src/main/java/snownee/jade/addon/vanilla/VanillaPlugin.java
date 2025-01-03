@@ -14,6 +14,7 @@ import net.minecraft.world.entity.Display.BlockDisplay;
 import net.minecraft.world.entity.Display.ItemDisplay;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.Chicken;
 import net.minecraft.world.entity.animal.allay.Allay;
@@ -126,6 +127,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerEntityDataProvider(NextEntityDropProvider.INSTANCE, Chicken.class);
 		registration.registerEntityDataProvider(NextEntityDropProvider.INSTANCE, Armadillo.class);
 		registration.registerEntityDataProvider(ZombieVillagerProvider.INSTANCE, ZombieVillager.class);
+		registration.registerEntityDataProvider(PetArmorProvider.INSTANCE, Mob.class);
 
 		registration.registerItemStorage(CampfireProvider.INSTANCE, CampfireBlockEntity.class);
 	}
@@ -144,6 +146,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.addConfig(JadeIds.MC_ENTITY_HEALTH_MAX_FOR_RENDER, 40, 0, 200, false);
 		registration.addConfig(JadeIds.MC_ENTITY_HEALTH_ICONS_PER_LINE, 10, 5, 40, false);
 		registration.addConfig(JadeIds.MC_ENTITY_HEALTH_SHOW_FRACTIONS, false);
+		registration.addConfig(JadeIds.MC_PET_ARMOR, PetArmorProvider.Mode.SHOW_DAMAGEABLE);
 
 		registration.registerBlockComponent(BrewingStandProvider.INSTANCE, BrewingStandBlock.class);
 		registration.registerEntityComponent(HorseStatsProvider.INSTANCE, AbstractHorse.class);
@@ -190,6 +193,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerEntityComponent(ZombieVillagerProvider.INSTANCE, ZombieVillager.class);
 		registration.registerBlockComponent(WaxedProvider.INSTANCE, SignBlock.class);
 		registration.registerBlockIcon(WaxedProvider.INSTANCE, SignBlock.class);
+		registration.registerEntityComponent(PetArmorProvider.INSTANCE, Mob.class);
 
 		registration.registerItemStorageClient(CampfireProvider.INSTANCE);
 
@@ -233,6 +237,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.setConfigCategoryOverride(JadeIds.MC_ANIMAL_OWNER, entity);
 		registration.setConfigCategoryOverride(JadeIds.MC_ARMOR_STAND, both);
 		registration.setConfigCategoryOverride(JadeIds.MC_BEEHIVE, block);
+		registration.setConfigCategoryOverride(JadeIds.MC_BREAKING_PROGRESS, block);
 		registration.setConfigCategoryOverride(JadeIds.MC_BREWING_STAND, block);
 		registration.setConfigCategoryOverride(JadeIds.MC_CHISELED_BOOKSHELF, block);
 		registration.setConfigCategoryOverride(JadeIds.MC_COMMAND_BLOCK, block);
@@ -253,6 +258,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.setConfigCategoryOverride(JadeIds.MC_NEXT_ENTITY_DROP, entity);
 		registration.setConfigCategoryOverride(JadeIds.MC_NOTE_BLOCK, block);
 		registration.setConfigCategoryOverride(JadeIds.MC_PAINTING, both);
+		registration.setConfigCategoryOverride(JadeIds.MC_PET_ARMOR, entity);
 		registration.setConfigCategoryOverride(JadeIds.MC_PLAYER_HEAD, block);
 		registration.setConfigCategoryOverride(JadeIds.MC_POTION_EFFECTS, entity);
 		registration.setConfigCategoryOverride(JadeIds.MC_REDSTONE, block);
@@ -260,7 +266,6 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.setConfigCategoryOverride(JadeIds.MC_TOTAL_ENCHANTMENT_POWER, block);
 		registration.setConfigCategoryOverride(JadeIds.MC_VILLAGER_PROFESSION, entity);
 		registration.setConfigCategoryOverride(JadeIds.MC_WAXED, block);
-		registration.setConfigCategoryOverride(JadeIds.MC_BREAKING_PROGRESS, block);
 		registration.setConfigCategoryOverride(JadeIds.MC_ZOMBIE_VILLAGER, entity);
 
 		WailaCommonRegistration.instance().priorities.putUnsafe(JadeIds.MC_ENTITY_ARMOR, -4499);

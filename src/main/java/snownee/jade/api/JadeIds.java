@@ -77,6 +77,7 @@ public interface JadeIds {
 	ResourceLocation MC_NEXT_ENTITY_DROP = MC("next_entity_drop");
 	ResourceLocation MC_NOTE_BLOCK = MC("note_block");
 	ResourceLocation MC_PAINTING = MC("painting");
+	ResourceLocation MC_PET_ARMOR = MC("pet_armor");
 	ResourceLocation MC_PLAYER_HEAD = MC("player_head");
 	ResourceLocation MC_POTION_EFFECTS = MC("potion_effects");
 	ResourceLocation MC_REDSTONE = MC("redstone");
