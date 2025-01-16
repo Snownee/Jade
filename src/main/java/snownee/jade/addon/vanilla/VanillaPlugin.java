@@ -63,7 +63,6 @@ import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.WailaPlugin;
 import snownee.jade.overlay.DatapackBlockManager;
-import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
 
 @WailaPlugin
@@ -191,8 +190,6 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerBlockIcon(WaxedProvider.INSTANCE, SignBlock.class);
 
 		registration.registerItemStorageClient(CampfireProvider.INSTANCE);
-
-		ClientProxy.registerReloadListener(HarvestToolProvider.INSTANCE);
 
 		registration.addRayTraceCallback(-10, JadeClient::builtInOverrides);
 		registration.addRayTraceCallback(5000, DatapackBlockManager::override);
