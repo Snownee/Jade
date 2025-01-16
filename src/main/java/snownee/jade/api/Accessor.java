@@ -5,10 +5,6 @@ import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import com.mojang.serialization.DynamicOps;
-import com.mojang.serialization.MapDecoder;
-import com.mojang.serialization.MapEncoder;
-
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -30,15 +26,6 @@ public interface Accessor<T extends HitResult> {
 
 	@NotNull
 	CompoundTag getServerData();
-
-	@Deprecated
-	DynamicOps<Tag> nbtOps();
-
-	@Deprecated
-	<D> Optional<D> readData(MapDecoder<D> codec);
-
-	@Deprecated
-	<D> void writeData(MapEncoder<D> codec, D value);
 
 	<D> Optional<D> decodeFromNbt(StreamDecoder<RegistryFriendlyByteBuf, D> codec, Tag tag);
 

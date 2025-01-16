@@ -34,12 +34,8 @@ import snownee.jade.util.ModIdentification;
 public class WailaConfig implements IWailaConfig {
 	public static final MapCodec<WailaConfig> MAP_CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
 			Codec.string(0, 32).optionalFieldOf("name", "").forGetter(IWailaConfig::getName),
-			General.CODEC.fieldOf("general")
-					.orElseGet(() -> JadeCodecs.createFromEmptyMap(General.CODEC))
-					.forGetter(WailaConfig::general),
-			Overlay.CODEC.fieldOf("overlay")
-					.orElseGet(() -> JadeCodecs.createFromEmptyMap(Overlay.CODEC))
-					.forGetter(WailaConfig::overlay),
+			General.CODEC.fieldOf("general").orElseGet(() -> JadeCodecs.createFromEmptyMap(General.CODEC)).forGetter(WailaConfig::general),
+			Overlay.CODEC.fieldOf("overlay").orElseGet(() -> JadeCodecs.createFromEmptyMap(Overlay.CODEC)).forGetter(WailaConfig::overlay),
 			Formatting.CODEC.fieldOf("formatting")
 					.orElseGet(() -> JadeCodecs.createFromEmptyMap(Formatting.CODEC))
 					.forGetter(WailaConfig::formatting),
@@ -48,8 +44,7 @@ public class WailaConfig implements IWailaConfig {
 					.forGetter(WailaConfig::accessibility),
 			ClientPluginConfig.CODEC.fieldOf("plugin")
 					.orElseGet(() -> JadeCodecs.createFromEmptyMap(ClientPluginConfig.CODEC))
-					.forGetter(WailaConfig::plugin)
-	).apply(i, WailaConfig::new));
+					.forGetter(WailaConfig::plugin)).apply(i, WailaConfig::new));
 
 	private String name;
 	private final General general;
@@ -128,14 +123,11 @@ public class WailaConfig implements IWailaConfig {
 	}
 
 	public static void init() {
-		/* off */
-		List<String> names = General.itemModNameTooltipDisabledByMods.stream()
+		General.itemModNameTooltipDisabledByModsNames.clear();
+		General.itemModNameTooltipDisabledByMods.stream()
 				.filter(CommonProxy::isModLoaded)
 				.map($ -> ModIdentification.getModName($).orElse($))
-				.toList();
-		/* on */
-		General.itemModNameTooltipDisabledByMods.clear();
-		General.itemModNameTooltipDisabledByMods.addAll(names);
+				.forEach(General.itemModNameTooltipDisabledByModsNames::add);
 
 		boolean hasAccessibilityMod = ClientProxy.hasAccessibilityMod();
 		if (Jade.history().accessibilityModMemory != hasAccessibilityMod) {
@@ -150,13 +142,13 @@ public class WailaConfig implements IWailaConfig {
 	public static class History {
 
 		public static final Codec<History> CODEC = RecordCodecBuilder.create(i -> i.group(
-				Codec.BOOL.fieldOf("previewOverlay").orElse(true).forGetter($ -> $.previewOverlay),
-				Codec.BOOL.fieldOf("hintOverlayToggle").orElse(true).forGetter($ -> $.hintOverlayToggle),
-				Codec.BOOL.fieldOf("hintNarratorToggle").orElse(true).forGetter($ -> $.hintNarratorToggle),
-				Codec.BOOL.fieldOf("accessibilityModMemory").orElse(false).forGetter($ -> $.accessibilityModMemory),
-				Codec.INT.fieldOf("themesHash").orElse(0).forGetter($ -> $.themesHash),
-				JadeCodecs.intArrayCodec(0, Codec.INT).fieldOf("usersHash").orElse(new int[0]).forGetter($ -> $.usersHash)
-		).apply(i, History::new));
+						Codec.BOOL.fieldOf("previewOverlay").orElse(true).forGetter($ -> $.previewOverlay),
+						Codec.BOOL.fieldOf("hintOverlayToggle").orElse(true).forGetter($ -> $.hintOverlayToggle),
+						Codec.BOOL.fieldOf("hintNarratorToggle").orElse(true).forGetter($ -> $.hintNarratorToggle),
+						Codec.BOOL.fieldOf("accessibilityModMemory").orElse(false).forGetter($ -> $.accessibilityModMemory),
+						Codec.INT.fieldOf("themesHash").orElse(0).forGetter($ -> $.themesHash),
+						JadeCodecs.intArrayCodec(0, Codec.INT).fieldOf("usersHash").orElse(new int[0]).forGetter($ -> $.usersHash))
+				.apply(i, History::new));
 
 		public boolean previewOverlay;
 		public boolean hintOverlayToggle;
@@ -207,25 +199,30 @@ public class WailaConfig implements IWailaConfig {
 				Codec.BOOL.fieldOf("displayEntities").orElse(true).forGetter(General::getDisplayEntities),
 				Codec.BOOL.fieldOf("displayBosses").orElse(true).forGetter(General::getDisplayBosses),
 				StringRepresentable.fromEnum(DisplayMode::values)
-						.fieldOf("displayMode").orElse(DisplayMode.TOGGLE)
+						.fieldOf("displayMode")
+						.orElse(DisplayMode.TOGGLE)
 						.forGetter(General::getDisplayMode),
 				StringRepresentable.fromEnum(FluidMode::values)
-						.fieldOf("fluidMode").orElse(FluidMode.ANY)
+						.fieldOf("fluidMode")
+						.orElse(FluidMode.ANY)
 						.forGetter(General::getDisplayFluids),
 				StringRepresentable.fromEnum(PerspectiveMode::values)
-						.fieldOf("perspectiveMode").orElse(PerspectiveMode.CAMERA)
+						.fieldOf("perspectiveMode")
+						.orElse(PerspectiveMode.CAMERA)
 						.forGetter(General::getPerspectiveMode),
 				Codec.floatRange(0, 20).fieldOf("extendedReach").orElse(0F).forGetter(General::getExtendedReach),
 				Codec.BOOL.fieldOf("debug").orElse(false).forGetter(General::isDebug),
 				Codec.BOOL.fieldOf("itemModNameTooltip").orElse(true).forGetter(General::showItemModNameTooltip),
 				StringRepresentable.fromEnum(BossBarOverlapMode::values)
-						.fieldOf("bossBarOverlapMode").orElse(BossBarOverlapMode.PUSH_DOWN)
+						.fieldOf("bossBarOverlapMode")
+						.orElse(BossBarOverlapMode.PUSH_DOWN)
 						.forGetter(General::getBossBarOverlapMode),
 				Codec.BOOL.fieldOf("builtinCamouflage").orElse(true).forGetter(General::getBuiltinCamouflage),
-				ExtraOptions.CODEC.orElseGet(() -> JadeCodecs.createFromEmptyMap(ExtraOptions.CODEC.codec())).forGetter($ -> $.extraOptions)
-		).apply(i, General::new));
+				ExtraOptions.CODEC.orElseGet(() -> JadeCodecs.createFromEmptyMap(ExtraOptions.CODEC.codec()))
+						.forGetter($ -> $.extraOptions)).apply(i, General::new));
 
 		public static final List<String> itemModNameTooltipDisabledByMods = Lists.newArrayList("emi");
+		public static final List<String> itemModNameTooltipDisabledByModsNames = Lists.newArrayList();
 		private boolean displayTooltip;
 		private boolean displayBlocks;
 		private boolean displayEntities;
@@ -242,9 +239,10 @@ public class WailaConfig implements IWailaConfig {
 
 		public static final class ExtraOptions {
 			public static final MapCodec<ExtraOptions> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
-					Codec.BOOL.fieldOf("hideFromTabList").orElse(true).forGetter(ExtraOptions::hideFromTabList),
-					Codec.BOOL.fieldOf("hideFromGUIs").orElse(true).forGetter(ExtraOptions::hideFromGUIs)
-			).apply(i, ExtraOptions::new));
+					Codec.BOOL.fieldOf("hideFromTabList")
+							.orElse(true)
+							.forGetter(ExtraOptions::hideFromTabList),
+					Codec.BOOL.fieldOf("hideFromGUIs").orElse(true).forGetter(ExtraOptions::hideFromGUIs)).apply(i, ExtraOptions::new));
 
 			private boolean hideFromTabList;
 			private boolean hideFromGUIs;
@@ -387,7 +385,7 @@ public class WailaConfig implements IWailaConfig {
 
 		@Override
 		public boolean showItemModNameTooltip() {
-			return itemModNameTooltip && itemModNameTooltipDisabledByMods.isEmpty();
+			return itemModNameTooltip && itemModNameTooltipDisabledByModsNames.isEmpty();
 		}
 
 		@Override
@@ -454,21 +452,19 @@ public class WailaConfig implements IWailaConfig {
 	public static class Overlay implements IWailaConfig.Overlay {
 
 		public static final Codec<Overlay> CODEC = RecordCodecBuilder.create(i -> i.group(
-				ResourceLocation.CODEC.fieldOf("activeTheme").orElse(Theme.DEFAULT_THEME_ID).forGetter($ -> $.activeTheme),
-				Codec.FLOAT.fieldOf("overlayPosX").orElse(0.5F).forGetter(Overlay::getOverlayPosX),
-				Codec.FLOAT.fieldOf("overlayPosY").orElse(1.0F).forGetter(Overlay::getOverlayPosY),
-				Codec.floatRange(0.2F, 2F).fieldOf("overlayScale").orElse(1.0F).forGetter(Overlay::getOverlayScale),
-				Codec.FLOAT.fieldOf("overlayAnchorX").orElse(0.5F).forGetter(Overlay::getAnchorX),
-				Codec.FLOAT.fieldOf("overlayAnchorY").orElse(0.0F).forGetter(Overlay::getAnchorY),
-				Codec.BOOL.fieldOf("overlaySquare").orElse(false).forGetter(Overlay::getSquare),
-				Codec.floatRange(0, 1).fieldOf("autoScaleThreshold").orElse(0.4f).forGetter(Overlay::getAutoScaleThreshold),
-				Codec.floatRange(0, 1).fieldOf("alpha").orElse(0.7f).forGetter(Overlay::getAlpha),
-				StringRepresentable.fromEnum(IconMode::values)
-						.fieldOf("iconMode").orElse(IconMode.TOP)
-						.forGetter(Overlay::getIconMode),
-				Codec.BOOL.fieldOf("animation").orElse(true).forGetter(Overlay::getAnimation),
-				Codec.floatRange(0, Float.MAX_VALUE).fieldOf("disappearingDelay").orElse(0F).forGetter(Overlay::getDisappearingDelay)
-		).apply(i, Overlay::new));
+						ResourceLocation.CODEC.fieldOf("activeTheme").orElse(Theme.DEFAULT_THEME_ID).forGetter($ -> $.activeTheme),
+						Codec.FLOAT.fieldOf("overlayPosX").orElse(0.5F).forGetter(Overlay::getOverlayPosX),
+						Codec.FLOAT.fieldOf("overlayPosY").orElse(1.0F).forGetter(Overlay::getOverlayPosY),
+						Codec.floatRange(0.2F, 2F).fieldOf("overlayScale").orElse(1.0F).forGetter(Overlay::getOverlayScale),
+						Codec.FLOAT.fieldOf("overlayAnchorX").orElse(0.5F).forGetter(Overlay::getAnchorX),
+						Codec.FLOAT.fieldOf("overlayAnchorY").orElse(0.0F).forGetter(Overlay::getAnchorY),
+						Codec.BOOL.fieldOf("overlaySquare").orElse(false).forGetter(Overlay::getSquare),
+						Codec.floatRange(0, 1).fieldOf("autoScaleThreshold").orElse(0.4f).forGetter(Overlay::getAutoScaleThreshold),
+						Codec.floatRange(0, 1).fieldOf("alpha").orElse(0.7f).forGetter(Overlay::getAlpha),
+						StringRepresentable.fromEnum(IconMode::values).fieldOf("iconMode").orElse(IconMode.TOP).forGetter(Overlay::getIconMode),
+						Codec.BOOL.fieldOf("animation").orElse(true).forGetter(Overlay::getAnimation),
+						Codec.floatRange(0, Float.MAX_VALUE).fieldOf("disappearingDelay").orElse(0F).forGetter(Overlay::getDisappearingDelay))
+				.apply(i, Overlay::new));
 
 		public ResourceLocation activeTheme;
 		private float overlayPosX;
@@ -639,11 +635,10 @@ public class WailaConfig implements IWailaConfig {
 
 	public static class Formatting implements IWailaConfig.Formatting {
 
-		public static final Codec<Formatting> CODEC = RecordCodecBuilder.create(i -> i.group(
-				Style.Serializer.CODEC.fieldOf("itemModNameStyle")
-						.orElseGet(() -> Style.EMPTY.applyFormats(ChatFormatting.BLUE, ChatFormatting.ITALIC))
-						.forGetter(Formatting::getItemModNameStyle)
-		).apply(i, Formatting::new));
+		public static final Codec<Formatting> CODEC = RecordCodecBuilder.create(i -> i.group(Style.Serializer.CODEC.fieldOf(
+						"itemModNameStyle")
+				.orElseGet(() -> Style.EMPTY.applyFormats(ChatFormatting.BLUE, ChatFormatting.ITALIC))
+				.forGetter(Formatting::getItemModNameStyle)).apply(i, Formatting::new));
 
 		private Style itemModNameStyle;
 
@@ -674,12 +669,12 @@ public class WailaConfig implements IWailaConfig {
 		public static final Codec<Accessibility> CODEC = RecordCodecBuilder.create(i -> i.group(
 				Codec.BOOL.fieldOf("enableTextToSpeech").orElse(false).forGetter(Accessibility::shouldEnableTextToSpeech),
 				StringRepresentable.fromEnum(TTSMode::values)
-						.fieldOf("ttsMode").orElse(TTSMode.TOGGLE)
+						.fieldOf("ttsMode")
+						.orElse(TTSMode.TOGGLE)
 						.forGetter(Accessibility::getTTSMode),
 				Codec.BOOL.fieldOf("enableAccessibilityPlugin").orElse(false).forGetter(Accessibility::getEnableAccessibilityPlugin),
 				Codec.floatRange(0, 1).fieldOf("textBackgroundOpacity").orElse(0F).forGetter(Accessibility::getTextBackgroundOpacity),
-				Codec.BOOL.fieldOf("flipMainHand").orElse(false).forGetter(Accessibility::getFlipMainHand)
-		).apply(i, Accessibility::new));
+				Codec.BOOL.fieldOf("flipMainHand").orElse(false).forGetter(Accessibility::getFlipMainHand)).apply(i, Accessibility::new));
 
 		private boolean enableTextToSpeech;
 		private TTSMode ttsMode;
@@ -766,8 +761,7 @@ public class WailaConfig implements IWailaConfig {
 				WailaConfig.MAP_CODEC.forGetter($ -> $),
 				WailaConfig.History.CODEC.fieldOf("history")
 						.orElseGet(() -> JadeCodecs.createFromEmptyMap(WailaConfig.History.CODEC))
-						.forGetter($ -> $.history)
-		).apply(i, WailaConfig.Root::new));
+						.forGetter($ -> $.history)).apply(i, WailaConfig.Root::new));
 
 		private boolean enableProfiles;
 		public int profileIndex;

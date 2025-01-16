@@ -8,8 +8,6 @@ import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.google.common.base.Preconditions;
-
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
@@ -32,7 +30,7 @@ import snownee.jade.impl.lookup.WrappedHierarchyLookup;
 
 public class WailaCommonRegistration implements IWailaCommonRegistration {
 
-	private static final WailaCommonRegistration INSTANCE = new WailaCommonRegistration();
+	private static volatile WailaCommonRegistration INSTANCE = new WailaCommonRegistration();
 
 	public final PairHierarchyLookup<IServerDataProvider<BlockAccessor>> blockDataProviders;
 	public final HierarchyLookup<IServerDataProvider<EntityAccessor>> entityDataProviders;
@@ -42,7 +40,6 @@ public class WailaCommonRegistration implements IWailaCommonRegistration {
 	public final WrappedHierarchyLookup<IServerExtensionProvider<FluidView.Data>> fluidStorageProviders;
 	public final WrappedHierarchyLookup<IServerExtensionProvider<EnergyView.Data>> energyStorageProviders;
 	public final WrappedHierarchyLookup<IServerExtensionProvider<ProgressView.Data>> progressProviders;
-	private CommonRegistrationSession session;
 
 	WailaCommonRegistration() {
 		blockDataProviders = new PairHierarchyLookup<>(new HierarchyLookup<>(Block.class), new HierarchyLookup<>(BlockEntity.class));
@@ -70,25 +67,31 @@ public class WailaCommonRegistration implements IWailaCommonRegistration {
 	}
 
 	public static WailaCommonRegistration instance() {
+		if (INSTANCE == null) {
+			Jade.LOGGER.error("WailaCommonRegistration is not initialized yet.");
+			synchronized (WailaCommonRegistration.class) {
+				if (INSTANCE == null) {
+					INSTANCE = new WailaCommonRegistration();
+				}
+			}
+		}
 		return INSTANCE;
+	}
+
+	public static void reset() {
+		synchronized (WailaCommonRegistration.class) {
+			INSTANCE = new WailaCommonRegistration();
+		}
 	}
 
 	@Override
 	public void registerBlockDataProvider(IServerDataProvider<BlockAccessor> dataProvider, Class<?> blockOrBlobkEntityClass) {
-		if (isSessionActive()) {
-			session.registerBlockDataProvider(dataProvider, blockOrBlobkEntityClass);
-		} else {
-			blockDataProviders.register(blockOrBlobkEntityClass, dataProvider);
-		}
+		blockDataProviders.register(blockOrBlobkEntityClass, dataProvider);
 	}
 
 	@Override
 	public void registerEntityDataProvider(IServerDataProvider<EntityAccessor> dataProvider, Class<? extends Entity> entityClass) {
-		if (isSessionActive()) {
-			session.registerEntityDataProvider(dataProvider, entityClass);
-		} else {
-			entityDataProviders.register(entityClass, dataProvider);
-		}
+		entityDataProviders.register(entityClass, dataProvider);
 	}
 
 	/* PROVIDER GETTERS */
@@ -111,58 +114,25 @@ public class WailaCommonRegistration implements IWailaCommonRegistration {
 		fluidStorageProviders.loadComplete(priorities);
 		energyStorageProviders.loadComplete(priorities);
 		progressProviders.loadComplete(priorities);
-		session = null;
 	}
 
 	@Override
 	public <T> void registerItemStorage(IServerExtensionProvider<ItemStack> provider, Class<? extends T> clazz) {
-		if (isSessionActive()) {
-			session.registerItemStorage(provider, clazz);
-		} else {
-			itemStorageProviders.register(clazz, provider);
-		}
+		itemStorageProviders.register(clazz, provider);
 	}
 
 	@Override
 	public <T> void registerFluidStorage(IServerExtensionProvider<FluidView.Data> provider, Class<? extends T> clazz) {
-		if (isSessionActive()) {
-			session.registerFluidStorage(provider, clazz);
-		} else {
-			fluidStorageProviders.register(clazz, provider);
-		}
+		fluidStorageProviders.register(clazz, provider);
 	}
 
 	@Override
 	public <T> void registerEnergyStorage(IServerExtensionProvider<EnergyView.Data> provider, Class<? extends T> clazz) {
-		if (isSessionActive()) {
-			session.registerEnergyStorage(provider, clazz);
-		} else {
-			energyStorageProviders.register(clazz, provider);
-		}
+		energyStorageProviders.register(clazz, provider);
 	}
 
 	@Override
 	public <T> void registerProgress(IServerExtensionProvider<ProgressView.Data> provider, Class<? extends T> clazz) {
-		if (isSessionActive()) {
-			session.registerProgress(provider, clazz);
-		} else {
-			progressProviders.register(clazz, provider);
-		}
-	}
-
-	public void startSession() {
-		if (session == null) {
-			session = new CommonRegistrationSession(this);
-		}
-		session.reset();
-	}
-
-	public void endSession() {
-		Preconditions.checkState(session != null, "Session not started");
-		session.end();
-	}
-
-	public boolean isSessionActive() {
-		return session != null && session.isActive();
+		progressProviders.register(clazz, provider);
 	}
 }

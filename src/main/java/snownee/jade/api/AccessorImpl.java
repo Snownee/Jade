@@ -7,19 +7,14 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 
 import com.mojang.serialization.DynamicOps;
-import com.mojang.serialization.MapDecoder;
-import com.mojang.serialization.MapEncoder;
-import com.mojang.serialization.MapLike;
 
 import io.netty.buffer.Unpooled;
 import net.minecraft.nbt.ByteArrayTag;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamDecoder;
 import net.minecraft.network.codec.StreamEncoder;
-import net.minecraft.resources.RegistryOps;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -62,26 +57,6 @@ public abstract class AccessorImpl<T extends HitResult> implements Accessor<T> {
 	@Override
 	public final @NotNull CompoundTag getServerData() {
 		return serverData;
-	}
-
-	@Override
-	public DynamicOps<Tag> nbtOps() {
-		if (ops == null) {
-			ops = RegistryOps.create(NbtOps.INSTANCE, level.registryAccess());
-		}
-		return ops;
-	}
-
-	@Override
-	public <D> Optional<D> readData(MapDecoder<D> codec) {
-		MapLike<Tag> mapLike = nbtOps().getMap(serverData).getOrThrow();
-		return codec.decode(nbtOps(), mapLike).result();
-	}
-
-	@Override
-	public <D> void writeData(MapEncoder<D> codec, D value) {
-		Tag tag = codec.encode(value, nbtOps(), nbtOps().mapBuilder()).build(new CompoundTag()).getOrThrow();
-		serverData.merge((CompoundTag) tag);
 	}
 
 	private RegistryFriendlyByteBuf buffer() {

@@ -148,6 +148,8 @@
 	"config.jade.danger_zone": "Danger Zone",
 	"config.jade.reset_settings": "Reset Settings",
 	"config.jade.reset_settings.confirm": "Are you sure you wish to reset settings?",
+	"config.jade.reload_plugins": "Reload Plugins",
+	"config.jade.reload_plugins.button": "Reload",
 	"config.jade.plugin_jade": "Core Features",
 	"jade.customNameEntity": "%s (%s)",
 	"jade.typeNameEntity": "%s (%s)",

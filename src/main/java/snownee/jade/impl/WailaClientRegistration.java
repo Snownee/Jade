@@ -20,11 +20,9 @@ import org.jetbrains.annotations.Nullable;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
-import com.mojang.datafixers.util.Pair;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -85,7 +83,7 @@ import snownee.jade.util.ModIdentification;
 
 public class WailaClientRegistration implements IWailaClientRegistration {
 
-	private static final WailaClientRegistration INSTANCE = new WailaClientRegistration();
+	private static volatile WailaClientRegistration INSTANCE;
 
 	public final HierarchyLookup<IComponentProvider<BlockAccessor>> blockIconProviders;
 	public final HierarchyLookup<IComponentProvider<BlockAccessor>> blockComponentProviders;
@@ -108,7 +106,6 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	public final CallbackContainer<JadeBeforeTooltipCollectCallback> beforeTooltipCollectCallback = new CallbackContainer<>();
 
 	public final Map<ResourceLocation, ConfigEntry<?>> configEntries = Maps.newHashMap();
-	public final List<Pair<ResourceLocation, Consumer<ResourceLocation>>> configListeners = Lists.newArrayList();
 	public final Multimap<ResourceLocation, Component> configCategoryOverrides = ArrayListMultimap.create();
 
 	public final Map<Block, CustomEnchantPower> customEnchantPowers = Maps.newHashMap();
@@ -120,7 +117,6 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	public final Set<ResourceLocation> clientFeatures = Sets.newHashSet();
 
 	public final Map<Class<Accessor<?>>, AccessorClientHandler<Accessor<?>>> accessorHandlers = Maps.newIdentityHashMap();
-	private ClientRegistrationSession session;
 
 	WailaClientRegistration() {
 		blockIconProviders = new HierarchyLookup<>(Block.class);
@@ -131,7 +127,21 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	}
 
 	public static WailaClientRegistration instance() {
+		if (INSTANCE == null) {
+			Jade.LOGGER.error("WailaClientRegistration is not initialized yet.");
+			synchronized (WailaClientRegistration.class) {
+				if (INSTANCE == null) {
+					INSTANCE = new WailaClientRegistration();
+				}
+			}
+		}
 		return INSTANCE;
+	}
+
+	public static void reset() {
+		synchronized (WailaClientRegistration.class) {
+			INSTANCE = new WailaClientRegistration();
+		}
 	}
 
 	public static <T> JsonConfig<IgnoreList<T>> createIgnoreListConfig(
@@ -139,7 +149,8 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 			ResourceKey<Registry<T>> registryKey,
 			List<String> defaultValues) {
 		List<String> values = List.copyOf(defaultValues);
-		return new JsonConfig<>(Jade.ID + "/" + file, JadeCodecs.ignoreList(registryKey), null, () -> {
+		return new JsonConfig<>(
+				Jade.ID + "/" + file, JadeCodecs.ignoreList(registryKey), null, () -> {
 			var ignoreList = new IgnoreList<T>();
 			ignoreList.values = values;
 			return ignoreList;
@@ -148,42 +159,26 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 
 	@Override
 	public void registerBlockIcon(IComponentProvider<BlockAccessor> provider, Class<? extends Block> blockClass) {
-		if (isSessionActive()) {
-			session.registerBlockIcon(provider, blockClass);
-		} else {
-			blockIconProviders.register(blockClass, provider);
-			tryAddConfig(provider);
-		}
+		blockIconProviders.register(blockClass, provider);
+		tryAddConfig(provider);
 	}
 
 	@Override
 	public void registerBlockComponent(IComponentProvider<BlockAccessor> provider, Class<? extends Block> blockClass) {
-		if (isSessionActive()) {
-			session.registerBlockComponent(provider, blockClass);
-		} else {
-			blockComponentProviders.register(blockClass, provider);
-			tryAddConfig(provider);
-		}
+		blockComponentProviders.register(blockClass, provider);
+		tryAddConfig(provider);
 	}
 
 	@Override
 	public void registerEntityIcon(IComponentProvider<EntityAccessor> provider, Class<? extends Entity> entityClass) {
-		if (isSessionActive()) {
-			session.registerEntityIcon(provider, entityClass);
-		} else {
-			entityIconProviders.register(entityClass, provider);
-			tryAddConfig(provider);
-		}
+		entityIconProviders.register(entityClass, provider);
+		tryAddConfig(provider);
 	}
 
 	@Override
 	public void registerEntityComponent(IComponentProvider<EntityAccessor> provider, Class<? extends Entity> entityClass) {
-		if (isSessionActive()) {
-			session.registerEntityComponent(provider, entityClass);
-		} else {
-			entityComponentProviders.register(entityClass, provider);
-			tryAddConfig(provider);
-		}
+		entityComponentProviders.register(entityClass, provider);
+		tryAddConfig(provider);
 	}
 
 	public List<IComponentProvider<BlockAccessor>> getBlockProviders(
@@ -265,73 +260,45 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 
 	@Override
 	public void addConfig(ResourceLocation key, boolean defaultValue) {
-		if (isSessionActive()) {
-			session.addConfig(key, defaultValue);
-		} else {
-			addConfig(new BooleanConfigEntry(key, defaultValue));
-		}
+		addConfig(new BooleanConfigEntry(key, defaultValue));
 	}
 
 	@Override
 	public <T extends Enum<T>> void addConfig(ResourceLocation key, T defaultValue) {
 		Objects.requireNonNull(defaultValue);
-		if (isSessionActive()) {
-			session.addConfig(key, defaultValue);
-		} else {
-			addConfig(new EnumConfigEntry<>(key, defaultValue));
-		}
+		addConfig(new EnumConfigEntry<>(key, defaultValue));
 	}
 
 	@Override
 	public void addConfig(ResourceLocation key, String defaultValue, Predicate<String> validator) {
 		Objects.requireNonNull(defaultValue);
 		Objects.requireNonNull(validator);
-		if (isSessionActive()) {
-			session.addConfig(key, defaultValue, validator);
-		} else {
-			addConfig(new StringConfigEntry(key, defaultValue, validator));
-		}
+		addConfig(new StringConfigEntry(key, defaultValue, validator));
 	}
 
 	@Override
 	public void addConfig(ResourceLocation key, int defaultValue, int min, int max, boolean slider) {
-		if (isSessionActive()) {
-			session.addConfig(key, defaultValue, min, max, slider);
-		} else {
-			addConfig(new IntConfigEntry(key, defaultValue, min, max, slider));
-		}
+		addConfig(new IntConfigEntry(key, defaultValue, min, max, slider));
 	}
 
 	@Override
 	public void addConfig(ResourceLocation key, float defaultValue, float min, float max, boolean slider) {
-		if (isSessionActive()) {
-			session.addConfig(key, defaultValue, min, max, slider);
-		} else {
-			addConfig(new FloatConfigEntry(key, defaultValue, min, max, slider));
-		}
+		addConfig(new FloatConfigEntry(key, defaultValue, min, max, slider));
 	}
 
 	@Override
 	public void addConfigListener(ResourceLocation key, Consumer<ResourceLocation> listener) {
 		Objects.requireNonNull(listener);
-		if (isSessionActive()) {
-			session.addConfigListener(key, listener);
-		} else {
-			Preconditions.checkArgument(hasConfig(key), "Unknown config key: %s", key);
-			Objects.requireNonNull(getConfigEntry(key)).addListener(listener);
-		}
+		Preconditions.checkArgument(hasConfig(key), "Unknown config key: %s", key);
+		Objects.requireNonNull(getConfigEntry(key)).addListener(listener);
 	}
 
 	@Override
 	public void setConfigCategoryOverride(ResourceLocation key, Component override) {
 		Preconditions.checkArgument(!JadeIds.isAccess(key), "Cannot override option from access category");
 		Preconditions.checkArgument(IPluginConfig.isPrimaryKey(key), "Only primary config key can be overridden");
-		if (isSessionActive()) {
-			session.setConfigCategoryOverride(key, override);
-		} else {
-			Preconditions.checkArgument(hasConfig(key), "Unknown config key: %s", key);
-			configCategoryOverrides.put(key, override);
-		}
+		Preconditions.checkArgument(hasConfig(key), "Unknown config key: %s", key);
+		configCategoryOverrides.put(key, override);
 	}
 
 	@Override
@@ -399,7 +366,8 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 		});
 
 		return categoryMap.asMap().entrySet().stream()
-				.map(e -> new Category(Component.literal(e.getKey()), e.getValue().stream()
+				.map(e -> new Category(
+						Component.literal(e.getKey()), e.getValue().stream()
 						.sorted(Comparator.comparingInt($ -> WailaCommonRegistration.instance().priorities.getSortedList()
 								.indexOf($.id())))
 						.toList()
@@ -462,7 +430,6 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 				tooltipCollectedCallback,
 				itemModNameCallback,
 				beforeTooltipCollectCallback).forEach(CallbackContainer::sort);
-		session = null;
 	}
 
 	public synchronized void reloadIgnoreLists() {
@@ -493,61 +460,37 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	@Override
 	public void addAfterRenderCallback(int priority, JadeAfterRenderCallback callback) {
 		Objects.requireNonNull(callback);
-		if (isSessionActive()) {
-			session.addAfterRenderCallback(priority, callback);
-		} else {
-			afterRenderCallback.add(priority, callback);
-		}
+		afterRenderCallback.add(priority, callback);
 	}
 
 	@Override
 	public void addBeforeRenderCallback(int priority, JadeBeforeRenderCallback callback) {
 		Objects.requireNonNull(callback);
-		if (isSessionActive()) {
-			session.addBeforeRenderCallback(priority, callback);
-		} else {
-			beforeRenderCallback.add(priority, callback);
-		}
+		beforeRenderCallback.add(priority, callback);
 	}
 
 	@Override
 	public void addRayTraceCallback(int priority, JadeRayTraceCallback callback) {
 		Objects.requireNonNull(callback);
-		if (isSessionActive()) {
-			session.addRayTraceCallback(priority, callback);
-		} else {
-			rayTraceCallback.add(priority, callback);
-		}
+		rayTraceCallback.add(priority, callback);
 	}
 
 	@Override
 	public void addTooltipCollectedCallback(int priority, JadeTooltipCollectedCallback callback) {
 		Objects.requireNonNull(callback);
-		if (isSessionActive()) {
-			session.addTooltipCollectedCallback(priority, callback);
-		} else {
-			tooltipCollectedCallback.add(priority, callback);
-		}
+		tooltipCollectedCallback.add(priority, callback);
 	}
 
 	@Override
 	public void addItemModNameCallback(int priority, JadeItemModNameCallback callback) {
 		Objects.requireNonNull(callback);
-		if (isSessionActive()) {
-			session.addItemModNameCallback(priority, callback);
-		} else {
-			itemModNameCallback.add(priority, callback);
-		}
+		itemModNameCallback.add(priority, callback);
 	}
 
 	@Override
 	public void addBeforeTooltipCollectCallback(int priority, JadeBeforeTooltipCollectCallback callback) {
 		Objects.requireNonNull(callback);
-		if (isSessionActive()) {
-			session.addBeforeTooltipCollectCallback(priority, callback);
-		} else {
-			beforeTooltipCollectCallback.add(priority, callback);
-		}
+		beforeTooltipCollectCallback.add(priority, callback);
 	}
 
 	@Override
@@ -593,41 +536,25 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	@Override
 	public void registerItemStorageClient(IClientExtensionProvider<ItemStack, ItemView> provider) {
 		Objects.requireNonNull(provider.getUid());
-		if (isSessionActive()) {
-			session.registerItemStorageClient(provider);
-		} else {
-			itemStorageProviders.put(provider.getUid(), provider);
-		}
+		itemStorageProviders.put(provider.getUid(), provider);
 	}
 
 	@Override
 	public void registerFluidStorageClient(IClientExtensionProvider<FluidView.Data, FluidView> provider) {
 		Objects.requireNonNull(provider.getUid());
-		if (isSessionActive()) {
-			session.registerFluidStorageClient(provider);
-		} else {
-			fluidStorageProviders.put(provider.getUid(), provider);
-		}
+		fluidStorageProviders.put(provider.getUid(), provider);
 	}
 
 	@Override
 	public void registerEnergyStorageClient(IClientExtensionProvider<EnergyView.Data, EnergyView> provider) {
 		Objects.requireNonNull(provider.getUid());
-		if (isSessionActive()) {
-			session.registerEnergyStorageClient(provider);
-		} else {
-			energyStorageProviders.put(provider.getUid(), provider);
-		}
+		energyStorageProviders.put(provider.getUid(), provider);
 	}
 
 	@Override
 	public void registerProgressClient(IClientExtensionProvider<ProgressView.Data, ProgressView> provider) {
 		Objects.requireNonNull(provider.getUid());
-		if (isSessionActive()) {
-			session.registerProgressClient(provider);
-		} else {
-			progressProviders.put(provider.getUid(), provider);
-		}
+		progressProviders.put(provider.getUid(), provider);
 	}
 
 	@Override
@@ -684,21 +611,5 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	@Override
 	public boolean maybeLowVisionUser() {
 		return ClientProxy.hasAccessibilityMod() || IWailaConfig.get().accessibility().shouldEnableTextToSpeech();
-	}
-
-	public void startSession() {
-		if (session == null) {
-			session = new ClientRegistrationSession(this);
-		}
-		session.reset();
-	}
-
-	public void endSession() {
-		Preconditions.checkState(session != null, "Session not started");
-		session.end();
-	}
-
-	public boolean isSessionActive() {
-		return session != null && session.isActive();
 	}
 }

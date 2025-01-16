@@ -15,7 +15,6 @@ import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Stopwatch;
 import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
 import com.google.common.cache.Cache;
 import com.google.common.collect.Sets;
 import com.mojang.authlib.GameProfile;
@@ -90,6 +89,7 @@ import snownee.jade.addon.universal.ItemStorageProvider;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IWailaPlugin;
+import snownee.jade.api.TraceableException;
 import snownee.jade.api.WailaPlugin;
 import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.view.EnergyView;
@@ -426,6 +426,14 @@ public final class CommonProxy implements ModInitializer {
 	}
 
 	public static void loadComplete() {
+		Jade.loadPlugins();
+	}
+
+	public static void loadPlugins(Set<String> erroneousClasses, Set<String> excludedClasses) {
+		WailaCommonRegistration.reset();
+		if (isPhysicallyClient()) {
+			WailaClientRegistration.reset();
+		}
 		Set<Class<?>> classes = Sets.newHashSet();
 		FabricLoader.getInstance().getEntrypointContainers(Jade.ID, IWailaPlugin.class).forEach(entrypoint -> {
 			String className = null;
@@ -433,47 +441,50 @@ public final class CommonProxy implements ModInitializer {
 				ModMetadata metadata = entrypoint.getProvider().getMetadata();
 				IWailaPlugin plugin = entrypoint.getEntrypoint();
 				className = plugin.getClass().getName();
+				if (excludedClasses.contains(className)) {
+					return;
+				}
 				Jade.LOGGER.info("Start loading plugin from %s: %s".formatted(metadata.getName(), className));
 				WailaPlugin a = plugin.getClass().getDeclaredAnnotation(WailaPlugin.class);
 				if (a != null && !Strings.isNullOrEmpty(a.value()) && !isModLoaded(a.value())) {
 					return;
 				}
 				if (className.startsWith("snownee.jade.") && !metadata.getId().startsWith(Jade.ID)) {
-					throw new IllegalStateException("Mod %s is not allowed to register built-in plugins. Please contact the mod author".formatted(
-							metadata.getName()));
+					throw new TraceableException(
+							new IllegalStateException("Mod %s is not allowed to register built-in plugins. Please contact the mod author".formatted(
+									metadata.getName())),
+							Jade.ID);
 				}
 				if (!classes.add(plugin.getClass())) {
-					throw new IllegalStateException("Duplicate plugin class " + className);
+					throw new TraceableException(new IllegalStateException("Duplicate plugin class " + className), Jade.ID);
 				}
 				Stopwatch stopwatch = null;
 				if (CommonProxy.isDevEnv()) {
 					stopwatch = Stopwatch.createStarted();
 				}
 				WailaCommonRegistration common = WailaCommonRegistration.instance();
-				common.startSession();
 				plugin.register(common);
 				if (isPhysicallyClient()) {
 					WailaClientRegistration client = WailaClientRegistration.instance();
-					client.startSession();
 					plugin.registerClient(client);
 					if (stopwatch != null) {
 						Jade.LOGGER.info("Bootstrapped plugin from %s in %s".formatted(className, stopwatch));
 					}
-					client.endSession();
 				}
-				common.endSession();
 				if (stopwatch != null) {
 					Jade.LOGGER.info("Loaded plugin from %s in %s".formatted(className, stopwatch.stop()));
 				}
 			} catch (Throwable e) {
 				Jade.LOGGER.error("Error loading plugin at %s".formatted(className), e);
-				Throwables.throwIfInstanceOf(e, IllegalStateException.class);
+				if (e instanceof TraceableException) {
+					throw e;
+				}
 				if (entrypoint.getProvider().getMetadata().getId().equals(Jade.ID)) {
 					throw e;
 				}
+				erroneousClasses.add(className);
 			}
 		});
-		Jade.loadComplete();
 	}
 
 	public static Component getFluidName(JadeFluidObject fluidObject) {

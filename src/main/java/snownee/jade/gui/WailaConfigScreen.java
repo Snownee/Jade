@@ -50,20 +50,22 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 	public static OptionsList.Entry editIgnoreList(OptionsList.Entry entry, String fileName, Runnable defaultFactory) {
 		entry.getFirstWidget().setWidth(79);
 		MutableComponent tooltip = Component.translatable("config.jade.edit_ignore_list");
-		entry.addWidget(Button.builder(Component.literal("☰"), b -> {
-			new Thread(() -> {
-				try {
-					Thread.sleep(500);
-				} catch (InterruptedException ignored) {
-				}
-				JadeClient.pleaseWait();
-			}).start();
-			File file = new File(CommonProxy.getConfigDirectory(), "jade/%s.json".formatted(fileName));
-			if (!file.exists()) {
-				defaultFactory.run();
-			}
-			Util.getPlatform().openFile(file);
-		}).size(20, 20).tooltip(Tooltip.create(tooltip)).createNarration($ -> tooltip).build(), 80);
+		entry.addWidget(
+				Button.builder(
+						Component.literal("☰"), b -> {
+							new Thread(() -> {
+								try {
+									Thread.sleep(500);
+								} catch (InterruptedException ignored) {
+								}
+								JadeClient.pleaseWait();
+							}).start();
+							File file = new File(CommonProxy.getConfigDirectory(), "jade/%s.json".formatted(fileName));
+							if (!file.exists()) {
+								defaultFactory.run();
+							}
+							Util.getPlatform().openFile(file);
+						}).size(20, 20).tooltip(Tooltip.create(tooltip)).createNarration($ -> tooltip).build(), 80);
 		return entry;
 	}
 
@@ -102,9 +104,11 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 		IWailaConfig.Overlay overlay = IWailaConfig.get().overlay();
 		options.title("overlay");
 		Component adjust = Component.translatable(OptionsList.Entry.makeKey("overlay_pos.adjust"));
-		options.add(new OptionButton(Component.translatable(OptionsList.Entry.makeKey("overlay_pos")), Button.builder(adjust, w -> {
-			startAdjustingPosition();
-		}).size(100, 20)));
+		options.add(new OptionButton(
+				Component.translatable(OptionsList.Entry.makeKey("overlay_pos")), Button.builder(
+				adjust, w -> {
+					startAdjustingPosition();
+				}).size(100, 20)));
 		options.choices(
 				"overlay_theme",
 				() -> overlay.getTheme().id,
@@ -154,33 +158,43 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 		options.choices("flip_main_hand", accessibility::getFlipMainHand, accessibility::setFlipMainHand);
 
 		options.title("danger_zone").withStyle(ChatFormatting.RED);
+		options.add(new OptionButton(
+				"reload_plugins", Button.builder(
+				OptionsList.Entry.makeTitle("reload_plugins.button"),
+				w -> {
+					w.active = false;
+					Jade.loadPlugins();
+					w.active = true;
+				}).size(100, 20).build()));
 		Component reset = Component.translatable("controls.reset").withStyle(ChatFormatting.RED);
 		Component title = Component.translatable(OptionsList.Entry.makeKey("reset_settings")).withStyle(ChatFormatting.RED);
-		options.add(new OptionButton(title, Button.builder(reset, w -> {
-			minecraft.setScreen(new ConfirmScreen(
-					bl -> {
-						if (bl) {
-							for (KeyMapping keyMapping : minecraft.options.keyMappings) {
-								if (JadeClient.openConfig.getCategory().equals(keyMapping.getCategory())) {
-									keyMapping.setKey(keyMapping.getDefaultKey());
+		options.add(new OptionButton(
+				title, Button.builder(
+				reset, w -> {
+					minecraft.setScreen(new ConfirmScreen(
+							bl -> {
+								if (bl) {
+									for (KeyMapping keyMapping : minecraft.options.keyMappings) {
+										if (JadeClient.openConfig.getCategory().equals(keyMapping.getCategory())) {
+											keyMapping.setKey(keyMapping.getDefaultKey());
+										}
+									}
+									minecraft.options.save();
+									try {
+										Jade.resetConfig();
+										rebuildWidgets();
+									} catch (Throwable e) {
+										Jade.LOGGER.error("", e);
+									}
 								}
-							}
-							minecraft.options.save();
-							try {
-								Jade.resetConfig();
-								rebuildWidgets();
-							} catch (Throwable e) {
-								Jade.LOGGER.error("", e);
-							}
-						}
-						minecraft.setScreen(this);
-						this.options.setScrollAmount(this.options.maxScrollAmount());
-					},
-					title,
-					Component.translatable(OptionsList.Entry.makeKey("reset_settings.confirm")),
-					reset,
-					Component.translatable("gui.cancel")));
-		}).size(100, 20)));
+								minecraft.setScreen(this);
+								this.options.setScrollAmount(this.options.maxScrollAmount());
+							},
+							title,
+							Component.translatable(OptionsList.Entry.makeKey("reset_settings.confirm")),
+							reset,
+							Component.translatable("gui.cancel")));
+				}).size(100, 20)));
 
 		return options;
 	}

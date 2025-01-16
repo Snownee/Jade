@@ -15,6 +15,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Maps;
 
 import net.minecraft.core.IdMapper;
 import net.minecraft.resources.ResourceLocation;
@@ -30,6 +31,7 @@ public class PairHierarchyLookup<T extends IJadeProvider> implements IHierarchyL
 	protected boolean idMapped;
 	@Nullable
 	protected IdMapper<T> idMapper;
+	protected Map<ResourceLocation, T> byKey;
 
 	public PairHierarchyLookup(IHierarchyLookup<T> first, IHierarchyLookup<T> second) {
 		this.first = first;
@@ -41,19 +43,20 @@ public class PairHierarchyLookup<T extends IJadeProvider> implements IHierarchyL
 		Objects.requireNonNull(first);
 		Objects.requireNonNull(second);
 		try {
-			return (List<ANY>) mergedCache.get(Pair.of(first.getClass(), second.getClass()), () -> {
-				List<T> firstList = this.first.get(first);
-				List<T> secondList = this.second.get(second);
-				if (firstList.isEmpty()) {
-					return secondList;
-				} else if (secondList.isEmpty()) {
-					return firstList;
-				}
-				return ImmutableList.sortedCopyOf(
-						Comparator.comparingInt(WailaCommonRegistration.instance().priorities::byValue),
-						Iterables.concat(firstList, secondList)
-				);
-			});
+			return (List<ANY>) mergedCache.get(
+					Pair.of(first.getClass(), second.getClass()), () -> {
+						List<T> firstList = this.first.get(first);
+						List<T> secondList = this.second.get(second);
+						if (firstList.isEmpty()) {
+							return secondList;
+						} else if (secondList.isEmpty()) {
+							return firstList;
+						}
+						return ImmutableList.sortedCopyOf(
+								Comparator.comparingInt(WailaCommonRegistration.instance().priorities::byValue),
+								Iterables.concat(firstList, secondList)
+						);
+					});
 		} catch (ExecutionException e) {
 			Jade.LOGGER.error("", e);
 		}
@@ -63,6 +66,7 @@ public class PairHierarchyLookup<T extends IJadeProvider> implements IHierarchyL
 	@Override
 	public void idMapped() {
 		idMapped = true;
+		keyed();
 	}
 
 	@Override
@@ -78,6 +82,16 @@ public class PairHierarchyLookup<T extends IJadeProvider> implements IHierarchyL
 			second.register(clazz, provider);
 		} else {
 			throw new IllegalArgumentException("Class " + clazz + " is not acceptable");
+		}
+		if (byKey != null) {
+			T oldProvider = byKey.put(provider.getUid(), provider);
+			if (oldProvider != provider && oldProvider != null) {
+				Jade.LOGGER.warn(
+						"Found different provider instances with same id {}, this may cause issues: {} and {}",
+						provider.getUid(),
+						oldProvider,
+						provider);
+			}
 		}
 	}
 
@@ -119,5 +133,15 @@ public class PairHierarchyLookup<T extends IJadeProvider> implements IHierarchyL
 		if (idMapped) {
 			idMapper = createIdMapper();
 		}
+	}
+
+	@Override
+	public void keyed() {
+		byKey = Maps.newHashMap();
+	}
+
+	@Override
+	public T byKey(ResourceLocation key) {
+		return byKey.get(key);
 	}
 }

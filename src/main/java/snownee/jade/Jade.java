@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Sets;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 
@@ -29,7 +30,6 @@ public class Jade {
 			WailaConfig.Root.CODEC,
 			WailaConfig::fixData);
 	private static List<JsonConfig<? extends WailaConfig>> configs = List.of();
-	private static boolean frozen;
 
 	private static JsonConfig<? extends WailaConfig> configHolder() {
 		WailaConfig.Root root = rootConfig();
@@ -75,10 +75,6 @@ public class Jade {
 	}
 
 	public static void loadComplete() {
-		if (frozen) {
-			return;
-		}
-		frozen = true;
 		if (CommonProxy.isDevEnv()) {
 			try {
 				IWailaPlugin plugin = new ExamplePlugin();
@@ -132,5 +128,15 @@ public class Jade {
 		JsonConfig<? extends WailaConfig> dest = configs().get(index);
 		configHolder().saveTo(dest.getFile());
 		dest.invalidate();
+	}
+
+	public static void loadPlugins() {
+		Set<String> erroneousClasses = Sets.newHashSet();
+		CommonProxy.loadPlugins(erroneousClasses, Set.of());
+		if (!erroneousClasses.isEmpty()) {
+			LOGGER.info("Trying to load plugins again without erroneous plugins");
+			CommonProxy.loadPlugins(erroneousClasses, erroneousClasses);
+		}
+		loadComplete();
 	}
 }

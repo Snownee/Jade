@@ -14,7 +14,6 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 
 import com.google.common.base.Suppliers;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 
 import net.minecraft.client.Minecraft;
@@ -89,15 +88,6 @@ public class DisplayHelper implements IDisplayHelper {
 		}
 		guiGraphics.pose().popPose();
 		ClientProxy.renderItemDecorationsExtra(guiGraphics, font, stack, i, j, text);
-	}
-
-	private static void setGLColorFromInt(int color) {
-		float red = (color >> 16 & 0xFF) / 255.0F;
-		float green = (color >> 8 & 0xFF) / 255.0F;
-		float blue = (color & 0xFF) / 255.0F;
-		float alpha = ((color >> 24) & 0xFF) / 255F;
-
-		RenderSystem.setShaderColor(red, green, blue, alpha);
 	}
 
 	private static void drawTextureWithMasking(

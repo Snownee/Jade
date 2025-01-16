@@ -8,13 +8,11 @@ import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.google.common.collect.Maps;
 import com.google.common.collect.Streams;
 
 import net.minecraft.core.IdMap;
 import net.minecraft.core.IdMapper;
 import net.minecraft.resources.ResourceLocation;
-import snownee.jade.Jade;
 import snownee.jade.api.IJadeProvider;
 import snownee.jade.impl.PriorityStore;
 
@@ -47,6 +45,10 @@ public interface IHierarchyLookup<T extends IJadeProvider> {
 
 	List<T> get(Class<?> clazz);
 
+	void keyed();
+
+	T byKey(ResourceLocation key);
+
 	boolean isEmpty();
 
 	Stream<Map.Entry<Class<?>, Collection<T>>> entries();
@@ -69,22 +71,11 @@ public interface IHierarchyLookup<T extends IJadeProvider> {
 		return idMapper;
 	}
 
-	default void remapIds(List<ResourceLocation> ids) {
+	default void remapIds(List<ResourceLocation> keys) {
 		IdMapper<T> idMapper = Objects.requireNonNull(idMapper());
-		Map<ResourceLocation, T> map = Maps.newHashMapWithExpectedSize(idMapper.size());
-		Streams.stream(idMapper).forEach(provider -> {
-			T oldProvider = map.put(provider.getUid(), provider);
-			if (oldProvider != provider && oldProvider != null) {
-				Jade.LOGGER.warn(
-						"Found different data providers with same id {}, this may cause issues: {} and {}",
-						provider.getUid(),
-						oldProvider,
-						provider);
-			}
-		});
 		int i = 0;
-		for (ResourceLocation id : ids) {
-			T object = map.get(id);
+		for (ResourceLocation key : keys) {
+			T object = byKey(key);
 			if (object != null) {
 				idMapper.addMapping(object, i);
 			}
