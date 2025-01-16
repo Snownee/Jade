@@ -65,7 +65,6 @@ accessible field net/minecraft/world/level/block/entity/trialspawner/TrialSpawne
 accessible method net/minecraft/client/renderer/FogRenderer getPriorityFogFunction (Lnet/minecraft/world/entity/Entity;F)Lnet/minecraft/client/renderer/FogRenderer$MobEffectFogFunction;
 accessible class net/minecraft/client/renderer/FogRenderer$MobEffectFogFunction
 accessible class net/minecraft/client/renderer/FogRenderer$FogData
-accessible method net/minecraft/client/renderer/LightTexture getDarknessGamma (F)F
 accessible method net/minecraft/client/renderer/LightTexture calculateDarknessScale (Lnet/minecraft/world/entity/LivingEntity;FF)F
 
 accessible field net/minecraft/world/entity/animal/armadillo/Armadillo scuteTime I
@@ -86,3 +85,6 @@ accessible field net/minecraft/world/level/storage/loot/LootPool entries Ljava/u
 
 accessible method net/minecraft/client/gui/components/WidgetTooltipHolder createTooltipPositioner (Lnet/minecraft/client/gui/navigation/ScreenRectangle;ZZ)Lnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;
 extendable method net/minecraft/client/gui/components/WidgetTooltipHolder createTooltipPositioner (Lnet/minecraft/client/gui/navigation/ScreenRectangle;ZZ)Lnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;
+
+accessible method net/minecraft/client/GameNarrator narrateMessage (Ljava/lang/String;Z)V
+accessible method net/minecraft/client/GameNarrator logNarratedMessage (Ljava/lang/String;)V

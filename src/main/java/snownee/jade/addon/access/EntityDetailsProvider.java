@@ -4,7 +4,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Saddleable;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.Shearable;
 import net.minecraft.world.entity.animal.Bee;
 import net.minecraft.world.entity.animal.Sheep;
@@ -55,7 +55,7 @@ public class EntityDetailsProvider implements IEntityComponentProvider {
 		if (entity instanceof Shearable shearable && !shearable.readyForShearing()) {
 			AccessibilityPlugin.replaceTitle(tooltip, objectName, "entity.sheared");
 		}
-		if (entity instanceof Saddleable saddleable && saddleable.isSaddled()) {
+		if (entity instanceof Mob mob && mob.isSaddled()) {
 			AccessibilityPlugin.replaceTitle(tooltip, objectName, "entity.saddled");
 		}
 	}

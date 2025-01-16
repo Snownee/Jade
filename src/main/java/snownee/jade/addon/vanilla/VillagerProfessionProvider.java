@@ -12,7 +12,6 @@ import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
-import snownee.jade.util.CommonProxy;
 
 // @MerchantScreen / Villager.getTypeName
 public enum VillagerProfessionProvider implements IEntityComponentProvider {
@@ -32,10 +31,10 @@ public enum VillagerProfessionProvider implements IEntityComponentProvider {
 		if (data == null) {
 			return;
 		}
-		int level = data.getLevel();
-		VillagerProfession profession = data.getProfession();
-		MutableComponent component = CommonProxy.getProfessionName(profession);
-		if (profession != VillagerProfession.NONE && profession != VillagerProfession.NITWIT && level > 0 && level <= 5) {
+		int level = data.level();
+		VillagerProfession profession = data.profession().value();
+		MutableComponent component = profession.name().copy();
+		if (profession.workSound() != null && level >= VillagerData.MIN_VILLAGER_LEVEL && level <= VillagerData.MAX_VILLAGER_LEVEL) {
 			component.append(LEVEL_SEPARATOR).append(Component.translatable("merchant.level." + level));
 		}
 		tooltip.add(component);

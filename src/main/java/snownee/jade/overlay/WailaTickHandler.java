@@ -2,12 +2,10 @@ package snownee.jade.overlay;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Supplier;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Suppliers;
-import com.mojang.text2speech.Narrator;
 
+import net.minecraft.client.GameNarrator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Direction;
 import net.minecraft.util.StringUtil;
@@ -43,7 +41,6 @@ import snownee.jade.util.ClientProxy;
 
 public class WailaTickHandler {
 
-	private static final Supplier<Narrator> NARRATOR = Suppliers.memoize(Narrator::getNarrator);
 	private static WailaTickHandler INSTANCE = new WailaTickHandler();
 	private static String lastNarration = "";
 	private static long lastNarrationTime = 0;
@@ -58,20 +55,26 @@ public class WailaTickHandler {
 	}
 
 	public static void narrate(ITooltip tooltip, boolean dedupe) {
-		if (!NARRATOR.get().active() || tooltip.isEmpty()) {
+		if (tooltip.isEmpty()) {
 			return;
 		}
 		if (System.currentTimeMillis() - lastNarrationTime < 500) {
 			return;
 		}
-		String narration = tooltip.getMessage();
+		String narration = StringUtil.stripColor(tooltip.getMessage());
+		if (narration.isEmpty()) {
+			return;
+		}
 		if (dedupe && narration.equals(lastNarration)) {
 			return;
 		}
 		CompletableFuture.runAsync(() -> {
-			Narrator narrator = NARRATOR.get();
-			narrator.clear();
-			narrator.say(StringUtil.stripColor(narration), false);
+			GameNarrator narrator = Minecraft.getInstance().getNarrator();
+			narrator.logNarratedMessage(narration);
+			if (narrator.isActive()) {
+				narrator.clear();
+				narrator.narrateMessage(narration, true);
+			}
 		});
 		lastNarration = narration;
 		lastNarrationTime = System.currentTimeMillis();
@@ -190,13 +193,14 @@ public class WailaTickHandler {
 
 		if (config.getDisplayMode() == DisplayMode.LITE && !ClientProxy.isShowDetailsPressed()) {
 			Tooltip dummyTooltip = new Tooltip();
-			handler.gatherComponents(accessor, $ -> {
-				if (Math.abs(WailaCommonRegistration.instance().priorities.byValue($)) > 5000) {
-					return tooltip;
-				} else {
-					return dummyTooltip;
-				}
-			});
+			handler.gatherComponents(
+					accessor, $ -> {
+						if (Math.abs(WailaCommonRegistration.instance().priorities.byValue($)) > 5000) {
+							return tooltip;
+						} else {
+							return dummyTooltip;
+						}
+					});
 			if (!dummyTooltip.isEmpty()) {
 				tooltip.sneakyDetails = true;
 			}

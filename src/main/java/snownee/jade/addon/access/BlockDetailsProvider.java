@@ -4,7 +4,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.BarrelBlock;
 import net.minecraft.world.level.block.BaseRailBlock;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.CreakingHeartBlock;
 import net.minecraft.world.level.block.RepeaterBlock;
 import net.minecraft.world.level.block.entity.trialspawner.TrialSpawnerState;
 import net.minecraft.world.level.block.entity.vault.VaultState;
@@ -76,8 +75,8 @@ public class BlockDetailsProvider implements IBlockComponentProvider {
 		} else if (blockState.hasProperty(BlockStateProperties.TRIAL_SPAWNER_STATE) &&
 				blockState.getValue(BlockStateProperties.TRIAL_SPAWNER_STATE) == TrialSpawnerState.ACTIVE) {
 			active = true;
-		} else if (blockState.getBlock() instanceof CreakingHeartBlock && blockState.getValue(BlockStateProperties.ACTIVE)) {
-			active = true;
+//		} else if (blockState.getBlock() instanceof CreakingHeartBlock && blockState.getValue(BlockStateProperties.ACTIVE)) {
+//			active = true;
 		}
 		if (active) {
 			AccessibilityPlugin.replaceTitle(tooltip, objectName, "block.active");

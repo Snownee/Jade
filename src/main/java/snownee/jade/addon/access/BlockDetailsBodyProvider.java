@@ -14,7 +14,7 @@ import net.minecraft.world.level.block.BigDripleafStemBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.block.DecoratedPotBlock;
-import net.minecraft.world.level.block.PinkPetalsBlock;
+import net.minecraft.world.level.block.FlowerBedBlock;
 import net.minecraft.world.level.block.RedStoneWireBlock;
 import net.minecraft.world.level.block.SmallDripleafBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -51,7 +51,7 @@ public class BlockDetailsBodyProvider implements IBlockComponentProvider {
 			return;
 		}
 		//TODO client tags?
-		if (block instanceof PinkPetalsBlock || block instanceof CampfireBlock || block instanceof DecoratedPotBlock ||
+		if (block instanceof FlowerBedBlock || block instanceof CampfireBlock || block instanceof DecoratedPotBlock ||
 				block instanceof SmallDripleafBlock || block instanceof BigDripleafBlock || block instanceof BigDripleafStemBlock) {
 			return;
 		}

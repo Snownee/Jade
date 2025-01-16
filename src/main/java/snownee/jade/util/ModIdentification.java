@@ -32,18 +32,19 @@ public class ModIdentification implements ResourceManagerReloadListener {
 	}
 
 	public static Optional<String> getModName(String namespace) {
-		return NAMES.computeIfAbsent(namespace, $ -> {
-			Optional<String> optional = ClientProxy.getModName($);
-			if (optional.isPresent()) {
-				return optional;
-			}
-			String key = "jade.modName." + $;
-			if (I18n.exists(key)) {
-				return Optional.of(I18n.get(key));
-			} else {
-				return Optional.empty();
-			}
-		});
+		return NAMES.computeIfAbsent(
+				namespace, $ -> {
+					Optional<String> optional = ClientProxy.getModName($);
+					if (optional.isPresent()) {
+						return optional;
+					}
+					String key = "jade.modName." + $;
+					if (I18n.exists(key)) {
+						return Optional.of(I18n.get(key));
+					} else {
+						return Optional.empty();
+					}
+				});
 	}
 
 	public static String getModName(ResourceLocation id) {
@@ -87,7 +88,7 @@ public class ModIdentification implements ResourceManagerReloadListener {
 			return getModName(fallingBlock.getBlockState().getBlock());
 		}
 		if (entity instanceof Villager villager) {
-			return getModName(BuiltInRegistries.VILLAGER_PROFESSION.getKey(villager.getVillagerData().getProfession()));
+			return getModName(villager.getVillagerData().profession().unwrapKey().orElseThrow().location());
 		}
 		ResourceLocation id;
 		try {

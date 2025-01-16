@@ -60,13 +60,12 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.boss.EnderDragonPart;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
-import net.minecraft.world.entity.decoration.Painting;
+import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionContents;
-import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.CustomModelData;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
@@ -188,10 +187,9 @@ public final class CommonProxy implements ModInitializer {
 			}
 		}
 		if (stack.is(Items.PAINTING)) {
-			CustomData customData = stack.getOrDefault(DataComponents.ENTITY_DATA, CustomData.EMPTY);
-			if (!customData.isEmpty()) {
-				return customData.read(Painting.VARIANT_MAP_CODEC).result()
-						.flatMap(Holder::unwrapKey)
+			Holder<PaintingVariant> holder = stack.get(DataComponents.PAINTING_VARIANT);
+			if (holder != null) {
+				return holder.unwrapKey()
 						.map(ResourceKey::location)
 						.map(ResourceLocation::getNamespace)
 						.orElse(ResourceLocation.DEFAULT_NAMESPACE);

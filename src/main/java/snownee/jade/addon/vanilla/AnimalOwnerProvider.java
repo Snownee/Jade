@@ -8,6 +8,8 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityReference;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.OwnableEntity;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
@@ -49,7 +51,10 @@ public enum AnimalOwnerProvider implements IEntityComponentProvider, StreamServe
 
 	public static UUID getOwnerUUID(Entity entity) {
 		if (entity instanceof OwnableEntity ownableEntity) {
-			return ownableEntity.getOwnerUUID();
+			EntityReference<LivingEntity> reference = ownableEntity.getOwnerReference();
+			if (reference != null) {
+				return reference.getUUID();
+			}
 		}
 		return null;
 	}

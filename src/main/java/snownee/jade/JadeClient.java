@@ -30,6 +30,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -252,7 +253,7 @@ public final class JadeClient {
 		Minecraft mc = Minecraft.getInstance();
 		LightTexture lightTexture = mc.gameRenderer.lightTexture();
 		float darknessEffectScale = mc.options.darknessEffectScale().get().floatValue();
-		float gamma = lightTexture.getDarknessGamma(1) * darknessEffectScale;
+		float gamma = player.getEffectBlendFactor(MobEffects.DARKNESS, 1) * darknessEffectScale;
 		gamma = lightTexture.calculateDarknessScale(player, gamma, 1);
 		if (gamma > 0.15f && accessor.getLevel().getMaxLocalRawBrightness(BlockPos.containing(accessor.getHitResult().getLocation())) < 7) {
 			return null;
