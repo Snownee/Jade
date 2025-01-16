@@ -26,6 +26,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraft.util.StringUtil;
@@ -39,8 +40,8 @@ public class NotUglyEditBox extends AbstractWidget implements Renderable {
 	public Consumer<String> responder;
 	private String value = "";
 	private int maxLength = 32;
-	@Nullable
-	private WidgetSprites background = EditBox.SPRITES;
+	public WidgetSprites background = EditBox.SPRITES;
+	public BackgroundMode backgroundMode = BackgroundMode.VISIBLE;
 	private boolean canLoseFocus = true;
 	private boolean isEditable = true;
 	private boolean shiftPressed;
@@ -59,6 +60,7 @@ public class NotUglyEditBox extends AbstractWidget implements Renderable {
 	private Component hint;
 	private long focusedTime = Util.getMillis();
 	private boolean isMouseOverCross;
+	public boolean alwaysRenderCross;
 
 	public NotUglyEditBox(Font font, int i, int j, int k, int l, Component component) {
 		this(font, i, j, k, l, null, component);
@@ -345,18 +347,38 @@ public class NotUglyEditBox extends AbstractWidget implements Renderable {
 		if (!this.isVisible()) {
 			return;
 		}
-		if (background != null) {
-			ResourceLocation resourceLocation = background.get(this.isActive(), this.isFocused());
-			guiGraphics.blitSprite(RenderType::guiTextured, resourceLocation, this.getX(), this.getY(), this.getWidth(), this.getHeight());
+		float bgAlpha;
+		if (this.backgroundMode == BackgroundMode.HOVERING) {
+			if (isFocused()) {
+				bgAlpha = 1F;
+			} else if (isActive() && isHovered()) {
+				bgAlpha = 0.25F;
+			} else {
+				bgAlpha = 0F;
+			}
 		} else {
-			guiGraphics.fill(this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), 0xC0000000);
+			bgAlpha = backgroundMode == BackgroundMode.VISIBLE ? 1.0F : 0.0F;
 		}
-		if (isEditable && !value.isEmpty()) {
-			isMouseOverCross = isHovered && i > width - paddingRight + 4;
-			int c = isMouseOverCross ? textColor : textColorUneditable;
-			guiGraphics.drawString(font, "×", getX() + width - 10, getY() + paddingTop + 1, c);
+		if (bgAlpha > 0F) {
+			ResourceLocation resourceLocation = background.get(this.isActive(), this.isFocused());
+			guiGraphics.blitSprite(
+					RenderType::guiTextured,
+					resourceLocation,
+					this.getX(),
+					this.getY(),
+					this.getWidth(),
+					this.getHeight(),
+					ARGB.white(bgAlpha));
+
+			if (isEditable && !value.isEmpty()) {
+				if (alwaysRenderCross || isHovered) {
+					isMouseOverCross = isHovered && i > getRight() - paddingRight;
+					int c = isMouseOverCross ? textColor : textColorUneditable;
+					guiGraphics.drawString(font, "×", getX() + width - 10, getY() + paddingTop + 1, c);
+				}
+			}
 		}
-		int k = this.isEditable ? this.textColor : this.textColorUneditable;
+		int textColor = this.isEditable ? this.textColor : this.textColorUneditable;
 		int l = this.cursorPos - this.displayPos;
 		int m = this.highlightPos - this.displayPos;
 		String string = this.font.plainSubstrByWidth(this.value.substring(this.displayPos), this.getInnerWidth());
@@ -370,7 +392,7 @@ public class NotUglyEditBox extends AbstractWidget implements Renderable {
 		}
 		if (!string.isEmpty()) {
 			String string2 = bl ? string.substring(0, l) : string;
-			p = guiGraphics.drawString(this.font, this.formatter.apply(string2, this.displayPos), p, o, k);
+			p = guiGraphics.drawString(this.font, this.formatter.apply(string2, this.displayPos), p, o, textColor);
 		}
 		boolean bl3 = this.cursorPos < this.value.length() || this.value.length() >= this.getMaxLength();
 		int q = p;
@@ -381,10 +403,10 @@ public class NotUglyEditBox extends AbstractWidget implements Renderable {
 			--p;
 		}
 		if (!string.isEmpty() && bl && l < string.length()) {
-			guiGraphics.drawString(this.font, this.formatter.apply(string.substring(l), this.cursorPos), p, o, k);
+			guiGraphics.drawString(this.font, this.formatter.apply(string.substring(l), this.cursorPos), p, o, textColor);
 		}
 		if (this.hint != null && string.isEmpty() && !this.isFocused()) {
-			guiGraphics.drawString(this.font, this.hint, p, o, 0x808080);
+			guiGraphics.drawString(this.font, this.hint, p, o, backgroundMode == BackgroundMode.HOVERING ? textColor : 0x808080);
 		}
 		if (!bl3 && this.suggestion != null) {
 			guiGraphics.drawString(this.font, this.suggestion, q - 1, o, -8355712);
@@ -437,15 +459,6 @@ public class NotUglyEditBox extends AbstractWidget implements Renderable {
 
 	public void setCursorPosition(int i) {
 		this.cursorPos = Mth.clamp(i, 0, this.value.length());
-	}
-
-	@Nullable
-	public WidgetSprites getBackground() {
-		return background;
-	}
-
-	public void setBackground(@Nullable WidgetSprites background) {
-		this.background = background;
 	}
 
 	public void setTextColor(int i) {
@@ -549,5 +562,9 @@ public class NotUglyEditBox extends AbstractWidget implements Renderable {
 
 	public void setHint(Component component) {
 		this.hint = component;
+	}
+
+	public enum BackgroundMode {
+		VISIBLE, INVISIBLE, HOVERING
 	}
 }

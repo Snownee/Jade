@@ -6,16 +6,19 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
 import snownee.jade.api.config.IWailaConfig;
+import snownee.jade.gui.config.NotUglyEditBox;
 import snownee.jade.gui.config.OptionButton;
 import snownee.jade.gui.config.OptionsList;
 import snownee.jade.gui.config.value.OptionValue;
 import snownee.jade.impl.config.WailaConfig;
+import snownee.jade.util.JsonConfig;
 
 public class ProfileConfigScreen extends BaseOptionsScreen {
 
@@ -24,7 +27,11 @@ public class ProfileConfigScreen extends BaseOptionsScreen {
 	public ProfileConfigScreen(Screen parent) {
 		super(parent, Component.translatable("gui.jade.profile_settings"));
 		saver = () -> {
-			IWailaConfig.get().save();
+			for (OptionsList.Entry entry : options.children()) {
+				if (entry instanceof ProfileEntry profileEntry) {
+					profileEntry.save();
+				}
+			}
 			KeyMapping.resetMapping();
 			Minecraft.getInstance().options.save();
 		};
@@ -48,10 +55,11 @@ public class ProfileConfigScreen extends BaseOptionsScreen {
 
 		WailaConfig.Root root = Jade.rootConfig();
 		options.title("general");
-		enabledEntry = options.choices("enable_profiles", root::isEnableProfiles, value -> {
-			Jade.rootConfig().setEnableProfiles(value);
-			refresh();
-		});
+		enabledEntry = options.choices(
+				"enable_profiles", root::isEnableProfiles, value -> {
+					Jade.rootConfig().setEnableProfiles(value);
+					refresh();
+				});
 		for (int i = 0; i < JadeClient.profiles.length; i++) {
 			options.add(new ProfileEntry(i));
 		}
@@ -87,35 +95,53 @@ public class ProfileConfigScreen extends BaseOptionsScreen {
 		public static final Component SAVE = Component.translatable("selectWorld.edit.save");
 		private final int index;
 		private final Component normalTitle;
+		private final NotUglyEditBox editBox;
 
 		public ProfileEntry(int index) {
-			super(Component.translatable("config.jade.profile." + index), Button.builder(USE, $ -> {
-				Jade.useProfile(index);
-				if (Minecraft.getInstance().screen instanceof ProfileConfigScreen screen) {
-					screen.refresh();
-				}
-			}).size(48, 20).build());
+			super(Component.translatable("config.jade.profile." + index), (Button) null);
+
 			this.index = index;
 			this.normalTitle = title;
-			addWidget(Button.builder(SAVE, $ -> {
-				if (Screen.hasControlDown()) {
-					Jade.saveProfile(index);
-					return;
-				}
-				Minecraft mc = Minecraft.getInstance();
-				Screen screen = mc.screen;
-				mc.setScreen(new ConfirmScreen(
-						bl -> {
-							if (bl) {
-								Jade.saveProfile(index);
-							}
-							Minecraft.getInstance().setScreen(screen);
-						},
-						Component.translatable("gui.jade.save_profile.title"),
-						Component.translatable("gui.jade.save_profile.message", normalTitle),
-						Component.translatable("gui.continue"),
-						Component.translatable("gui.cancel")));
-			}).size(48, 20).build(), 100 - 48);
+
+			editBox = new NotUglyEditBox(Minecraft.getInstance().font, 0, 0, 120, 20, title);
+			editBox.paddingLeft = 4;
+			editBox.paddingRight = 12;
+			editBox.paddingTop = 6;
+			editBox.backgroundMode = NotUglyEditBox.BackgroundMode.HOVERING;
+			editBox.setHint(normalTitle);
+			editBox.setValue(Jade.configs().get(index).get().getName());
+			addWidget(new OptionsList.EntryWidget(editBox, -4, -editBox.getHeight() / 2, false));
+
+			addWidget(
+					Button.builder(
+							USE, $ -> {
+								Jade.useProfile(index);
+								if (Minecraft.getInstance().screen instanceof ProfileConfigScreen screen) {
+									screen.refresh();
+								}
+							}).size(48, 20).build(), 0);
+
+			addWidget(
+					Button.builder(
+							SAVE, $ -> {
+								if (Screen.hasControlDown()) {
+									Jade.saveProfile(index);
+									return;
+								}
+								Minecraft mc = Minecraft.getInstance();
+								Screen screen = mc.screen;
+								mc.setScreen(new ConfirmScreen(
+										bl -> {
+											if (bl) {
+												Jade.saveProfile(index);
+											}
+											Minecraft.getInstance().setScreen(screen);
+										},
+										Component.translatable("gui.jade.save_profile.title"),
+										Component.translatable("gui.jade.save_profile.message", normalTitle),
+										Component.translatable("gui.continue"),
+										Component.translatable("gui.cancel")));
+							}).size(48, 20).build(), 100 - 48);
 			addMessage(SAVE.getString());
 		}
 
@@ -127,12 +153,26 @@ public class ProfileConfigScreen extends BaseOptionsScreen {
 			} else {
 				title = normalTitle;
 			}
-			if (!root.isEnableProfiles()) {
-				return;
+			boolean enabled = root.isEnableProfiles();
+			for (AbstractWidget widget : children()) {
+				if (widget == editBox) {
+					editBox.setTextColor(enabled && current ? 16777045 : 0xE0E0E0);
+					editBox.setEditable(enabled);
+				} else if (enabled) {
+					widget.active = !current;
+				}
 			}
-			for (AbstractWidget widget : widgets) {
-				widget.active = !current;
-			}
+		}
+
+		public void save() {
+			JsonConfig<? extends WailaConfig> config = Jade.configs().get(index);
+			config.get().setName(editBox.getValue());
+			config.save();
+		}
+
+		@Override
+		protected boolean shouldRenderTitle() {
+			return false;
 		}
 	}
 

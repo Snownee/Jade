@@ -69,7 +69,7 @@ public abstract class BaseOptionsScreen extends Screen {
 			}
 		};
 		ResourceLocation searchBoxBackground = JadeIds.JADE("search_box_background");
-		searchBox.setBackground(new WidgetSprites(searchBoxBackground, searchBoxBackground));
+		searchBox.background = new WidgetSprites(searchBoxBackground, searchBoxBackground);
 		searchBox.setHint(Component.translatable("gui.jade.search.hint"));
 		searchBox.responder = s -> {
 			options.updateSearch(s);
@@ -78,6 +78,7 @@ public abstract class BaseOptionsScreen extends Screen {
 		searchBox.paddingLeft = 12;
 		searchBox.paddingTop = 6;
 		searchBox.paddingRight = 18;
+		searchBox.alwaysRenderCross = true;
 		addRenderableWidget(optionsNav);
 		addRenderableWidget(searchBox);
 		addRenderableWidget(options);

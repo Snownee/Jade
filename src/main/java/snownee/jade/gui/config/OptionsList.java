@@ -11,7 +11,6 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector2i;
 
 import com.google.common.base.Predicates;
 import com.google.common.collect.Lists;
@@ -30,7 +29,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.CycleButton;
-import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.narration.NarratedElementType;
@@ -436,12 +434,14 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		return super.mouseClicked(d, e, i);
 	}
 
+	public record EntryWidget(AbstractWidget widget, int offsetX, int offsetY, boolean floatRight) {}
+
 	public static class Entry extends ContainerObjectSelectionList.Entry<Entry> {
 
 		protected final Minecraft client;
 		protected final List<String> messages = Lists.newArrayList();
-		protected final List<AbstractWidget> widgets = Lists.newArrayList();
-		protected final List<Vector2i> widgetOffsets = Lists.newArrayList();
+		private final List<AbstractWidget> rawWidgets = Lists.newArrayList();
+		protected final List<EntryWidget> widgets = Lists.newArrayList();
 		protected List<Component> description = List.of();
 		private Entry parent;
 		private List<Entry> children = List.of();
@@ -459,21 +459,21 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		}
 
 		public AbstractWidget getFirstWidget() {
-			return widgets.isEmpty() ? null : widgets.getFirst();
+			return rawWidgets.isEmpty() ? null : rawWidgets.getFirst();
 		}
 
 		public void addWidget(AbstractWidget widget, int offsetX) {
-			addWidget(widget, offsetX, -widget.getHeight() / 2);
+			addWidget(new EntryWidget(widget, offsetX, -widget.getHeight() / 2, true));
 		}
 
-		public void addWidget(AbstractWidget widget, int offsetX, int offsetY) {
+		public void addWidget(EntryWidget widget) {
 			widgets.add(widget);
-			widgetOffsets.add(new Vector2i(offsetX, offsetY));
+			rawWidgets.add(widget.widget());
 		}
 
 		@Override
 		public List<? extends AbstractWidget> children() {
-			return widgets;
+			return rawWidgets;
 		}
 
 		@Override
@@ -493,19 +493,25 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 				int mouseY,
 				boolean hovered,
 				float deltaTime) {
-			for (AbstractWidget widget : widgets) {
-				Vector2i offset = widgetOffsets.get(widgets.indexOf(widget));
-				widget.setX(rowLeft + width - 110 + offset.x);
-				widget.setY(rowTop + height / 2 + offset.y);
-				widget.render(guiGraphics, mouseX, mouseY, deltaTime);
+			for (EntryWidget widget : widgets) {
+				AbstractWidget rawWidget = widget.widget();
+				int x;
+				if (widget.floatRight()) {
+					x = width - 110 + widget.offsetX();
+				} else {
+					x = 10 + widget.offsetX();
+				}
+				rawWidget.setX(rowLeft + x);
+				rawWidget.setY(rowTop + height / 2 + widget.offsetY());
+				rawWidget.render(guiGraphics, mouseX, mouseY, deltaTime);
 			}
 		}
 
-		public void setDisabled(boolean b) {
-			for (AbstractWidget widget : widgets) {
-				widget.active = !b;
-				if (widget instanceof EditBox box) {
-					box.setEditable(!b);
+		public void setDisabled(boolean disabled) {
+			for (AbstractWidget widget : rawWidgets) {
+				widget.active = !disabled;
+				if (widget instanceof NotUglyEditBox editBox) {
+					editBox.setEditable(!disabled);
 				}
 			}
 		}
