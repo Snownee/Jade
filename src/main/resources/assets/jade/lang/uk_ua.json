@@ -36,7 +36,7 @@
 	"gui.jade.profile.use": "Використати",
 	"gui.jade.profile.active": " (Активний)",
 	"gui.jade.save_profile.title": "Зберегти як профіль",
-	"gui.jade.save_profile.message": "Продовжуючи, ви збережете поточні налаштування як профіль %s. Це перезапише існуючий профіль",
+	"#gui.jade.save_profile.message": "Продовжуючи, ви збережете поточні налаштування як профіль %s. Це перезапише існуючий профіль",
 	"key.jade.config": "Відкрити налаштування",
 	"key.jade.show_overlay": "Показати накладання",
 	"key.jade.toggle_liquid": "Перемкнути рідини",

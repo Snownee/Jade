@@ -412,7 +412,7 @@ public final class CommonProxy implements ModInitializer {
 		}
 		((JadeServerPlayer) player).jade$setConnected(true);
 		Map<ResourceLocation, Object> configs = ServerPluginConfig.instance().values();
-		List<Block> shearableBlocks = HarvestToolProvider.INSTANCE.getShearableBlocks();
+		List<Block> shearableBlocks = HarvestToolProvider.getShearableBlocks();
 		if (!configs.isEmpty()) {
 			Jade.LOGGER.debug("Syncing config to {} ({})", player.getGameProfile().getName(), player.getGameProfile().getId());
 		}

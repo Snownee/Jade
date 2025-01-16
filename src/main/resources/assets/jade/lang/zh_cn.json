@@ -36,7 +36,7 @@
 	"gui.jade.profile.use": "使用",
 	"gui.jade.profile.active": "（生效中）",
 	"gui.jade.save_profile.title": "保存为配置存档",
-	"gui.jade.save_profile.message": "您将把当前设置保存为配置存档%s。这将覆盖现有的配置存档。",
+	"gui.jade.save_profile.message": "您将把当前设置保存为配置存档%s。这将覆盖现有的配置存档。（键位不会被保存）",
 	"key.jade.config": "打开配置",
 	"key.jade.show_overlay": "显示叠加层",
 	"key.jade.toggle_liquid": "切换流体",

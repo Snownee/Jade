@@ -36,7 +36,7 @@
 	"gui.jade.profile.use": "使用",
 	"gui.jade.profile.active": " (有効)",
 	"gui.jade.save_profile.title": "プロファイルとして保存",
-	"gui.jade.save_profile.message": "続行すると現在の設定がプロファイル%sとして保存されます。これにより既存のプロファイルが上書きされます。",
+	"#gui.jade.save_profile.message": "続行すると現在の設定がプロファイル%sとして保存されます。これにより既存のプロファイルが上書きされます。",
 	"key.jade.config": "設定を開く",
 	"key.jade.show_overlay": "オーバーレイを表示",
 	"key.jade.toggle_liquid": "液体を切り替え",

@@ -1,7 +1,6 @@
 package snownee.jade.addon.harvest;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -14,7 +13,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -45,20 +43,21 @@ import snownee.jade.util.CommonProxy;
 
 public class HarvestToolProvider implements IBlockComponentProvider, ResourceManagerReloadListener {
 
-	public static final HarvestToolProvider INSTANCE = new HarvestToolProvider();
+	public static final HarvestToolProvider INSTANCE;
 
-	public final Cache<BlockState, ImmutableList<ItemStack>> resultCache = CacheBuilder.newBuilder().expireAfterAccess(
-			5,
-			TimeUnit.MINUTES).build();
-	private List<Block> shearableBlocks = List.of();
 	public static final Map<ResourceLocation, ToolHandler> TOOL_HANDLERS = Maps.newLinkedHashMap();
+	private static List<Block> shearableBlocks = List.of();
 	private static final Component CHECK = Component.literal("✔");
 	private static final Component X = Component.literal("✕");
 	private static final Vec2 ITEM_SIZE = new Vec2(10, 0);
+	private final Cache<BlockState, ImmutableList<ItemStack>> resultCache = CacheBuilder.newBuilder().expireAfterAccess(
+			5,
+			TimeUnit.MINUTES).build();
 
 	static {
-		CommonProxy.registerTagsUpdatedListener(HarvestToolProvider.INSTANCE::tagsUpdated);
 		if (CommonProxy.isPhysicallyClient()) {
+			INSTANCE = new HarvestToolProvider();
+			CommonProxy.registerTagsUpdatedListener((lookupProvider, client) -> INSTANCE.resultCache.invalidateAll());
 			registerHandler(SimpleToolHandler.create(
 					JadeIds.JADE("pickaxe"),
 					List.of(
@@ -80,6 +79,18 @@ public class HarvestToolProvider implements IBlockComponentProvider, ResourceMan
 					.addExtraBlock(Blocks.BAMBOO)
 					.addExtraBlock(Blocks.BAMBOO_SAPLING));
 			registerHandler(ShearsToolHandler.getInstance());
+		} else {
+			INSTANCE = null;
+			CommonProxy.registerTagsUpdatedListener((lookupProvider, client) -> {
+				//TODO execute on a thread?
+				try {
+					shearableBlocks = LootTableMineableCollector.execute(
+							lookupProvider.lookupOrThrow(Registries.LOOT_TABLE),
+							Items.SHEARS.getDefaultInstance());
+				} catch (Throwable e) {
+					Jade.LOGGER.error("Failed to collect shearable blocks", e);
+				}
+			});
 		}
 	}
 
@@ -183,22 +194,7 @@ public class HarvestToolProvider implements IBlockComponentProvider, ResourceMan
 		resultCache.invalidateAll();
 	}
 
-	private void tagsUpdated(HolderLookup.Provider lookupProvider, boolean client) {
-		if (client) {
-			resultCache.invalidateAll();
-		} else {
-			//TODO execute on a thread?
-			try {
-				shearableBlocks = Collections.unmodifiableList(LootTableMineableCollector.execute(
-						lookupProvider.lookupOrThrow(Registries.LOOT_TABLE),
-						Items.SHEARS.getDefaultInstance()));
-			} catch (Throwable e) {
-				Jade.LOGGER.error("Failed to collect shearable blocks", e);
-			}
-		}
-	}
-
-	public List<Block> getShearableBlocks() {
+	public static List<Block> getShearableBlocks() {
 		return shearableBlocks;
 	}
 

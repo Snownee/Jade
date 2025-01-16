@@ -12,8 +12,10 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
@@ -165,6 +167,7 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 					w.active = false;
 					Jade.loadPlugins();
 					w.active = true;
+					Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.PLAYER_LEVELUP, 1.0f));
 				}).size(100, 20).build()));
 		Component reset = Component.translatable("controls.reset").withStyle(ChatFormatting.RED);
 		Component title = Component.translatable(OptionsList.Entry.makeKey("reset_settings")).withStyle(ChatFormatting.RED);

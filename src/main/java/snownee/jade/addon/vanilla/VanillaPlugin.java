@@ -61,7 +61,6 @@ import snownee.jade.api.JadeIds;
 import snownee.jade.api.WailaPlugin;
 import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.overlay.DatapackBlockManager;
-import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
 
 @WailaPlugin
@@ -196,8 +195,6 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerEntityComponent(PetArmorProvider.INSTANCE, Mob.class);
 
 		registration.registerItemStorageClient(CampfireProvider.INSTANCE);
-
-		ClientProxy.registerReloadListener(HarvestToolProvider.INSTANCE);
 
 		registration.addRayTraceCallback(-1000, JadeClient::limitMobEffectFog);
 		registration.addRayTraceCallback(-10, JadeClient::builtInOverrides);
