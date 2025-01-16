@@ -34,6 +34,7 @@ import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.InfestedBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.HitResult;
+import snownee.jade.addon.harvest.HarvestToolProvider;
 import snownee.jade.addon.universal.ItemStorageProvider;
 import snownee.jade.addon.vanilla.VanillaPlugin;
 import snownee.jade.api.Accessor;
@@ -85,6 +86,7 @@ public final class JadeClient {
 		showDetails = ClientProxy.registerDetailsKeyBinding();
 
 		ClientProxy.registerReloadListener(ModIdentification.INSTANCE);
+		ClientProxy.registerReloadListener(HarvestToolProvider.INSTANCE);
 	}
 
 	public static void onKeyPressed(int action) {
