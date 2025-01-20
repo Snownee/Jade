@@ -46,10 +46,10 @@ public class WailaCommonRegistration implements IWailaCommonRegistration {
 		});
 		priorities.configurable(Jade.MODID + "/sort-order", ResourceLocation.CODEC);
 
-		itemStorageProviders = new HierarchyLookup<>(Object.class, true);
-		fluidStorageProviders = new HierarchyLookup<>(Object.class, true);
-		energyStorageProviders = new HierarchyLookup<>(Object.class, true);
-		progressProviders = new HierarchyLookup<>(Object.class, true);
+		itemStorageProviders = new HierarchyLookup<>(Object.class);
+		fluidStorageProviders = new HierarchyLookup<>(Object.class);
+		energyStorageProviders = new HierarchyLookup<>(Object.class);
+		progressProviders = new HierarchyLookup<>(Object.class);
 	}
 
 	@Override
