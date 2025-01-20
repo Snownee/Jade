@@ -426,6 +426,8 @@
 	"jade.ignore_list.comment": "This is an ignore list for the target of Jade. You can add registry ids to the \"values\" list.",
 	"jade.protocolMismatch": "You are using a different version of Jade than the server. Please update Jade to %s.",
 	"jade.metadata": "{lang:[en_us],nameClasses:{}}",
+	"jade.profile_preset.accessibility": "Accessibility Mode",
+	"jade.profile_preset.minimalism": "Minimalism",
 	"__comment": "Only for testing:",
 	"jade.modName.cpp": "Crafting++",
 	"mymod.fuel": "Fuel: %d ticks",

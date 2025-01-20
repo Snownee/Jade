@@ -90,10 +90,10 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 		options.choices("display_fluids", general::getDisplayFluids, general::setDisplayFluids).parent(entry);
 		options.choices("display_mode", general::getDisplayMode, general::setDisplayMode);
 		OptionValue<?> value = options.choices("item_mod_name", general::showItemModNameTooltip, general::setItemModNameTooltip);
-		if (!General.itemModNameTooltipDisabledByMods.isEmpty()) {
+		if (!General.itemModNameTooltipDisabledByModsNames.isEmpty()) {
 			value.setDisabled(true);
 			value.appendDescription(Component.translatable("gui.jade.disabled_by_mods"));
-			General.itemModNameTooltipDisabledByMods.stream().map(Component::literal).forEach(value::appendDescription);
+			General.itemModNameTooltipDisabledByModsNames.stream().map(Component::literal).forEach(value::appendDescription);
 			if (value.getFirstWidget() != null && value.getDescription() != null) {
 				value.getFirstWidget().setTooltip(MultilineTooltip.create(value.getDescription()));
 			}

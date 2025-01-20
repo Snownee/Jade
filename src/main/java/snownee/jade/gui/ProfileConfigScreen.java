@@ -6,9 +6,9 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
@@ -96,6 +96,7 @@ public class ProfileConfigScreen extends BaseOptionsScreen {
 		private final int index;
 		private final Component normalTitle;
 		private final NotUglyEditBox editBox;
+		private final String originalName;
 
 		public ProfileEntry(int index) {
 			super(Component.translatable("config.jade.profile." + index), (Button) null);
@@ -108,8 +109,16 @@ public class ProfileConfigScreen extends BaseOptionsScreen {
 			editBox.paddingRight = 12;
 			editBox.paddingTop = 6;
 			editBox.backgroundMode = NotUglyEditBox.BackgroundMode.HOVERING;
+			editBox.setMaxLength(WailaConfig.MAX_NAME_LENGTH);
 			editBox.setHint(normalTitle);
-			editBox.setValue(Jade.configs().get(index).get().getName());
+			String name = Jade.configs().get(index).get().getName();
+			if (name.startsWith("@")) {
+				editBox.setValue(I18n.get(name.substring(1)));
+				originalName = editBox.getValue();
+			} else {
+				editBox.setValue(name);
+				originalName = null;
+			}
 			addWidget(new OptionsList.EntryWidget(editBox, -4, -editBox.getHeight() / 2, false));
 
 			addWidget(
@@ -166,7 +175,9 @@ public class ProfileConfigScreen extends BaseOptionsScreen {
 
 		public void save() {
 			JsonConfig<? extends WailaConfig> config = Jade.configs().get(index);
-			config.get().setName(editBox.getValue());
+			if (originalName == null || !originalName.equals(editBox.getValue())) {
+				config.get().setName(editBox.getValue());
+			}
 			config.save();
 		}
 

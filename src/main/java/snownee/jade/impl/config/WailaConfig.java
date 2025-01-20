@@ -32,8 +32,10 @@ import snownee.jade.util.ModIdentification;
  * Get this instance from {@link IWailaConfig#get()}
  */
 public class WailaConfig implements IWailaConfig {
+	public static final int MAX_NAME_LENGTH = 100;
+
 	public static final MapCodec<WailaConfig> MAP_CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
-			Codec.string(0, 32).optionalFieldOf("name", "").forGetter(IWailaConfig::getName),
+			Codec.string(0, MAX_NAME_LENGTH).optionalFieldOf("name", "").forGetter(IWailaConfig::getName),
 			General.CODEC.fieldOf("general").orElseGet(() -> JadeCodecs.createFromEmptyMap(General.CODEC)).forGetter(WailaConfig::general),
 			Overlay.CODEC.fieldOf("overlay").orElseGet(() -> JadeCodecs.createFromEmptyMap(Overlay.CODEC)).forGetter(WailaConfig::overlay),
 			Formatting.CODEC.fieldOf("formatting")

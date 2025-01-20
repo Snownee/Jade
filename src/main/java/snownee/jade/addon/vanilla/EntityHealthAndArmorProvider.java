@@ -61,7 +61,7 @@ public enum EntityHealthAndArmorProvider implements IEntityComponentProvider {
 
 	@Override
 	public int getDefaultPriority() {
-		return -4500;
+		return -8000;
 	}
 
 	private static boolean isHealthVisible(LivingEntity entity) {

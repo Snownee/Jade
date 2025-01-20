@@ -72,7 +72,9 @@ public class JsonConfig<T> {
 
 	public JsonConfig(String fileName, Codec<T> codec, @Nullable Consumer<T> onUpdate) {
 		this(fileName, codec, onUpdate, () -> JadeCodecs.createFromEmptyMap(codec));
-		JadeCodecs.createFromEmptyMap(codec); // make sure it works
+		if (CommonProxy.isDevEnv()) {
+			JadeCodecs.createFromEmptyMap(codec); // make sure it works
+		}
 	}
 
 	public T get() {

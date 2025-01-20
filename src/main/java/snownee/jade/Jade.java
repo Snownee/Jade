@@ -6,6 +6,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import com.mojang.logging.LogUtils;
@@ -13,12 +14,14 @@ import com.mojang.serialization.Codec;
 
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.api.IWailaPlugin;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.impl.config.WailaConfig;
 import snownee.jade.test.ExamplePlugin;
 import snownee.jade.util.CommonProxy;
+import snownee.jade.util.JadeCodecs;
 import snownee.jade.util.JsonConfig;
 
 public class Jade {
@@ -100,8 +103,35 @@ public class Jade {
 			Codec<WailaConfig> codec = WailaConfig.MAP_CODEC.codec();
 			ImmutableList.Builder<JsonConfig<? extends WailaConfig>> list = ImmutableList.builderWithExpectedSize(4);
 			list.add(rootConfig);
+			Supplier<WailaConfig> defaultFactory = () -> JadeCodecs.createFromEmptyMap(codec);
 			for (int i = 1; i < 4; ++i) {
-				list.add(new JsonConfig<>("%s/profiles/%s/%s".formatted(Jade.ID, i, Jade.ID), codec, WailaConfig::fixData));
+				Supplier<WailaConfig> factory = defaultFactory;
+				if (i == 1) {
+					factory = () -> {
+						WailaConfig config = defaultFactory.get();
+						config.setName("@jade.profile_preset.accessibility");
+						config.accessibility().setEnableAccessibilityPlugin(true);
+						config.overlay().setAnimation(false);
+						config.overlay().setAlpha(1);
+						config.plugin().set(JadeIds.CORE_BLOCK_FACE, true);
+						config.plugin().set(JadeIds.CORE_MOD_NAME, false);
+						return config;
+					};
+				} else if (i == 2) {
+					factory = () -> {
+						WailaConfig config = defaultFactory.get();
+						config.setName("@jade.profile_preset.minimalism");
+						config.general().setDisplayMode(IWailaConfig.DisplayMode.LITE);
+						config.general().setBossBarOverlapMode(IWailaConfig.BossBarOverlapMode.HIDE_TOOLTIP);
+						config.overlay().setAlpha(0);
+						config.overlay().setSquare(true);
+						config.overlay().setIconMode(IWailaConfig.IconMode.INLINE);
+						config.plugin().set(JadeIds.MC_BREAKING_PROGRESS, false);
+						config.plugin().set(JadeIds.MC_HARVEST_TOOL, false);
+						return config;
+					};
+				}
+				list.add(new JsonConfig<>("%s/profiles/%s/%s".formatted(Jade.ID, i, Jade.ID), codec, WailaConfig::fixData, factory));
 			}
 			configs = list.build();
 			rootConfig().history.checkNewUser(CommonProxy.getConfigDirectory().getAbsolutePath().hashCode());
