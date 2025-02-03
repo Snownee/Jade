@@ -1,5 +1,6 @@
 package snownee.jade.gui.config.value;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -22,6 +23,7 @@ public class InputOptionValue<T> extends OptionValue<T> {
 		updateValue();
 		textField.setResponder(s -> {
 			if (this.validator.test(s)) {
+				setValue(s);
 				textField.setTextColor(ChatFormatting.WHITE.getColor());
 			} else {
 				textField.setTextColor(ChatFormatting.RED.getColor());
@@ -31,11 +33,11 @@ public class InputOptionValue<T> extends OptionValue<T> {
 		addWidget(textField, 0);
 	}
 
+	@SuppressWarnings("unchecked")
 	private void setValue(String text) {
 		if (value instanceof String) {
 			value = (T) text;
 		}
-
 		try {
 			if (value instanceof Integer) {
 				value = (T) Integer.valueOf(text);
@@ -50,10 +52,8 @@ public class InputOptionValue<T> extends OptionValue<T> {
 			} else if (value instanceof Float) {
 				value = (T) Float.valueOf(text);
 			}
-		} catch (NumberFormatException e) {
-			// no-op
+		} catch (NumberFormatException ignored) {
 		}
-
 		save();
 	}
 
@@ -69,8 +69,11 @@ public class InputOptionValue<T> extends OptionValue<T> {
 
 	@Override
 	public void updateValue() {
-		value = getter.get();
-		textField.setValue(String.valueOf(value));
+		T newValue = getter.get();
+		if (!Objects.equals(value, newValue)) {
+			value = newValue;
+			textField.setValue(String.valueOf(value));
+		}
 	}
 
 }
