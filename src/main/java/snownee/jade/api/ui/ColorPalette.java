@@ -9,7 +9,7 @@ public record ColorPalette(int normal, int info, int title, int success, int war
 			0xFFFFFFFF,
 			0xFFFFFFFF,
 			0xFF55FF55,
-			0xFFFFF3CD,
+			0xFFFFC107,
 			0xFFFF5555,
 			0xFFAA0000);
 
