@@ -13,7 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.enchantment.ItemEnchantments;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.block.ChiseledBookShelfBlock;
 import net.minecraft.world.level.block.entity.ChiseledBookShelfBlockEntity;
 import snownee.jade.addon.universal.ItemStorageProvider;
@@ -66,8 +66,13 @@ public enum ChiseledBookshelfProvider implements IBlockComponentProvider, Stream
 		tooltip.add(IDisplayHelper.get().stripColor(item.getHoverName()));
 		if (item.has(DataComponents.STORED_ENCHANTMENTS)) {
 			List<Component> list = Lists.newArrayList();
-			item.getOrDefault(DataComponents.STORED_ENCHANTMENTS, ItemEnchantments.EMPTY)
-					.addToTooltip(Item.TooltipContext.of(accessor.getLevel()), list::add, TooltipFlag.NORMAL);
+			TooltipDisplay tooltipDisplay = item.getOrDefault(DataComponents.TOOLTIP_DISPLAY, TooltipDisplay.DEFAULT);
+			item.addToTooltip(
+					DataComponents.STORED_ENCHANTMENTS,
+					Item.TooltipContext.of(accessor.getLevel()),
+					tooltipDisplay,
+					list::add,
+					TooltipFlag.NORMAL);
 			tooltip.addAll(list);
 		}
 	}
