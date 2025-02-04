@@ -66,11 +66,15 @@ public class BoxElement extends Element implements IBoxElement {
 				return;
 			}
 			float delta = Minecraft.getInstance().getTimer().getRealtimeDeltaTicks() * 2;
-			if (delta < 1) {
-				diff *= delta;
-			}
-			if (Mth.abs(diff) < 1) {
+			if (delta == 0) {
 				diff = diff > 0 ? 1 : -1;
+			} else {
+				if (delta < 1) {
+					diff *= delta;
+				}
+				if (Mth.abs(diff) < 1) {
+					diff = diff > 0 ? 1 : -1;
+				}
 			}
 			setter.accept((int) (source + diff));
 		} else {
