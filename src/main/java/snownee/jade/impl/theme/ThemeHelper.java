@@ -37,8 +37,9 @@ import snownee.jade.api.theme.Theme;
 import snownee.jade.impl.config.WailaConfig;
 import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.util.JadeClientCodecs;
+import snownee.jade.util.KeyedReloadListener;
 
-public class ThemeHelper extends SimpleJsonResourceReloadListener<JadeClientCodecs.ThemeHolder> implements IThemeHelper {
+public class ThemeHelper extends SimpleJsonResourceReloadListener<JadeClientCodecs.ThemeHolder> implements IThemeHelper, KeyedReloadListener {
 	public static final ThemeHelper INSTANCE = new ThemeHelper();
 	public static final ResourceLocation ID = JadeIds.JADE("themes");
 	public static final MutableObject<Theme> theme = new MutableObject<>();
@@ -213,5 +214,10 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener<JadeClientCode
 		}
 		config.applyTheme(config.activeTheme);
 		theme.setValue(config.getTheme());
+	}
+
+	@Override
+	public ResourceLocation getUid() {
+		return ID;
 	}
 }

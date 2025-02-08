@@ -65,6 +65,7 @@ import snownee.jade.api.ui.TooltipRect;
 import snownee.jade.conditional_key_mapping.ConditionalKeyMapping;
 import snownee.jade.gui.HomeConfigScreen;
 import snownee.jade.impl.WailaClientRegistration;
+import snownee.jade.impl.theme.ThemeHelper;
 import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.overlay.WailaTickHandler;
 import snownee.jade.util.ClientProxy;
@@ -107,6 +108,7 @@ public final class JadeClient {
 
 		ClientProxy.registerReloadListener(ModIdentification.INSTANCE);
 		ClientProxy.registerReloadListener(HarvestToolProvider.INSTANCE);
+		ClientProxy.registerReloadListener(ThemeHelper.INSTANCE);
 	}
 
 	public static void onKeyPressed(int action) {

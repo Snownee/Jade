@@ -28,7 +28,6 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.event.Event;
-import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRenderHandler;
 import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
@@ -56,8 +55,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.resources.ReloadableResourceManager;
-import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.util.LazyLoadedValue;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Item;
@@ -91,7 +88,6 @@ import snownee.jade.impl.BlockAccessorImpl;
 import snownee.jade.impl.EntityAccessorImpl;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.WailaClientRegistration;
-import snownee.jade.impl.theme.ThemeHelper;
 import snownee.jade.impl.ui.FluidStackElement;
 import snownee.jade.mixin.KeyAccess;
 import snownee.jade.network.ClientHandshakePacket;
@@ -200,12 +196,8 @@ public final class ClientProxy implements ClientModInitializer {
 		return new FluidStackElement(JadeFluidObject.of(fluidState.getType()));//.size(new Size(18, 18));
 	}
 
-	public static void registerReloadListener(ResourceManagerReloadListener listener) {
-		Minecraft.getInstance().execute(() -> {
-			ReloadableResourceManager manager = (ReloadableResourceManager) Minecraft.getInstance().getResourceManager();
-			manager.registerReloadListener(listener);
-			listener.onResourceManagerReload(manager);
-		});
+	public static void registerReloadListener(KeyedReloadListener listener) {
+		ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(listener);
 	}
 
 	@Nullable
@@ -340,15 +332,18 @@ public final class ClientProxy implements ClientModInitializer {
 			ClientPlayNetworking.send(new ClientHandshakePacket(Jade.PROTOCOL_VERSION));
 		});
 
-		ClientPlayNetworking.registerGlobalReceiver(ReceiveDataPacket.TYPE, (payload, context) -> {
-			ReceiveDataPacket.handle(payload, context.client()::execute);
-		});
-		ClientPlayNetworking.registerGlobalReceiver(ServerHandshakePacket.TYPE, (payload, context) -> {
-			ServerHandshakePacket.handle(payload, context.client()::execute);
-		});
-		ClientPlayNetworking.registerGlobalReceiver(ShowOverlayPacket.TYPE, (payload, context) -> {
-			ShowOverlayPacket.handle(payload, context.client()::execute);
-		});
+		ClientPlayNetworking.registerGlobalReceiver(
+				ReceiveDataPacket.TYPE, (payload, context) -> {
+					ReceiveDataPacket.handle(payload, context.client()::execute);
+				});
+		ClientPlayNetworking.registerGlobalReceiver(
+				ServerHandshakePacket.TYPE, (payload, context) -> {
+					ServerHandshakePacket.handle(payload, context.client()::execute);
+				});
+		ClientPlayNetworking.registerGlobalReceiver(
+				ShowOverlayPacket.TYPE, (payload, context) -> {
+					ShowOverlayPacket.handle(payload, context.client()::execute);
+				});
 
 		for (int i = 320; i < 330; i++) {
 			InputConstants.Key key = InputConstants.Type.KEYSYM.getOrCreate(i);
@@ -356,10 +351,8 @@ public final class ClientProxy implements ClientModInitializer {
 			((KeyAccess) (Object) key).setDisplayName(new LazyLoadedValue<>(() -> Component.translatable(key.getName())));
 		}
 		JadeClient.init();
-		ResourceManagerHelper.get(PackType.CLIENT_RESOURCES)
-				.registerReloadListener((IdentifiableResourceReloadListener) ThemeHelper.INSTANCE);
 		ResourceManagerHelper.get(PackType.SERVER_DATA)
-				.registerReloadListener((IdentifiableResourceReloadListener) HarvestToolProvider.INSTANCE);
+				.registerReloadListener(HarvestToolProvider.INSTANCE);
 		UsernameCache.load();
 	}
 }

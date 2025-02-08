@@ -10,7 +10,6 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.decoration.Painting;
 import net.minecraft.world.entity.item.FallingBlockEntity;
@@ -18,12 +17,14 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.TraceableException;
 import snownee.jade.api.callback.JadeItemModNameCallback;
 import snownee.jade.impl.WailaClientRegistration;
 
-public class ModIdentification implements ResourceManagerReloadListener {
+public class ModIdentification implements KeyedResourceManagerReloadListener {
 
+	public static final ResourceLocation ID = JadeIds.JADE("mod_id");
 	public static final ModIdentification INSTANCE = new ModIdentification();
 	private static final Map<String, Optional<String>> NAMES = Maps.newConcurrentMap();
 
@@ -104,4 +105,8 @@ public class ModIdentification implements ResourceManagerReloadListener {
 		invalidateCache();
 	}
 
+	@Override
+	public ResourceLocation getUid() {
+		return ID;
+	}
 }
