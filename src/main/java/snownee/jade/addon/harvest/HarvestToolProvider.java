@@ -19,7 +19,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -42,8 +41,9 @@ import snownee.jade.api.ui.IElement.Align;
 import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
+import snownee.jade.util.KeyedResourceManagerReloadListener;
 
-public class HarvestToolProvider implements IBlockComponentProvider, ResourceManagerReloadListener {
+public class HarvestToolProvider implements IBlockComponentProvider, KeyedResourceManagerReloadListener {
 
 	public static final HarvestToolProvider INSTANCE = new HarvestToolProvider();
 
@@ -224,5 +224,4 @@ public class HarvestToolProvider implements IBlockComponentProvider, ResourceMan
 	public int getDefaultPriority() {
 		return TooltipPosition.HEAD + 2000;
 	}
-
 }

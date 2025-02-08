@@ -21,9 +21,9 @@ import net.minecraft.util.ExtraCodecs;
 import snownee.jade.Jade;
 import snownee.jade.api.JadeIds;
 
-public class JadeLanguages implements ResourceManagerReloadListener {
-	public static final JadeLanguages INSTANCE = new JadeLanguages();
+public class JadeLanguages implements KeyedResourceManagerReloadListener {
 	public static final ResourceLocation ID = JadeIds.JADE("languages");
+	public static final JadeLanguages INSTANCE = new JadeLanguages();
 	private Map<String, Pattern> nameClasses = Map.of();
 	private final Cache<String, String> nameClassCache = CacheBuilder.newBuilder().maximumSize(1000).build();
 
@@ -60,6 +60,11 @@ public class JadeLanguages implements ResourceManagerReloadListener {
 		} catch (ExecutionException e) {
 			return "other";
 		}
+	}
+
+	@Override
+	public ResourceLocation getUid() {
+		return ID;
 	}
 
 	private record Metadata(List<String> lang, Map<String, Pattern> nameClasses) {

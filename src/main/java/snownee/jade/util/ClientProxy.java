@@ -33,8 +33,6 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.PreparableReloadListener;
-import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.util.LazyLoadedValue;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
@@ -49,12 +47,12 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.neoforge.client.ItemDecoratorHandler;
+import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
-import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
@@ -90,7 +88,6 @@ import snownee.jade.impl.BlockAccessorImpl;
 import snownee.jade.impl.EntityAccessorImpl;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.WailaClientRegistration;
-import snownee.jade.impl.theme.ThemeHelper;
 import snownee.jade.impl.ui.FluidStackElement;
 import snownee.jade.mixin.KeyAccess;
 import snownee.jade.network.ClientHandshakePacket;
@@ -103,7 +100,7 @@ import snownee.jade.overlay.WailaTickHandler;
 public final class ClientProxy {
 
 	private static final List<KeyMapping> keys = Lists.newArrayList();
-	private static final List<PreparableReloadListener> listeners = Lists.newArrayList();
+	private static final List<KeyedReloadListener> listeners = Lists.newArrayList();
 	public static boolean hasJEI = CommonProxy.isModLoaded("jei");
 	public static boolean hasREI = false; //isModLoaded("roughlyenoughitems");
 	public static boolean hasFastScroll = CommonProxy.isModLoaded("fastscroll");
@@ -216,7 +213,7 @@ public final class ClientProxy {
 		return new FluidStackElement(JadeFluidObject.of(fluidState.getType()));//.size(new Size(18, 18));
 	}
 
-	public static void registerReloadListener(ResourceManagerReloadListener listener) {
+	public static void registerReloadListener(KeyedReloadListener listener) {
 		listeners.add(listener);
 	}
 
@@ -368,9 +365,8 @@ public final class ClientProxy {
 					}
 				});
 		modBus.addListener(
-				RegisterClientReloadListenersEvent.class, event -> {
-					event.registerReloadListener(ThemeHelper.INSTANCE);
-					listeners.forEach(event::registerReloadListener);
+				AddClientReloadListenersEvent.class, event -> {
+					listeners.forEach($ -> event.addListener($.getUid(), $));
 					listeners.clear();
 				});
 		modBus.addListener(
