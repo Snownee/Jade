@@ -69,4 +69,12 @@ public class JadeFluidObject {
 	public boolean isEmpty() {
 		return getType() == Fluids.EMPTY || getAmount() == 0;
 	}
+
+	public static boolean isSameFluidSameComponents(JadeFluidObject first, JadeFluidObject second) {
+		if (first.type != second.type) {
+			return false;
+		} else {
+			return first.isEmpty() && second.isEmpty() || Objects.equals(first.components, second.components);
+		}
+	}
 }

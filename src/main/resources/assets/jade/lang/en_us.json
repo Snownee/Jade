@@ -276,6 +276,7 @@
 	"jade.fluid.with_capacity": "%s / %s",
 	"jade.fluid.empty": "Empty",
 	"jade.fluid.text": "%s: %s",
+	"jade.fluid.more_tanks": "%s more tanks",
 	"config.jade.plugin_minecraft.lectern": "Lectern",
 	"config.jade.plugin_minecraft.animal_owner": "Animal Owner",
 	"config.jade.plugin_minecraft.animal_owner_extra_msg": "horse,pet",

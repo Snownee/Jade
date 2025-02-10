@@ -5,15 +5,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-
 import org.jetbrains.annotations.Nullable;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
@@ -126,6 +124,12 @@ public abstract class FluidStorageProvider<T extends Accessor<?>> implements ICo
 								ProgressStyle progressStyle = helper.progressStyle().overlay(view.overlay);
 								theTooltip.add(helper.progress(view.ratio, text, progressStyle, BoxStyle.getNestedBox(), true));
 							}
+						}
+					}
+					if (group.extraData != null && group.extraData.contains("+")) {
+						int extra = group.extraData.getInt("+");
+						if (extra > 0) {
+							theTooltip.add(Component.translatable("jade.fluid.more_tanks", extra));
 						}
 					}
 				});
