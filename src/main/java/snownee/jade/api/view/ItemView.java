@@ -3,6 +3,7 @@ package snownee.jade.api.view;
 import java.util.List;
 import java.util.Objects;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.world.item.ItemStack;
@@ -21,11 +22,13 @@ public class ItemView {
 		this.item = item;
 	}
 
+	@Contract("_ -> this")
 	public ItemView amountText(String amountText) {
 		this.amountText = amountText;
 		return this;
 	}
 
+	@Contract("_ -> this")
 	public ItemView description(List<IElement> description) {
 		this.description = description;
 		return this;

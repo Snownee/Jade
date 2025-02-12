@@ -1,5 +1,6 @@
 package snownee.jade.api.ui;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.client.gui.GuiGraphics;
@@ -16,6 +17,7 @@ public interface IElement {
 	/**
 	 * Force a size that this element reserve
 	 */
+	@Contract("_ -> this")
 	IElement size(@Nullable Vec2 size);
 
 	/**
@@ -38,6 +40,10 @@ public interface IElement {
 	 */
 	void render(GuiGraphics guiGraphics, float x, float y, float maxX, float maxY);
 
+	/**
+	 * Reposition this element with an alignment
+	 */
+	@Contract("_ -> this")
 	IElement align(Align align);
 
 	Align getAlignment();
@@ -45,6 +51,7 @@ public interface IElement {
 	/**
 	 * Reposition this element with an offset
 	 */
+	@Contract("_ -> this")
 	IElement translate(Vec2 translation);
 
 	Vec2 getTranslation();
@@ -53,8 +60,10 @@ public interface IElement {
 	 * Tag this element for identify by other component providers or
 	 * adding transition animation if this element is a progress bar
 	 */
+	@Contract("_ -> this")
 	IElement tag(ResourceLocation tag);
 
+	@Nullable
 	ResourceLocation getTag();
 
 	@Nullable
@@ -65,8 +74,10 @@ public interface IElement {
 	@Nullable
 	String getCachedMessage();
 
+	@Contract("-> this")
 	IElement clearCachedMessage();
 
+	@Contract("_ -> this")
 	IElement message(@Nullable String message);
 
 	enum Align {

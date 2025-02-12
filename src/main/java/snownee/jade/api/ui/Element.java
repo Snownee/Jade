@@ -66,7 +66,7 @@ public abstract class Element implements IElement {
 	}
 
 	@Override
-	public ResourceLocation getTag() {
+	public @Nullable ResourceLocation getTag() {
 		return tag;
 	}
 
