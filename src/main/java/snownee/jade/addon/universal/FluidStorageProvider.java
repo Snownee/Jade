@@ -125,6 +125,12 @@ public abstract class FluidStorageProvider<T extends Accessor<?>> implements ICo
 							}
 						}
 					}
+					if (group.extraData != null && group.extraData.contains("+")) {
+						int extra = group.extraData.getInt("+");
+						if (extra > 0) {
+							theTooltip.add(Component.translatable("jade.fluid.more_tanks", extra));
+						}
+					}
 				});
 	}
 
