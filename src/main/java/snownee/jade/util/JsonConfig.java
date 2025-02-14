@@ -17,7 +17,6 @@ import com.google.gson.Strictness;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 
-import net.minecraft.resources.ResourceLocation;
 import snownee.jade.Jade;
 
 public class JsonConfig<T> {
@@ -27,7 +26,6 @@ public class JsonConfig<T> {
 			.setPrettyPrinting()
 			.serializeNulls()
 			.enableComplexMapKeySerialization()
-			.registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
 			.setStrictness(Strictness.LENIENT)
 			.create();
 	/* on */
