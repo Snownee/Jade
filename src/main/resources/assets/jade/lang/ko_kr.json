@@ -48,7 +48,6 @@
 	"narration.jade.category": "%s 카테고리",
 	"narration.jade.clear_content.usage": "내용 지우려면 왼쪽 클릭",
 	"narration.jade.by": "Snownee가 사랑으로 제작했습니다. 버튼을 눌러 내 모든 작품을 확인하세요!",
-	"narration.jade.adjusting_position": "위치를 조정하려면 드래그하세요. ESC를 눌러 종료",
 	"config.jade.key_name_n_bind_0": "[%s](현재 미지정)",
 	"config.jade.key_name_n_bind_1": "[%s](현재 %s)",
 	"config.jade.key_name_n_bind_2": "[%s](현재 %s, %s)",

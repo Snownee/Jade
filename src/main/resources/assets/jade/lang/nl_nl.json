@@ -48,7 +48,6 @@
 	"narration.jade.category": "%s categorie",
 	"narration.jade.clear_content.usage": "Klik met de linkermuisknop om de inhoud te wissen",
 	"narration.jade.by": "Met liefde gemaakt door Snownee. Druk op de knop om al mijn werken te bekijken!",
-	"narration.jade.adjusting_position": "Sleep om de positie aan te passen. Druk op ESC om af te sluiten",
 	"config.jade.key_name_n_bind_0": "[%s](momenteel ongebonden)",
 	"config.jade.key_name_n_bind_1": "[%s](momenteel %s)",
 	"config.jade.key_name_n_bind_2": "[%s](momenteel %s, %s)",

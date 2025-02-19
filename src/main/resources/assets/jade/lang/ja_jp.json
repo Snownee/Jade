@@ -60,7 +60,6 @@
 	"narration.jade.clear_content.usage": "左クリックで内容を消去",
 	"narration.jade.by": "Snownee が愛情を込めて作りました。ボタンを押して私の作品をすべてチェックしてください。",
 	"narration.jade.by.lunar": "旧正月おめでとうございます！ボタンを押して私の作品をすべてチェックしてください！",
-	"narration.jade.adjusting_position": "ドラッグして位置を調整します。終了するにはESCを押します",
 	"config.jade.key_name_n_bind_0": "[%s](現在未割り当て)",
 	"config.jade.key_name_n_bind_1": "[%s](現在%s)",
 	"config.jade.key_name_n_bind_2": "[%s](現在%s, %s)",

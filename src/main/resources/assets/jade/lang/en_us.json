@@ -60,7 +60,7 @@
 	"narration.jade.clear_content.usage": "Left click to clear content",
 	"narration.jade.by": "Made with Love by Snownee. Press button to check out all my works!",
 	"narration.jade.by.lunar": "Happy Lunar New Year! Press button to check out all my works!",
-	"narration.jade.adjusting_position": "Drag to adjust position. Press ESC to exit",
+	"narration.jade.adjusting_position": "Drag or click the screen edge to adjust position. Press ESC or click the center to exit.",
 	"narration.jade.item_durability": "{0} durability: {1}",
 	"config.jade.key_name_n_bind_0": "[%s](currently unbound)",
 	"config.jade.key_name_n_bind_1": "[%s](currently %s)",

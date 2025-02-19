@@ -48,7 +48,6 @@
 	"narration.jade.category": "%s categoría",
 	"narration.jade.clear_content.usage": "Click izquierdo para borrar el contenido",
 	"narration.jade.by": "Hecho con amor por Snownee. ¡Presiona el botón para ver todos mis trabajos!",
-	"narration.jade.adjusting_position": "Arrastra para ajustar la posición. Presiona ESC para salir.",
 	"config.jade.key_name_n_bind_0": "[%s](actualmente sin consolidar)",
 	"config.jade.key_name_n_bind_1": "[%s](actualmente %s)",
 	"config.jade.key_name_n_bind_2": "[%s](actualmente %s, %s)",

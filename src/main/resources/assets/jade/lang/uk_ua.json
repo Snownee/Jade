@@ -60,7 +60,6 @@
 	"narration.jade.clear_content.usage": "Натисність ЛКМ, щоб очистити вміст",
 	"narration.jade.by": "Зроблено з любов'ю від Snownee. Натисніть кнопку, щоб переглянути всі мої роботи!",
 	"narration.jade.by.lunar": "З Новим роком за місячним календарем! Натисніть кнопку, щоб переглянути всі мої роботи!",
-	"narration.jade.adjusting_position": "Перетягніть, щоб відрегулювати положення. Натисніть ESC, щоб вийти",
 	"config.jade.key_name_n_bind_0": "[%s](не призначено)",
 	"config.jade.key_name_n_bind_1": "[%s](призначено на %s)",
 	"config.jade.key_name_n_bind_2": "[%s](призначено на %s, %s)",

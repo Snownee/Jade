@@ -60,7 +60,6 @@
 	"narration.jade.clear_content.usage": "Щёлкните ЛКМ, чтобы очистить содержимое",
 	"narration.jade.by": "От Snownee с любовью. Нажмите на кнопку, чтобы ознакомиться со всеми моими работами!",
 	"narration.jade.by.lunar": "С наступающим Лунным Новым годом! Нажмите кнопку, чтобы ознакомиться со всеми моими работами!",
-	"narration.jade.adjusting_position": "Перетащите курсор, чтобы изменить положение. Нажмите ESC для выхода",
 	"config.jade.key_name_n_bind_0": "[%s](не назначено)",
 	"config.jade.key_name_n_bind_1": "[%s](назначено на %s)",
 	"config.jade.key_name_n_bind_2": "[%s](назначено на %s, %s)",

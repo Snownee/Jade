@@ -48,7 +48,7 @@
 	"narration.jade.category": "%s 分類",
 	"narration.jade.clear_content.usage": "左鍵點擊以清除內容",
 	"narration.jade.by": "由Snownee悉心製作。按下按鈕查看我所有的作品！",
-	"narration.jade.adjusting_position": "拖曳以調整位置。按ESC鍵退出。",
+	"narration.jade.adjusting_position": "拖曳或點擊螢幕邊緣以調整位置。按ESC鍵或點擊中央退出。",
 	"config.jade.key_name_n_bind_0": "[%s]（目前未綁定）",
 	"config.jade.key_name_n_bind_1": "[%s]（目前綁定：%s）",
 	"config.jade.key_name_n_bind_2": "[%s]（目前綁定：%s, %s）",
