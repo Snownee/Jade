@@ -5,6 +5,7 @@ import java.util.Objects;
 import com.mojang.blaze3d.platform.InputConstants;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.narration.NarratedElementType;
@@ -13,10 +14,13 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.Mth;
 import snownee.jade.Jade;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.gui.config.OptionsList;
+import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.overlay.OverlayRenderer;
 
 public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
@@ -97,25 +101,35 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 
 	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int p_94697_) {
-		if (adjustingPosition) {
-			Objects.requireNonNull(minecraft);
-			Rect2i rect = OverlayRenderer.rect.expectedRect;
-			if (rect.contains((int) mouseX, (int) mouseY)) {
-				setDragging(true);
-				adjustDragging = true;
-				float centerX = rect.getX() + rect.getWidth() / 2F;
-				float centerY = rect.getY() + rect.getHeight() / 2F;
-				dragOffsetX = mouseX - centerX;
-				dragOffsetY = mouseY - centerY;
-			} else {
-				adjustingPosition = false;
-				adjustDragging = false;
-				minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0f));
-			}
-			return true;
+		if (!adjustingPosition) {
+			return super.mouseClicked(mouseX, mouseY, p_94697_);
 		}
 
-		return super.mouseClicked(mouseX, mouseY, p_94697_);
+		Objects.requireNonNull(minecraft);
+		Rect2i rect = OverlayRenderer.rect.expectedRect;
+		if (rect.contains((int) mouseX, (int) mouseY)) {
+			setDragging(true);
+			adjustDragging = true;
+			float centerX = rect.getX() + rect.getWidth() / 2F;
+			float centerY = rect.getY() + rect.getHeight() / 2F;
+			dragOffsetX = mouseX - centerX;
+			dragOffsetY = mouseY - centerY;
+		} else {
+			minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0f));
+			int xIndex = Mth.clamp((int) (mouseX / (width / 3D)), 0, 2);
+			int yIndex = Mth.clamp((int) (mouseY / (height / 3D)), 0, 2);
+			if (xIndex == 1 && yIndex == 1) {
+				adjustingPosition = false;
+				adjustDragging = false;
+			} else {
+				IWailaConfig.Overlay overlay = IWailaConfig.get().overlay();
+				overlay.setOverlayPosX(IWailaConfig.get().accessibility().tryFlip(xIndex / 2F));
+				overlay.setOverlayPosY(1 - yIndex / 2F);
+				overlay.setAnchorX(IWailaConfig.get().accessibility().tryFlip(xIndex / 2F));
+				overlay.setAnchorY(yIndex / 2F);
+			}
+		}
+		return true;
 	}
 
 	@Override
@@ -185,15 +199,21 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		if (adjustingPosition) {
 			super.render(guiGraphics, Integer.MAX_VALUE, Integer.MAX_VALUE, partialTicks);
-			guiGraphics.fill(0, 0, width, height, 50, 0x80AAAAAA);
+			guiGraphics.fill(0, 0, width, height, 50, 0x80808080);
 			guiGraphics.pose().pushPose();
-			guiGraphics.pose().translate(0, 0, 50);
-			guiGraphics.drawCenteredString(
-					font,
-					Component.translatable("config.jade.overlay_pos.exit"),
-					width / 2,
-					height / 2 - 7,
-					0xFFFFFF);
+			guiGraphics.pose().translate(0, 0, 55);
+			MutableComponent text = Component.translatable("config.jade.overlay_pos.exit");
+			DisplayHelper.font().drawInBatch(
+					text,
+					(float) (width - DisplayHelper.font().width(text)) / 2,
+					(float) height / 2 - 7,
+					0xFFFFFF,
+					true,
+					guiGraphics.pose().last().pose(),
+					guiGraphics.bufferSource,
+					Font.DisplayMode.NORMAL,
+					0x88000000,
+					0xF000F0);
 			guiGraphics.pose().popPose();
 			IWailaConfig.Overlay config = IWailaConfig.get().overlay();
 			Rect2i rect = OverlayRenderer.rect.expectedRect;

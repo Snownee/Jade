@@ -97,7 +97,6 @@
 	"config.jade.overlay": "Apariencia",
 	"config.jade.overlay_pos": "Posición de la superposición",
 	"config.jade.overlay_pos.adjust": "Ajustar...",
-	"config.jade.overlay_pos.exit": "Haga click en el espacio en blanco para salir",
 	"config.jade.overlay_pos_extra_msg": "arriba, abajo, izquierda, derecha, centro",
 	"config.jade.overlay_scale": "Escala de visualización",
 	"config.jade.overlay_square": "Borde cuadrado",

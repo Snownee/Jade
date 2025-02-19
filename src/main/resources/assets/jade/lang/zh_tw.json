@@ -103,7 +103,7 @@
 	"config.jade.overlay": "外觀",
 	"config.jade.overlay_pos": "提示框位置",
 	"config.jade.overlay_pos.adjust": "調整…",
-	"config.jade.overlay_pos.exit": "點擊空白處以退出",
+	"config.jade.overlay_pos.exit": "按ESC鍵或點擊中央退出",
 	"config.jade.overlay_pos_extra_msg": "頂部,底部,左側,右側,置中",
 	"config.jade.overlay_scale": "顯示縮放比例",
 	"config.jade.overlay_square": "直角邊框",

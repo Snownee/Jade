@@ -127,7 +127,6 @@
 	"config.jade.overlay": "Зовнішній вигляд",
 	"config.jade.overlay_pos": "Позиція накладання",
 	"config.jade.overlay_pos.adjust": "Налаштувати...",
-	"config.jade.overlay_pos.exit": "Натисніть на порожнє місце, щоб вийти",
 	"config.jade.overlay_pos_extra_msg": "зверху, знизу, ліворуч, праворуч, по центру",
 	"config.jade.overlay_scale": "Відображення масштабу",
 	"config.jade.overlay_square": "Квадратна межа",

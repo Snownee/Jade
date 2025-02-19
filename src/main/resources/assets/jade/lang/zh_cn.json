@@ -129,7 +129,7 @@
 	"config.jade.overlay": "外观",
 	"config.jade.overlay_pos": "提示框位置",
 	"config.jade.overlay_pos.adjust": "调整…",
-	"config.jade.overlay_pos.exit": "点击空白位置退出",
+	"config.jade.overlay_pos.exit": "按ESC键或点击中心退出",
 	"config.jade.overlay_pos_extra_msg": "顶部,底部,左侧,右侧,居中",
 	"config.jade.overlay_scale": "显示缩放",
 	"config.jade.overlay_square": "无圆角边框",

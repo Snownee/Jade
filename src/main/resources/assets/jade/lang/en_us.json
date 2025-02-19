@@ -129,7 +129,7 @@
 	"config.jade.overlay": "Appearance",
 	"config.jade.overlay_pos": "Overlay Position",
 	"config.jade.overlay_pos.adjust": "Adjust...",
-	"config.jade.overlay_pos.exit": "Click on the blank to exit",
+	"config.jade.overlay_pos.exit": "Press ESC or click the center to exit",
 	"config.jade.overlay_pos_extra_msg": "top,bottom,left,right,center",
 	"config.jade.overlay_scale": "Display Scale",
 	"config.jade.overlay_square": "Square Border",

@@ -102,7 +102,6 @@
 	"config.jade.overlay": "오버레이",
 	"config.jade.overlay_pos": "오버레이 위치",
 	"config.jade.overlay_pos.adjust": "조정...",
-	"config.jade.overlay_pos.exit": "빈 공간을 클릭하여 종료",
 	"config.jade.overlay_pos_extra_msg": "top,bottom,left,right,center",
 	"config.jade.overlay_scale": "디스플레이 크기",
 	"config.jade.overlay_square": "테두리 제거",

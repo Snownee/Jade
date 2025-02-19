@@ -97,7 +97,6 @@
 	"config.jade.overlay": "Verschijning",
 	"config.jade.overlay_pos": "Overlay-positie",
 	"config.jade.overlay_pos.adjust": "Aanpassen...",
-	"config.jade.overlay_pos.exit": "Klik op de leeg om af te sluiten",
 	"config.jade.overlay_pos_extra_msg": "bovenkant,omlaag,links,rechts,centrum",
 	"config.jade.overlay_scale": "Schaal weergeven",
 	"config.jade.overlay_square": "Vierkante rand",
