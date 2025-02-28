@@ -81,6 +81,8 @@ public final class JadeClient {
 	public static KeyMapping showRecipes;
 	public static KeyMapping showUses;
 	private static final Cache<Item.TooltipContext, Item.TooltipContext> hideModName = CacheBuilder.newBuilder()
+			.weakKeys()
+			.weakValues()
 			.expireAfterAccess(1, TimeUnit.SECONDS)
 			.build();
 	private static boolean translationChecked;
