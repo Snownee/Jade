@@ -85,8 +85,7 @@ public class TooltipRenderer implements ITooltipRenderer {
 		}
 
 		if (tooltip.sneakyDetails) {
-			Minecraft mc = Minecraft.getInstance();
-			x = (totalSize.x - mc.font.width("▾") + 1) / 2f;
+			x = (totalSize.x - DisplayHelper.font().width("▾") + 1) / 2f;
 			float yOffset = (OverlayRenderer.ticks / 5) % 8 - 2;
 			if (yOffset <= 4) {
 				y = totalSize.y - 6 + yOffset;

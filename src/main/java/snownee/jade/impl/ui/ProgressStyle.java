@@ -4,7 +4,6 @@ import org.joml.Vector3f;
 
 import com.mojang.blaze3d.vertex.Tesselator;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -116,7 +115,7 @@ public class ProgressStyle implements IProgressStyle {
 			}
 		}
 		if (text != null) {
-			Font font = Minecraft.getInstance().font;
+			Font font = DisplayHelper.font();
 			if (autoTextColor) {
 				autoTextColor = false;
 				if (overlay == null && RGBtoHSV(color2).z() > 0.75f) {
@@ -137,9 +136,7 @@ public class ProgressStyle implements IProgressStyle {
 				font.drawInBatch8xOutline(text.getVisualOrderText(), x + 1, y, 0xFFFFFFFF, 0xFF333333, guiGraphics.pose().last().pose(), multibuffersource$buffersource, 15728880);
 				multibuffersource$buffersource.endBatch();
 			} else {
-				DisplayHelper.setBetterTextShadow(true);
 				guiGraphics.drawString(font, text, (int) x + 1, (int) y, color, shadow);
-				DisplayHelper.setBetterTextShadow(false);
 			}
 		}
 	}

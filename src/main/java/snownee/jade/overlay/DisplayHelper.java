@@ -5,12 +5,14 @@ import java.text.DecimalFormat;
 import java.text.Format;
 import java.text.NumberFormat;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 
+import com.google.common.base.Suppliers;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.BufferUploader;
@@ -42,11 +44,11 @@ import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.Color;
+import snownee.jade.util.JadeFont;
 
 public class DisplayHelper implements IDisplayHelper {
 
 	public static final DisplayHelper INSTANCE = new DisplayHelper();
-	private static final Minecraft CLIENT = Minecraft.getInstance();
 	private static final ResourceLocation GUI_ICONS_LOCATION = new ResourceLocation("textures/gui/icons.png");
 	//https://github.com/mezz/JustEnoughItems/blob/1.16/src/main/java/mezz/jei/plugins/vanilla/ingredients/fluid/FluidStackRenderer.java
 	private static final int TEX_WIDTH = 16;
@@ -55,7 +57,7 @@ public class DisplayHelper implements IDisplayHelper {
 	private static final Pattern STRIP_COLOR = Pattern.compile("(?i)\u00a7[0-9A-F]");
 	public static DecimalFormat dfCommas = new DecimalFormat("0.##");
 	public static final DecimalFormat[] dfCommasArray = new DecimalFormat[]{dfCommas, new DecimalFormat("0.#"), new DecimalFormat("0")};
-	private static boolean betterTextShadow;
+	private static final Supplier<JadeFont> FONT = Suppliers.memoize(() -> new JadeFont(Minecraft.getInstance().font));
 
 	static {
 		for (DecimalFormat format : dfCommasArray) {
@@ -95,7 +97,16 @@ public class DisplayHelper implements IDisplayHelper {
 		ClientProxy.renderItemDecorationsExtra(guiGraphics, font, stack, i, j, text);
 	}
 
-	public static void drawTexturedModalRect(GuiGraphics guiGraphics, float x, float y, int textureX, int textureY, int width, int height, int tw, int th) {
+	public static void drawTexturedModalRect(
+			GuiGraphics guiGraphics,
+			float x,
+			float y,
+			int textureX,
+			int textureY,
+			int width,
+			int height,
+			int tw,
+			int th) {
 		Matrix4f matrix = guiGraphics.pose().last().pose();
 		float f = 0.00390625F;
 		float f1 = 0.00390625F;
@@ -112,16 +123,18 @@ public class DisplayHelper implements IDisplayHelper {
 	}
 
 	public static void renderIcon(GuiGraphics guiGraphics, float x, float y, int sx, int sy, IconUI icon) {
-		if (icon == null)
+		if (icon == null) {
 			return;
+		}
 
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, OverlayRenderer.alpha);
 		RenderSystem.setShaderTexture(0, GUI_ICONS_LOCATION);
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
 
-		if (icon.bu != -1)
+		if (icon.bu != -1) {
 			DisplayHelper.drawTexturedModalRect(guiGraphics, x, y, icon.bu, icon.bv, sx, sy, icon.bsu, icon.bsv);
+		}
 		DisplayHelper.drawTexturedModalRect(guiGraphics, x, y, icon.u, icon.v, sx, sy, icon.su, icon.sv);
 		RenderSystem.setShaderColor(1, 1, 1, 1);
 	}
@@ -135,7 +148,14 @@ public class DisplayHelper implements IDisplayHelper {
 		RenderSystem.setShaderColor(red, green, blue, alpha);
 	}
 
-	private static void drawTextureWithMasking(Matrix4f matrix, float xCoord, float yCoord, TextureAtlasSprite textureSprite, float maskTop, float maskRight, float zLevel) {
+	private static void drawTextureWithMasking(
+			Matrix4f matrix,
+			float xCoord,
+			float yCoord,
+			TextureAtlasSprite textureSprite,
+			float maskTop,
+			float maskRight,
+			float zLevel) {
 		float uMin = textureSprite.getU0();
 		float uMax = textureSprite.getU1();
 		float vMin = textureSprite.getV0();
@@ -188,14 +208,6 @@ public class DisplayHelper implements IDisplayHelper {
 		RenderSystem.disableBlend();
 	}
 
-	public static boolean enableBetterTextShadow() {
-		return betterTextShadow;
-	}
-
-	public static void setBetterTextShadow(boolean betterTextShadow) {
-		DisplayHelper.betterTextShadow = betterTextShadow;
-	}
-
 	@Override
 	public void drawItem(GuiGraphics guiGraphics, float x, float y, ItemStack stack, float scale, @Nullable String text) {
 		if (OverlayRenderer.alpha < 0.5F) {
@@ -205,7 +217,7 @@ public class DisplayHelper implements IDisplayHelper {
 		guiGraphics.pose().translate(x, y, 0);
 		guiGraphics.pose().scale(scale, scale, scale);
 		guiGraphics.renderFakeItem(stack, 0, 0);
-		renderGuiItemDecorations(guiGraphics, CLIENT.font, stack, 0, 0, text);
+		renderGuiItemDecorations(guiGraphics, font(), stack, 0, 0, text);
 		guiGraphics.pose().popPose();
 	}
 
@@ -214,7 +226,15 @@ public class DisplayHelper implements IDisplayHelper {
 		drawGradientRect(guiGraphics, left, top, width, height, startColor, endColor, false);
 	}
 
-	public void drawGradientRect(GuiGraphics guiGraphics, float left, float top, float width, float height, int startColor, int endColor, boolean horizontal) {
+	public void drawGradientRect(
+			GuiGraphics guiGraphics,
+			float left,
+			float top,
+			float width,
+			float height,
+			int startColor,
+			int endColor,
+			boolean horizontal) {
 		if (startColor == -1 && endColor == -1) {
 			return;
 		}
@@ -251,7 +271,15 @@ public class DisplayHelper implements IDisplayHelper {
 	}
 
 	@Override
-	public void drawBorder(GuiGraphics guiGraphics, float minX, float minY, float maxX, float maxY, float width, int color, boolean corner) {
+	public void drawBorder(
+			GuiGraphics guiGraphics,
+			float minX,
+			float minY,
+			float maxX,
+			float maxY,
+			float width,
+			int color,
+			boolean corner) {
 		fill(guiGraphics, minX + width, minY, maxX - width, minY + width, color);
 		fill(guiGraphics, minX + width, maxY - width, maxX - width, maxY, color);
 		if (corner) {
@@ -263,7 +291,14 @@ public class DisplayHelper implements IDisplayHelper {
 		}
 	}
 
-	public void drawFluid(GuiGraphics guiGraphics, final float xPosition, final float yPosition, JadeFluidObject fluid, float width, float height, long capacityMb) {
+	public void drawFluid(
+			GuiGraphics guiGraphics,
+			final float xPosition,
+			final float yPosition,
+			JadeFluidObject fluid,
+			float width,
+			float height,
+			long capacityMb) {
 		if (fluid.isEmpty()) {
 			return;
 		}
@@ -277,23 +312,32 @@ public class DisplayHelper implements IDisplayHelper {
 			scaledAmount.setValue(height);
 		}
 
-		ClientProxy.getFluidSpriteAndColor(fluid, (sprite, color) -> {
-			if (sprite == null) {
-				float maxY = yPosition + height;
-				if (color == -1) {
-					color = 0xAAAAAAAA;
-				}
-				fill(guiGraphics, xPosition, maxY - scaledAmount.floatValue(), xPosition + width, maxY, color);
-			} else {
-				if (OverlayRenderer.alpha != 1) {
-					color = IWailaConfig.IConfigOverlay.applyAlpha(color, OverlayRenderer.alpha);
-				}
-				drawTiledSprite(guiGraphics, xPosition, yPosition, width, height, color, scaledAmount.floatValue(), sprite);
-			}
-		});
+		ClientProxy.getFluidSpriteAndColor(
+				fluid, (sprite, color) -> {
+					if (sprite == null) {
+						float maxY = yPosition + height;
+						if (color == -1) {
+							color = 0xAAAAAAAA;
+						}
+						fill(guiGraphics, xPosition, maxY - scaledAmount.floatValue(), xPosition + width, maxY, color);
+					} else {
+						if (OverlayRenderer.alpha != 1) {
+							color = IWailaConfig.IConfigOverlay.applyAlpha(color, OverlayRenderer.alpha);
+						}
+						drawTiledSprite(guiGraphics, xPosition, yPosition, width, height, color, scaledAmount.floatValue(), sprite);
+					}
+				});
 	}
 
-	private void drawTiledSprite(GuiGraphics guiGraphics, final float xPosition, final float yPosition, final float tiledWidth, final float tiledHeight, int color, float scaledAmount, TextureAtlasSprite sprite) {
+	private void drawTiledSprite(
+			GuiGraphics guiGraphics,
+			final float xPosition,
+			final float yPosition,
+			final float tiledWidth,
+			final float tiledHeight,
+			int color,
+			float scaledAmount,
+			TextureAtlasSprite sprite) {
 		RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
 		Matrix4f matrix = guiGraphics.pose().last().pose();
 		setGLColorFromInt(color);
@@ -347,10 +391,12 @@ public class DisplayHelper implements IDisplayHelper {
 			formatter = dfCommasArray[2];
 		} else {
 			exp = (int) Math.log10(number) / 3;
-			if (exp > 7)
+			if (exp > 7) {
 				exp = 7;
-			if (exp > 0)
+			}
+			if (exp > 0) {
 				number /= Math.pow(1000, exp);
+			}
 			if (formatter == null) {
 				if (number < 10) {
 					formatter = dfCommasArray[0];
@@ -400,12 +446,17 @@ public class DisplayHelper implements IDisplayHelper {
 		if (OverlayRenderer.alpha != 1) {
 			color = IConfigOverlay.applyAlpha(color, OverlayRenderer.alpha);
 		}
-		betterTextShadow = true;
-		guiGraphics.drawString(CLIENT.font, text, (int) x, (int) y, color, shadow);
-		betterTextShadow = false;
+		guiGraphics.drawString(font(), text, (int) x, (int) y, color, shadow);
 	}
 
-	public void drawGradientProgress(GuiGraphics guiGraphics, float left, float top, float width, float height, float progress, int progressColor) {
+	public void drawGradientProgress(
+			GuiGraphics guiGraphics,
+			float left,
+			float top,
+			float width,
+			float height,
+			float progress,
+			int progressColor) {
 		Color color = Color.rgb(progressColor);
 		Color highlight = Color.hsl(color.getHue(), color.getSaturation(), Math.min(color.getLightness() + 0.2, 1), color.getOpacity());
 		if (progress < 0.1F) {
@@ -421,14 +472,19 @@ public class DisplayHelper implements IDisplayHelper {
 	@Override
 	public MutableComponent stripColor(Component component) {
 		MutableComponent mutableComponent = Component.empty();
-		component.visit((style, string) -> {
-			if (!string.isEmpty()) {
-				MutableComponent literal = Component.literal(STRIP_COLOR.matcher(string).replaceAll(""));
-				literal.withStyle(style.withColor((TextColor) null));
-				mutableComponent.append(literal);
-			}
-			return Optional.empty();
-		}, Style.EMPTY);
+		component.visit(
+				(style, string) -> {
+					if (!string.isEmpty()) {
+						MutableComponent literal = Component.literal(STRIP_COLOR.matcher(string).replaceAll(""));
+						literal.withStyle(style.withColor((TextColor) null));
+						mutableComponent.append(literal);
+					}
+					return Optional.empty();
+				}, Style.EMPTY);
 		return mutableComponent;
+	}
+
+	public static Font font() {
+		return FONT.get();
 	}
 }

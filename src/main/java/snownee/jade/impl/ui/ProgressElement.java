@@ -3,7 +3,6 @@ package snownee.jade.impl.ui;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
@@ -13,6 +12,7 @@ import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.IBoxStyle;
 import snownee.jade.api.ui.IProgressStyle;
+import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.overlay.ProgressTracker.TrackInfo;
 import snownee.jade.overlay.WailaTickHandler;
 
@@ -45,8 +45,7 @@ public class ProgressElement extends Element {
 		float width = 0;
 		width += boxStyle.borderWidth() * 2;
 		if (text != null) {
-			Font font = Minecraft.getInstance().font;
-			width += font.width(text) + 3;
+			width += DisplayHelper.font().width(text) + 3;
 		}
 		width = Math.max(20, width);
 		if (getTag() != null) {

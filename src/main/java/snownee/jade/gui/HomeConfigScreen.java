@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
+import org.apache.commons.lang3.mutable.MutableInt;
+
 import com.google.common.collect.Lists;
 
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
@@ -18,9 +20,13 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.util.StringDecomposer;
 import snownee.jade.Jade;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.impl.WailaClientRegistration;
@@ -222,13 +228,33 @@ public class HomeConfigScreen extends Screen {
 			return;
 		}
 		int color = IWailaConfig.IConfigOverlay.applyAlpha(0xAAAAAA, 1 - distY / 10F);
-		((JadeFont) font).jade$setGlint((ticks - y / 5F) % 90 / 45 * width, mouseX);
-		((JadeFont) font).jade$setGlintStrength(1, 1 - Mth.clamp(Math.abs(mouseY - y) / 20F, 0, 1));
+		float glint1 = (ticks - y / 5F) % 90 / 45 * width;
+		float glint2 = mouseX;
+		float glint1Strength = 1;
+		float glint2Strength = 1 - Mth.clamp(Math.abs(mouseY - y) / 20F, 0, 1);
+
+		MutableComponent component = Component.empty();
+		MutableInt curX = new MutableInt();
+		StringDecomposer.iterateFormatted(text, Style.EMPTY, (index, style, codePoint) -> {
+			String s = Character.toString(codePoint);
+			int width = font.width(s);
+			int curXVal = curX.getValue();
+			curX.add(width);
+			curXVal += width / 2;
+			float dist = Math.abs(curXVal - glint1);
+			float localGlint1 = 0.65F + Mth.clamp(1 - dist / 20, 0, 1) * 0.35F * glint1Strength;
+			dist = Math.abs(curXVal - glint2);
+			float localGlint2 = 0.65F + Mth.clamp(1 - dist / 20, 0, 1) * 0.35F * glint2Strength;
+			float colorMul = Math.max(localGlint1, localGlint2);
+			int originalColor = style.getColor() == null ? 0xAAAAAA : style.getColor().getValue();
+			component.append(Component.literal(s).withStyle(style.withColor(FastColor.ARGB32.lerp(colorMul, 0x000000, originalColor))));
+			return true;
+		});
+
 		guiGraphics.pose().pushPose();
 		guiGraphics.pose().translate(0, y, 0);
-		guiGraphics.drawString(font, text, 0, 0, color);
+		guiGraphics.drawString(font, component, 0, 0, color);
 		guiGraphics.pose().popPose();
-		((JadeFont) font).jade$setGlint(Float.NaN, Float.NaN);
 	}
 
 	private class TextParticle {

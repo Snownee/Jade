@@ -4,7 +4,6 @@ import org.jetbrains.annotations.Nullable;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -23,7 +22,7 @@ public class ScaledTextElement extends TextElement {
 
 	@Override
 	public Vec2 getSize() {
-		Font font = Minecraft.getInstance().font;
+		Font font = DisplayHelper.font();
 		return new Vec2(font.width(text) * scale, font.lineHeight * scale + 1);
 	}
 

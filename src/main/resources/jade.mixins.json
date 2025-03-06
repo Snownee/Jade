@@ -6,7 +6,6 @@
   "mixins": [
   ],
   "client": [
-    "FontMixin",
     "FullTextSearchTreeMixin",
     "StringRenderOutputMixin"
   ],
