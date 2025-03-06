@@ -49,6 +49,8 @@ public class WailaExceptionHandler {
 			}
 			if (modid == null || ResourceLocation.DEFAULT_NAMESPACE.equals(modid)) {
 				modid = Jade.MODID;
+			} else if (modid.startsWith("jadeaddons.")) {
+				modid = "jadeaddons";
 			}
 			tooltip.accept(Component.translatable("jade.error", ModIdentification.getModName(modid).orElse(modid))
 					.withStyle(ChatFormatting.DARK_RED));
