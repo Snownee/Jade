@@ -329,7 +329,7 @@
 	"jade.waxed": "Вощений %s",
 	"config.jade.plugin_minecraft.pet_armor": "Обладунки улюбленця",
 	"config.jade.plugin_minecraft.pet_armor_desc": "Показує назву і міцність обладунків улюбленця",
-	"config.jade.plugin_minecraft.pet_armor_extra_msg": "кінб,вовк",
+	"config.jade.plugin_minecraft.pet_armor_extra_msg": "кінь,вовк",
 	"config.jade.plugin_minecraft.pet_armor_show_all": "Показати усі",
 	"config.jade.plugin_minecraft.pet_armor_show_damageable": "Показати пошкоджуваність",
 	"config.jade.accessibility_plugin": "Плаґін доступности",
