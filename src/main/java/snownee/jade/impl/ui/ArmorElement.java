@@ -2,8 +2,6 @@ package snownee.jade.impl.ui;
 
 import org.jetbrains.annotations.Nullable;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.util.Mth;
@@ -30,8 +28,7 @@ public class ArmorElement extends Element {
 	public Vec2 getSize() {
 		if (armor > PluginConfig.INSTANCE.getInt(Identifiers.MC_ENTITY_ARMOR_MAX_FOR_RENDER)) {
 			String text = "  " + DisplayHelper.dfCommas.format(armor);
-			Font font = Minecraft.getInstance().font;
-			return new Vec2(8 + font.width(text), 10);
+			return new Vec2(8 + DisplayHelper.font().width(text), 10);
 		} else {
 			int maxHearts = PluginConfig.INSTANCE.getInt(Identifiers.MC_ENTITY_HEALTH_ICONS_PER_LINE);
 			int lineCount = (int) (Math.ceil(armor / maxHearts * 0.5F));
