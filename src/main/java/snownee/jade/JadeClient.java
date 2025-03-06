@@ -18,6 +18,7 @@ import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -42,6 +43,7 @@ import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.IWailaClientRegistration;
 import snownee.jade.api.Identifiers;
+import snownee.jade.api.TraceableException;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.IWailaConfig.DisplayMode;
 import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
@@ -58,6 +60,7 @@ import snownee.jade.overlay.WailaTickHandler;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
 import snownee.jade.util.ModIdentification;
+import snownee.jade.util.WailaExceptionHandler;
 
 public final class JadeClient {
 
@@ -172,7 +175,16 @@ public final class JadeClient {
 				return;
 			}
 		}
-		String name = ModIdentification.getModName(stack);
+		String name;
+		try {
+			name = ModIdentification.getModName(stack);
+		} catch (Throwable e) {
+			WailaExceptionHandler.handleErr(
+					TraceableException.create(e, BuiltInRegistries.ITEM.getKey(stack.getItem()).getNamespace()),
+					null,
+					tooltip::add);
+			return;
+		}
 		name = String.format(Jade.CONFIG.get().getFormatting().getModName(), name);
 		tooltip.add(Component.literal(name));
 	}
