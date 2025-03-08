@@ -1,4 +1,4 @@
-accessWidener   v1  named
+accessWidener   v2  named
 accessible field net/minecraft/world/level/block/entity/BrewingStandBlockEntity brewTime I
 accessible field net/minecraft/world/level/block/entity/BrewingStandBlockEntity fuel I
 
@@ -42,3 +42,10 @@ accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScr
 
 accessible field net/minecraft/world/level/block/entity/CampfireBlockEntity cookingProgress [I
 accessible field net/minecraft/world/level/block/entity/CampfireBlockEntity cookingTime [I
+
+accessible field net/minecraft/client/gui/Font fonts Ljava/util/function/Function;
+accessible field net/minecraft/client/gui/Font filterFishyGlyphs Z
+accessible field net/minecraft/client/gui/Font splitter Lnet/minecraft/client/StringSplitter;
+mutable field net/minecraft/client/gui/Font splitter Lnet/minecraft/client/StringSplitter;
+accessible class net/minecraft/client/gui/font/providers/BitmapProvider$Glyph
+accessible method net/minecraft/client/gui/Font getFontSet (Lnet/minecraft/resources/ResourceLocation;)Lnet/minecraft/client/gui/font/FontSet;
