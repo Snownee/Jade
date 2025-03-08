@@ -8,15 +8,23 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
+
+import com.mojang.blaze3d.font.GlyphInfo;
 
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.font.FontSet;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.network.chat.Style;
 import snownee.jade.api.theme.IThemeHelper;
-import snownee.jade.overlay.DisplayHelper;
+import snownee.jade.util.JadeFont;
 
 @Mixin(Font.StringRenderOutput.class)
 public class StringRenderOutputMixin {
 
+	@Shadow(aliases = {"field_24240"}, remap = false)
+	private Font this$0;
 	@Final
 	@Mutable
 	@Shadow
@@ -39,8 +47,18 @@ public class StringRenderOutputMixin {
 	private float a;
 
 	@Inject(method = "<init>", at = @At("RETURN"))
-	private void jade$init(Font font, MultiBufferSource multiBufferSource, float f, float g, int i, boolean bl, Matrix4f matrix4f, Font.DisplayMode displayMode, int j, CallbackInfo ci) {
-		if (bl && DisplayHelper.enableBetterTextShadow() && IThemeHelper.get().isLightColorScheme()) {
+	private void jade$init(
+			Font font,
+			MultiBufferSource multiBufferSource,
+			float f,
+			float g,
+			int i,
+			boolean bl,
+			Matrix4f matrix4f,
+			Font.DisplayMode displayMode,
+			int j,
+			CallbackInfo ci) {
+		if (bl && this$0.getClass() == JadeFont.class && IThemeHelper.get().isLightColorScheme()) {
 			dimFactor = 1;
 			this.r = (float) (i >> 16 & 0xFF) / 255.0f;
 			this.g = (float) (i >> 8 & 0xFF) / 255.0f;
@@ -49,4 +67,20 @@ public class StringRenderOutputMixin {
 		}
 	}
 
+	@Inject(
+			method = "accept",
+			at = @At(value = "INVOKE", target = "Lnet/minecraft/network/chat/Style;isObfuscated()Z"),
+			locals = LocalCapture.CAPTURE_FAILHARD,
+			cancellable = true)
+	private void jade$accept(
+			int pPositionInCurrentSequence,
+			Style pStyle,
+			int pCodePoint,
+			CallbackInfoReturnable<Boolean> cir,
+			FontSet fontset,
+			GlyphInfo glyphInfo) {
+		if (this$0.getClass() == JadeFont.class && JadeFont.isTooLarge(glyphInfo, 9)) {
+			cir.setReturnValue(false);
+		}
+	}
 }

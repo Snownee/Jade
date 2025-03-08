@@ -7,13 +7,12 @@
     "AbstractHorseAccess"
   ],
   "client": [
-    "BossHealthOverlayMixin",
-    "ClientLevelMixin",
-    "FontMixin",
-    "FullTextSearchTreeMixin",
-    "KeyAccess",
-    "StringRenderOutputMixin",
-    "ThemeHelperMixin"
+	  "BossHealthOverlayMixin",
+	  "ClientLevelMixin",
+	  "FullTextSearchTreeMixin",
+	  "KeyAccess",
+	  "StringRenderOutputMixin",
+	  "ThemeHelperMixin"
   ],
   "injectors": {
     "defaultRequire": 1
