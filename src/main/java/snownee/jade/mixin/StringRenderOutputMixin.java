@@ -8,14 +8,14 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.font.GlyphInfo;
 
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
-import snownee.jade.api.config.IWailaConfig;
+import net.minecraft.network.chat.Style;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.util.JadeFont;
 
@@ -57,24 +57,25 @@ public class StringRenderOutputMixin {
 			Font.DisplayMode displayMode,
 			int j,
 			CallbackInfo ci) {
-		if (bl && DisplayHelper.enableBetterTextShadow() && IThemeHelper.get().isLightColorScheme()) {
+		if (bl && this$0.getClass() == JadeFont.class && IThemeHelper.get().isLightColorScheme()) {
 			dimFactor = 1;
 			this.r = (float) (i >> 16 & 0xFF) / 255.0f;
 			this.g = (float) (i >> 8 & 0xFF) / 255.0f;
 			this.b = (float) (i & 0xFF) / 255.0f;
 			this.a = (float) (i >> 24 & 0xFF) / 255.0f * 0.15f;
-	@WrapOperation(method = "getShadowColor", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/ARGB;scaleRGB(IF)I"))
-	private int jade$getShadowColor(int i, float f, Operation<Integer> original) {
-		if (this$0.getClass() == JadeFont.class && IThemeHelper.get().isLightColorScheme()) {
-			return IWailaConfig.Overlay.applyAlpha(i, 0.15F);
 		}
 	}
 
+
 	@Inject(method = "accept", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/chat/Style;isObfuscated()Z"), cancellable = true)
-	private void jade$accept(int i, Style style, int j, CallbackInfoReturnable<Boolean> cir, @Local GlyphInfo glyphInfo) {
-		if (this$0.getClass() == JadeFont.class && JadeFont.isTooLarge(glyphInfo, this$0.lineHeight)) {
+	private void jade$accept(
+			int pPositionInCurrentSequence,
+			Style pStyle,
+			int pCodePoint,
+			CallbackInfoReturnable<Boolean> cir,
+			@Local GlyphInfo glyphInfo) {
+		if (this$0.getClass() == JadeFont.class && JadeFont.isTooLarge(glyphInfo, 9)) {
 			cir.setReturnValue(false);
 		}
 	}
-
 }
