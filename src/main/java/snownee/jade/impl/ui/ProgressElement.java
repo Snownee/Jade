@@ -3,7 +3,6 @@ package snownee.jade.impl.ui;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
@@ -13,6 +12,7 @@ import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.ProgressStyle;
+import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.overlay.WailaTickHandler;
 import snownee.jade.track.ProgressTrackInfo;
 
@@ -39,14 +39,14 @@ public class ProgressElement extends Element implements StyledElement {
 		float width = 0;
 		width += boxStyle.borderWidth() * 2;
 		if (text != null) {
-			Font font = Minecraft.getInstance().font;
-			width += font.width(text) + 3;
+			width += DisplayHelper.font().width(text) + 3;
 		}
 		float finalWidth = width = Math.max(20, width);
 		if (getTag() != null) {
-			track = WailaTickHandler.instance().progressTracker.getOrCreate(getTag(), ProgressTrackInfo.class, () -> {
-				return new ProgressTrackInfo(canDecrease, this.progress, finalWidth);
-			});
+			track = WailaTickHandler.instance().progressTracker.getOrCreate(
+					getTag(), ProgressTrackInfo.class, () -> {
+						return new ProgressTrackInfo(canDecrease, this.progress, finalWidth);
+					});
 			track.setExpectedWidth(width);
 			width = track.getWidth();
 		}
@@ -62,9 +62,10 @@ public class ProgressElement extends Element implements StyledElement {
 		boxStyle.render(guiGraphics, this, x, y, width, height, IDisplayHelper.get().opacity());
 		float progress = this.progress;
 		if (track == null && getTag() != null) {
-			track = WailaTickHandler.instance().progressTracker.getOrCreate(getTag(), ProgressTrackInfo.class, () -> {
-				return new ProgressTrackInfo(canDecrease, this.progress, width);
-			});
+			track = WailaTickHandler.instance().progressTracker.getOrCreate(
+					getTag(), ProgressTrackInfo.class, () -> {
+						return new ProgressTrackInfo(canDecrease, this.progress, width);
+					});
 		}
 		if (track != null) {
 			track.setProgress(progress);

@@ -2,8 +2,6 @@ package snownee.jade.impl.ui;
 
 import org.jetbrains.annotations.Nullable;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
@@ -27,8 +25,7 @@ public class TextElement extends Element implements ITextElement {
 
 	@Override
 	public Vec2 getSize() {
-		Font font = Minecraft.getInstance().font;
-		return new Vec2(font.width(text), font.lineHeight - 1);
+		return new Vec2(Math.max(DisplayHelper.font().width(text), 0), DisplayHelper.font().lineHeight - 1);
 	}
 
 	@Override
