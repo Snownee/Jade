@@ -2,8 +2,6 @@ package snownee.jade.impl.ui;
 
 import org.jetbrains.annotations.Nullable;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.resources.ResourceLocation;
@@ -47,8 +45,7 @@ public class ArmorElement extends Element {
 	@Override
 	public Vec2 getSize() {
 		if (showText()) {
-			Font font = Minecraft.getInstance().font;
-			return new Vec2(font.width(text) + 10, 9);
+			return new Vec2(DisplayHelper.font().width(text) + 10, 9);
 		} else {
 			return new Vec2(8 * iconsPerLine + 1, 5 + 4 * lineCount);
 		}
