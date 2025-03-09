@@ -20,6 +20,7 @@ import net.minecraft.world.level.block.SmallDripleafBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.block.state.properties.RailShape;
 import net.minecraft.world.level.block.state.properties.RedstoneSide;
 import snownee.jade.addon.core.BlockFaceProvider;
 import snownee.jade.api.BlockAccessor;
@@ -55,6 +56,17 @@ public class BlockDetailsBodyProvider implements IBlockComponentProvider {
 				block instanceof SmallDripleafBlock || block instanceof BigDripleafBlock || block instanceof BigDripleafStemBlock) {
 			return;
 		}
+
+		RailShape railShape = null;
+		if (blockState.hasProperty(BlockStateProperties.RAIL_SHAPE)) {
+			railShape = blockState.getValue(BlockStateProperties.RAIL_SHAPE);
+		} else if (blockState.hasProperty(BlockStateProperties.RAIL_SHAPE_STRAIGHT)) {
+			railShape = blockState.getValue(BlockStateProperties.RAIL_SHAPE_STRAIGHT);
+		}
+		if (railShape != null) {
+			tooltip.add(Component.translatable("jade.access.block.rail.%s".formatted(railShape.getSerializedName())));
+		}
+
 		Direction facing = null;
 		if (blockState.hasProperty(BlockStateProperties.FACING)) {
 			facing = blockState.getValue(BlockStateProperties.FACING);
