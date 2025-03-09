@@ -56,7 +56,7 @@ public record ReceiveDataPacket(CompoundTag tag) implements CustomPacketPayload 
 		int largestSize = 0;
 		String largestKey = null;
 		Tag largestValue = null;
-		for (String key : tag.getAllKeys()) {
+		for (String key : tag.keySet()) {
 			Tag childTag = Objects.requireNonNull(tag.get(key));
 			int size = childTag.sizeInBytes();
 			if (size > largestSize) {

@@ -627,6 +627,10 @@ public final class CommonProxy implements ModInitializer {
 		return null;
 	}
 
+	public static String defaultEnergyUnit() {
+		return "E";
+	}
+
 	@Override
 	public void onInitialize() {
 		PayloadTypeRegistry.playS2C().register(ReceiveDataPacket.TYPE, ReceiveDataPacket.CODEC);

@@ -168,7 +168,7 @@ public class WailaTickHandler {
 		}
 		if (accessor.isServerConnected()) {
 			if (!accessor.verifyData(accessor.getServerData())) {
-				accessor.getServerData().getAllKeys().clear();
+				accessor.getServerData().keySet().clear();
 			}
 			List<IServerDataProvider<Accessor<?>>> providers = handler.shouldRequestData(accessor);
 			if (ObjectDataCenter.isTimeElapsed(ObjectDataCenter.rateLimiter)) {

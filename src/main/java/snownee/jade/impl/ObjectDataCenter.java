@@ -66,7 +66,7 @@ public final class ObjectDataCenter {
 	public static void setServerData(CompoundTag tag) {
 		serverData = tag;
 		if (accessor != null && accessor.verifyData(serverData)) {
-			accessor.getServerData().getAllKeys().clear();
+			accessor.getServerData().keySet().clear();
 			accessor.getServerData().merge(tag);
 		}
 	}

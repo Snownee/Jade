@@ -39,12 +39,8 @@ public class ClientViewGroup<T> {
 			var group = new ClientViewGroup<>($.views.stream().map(itemFactory).filter(Objects::nonNull).toList());
 			CompoundTag data = $.extraData;
 			if (data != null) {
-				if (data.contains("Progress")) {
-					group.boxProgress = data.getFloat("Progress");
-				}
-				if (data.contains("MessageType")) {
-					group.messageType = MessageType.parse(data.getString("MessageType"));
-				}
+				group.boxProgress = data.getFloatOr("Progress", 0F);
+				group.messageType = data.getString("MessageType").map(MessageType::parse).orElse(MessageType.NORMAL);
 			}
 			if (clientGroupDecorator != null) {
 				clientGroupDecorator.accept($, group);

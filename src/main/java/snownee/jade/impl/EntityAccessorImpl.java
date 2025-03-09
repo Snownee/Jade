@@ -96,10 +96,7 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 		if (!verify) {
 			return true;
 		}
-		if (!data.contains("EntityId")) {
-			return false;
-		}
-		return data.getInt("EntityId") == getEntity().getId();
+		return data.getInt("EntityId").filter(id -> id == getEntity().getId()).isPresent();
 	}
 
 	public static class Builder implements EntityAccessor.Builder {

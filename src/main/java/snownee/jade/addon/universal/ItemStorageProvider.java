@@ -15,7 +15,6 @@ import com.google.common.collect.Lists;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -86,9 +85,9 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 
 	public static void append(ITooltip tooltip, Accessor<?> accessor, IPluginConfig config) {
 		if (!accessor.getServerData().contains(JadeIds.UNIVERSAL_ITEM_STORAGE.toString())) {
-			if (accessor.getServerData().getBoolean("Loot")) {
+			if (accessor.getServerData().getBooleanOr("Loot", false)) {
 				tooltip.add(Component.translatable("jade.loot_not_generated"));
-			} else if (accessor.getServerData().getBoolean("Locked")) {
+			} else if (accessor.getServerData().getBooleanOr("Locked", false)) {
 				tooltip.add(Component.translatable("jade.locked"));
 			}
 			return;
@@ -130,75 +129,73 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 
 		IElementHelper helper = IElementHelper.get();
 		boolean renderGroup = groups.size() > 1 || groups.getFirst().shouldRenderGroup();
-		ClientViewGroup.tooltip(tooltip, groups, renderGroup, (theTooltip, group) -> {
-			if (renderGroup) {
-				theTooltip.add(new HorizontalLineElement());
-				if (group.title != null) {
-					theTooltip.append(helper.text(group.title).scale(0.5F));
-					theTooltip.append(new HorizontalLineElement());
-				}
-			}
-			if (group.views.isEmpty()) {
-				CompoundTag data = group.extraData;
-				if (data != null && data.contains("Collecting", Tag.TAG_ANY_NUMERIC)) {
-					float progress = data.getFloat("Collecting");
-					if (progress < 1) {
-						MutableComponent component = Component.translatable("jade.collectingItems");
-						if (progress > 0) {
-							component.append(" %s%%".formatted((int) (progress * 100)));
+		ClientViewGroup.tooltip(
+				tooltip, groups, renderGroup, (theTooltip, group) -> {
+					if (renderGroup) {
+						theTooltip.add(new HorizontalLineElement());
+						if (group.title != null) {
+							theTooltip.append(helper.text(group.title).scale(0.5F));
+							theTooltip.append(new HorizontalLineElement());
 						}
-						theTooltip.add(component);
 					}
-				}
-			}
-			int drawnCount = 0;
-			int realSize = config.getInt(accessor.showDetails() ?
-					JadeIds.UNIVERSAL_ITEM_STORAGE_DETAILED_AMOUNT :
-					JadeIds.UNIVERSAL_ITEM_STORAGE_NORMAL_AMOUNT);
-			realSize = Math.min(group.views.size(), realSize);
-			List<IElement> elements = Lists.newArrayList();
-			for (int i = 0; i < realSize; i++) {
-				ItemView itemView = group.views.get(i);
-				ItemStack stack = itemView.item;
-				if (stack.isEmpty()) {
-					continue;
-				}
-				if (i > 0 && (
-						showName.isTrue() ||
-								drawnCount >= config.getInt(JadeIds.UNIVERSAL_ITEM_STORAGE_ITEMS_PER_LINE))) {
-					theTooltip.add(elements);
-					theTooltip.setLineMargin(-1, ScreenDirection.DOWN, 0);
-					elements.clear();
-					drawnCount = 0;
-				}
-
-				if (showName.isTrue()) {
-					if (itemView.description != null) {
-						elements.add(helper.smallItem(stack));
-						elements.addAll(itemView.description);
-					} else {
-						elements.add(helper.smallItem(stack).clearCachedMessage());
-						String s = IDisplayHelper.get().humanReadableNumber(stack.getCount(), "", false, null);
-						int width = Minecraft.getInstance().font.width(s);
-						if (width < amountWidth.intValue()) {
-							elements.add(helper.spacer(amountWidth.intValue() - width, 0));
+					if (group.views.isEmpty() && group.extraData != null) {
+						float progress = group.extraData.getFloatOr("Collecting", 0F);
+						if (progress >= 0 && progress < 1) {
+							MutableComponent component = Component.translatable("jade.collectingItems");
+							if (progress != 0) {
+								component.append(" %s%%".formatted((int) (progress * 100)));
+							}
+							theTooltip.add(component);
 						}
-						elements.add(helper.text(Component.literal(s)
-								.append("× ")
-								.append(IDisplayHelper.get().stripColor(stack.getHoverName()))).message(null));
 					}
-				} else if (itemView.amountText != null) {
-					elements.add(helper.item(stack, 1, itemView.amountText));
-				} else {
-					elements.add(helper.item(stack));
-				}
-				drawnCount += 1;
-			}
+					int drawnCount = 0;
+					int realSize = config.getInt(accessor.showDetails() ?
+							JadeIds.UNIVERSAL_ITEM_STORAGE_DETAILED_AMOUNT :
+							JadeIds.UNIVERSAL_ITEM_STORAGE_NORMAL_AMOUNT);
+					realSize = Math.min(group.views.size(), realSize);
+					List<IElement> elements = Lists.newArrayList();
+					for (int i = 0; i < realSize; i++) {
+						ItemView itemView = group.views.get(i);
+						ItemStack stack = itemView.item;
+						if (stack.isEmpty()) {
+							continue;
+						}
+						if (i > 0 && (
+								showName.isTrue() ||
+										drawnCount >= config.getInt(JadeIds.UNIVERSAL_ITEM_STORAGE_ITEMS_PER_LINE))) {
+							theTooltip.add(elements);
+							theTooltip.setLineMargin(-1, ScreenDirection.DOWN, 0);
+							elements.clear();
+							drawnCount = 0;
+						}
 
-			if (!elements.isEmpty()) {
-				theTooltip.add(elements);
-			}
-		});
+						if (showName.isTrue()) {
+							if (itemView.description != null) {
+								elements.add(helper.smallItem(stack));
+								elements.addAll(itemView.description);
+							} else {
+								elements.add(helper.smallItem(stack).clearCachedMessage());
+								String s = IDisplayHelper.get().humanReadableNumber(stack.getCount(), "", false, null);
+								int width = Minecraft.getInstance().font.width(s);
+								if (width < amountWidth.intValue()) {
+									elements.add(helper.spacer(amountWidth.intValue() - width, 0));
+								}
+								elements.add(helper.text(Component.literal(s)
+										.append("× ")
+										.append(IDisplayHelper.get().stripColor(stack.getHoverName()))).message(null));
+							}
+						} else if (itemView.amountText != null) {
+							elements.add(helper.item(stack, 1, itemView.amountText));
+						} else {
+							elements.add(helper.item(stack));
+						}
+						drawnCount += 1;
+					}
+
+					if (!elements.isEmpty()) {
+						theTooltip.add(elements);
+					}
+				});
 	}
 
 	public static void putData(Accessor<?> accessor) {

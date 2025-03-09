@@ -12,22 +12,26 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.component.TooltipDisplay;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.view.ViewGroup;
 
 public class ItemCollector<T> {
 	public static final int MAX_SIZE = 54;
 	public static final ItemCollector<?> EMPTY = new ItemCollector<>(null);
-	private static final Predicate<ItemStack> NON_EMPTY = stack -> {
+	private static final Predicate<ItemStack> SHOWN = stack -> {
 		if (stack.isEmpty()) {
 			return false;
 		}
-		if (stack.has(DataComponents.CUSTOM_MODEL_DATA)) {
+		if (stack.getOrDefault(DataComponents.TOOLTIP_DISPLAY, TooltipDisplay.DEFAULT).hideTooltip()) {
+			return false;
+		}
+		if (stack.hasNonDefault(DataComponents.CUSTOM_MODEL_DATA) || stack.hasNonDefault(DataComponents.ITEM_MODEL)) {
 			CustomData customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
 			//noinspection deprecation
 			CompoundTag tag = customData.getUnsafe();
-			for (String key : tag.getAllKeys()) {
-				if (key.toLowerCase(Locale.ENGLISH).endsWith("clear") && tag.getBoolean(key)) {
+			for (String key : tag.keySet()) {
+				if (key.toLowerCase(Locale.ENGLISH).endsWith("clear") && tag.getBooleanOr(key, true)) {
 					return false;
 				}
 			}
@@ -69,7 +73,7 @@ public class ItemCollector<T> {
 		AtomicInteger count = new AtomicInteger();
 		iterator.populate(container, MAX_SIZE * 2).forEach(stack -> {
 			count.incrementAndGet();
-			if (NON_EMPTY.test(stack)) {
+			if (SHOWN.test(stack)) {
 				ItemDefinition def = new ItemDefinition(stack);
 				items.addTo(def, stack.getCount());
 			}

@@ -148,7 +148,7 @@ public abstract class EnergyStorageProvider<T extends Accessor<?>> implements IC
 		@Override
 		public List<ClientViewGroup<EnergyView>> getClientGroups(Accessor<?> accessor, List<ViewGroup<EnergyView.Data>> groups) {
 			return groups.stream().map($ -> {
-				String unit = $.getExtraData().getString("Unit");
+				String unit = $.getExtraData().getStringOr("Unit", CommonProxy.defaultEnergyUnit());
 				return new ClientViewGroup<>($.views.stream().map(data -> EnergyView.read(data, unit)).filter(Objects::nonNull).toList());
 			}).toList();
 		}

@@ -32,7 +32,6 @@ public abstract class AccessorImpl<T extends HitResult> implements Accessor<T> {
 	private final boolean serverConnected;
 	private final boolean showDetails;
 	protected boolean verify;
-	private DynamicOps<Tag> ops;
 	private RegistryFriendlyByteBuf buffer;
 
 	public AccessorImpl(Level level, Player player, CompoundTag serverData, Supplier<T> hit, boolean serverConnected, boolean showDetails) {
