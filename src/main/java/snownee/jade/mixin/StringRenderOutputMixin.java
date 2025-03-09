@@ -21,7 +21,7 @@ import snownee.jade.util.JadeFont;
 
 @Mixin(Font.StringRenderOutput.class)
 public class StringRenderOutputMixin {
-	@Shadow(aliases = {"field_24240", "b"}, remap = false)
+	@Shadow(aliases = {"field_24240"}, remap = false)
 	private Font this$0;
 
 	@Final
