@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.mojang.blaze3d.platform.Window;
 
+import net.minecraft.client.GraphicsStatus;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.GuiSpriteManager;
@@ -195,6 +196,10 @@ public class BoxElement extends Element implements IBoxElement {
 
 		// render elements
 		{
+			boolean fancy = Minecraft.getInstance().options.graphicsMode().get() != GraphicsStatus.FAST;
+			if (fancy) {
+				guiGraphics.enableScissor(0, 0, (int) (maxX - x), (int) (maxY - y));
+			}
 			float lineTop = contentTop;
 			int lineCount = tooltip.lines.size();
 			Tooltip.Line line = tooltip.lines.getFirst();
@@ -206,6 +211,9 @@ public class BoxElement extends Element implements IBoxElement {
 					line = tooltip.lines.get(i + 1);
 					lineTop += lineSize.y + calculateMargin(marginBottom, line.marginTop);
 				}
+			}
+			if (fancy) {
+				guiGraphics.disableScissor();
 			}
 		}
 

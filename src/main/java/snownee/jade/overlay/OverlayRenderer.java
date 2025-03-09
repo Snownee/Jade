@@ -6,6 +6,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.util.Mth;
 import net.minecraft.util.profiling.Profiler;
 import net.minecraft.world.item.ItemStack;
@@ -185,15 +186,16 @@ public class OverlayRenderer {
 		} else {
 			z = -999;
 		}
-		matrixStack.translate(rect.rect.getX(), rect.rect.getY(), z);
+		Rect2i rect2i = rect.rect;
+		matrixStack.translate(rect2i.getX(), rect2i.getY(), z);
 
 		float scale = rect.scale;
 		if (scale != 1) {
 			matrixStack.scale(scale, scale, 1.0F);
 		}
 		{
-			float maxWidth = rect.rect.getWidth();
-			float maxHeight = rect.rect.getHeight();
+			float maxWidth = rect2i.getWidth();
+			float maxHeight = rect2i.getHeight();
 			maxWidth = maxWidth / scale;
 			maxHeight = maxHeight / scale;
 			if (root.getStyle().hasRoundCorner()) {
