@@ -1,6 +1,7 @@
 package snownee.jade.impl.lookup;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -17,8 +18,11 @@ import net.minecraft.resources.ResourceLocation;
 import snownee.jade.Jade;
 import snownee.jade.api.IJadeProvider;
 import snownee.jade.impl.PriorityStore;
+import snownee.jade.impl.WailaCommonRegistration;
 
 public interface IHierarchyLookup<T extends IJadeProvider> {
+	Comparator<IJadeProvider> COMPARATOR = Comparator.comparingInt($ -> WailaCommonRegistration.instance().priorities.byValue($));
+
 	default IHierarchyLookup<? extends T> cast() {
 		return this;
 	}
