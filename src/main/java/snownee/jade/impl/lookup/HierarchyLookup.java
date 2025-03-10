@@ -73,15 +73,16 @@ public class HierarchyLookup<T extends IJadeProvider> implements IHierarchyLooku
 	@Override
 	public List<T> get(Class<?> clazz) {
 		try {
-			return resultCache.get(clazz, () -> {
-				List<T> list = Lists.newArrayList();
-				getInternal(clazz, list);
-				list = ImmutableList.sortedCopyOf(Comparator.comparingInt(WailaCommonRegistration.instance().priorities::byValue), list);
-				if (singleton && !list.isEmpty()) {
-					return ImmutableList.of(list.getFirst());
-				}
-				return list;
-			});
+			return resultCache.get(
+					clazz, () -> {
+						List<T> list = Lists.newArrayList();
+						getInternal(clazz, list);
+						list = ImmutableList.sortedCopyOf(COMPARATOR, list);
+						if (singleton && !list.isEmpty()) {
+							return ImmutableList.of(list.getFirst());
+						}
+						return list;
+					});
 		} catch (ExecutionException e) {
 			Jade.LOGGER.error("", e);
 		}
@@ -119,10 +120,11 @@ public class HierarchyLookup<T extends IJadeProvider> implements IHierarchyLooku
 			Set<ResourceLocation> set = Sets.newHashSetWithExpectedSize(list.size());
 			for (T provider : list) {
 				if (set.contains(provider.getUid())) {
-					throw new IllegalStateException("Duplicate UID: %s for %s".formatted(provider.getUid(), list.stream()
-							.filter(p -> p.getUid().equals(provider.getUid()))
-							.map(p -> p.getClass().getName())
-							.toList()
+					throw new IllegalStateException("Duplicate UID: %s for %s".formatted(
+							provider.getUid(), list.stream()
+									.filter(p -> p.getUid().equals(provider.getUid()))
+									.map(p -> p.getClass().getName())
+									.toList()
 					));
 				}
 				set.add(provider.getUid());

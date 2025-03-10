@@ -9,6 +9,7 @@ import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.WailaPlugin;
 import snownee.jade.api.config.IWailaConfig;
+import snownee.jade.api.view.HideThingsExtensionProvider;
 
 @WailaPlugin
 public class UniversalPlugin implements IWailaPlugin {
@@ -43,6 +44,11 @@ public class UniversalPlugin implements IWailaPlugin {
 		registration.addConfig(JadeIds.UNIVERSAL_ENERGY_STORAGE_STYLE, IWailaConfig.HandlerDisplayStyle.PROGRESS_BAR);
 		registration.addConfig(JadeIds.UNIVERSAL_FLUID_STORAGE_DETAILED, false);
 		registration.addConfig(JadeIds.UNIVERSAL_FLUID_STORAGE_STYLE, IWailaConfig.HandlerDisplayStyle.PROGRESS_BAR);
+
+		registration.registerItemStorageClient(HideThingsExtensionProvider.instance());
+		registration.registerFluidStorageClient(HideThingsExtensionProvider.instance());
+		registration.registerEnergyStorageClient(HideThingsExtensionProvider.instance());
+		registration.registerProgressClient(HideThingsExtensionProvider.instance());
 
 		registration.registerBlockComponent(ItemStorageProvider.getBlock(), Block.class);
 		registration.registerEntityComponent(ItemStorageProvider.getEntity(), Entity.class);
