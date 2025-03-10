@@ -90,9 +90,7 @@ public class HierarchyLookup<T extends IJadeProvider> implements IHierarchyLooku
 					clazz, () -> {
 						List<T> list = Lists.newArrayList();
 						getInternal(clazz, list);
-						list = ImmutableList.sortedCopyOf(
-								Comparator.comparingInt(WailaCommonRegistration.instance().priorities::byValue),
-								list);
+						list = ImmutableList.sortedCopyOf(COMPARATOR, list);
 						if (singleton && !list.isEmpty()) {
 							return ImmutableList.of(list.getFirst());
 						}

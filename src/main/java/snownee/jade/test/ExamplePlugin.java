@@ -8,12 +8,14 @@ import net.minecraft.world.level.block.AbstractFurnaceBlock;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
+import net.minecraft.world.level.block.entity.DispenserBlockEntity;
 import snownee.jade.Jade;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IWailaClientRegistration;
 import snownee.jade.api.IWailaCommonRegistration;
 import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.config.IWailaConfig;
+import snownee.jade.api.view.HideThingsExtensionProvider;
 
 public class ExamplePlugin implements IWailaPlugin {
 
@@ -30,6 +32,7 @@ public class ExamplePlugin implements IWailaPlugin {
 	public void register(IWailaCommonRegistration registration) {
 		registration.registerBlockDataProvider(ExampleComponentProvider.INSTANCE, AbstractFurnaceBlockEntity.class);
 		registration.registerItemStorage(ExampleItemStorageProvider.INSTANCE, BrewingStandBlockEntity.class);
+		registration.registerItemStorage(HideThingsExtensionProvider.instance(), DispenserBlockEntity.class);
 		registration.registerFluidStorage(ExampleFluidStorageProvider.INSTANCE, Slime.class);
 		registration.registerEnergyStorage(ExampleEnergyStorageProvider.INSTANCE, Sheep.class);
 		registration.registerProgress(ExampleProgressProvider.INSTANCE, AbstractFurnaceBlockEntity.class);

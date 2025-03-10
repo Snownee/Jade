@@ -1,7 +1,6 @@
 package snownee.jade.impl.lookup;
 
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -22,7 +21,6 @@ import net.minecraft.resources.ResourceLocation;
 import snownee.jade.Jade;
 import snownee.jade.api.IJadeProvider;
 import snownee.jade.impl.PriorityStore;
-import snownee.jade.impl.WailaCommonRegistration;
 
 public class PairHierarchyLookup<T extends IJadeProvider> implements IHierarchyLookup<T> {
 	public final IHierarchyLookup<T> first;
@@ -52,10 +50,7 @@ public class PairHierarchyLookup<T extends IJadeProvider> implements IHierarchyL
 						} else if (secondList.isEmpty()) {
 							return firstList;
 						}
-						return ImmutableList.sortedCopyOf(
-								Comparator.comparingInt(WailaCommonRegistration.instance().priorities::byValue),
-								Iterables.concat(firstList, secondList)
-						);
+						return ImmutableList.sortedCopyOf(COMPARATOR, Iterables.concat(firstList, secondList));
 					});
 		} catch (ExecutionException e) {
 			Jade.LOGGER.error("", e);
