@@ -19,6 +19,6 @@ public class JadeFont extends Font {
 	}
 
 	public static boolean isTooLarge(GlyphInfo glyphInfo, int lineHeight) {
-		return glyphInfo instanceof BitmapProvider.Glyph glyph && glyph.height() > lineHeight + 4;
+		return glyphInfo instanceof BitmapProvider.Glyph glyph && glyph.height() * glyph.scale() > lineHeight + 4;
 	}
 }
