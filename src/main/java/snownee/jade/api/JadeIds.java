@@ -5,6 +5,7 @@ import net.minecraft.resources.ResourceLocation;
 public interface JadeIds {
 
 	ResourceLocation ROOT = MC("root");
+	ResourceLocation UI_MAIN = JADE("main");
 	ResourceLocation PACKET_RECEIVE_DATA = JADE("receive_data");
 	ResourceLocation PACKET_SERVER_HANDSHAKE = JADE("server_handshake");
 	ResourceLocation PACKET_CLIENT_HANDSHAKE = JADE("client_handshake");
