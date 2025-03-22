@@ -21,6 +21,7 @@ import net.minecraft.world.entity.animal.allay.Allay;
 import net.minecraft.world.entity.animal.armadillo.Armadillo;
 import net.minecraft.world.entity.animal.frog.Tadpole;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
+import net.minecraft.world.entity.animal.sniffer.Sniffer;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.entity.decoration.Painting;
@@ -125,6 +126,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerEntityDataProvider(MobBreedingProvider.INSTANCE, Allay.class);
 		registration.registerEntityDataProvider(NextEntityDropProvider.INSTANCE, Chicken.class);
 		registration.registerEntityDataProvider(NextEntityDropProvider.INSTANCE, Armadillo.class);
+		registration.registerEntityDataProvider(NextEntityDropProvider.INSTANCE, Sniffer.class);
 		registration.registerEntityDataProvider(ZombieVillagerProvider.INSTANCE, ZombieVillager.class);
 		registration.registerEntityDataProvider(PetArmorProvider.INSTANCE, Mob.class);
 
@@ -162,6 +164,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerEntityComponent(PaintingProvider.INSTANCE, Painting.class);
 		registration.registerEntityComponent(NextEntityDropProvider.INSTANCE, Chicken.class);
 		registration.registerEntityComponent(NextEntityDropProvider.INSTANCE, Armadillo.class);
+		registration.registerEntityComponent(NextEntityDropProvider.INSTANCE, Sniffer.class);
 		registration.registerBlockComponent(HarvestToolProvider.INSTANCE, Block.class);
 		registration.registerBlockComponent(CommandBlockProvider.INSTANCE, CommandBlock.class);
 		registration.registerBlockComponent(EnchantmentPowerProvider.INSTANCE, Block.class);

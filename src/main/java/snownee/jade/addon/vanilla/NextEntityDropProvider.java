@@ -6,8 +6,10 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.animal.Chicken;
 import net.minecraft.world.entity.animal.armadillo.Armadillo;
+import net.minecraft.world.entity.animal.sniffer.Sniffer;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
@@ -25,6 +27,7 @@ public enum NextEntityDropProvider implements IEntityComponentProvider, IServerD
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		appendSeconds(tooltip, accessor, "NextEggIn", "jade.nextEgg");
 		appendSeconds(tooltip, accessor, "NextScuteIn", "jade.nextScute");
+		appendSeconds(tooltip, accessor, "NextSniffIn", "jade.nextSniff");
 	}
 
 	public static void appendSeconds(ITooltip tooltip, Accessor<?> accessor, String tagKey, String translationKey) {
@@ -45,6 +48,11 @@ public enum NextEntityDropProvider implements IEntityComponentProvider, IServerD
 		} else if (accessor.getEntity() instanceof Armadillo armadillo) {
 			if (!armadillo.isBaby() && armadillo.scuteTime < max) {
 				tag.putInt("NextScuteIn", armadillo.scuteTime);
+			}
+		} else if (accessor.getEntity() instanceof Sniffer sniffer) {
+			long time = sniffer.getBrain().getTimeUntilExpiry(MemoryModuleType.SNIFF_COOLDOWN);
+			if (time > 0 && time < max) {
+				tag.putInt("NextSniffIn", (int) time);
 			}
 		}
 	}
