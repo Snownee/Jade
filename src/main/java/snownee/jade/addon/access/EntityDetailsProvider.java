@@ -8,7 +8,6 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.Shearable;
 import net.minecraft.world.entity.animal.Bee;
 import net.minecraft.world.entity.animal.goat.Goat;
-import net.minecraft.world.entity.animal.sheep.Sheep;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.Slime;
@@ -35,8 +34,6 @@ public class EntityDetailsProvider implements IEntityComponentProvider {
 			AccessibilityPlugin.replaceTitle(tooltip, objectName, "zombie_villager.curing");
 		} else if (entity instanceof Goat goat && !goat.hasLeftHorn() && !goat.hasRightHorn()) {
 			AccessibilityPlugin.replaceTitle(tooltip, objectName, "goat.hornless");
-		} else if (entity instanceof Sheep sheep) {
-			AccessibilityPlugin.replaceTitle(tooltip, objectName, "entity." + sheep.getColor().getSerializedName());
 		} else if (entity instanceof Bee bee) {
 			if (bee.hasNectar()) {
 				AccessibilityPlugin.replaceTitle(tooltip, objectName, "bee.nectar");
@@ -57,6 +54,11 @@ public class EntityDetailsProvider implements IEntityComponentProvider {
 		}
 		if (entity instanceof Mob mob && mob.isSaddled()) {
 			AccessibilityPlugin.replaceTitle(tooltip, objectName, "entity.saddled");
+		}
+
+		String color = EntityVariantHelper.getVariantName(entity, true);
+		if (color != null) {
+			AccessibilityPlugin.replaceTitle(tooltip, objectName, "entity." + color);
 		}
 	}
 

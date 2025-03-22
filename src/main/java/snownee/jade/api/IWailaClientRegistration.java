@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -64,7 +65,7 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 
 	/**
 	 * Register an {@link IJadeProvider} instance to allow overriding the icon for a block via the
-	 * {@link IBlockComponentProvider#getIcon(BlockAccessor, IPluginConfig, IElement)} method.
+	 * {@link IComponentProvider#getIcon(Accessor, IPluginConfig, IElement)} method.
 	 *
 	 * @param provider   The data provider instance
 	 * @param blockClass The highest level class to apply to
@@ -72,7 +73,7 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 	void registerBlockIcon(IComponentProvider<BlockAccessor> provider, Class<? extends Block> blockClass);
 
 	/**
-	 * Register an {@link IJadeProvider} instance for appending informations to
+	 * Register an {@link IJadeProvider} instance for appending information to
 	 * the tooltip.
 	 *
 	 * @param provider   The data provider instance
@@ -82,7 +83,7 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 
 	/**
 	 * Register an {@link IEntityComponentProvider} instance to allow overriding the icon for a entity via the
-	 * {@link IEntityComponentProvider#getIcon(EntityAccessor, IPluginConfig, IElement)} method.
+	 * {@link IComponentProvider#getIcon(Accessor, IPluginConfig, IElement)} method.
 	 *
 	 * @param provider    The data provider instance
 	 * @param entityClass The highest level class to apply to
@@ -204,4 +205,8 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 	<T extends Accessor<?>> void registerAccessorHandler(Class<T> clazz, AccessorClientHandler<T> handler);
 
 	AccessorClientHandler<Accessor<?>> getAccessorHandler(Class<? extends Accessor<?>> clazz);
+
+	void addEntityVariantMapping(EntityType<?> entityType, @Nullable DataComponentType<?> variantType);
+
+	void addVariantType(DataComponentType<?> type, boolean isVariant);
 }

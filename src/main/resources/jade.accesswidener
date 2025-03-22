@@ -88,3 +88,5 @@ extendable method net/minecraft/client/gui/components/WidgetTooltipHolder create
 
 accessible method net/minecraft/client/GameNarrator narrateMessage (Ljava/lang/String;Z)V
 accessible method net/minecraft/client/GameNarrator logNarratedMessage (Ljava/lang/String;)V
+
+accessible method net/minecraft/world/entity/Entity applyImplicitComponents (Lnet/minecraft/core/component/DataComponentGetter;)V

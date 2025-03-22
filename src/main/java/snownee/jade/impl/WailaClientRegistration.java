@@ -29,6 +29,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -43,6 +44,7 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import snownee.jade.Jade;
+import snownee.jade.addon.access.EntityVariantHelper;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.AccessorClientHandler;
 import snownee.jade.api.BlockAccessor;
@@ -606,6 +608,16 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	@Override
 	public AccessorClientHandler<Accessor<?>> getAccessorHandler(Class<? extends Accessor<?>> clazz) {
 		return Objects.requireNonNull(accessorHandlers.get(clazz), () -> "No accessor handler for " + clazz);
+	}
+
+	@Override
+	public void addEntityVariantMapping(EntityType<?> entityType, @Nullable DataComponentType<?> variantType) {
+		EntityVariantHelper.addVariantMapping(entityType, variantType);
+	}
+
+	@Override
+	public void addVariantType(DataComponentType<?> type, boolean isVariant) {
+		EntityVariantHelper.addVariantType(type, isVariant);
 	}
 
 	@Override
