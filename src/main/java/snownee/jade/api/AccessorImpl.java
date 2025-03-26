@@ -6,8 +6,6 @@ import java.util.function.Supplier;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 
-import com.mojang.serialization.DynamicOps;
-
 import io.netty.buffer.Unpooled;
 import net.minecraft.nbt.ByteArrayTag;
 import net.minecraft.nbt.CompoundTag;

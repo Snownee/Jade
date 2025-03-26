@@ -1,10 +1,14 @@
 package snownee.jade.api;
 
+import java.io.Serial;
+
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.resources.ResourceLocation;
 
 public class TraceableException extends RuntimeException {
+	@Serial
+	private static final long serialVersionUID = -1306920332552101886L;
 	private final String namespace;
 
 	public TraceableException(Throwable cause, String namespace) {
