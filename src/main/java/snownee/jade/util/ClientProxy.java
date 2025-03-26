@@ -54,6 +54,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.util.LazyLoadedValue;
@@ -71,9 +72,6 @@ import snownee.jade.Jade;
 import snownee.jade.JadeClient;
 import snownee.jade.addon.harvest.HarvestToolProvider;
 import snownee.jade.api.Accessor;
-import snownee.jade.api.BlockAccessor;
-import snownee.jade.api.EntityAccessor;
-import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IWailaConfig;
@@ -85,16 +83,12 @@ import snownee.jade.api.view.ViewGroup;
 import snownee.jade.command.JadeClientCommand;
 import snownee.jade.compat.JEICompat;
 import snownee.jade.gui.PreviewOptionsScreen;
-import snownee.jade.impl.BlockAccessorImpl;
-import snownee.jade.impl.EntityAccessorImpl;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.ui.FluidStackElement;
 import snownee.jade.mixin.KeyAccess;
 import snownee.jade.network.ClientHandshakePacket;
 import snownee.jade.network.ReceiveDataPacket;
-import snownee.jade.network.RequestBlockPacket;
-import snownee.jade.network.RequestEntityPacket;
 import snownee.jade.network.ServerHandshakePacket;
 import snownee.jade.network.ShowOverlayPacket;
 import snownee.jade.overlay.DatapackBlockManager;
@@ -182,14 +176,6 @@ public final class ClientProxy implements ClientModInitializer {
 
 	public static boolean shouldRegisterRecipeViewerKeys() {
 		return hasJEI || hasREI;
-	}
-
-	public static void requestBlockData(BlockAccessor accessor, List<IServerDataProvider<BlockAccessor>> providers) {
-		ClientPlayNetworking.send(new RequestBlockPacket(new BlockAccessorImpl.SyncData(accessor), providers));
-	}
-
-	public static void requestEntityData(EntityAccessor accessor, List<IServerDataProvider<EntityAccessor>> providers) {
-		ClientPlayNetworking.send(new RequestEntityPacket(new EntityAccessorImpl.SyncData(accessor), providers));
 	}
 
 	public static IElement elementFromLiquid(BlockState blockState) {
@@ -298,6 +284,10 @@ public final class ClientProxy implements ClientModInitializer {
 			return WailaClientRegistration.instance().customEnchantPowers.get(state.getBlock()).getEnchantPowerBonus(state, world, pos);
 		}
 		return state.is(Blocks.BOOKSHELF) ? 1 : 0;
+	}
+
+	public static void sendPacket(CustomPacketPayload payload) {
+		ClientPlayNetworking.send(payload);
 	}
 
 	@Override

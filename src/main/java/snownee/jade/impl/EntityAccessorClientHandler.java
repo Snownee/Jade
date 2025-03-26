@@ -17,6 +17,7 @@ import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.impl.ui.ElementHelper;
 import snownee.jade.impl.ui.ItemStackElement;
+import snownee.jade.network.RequestEntityPacket;
 import snownee.jade.overlay.RayTracing;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
@@ -48,7 +49,7 @@ public class EntityAccessorClientHandler implements AccessorClientHandler<Entity
 
 	@Override
 	public void requestData(EntityAccessor accessor, List<IServerDataProvider<EntityAccessor>> providers) {
-		ClientProxy.requestEntityData(accessor, providers);
+		ClientProxy.sendPacket(new RequestEntityPacket(new EntityAccessorImpl.SyncData(accessor), providers));
 	}
 
 	@Override
