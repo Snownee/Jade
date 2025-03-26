@@ -1,23 +1,20 @@
 package snownee.jade.util;
 
 import java.io.File;
-import java.util.Collection;
+import java.lang.annotation.ElementType;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
+import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Stopwatch;
-import com.google.common.base.Strings;
 import com.google.common.cache.Cache;
-import com.google.common.collect.Sets;
 import com.mojang.authlib.GameProfile;
 
 import net.minecraft.advancements.critereon.ItemPredicate;
@@ -30,6 +27,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -61,6 +59,7 @@ import net.minecraft.world.level.storage.loot.predicates.MatchTool;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
@@ -83,9 +82,9 @@ import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforgespi.language.IModFileInfo;
 import net.neoforged.neoforgespi.language.ModFileScanData;
 import snownee.jade.Jade;
-import snownee.jade.addon.harvest.HarvestToolProvider;
 import snownee.jade.addon.universal.ItemCollector;
 import snownee.jade.addon.universal.ItemIterator;
 import snownee.jade.addon.universal.ItemStorageProvider;
@@ -101,9 +100,6 @@ import snownee.jade.api.view.FluidView;
 import snownee.jade.api.view.IServerExtensionProvider;
 import snownee.jade.api.view.ViewGroup;
 import snownee.jade.command.JadeServerCommand;
-import snownee.jade.impl.WailaClientRegistration;
-import snownee.jade.impl.WailaCommonRegistration;
-import snownee.jade.impl.config.ServerPluginConfig;
 import snownee.jade.impl.lookup.WrappedHierarchyLookup;
 import snownee.jade.mixin.AbstractHorseAccess;
 import snownee.jade.network.ClientHandshakePacket;
@@ -386,25 +382,6 @@ public final class CommonProxy {
 		return MoreObjects.firstNonNull(entity.getPickResult(), ItemStack.EMPTY);
 	}
 
-	public static void playerHandshake(String clientVersion, ServerPlayer player) {
-		if (!Jade.PROTOCOL_VERSION.equals(clientVersion)) {
-			String version = ModList.get().getModContainerById(Jade.ID)
-					.map($ -> MavenVersionTranslator.artifactVersionToString($.getModInfo().getVersion()))
-					.orElse("UNKNOWN");
-			player.displayClientMessage(Component.translatable("jade.protocolMismatch", version), false);
-			return;
-		}
-		((JadeServerPlayer) player).jade$setConnected(true);
-		Map<ResourceLocation, Object> configs = ServerPluginConfig.instance().values();
-		List<Block> shearableBlocks = HarvestToolProvider.getShearableBlocks();
-		if (!configs.isEmpty()) {
-			Jade.LOGGER.debug("Syncing config to {} ({})", player.getGameProfile().getName(), player.getGameProfile().getId());
-		}
-		List<ResourceLocation> blockProviderIds = WailaCommonRegistration.instance().blockDataProviders.mappedIds();
-		List<ResourceLocation> entityProviderIds = WailaCommonRegistration.instance().entityDataProviders.mappedIds();
-		player.connection.send(new ServerHandshakePacket(configs, shearableBlocks, blockProviderIds, entityProviderIds));
-	}
-
 	public static boolean isModLoaded(String modid) {
 		try {
 			ModList modList = ModList.get();
@@ -417,80 +394,29 @@ public final class CommonProxy {
 		}
 	}
 
+	public static Optional<String> getModVersion(String modid) {
+		return ModList.get().getModContainerById(modid).map($ -> MavenVersionTranslator.artifactVersionToString($.getModInfo()
+				.getVersion()));
+	}
+
 	public static void loadComplete() {
 		Jade.loadPlugins();
 	}
 
-	public static void loadPlugins(Set<String> erroneousClasses, Set<String> excludedClasses) {
-		WailaCommonRegistration.reset();
-		if (isPhysicallyClient()) {
-			WailaClientRegistration.reset();
-		}
-		Set<Class<?>> classes = Sets.newHashSet();
-
-		List<String> classNames = ModList.get().getAllScanData()
-				.stream()
-				.flatMap($ -> $.getAnnotations().stream())
-				.filter($ -> {
-					if ($.annotationType().getClassName().equals(WailaPlugin.class.getName())) {
-						String required = (String) $.annotationData().getOrDefault("value", "");
-						return required.isEmpty() || ModList.get().isLoaded(required);
-					}
-					return false;
-				})
-				.map(ModFileScanData.AnnotationData::memberName)
-				.toList();
-		for (String className : classNames) {
-			if (excludedClasses.contains(className)) {
-				return;
+	public static List<Entrypoint> loadEntrypoints() {
+		List<Entrypoint> entrypoints = Lists.newArrayList();
+		for (ModContainer container : ModList.get().getSortedMods()) {
+			IModFileInfo owningFile = container.getModInfo().getOwningFile();
+			if (owningFile == null) {
+				continue;
 			}
-			try {
-				Class<?> clazz = Class.forName(className);
-				if (!IWailaPlugin.class.isAssignableFrom(clazz)) {
-					throw new IllegalStateException("Plugin class %s must implement IWailaPlugin".formatted(className));
-				}
-				IWailaPlugin plugin = (IWailaPlugin) clazz.getDeclaredConstructor().newInstance();
-				Jade.LOGGER.info("Start loading plugin from %s".formatted(className));
-				WailaPlugin a = plugin.getClass().getDeclaredAnnotation(WailaPlugin.class);
-				if (a != null && !Strings.isNullOrEmpty(a.value()) && !isModLoaded(a.value())) {
-					return;
-				}
-//				if (className.startsWith("snownee.jade.") && !metadata.getId().startsWith(Jade.ID)) {
-//					throw new TraceableException(
-//							new IllegalStateException("Mod %s is not allowed to register built-in plugins. Please contact the mod author".formatted(
-//									className)),
-//							Jade.ID);
-//				}
-				if (!classes.add(plugin.getClass())) {
-					throw new TraceableException(new IllegalStateException("Duplicate plugin class " + className), Jade.ID);
-				}
-				Stopwatch stopwatch = null;
-				if (CommonProxy.isDevEnv()) {
-					stopwatch = Stopwatch.createStarted();
-				}
-				WailaCommonRegistration common = WailaCommonRegistration.instance();
-				plugin.register(common);
-				if (isPhysicallyClient()) {
-					WailaClientRegistration client = WailaClientRegistration.instance();
-					plugin.registerClient(client);
-					if (stopwatch != null) {
-						Jade.LOGGER.info("Bootstrapped plugin from %s in %s".formatted(className, stopwatch));
-					}
-				}
-				if (stopwatch != null) {
-					Jade.LOGGER.info("Loaded plugin from %s in %s".formatted(className, stopwatch.stop()));
-				}
-			} catch (Throwable e) {
-				Jade.LOGGER.error("Error loading plugin at %s".formatted(className), e);
-				if (e instanceof TraceableException traceableException) {
-					throw traceableException;
-				}
-//				if (entrypoint.getProvider().getMetadata().getId().equals(Jade.ID)) {
-//					throw e;
-//				}
-				erroneousClasses.add(className);
-			}
+			owningFile.getFile()
+					.getScanResult()
+					.getAnnotatedBy(WailaPlugin.class, ElementType.TYPE)
+					.map($ -> new Entrypoint(container, $))
+					.forEach(entrypoints::add);
 		}
+		return entrypoints;
 	}
 
 	public static Component getFluidName(JadeFluidObject fluid) {
@@ -501,14 +427,6 @@ public final class CommonProxy {
 		int id = BuiltInRegistries.FLUID.getId(fluid.getType());
 		Optional<Holder.Reference<Fluid>> holder = BuiltInRegistries.FLUID.get(id);
 		return holder.isEmpty() ? FluidStack.EMPTY : new FluidStack(holder.get(), (int) fluid.getAmount(), fluid.getComponents());
-	}
-
-	public static int showOrHideFromServer(Collection<ServerPlayer> players, boolean show) {
-		ShowOverlayPacket msg = new ShowOverlayPacket(show);
-		for (ServerPlayer player : players) {
-			player.connection.send(msg);
-		}
-		return players.size();
 	}
 
 	public static boolean isMultipartEntity(Entity target) {
@@ -682,5 +600,50 @@ public final class CommonProxy {
 
 	public static String defaultEnergyUnit() {
 		return "E";
+	}
+
+	public static void sendPacket(ServerPlayer player, CustomPacketPayload payload) {
+		player.connection.send(payload);
+	}
+
+	public record Entrypoint(ModContainer container, ModFileScanData.AnnotationData annotationData) {
+		public String className() {
+			return annotationData.memberName();
+		}
+
+		public String modId() {
+			return container.getModId();
+		}
+
+		public String modName() {
+			return container.getModInfo().getDisplayName();
+		}
+
+		public String requiredMod() {
+			return annotationData.annotationData().getOrDefault("value", "").toString();
+		}
+
+		public IWailaPlugin newInstance() {
+			try {
+				return (IWailaPlugin) Class.forName(className()).getDeclaredConstructor().newInstance();
+			} catch (Throwable e) {
+				throwError("Failed to instantiate plugin class");
+				throw new AssertionError();
+			}
+		}
+
+		public void throwError(String message, @Nullable Throwable cause) {
+			message = "Error in plugin class %s from %s: %s".formatted(className(), modName(), message);
+			if (cause == null) {
+				cause = new IllegalStateException(message);
+			} else {
+				cause = new IllegalStateException(message, cause);
+			}
+			throw new TraceableException(cause, modId());
+		}
+
+		public void throwError(String message) {
+			throwError(message, null);
+		}
 	}
 }

@@ -1,13 +1,17 @@
 package snownee.jade.util;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.google.common.math.IntMath;
+import com.google.common.collect.Lists;
+import com.google.common.math.LongMath;
 
+import net.minecraft.util.Tuple;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
@@ -27,28 +31,75 @@ public class JadeForgeUtils {
 		return JadeFluidObject.of(fluidStack.getFluid(), fluidStack.getAmount(), fluidStack.getComponentsPatch());
 	}
 
-	public static List<ViewGroup<FluidView.Data>> fromFluidHandler(IFluidHandler fluidHandler) {
-		List<FluidView.Data> list = new ArrayList<>(fluidHandler.getTanks());
-		int emptyCapacity = 0;
+	public static List<ViewGroup<FluidView.Data>> fromFluidHandler(IFluidHandler storage) {
+		if (storage.getTanks() == 0) {
+			return List.of();
+		}
+		FluidCollectingResult result = fromFluidHandlerStream(storage);
+		if (result.tanks == 0) {
+			return List.of();
+		}
+		List<Tuple<JadeFluidObject, Long>> list = Lists.newArrayList();
+		int maxTanks = result.emptyTanks == 0 ? 5 : 4;
+		if (result.tanks - result.emptyTanks <= maxTanks) {
+			list.addAll(result.stream.toList());
+		} else {
+			result.stream.takeWhile(tag -> list.size() <= maxTanks).forEach(tuple1 -> {
+				for (Tuple<JadeFluidObject, Long> tuple2 : list) {
+					if (JadeFluidObject.isSameFluidSameComponents(tuple1.getA(), tuple2.getA())) {
+						return;
+					}
+				}
+				list.add(tuple1);
+			});
+		}
+		int remaining = result.tanks - result.emptyTanks - list.size();
+		if (result.emptyTanks > 0) {
+			list.add(new Tuple<>(JadeFluidObject.empty(), result.emptyCapacity));
+		}
+		ViewGroup<FluidView.Data> group = new ViewGroup<>(list.stream()
+				.map(tuple -> new FluidView.Data(tuple.getA(), tuple.getB()))
+				.toList());
+		if (remaining > 0) {
+			group.getExtraData().putInt("+", remaining);
+		}
+		return List.of(group);
+	}
+
+	public static FluidCollectingResult fromFluidHandlerStream(IFluidHandler fluidHandler) {
+		FluidCollectingResult result = new FluidCollectingResult();
 		for (int i = 0; i < fluidHandler.getTanks(); i++) {
-			int capacity = fluidHandler.getTankCapacity(i);
-			if (capacity <= 0) {
-				continue;
+			if (fluidHandler.getTankCapacity(i) > 0) {
+				result.tanks++;
+				if (fluidHandler.getFluidInTank(i).isEmpty()) {
+					result.emptyTanks++;
+				}
 			}
-			FluidStack fluidStack = fluidHandler.getFluidInTank(i);
-			if (fluidStack.isEmpty()) {
-				emptyCapacity = IntMath.saturatedAdd(emptyCapacity, capacity);
-				continue;
-			}
-			list.add(new FluidView.Data(fromFluidStack(fluidStack), capacity));
 		}
-		if (list.isEmpty() && emptyCapacity > 0) {
-			list.add(new FluidView.Data(JadeFluidObject.empty(), emptyCapacity));
+		if (result.tanks == 0) {
+			result.stream = Stream.empty();
+		} else {
+			result.stream = IntStream.range(0, fluidHandler.getTanks()).mapToObj(i -> {
+				long capacity = fluidHandler.getTankCapacity(i);
+				if (capacity <= 0) {
+					return null;
+				}
+				FluidStack fluidStack = fluidHandler.getFluidInTank(i);
+				if (fluidStack.isEmpty()) {
+					result.emptyCapacity = LongMath.saturatedAdd(result.emptyCapacity, capacity);
+					return null;
+				}
+				return new Tuple<>(fromFluidStack(fluidStack), capacity);
+			}).filter(Objects::nonNull);
 		}
-		if (!list.isEmpty()) {
-			return List.of(new ViewGroup<>(list));
-		}
-		return List.of();
+		return result;
+	}
+
+	public static class FluidCollectingResult {
+		public Stream<Tuple<JadeFluidObject, Long>> stream;
+		public long emptyCapacity;
+		public int tanks;
+		public int emptyTanks;
 	}
 
 	public static ItemIterator<? extends IItemHandler> fromItemHandler(IItemHandler storage, int fromIndex) {

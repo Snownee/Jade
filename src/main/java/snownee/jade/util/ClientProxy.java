@@ -32,6 +32,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.LazyLoadedValue;
 import net.minecraft.world.item.ItemStack;
@@ -70,9 +71,6 @@ import net.neoforged.neoforgespi.language.IModInfo;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
 import snownee.jade.api.Accessor;
-import snownee.jade.api.BlockAccessor;
-import snownee.jade.api.EntityAccessor;
-import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.fluid.JadeFluidObject;
@@ -84,15 +82,11 @@ import snownee.jade.command.JadeClientCommand;
 import snownee.jade.compat.JEICompat;
 import snownee.jade.gui.HomeConfigScreen;
 import snownee.jade.gui.PreviewOptionsScreen;
-import snownee.jade.impl.BlockAccessorImpl;
-import snownee.jade.impl.EntityAccessorImpl;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.ui.FluidStackElement;
 import snownee.jade.mixin.KeyAccess;
 import snownee.jade.network.ClientHandshakePacket;
-import snownee.jade.network.RequestBlockPacket;
-import snownee.jade.network.RequestEntityPacket;
 import snownee.jade.overlay.DatapackBlockManager;
 import snownee.jade.overlay.OverlayRenderer;
 import snownee.jade.overlay.WailaTickHandler;
@@ -159,7 +153,7 @@ public final class ClientProxy {
 
 	private static void onPlayerJoin(ClientPlayerNetworkEvent.LoggingIn event) {
 		try {
-			event.getPlayer().connection.send(new ClientHandshakePacket(Jade.PROTOCOL_VERSION));
+			sendPacket(new ClientHandshakePacket(Jade.PROTOCOL_VERSION));
 		} catch (Exception ignored) {
 		}
 	}
@@ -196,16 +190,6 @@ public final class ClientProxy {
 
 	public static boolean shouldRegisterRecipeViewerKeys() {
 		return hasJEI || hasREI;
-	}
-
-	public static void requestBlockData(BlockAccessor accessor, List<IServerDataProvider<BlockAccessor>> providers) {
-		Objects.requireNonNull(Minecraft.getInstance().getConnection())
-				.send((new RequestBlockPacket(new BlockAccessorImpl.SyncData(accessor), providers)));
-	}
-
-	public static void requestEntityData(EntityAccessor accessor, List<IServerDataProvider<EntityAccessor>> providers) {
-		Objects.requireNonNull(Minecraft.getInstance().getConnection()).send((
-				new RequestEntityPacket(new EntityAccessorImpl.SyncData(accessor), providers)));
 	}
 
 	public static IElement elementFromLiquid(BlockState blockState) {
@@ -384,5 +368,10 @@ public final class ClientProxy {
 			((KeyAccess) (Object) key).setDisplayName(new LazyLoadedValue<>(() -> Component.translatable(key.getName())));
 		}
 		JadeClient.init();
+		UsernameCache.load();
+	}
+
+	public static void sendPacket(CustomPacketPayload payload) {
+		Objects.requireNonNull(Minecraft.getInstance().getConnection()).send(payload);
 	}
 }

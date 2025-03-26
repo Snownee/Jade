@@ -6,6 +6,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Stopwatch;
 import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
@@ -15,6 +16,7 @@ import com.mojang.serialization.Codec;
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.JadeIds;
+import snownee.jade.api.TraceableException;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
@@ -29,7 +31,7 @@ public class Jade {
 	public static final String PROTOCOL_VERSION = "7";
 	public static final Logger LOGGER = LogUtils.getLogger();
 	private static final JsonConfig<WailaConfig.Root> rootConfig = new JsonConfig<>(
-			Jade.ID + "/" + Jade.ID,
+			ID + "/" + ID,
 			WailaConfig.Root.CODEC,
 			WailaConfig::fixData);
 	private static List<JsonConfig<? extends WailaConfig>> configs = List.of();
@@ -131,7 +133,7 @@ public class Jade {
 						return config;
 					};
 				}
-				list.add(new JsonConfig<>("%s/profiles/%s/%s".formatted(Jade.ID, i, Jade.ID), codec, WailaConfig::fixData, factory));
+				list.add(new JsonConfig<>("%s/profiles/%s/%s".formatted(ID, i, ID), codec, WailaConfig::fixData, factory));
 			}
 			configs = list.build();
 			rootConfig().history.checkNewUser(CommonProxy.getConfigDirectory().getAbsolutePath().hashCode());
@@ -161,12 +163,66 @@ public class Jade {
 	}
 
 	public static void loadPlugins() {
+		List<CommonProxy.Entrypoint> entrypoints = CommonProxy.loadEntrypoints();
 		Set<String> erroneousClasses = Sets.newHashSet();
-		CommonProxy.loadPlugins(erroneousClasses, Set.of());
+		loadPlugins(entrypoints, erroneousClasses, Set.of());
 		if (!erroneousClasses.isEmpty()) {
 			LOGGER.info("Trying to load plugins again without erroneous plugins");
-			CommonProxy.loadPlugins(erroneousClasses, erroneousClasses);
+			loadPlugins(entrypoints, erroneousClasses, erroneousClasses);
 		}
 		loadComplete();
+	}
+
+	private static void loadPlugins(List<CommonProxy.Entrypoint> entrypoints, Set<String> erroneousClasses, Set<String> excludedClasses) {
+		WailaCommonRegistration.reset();
+		if (CommonProxy.isPhysicallyClient()) {
+			WailaClientRegistration.reset();
+		}
+		Set<String> classes = Sets.newHashSet();
+		Stopwatch stopwatch = null;
+		if (CommonProxy.isDevEnv()) {
+			stopwatch = Stopwatch.createUnstarted();
+		}
+		for (CommonProxy.Entrypoint entrypoint : entrypoints) {
+			String className = entrypoint.className();
+			try {
+				if (excludedClasses.contains(className)) {
+					return;
+				}
+				if (className.startsWith("snownee.jade.") && !entrypoint.modId().equals(ID)) {
+					entrypoint.throwError("Built-in plugin registered by non-Jade mod");
+				}
+				String requiredMod = entrypoint.requiredMod();
+				if (!requiredMod.isEmpty() && !CommonProxy.isModLoaded(requiredMod)) {
+					return;
+				}
+				if (!classes.add(className)) {
+					entrypoint.throwError("Duplicate plugin class");
+				}
+				IWailaPlugin plugin = entrypoint.newInstance();
+				LOGGER.info("Start loading plugin from %s: %s".formatted(entrypoint.modName(), className));
+				if (stopwatch != null) {
+					stopwatch.reset().start();
+				}
+				WailaCommonRegistration common = WailaCommonRegistration.instance();
+				plugin.register(common);
+				if (CommonProxy.isPhysicallyClient()) {
+					WailaClientRegistration client = WailaClientRegistration.instance();
+					plugin.registerClient(client);
+				}
+				if (stopwatch != null) {
+					LOGGER.info("%s loaded: %s".formatted(className, stopwatch.stop()));
+				}
+			} catch (Throwable e) {
+				LOGGER.error("", e);
+				if (entrypoint.modId().equals(ID)) {
+					throw e;
+				}
+				if (!(e instanceof TraceableException)) {
+					throw e;
+				}
+				erroneousClasses.add(className);
+			}
+		}
 	}
 }

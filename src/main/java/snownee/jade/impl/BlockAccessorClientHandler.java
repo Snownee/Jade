@@ -17,6 +17,7 @@ import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.impl.ui.ElementHelper;
 import snownee.jade.impl.ui.ItemStackElement;
+import snownee.jade.network.RequestBlockPacket;
 import snownee.jade.overlay.RayTracing;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.WailaExceptionHandler;
@@ -41,7 +42,7 @@ public class BlockAccessorClientHandler implements AccessorClientHandler<BlockAc
 
 	@Override
 	public void requestData(BlockAccessor accessor, List<IServerDataProvider<BlockAccessor>> providers) {
-		ClientProxy.requestBlockData(accessor, providers);
+		ClientProxy.sendPacket(new RequestBlockPacket(new BlockAccessorImpl.SyncData(accessor), providers));
 	}
 
 	@Override

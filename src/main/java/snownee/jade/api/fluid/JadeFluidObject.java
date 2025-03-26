@@ -9,6 +9,7 @@ import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.level.material.Fluid;
@@ -81,6 +82,10 @@ public class JadeFluidObject {
 
 	public boolean isEmpty() {
 		return getType() == Fluids.EMPTY || getAmount() == 0;
+	}
+
+	public Component getDisplayName() {
+		return CommonProxy.getFluidName(this);
 	}
 
 	public static boolean isSameFluidSameComponents(JadeFluidObject first, JadeFluidObject second) {
