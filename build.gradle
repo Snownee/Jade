@@ -116,7 +116,7 @@ dependencies {
 
 unifiedPublishing {
     project {
-        displayName = "[NeoForge $project.supported_version(21.4.84+)] $project.mod_version"
+        displayName = "[NeoForge $project.supported_version] $project.mod_version"
         version = realVersion // Optional, Inferred from project by default
         changelog = file("CHANGELOG.md").exists() ? file("CHANGELOG.md").text : "" // Optional, in markdown format
         releaseType = project.release_type // Optional, use "release", "beta" or "alpha"
