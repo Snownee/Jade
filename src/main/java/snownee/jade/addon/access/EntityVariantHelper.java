@@ -5,6 +5,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.Lists;
@@ -23,6 +24,7 @@ import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.EitherHolder;
+import snownee.jade.mixin.EntityAccess;
 
 public final class EntityVariantHelper {
 	private static final Object2BooleanMap<DataComponentType<?>> isVariantType = new Object2BooleanOpenHashMap<>();
@@ -111,9 +113,9 @@ public final class EntityVariantHelper {
 
 	private static List<DataComponentType<?>> componentTypes(Entity entity) {
 		List<DataComponentType<?>> types = Lists.newArrayList();
-		entity.applyImplicitComponents(new DataComponentGetter() {
+		((EntityAccess) entity).callApplyImplicitComponents(new DataComponentGetter() {
 			@Override
-			public @Nullable <T> T get(DataComponentType<? extends T> dataComponentType) {
+			public @Nullable <T> T get(@NotNull DataComponentType<? extends T> dataComponentType) {
 				types.add(dataComponentType);
 				return null;
 			}

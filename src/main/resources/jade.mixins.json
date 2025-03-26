@@ -6,7 +6,6 @@
 	"mixins": [
 		"AbstractHorseAccess",
 		"EntityAccess",
-		"HarvestToolProviderMixin",
 		"ServerPlayerMixin"
 	],
 	"client": [
