@@ -9,4 +9,6 @@ public interface ITextElement extends IElement {
 
 	@Contract("_ -> this")
 	ITextElement zOffset(int zOffset);
+
+	String getString();
 }

@@ -16,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import com.google.common.base.MoreObjects;
 import com.google.common.cache.Cache;
 import com.mojang.authlib.GameProfile;
+import com.mojang.datafixers.util.Either;
 
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.client.Minecraft;
@@ -36,6 +37,10 @@ import net.minecraft.world.WorldlyContainerHolder;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Shearable;
+import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.animal.MushroomCow;
+import net.minecraft.world.entity.animal.sheep.Sheep;
 import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.player.Player;
@@ -72,6 +77,7 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.EntityCapability;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.TranslatableEnum;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.entity.PartEntity;
 import net.neoforged.neoforge.event.EventHooks;
@@ -604,6 +610,25 @@ public final class CommonProxy {
 
 	public static void sendPacket(ServerPlayer player, CustomPacketPayload payload) {
 		player.connection.send(payload);
+	}
+
+	public static boolean isSheared(Entity entity) {
+		//noinspection deprecation
+		if (entity instanceof Shearable shearable && !shearable.readyForShearing()) {
+			if (entity instanceof Sheep || entity instanceof MushroomCow) {
+				return !((Animal) entity).isBaby();
+			}
+			return true;
+		}
+		return false;
+	}
+
+	@Nullable
+	public static Either<String, Component> getTranslatableName(Object object) {
+		if (object instanceof TranslatableEnum translatableEnum) {
+			return Either.right(translatableEnum.getTranslatedName());
+		}
+		return null;
 	}
 
 	public record Entrypoint(ModContainer container, ModFileScanData.AnnotationData annotationData) {

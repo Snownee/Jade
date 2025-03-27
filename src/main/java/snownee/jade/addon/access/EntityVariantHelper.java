@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.mojang.datafixers.util.Either;
 
 import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
@@ -18,6 +19,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.StringRepresentable;
@@ -25,6 +27,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.EitherHolder;
 import snownee.jade.mixin.EntityAccess;
+import snownee.jade.util.CommonProxy;
 
 public final class EntityVariantHelper {
 	private static final Object2BooleanMap<DataComponentType<?>> isVariantType = new Object2BooleanOpenHashMap<>();
@@ -75,16 +78,21 @@ public final class EntityVariantHelper {
 	}
 
 	@Nullable
-	public static synchronized String getVariantName(Entity entity, boolean isColor) {
+	public static synchronized Either<String, Component> getVariantName(Entity entity, boolean isColor) {
 		Object variant = getVariant(entity, isColor);
-		if (variant instanceof Holder<?> holder) {
+		if (variant == null) {
+			return null;
+		} else if (variant instanceof Holder<?> holder) {
 			ResourceLocation id = holder.unwrapKey().map(ResourceKey::location).orElse(null);
 			variant = id != null ? id : holder.value();
 		} else if (variant instanceof EitherHolder<?> holder) {
 			variant = holder.key().map(ResourceKey::location).orElse(null);
 		}
 		String name = null;
-		if (variant instanceof ResourceLocation id) {
+		Either<String, Component> result = CommonProxy.getTranslatableName(variant);
+		if (result != null) {
+			return result;
+		} else if (variant instanceof ResourceLocation id) {
 			name = id.toShortLanguageKey();
 		} else if (variant instanceof String) {
 			name = variant.toString();
@@ -93,7 +101,7 @@ public final class EntityVariantHelper {
 		} else if (variant instanceof Enum<?> enumValue) {
 			name = enumValue.name();
 		}
-		return name == null ? null : name.toLowerCase(Locale.ENGLISH);
+		return name == null ? null : Either.left(name.toLowerCase(Locale.ENGLISH));
 	}
 
 	private static boolean isVariantType(DataComponentType<?> type) {
