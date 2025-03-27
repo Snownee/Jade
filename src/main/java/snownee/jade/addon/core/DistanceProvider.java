@@ -20,6 +20,7 @@ import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.ui.ITextElement;
 import snownee.jade.impl.theme.ThemeHelper;
 
 public abstract class DistanceProvider implements IToggleableProvider {
@@ -58,10 +59,12 @@ public abstract class DistanceProvider implements IToggleableProvider {
 		return fmt.format(accessor.getPlayer().getEyePosition(partialTick).distanceTo(accessor.getHitResult().getLocation()));
 	}
 
-	public static void xyz(ITooltip tooltip, Vec3i pos) {
+	public static ITextElement xyz(Vec3i pos) {
 		Component display = Component.translatable("jade.blockpos", display(pos.getX(), 0), display(pos.getY(), 1), display(pos.getZ(), 2));
 		String narrate = I18n.get("narration.jade.blockpos", narrate(pos.getX()), narrate(pos.getY()), narrate(pos.getZ()));
-		tooltip.add(IElementHelper.get().text(display).message(narrate));
+		ITextElement text = IElementHelper.get().text(display);
+		text.message(narrate);
+		return text;
 	}
 
 	public static Component display(int i, int colorIndex) {
@@ -81,9 +84,9 @@ public abstract class DistanceProvider implements IToggleableProvider {
 		String distanceMsg = distance ? I18n.get("narration.jade.distance", distanceVal) : null;
 		if (config.get(JadeIds.CORE_COORDINATES)) {
 			if (config.get(JadeIds.CORE_REL_COORDINATES) && Screen.hasControlDown()) {
-				xyz(tooltip, pos.subtract(BlockPos.containing(accessor.getPlayer().getEyePosition())));
+				tooltip.add(xyz(pos.subtract(BlockPos.containing(accessor.getPlayer().getEyePosition()))));
 			} else {
-				xyz(tooltip, pos);
+				tooltip.add(xyz(pos));
 			}
 			if (distance) {
 				tooltip.append(IElementHelper.get().text(Component.translatable("jade.distance1", distanceVal)).message(distanceMsg));

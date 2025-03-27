@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import com.google.common.cache.Cache;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.datafixers.util.Either;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
@@ -56,6 +57,10 @@ import net.minecraft.world.WorldlyContainerHolder;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Shearable;
+import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.animal.MushroomCow;
+import net.minecraft.world.entity.animal.sheep.Sheep;
 import net.minecraft.world.entity.boss.EnderDragonPart;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.decoration.PaintingVariant;
@@ -553,6 +558,22 @@ public final class CommonProxy implements ModInitializer {
 
 	public static void sendPacket(ServerPlayer player, CustomPacketPayload payload) {
 		ServerPlayNetworking.send(player, payload);
+	}
+
+	public static boolean isSheared(Entity entity) {
+		//noinspection deprecation
+		if (entity instanceof Shearable shearable && !shearable.readyForShearing()) {
+			if (entity instanceof Sheep || entity instanceof MushroomCow) {
+				return !((Animal) entity).isBaby();
+			}
+			return true;
+		}
+		return false;
+	}
+
+	@Nullable
+	public static Either<String, Component> getTranslatableName(Object object) {
+		return null;
 	}
 
 	@Override

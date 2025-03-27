@@ -1,11 +1,12 @@
 package snownee.jade.addon.access;
 
+import com.mojang.datafixers.util.Either;
+
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.Shearable;
 import net.minecraft.world.entity.animal.Bee;
 import net.minecraft.world.entity.animal.goat.Goat;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
@@ -20,6 +21,7 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
+import snownee.jade.util.CommonProxy;
 
 public class EntityDetailsProvider implements IEntityComponentProvider {
 	@Override
@@ -49,16 +51,16 @@ public class EntityDetailsProvider implements IEntityComponentProvider {
 		if (entity instanceof LivingEntity livingEntity && livingEntity.isBaby()) {
 			AccessibilityPlugin.replaceTitle(tooltip, objectName, "entity.baby");
 		}
-		if (entity instanceof Shearable shearable && !shearable.readyForShearing()) {
+		if (CommonProxy.isSheared(entity)) {
 			AccessibilityPlugin.replaceTitle(tooltip, objectName, "entity.sheared");
 		}
 		if (entity instanceof Mob mob && mob.isSaddled()) {
 			AccessibilityPlugin.replaceTitle(tooltip, objectName, "entity.saddled");
 		}
 
-		String color = EntityVariantHelper.getVariantName(entity, true);
+		Either<String, Component> color = EntityVariantHelper.getVariantName(entity, true);
 		if (color != null) {
-			AccessibilityPlugin.replaceTitle(tooltip, objectName, "entity." + color);
+			color.ifLeft(s -> AccessibilityPlugin.replaceTitle(tooltip, objectName, "entity." + s));
 		}
 	}
 
