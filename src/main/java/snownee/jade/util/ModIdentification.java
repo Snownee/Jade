@@ -1,11 +1,16 @@
 package snownee.jade.util;
 
+import java.text.BreakIterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+
+import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -21,30 +26,122 @@ import snownee.jade.api.JadeIds;
 import snownee.jade.api.TraceableException;
 import snownee.jade.api.callback.JadeItemModNameCallback;
 import snownee.jade.impl.WailaClientRegistration;
+import snownee.jade.overlay.DisplayHelper;
 
 public class ModIdentification implements KeyedResourceManagerReloadListener {
 
 	public static final ResourceLocation ID = JadeIds.JADE("mod_id");
 	public static final ModIdentification INSTANCE = new ModIdentification();
+	public static int NAME_MAX_WIDTH = 160;
 	private static final Map<String, Optional<String>> NAMES = Maps.newConcurrentMap();
+	private static final Map<String, Optional<String>> CUT_NAMES = Maps.newConcurrentMap();
+	@Nullable
+	private static WordCutter wordCutter;
+
+	public static WordCutter wordCutter() {
+		WordCutter cutter = wordCutter;
+		if (cutter == null) {
+			JadeLanguages languages = JadeLanguages.INSTANCE;
+			BreakIterator iterator = BreakIterator.getWordInstance(languages.getLocale());
+			wordCutter = cutter = new WordCutter(iterator, languages);
+		}
+		return cutter;
+	}
 
 	public static void invalidateCache() {
 		NAMES.clear();
+		CUT_NAMES.clear();
+		wordCutter = null;
+
+		/*
+		List<String> names = List.of(
+				"Minecraft",
+				"Forgified Fabric BlockRenderLayer Registration (v1)",
+				"Pam's HarvestCraft - Food Extended",
+				"Nice Mobs Remastered: Friends & Foes",
+				"Nexus (Tower Defense Battle Mode)",
+				"MrCrayfish's Furniture Mod: Refurbished",
+				"立即重生配置指令 [DCC]doImmediateRespawn Config Command");
+		for (String name : names) {
+			Jade.LOGGER.info("{} -> {}", name, cutName(name, NAME_MAX_WIDTH));
+		}*/
+	}
+
+	public static String cutName(String fullName, int maxWidth) {
+		fullName = fullName.trim();
+		if (maxWidth <= 0) {
+			return fullName;
+		}
+		if (DisplayHelper.font().width(fullName) <= maxWidth) {
+			return fullName;
+		}
+
+		WordCutter cutter = wordCutter();
+		cutter.setText(fullName, maxWidth);
+
+		int tokens;
+		do {
+			tokens = cutter.tokenCount();
+			cutter.removeBracketed();
+			cutter.trim();
+		} while (tokens != cutter.tokenCount() && cutter.tooLong());
+
+		afterColon:
+		if (cutter.hasColon() && cutter.tooLong()) {
+			int start = cutter.findFirst(token -> token.type() == WordCutter.TokenType.COLON);
+			if (start == -1) {
+				break afterColon;
+			}
+			String s = cutter.concat(start + 1, cutter.tokenCount()).trim().toLowerCase(Locale.ENGLISH);
+			boolean remove = s.endsWith("edition") || s.endsWith("version");
+			if (!remove && !s.contains(" ")) {
+				remove = s.equals("legacy") || s.startsWith("re");
+			}
+			if (remove) {
+				cutter.removeRange(start, cutter.tokenCount());
+				cutter.trim();
+			}
+		}
+
+		if (cutter.tooLong()) {
+			WordCutter.Token last = cutter.tokens().getLast();
+			if (last.type() == WordCutter.TokenType.WORD && last.str().toLowerCase(Locale.ENGLISH).equals("mod")) {
+				cutter.removeRange(cutter.tokenCount() - 1, cutter.tokenCount());
+				cutter.trim();
+			}
+		}
+
+		cutter.cutToMaxWidth(true);
+		return cutter.toString();
 	}
 
 	public static Optional<String> getModName(String namespace) {
+		return getModName(namespace, NAME_MAX_WIDTH);
+	}
+
+	public static Optional<String> getModName(String namespace, int maxWidth) {
+		if (maxWidth != NAME_MAX_WIDTH) {
+			return getModNameInternal(namespace, maxWidth);
+		}
+		return CUT_NAMES.computeIfAbsent(namespace, $ -> getModNameInternal($, NAME_MAX_WIDTH));
+	}
+
+	public static Optional<String> getModNameInternal(String namespace, int maxWidth) {
+		String fullName = getModFullName(namespace).orElse(null);
+		if (fullName == null) {
+			return Optional.empty();
+		}
+		return Optional.of(cutName(fullName, maxWidth));
+	}
+
+	public static Optional<String> getModFullName(String namespace) {
 		return NAMES.computeIfAbsent(
 				namespace, $ -> {
-					Optional<String> optional = ClientProxy.getModName($);
-					if (optional.isPresent()) {
-						return optional;
-					}
 					String key = "jade.modName." + $;
 					if (I18n.exists(key)) {
 						return Optional.of(I18n.get(key));
-					} else {
-						return Optional.empty();
 					}
+					return ClientProxy.getModName($).map(ChatFormatting::stripFormatting);
 				});
 	}
 
