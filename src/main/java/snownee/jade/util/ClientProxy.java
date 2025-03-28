@@ -19,7 +19,6 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.renderer.Rect2i;
@@ -238,7 +237,7 @@ public final class ClientProxy {
 	}
 
 	public static boolean shouldShowAfterGui(Minecraft mc, @NotNull Screen screen) {
-		return screen instanceof PreviewOptionsScreen || screen instanceof ChatScreen;
+		return screen instanceof PreviewOptionsScreen;
 	}
 
 	public static boolean shouldShowBeforeGui(Minecraft mc, @NotNull Screen screen) {
