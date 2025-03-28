@@ -359,7 +359,7 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 				}
 			}
 			String namespace = key.getNamespace();
-			Optional<String> modName = ModIdentification.getModName(namespace);
+			Optional<String> modName = ModIdentification.getModFullName(namespace);
 			if (!Jade.ID.equals(namespace) && modName.isPresent()) {
 				categoryMap.put(modName.get(), entry);
 			} else {

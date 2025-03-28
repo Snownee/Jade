@@ -128,7 +128,7 @@ public class WailaConfig implements IWailaConfig {
 		General.itemModNameTooltipDisabledByModsNames.clear();
 		General.itemModNameTooltipDisabledByMods.stream()
 				.filter(CommonProxy::isModLoaded)
-				.map($ -> ModIdentification.getModName($).orElse($))
+				.map($ -> ModIdentification.getModFullName($).orElse($))
 				.forEach(General.itemModNameTooltipDisabledByModsNames::add);
 
 		boolean hasAccessibilityMod = ClientProxy.hasAccessibilityMod();

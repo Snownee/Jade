@@ -414,6 +414,7 @@
 	"jade.block_burn_odds": "燃焼確率: %s",
 	"jade.ignore_list.comment": "これはJadeのターゲットの無視リストです。レジストリIDを「value」リストに追加できます。",
 	"jade.protocolMismatch": "サーバーとは異なるバージョンのJadeを使用しています。Jadeを%sに更新してください。",
+	"jade.metadata": "{lang:[ja_jp],tokens:{left_bracket:'[(（\\\\[【<《]',right_bracket:'[)）\\\\]】>》]',colon:'[:：]',symbol:'[|—,，/&-]'}}",
 	"__comment": "テストのみ:",
 	"jade.modName.cpp": "クラフト++",
 	"mymod.fuel": "燃料: %dティック",

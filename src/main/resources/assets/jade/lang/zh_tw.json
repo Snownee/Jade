@@ -375,6 +375,7 @@
 	"jade.block_ignite_odds": "點燃機率：%s",
 	"jade.block_burn_odds": "燃燒機率：%s",
 	"jade.ignore_list.comment": "這是Jade目標的忽略清單。你可以將登錄ID新增到「values」清單中。",
+	"jade.metadata": "{lang:[zh_tw],tokens:{left_bracket:'[(（\\\\[【<《]',right_bracket:'[)）\\\\]】>》]',colon:'[:：]',symbol:'[|—,，/&-]'}}",
 	"__comment": "僅供測試：",
 	"jade.modName.cpp": "Crafting++",
 	"mymod.fuel": "燃料：%d 刻",
