@@ -1,6 +1,7 @@
 {
   "config.waila.plugin_jade.inventory": "物品容器",
   "jade.locked": "容器已上锁",
+  "jade.not_generated": "物品未生成",
   "config.waila.plugin_jade.horse_stat": "马匹信息",
   "jade.horseStat.jump": "跳跃高度：%d",
   "jade.horseStat.speed": "速度：%d",

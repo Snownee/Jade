@@ -11,6 +11,7 @@ import mcp.mobius.waila.api.RenderableTextComponent;
 import mcp.mobius.waila.utils.ModIdentification;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.item.ArmorStandEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
@@ -59,6 +60,10 @@ public class HUDHandlerEntities implements IEntityComponentProvider {
 	}
 
 	private void appendHealth(LivingEntity living, List<ITextComponent> tooltip) {
+		if (living instanceof ArmorStandEntity) {
+			return;
+		}
+
 		float health = living.getHealth();
 		float maxHealth = living.getMaxHealth();
 

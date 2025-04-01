@@ -18,10 +18,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.AbstractFurnaceTileEntity;
 import net.minecraft.tileentity.EnderChestTileEntity;
+import net.minecraft.tileentity.LockableLootTileEntity;
 import net.minecraft.tileentity.LockableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.LockCode;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -44,6 +46,11 @@ public class InventoryProvider implements IComponentProvider, IServerDataProvide
 	public void appendBody(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {
 		if (!config.get(JadePlugin.INVENTORY) || accessor.getTileEntity() == null || accessor.getTileEntity() instanceof AbstractFurnaceTileEntity)
 			return;
+
+		if (accessor.getServerData().getBoolean("Loot")) {
+			tooltip.add(new TranslationTextComponent("jade.not_generated"));
+			return;
+		}
 
 		if (accessor.getServerData().contains("Locked") && accessor.getServerData().getBoolean("Locked")) {
 			tooltip.add(new TranslationTextComponent("jade.locked"));
@@ -99,9 +106,14 @@ public class InventoryProvider implements IComponentProvider, IServerDataProvide
 			return;
 		}
 
+		if (te instanceof LockableLootTileEntity && ((LockableLootTileEntity) te).lootTable != null) {
+			tag.putBoolean("Loot", true);
+			return;
+		}
+
 		if (!JadeCommonConfig.bypassLockedContainer && !player.isCreative() && !player.isSpectator() && te instanceof LockableTileEntity) {
 			LockableTileEntity lockableTileEntity = (LockableTileEntity) te;
-			if (!lockableTileEntity.canOpen(player)) {
+			if (lockableTileEntity.code != LockCode.EMPTY_CODE) {
 				tag.putBoolean("Locked", true);
 				return;
 			}
