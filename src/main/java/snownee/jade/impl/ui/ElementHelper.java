@@ -10,6 +10,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.fluid.JadeFluidObject;
+import snownee.jade.api.ui.IBorderStyle;
 import snownee.jade.api.ui.IBoxElement;
 import snownee.jade.api.ui.IBoxStyle;
 import snownee.jade.api.ui.IElement;
@@ -59,10 +60,20 @@ public class ElementHelper implements IElementHelper {
 	}
 
 	@Override
+	public IElement progress(float progress, @Nullable Component text, IProgressStyle style, @Nullable IBorderStyle borderStyle) {
+		return progress(progress, text, (ProgressStyle) style, BorderStyle.toBoxStyle(borderStyle), true);
+	}
+
+	@Override
 	public IElement progress(float progress, @Nullable Component text, IProgressStyle style, IBoxStyle boxStyle, boolean canDecrease) {
 		Objects.requireNonNull(style);
 		Objects.requireNonNull(boxStyle);
 		return new ProgressElement(progress, text, style, boxStyle, canDecrease);
+	}
+
+	@Override
+	public IElement box(ITooltip tooltip, @Nullable IBorderStyle border) {
+		return box(tooltip, BorderStyle.toBoxStyle(border));
 	}
 
 	@Override
@@ -74,6 +85,11 @@ public class ElementHelper implements IElementHelper {
 	@Override
 	public ITooltip tooltip() {
 		return new Tooltip();
+	}
+
+	@Override
+	public IBorderStyle borderStyle() {
+		return new BorderStyle();
 	}
 
 	@Override

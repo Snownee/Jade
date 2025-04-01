@@ -10,8 +10,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.decoration.Motive;
 import net.minecraft.world.entity.decoration.Painting;
-import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
@@ -30,7 +30,7 @@ public class ModIdentification implements ResourceManagerReloadListener {
 
 	public static void init() {
 		NAMES.clear();
-		ClientProxy.initModNames(NAMES);
+		ClientPlatformProxy.initModNames(NAMES);
 	}
 
 	public static String getModName(String namespace) {
@@ -49,7 +49,7 @@ public class ModIdentification implements ResourceManagerReloadListener {
 	}
 
 	public static String getModName(Block block) {
-		return getModName(CommonProxy.getId(block));
+		return getModName(PlatformProxy.getId(block));
 	}
 
 	public static String getModName(ItemStack stack) {
@@ -59,13 +59,13 @@ public class ModIdentification implements ResourceManagerReloadListener {
 				return s;
 			}
 		}
-		return getModName(CommonProxy.getModIdFromItem(stack));
+		return getModName(PlatformProxy.getModIdFromItem(stack));
 	}
 
 	public static String getModName(Entity entity) {
 		if (entity instanceof Painting) {
-			PaintingVariant motive = ((Painting) entity).getVariant().value();
-			return getModName(CommonProxy.getId(motive).getNamespace());
+			Motive motive = ((Painting) entity).motive;
+			return getModName(PlatformProxy.getId(motive).getNamespace());
 		}
 		if (entity instanceof ItemEntity) {
 			return getModName(((ItemEntity) entity).getItem());
@@ -73,7 +73,7 @@ public class ModIdentification implements ResourceManagerReloadListener {
 		if (entity instanceof FallingBlockEntity) {
 			return getModName(((FallingBlockEntity) entity).getBlockState().getBlock());
 		}
-		return getModName(CommonProxy.getId(entity.getType()));
+		return getModName(PlatformProxy.getId(entity.getType()));
 	}
 
 	@Override

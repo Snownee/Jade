@@ -7,6 +7,8 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.BlockAccessor;
@@ -39,15 +41,15 @@ public enum DistanceProvider implements IBlockComponentProvider, IEntityComponen
 		String distanceMsg = distance ? I18n.get("narration.jade.distance", distanceVal) : null;
 		if (config.get(Identifiers.CORE_COORDINATES)) {
 			if (config.get(Identifiers.CORE_REL_COORDINATES) && Screen.hasControlDown()) {
-				xyz(tooltip, pos.subtract(BlockPos.containing(accessor.getPlayer().getEyePosition())));
+				xyz(tooltip, pos.subtract(new BlockPos(accessor.getPlayer().getEyePosition())));
 			} else {
 				xyz(tooltip, pos);
 			}
 			if (distance) {
-				tooltip.append(tooltip.getElementHelper().text(Component.translatable("jade.distance1", distanceVal)).message(distanceMsg));
+				tooltip.append(tooltip.getElementHelper().text(new TranslatableComponent("jade.distance1", distanceVal)).message(distanceMsg));
 			}
 		} else if (distance) {
-			tooltip.add(tooltip.getElementHelper().text(Component.translatable("jade.distance2", distanceVal)).message(distanceMsg));
+			tooltip.add(tooltip.getElementHelper().text(new TranslatableComponent("jade.distance2", distanceVal)).message(distanceMsg));
 		}
 	}
 
@@ -56,13 +58,13 @@ public enum DistanceProvider implements IBlockComponentProvider, IEntityComponen
 	}
 
 	public static void xyz(ITooltip tooltip, Vec3i pos) {
-		Component display = Component.translatable("jade.blockpos", display(pos.getX(), 0xef9a9a), display(pos.getY(), 0xa5d6a7), display(pos.getZ(), 0x90caf9));
+		Component display = new TranslatableComponent("jade.blockpos", display(pos.getX(), 0xef9a9a), display(pos.getY(), 0xa5d6a7), display(pos.getZ(), 0x90caf9));
 		String narrate = I18n.get("narration.jade.blockpos", narrate(pos.getX()), narrate(pos.getY()), narrate(pos.getZ()));
 		tooltip.add(tooltip.getElementHelper().text(display).message(narrate));
 	}
 
 	public static Component display(int i, int color) {
-		return Component.literal(Integer.toString(i)).withStyle($ -> $.withColor(color));
+		return new TextComponent(Integer.toString(i)).withStyle($ -> $.withColor(color));
 	}
 
 	public static String narrate(int i) {

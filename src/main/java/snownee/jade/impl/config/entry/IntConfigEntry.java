@@ -2,7 +2,7 @@ package snownee.jade.impl.config.entry;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import snownee.jade.gui.config.OptionsList;
+import snownee.jade.gui.config.WailaOptionsList;
 import snownee.jade.gui.config.value.InputOptionValue;
 import snownee.jade.gui.config.value.OptionValue;
 import snownee.jade.impl.config.PluginConfig;
@@ -31,7 +31,7 @@ public class IntConfigEntry extends ConfigEntry<Integer> {
 	}
 
 	@Override
-	public OptionValue<?> createUI(OptionsList options, String optionName) {
+	public OptionValue<?> createUI(WailaOptionsList options, String optionName) {
 		if (slider) {
 			return options.slider(optionName, getValue(), f -> PluginConfig.INSTANCE.set(id, (int) (float) f), min, max, f -> (float) Math.round(f));
 		} else {

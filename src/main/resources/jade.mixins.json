@@ -9,11 +9,8 @@
   "client": [
     "BossHealthOverlayMixin",
     "ClientLevelMixin",
-    "FontMixin",
-    "GameRendererMixin",
     "KeyAccess",
-    "KeyMappingAccess",
-    "PlainTextSearchTreeMixin"
+    "MinecraftMixin"
   ],
   "injectors": {
     "defaultRequire": 1

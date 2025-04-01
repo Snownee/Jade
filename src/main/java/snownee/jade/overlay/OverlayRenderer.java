@@ -9,7 +9,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.util.Mth;
 import snownee.jade.Jade;
@@ -26,7 +25,7 @@ import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.config.WailaConfig.ConfigGeneral;
 import snownee.jade.impl.config.WailaConfig.ConfigOverlay;
-import snownee.jade.util.ClientProxy;
+import snownee.jade.util.ClientPlatformProxy;
 import snownee.jade.util.Color;
 
 public class OverlayRenderer {
@@ -63,15 +62,11 @@ public class OverlayRenderer {
 		if (mc.level == null)
 			return false;
 
-		if (!ClientProxy.shouldShowWithOverlay(mc, mc.screen)) {
+		if (!ClientPlatformProxy.shouldShowWithOverlay(mc, mc.screen)) {
 			return false;
 		}
 
-		ConfigGeneral general = Jade.CONFIG.get().getGeneral();
-		if (mc.screen instanceof BaseOptionsScreen optionsScreen) {
-			if (!general.previewOverlay && !optionsScreen.forcePreviewOverlay()) {
-				return false;
-			}
+		if (mc.screen instanceof BaseOptionsScreen) {
 			Rect2i position = tooltipRenderer.getPosition();
 			Window window = mc.getWindow();
 			double x = mc.mouseHandler.xpos() * window.getGuiScaledWidth() / window.getScreenWidth();
@@ -84,6 +79,7 @@ public class OverlayRenderer {
 			}
 		}
 
+		ConfigGeneral general = Jade.CONFIG.get().getGeneral();
 		if (mc.options.renderDebug && general.shouldHideFromDebug())
 			return false;
 
@@ -98,16 +94,16 @@ public class OverlayRenderer {
 	}
 
 	/**
-	 * NOTE!!!
-	 * <p>
-	 * Please do NOT replace the whole codes with Mixin.
-	 * It will make me unable to locate bugs.
-	 * A regular plugin can also realize the same features.
-	 * <p>
-	 * Secondly, please notice the license that Jade is using.
-	 * I don't think it is compatible with some open-source licenses.
+	 *  NOTE!!!
+	 *  
+	 *  Please do NOT replace the whole codes with Mixin.
+	 *  It will make me unable to locate bugs.
+	 *  A regular plugin can also realize the same features.
+	 *  
+	 *  Secondly, please notice the license that Jade is using.
+	 *  I don't think it is compatible with some open-source licenses.
 	 */
-	public static void renderOverlay478757(GuiGraphics guiGraphics) {
+	public static void renderOverlay478757(PoseStack poseStack) {
 		shown = false;
 		boolean show = shouldShow();
 		TooltipRenderer tooltipRenderer = WailaTickHandler.instance().tooltipRenderer;
@@ -135,12 +131,11 @@ public class OverlayRenderer {
 
 		ticks += delta;
 		Minecraft.getInstance().getProfiler().push("Jade Overlay");
-		renderOverlay(tooltipRenderer, guiGraphics);
+		renderOverlay(tooltipRenderer, poseStack);
 		Minecraft.getInstance().getProfiler().pop();
 	}
 
-	public static void renderOverlay(TooltipRenderer tooltip, GuiGraphics guiGraphics) {
-		PoseStack matrixStack = guiGraphics.pose();
+	public static void renderOverlay(TooltipRenderer tooltip, PoseStack matrixStack) {
 		matrixStack.pushPose();
 
 		Rect2i position = tooltip.getPosition();
@@ -153,7 +148,7 @@ public class OverlayRenderer {
 
 		BossBarOverlapMode mode = Jade.CONFIG.get().getGeneral().getBossBarOverlapMode();
 		if (mode == BossBarOverlapMode.PUSH_DOWN) {
-			Rect2i rect = ClientProxy.getBossBarRect();
+			Rect2i rect = ClientPlatformProxy.getBossBarRect();
 			if (rect != null) {
 				int tw = position.getWidth();
 				int th = position.getHeight();
@@ -189,14 +184,13 @@ public class OverlayRenderer {
 		colorSetting.gradientStart = gradientStartRaw;
 		colorSetting.gradientEnd = gradientEndRaw;
 		for (JadeBeforeRenderCallback callback : WailaClientRegistration.INSTANCE.beforeRenderCallback.callbacks()) {
-			if (callback.beforeRender(tooltip.getTooltip(), morphRect, guiGraphics, ObjectDataCenter.get(), colorSetting)) {
+			if (callback.beforeRender(tooltip.getTooltip(), morphRect, matrixStack, ObjectDataCenter.get(), colorSetting)) {
 				matrixStack.popPose();
 				return;
 			}
 		}
 
-		float z = Minecraft.getInstance().screen == null ? 1 : 100;
-		matrixStack.translate(morphRect.getX(), morphRect.getY(), z);
+		matrixStack.translate(morphRect.getX(), morphRect.getY(), 1);
 
 		float scale = overlay.getOverlayScale();
 		Window window = Minecraft.getInstance().getWindow();
@@ -213,22 +207,22 @@ public class OverlayRenderer {
 		boolean doDefault = true;
 		colorSetting.alpha *= alpha;
 		for (JadeRenderBackgroundCallback callback : WailaClientRegistration.INSTANCE.renderBackgroundCallback.callbacks()) {
-			if (callback.onRender(tooltip, morphRect, guiGraphics, ObjectDataCenter.get(), colorSetting)) {
+			if (callback.onRender(tooltip, morphRect, matrixStack, ObjectDataCenter.get(), colorSetting)) {
 				doDefault = false;
 				break;
 			}
 		}
 		if (doDefault && colorSetting.alpha > 0) {
-			drawTooltipBox(guiGraphics, 0, 0, morphRect.getWidth(), morphRect.getHeight(), IConfigOverlay.applyAlpha(colorSetting.backgroundColor, colorSetting.alpha), IConfigOverlay.applyAlpha(colorSetting.gradientStart, colorSetting.alpha), IConfigOverlay.applyAlpha(colorSetting.gradientEnd, colorSetting.alpha), overlay.getSquare());
+			drawTooltipBox(matrixStack, 0, 0, morphRect.getWidth(), morphRect.getHeight(), IConfigOverlay.applyAlpha(colorSetting.backgroundColor, colorSetting.alpha), IConfigOverlay.applyAlpha(colorSetting.gradientStart, colorSetting.alpha), IConfigOverlay.applyAlpha(colorSetting.gradientEnd, colorSetting.alpha), overlay.getSquare());
 		}
 
 		RenderSystem.enableBlend();
 		RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-		tooltip.draw(guiGraphics);
+		tooltip.draw(matrixStack);
 		RenderSystem.disableBlend();
 
 		WailaClientRegistration.INSTANCE.afterRenderCallback.call(callback -> {
-			callback.afterRender(tooltip.getTooltip(), morphRect, guiGraphics, ObjectDataCenter.get());
+			callback.afterRender(tooltip.getTooltip(), morphRect, matrixStack, ObjectDataCenter.get());
 		});
 
 		RenderSystem.enableDepthTest();
@@ -261,22 +255,22 @@ public class OverlayRenderer {
 		}
 	}
 
-	public static void drawTooltipBox(GuiGraphics guiGraphics, int x, int y, int w, int h, int bg, int grad1, int grad2, boolean square) {
+	public static void drawTooltipBox(PoseStack matrixStack, int x, int y, int w, int h, int bg, int grad1, int grad2, boolean square) {
 		if (!square) {
 			w -= 2;
 			h -= 2;
 		}
-		DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x + 1, y + 1, w - 2, h - 2, bg, bg);//center
+		DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x + 1, y + 1, w - 2, h - 2, bg, bg);//center
 		if (!square) {
-			DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x, y - 1, w, 1, bg, bg);
-			DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x, y + h, w, 1, bg, bg);
-			DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x - 1, y, 1, h, bg, bg);
-			DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x + w, y, 1, h, bg, bg);
+			DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x, y - 1, w, 1, bg, bg);
+			DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x, y + h, w, 1, bg, bg);
+			DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x - 1, y, 1, h, bg, bg);
+			DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x + w, y, 1, h, bg, bg);
 		}
-		DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x, y + 1, 1, h - 2, grad1, grad2);
-		DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x + w - 1, y + 1, 1, h - 2, grad1, grad2);
-		DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x, y, w, 1, grad1, grad1);
-		DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x, y + h - 1, w, 1, grad2, grad2);
+		DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x, y + 1, 1, h - 2, grad1, grad2);
+		DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x + w - 1, y + 1, 1, h - 2, grad1, grad2);
+		DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x, y, w, 1, grad1, grad1);
+		DisplayHelper.INSTANCE.drawGradientRect(matrixStack, x, y + h - 1, w, 1, grad2, grad2);
 	}
 
 	public static void updateTheme() {

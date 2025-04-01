@@ -3,7 +3,7 @@ package snownee.jade.test;
 import java.util.List;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -28,7 +28,7 @@ public enum ExampleEnergyStorageProvider
 	public List<ClientViewGroup<EnergyView>> getClientGroups(Accessor<?> accessor, List<ViewGroup<CompoundTag>> groups) {
 		return ClientViewGroup.map(groups, tag -> EnergyView.read(tag, "RF"), (group, clientGroup) -> {
 			if (group.id != null) {
-				clientGroup.title = Component.literal(group.id);
+				clientGroup.title = new TextComponent(group.id);
 				clientGroup.bgColor = 0x5511AA11;
 			} else {
 				clientGroup.progressColor = 0xFFCC1111;

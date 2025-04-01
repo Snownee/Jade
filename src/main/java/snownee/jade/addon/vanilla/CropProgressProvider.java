@@ -1,7 +1,7 @@
 package snownee.jade.addon.vanilla;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -40,8 +40,9 @@ public enum CropProgressProvider implements IBlockComponentProvider {
 		BlockState state = accessor.getBlockState();
 		Block block = state.getBlock();
 
-		if (block instanceof CropBlock crop) {
-			addMaturityTooltip(tooltip, crop.getAge(state) / (float) crop.getMaxAge());
+		if (block instanceof CropBlock) {
+			CropBlock crop = (CropBlock) block;
+			addMaturityTooltip(tooltip, state.getValue(crop.getAgeProperty()) / (float) crop.getMaxAge());
 		} else if (state.hasProperty(BlockStateProperties.AGE_7)) {
 			addMaturityTooltip(tooltip, state.getValue(BlockStateProperties.AGE_7) / 7F);
 		} else if (state.hasProperty(BlockStateProperties.AGE_2)) {
@@ -56,9 +57,9 @@ public enum CropProgressProvider implements IBlockComponentProvider {
 	private static void addMaturityTooltip(ITooltip tooltip, float growthValue) {
 		growthValue *= 100.0F;
 		if (growthValue < 100.0F)
-			tooltip.add(Component.translatable("tooltip.jade.crop_growth", String.format("%.0f%%", growthValue)));
+			tooltip.add(new TranslatableComponent("tooltip.jade.crop_growth", String.format("%.0f%%", growthValue)));
 		else
-			tooltip.add(Component.translatable("tooltip.jade.crop_growth", Component.translatable("tooltip.jade.crop_mature").withStyle(ChatFormatting.GREEN)));
+			tooltip.add(new TranslatableComponent("tooltip.jade.crop_growth", new TranslatableComponent("tooltip.jade.crop_mature").withStyle(ChatFormatting.GREEN)));
 	}
 
 	@Override

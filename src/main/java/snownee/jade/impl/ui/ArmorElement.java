@@ -2,9 +2,10 @@ package snownee.jade.impl.ui;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec2;
@@ -40,11 +41,11 @@ public class ArmorElement extends Element {
 	}
 
 	@Override
-	public void render(GuiGraphics guiGraphics, float x, float y, float maxX, float maxY) {
+	public void render(PoseStack matrixStack, float x, float y, float maxX, float maxY) {
 		if (armor > PluginConfig.INSTANCE.getInt(Identifiers.MC_ENTITY_ARMOR_MAX_FOR_RENDER)) {
-			DisplayHelper.renderIcon(guiGraphics, x, y, 8, 8, IconUI.ARMOR);
+			DisplayHelper.renderIcon(matrixStack, x, y, 8, 8, IconUI.ARMOR);
 			String text = "  " + DisplayHelper.dfCommas.format(armor);
-			DisplayHelper.INSTANCE.drawText(guiGraphics, text, x + 8, y, OverlayRenderer.normalTextColorRaw);
+			DisplayHelper.INSTANCE.drawText(matrixStack, text, x + 8, y, OverlayRenderer.normalTextColorRaw);
 		} else {
 			float armor = this.armor * 0.5F;
 			int maxHearts = PluginConfig.INSTANCE.getInt(Identifiers.MC_ENTITY_HEALTH_ICONS_PER_LINE);
@@ -53,17 +54,17 @@ public class ArmorElement extends Element {
 			int xOffset = 0;
 			for (int i = 1; i <= armorCount; i++) {
 				if (i <= Mth.floor(armor)) {
-					DisplayHelper.renderIcon(guiGraphics, x + xOffset, y, 8, 8, IconUI.ARMOR);
+					DisplayHelper.renderIcon(matrixStack, x + xOffset, y, 8, 8, IconUI.ARMOR);
 					xOffset += 8;
 				}
 
 				if ((i > armor) && (i < armor + 1)) {
-					DisplayHelper.renderIcon(guiGraphics, x + xOffset, y, 8, 8, IconUI.HALF_ARMOR);
+					DisplayHelper.renderIcon(matrixStack, x + xOffset, y, 8, 8, IconUI.HALF_ARMOR);
 					xOffset += 8;
 				}
 
 				if (i >= armor + 1) {
-					DisplayHelper.renderIcon(guiGraphics, x + xOffset, y, 8, 8, IconUI.EMPTY_ARMOR);
+					DisplayHelper.renderIcon(matrixStack, x + xOffset, y, 8, 8, IconUI.EMPTY_ARMOR);
 					xOffset += 8;
 				}
 

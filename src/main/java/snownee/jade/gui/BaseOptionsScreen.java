@@ -1,135 +1,111 @@
 package snownee.jade.gui;
 
-import java.util.Objects;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.CycleButton;
-import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import snownee.jade.Jade;
-import snownee.jade.gui.config.BelowOrAboveListEntryTooltipPositioner;
-import snownee.jade.gui.config.NotUglyEditBox;
-import snownee.jade.gui.config.OptionsList;
-import snownee.jade.gui.config.OptionsNav;
-import snownee.jade.gui.config.value.OptionValue;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.util.FormattedCharSequence;
+import snownee.jade.JadeClient;
+import snownee.jade.gui.config.WailaOptionsList;
 
 public abstract class BaseOptionsScreen extends Screen {
 
 	private final Screen parent;
+	private final Runnable saver;
+	private final Runnable canceller;
+	protected WailaOptionsList options;
 	private final Set<GuiEventListener> entryWidgets = Sets.newIdentityHashSet();
 	public Button saveButton;
-	protected Runnable saver;
-	protected Runnable canceller;
-	protected OptionsList options;
-	protected OptionsNav optionsNav;
-	private NotUglyEditBox searchBox;
 
-	public BaseOptionsScreen(Screen parent, Component title) {
+	public BaseOptionsScreen(Screen parent, Component title, Runnable saver, Runnable canceller) {
 		super(title);
 
 		this.parent = parent;
+		this.saver = saver;
+		this.canceller = canceller;
+	}
+
+	public BaseOptionsScreen(Screen parent, String title, Runnable saver, Runnable canceller) {
+		this(parent, WailaOptionsList.Entry.makeTitle(title), saver, canceller);
 	}
 
 	public BaseOptionsScreen(Screen parent, String title) {
-		this(parent, OptionsList.Entry.makeTitle(title));
+		this(parent, title, null, null);
 	}
 
 	@Override
 	protected void init() {
-		Objects.requireNonNull(minecraft);
-		double scroll = options == null ? 0 : options.getScrollAmount();
 		super.init();
 		entryWidgets.clear();
-		if (options != null)
-			options.removed();
 		options = createOptions();
-		options.setLeftPos(120);
-		optionsNav = new OptionsNav(options, 120, height, 18, height - 32, 18);
-		searchBox = new NotUglyEditBox(font, 0, 0, 120, 18, searchBox, Component.translatable("gui.jade.search"));
-		searchBox.setHint(Component.translatable("gui.jade.search.hint"));
-		searchBox.responder = s -> {
-			options.updateSearch(s);
-			optionsNav.refresh();
-		};
-		searchBox.paddingLeft = 12;
-		searchBox.paddingTop = 6;
-		searchBox.paddingRight = 18;
-		addRenderableWidget(optionsNav);
-		addRenderableWidget(searchBox);
 		addRenderableWidget(options);
 
-		searchBox.responder.accept(searchBox.getValue());
-		options.setScrollAmount(scroll);
-
-		saveButton = addRenderableWidget(Button.builder(Component.translatable("gui.jade.save_and_quit").withStyle(style -> style.withColor(0xFFB9F6CA)), w -> {
-			options.save();
-			saver.run();
-			minecraft.setScreen(parent);
-		}).bounds(width - 100, height - 25, 90, 20).build());
-		if (canceller != null) {
-			addRenderableWidget(Button.builder(CommonComponents.GUI_CANCEL, w -> {
-				onClose();
-			}).bounds(saveButton.getX() - 95, height - 25, 90, 20).build());
+		if (saver != null && canceller != null) {
+			saveButton = addRenderableWidget(new Button(width / 2 - 100, height - 25, 100, 20, new TranslatableComponent("gui.done"), w -> {
+				options.save();
+				saver.run();
+				minecraft.setScreen(parent);
+			}));
+			addRenderableWidget(new Button(width / 2 + 5, height - 25, 100, 20, new TranslatableComponent("gui.cancel"), w -> {
+				canceller.run();
+				minecraft.setScreen(parent);
+			}));
+		} else {
+			saveButton = addRenderableWidget(new Button(width / 2 - 50, height - 25, 100, 20, new TranslatableComponent("gui.done"), w -> {
+				options.save();
+				minecraft.setScreen(parent);
+			}));
 		}
 
 		options.updateSaveState();
-
-		if (minecraft.level != null) {
-			CycleButton<Boolean> previewButton = CycleButton.booleanBuilder(OptionsList.OPTION_ON, OptionsList.OPTION_OFF).create(10, saveButton.getY(), 85, 20, Component.translatable("gui.jade.preview"), (button, value) -> {
-				Jade.CONFIG.get().getGeneral().previewOverlay = value;
-				saver.run();
-			});
-			previewButton.setValue(Jade.CONFIG.get().getGeneral().previewOverlay);
-			addRenderableWidget(previewButton);
-		}
 	}
 
 	@Override
-	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-		renderBackground(guiGraphics);
-		super.render(guiGraphics, mouseX, mouseY, partialTicks);
+	public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+		renderBackground(matrixStack);
+		super.render(matrixStack, mouseX, mouseY, partialTicks);
 
-		OptionsList.Entry entry = options.isMouseOver(mouseX, mouseY) ? options.getEntryAt(mouseX, mouseY) : null;
-		if (entry != null) {
+		if (options.serverFeatures > 0) {
+			Component component = JadeClient.format("gui.jade.server_features", options.serverFeatures);
+			font.drawShadow(matrixStack, component, 4, height - 18, ChatFormatting.GRAY.getColor());
+			if (mouseY >= height - 18 && mouseY <= height - 18 + font.lineHeight && mouseX >= 4 && mouseX <= 4 + font.width(component)) {
+				renderTooltip(matrixStack, font.split(JadeClient.format("gui.jade.server_features.tip", options.serverFeatures), 300), mouseX, mouseY);
+			}
+		}
+
+		if (options.getSelected() != null && mouseY >= 32 && mouseY <= height - 32) {
+			WailaOptionsList.Entry entry = options.getSelected();
 			if (!Strings.isNullOrEmpty(entry.getDescription())) {
 				int valueX = entry.getTextX(options.getRowWidth());
 				if (mouseX >= valueX && mouseX < valueX + entry.getTextWidth()) {
-					setTooltipForNextRenderPass(Tooltip.create(Component.literal(entry.getDescription())), new BelowOrAboveListEntryTooltipPositioner(options, entry), false);
-				}
-			}
-			if (entry instanceof OptionValue<?> optionValue && optionValue.serverFeature) {
-				int x = entry.getTextX(options.getRowWidth()) + entry.getTextWidth() + 1;
-				int y = options.getRowTop(options.children().indexOf(entry)) + 7;
-				if (mouseX >= x && mouseX < x + 4 && mouseY >= y && mouseY < y + 4) {
-					setTooltipForNextRenderPass(Tooltip.create(Component.translatable("gui.jade.server_feature")), new BelowOrAboveListEntryTooltipPositioner(options, entry), false);
+					List<FormattedCharSequence> tooltip = font.split(new TextComponent(entry.getDescription()), 200);
+					matrixStack.pushPose();
+					matrixStack.translate(0, 0, 100);
+					renderTooltip(matrixStack, tooltip, mouseX, mouseY);
+					RenderSystem.enableDepthTest();
+					matrixStack.popPose();
 				}
 			}
 		}
 	}
 
-	@Override
-	public void tick() {
-		if (searchBox != null) {
-			searchBox.tick();
-		}
-	}
-
-	public abstract OptionsList createOptions();
+	public abstract WailaOptionsList createOptions();
 
 	@Override
 	public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
-		if (optionsNav.isMouseOver(mouseX, mouseY))
-			return optionsNav.mouseScrolled(mouseX, mouseY, delta);
 		return options.mouseScrolled(mouseX, mouseY, delta);
 	}
 
@@ -137,12 +113,8 @@ public abstract class BaseOptionsScreen extends Screen {
 	public void onClose() {
 		if (canceller != null)
 			canceller.run();
-		Objects.requireNonNull(minecraft).setScreen(parent);
-	}
-
-	@Override
-	public void removed() {
-		options.removed();
+		options.onClose();
+		super.onClose();
 	}
 
 	public <T extends GuiEventListener & NarratableEntry> T addEntryWidget(T widget) {
@@ -170,11 +142,6 @@ public abstract class BaseOptionsScreen extends Screen {
 	}
 
 	@Override
-	public boolean shouldCloseOnEsc() {
-		return options.selectedKey == null;
-	}
-
-	@Override
 	public Optional<GuiEventListener> getChildAt(double mouseX, double mouseY) {
 		boolean onList = options != null && options.isMouseOver(mouseX, mouseY);
 		for (GuiEventListener guieventlistener : children()) {
@@ -187,15 +154,5 @@ public abstract class BaseOptionsScreen extends Screen {
 		}
 
 		return Optional.empty();
-	}
-
-	public boolean forcePreviewOverlay() {
-		Objects.requireNonNull(minecraft);
-		if (!isDragging() || options == null)
-			return false;
-		OptionsList.Entry entry = options.getSelected();
-		if (entry == null || entry.getFirstWidget() == null)
-			return false;
-		return options.forcePreview.contains(entry);
 	}
 }

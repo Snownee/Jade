@@ -2,7 +2,8 @@ package snownee.jade.api.ui;
 
 import org.jetbrains.annotations.Nullable;
 
-import net.minecraft.client.gui.GuiGraphics;
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec2;
 
@@ -30,13 +31,13 @@ public interface IElement {
 	/**
 	 * Draw method for the renderer.
 	 *
-	 * @param guiGraphics
+	 * @param matrixStack
 	 * @param x
 	 * @param y
 	 * @param maxX Max width this element can expand to
 	 * @param maxY Max height this element can expand to
 	 */
-	void render(GuiGraphics guiGraphics, float x, float y, float maxX, float maxY);
+	void render(PoseStack matrixStack, float x, float y, float maxX, float maxY);
 
 	IElement align(Align align);
 

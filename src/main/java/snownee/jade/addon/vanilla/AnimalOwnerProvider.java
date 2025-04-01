@@ -3,21 +3,24 @@ package snownee.jade.addon.vanilla;
 import java.util.UUID;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.TamableAnimal;
+import net.minecraft.world.entity.animal.horse.AbstractHorse;
+import net.minecraft.world.level.Level;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
-import snownee.jade.util.CommonProxy;
+import snownee.jade.util.PlatformProxy;
 
-public enum AnimalOwnerProvider implements IEntityComponentProvider, IServerDataProvider<EntityAccessor> {
+public enum AnimalOwnerProvider implements IEntityComponentProvider, IServerDataProvider<Entity> {
 
 	INSTANCE;
 
@@ -31,31 +34,34 @@ public enum AnimalOwnerProvider implements IEntityComponentProvider, IServerData
 			UUID ownerUUID = null;
 			if (entity instanceof OwnableEntity) {
 				ownerUUID = ((OwnableEntity) entity).getOwnerUUID();
+			} else if (entity instanceof AbstractHorse) {
+				ownerUUID = ((AbstractHorse) entity).getOwnerUUID();
 			}
 			if (ownerUUID == null) {
 				return;
 			}
-			name = CommonProxy.getLastKnownUsername(ownerUUID);
+			name = PlatformProxy.getLastKnownUsername(ownerUUID);
 			if (name == null) {
 				name = "???";
 			}
 		}
-		tooltip.add(Component.translatable("jade.owner", name));
+		tooltip.add(new TranslatableComponent("jade.owner", name));
 	}
 
 	@Override
-	public void appendServerData(CompoundTag data, EntityAccessor accessor) {
-		MinecraftServer server = accessor.getLevel().getServer();
-		if (server != null && server.isSingleplayerOwner(accessor.getPlayer().getGameProfile()) && accessor.getEntity() instanceof TamableAnimal) {
+	public void appendServerData(CompoundTag data, ServerPlayer player, Level world, Entity entity, boolean showDetails) {
+		MinecraftServer server = player.getLevel().getServer();
+		if (server != null && server.isSingleplayerOwner(player.getGameProfile()) && entity instanceof TamableAnimal) {
 			return;
 		}
-		Entity entity = accessor.getEntity();
 		UUID ownerUUID = null;
 		if (entity instanceof OwnableEntity) {
 			ownerUUID = ((OwnableEntity) entity).getOwnerUUID();
+		} else if (entity instanceof AbstractHorse) {
+			ownerUUID = ((AbstractHorse) entity).getOwnerUUID();
 		}
 		if (ownerUUID != null) {
-			String name = CommonProxy.getLastKnownUsername(ownerUUID);
+			String name = PlatformProxy.getLastKnownUsername(ownerUUID);
 			if (name != null) {
 				data.putString("OwnerName", name);
 			}

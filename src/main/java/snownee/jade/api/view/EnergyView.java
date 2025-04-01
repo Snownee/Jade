@@ -1,11 +1,13 @@
 package snownee.jade.api.view;
 
+import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import snownee.jade.api.ui.IDisplayHelper;
 
+@Experimental
 public class EnergyView {
 
 	public String current;

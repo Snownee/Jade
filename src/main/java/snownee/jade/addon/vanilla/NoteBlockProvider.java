@@ -8,7 +8,7 @@ import com.google.common.base.Joiner;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.NoteBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -40,7 +40,7 @@ public enum NoteBlockProvider implements IBlockComponentProvider {
 		} else {
 			name = Joiner.on(' ').join(Stream.of(instrument.getSerializedName().replace('_', ' ').split(" ")).map(StringUtils::capitalize).toList());
 		}
-		tooltip.add(Component.translatable("%s %s", name, octave + pitch));
+		tooltip.add(new TranslatableComponent("%s %s", name, octave + pitch));
 	}
 
 	@Override

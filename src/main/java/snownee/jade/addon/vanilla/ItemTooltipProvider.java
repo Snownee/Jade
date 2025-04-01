@@ -9,8 +9,8 @@ import com.mojang.datafixers.util.Either;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
@@ -49,7 +49,7 @@ public enum ItemTooltipProvider implements IEntityComponentProvider {
 			}
 			int width = font.width(text);
 			if (width > maxWidth) {
-				tooltip.add(Component.literal(font.substrByWidth(text, maxWidth - 5).getString() + ".."));
+				tooltip.add(new TextComponent(font.substrByWidth(text, maxWidth - 5).getString() + ".."));
 			} else {
 				tooltip.add(new TextElement(text));
 			}

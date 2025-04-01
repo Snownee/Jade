@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
@@ -20,7 +21,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.reflect.TypeToken;
 
@@ -28,9 +28,11 @@ import net.minecraft.resources.ResourceLocation;
 import snownee.jade.Jade;
 import snownee.jade.api.IToggleableProvider;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.impl.config.entry.ConfigEntry;
-import snownee.jade.util.CommonProxy;
 import snownee.jade.util.JsonConfig;
+import snownee.jade.util.PlatformProxy;
+
 
 public class PluginConfig implements IPluginConfig {
 
@@ -67,13 +69,14 @@ public class PluginConfig implements IPluginConfig {
 		if (provider.isRequired()) {
 			return true;
 		}
-		return get(provider.getUid());
+		return get(provider.getUid(), provider.enabledByDefault());
 	}
 
 	@Override
-	public boolean get(ResourceLocation key) {
-		if (CommonProxy.isPhysicallyClient()) {
-			return (Boolean) getEntry(key).getValue();
+	public boolean get(ResourceLocation key, boolean defaultValue) {
+		if (PlatformProxy.isPhysicallyClient()) {
+			ConfigEntry<?> entry = getEntry(key);
+			return entry == null ? defaultValue : (Boolean) entry.getValue();
 		} else {
 			return Optional.ofNullable(serverConfigs).map($ -> $.getAsJsonObject(key.getNamespace())).map($ -> $.get(key.getPath())).map(JsonElement::getAsBoolean).orElse(false);
 		}
@@ -123,12 +126,12 @@ public class PluginConfig implements IPluginConfig {
 	}
 
 	public File getFile() {
-		boolean client = CommonProxy.isPhysicallyClient();
-		return new File(CommonProxy.getConfigDirectory(), client ? CLIENT_FILE : SERVER_FILE);
+		boolean client = PlatformProxy.isPhysicallyClient();
+		return new File(PlatformProxy.getConfigDirectory(), client ? CLIENT_FILE : SERVER_FILE);
 	}
 
 	public void reload() {
-		boolean client = CommonProxy.isPhysicallyClient();
+		boolean client = PlatformProxy.isPhysicallyClient();
 		File configFile = getFile();
 
 		if (client)
@@ -185,7 +188,7 @@ public class PluginConfig implements IPluginConfig {
 	}
 
 	private void writeConfig(File file, boolean reset) {
-		boolean client = CommonProxy.isPhysicallyClient();
+		boolean client = PlatformProxy.isPhysicallyClient();
 		String json;
 		if (client) {
 			Map<String, Map<String, Object>> config = Maps.newHashMap();
@@ -208,8 +211,19 @@ public class PluginConfig implements IPluginConfig {
 		}
 	}
 
+	@Override
+	public IWailaConfig getWailaConfig() {
+		return Jade.CONFIG.get();
+	}
+
 	public void applyServerConfigs(JsonObject json) {
-		json.keySet().forEach(namespace -> {
+		Set<String> keysSet = null;
+		for (var a: json.entrySet()) {
+			keysSet.add(a.getKey());
+		}
+
+
+		keysSet.forEach(namespace -> {
 			json.getAsJsonObject(namespace).entrySet().forEach(entry -> {
 				ResourceLocation key = new ResourceLocation(namespace, entry.getKey());
 				ConfigEntry<?> configEntry = getEntry(key);

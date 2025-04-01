@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import com.google.common.collect.Sets;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.Jade;
 import snownee.jade.api.IJadeProvider;
@@ -27,7 +27,7 @@ public class WailaExceptionHandler {
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy - HH:mm:ss");
 
 	public static void handleErr(Throwable e, @Nullable IJadeProvider provider, @Nullable ITooltip tooltip) {
-		if (CommonProxy.isDevEnv()) {
+		if (PlatformProxy.isDevEnv()) {
 			ExceptionUtils.rethrow(e);
 			return;
 		}
@@ -50,7 +50,7 @@ public class WailaExceptionHandler {
 			if (modid == null || ResourceLocation.DEFAULT_NAMESPACE.equals(modid)) {
 				modid = Jade.MODID;
 			}
-			tooltip.add(Component.translatable("jade.error", ModIdentification.getModName(modid)).withStyle(ChatFormatting.DARK_RED));
+			tooltip.add(new TranslatableComponent("jade.error", ModIdentification.getModName(modid)).withStyle(ChatFormatting.DARK_RED));
 		}
 	}
 }

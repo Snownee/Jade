@@ -1,32 +1,33 @@
 package snownee.jade.impl;
 
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-
-import org.jetbrains.annotations.Nullable;
-
-import com.google.common.base.Suppliers;
+import java.util.function.Function;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import snownee.jade.Jade;
 import snownee.jade.api.AccessorImpl;
 import snownee.jade.api.BlockAccessor;
-import snownee.jade.api.IServerDataProvider;
-import snownee.jade.util.CommonProxy;
+import snownee.jade.api.IBlockComponentProvider;
+import snownee.jade.api.IJadeProvider;
+import snownee.jade.api.ITooltip;
+import snownee.jade.api.ui.IElement;
+import snownee.jade.impl.config.PluginConfig;
+import snownee.jade.impl.ui.ElementHelper;
+import snownee.jade.impl.ui.ItemStackElement;
+import snownee.jade.overlay.RayTracing;
+import snownee.jade.util.ClientPlatformProxy;
 import snownee.jade.util.WailaExceptionHandler;
 
 /**
@@ -35,77 +36,14 @@ import snownee.jade.util.WailaExceptionHandler;
 public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements BlockAccessor {
 
 	private final BlockState blockState;
-	@Nullable
-	private final Supplier<BlockEntity> blockEntity;
+	private final BlockEntity blockEntity;
 	private ItemStack fakeBlock;
 
 	private BlockAccessorImpl(Builder builder) {
-		super(builder.level, builder.player, builder.serverData, () -> builder.hit, builder.connected, builder.showDetails);
+		super(builder.level, builder.player, builder.serverData, builder.hit, builder.connected, builder.showDetails);
 		blockState = builder.blockState;
 		blockEntity = builder.blockEntity;
 		fakeBlock = builder.fakeBlock;
-	}
-
-	public static void handleRequest(FriendlyByteBuf buf, ServerPlayer player, Consumer<Runnable> executor, Consumer<CompoundTag> responseSender) {
-		BlockAccessor accessor;
-		try {
-			accessor = fromNetwork(buf, player);
-		} catch (Exception e) {
-			WailaExceptionHandler.handleErr(e, null, null);
-			return;
-		}
-		executor.accept(() -> {
-			BlockPos pos = accessor.getPosition();
-			ServerLevel world = player.serverLevel();
-			if (pos.distSqr(player.blockPosition()) > Jade.MAX_DISTANCE_SQR || !world.isLoaded(pos))
-				return;
-
-			BlockEntity tile = accessor.getBlockEntity();
-			if (tile == null)
-				return;
-
-			List<IServerDataProvider<BlockAccessor>> providers = WailaCommonRegistration.INSTANCE.getBlockNBTProviders(tile);
-			if (providers.isEmpty())
-				return;
-
-			CompoundTag tag = accessor.getServerData();
-			for (IServerDataProvider<BlockAccessor> provider : providers) {
-				try {
-					provider.appendServerData(tag, accessor);
-				} catch (Exception e) {
-					WailaExceptionHandler.handleErr(e, provider, null);
-				}
-			}
-
-			tag.putInt("x", pos.getX());
-			tag.putInt("y", pos.getY());
-			tag.putInt("z", pos.getZ());
-			tag.putString("id", CommonProxy.getId(tile.getType()).toString());
-			responseSender.accept(tag);
-		});
-	}
-
-	public static BlockAccessor fromNetwork(FriendlyByteBuf buf, ServerPlayer player) {
-		Builder builder = new Builder();
-		builder.level(player.level());
-		builder.player(player);
-		builder.showDetails(buf.readBoolean());
-		builder.hit(buf.readBlockHitResult());
-		builder.blockState(Block.stateById(buf.readVarInt()));
-		builder.fakeBlock(buf.readItem());
-		if (builder.blockState.hasBlockEntity()) {
-			// you can only get block entity from the main thread
-			builder.blockEntity(Suppliers.memoize(() -> builder.level.getBlockEntity(builder.hit.getBlockPos())));
-		}
-		return builder.build();
-	}
-
-	@Override
-	public void toNetwork(FriendlyByteBuf buf) {
-		buf.writeBoolean(showDetails());
-		buf.writeBlockHitResult(getHitResult());
-		buf.writeVarInt(Block.getId(blockState));
-		buf.writeItem(fakeBlock);
 	}
 
 	@Override
@@ -120,7 +58,7 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 
 	@Override
 	public BlockEntity getBlockEntity() {
-		return blockEntity == null ? null : blockEntity.get();
+		return blockEntity;
 	}
 
 	@Override
@@ -135,7 +73,83 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 
 	@Override
 	public ItemStack getPickedResult() {
-		return CommonProxy.getBlockPickedResult(blockState, getPlayer(), getHitResult());
+		return ClientPlatformProxy.getBlockPickedResult(blockState, getPlayer(), getHitResult());
+	}
+
+	@Override
+	public IElement _getIcon() {
+		if (blockState.isAir())
+			return null;
+		IElement icon = null;
+
+		if (isFakeBlock()) {
+			icon = ItemStackElement.of(getFakeBlock());
+		} else {
+			ItemStack pick = getPickedResult();
+			if (!pick.isEmpty())
+				icon = ItemStackElement.of(pick);
+		}
+
+		if (RayTracing.isEmptyElement(icon) && getBlock().asItem() != Items.AIR) {
+			icon = ItemStackElement.of(new ItemStack(getBlock()));
+		}
+
+		if (RayTracing.isEmptyElement(icon) && getBlock() instanceof LiquidBlock) {
+			icon = ClientPlatformProxy.elementFromLiquid((LiquidBlock) getBlock());
+		}
+
+		for (IBlockComponentProvider provider : WailaClientRegistration.INSTANCE.getBlockIconProviders(getBlock(), PluginConfig.INSTANCE::get)) {
+			try {
+				IElement element = provider.getIcon(this, PluginConfig.INSTANCE, icon);
+				if (!RayTracing.isEmptyElement(element))
+					icon = element;
+			} catch (Throwable e) {
+				WailaExceptionHandler.handleErr(e, provider, null);
+			}
+		}
+		return icon;
+	}
+
+	@Override
+	public void _gatherComponents(Function<IJadeProvider, ITooltip> tooltipProvider) {
+		List<IBlockComponentProvider> providers = WailaClientRegistration.INSTANCE.getBlockProviders(getBlock(), PluginConfig.INSTANCE::get);
+		for (IBlockComponentProvider provider : providers) {
+			ITooltip tooltip = tooltipProvider.apply(provider);
+			try {
+				ElementHelper.INSTANCE.setCurrentUid(provider.getUid());
+				provider.appendTooltip(tooltip, this, PluginConfig.INSTANCE);
+			} catch (Throwable e) {
+				WailaExceptionHandler.handleErr(e, provider, tooltip);
+			} finally {
+				ElementHelper.INSTANCE.setCurrentUid(null);
+			}
+		}
+	}
+
+	@Override
+	public boolean shouldDisplay() {
+		return Jade.CONFIG.get().getGeneral().getDisplayBlocks();
+	}
+
+	@Override
+	public void _requestData() {
+		ClientPlatformProxy.requestBlockData(blockEntity, showDetails());
+	}
+
+	@Override
+	public boolean shouldRequestData() {
+		if (blockEntity == null)
+			return false;
+		return !WailaCommonRegistration.INSTANCE.getBlockNBTProviders(blockEntity).isEmpty();
+	}
+
+	@Override
+	public boolean _verifyData(CompoundTag serverData) {
+		int x = serverData.getInt("x");
+		int y = serverData.getInt("y");
+		int z = serverData.getInt("z");
+		BlockPos hitPos = getPosition();
+		return x == hitPos.getX() && y == hitPos.getY() && z == hitPos.getZ();
 	}
 
 	@Override
@@ -166,7 +180,7 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 		private boolean showDetails;
 		private BlockHitResult hit;
 		private BlockState blockState = Blocks.AIR.defaultBlockState();
-		private Supplier<BlockEntity> blockEntity;
+		private BlockEntity blockEntity;
 		private ItemStack fakeBlock = ItemStack.EMPTY;
 
 		@Override
@@ -212,7 +226,7 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 		}
 
 		@Override
-		public Builder blockEntity(Supplier<BlockEntity> blockEntity) {
+		public Builder blockEntity(BlockEntity blockEntity) {
 			this.blockEntity = blockEntity;
 			return this;
 		}
@@ -231,7 +245,7 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 			connected = accessor.isServerConnected();
 			showDetails = accessor.showDetails();
 			hit = accessor.getHitResult();
-			blockEntity = accessor::getBlockEntity;
+			blockEntity = accessor.getBlockEntity();
 			blockState = accessor.getBlockState();
 			fakeBlock = accessor.getFakeBlock();
 			return this;

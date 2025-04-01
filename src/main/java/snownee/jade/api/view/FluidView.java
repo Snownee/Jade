@@ -2,22 +2,26 @@ package snownee.jade.api.view;
 
 import java.util.Objects;
 
+import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.Nullable;
 
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
+import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
 import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElementHelper;
-import snownee.jade.util.CommonProxy;
 import snownee.jade.util.FluidTextHelper;
 
+@Experimental
 public class FluidView {
 
-	public static final Component EMPTY_FLUID = Component.translatable("jade.fluid.empty");
+	public static final Component EMPTY_FLUID = new TranslatableComponent("jade.fluid.empty");
 
 	public IElement overlay;
 	public String current;
@@ -39,12 +43,12 @@ public class FluidView {
 		if (capacity <= 0) {
 			return null;
 		}
-		Fluid fluid = BuiltInRegistries.FLUID.get(new ResourceLocation(tag.getString("fluid")));
+		Fluid fluid = Registry.FLUID.get(new ResourceLocation(tag.getString("fluid")));
 		CompoundTag nbt = tag.contains("tag") ? tag.getCompound("tag") : null;
 		long amount = tag.getLong("amount");
 		JadeFluidObject fluidObject = JadeFluidObject.of(fluid, amount, nbt);
 		FluidView fluidView = new FluidView(IElementHelper.get().fluid(fluidObject));
-		fluidView.fluidName = CommonProxy.getFluidName(fluidObject);
+		fluidView.fluidName = FluidVariantRendering.getName(FluidVariant.of(fluid, nbt));
 		if (amount <= 0) {
 			fluidView.overrideText = EMPTY_FLUID;
 		}
@@ -59,7 +63,7 @@ public class FluidView {
 		if (capacity <= 0) {
 			return tag;
 		}
-		tag.putString("fluid", BuiltInRegistries.FLUID.getKey(fluidObject.getType()).toString());
+		tag.putString("fluid", Registry.FLUID.getKey(fluidObject.getType()).toString());
 		tag.putLong("amount", fluidObject.getAmount());
 		tag.putLong("capacity", capacity);
 		if (fluidObject.getTag() != null) {

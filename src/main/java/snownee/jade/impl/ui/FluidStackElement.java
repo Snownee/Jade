@@ -4,7 +4,8 @@ import java.util.Objects;
 
 import org.jetbrains.annotations.Nullable;
 
-import net.minecraft.client.gui.GuiGraphics;
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.ui.Element;
@@ -26,9 +27,9 @@ public class FluidStackElement extends Element {
 	}
 
 	@Override
-	public void render(GuiGraphics guiGraphics, float x, float y, float maxX, float maxY) {
+	public void render(PoseStack matrixStack, float x, float y, float maxX, float maxY) {
 		Vec2 size = getCachedSize();
-		DisplayHelper.INSTANCE.drawFluid(guiGraphics, x, y, fluid, size.x, size.y, JadeFluidObject.bucketVolume());
+		DisplayHelper.INSTANCE.drawFluid(matrixStack, x, y, fluid, size.x, size.y, JadeFluidObject.bucketVolume());
 	}
 
 	@Override
