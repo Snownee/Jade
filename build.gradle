@@ -149,7 +149,7 @@ unifiedPublishing {
         changelog = file("CHANGELOG.md").exists() ? file("CHANGELOG.md").text : "" // Optional, in markdown format
         releaseType = project.release_type // Optional, use "release", "beta" or "alpha"
         gameVersions = [project.archive_minecraft_version]
-        gameLoaders = ["fabric", "quilt"]
+        gameLoaders = ["fabric"]
 
         mainPublication tasks.remapJar // Declares the publicated jar
         secondaryPublications.builtBy(tasks.apiJar)
@@ -158,6 +158,7 @@ unifiedPublishing {
             curseforge {
                 token = System.getenv("CURSE_TOKEN")
                 id = "324717"
+                gameVersions = ["1.20.5-Snapshot"]
 
                 relations { // Optional, Inferred from the relations above by default
                     optional "jei"

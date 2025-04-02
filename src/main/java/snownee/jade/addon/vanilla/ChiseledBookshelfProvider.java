@@ -71,6 +71,7 @@ public enum ChiseledBookshelfProvider implements IBlockComponentProvider, Stream
 					DataComponents.STORED_ENCHANTMENTS,
 					Item.TooltipContext.of(accessor.getLevel()),
 					tooltipDisplay,
+					accessor.getPlayer(),
 					list::add,
 					TooltipFlag.NORMAL);
 			tooltip.addAll(list);

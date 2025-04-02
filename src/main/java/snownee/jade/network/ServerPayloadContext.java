@@ -8,7 +8,7 @@ import net.minecraft.server.level.ServerPlayer;
 
 public interface ServerPayloadContext {
 	default void execute(Runnable runnable) {
-		Objects.requireNonNull(player().getServer()).execute(runnable);
+		Objects.requireNonNull(player().theGame().server()).execute(runnable);
 	}
 
 	default void sendPacket(CustomPacketPayload payload) {
