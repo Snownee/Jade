@@ -48,9 +48,18 @@ import net.minecraft.world.level.block.SignBlock;
 import net.minecraft.world.level.block.SpawnerBlock;
 import net.minecraft.world.level.block.TntBlock;
 import net.minecraft.world.level.block.TrialSpawnerBlock;
+import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
+import net.minecraft.world.level.block.entity.BeehiveBlockEntity;
+import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
 import net.minecraft.world.level.block.entity.CalibratedSculkSensorBlockEntity;
 import net.minecraft.world.level.block.entity.CampfireBlockEntity;
+import net.minecraft.world.level.block.entity.ChiseledBookShelfBlockEntity;
+import net.minecraft.world.level.block.entity.CommandBlockEntity;
 import net.minecraft.world.level.block.entity.ComparatorBlockEntity;
+import net.minecraft.world.level.block.entity.HopperBlockEntity;
+import net.minecraft.world.level.block.entity.JukeboxBlockEntity;
+import net.minecraft.world.level.block.entity.LecternBlockEntity;
+import net.minecraft.world.level.block.entity.TrialSpawnerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import snownee.jade.JadeClient;
@@ -106,17 +115,17 @@ public class VanillaPlugin implements IWailaPlugin {
 
 	@Override
 	public void register(IWailaCommonRegistration registration) {
-		registration.registerBlockDataProvider(BrewingStandProvider.INSTANCE, BrewingStandBlock.class);
-		registration.registerBlockDataProvider(BeehiveProvider.INSTANCE, BeehiveBlock.class);
-		registration.registerBlockDataProvider(CommandBlockProvider.INSTANCE, CommandBlock.class);
-		registration.registerBlockDataProvider(HopperLockProvider.INSTANCE, HopperBlock.class);
-		registration.registerBlockDataProvider(JukeboxProvider.INSTANCE, JukeboxBlock.class);
-		registration.registerBlockDataProvider(LecternProvider.INSTANCE, LecternBlock.class);
+		registration.registerBlockDataProvider(BrewingStandProvider.INSTANCE, BrewingStandBlockEntity.class);
+		registration.registerBlockDataProvider(BeehiveProvider.INSTANCE, BeehiveBlockEntity.class);
+		registration.registerBlockDataProvider(CommandBlockProvider.INSTANCE, CommandBlockEntity.class);
+		registration.registerBlockDataProvider(HopperLockProvider.INSTANCE, HopperBlockEntity.class);
+		registration.registerBlockDataProvider(JukeboxProvider.INSTANCE, JukeboxBlockEntity.class);
+		registration.registerBlockDataProvider(LecternProvider.INSTANCE, LecternBlockEntity.class);
 		registration.registerBlockDataProvider(RedstoneProvider.INSTANCE, ComparatorBlockEntity.class);
 		registration.registerBlockDataProvider(RedstoneProvider.INSTANCE, CalibratedSculkSensorBlockEntity.class);
-		registration.registerBlockDataProvider(FurnaceProvider.INSTANCE, AbstractFurnaceBlock.class);
-		registration.registerBlockDataProvider(ChiseledBookshelfProvider.INSTANCE, ChiseledBookShelfBlock.class);
-		registration.registerBlockDataProvider(MobSpawnerCooldownProvider.INSTANCE, TrialSpawnerBlock.class);
+		registration.registerBlockDataProvider(FurnaceProvider.INSTANCE, AbstractFurnaceBlockEntity.class);
+		registration.registerBlockDataProvider(ChiseledBookshelfProvider.INSTANCE, ChiseledBookShelfBlockEntity.class);
+		registration.registerBlockDataProvider(MobSpawnerCooldownProvider.INSTANCE, TrialSpawnerBlockEntity.class);
 
 		registration.registerEntityDataProvider(AnimalOwnerProvider.INSTANCE, Entity.class);
 		registration.registerEntityDataProvider(StatusEffectsProvider.INSTANCE, LivingEntity.class);
