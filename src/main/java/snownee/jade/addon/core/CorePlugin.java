@@ -34,6 +34,7 @@ public class CorePlugin implements IWailaPlugin {
 		registration.registerBlockComponent(ModNameProvider.getBlock(), Block.class);
 		registration.registerBlockComponent(DistanceProvider.getBlock(), Block.class);
 		registration.registerBlockComponent(BlockFaceProvider.INSTANCE, Block.class);
+		registration.registerBlockComponent(ExchangeValueProvider.INSTANCE, Block.class);
 
 		registration.registerEntityComponent(ObjectNameProvider.getEntity(), Entity.class);
 		registration.registerEntityComponent(ModNameProvider.getEntity(), Entity.class);
@@ -44,5 +45,6 @@ public class CorePlugin implements IWailaPlugin {
 		registration.markAsClientFeature(JadeIds.CORE_REL_COORDINATES);
 		registration.markAsClientFeature(JadeIds.CORE_MOD_NAME);
 		registration.markAsClientFeature(JadeIds.CORE_BLOCK_FACE);
+		registration.markAsClientFeature(JadeIds.CORE_EXCHANGE_VALUE);
 	}
 }

@@ -452,7 +452,7 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 			createIgnoreListConfig(
 					"hide-blocks",
 					Registries.BLOCK,
-					List.of("barrier")).get().reload(
+					List.of("barrier", "sky")).get().reload(
 					BuiltInRegistries.BLOCK,
 					builder::add);
 			hideBlocksReloadable = builder.build();

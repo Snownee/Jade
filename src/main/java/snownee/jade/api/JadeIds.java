@@ -19,6 +19,7 @@ public interface JadeIds {
 	ResourceLocation CORE_COORDINATES = JADE("coordinates");
 	ResourceLocation CORE_REL_COORDINATES = JADE("coordinates.rel");
 	ResourceLocation CORE_BLOCK_FACE = JADE("block_face");
+	ResourceLocation CORE_EXCHANGE_VALUE = JADE("exchange_value");
 	ResourceLocation DEBUG_REGISTRY_NAME = JADE("registry_name");
 	ResourceLocation DEBUG_SPECIAL_REGISTRY_NAME = JADE("registry_name.special");
 	ResourceLocation DEBUG_BLOCK_PROPERTIES = JADE("block_properties");

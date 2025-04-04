@@ -445,5 +445,6 @@
 	"mymod.fuel": "燃料：%d刻",
 	"config.jade.plugin_debug.furnace_fuel": "测试燃料",
 	"config.jade.plugin_debug.furnace_fuel.str_cfg": "测试字符串",
-	"config.jade.plugin_debug.furnace_fuel.float_cfg": "测试浮点数"
+	"config.jade.plugin_debug.furnace_fuel.float_cfg": "测试浮点数",
+	"config.jade.plugin_jade.exchange_value": "价值"
 }
