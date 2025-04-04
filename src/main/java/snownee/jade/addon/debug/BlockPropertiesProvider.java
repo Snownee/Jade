@@ -41,19 +41,6 @@ public enum BlockPropertiesProvider implements IBlockComponentProvider {
 		if (burnOdds != 0) {
 			tooltip.add(Component.translatable("jade.block_burn_odds", themes.info(burnOdds)));
 		}
-
-		//ONLY FOR CRAFTMINE SNAPSHOT
-		ItemStack stack = accessor.getBlock().asItem().getDefaultInstance();
-		ItemExchangeValue exvComponent = stack.getComponents().get(DataComponents.EXCHANGE_VALUE);
-		Player player = accessor.getPlayer();
-		float originalExchangeValue = 0;
-		if (exvComponent != null) {
-			originalExchangeValue = exvComponent.getValue(player, stack);
-		}
-		double exchangeValue = (double)Math.round((double)originalExchangeValue * (double)1000.0F) / (double)1000.0F;
-		if (exchangeValue != 0){
-			tooltip.add(Component.translatable("item.exchange_value", Component.literal("" + exchangeValue).withStyle(ChatFormatting.WHITE)).withStyle(ChatFormatting.YELLOW));
-		}
 	}
 
 	@Override
