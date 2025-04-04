@@ -151,6 +151,7 @@
 	"config.jade.reload_plugins": "Reload Plugins",
 	"config.jade.reload_plugins.button": "Reload",
 	"config.jade.plugin_jade": "Core Features",
+	"config.jade.plugin_25w14craftmine": "25w14craftmine",
 	"jade.customNameEntity": "%s (%s)",
 	"jade.typeNameEntity": "%s (%s)",
 	"config.jade.plugin_jade.debug": "Debug",
@@ -440,11 +441,13 @@
 	"jade.metadata": "{lang:[en_us],nameClasses:{}}",
 	"jade.profile_preset.accessibility": "Accessibility Mode",
 	"jade.profile_preset.minimalism": "Minimalism",
+	"config.jade.plugin_jade.exchange_value_minimum": "Show Value Minimum",
+	"config.jade.plugin_jade.travelling_block": "Travelling Block",
+	"jade.travellingBlock": "%s",
 	"__comment": "Only for testing:",
 	"jade.modName.cpp": "Crafting++",
 	"mymod.fuel": "Fuel: %d ticks",
 	"config.jade.plugin_debug.furnace_fuel": "Test Fuel",
 	"config.jade.plugin_debug.furnace_fuel.str_cfg": "Test Str",
-	"config.jade.plugin_debug.furnace_fuel.float_cfg": "Test Float",
-	"config.jade.plugin_jade.exchange_value": "Exchange Value"
+	"config.jade.plugin_debug.furnace_fuel.float_cfg": "Test Float"
 }
