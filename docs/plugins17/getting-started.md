@@ -4,7 +4,7 @@
 
 In your `build.gradle`:
 
-``` groovy
+```groovy
 repositories {
     maven {
         url "https://www.cursemaven.com"
@@ -25,7 +25,7 @@ Visit [CurseMaven](https://www.cursemaven.com/) to find more information about h
 
 ## Registering
 
-``` java
+```java
 package mcp.mobius.waila.test;
 
 import mcp.mobius.waila.api.IWailaClientRegistration;
@@ -55,7 +55,7 @@ Component providers can append information (texts or images) to the tooltip.
 
 Let's create a simple block component provider that adds an extra line to all the furnaces:
 
-``` java
+```java
 package mcp.mobius.waila.test;
 
 import mcp.mobius.waila.api.BlockAccessor;
@@ -82,7 +82,7 @@ You also have the `accessor`, which you can get access to the context. We will u
 
 Then register our `ExampleComponentProvider`:
 
-``` java
+```java
 package mcp.mobius.waila.test;
 
 import mcp.mobius.waila.api.IWailaClientRegistration;
@@ -128,7 +128,7 @@ This is a chart shows the basic lifecycle:
 
 Now it's time to implement our `IServerDataProvider`:
 
-``` java
+```java
 package mcp.mobius.waila.test;
 
 import mcp.mobius.waila.api.BlockAccessor;
@@ -167,7 +167,7 @@ Here we used [Access Transformer](https://forge.gemwire.uk/wiki/Access_Transform
 
 Register `IServerDataProvider`:
 
-``` java
+```java
 package mcp.mobius.waila.test;
 
 import mcp.mobius.waila.api.IWailaClientRegistration;
@@ -210,7 +210,7 @@ Great!
 
 Now let's show a clock as a small icon:
 
-``` java
+```java
 @Override
 public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
   if (accessor.getServerData().contains("Fuel")) {
@@ -228,7 +228,7 @@ Result:
 
 Hmmm, would be better if we do some fine-tuning:
 
-``` java 
+```java 
 @Override
 public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
   if (accessor.getServerData().contains("Fuel")) {

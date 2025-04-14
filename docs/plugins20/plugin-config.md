@@ -2,7 +2,7 @@
 
 ## Registering and Getting Value
 
-``` java
+```java
 @Override
 public void registerClient(IWailaClientRegistration registration) {
     var optionId = new ResourceLocation("examplemod:boolean_option");
@@ -17,7 +17,7 @@ public void registerClient(IWailaClientRegistration registration) {
 
 ## Secondary Options
 
-``` java
+```java
 var parentId = new ResourceLocation("examplemod:parent");
 registration.addConfig(new ResourceLocation("examplemod:parent.suboption"), true);
 ```
@@ -28,12 +28,12 @@ Client feature is option that can work without the need of server data.
 
 To mark a config option as client feature:
 
-``` java
+```java
 registration.markAsClientFeature(optionId);
 ```
 
 To check if a config option is a client feature:
 
-```
+```java
 registration.isClientFeature(optionId); // true
 ```

@@ -8,7 +8,7 @@ You can subscribe to `WailaRayTraceEvent` to replace the ray-trace result. New r
 
 Here is a small example that displays grass block as TNT block:
 
-``` java
+```java
 package mcp.mobius.waila.test;
 
 import mcp.mobius.waila.api.Accessor;

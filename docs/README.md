@@ -2,7 +2,7 @@
 
 Welcome to Jade's developer wiki!
 
-This documentation uses official mappings.
+This documentation uses the official mappings.
 
 ## Links
 

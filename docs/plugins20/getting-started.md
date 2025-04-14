@@ -6,41 +6,31 @@
 
     In your `build.gradle`:
 
-    ``` groovy
+    ```groovy
     repositories {
-      maven {
-        url "https://www.cursemaven.com"
-        content {
-          includeGroup "curse.maven"
-        }
-      }
+      maven { url = "https://api.modrinth.com/maven" }
     }
 
     dependencies {
-      // Visit https://www.curseforge.com/minecraft/mc-mods/jade/files/all?filter-status=1&filter-game-version=2020709689%3A7499
-      // to get the latest version's jade_id
-      modImplementation "curse.maven:jade-324717:${jade_id}"
+      // jade_version example: 15.10.0+fabric
+      // Visit https://modrinth.com/mod/jade/versions?l=fabric to get the latest version
+      modImplementation "maven.modrinth:jade:${project.jade_version}"
     }
     ```
 
-=== "NeoForge 20.2+"
-
+=== "NeoForge 1.21+"
+  
     In your `build.gradle`:
 
-    ``` groovy
+    ```groovy
     repositories {
-      maven {
-        url "https://www.cursemaven.com"
-        content {
-          includeGroup "curse.maven"
-        }
-      }
+      maven { url = "https://api.modrinth.com/maven" }
     }
 
     dependencies {
-      // Visit https://www.curseforge.com/minecraft/mc-mods/jade/files/all?filter-status=1&filter-game-version=2020709689%3A7498
-      // to get the latest version's jade_id
-      implementation "curse.maven:jade-324717:${jade_id}"
+      // jade_version example: 15.10.0+neoforge
+      // Visit https://modrinth.com/mod/jade/versions?l=neoforge to get the latest version
+      implementation "maven.modrinth:jade:${project.jade_version}"
     }
     ```
 
@@ -48,20 +38,15 @@
 
     In your `build.gradle`:
 
-    ``` groovy
+    ```groovy
     repositories {
-      maven {
-        url "https://www.cursemaven.com"
-        content {
-          includeGroup "curse.maven"
-        }
-      }
+      maven { url = "https://api.modrinth.com/maven" }
     }
 
     dependencies {
-      // Visit https://www.curseforge.com/minecraft/mc-mods/jade/files/all?filter-status=1&filter-game-version=2020709689%3A7498
-      // to get the latest version's jade_id
-      implementation fg.deobf("curse.maven:jade-324717:${jade_id}")
+      // jade_version example: 11.13.1+forge
+      // Visit https://modrinth.com/mod/jade/versions?l=forge to get the latest version
+      implementation fg.deobf("maven.modrinth:jade:${project.jade_version}")
     }
     ```
 
@@ -76,7 +61,7 @@
 
         You need to add this to your `build.gradle`:
 
-        ``` groovy
+        ```groovy
         minecraft {
           runs {
             client {
@@ -280,7 +265,7 @@ Now let's show a clock as a small icon:
 @Override
 public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
   if (accessor.getServerData().contains("Fuel")) {
-    IElementHelper elements = tooltip.getElementHelper();
+    IElementHelper elements = IElementHelper.get();
     IElement icon = elements.item(new ItemStack(Items.CLOCK), 0.5f);
     tooltip.add(icon);
     tooltip.append(Component.translatable("mymod.fuel", accessor.getServerData().getInt("Fuel")));
@@ -298,7 +283,7 @@ Hmmm, would be better if we do some fine-tuning:
 @Override
 public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
   if (accessor.getServerData().contains("Fuel")) {
-    IElementHelper elements = tooltip.getElementHelper();
+    IElementHelper elements = IElementHelper.get();
     IElement icon = elements.item(new ItemStack(Items.CLOCK), 0.5f).size(new Vec2(10, 10)).translate(new Vec2(0, -1));
     tooltip.add(icon);
     tooltip.append(Component.translatable("mymod.fuel", accessor.getServerData().getInt("Fuel")));
@@ -320,7 +305,7 @@ Jade has a feature that allows user to narrate the tooltip (press keypad 5 by de
 @Override
 public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
   if (accessor.getServerData().contains("Fuel")) {
-    IElementHelper elements = tooltip.getElementHelper();
+    IElementHelper elements = IElementHelper.get();
     IElement icon = elements.item(new ItemStack(Items.CLOCK), 0.5f).size(new Vec2(10, 10)).translate(new Vec2(0, -1));
     icon.message(null);
     tooltip.add(icon);

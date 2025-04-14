@@ -8,7 +8,7 @@ You can add a `JadeRayTraceCallback` to replace the ray-trace result. New result
 
 Here is a small example that displays grass block as TNT block:
 
-``` java
+```java
 @Override
 public void registerClient(IWailaClientRegistration registration) {
 	registration.addRayTraceCallback((hitResult, accessor, originalAccessor) -> {
