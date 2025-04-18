@@ -428,7 +428,7 @@
 	"jade.theme.jade.top": "One Probe",
 	"jade.theme.jade.create": "Create",
 	"jade.collectingItems": "Збираю речі...",
-	"config.jade.plugin_jade.block_properties": "Властивости блоку",
+	"config.jade.plugin_jade.block_properties": "Властивості блоку",
 	"jade.block_explosion_resistance": "Вибухостійкість: %s",
 	"jade.block_destroy_time": "Час знищення: %s",
 	"jade.block_jump_factor": "Фактор стрибка: %s",
