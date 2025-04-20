@@ -34,6 +34,9 @@ public class EntityAccessorClientHandler implements AccessorClientHandler<Entity
 		if (!general.getDisplayBosses() && CommonProxy.isBoss(accessor.getEntity())) {
 			return false;
 		}
+		if (accessor.getEntity() instanceof ItemEntity itemEntity && itemEntity.getItem().isEmpty()) {
+			return false;
+		}
 		return true;
 	}
 
