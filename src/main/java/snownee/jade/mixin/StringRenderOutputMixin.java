@@ -74,7 +74,7 @@ public class StringRenderOutputMixin {
 			int pCodePoint,
 			CallbackInfoReturnable<Boolean> cir,
 			@Local GlyphInfo glyphInfo) {
-		if (this$0.getClass() == JadeFont.class && JadeFont.isTooLarge(glyphInfo, this$0.lineHeight)) {
+		if (this$0.getClass() == JadeFont.class && JadeFont.isFilteredGlyph(glyphInfo, this$0.lineHeight)) {
 			cir.setReturnValue(false);
 		}
 	}
