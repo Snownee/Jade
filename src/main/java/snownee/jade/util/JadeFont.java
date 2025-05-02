@@ -11,14 +11,17 @@ public class JadeFont extends Font {
 		super(font.fonts, font.filterFishyGlyphs);
 		this.splitter = new StringSplitter((i, style) -> {
 			GlyphInfo glyphInfo = getFontSet(style.getFont()).getGlyphInfo(i, filterFishyGlyphs);
-			if (isTooLarge(glyphInfo, lineHeight)) {
+			if (isFilteredGlyph(glyphInfo, lineHeight)) {
 				return 0;
 			}
 			return glyphInfo.getAdvance(style.isBold());
 		});
 	}
 
-	public static boolean isTooLarge(GlyphInfo glyphInfo, int lineHeight) {
-		return glyphInfo instanceof BitmapProvider.Glyph glyph && glyph.height() * glyph.scale() > lineHeight + 4;
+	public static boolean isFilteredGlyph(GlyphInfo glyphInfo, int lineHeight) {
+		if (glyphInfo instanceof BitmapProvider.Glyph glyph) {
+			return glyph.height() * glyph.scale() > lineHeight + 4;
+		}
+		return glyphInfo.getAdvance() < -lineHeight;
 	}
 }
