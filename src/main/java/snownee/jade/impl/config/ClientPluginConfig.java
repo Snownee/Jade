@@ -11,7 +11,6 @@ import snownee.jade.Jade;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.config.entry.ConfigEntry;
-import snownee.jade.impl.config.entry.EnumConfigEntry;
 
 public class ClientPluginConfig implements IPluginConfig {
 
@@ -85,19 +84,19 @@ public class ClientPluginConfig implements IPluginConfig {
 
 	public void ensureEntry(ConfigEntry<?> entry) {
 		ResourceLocation key = entry.id();
-		Object value;
-		if (!values.containsKey(key)) {
+		Object value = values.get(key);
+		if (value == null) {
 			values.put(key, value = entry.defaultValue());
-		} else if (entry instanceof EnumConfigEntry<?> enumEntry && values.get(key) instanceof String s) {
+		} else {
 			try {
-				values.put(key, value = enumEntry.convertValue(s));
+				values.put(key, value = entry.convertValue(value));
 			} catch (Exception e) {
 				values.put(key, value = entry.defaultValue());
 			}
-		} else {
-			value = values.get(key);
 		}
-		value = entry.isSynced() ? entry.syncedValue() : value;
+		if (entry.isSynced()) {
+			value = entry.syncedValue();
+		}
 		Object old = mergedValues.put(key, value);
 		if (!Objects.equals(old, value)) {
 			entry.notifyChange();

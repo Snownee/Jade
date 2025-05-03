@@ -1,5 +1,6 @@
 package snownee.jade.impl.config.entry;
 
+import java.util.Locale;
 import java.util.function.BiConsumer;
 
 import net.minecraft.resources.ResourceLocation;
@@ -18,13 +19,14 @@ public class EnumConfigEntry<E extends Enum<E>> extends ConfigEntry<E> {
 		return value.getClass() == defaultValue().getClass();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public E convertValue(Object value) {
 		if (value.getClass() == String.class) {
-			//noinspection unchecked
 			return (E) Enum.valueOf(defaultValue().getClass(), (String) value);
+		} else if (value.getClass() == Boolean.class) {
+			return (E) Enum.valueOf(defaultValue().getClass(), String.valueOf(value).toUpperCase(Locale.ENGLISH));
 		}
-		//noinspection unchecked
 		return (E) value;
 	}
 

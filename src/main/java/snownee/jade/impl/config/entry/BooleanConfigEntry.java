@@ -19,6 +19,16 @@ public class BooleanConfigEntry extends ConfigEntry<Boolean> {
 	}
 
 	@Override
+	public Boolean convertValue(Object value) {
+		if (value instanceof String string) {
+			return Boolean.valueOf(string);
+		} else if (value instanceof Number number) {
+			return number.intValue() != 0;
+		}
+		return (Boolean) value;
+	}
+
+	@Override
 	public OptionValue<?> createUI(
 			OptionsList options,
 			String optionName,
