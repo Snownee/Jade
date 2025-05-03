@@ -47,8 +47,8 @@ public abstract class ConfigEntry<T> {
 		syncedValue = value;
 	}
 
+	@SuppressWarnings("unchecked")
 	public T convertValue(Object value) {
-		//noinspection unchecked
 		return (T) value;
 	}
 
