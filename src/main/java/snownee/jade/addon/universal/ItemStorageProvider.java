@@ -139,7 +139,7 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 						}
 					}
 					if (group.views.isEmpty() && group.extraData != null) {
-						float progress = group.extraData.getFloatOr("Collecting", 0F);
+						float progress = group.extraData.getFloatOr("Collecting", -1F);
 						if (progress >= 0 && progress < 1) {
 							MutableComponent component = Component.translatable("jade.collectingItems");
 							if (progress != 0) {
