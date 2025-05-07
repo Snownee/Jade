@@ -235,5 +235,9 @@ public interface IWailaConfig {
 		void setTextBackgroundOpacity(float opacity);
 
 		float getTextBackgroundOpacity();
+
+		void setNarrateKeys(boolean narrateKeys);
+
+		boolean getNarrateKeys();
 	}
 }

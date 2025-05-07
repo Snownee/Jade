@@ -676,25 +676,30 @@ public class WailaConfig implements IWailaConfig {
 						.forGetter(Accessibility::getTTSMode),
 				Codec.BOOL.fieldOf("enableAccessibilityPlugin").orElse(false).forGetter(Accessibility::getEnableAccessibilityPlugin),
 				Codec.floatRange(0, 1).fieldOf("textBackgroundOpacity").orElse(0F).forGetter(Accessibility::getTextBackgroundOpacity),
-				Codec.BOOL.fieldOf("flipMainHand").orElse(false).forGetter(Accessibility::getFlipMainHand)).apply(i, Accessibility::new));
+				Codec.BOOL.fieldOf("flipMainHand").orElse(false).forGetter(Accessibility::getFlipMainHand),
+				Codec.BOOL.fieldOf("narrateKeys").orElse(false).forGetter(Accessibility::getNarrateKeys)
+		).apply(i, Accessibility::new));
 
 		private boolean enableTextToSpeech;
 		private TTSMode ttsMode;
 		private boolean enableAccessibilityPlugin;
 		private float textBackgroundOpacity;
 		private boolean flipMainHand;
+		private boolean narrateKeys;
 
 		public Accessibility(
 				boolean enableTextToSpeech,
 				TTSMode ttsMode,
 				boolean enableAccessibilityPlugin,
 				float textBackgroundOpacity,
-				boolean flipMainHand) {
+				boolean flipMainHand,
+				boolean narrateKeys) {
 			this.enableTextToSpeech = enableTextToSpeech;
 			this.ttsMode = ttsMode;
 			this.enableAccessibilityPlugin = enableAccessibilityPlugin;
 			this.textBackgroundOpacity = textBackgroundOpacity;
 			this.flipMainHand = flipMainHand;
+			this.narrateKeys = narrateKeys;
 		}
 
 		@Override
@@ -753,6 +758,16 @@ public class WailaConfig implements IWailaConfig {
 		@Override
 		public float getTextBackgroundOpacity() {
 			return textBackgroundOpacity;
+		}
+
+		@Override
+		public void setNarrateKeys(boolean narrateKeys) {
+			this.narrateKeys = narrateKeys;
+		}
+
+		@Override
+		public boolean getNarrateKeys() {
+			return narrateKeys;
 		}
 	}
 
