@@ -114,11 +114,12 @@ public final class JadeClient {
 	}
 
 	public static void onKeyPressed(int action) {
+		Minecraft mc = Minecraft.getInstance();
 		while (openConfig.consumeClick()) {
 			Jade.invalidateConfig();
 			ItemStorageProvider.targetCache.invalidateAll();
 			ItemStorageProvider.containerCache.invalidateAll();
-			Minecraft.getInstance().setScreen(new HomeConfigScreen(null));
+			mc.setScreen(new HomeConfigScreen(null));
 		}
 
 		while (showOverlay.consumeClick()) {
@@ -127,14 +128,15 @@ public final class JadeClient {
 			if (mode == IWailaConfig.DisplayMode.TOGGLE) {
 				general.setDisplayTooltip(!general.shouldDisplayTooltip());
 				if (!general.shouldDisplayTooltip() && Jade.history().hintOverlayToggle) {
-					Minecraft.getInstance().getChatListener().handleSystemMessage(
+					mc.getChatListener().handleSystemMessage(
 							Component.translatable("toast.jade.toggle_hint.1"),
 							false);
-					Minecraft.getInstance().getChatListener().handleSystemMessage(
+					mc.getChatListener().handleSystemMessage(
 							Component.translatable("toast.jade.toggle_hint.2", showOverlay.getTranslatedKeyMessage()),
 							false);
 					Jade.history().hintOverlayToggle = false;
 				}
+				narrateKey("show_overlay", general.shouldDisplayTooltip());
 				IWailaConfig.get().save();
 			}
 		}
@@ -142,6 +144,7 @@ public final class JadeClient {
 		while (toggleLiquid.consumeClick()) {
 			IWailaConfig.General general = IWailaConfig.get().general();
 			general.setDisplayFluids(!general.shouldDisplayFluids());
+			narrateKey("toggle_liquid", general.shouldDisplayFluids());
 			IWailaConfig.get().save();
 		}
 
@@ -150,10 +153,10 @@ public final class JadeClient {
 			if (accessibility.getTTSMode() == TTSMode.TOGGLE) {
 				accessibility.toggleTTS();
 				if (accessibility.shouldEnableTextToSpeech() && Jade.history().hintNarratorToggle) {
-					Minecraft.getInstance().getChatListener().handleSystemMessage(
+					mc.getChatListener().handleSystemMessage(
 							Component.translatable("toast.jade.tts_hint.1"),
 							false);
-					Minecraft.getInstance().getChatListener().handleSystemMessage(
+					mc.getChatListener().handleSystemMessage(
 							Component.translatable("toast.jade.tts_hint.2", narrate.getTranslatedKeyMessage()),
 							false);
 					Jade.history().hintNarratorToggle = false;
@@ -168,8 +171,18 @@ public final class JadeClient {
 			for (int i = 0; i < 4; i++) {
 				while (profiles[i].consumeClick()) {
 					Jade.useProfile(i);
+					if (IWailaConfig.get().accessibility().getNarrateKeys()) {
+						WailaTickHandler.narrate(I18n.get("narration.jade.key.profile", profiles[i].getName()), false);
+					}
 				}
 			}
+		}
+	}
+
+	public static void narrateKey(String key, boolean bl) {
+		if (IWailaConfig.get().accessibility().getNarrateKeys()) {
+			key = "narration.jade.key.%s.%s".formatted(key, bl ? "on" : "off");
+			WailaTickHandler.narrate(I18n.get(key), false);
 		}
 	}
 

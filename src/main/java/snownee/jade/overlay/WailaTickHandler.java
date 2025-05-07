@@ -61,23 +61,26 @@ public class WailaTickHandler {
 		if (System.currentTimeMillis() - lastNarrationTime < 500) {
 			return;
 		}
-		String narration = StringUtil.stripColor(tooltip.getMessage());
-		if (narration.isEmpty()) {
+		narrate(StringUtil.stripColor(tooltip.getMessage()), dedupe);
+		lastNarrationTime = System.currentTimeMillis();
+	}
+
+	public static void narrate(String message, boolean dedupe) {
+		if (message.isEmpty()) {
 			return;
 		}
-		if (dedupe && narration.equals(lastNarration)) {
+		if (dedupe && message.equals(lastNarration)) {
 			return;
 		}
 		CompletableFuture.runAsync(() -> {
 			GameNarrator narrator = Minecraft.getInstance().getNarrator();
-			narrator.logNarratedMessage(narration);
+			narrator.logNarratedMessage(message);
 			if (narrator.isActive()) {
 				narrator.clear();
-				narrator.narrateMessage(narration, true);
+				narrator.narrateMessage(message, true);
 			}
 		});
-		lastNarration = narration;
-		lastNarrationTime = System.currentTimeMillis();
+		lastNarration = message;
 	}
 
 	public static void clearLastNarration() {
