@@ -174,7 +174,6 @@
 	"config.jade.plugin_minecraft.entity_health.show_fractions": "Дробова частка",
 	"config.jade.plugin_minecraft.entity_armor": "Захист сутностей",
 	"config.jade.plugin_minecraft.entity_armor.max_for_render": "Макс. показаний захист",
-	"config.jade.plugin_jade.item_mod_name": "Назва моду у підказці предмета",
 	"config.jade.plugin_jade.mod_name": "Назва мода",
 	"config.jade.plugin_jade.mod_name_extra_msg": "простір імен,мод id",
 	"config.jade.plugin_jade.distance": "Дальність",

@@ -185,11 +185,6 @@ public abstract class ObjectNameProvider implements IToggleableProvider {
 	}
 
 	@Override
-	public boolean isRequired() {
-		return true;
-	}
-
-	@Override
 	public int getDefaultPriority() {
 		return TooltipPosition.HEAD - 100;
 	}

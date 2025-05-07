@@ -218,6 +218,6 @@ public class HarvestToolProvider implements IBlockComponentProvider, KeyedResour
 
 	@Override
 	public int getDefaultPriority() {
-		return TooltipPosition.HEAD + 2000;
+		return TooltipPosition.TAIL - 2000;
 	}
 }

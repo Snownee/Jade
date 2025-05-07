@@ -63,6 +63,10 @@ public class OverlayRenderer {
 	}
 
 	public static boolean shouldShowImmediately(BoxElement box) {
+		if (box.getTooltip().isEmpty()) {
+			return false;
+		}
+
 		Minecraft mc = Minecraft.getInstance();
 
 		if (!ClientProxy.shouldShowWithGui(mc, mc.screen)) {
