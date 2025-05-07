@@ -137,7 +137,6 @@
 	"config.jade.plugin_minecraft.entity_health.show_fractions": "분수 표시",
 	"config.jade.plugin_minecraft.entity_armor": "엔티티 갑옷",
 	"config.jade.plugin_minecraft.entity_armor.max_for_render": "최대 갑옷 렌더링",
-	"config.jade.plugin_jade.item_mod_name": "아이템 설명에 모드 이름 표시",
 	"config.jade.plugin_jade.mod_name": "모드 이름",
 	"config.jade.plugin_jade.mod_name_extra_msg": "namespace,modid",
 	"config.jade.plugin_jade.distance": "거리",

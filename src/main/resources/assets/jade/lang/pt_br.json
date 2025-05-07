@@ -173,7 +173,6 @@
 	"config.jade.plugin_minecraft.entity_health.show_fractions": "Mostrar Frações",
 	"config.jade.plugin_minecraft.entity_armor": "Armadura da Entidade",
 	"config.jade.plugin_minecraft.entity_armor.max_for_render": "Armadura Máx. p/ Renderização",
-	"config.jade.plugin_jade.item_mod_name": "Nome do Mod na Dica de Item",
 	"config.jade.plugin_jade.mod_name": "Nome do Mod",
 	"config.jade.plugin_jade.mod_name_extra_msg": "namespace,modid",
 	"config.jade.plugin_jade.distance": "Distância",
