@@ -2,11 +2,12 @@ package snownee.jade.addon.vanilla;
 
 import org.jetbrains.annotations.Nullable;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.storage.TagValueOutput;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.ITooltip;
@@ -24,10 +25,12 @@ public enum ItemBERProvider implements IBlockComponentProvider {
 		BlockEntity blockEntity = accessor.getBlockEntity();
 		if (blockEntity != null) {
 			ItemStack itemStack = accessor.getPickedResult();
-			CompoundTag compoundTag = blockEntity.saveCustomOnly(accessor.getLevel().registryAccess());
+			TagValueOutput tagValueOutput = TagValueOutput.createWithContext(
+					ProblemReporter.ScopedCollector.DISCARDING,
+					accessor.getLevel().registryAccess());
 			//noinspection deprecation
-			blockEntity.removeComponentsFromTag(compoundTag);
-			BlockItem.setBlockEntityData(itemStack, blockEntity.getType(), compoundTag);
+			blockEntity.removeComponentsFromTag(tagValueOutput);
+			BlockItem.setBlockEntityData(itemStack, blockEntity.getType(), tagValueOutput);
 			itemStack.applyComponents(blockEntity.collectComponents());
 			return IElementHelper.get().item(itemStack);
 		}

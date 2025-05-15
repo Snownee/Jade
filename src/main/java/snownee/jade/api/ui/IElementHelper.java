@@ -1,10 +1,9 @@
 package snownee.jade.api.ui;
 
-import java.util.function.Function;
-
 import org.jetbrains.annotations.Nullable;
 
-import net.minecraft.client.renderer.RenderType;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
+
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -56,7 +55,7 @@ public interface IElementHelper {
 
 	ProgressStyle progressStyle();
 
-	IElement sprite(Function<ResourceLocation, RenderType> function, ResourceLocation sprite, int width, int height);
+	IElement sprite(RenderPipeline renderPipeline, ResourceLocation sprite, int width, int height);
 
 	IElement sprite(ResourceLocation sprite, int width, int height);
 }

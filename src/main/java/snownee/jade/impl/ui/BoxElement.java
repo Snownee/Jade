@@ -115,8 +115,9 @@ public class BoxElement extends Element implements IBoxElement {
 			width += size.x + 3;
 			height = Math.max(height, size.y);
 		}
-		width += padding(ScreenDirection.LEFT) + padding(ScreenDirection.RIGHT);
-		height += padding(ScreenDirection.UP) + padding(ScreenDirection.DOWN);
+		int twoOfBorder = style.borderWidth() * 2;
+		width += padding(ScreenDirection.LEFT) + padding(ScreenDirection.RIGHT) + twoOfBorder;
+		height += padding(ScreenDirection.UP) + padding(ScreenDirection.DOWN) + twoOfBorder;
 		// our limited negative-padding support:
 		width = Math.max(width, 0);
 		height = Math.max(height, 0);
@@ -133,8 +134,8 @@ public class BoxElement extends Element implements IBoxElement {
 		if (tooltip.isEmpty()) {
 			return;
 		}
-		guiGraphics.pose().pushPose();
-		guiGraphics.pose().translate(x, y, 0);
+		guiGraphics.pose().pushMatrix();
+		guiGraphics.pose().translate(x, y);
 
 		// render background
 		float alpha = IDisplayHelper.get().opacity();
@@ -145,11 +146,12 @@ public class BoxElement extends Element implements IBoxElement {
 			style.render(guiGraphics, this, 0, 0, maxX - x, maxY - y, alpha);
 		}
 
+		int borderWidth = style.borderWidth();
 		// render box progress
 		if (boxProgressType != null) {
-			float left = style.boxProgressOffset(ScreenDirection.LEFT);
+			float left = style.boxProgressOffset(ScreenDirection.LEFT) + borderWidth;
 			float width = maxX - x - left;
-			float top = maxY - y - 1 + style.boxProgressOffset(ScreenDirection.UP) + style.borderWidth();
+			float top = maxY - y - 1 + style.boxProgressOffset(ScreenDirection.UP) + borderWidth;
 			float height = 1 + style.boxProgressOffset(ScreenDirection.DOWN);
 			float progress = boxProgress;
 			if (track == null && tag != null) {
@@ -173,8 +175,8 @@ public class BoxElement extends Element implements IBoxElement {
 					style.boxProgressColors.get(boxProgressType));
 		}
 
-		float contentLeft = padding(ScreenDirection.LEFT);
-		float contentTop = padding(ScreenDirection.UP);
+		float contentLeft = padding(ScreenDirection.LEFT) + borderWidth;
+		float contentTop = padding(ScreenDirection.UP) + borderWidth;
 
 		// render icon
 		if (icon != null) {
@@ -223,19 +225,19 @@ public class BoxElement extends Element implements IBoxElement {
 			if (arrowTop <= 4) {
 				alpha = 1 - Math.abs(arrowTop) / 2;
 				if (alpha > 0.016) {
-					guiGraphics.pose().pushPose();
+					guiGraphics.pose().pushMatrix();
 					arrowTop += size.y - 6;
 					float arrowLeft = contentLeft + (contentSize.x - DisplayHelper.font().width("▾") + 1) / 2f;
-					guiGraphics.pose().translate(arrowLeft, arrowTop, 0);
+					guiGraphics.pose().translate(arrowLeft, arrowTop);
 					int color = Overlay.applyAlpha(IThemeHelper.get().theme().text.colors().info(), alpha);
 					DisplayHelper.INSTANCE.drawText(guiGraphics, "▾", 0, 0, color);
-					guiGraphics.pose().popPose();
+					guiGraphics.pose().popMatrix();
 				}
 			}
 		}
 
 		Tooltip.drawDebugBorder(guiGraphics, 0, 0, this);
-		guiGraphics.pose().popPose();
+		guiGraphics.pose().popMatrix();
 	}
 
 	@Override
@@ -334,13 +336,6 @@ public class BoxElement extends Element implements IBoxElement {
 		float y = window.getGuiScaledHeight() * (1.0F - overlay.getOverlayPosY());
 		float width = size.x;
 		float height = size.y;
-
-		if (style.hasRoundCorner()) {
-			x++;
-			y++;
-			width += 2;
-			height += 2;
-		}
 
 		rect.scale = overlay.getOverlayScale();
 		float thresholdHeight = window.getGuiScaledHeight() * overlay.getAutoScaleThreshold();

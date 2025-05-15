@@ -24,6 +24,8 @@ public interface IThemeHelper {
 	@NotNull
 	Theme getTheme(ResourceLocation id);
 
+	boolean hasTheme(ResourceLocation id);
+
 	MutableComponent info(Object componentOrString);
 
 	MutableComponent success(Object componentOrString);

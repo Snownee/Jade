@@ -79,4 +79,9 @@ public class EntityDetailsBodyProvider implements IEntityComponentProvider {
 	public boolean isRequired() {
 		return true;
 	}
+
+	@Override
+	public int getDefaultPriority() {
+		return 3333;
+	}
 }

@@ -39,6 +39,7 @@ public class CorePlugin implements IWailaPlugin {
 		registration.registerEntityComponent(ModNameProvider.getEntity(), Entity.class);
 		registration.registerEntityComponent(DistanceProvider.getEntity(), Entity.class);
 
+		registration.markAsClientFeature(JadeIds.CORE_OBJECT_NAME);
 		registration.markAsClientFeature(JadeIds.CORE_DISTANCE);
 		registration.markAsClientFeature(JadeIds.CORE_COORDINATES);
 		registration.markAsClientFeature(JadeIds.CORE_REL_COORDINATES);

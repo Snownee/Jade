@@ -5,21 +5,23 @@ import java.text.DecimalFormat;
 import java.text.Format;
 import java.text.NumberFormat;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix3x2f;
 import org.joml.Matrix4f;
 
 import com.google.common.base.Suppliers;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.gui.render.TextureSetup;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
@@ -63,30 +65,23 @@ public class DisplayHelper implements IDisplayHelper {
 		if (stack.isEmpty()) {
 			return;
 		}
-		guiGraphics.pose().pushPose();
+		guiGraphics.pose().pushMatrix();
+		guiGraphics.renderItemBar(stack, i, j);
 		if (stack.getCount() != 1 || text != null) {
 			String s = text == null ? INSTANCE.humanReadableNumber(stack.getCount(), "", false, null) : text;
 			boolean smaller = s.length() > 3;
 			float scale = smaller ? 0.5F : 0.75F;
 			int x = smaller ? 32 : 22;
 			int y = smaller ? 23 : 13;
-			guiGraphics.pose().pushPose();
-			guiGraphics.pose().translate(0.0f, 0.0f, 200.0f);
-			guiGraphics.pose().scale(scale, scale, 1f);
+			guiGraphics.pose().pushMatrix();
+			//FIXME
+//			guiGraphics.pose().translate(0.0f, 0.0f, 200.0f);
+			guiGraphics.pose().scale(scale);
 			int color = IThemeHelper.get().theme().text.itemAmountColor();
 			guiGraphics.drawString(font, s, i + x - font.width(s), j + y, color, true);
-			guiGraphics.pose().popPose();
+			guiGraphics.pose().popMatrix();
 		}
-
-		if (stack.isBarVisible()) {
-			int k = stack.getBarWidth();
-			int l = stack.getBarColor();
-			int m = i + 2;
-			int n = j + 13;
-			guiGraphics.fill(RenderType.guiOverlay(), m, n, m + 13, n + 2, -16777216);
-			guiGraphics.fill(RenderType.guiOverlay(), m, n, m + k, n + 1, l | 0xFF000000);
-		}
-		guiGraphics.pose().popPose();
+		guiGraphics.pose().popMatrix();
 		ClientProxy.renderItemDecorationsExtra(guiGraphics, font, stack, i, j, text);
 	}
 
@@ -114,28 +109,29 @@ public class DisplayHelper implements IDisplayHelper {
 	}
 
 	public static void fill(GuiGraphics guiGraphics, float minX, float minY, float maxX, float maxY, int color) {
-		fill(guiGraphics, RenderType.gui(), minX, minY, maxX, maxY, color);
+		fill(guiGraphics, RenderPipelines.GUI, minX, minY, maxX, maxY, color);
 	}
 
-	public static void fill(GuiGraphics guiGraphics, RenderType renderType, float minX, float minY, float maxX, float maxY, int color) {
-		Matrix4f matrix = guiGraphics.pose().last().pose();
-		if (minX < maxX) {
-			float i = minX;
-			minX = maxX;
-			maxX = i;
-		}
-		if (minY < maxY) {
-			float j = minY;
-			minY = maxY;
-			maxY = j;
-		}
-		color = Overlay.applyAlpha(color, OverlayRenderer.alpha);
-		VertexConsumer buffer = guiGraphics.bufferSource.getBuffer(renderType);
-		buffer.addVertex(matrix, minX, maxY, 0.0F).setColor(color);
-		buffer.addVertex(matrix, maxX, maxY, 0.0F).setColor(color);
-		buffer.addVertex(matrix, maxX, minY, 0.0F).setColor(color);
-		buffer.addVertex(matrix, minX, minY, 0.0F).setColor(color);
-		guiGraphics.flush();
+	public static void fill(
+			GuiGraphics guiGraphics,
+			RenderPipeline renderPipeline,
+			float minX,
+			float minY,
+			float maxX,
+			float maxY,
+			int color) {
+		guiGraphics.guiRenderState.submitGuiElement(new FloatColoredRectangleRenderState(
+				renderPipeline,
+				TextureSetup.noTexture(),
+				new Matrix3x2f(guiGraphics.pose()),
+				minX,
+				minY,
+				maxX,
+				maxY,
+				color,
+				color,
+				guiGraphics.scissorStack.peek()
+		));
 	}
 
 	@Override
@@ -143,12 +139,12 @@ public class DisplayHelper implements IDisplayHelper {
 		if (opacity() < 0.5F) {
 			return;
 		}
-		guiGraphics.pose().pushPose();
-		guiGraphics.pose().translate(x, y, 0);
-		guiGraphics.pose().scale(scale, scale, scale);
+		guiGraphics.pose().pushMatrix();
+		guiGraphics.pose().translate(x, y);
+		guiGraphics.pose().scale(scale);
 		guiGraphics.renderFakeItem(stack, 0, 0);
 		renderGuiItemDecorations(guiGraphics, font(), stack, 0, 0, text);
-		guiGraphics.pose().popPose();
+		guiGraphics.pose().popMatrix();
 	}
 
 	@Override
@@ -168,24 +164,25 @@ public class DisplayHelper implements IDisplayHelper {
 		if (startColor == -1 && endColor == -1) {
 			return;
 		}
-		float zLevel = 0.0F;
-		Matrix4f matrix = guiGraphics.pose().last().pose();
 
-		startColor = Overlay.applyAlpha(startColor, opacity());
-		endColor = Overlay.applyAlpha(endColor, opacity());
-		VertexConsumer buffer = guiGraphics.bufferSource.getBuffer(RenderType.gui());
-		if (horizontal) {
-			buffer.addVertex(matrix, left + width, top, zLevel).setColor(endColor);
-			buffer.addVertex(matrix, left, top, zLevel).setColor(startColor);
-			buffer.addVertex(matrix, left, top + height, zLevel).setColor(startColor);
-			buffer.addVertex(matrix, left + width, top + height, zLevel).setColor(endColor);
-		} else {
-			buffer.addVertex(matrix, left + width, top, zLevel).setColor(startColor);
-			buffer.addVertex(matrix, left, top, zLevel).setColor(startColor);
-			buffer.addVertex(matrix, left, top + height, zLevel).setColor(endColor);
-			buffer.addVertex(matrix, left + width, top + height, zLevel).setColor(endColor);
-		}
-		guiGraphics.flush();
+//		float zLevel = 0.0F;
+//		Matrix4f matrix = guiGraphics.pose().last().pose();
+//
+//		startColor = Overlay.applyAlpha(startColor, opacity());
+//		endColor = Overlay.applyAlpha(endColor, opacity());
+//		VertexConsumer buffer = guiGraphics.bufferSource.getBuffer(RenderType.gui());
+//		if (horizontal) {
+//			buffer.addVertex(matrix, left + width, top, zLevel).setColor(endColor);
+//			buffer.addVertex(matrix, left, top, zLevel).setColor(startColor);
+//			buffer.addVertex(matrix, left, top + height, zLevel).setColor(startColor);
+//			buffer.addVertex(matrix, left + width, top + height, zLevel).setColor(endColor);
+//		} else {
+//			buffer.addVertex(matrix, left + width, top, zLevel).setColor(startColor);
+//			buffer.addVertex(matrix, left, top, zLevel).setColor(startColor);
+//			buffer.addVertex(matrix, left, top + height, zLevel).setColor(endColor);
+//			buffer.addVertex(matrix, left + width, top + height, zLevel).setColor(endColor);
+//		}
+//		guiGraphics.flush();
 	}
 
 	@Override
@@ -244,7 +241,7 @@ public class DisplayHelper implements IDisplayHelper {
 						}
 						drawTiledSprite(
 								guiGraphics,
-								RenderType::guiTextured,
+								RenderPipelines.GUI_TEXTURED,
 								xPosition,
 								yPosition,
 								width,
@@ -258,7 +255,7 @@ public class DisplayHelper implements IDisplayHelper {
 
 	private void drawTiledSprite(
 			GuiGraphics guiGraphics,
-			Function<ResourceLocation, RenderType> function,
+			RenderPipeline renderPipeline,
 			final float xPosition,
 			final float yPosition,
 			final float tiledWidth,
@@ -269,30 +266,30 @@ public class DisplayHelper implements IDisplayHelper {
 		if (tiledWidth == 0 || tiledHeight == 0 || scaledAmount == 0) {
 			return;
 		}
-		Matrix4f matrix = guiGraphics.pose().last().pose();
-		VertexConsumer vertexConsumer = guiGraphics.bufferSource.getBuffer(function.apply(sprite.atlasLocation()));
-
-		final int xTileCount = (int) (tiledWidth / TEX_WIDTH);
-		final float xRemainder = tiledWidth - (xTileCount * TEX_WIDTH);
-		final int yTileCount = (int) (scaledAmount / TEX_HEIGHT);
-		final float yRemainder = scaledAmount - (yTileCount * TEX_HEIGHT);
-
-		final float yStart = yPosition + tiledHeight;
-
-		for (int xTile = 0; xTile <= xTileCount; xTile++) {
-			for (int yTile = 0; yTile <= yTileCount; yTile++) {
-				float width = (xTile == xTileCount) ? xRemainder : TEX_WIDTH;
-				float height = (yTile == yTileCount) ? yRemainder : TEX_HEIGHT;
-				float x = xPosition + (xTile * TEX_WIDTH);
-				float y = yStart - ((yTile + 1) * TEX_HEIGHT);
-				if (width > 0 && height > 0) {
-					float maskTop = TEX_HEIGHT - height;
-					float maskRight = TEX_WIDTH - width;
-
-					drawTextureWithMasking(matrix, vertexConsumer, x, y, sprite, maskTop, maskRight, 0, color);
-				}
-			}
-		}
+//		Matrix4f matrix = guiGraphics.pose().last().pose();
+//		VertexConsumer vertexConsumer = guiGraphics.bufferSource.getBuffer(function.apply(sprite.atlasLocation()));
+//
+//		final int xTileCount = (int) (tiledWidth / TEX_WIDTH);
+//		final float xRemainder = tiledWidth - (xTileCount * TEX_WIDTH);
+//		final int yTileCount = (int) (scaledAmount / TEX_HEIGHT);
+//		final float yRemainder = scaledAmount - (yTileCount * TEX_HEIGHT);
+//
+//		final float yStart = yPosition + tiledHeight;
+//
+//		for (int xTile = 0; xTile <= xTileCount; xTile++) {
+//			for (int yTile = 0; yTile <= yTileCount; yTile++) {
+//				float width = (xTile == xTileCount) ? xRemainder : TEX_WIDTH;
+//				float height = (yTile == yTileCount) ? yRemainder : TEX_HEIGHT;
+//				float x = xPosition + (xTile * TEX_WIDTH);
+//				float y = yStart - ((yTile + 1) * TEX_HEIGHT);
+//				if (width > 0 && height > 0) {
+//					float maskTop = TEX_HEIGHT - height;
+//					float maskRight = TEX_WIDTH - width;
+//
+//					drawTextureWithMasking(matrix, vertexConsumer, x, y, sprite, maskTop, maskRight, 0, color);
+//				}
+//			}
+//		}
 	}
 
 	@Override
@@ -372,7 +369,6 @@ public class DisplayHelper implements IDisplayHelper {
 			color = Overlay.applyAlpha(color, opacity());
 		}
 		guiGraphics.drawString(font(), text, (int) x, (int) y, color, shadow);
-		guiGraphics.bufferSource.endLastBatch();
 	}
 
 	public void drawGradientProgress(
@@ -413,32 +409,32 @@ public class DisplayHelper implements IDisplayHelper {
 	@Override
 	public void blitSprite(
 			GuiGraphics guiGraphics,
-			Function<ResourceLocation, RenderType> function,
+			RenderPipeline renderPipeline,
 			ResourceLocation resourceLocation,
 			int i,
 			int j,
 			int k,
 			int l) {
-		guiGraphics.blitSprite(RenderType::guiTextured, resourceLocation, i, j, k, l, ARGB.white(opacity()));
+		guiGraphics.blitSprite(renderPipeline, resourceLocation, i, j, k, l, ARGB.white(opacity()));
 	}
 
 	@Override
 	public void blitSprite(
 			GuiGraphics guiGraphics,
-			Function<ResourceLocation, RenderType> function,
+			RenderPipeline renderPipeline,
 			ResourceLocation resourceLocation,
 			int i,
 			int j,
 			int k,
 			int l,
 			int m) {
-		guiGraphics.blitSprite(RenderType::guiTextured, resourceLocation, i, j, k, l, ARGB.color(ARGB.as8BitChannel(opacity()), m));
+		guiGraphics.blitSprite(renderPipeline, resourceLocation, i, j, k, l, ARGB.color(ARGB.as8BitChannel(opacity()), m));
 	}
 
 	@Override
 	public void blitSprite(
 			GuiGraphics guiGraphics,
-			Function<ResourceLocation, RenderType> function,
+			RenderPipeline renderPipeline,
 			ResourceLocation resourceLocation,
 			int i,
 			int j,
@@ -448,7 +444,7 @@ public class DisplayHelper implements IDisplayHelper {
 			int n,
 			int o,
 			int p) {
-		guiGraphics.blitSprite(RenderType::guiTextured, resourceLocation, i, j, k, l, m, n, o, p);
+		guiGraphics.blitSprite(renderPipeline, resourceLocation, i, j, k, l, m, n, o, p);
 	}
 
 	@Override

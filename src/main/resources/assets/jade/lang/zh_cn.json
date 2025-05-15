@@ -132,7 +132,6 @@
 	"config.jade.overlay_pos.exit": "按ESC键或点击中心退出",
 	"config.jade.overlay_pos_extra_msg": "顶部,底部,左侧,右侧,居中",
 	"config.jade.overlay_scale": "显示缩放",
-	"config.jade.overlay_square": "无圆角边框",
 	"config.jade.text_background_opacity": "文本背景透明度",
 	"config.jade.text_background_opacity_desc": "在进度条（如液体罐和能量存储）上绘制文本背景。",
 	"config.jade.flip_main_hand": "翻转主手",

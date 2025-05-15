@@ -57,9 +57,9 @@ public abstract class OptionValue<T> extends OptionsList.Entry {
 		Component title0 = widget.active ? title : title.copy().withStyle(ChatFormatting.STRIKETHROUGH, ChatFormatting.GRAY);
 		int left = rowLeft + indent + 10;
 		int top = rowTop + (height / 2) - (client.font.lineHeight / 2);
-		guiGraphics.drawString(client.font, title0, left, top, 16777215);
+		guiGraphics.drawString(client.font, title0, left, top, 0xFFFFFFFF);
 		if (serverFeature) {
-			guiGraphics.drawString(client.font, SERVER_FEATURE, left + getTextWidth() + 1, top, 16777215);
+			guiGraphics.drawString(client.font, SERVER_FEATURE, left + getTextWidth() + 1, top, 0xFFFFFFFF);
 		}
 		super.render(guiGraphics, index, rowTop, rowLeft, width, height, mouseX, mouseY, hovered, deltaTime);
 		this.x = rowLeft;

@@ -129,7 +129,6 @@
 	"config.jade.overlay_pos.adjust": "調整する...",
 	"config.jade.overlay_pos_extra_msg": "上,下,左,右,中央",
 	"config.jade.overlay_scale": "表示倍率",
-	"config.jade.overlay_square": "正方形の枠",
 	"config.jade.text_background_opacity": "テキスト背景の不透明度",
 	"config.jade.text_background_opacity_desc": "流体タンクやエネルギー貯蔵などの進行状況バーにテキストの背景を描画します。",
 	"config.jade.flip_main_hand": "利き手によって位置を反転",

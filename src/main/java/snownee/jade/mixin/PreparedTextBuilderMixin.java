@@ -17,8 +17,8 @@ import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.util.JadeFont;
 
-@Mixin(value = Font.StringRenderOutput.class, priority = 500)
-public class StringRenderOutputMixin {
+@Mixin(value = Font.PreparedTextBuilder.class, priority = 500)
+public class PreparedTextBuilderMixin {
 	@Shadow(aliases = {"field_24240", "b"}, remap = false)
 	private Font this$0;
 

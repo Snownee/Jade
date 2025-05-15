@@ -1,7 +1,6 @@
 package snownee.jade.impl.theme;
 
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -44,8 +43,8 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener<JadeClientCode
 	public static final ResourceLocation ID = JadeIds.JADE("themes");
 	public static final MutableObject<Theme> theme = new MutableObject<>();
 	private static final Int2ObjectMap<Style> styleCache = new Int2ObjectOpenHashMap<>(6);
-	private final Map<ResourceLocation, Theme> themes = Maps.newTreeMap(Comparator.comparing(ResourceLocation::toString));
-	private final MinMaxBounds.Ints allowedVersions = MinMaxBounds.Ints.between(100, 199);
+	private final Map<ResourceLocation, Theme> themes = Maps.newTreeMap();
+	private final MinMaxBounds.Ints allowedVersions = MinMaxBounds.Ints.between(200, 299);
 	private final Style[] modNameStyleCache = new Style[3];
 	private Theme fallback;
 
@@ -76,6 +75,11 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener<JadeClientCode
 	@NotNull
 	public Theme getTheme(ResourceLocation id) {
 		return Objects.requireNonNull(themes.getOrDefault(id, fallback));
+	}
+
+	@Override
+	public boolean hasTheme(ResourceLocation id) {
+		return themes.containsKey(id);
 	}
 
 	@Override
@@ -202,9 +206,6 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener<JadeClientCode
 				Theme theme = enable.getValue();
 				config.activeTheme = theme.id;
 				Jade.LOGGER.info("Auto enabled theme {}", theme.id);
-				if (theme.changeRoundCorner != null) {
-					config.setSquare(theme.changeRoundCorner);
-				}
 				if (theme.changeOpacity != 0) {
 					config.setAlpha(theme.changeOpacity);
 				}

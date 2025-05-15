@@ -133,7 +133,6 @@
 	"config.jade.overlay_pos.exit": "Натисніть ESC або натисність по центру, щоб вийти",
 	"config.jade.overlay_pos_extra_msg": "зверху, знизу, ліворуч, праворуч, по центру",
 	"config.jade.overlay_scale": "Відображення масштабу",
-	"config.jade.overlay_square": "Квадратна межа",
 	"config.jade.text_background_opacity": "Прозорість тла тексту",
 	"config.jade.text_background_opacity_desc": "Малює тло тексту на індикаторах прогресу, таких як резервуари для рідини та накопичувачі енергії",
 	"config.jade.flip_main_hand": "Зміна позиції ведучої рукою",

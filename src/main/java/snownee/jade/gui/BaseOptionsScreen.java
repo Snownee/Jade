@@ -11,9 +11,9 @@ import com.mojang.blaze3d.platform.InputConstants;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.ComponentPath;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.gui.navigation.ScreenAxis;
@@ -22,6 +22,7 @@ import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FormattedCharSequence;
 import snownee.jade.JadeClient;
 import snownee.jade.api.JadeIds;
 import snownee.jade.gui.config.BelowOrAboveListEntryTooltipPositioner;
@@ -29,6 +30,7 @@ import snownee.jade.gui.config.NotUglyEditBox;
 import snownee.jade.gui.config.OptionsList;
 import snownee.jade.gui.config.OptionsNav;
 import snownee.jade.gui.config.value.OptionValue;
+import snownee.jade.overlay.DisplayHelper;
 
 public abstract class BaseOptionsScreen extends Screen {
 
@@ -87,8 +89,7 @@ public abstract class BaseOptionsScreen extends Screen {
 		options.forceSetScrollAmount(scroll);
 
 		saveButton = addRenderableWidget(Button.builder(
-				Component.translatable("gui.jade.save_and_quit")
-						.withStyle(style -> style.withColor(0xFFB9F6CA)), w -> {
+				Component.translatable("gui.jade.save_and_quit").withStyle(style -> style.withColor(0xFFB9F6CA)), w -> {
 					if (options.invalidEntry == null) {
 						options.save();
 						saver.run();
@@ -123,23 +124,23 @@ public abstract class BaseOptionsScreen extends Screen {
 				}
 				if (!descs.isEmpty()) {
 					descs.replaceAll(BaseOptionsScreen::processBuiltInVariables);
-					setTooltipForNextRenderPass(
-							MultilineTooltip.create(descs),
-							new BelowOrAboveListEntryTooltipPositioner(options, entry),
-							false);
+					setTooltipForNextFrame(guiGraphics, descs, mouseX, mouseY, entry);
 				}
 			}
 			if (entry instanceof OptionValue<?> optionValue && optionValue.serverFeature) {
 				int x = entry.getTextX(options.getRowWidth()) + entry.getTextWidth() + 1;
 				int y = options.getRowTop(options.children().indexOf(entry)) + 7;
 				if (mouseX >= x && mouseX < x + 4 && mouseY >= y && mouseY < y + 4) {
-					setTooltipForNextRenderPass(
-							Tooltip.create(Component.translatable("gui.jade.server_feature")),
-							new BelowOrAboveListEntryTooltipPositioner(options, entry),
-							false);
+					setTooltipForNextFrame(guiGraphics, List.of(Component.translatable("gui.jade.server_feature")), mouseX, mouseY, entry);
 				}
 			}
 		}
+	}
+
+	public void setTooltipForNextFrame(GuiGraphics guiGraphics, List<Component> descs, int mouseX, int mouseY, OptionsList.Entry entry) {
+		Font font = DisplayHelper.font();
+		List<FormattedCharSequence> list = descs.stream().flatMap($ -> font.split($, 255).stream()).toList();
+		guiGraphics.setTooltipForNextFrame(font, list, new BelowOrAboveListEntryTooltipPositioner(options, entry), mouseX, mouseY, false);
 	}
 
 	public static Component processBuiltInVariables(Component component) {

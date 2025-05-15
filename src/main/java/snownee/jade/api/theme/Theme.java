@@ -10,41 +10,53 @@ import snownee.jade.api.ui.IBoxElement;
 public class Theme {
 
 	public static final ResourceLocation DEFAULT_THEME_ID = JadeIds.JADE("dark");
+	public ResourceLocation id;
+	public String styleName;
 	public BoxStyle tooltipStyle;
 	public BoxStyle nestedBoxStyle;
 	public BoxStyle viewGroupStyle;
-	public ResourceLocation id;
 	public TextSetting text;
-	public Boolean changeRoundCorner;
 	public float changeOpacity;
 	public boolean lightColorScheme;
-	public boolean hidden;
 	public ResourceLocation iconSlotSprite;
 	public int iconSlotInflation;
 	public IBoxElement iconSlotSpriteCache;
 
 	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 	public Theme(
+			String styleName,
 			BoxStyle tooltipStyle,
 			BoxStyle nestedBoxStyle,
 			BoxStyle viewGroupStyle,
 			TextSetting text,
-			Optional<Boolean> changeRoundCorner,
 			float changeOpacity,
 			boolean lightColorScheme,
-			boolean hidden,
 			Optional<ResourceLocation> iconSlotSprite,
 			int iconSlotInflation) {
+		this.styleName = styleName;
 		this.tooltipStyle = tooltipStyle;
 		this.nestedBoxStyle = nestedBoxStyle;
 		this.viewGroupStyle = viewGroupStyle;
 		this.text = text;
-		this.changeRoundCorner = changeRoundCorner.orElse(null);
 		this.changeOpacity = changeOpacity;
 		this.lightColorScheme = lightColorScheme;
-		this.hidden = hidden;
 		this.iconSlotSprite = iconSlotSprite.orElse(null);
 		this.iconSlotInflation = iconSlotInflation;
 	}
 
+	public ResourceLocation mainId() {
+		if (id.getPath().contains("/")) {
+			return id.withPath(id.getPath().substring(0, id.getPath().indexOf('/')));
+		} else {
+			return id;
+		}
+	}
+
+	public String styleId() {
+		if (id.getPath().contains("/")) {
+			return id.getPath().substring(id.getPath().indexOf('/') + 1);
+		} else {
+			return "";
+		}
+	}
 }

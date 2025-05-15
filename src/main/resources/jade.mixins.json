@@ -12,10 +12,11 @@
 		"BossHealthOverlayMixin",
 		"ClientLevelMixin",
 		"CreativeModeInventoryScreenMixin",
+		"FogRendererMixin",
 		"KeyAccess",
 		"LanguageManagerMixin",
 		"SessionSearchTreesMixin",
-		"StringRenderOutputMixin",
+		"PreparedTextBuilderMixin",
 		"conditional_key_mapping.KeyBindsListMixin",
 		"conditional_key_mapping.KeyMappingMixin"
 	],

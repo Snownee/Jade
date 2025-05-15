@@ -37,7 +37,6 @@ accessible field net/minecraft/client/gui/Font filterFishyGlyphs Z
 accessible field net/minecraft/client/gui/Font splitter Lnet/minecraft/client/StringSplitter;
 mutable field net/minecraft/client/gui/Font splitter Lnet/minecraft/client/StringSplitter;
 accessible method net/minecraft/client/gui/Font getFontSet (Lnet/minecraft/resources/ResourceLocation;)Lnet/minecraft/client/gui/font/FontSet;
-accessible class net/minecraft/client/gui/Font$StringRenderOutput
 accessible field net/minecraft/client/gui/font/glyphs/BakedGlyph up F
 accessible field net/minecraft/client/gui/font/glyphs/BakedGlyph down F
 accessible class net/minecraft/client/gui/font/providers/BitmapProvider$Glyph
@@ -48,23 +47,13 @@ accessible field net/minecraft/client/gui/components/Button DEFAULT_NARRATION Ln
 accessible field net/minecraft/client/gui/screens/inventory/CreativeModeInventoryScreen selectedTab Lnet/minecraft/world/item/CreativeModeTab;
 accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen hoveredSlot Lnet/minecraft/world/inventory/Slot;
 
-accessible method net/minecraft/client/gui/GuiGraphics blitTiledSprite (Ljava/util/function/Function;Lnet/minecraft/client/renderer/texture/TextureAtlasSprite;IIIIIIIIIII)V
-accessible method net/minecraft/client/gui/GuiGraphics blitSprite (Ljava/util/function/Function;Lnet/minecraft/client/renderer/texture/TextureAtlasSprite;IIIIIIIII)V
-accessible field net/minecraft/client/gui/GuiGraphics bufferSource Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;
-accessible method net/minecraft/client/gui/GuiGraphics blitNineSliceInnerSegment (Ljava/util/function/Function;Lnet/minecraft/client/resources/metadata/gui/GuiSpriteScaling$NineSlice;Lnet/minecraft/client/renderer/texture/TextureAtlasSprite;IIIIIIIIIII)V
-
 accessible field net/minecraft/client/gui/components/EditBox SPRITES Lnet/minecraft/client/gui/components/WidgetSprites;
-
-accessible field net/minecraft/client/gui/screens/Screen deferredTooltipRendering Lnet/minecraft/client/gui/screens/Screen$DeferredTooltipRendering;
 
 accessible field net/minecraft/world/level/block/entity/CampfireBlockEntity cookingProgress [I
 accessible field net/minecraft/world/level/block/entity/CampfireBlockEntity cookingTime [I
 
-accessible field net/minecraft/world/level/block/entity/trialspawner/TrialSpawnerData cooldownEndsAt J
+accessible field net/minecraft/world/level/block/entity/trialspawner/TrialSpawnerStateData cooldownEndsAt J
 
-accessible method net/minecraft/client/renderer/FogRenderer getPriorityFogFunction (Lnet/minecraft/world/entity/Entity;F)Lnet/minecraft/client/renderer/FogRenderer$MobEffectFogFunction;
-accessible class net/minecraft/client/renderer/FogRenderer$MobEffectFogFunction
-accessible class net/minecraft/client/renderer/FogRenderer$FogData
 accessible method net/minecraft/client/renderer/LightTexture calculateDarknessScale (Lnet/minecraft/world/entity/LivingEntity;FF)F
 
 accessible field net/minecraft/world/entity/animal/armadillo/Armadillo scuteTime I
@@ -88,3 +77,13 @@ extendable method net/minecraft/client/gui/components/WidgetTooltipHolder create
 
 accessible method net/minecraft/client/GameNarrator narrateMessage (Ljava/lang/String;Z)V
 accessible method net/minecraft/client/GameNarrator logNarratedMessage (Ljava/lang/String;)V
+
+accessible class net/minecraft/client/gui/Font$PreparedTextBuilder
+
+accessible method net/minecraft/client/gui/GuiGraphics renderItemBar (Lnet/minecraft/world/item/ItemStack;II)V
+accessible field net/minecraft/client/gui/GuiGraphics guiRenderState Lnet/minecraft/client/gui/render/state/GuiRenderState;
+accessible field net/minecraft/client/gui/GuiGraphics scissorStack Lnet/minecraft/client/gui/GuiGraphics$ScissorStack;
+accessible method net/minecraft/client/gui/GuiGraphics$ScissorStack peek ()Lnet/minecraft/client/gui/navigation/ScreenRectangle;
+
+accessible method net/minecraft/client/gui/screens/inventory/tooltip/TooltipRenderUtil getBackgroundSprite (Lnet/minecraft/resources/ResourceLocation;)Lnet/minecraft/resources/ResourceLocation;
+accessible method net/minecraft/client/gui/screens/inventory/tooltip/TooltipRenderUtil getFrameSprite (Lnet/minecraft/resources/ResourceLocation;)Lnet/minecraft/resources/ResourceLocation;

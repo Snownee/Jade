@@ -460,7 +460,6 @@ public class WailaConfig implements IWailaConfig {
 						Codec.floatRange(0.2F, 2F).fieldOf("overlayScale").orElse(1.0F).forGetter(Overlay::getOverlayScale),
 						Codec.FLOAT.fieldOf("overlayAnchorX").orElse(0.5F).forGetter(Overlay::getAnchorX),
 						Codec.FLOAT.fieldOf("overlayAnchorY").orElse(0.0F).forGetter(Overlay::getAnchorY),
-						Codec.BOOL.fieldOf("overlaySquare").orElse(false).forGetter(Overlay::getSquare),
 						Codec.floatRange(0, 1).fieldOf("autoScaleThreshold").orElse(0.4f).forGetter(Overlay::getAutoScaleThreshold),
 						Codec.floatRange(0, 1).fieldOf("alpha").orElse(0.7f).forGetter(Overlay::getAlpha),
 						StringRepresentable.fromEnum(IconMode::values).fieldOf("iconMode").orElse(IconMode.TOP).forGetter(Overlay::getIconMode),
@@ -474,7 +473,6 @@ public class WailaConfig implements IWailaConfig {
 		private float overlayScale;
 		private float overlayAnchorX;
 		private float overlayAnchorY;
-		private boolean overlaySquare;
 		private float autoScaleThreshold;
 		private float alpha;
 		private transient Theme activeThemeInstance;
@@ -489,7 +487,6 @@ public class WailaConfig implements IWailaConfig {
 				float overlayScale,
 				float overlayAnchorX,
 				float overlayAnchorY,
-				boolean overlaySquare,
 				float autoScaleThreshold,
 				float alpha,
 				IconMode iconMode,
@@ -501,7 +498,6 @@ public class WailaConfig implements IWailaConfig {
 			this.overlayScale = overlayScale;
 			this.overlayAnchorX = overlayAnchorX;
 			this.overlayAnchorY = overlayAnchorY;
-			this.overlaySquare = overlaySquare;
 			this.autoScaleThreshold = autoScaleThreshold;
 			this.alpha = alpha;
 			this.iconMode = iconMode;
@@ -557,16 +553,6 @@ public class WailaConfig implements IWailaConfig {
 		@Override
 		public void setAnchorY(float overlayAnchorY) {
 			this.overlayAnchorY = Mth.clamp(overlayAnchorY, 0.0F, 1.0F);
-		}
-
-		@Override
-		public boolean getSquare() {
-			return overlaySquare;
-		}
-
-		@Override
-		public void setSquare(boolean overlaySquare) {
-			this.overlaySquare = overlaySquare;
 		}
 
 		@Override

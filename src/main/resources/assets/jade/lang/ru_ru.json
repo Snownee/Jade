@@ -129,7 +129,6 @@
 	"config.jade.overlay_pos.adjust": "Регулирование...",
 	"config.jade.overlay_pos_extra_msg": "вверху,внизу,слева,справа,в центре",
 	"config.jade.overlay_scale": "Отображение масштаба",
-	"config.jade.overlay_square": "Квадратная граница",
 	"config.jade.text_background_opacity": "Непрозрачность фона текста",
 	"config.jade.text_background_opacity_desc": "Рисовать фоновый текст на индикаторах выполнения, таких как резервуары для жидкости и накопители энергии.",
 	"config.jade.flip_main_hand": "Изменение позиции ведущей рукой",

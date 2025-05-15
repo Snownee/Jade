@@ -106,7 +106,6 @@
 	"config.jade.overlay_pos.exit": "按ESC鍵或點擊中央退出",
 	"config.jade.overlay_pos_extra_msg": "頂部,底部,左側,右側,置中",
 	"config.jade.overlay_scale": "顯示縮放比例",
-	"config.jade.overlay_square": "直角邊框",
 	"config.jade.flip_main_hand": "隨慣用手翻轉位置",
 	"config.jade.flip_main_hand_desc": "若慣用手改為左手則對翻轉物品提示的位置",
 	"config.jade.overlay_alpha": "背景不透明度",

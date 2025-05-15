@@ -7,6 +7,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.OwnableEntity;
+import net.minecraft.world.entity.animal.HappyGhast;
 import net.minecraft.world.item.ItemStack;
 import snownee.jade.JadeClient;
 import snownee.jade.api.EntityAccessor;
@@ -24,17 +25,14 @@ public enum PetArmorProvider implements IEntityComponentProvider, StreamServerDa
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
-		if (!(accessor.getEntity() instanceof OwnableEntity)) {
-			return;
-		}
-		Mode mode = IWailaConfig.get().plugin().getEnum(JadeIds.MC_PET_ARMOR);
-		if (mode == Mode.OFF) {
+		if (!shouldRequestData(accessor)) {
 			return;
 		}
 		ItemStack armor = decodeFromData(accessor).orElse(ItemStack.EMPTY);
 		if (armor.isEmpty()) {
 			return;
 		}
+		Mode mode = IWailaConfig.get().plugin().getEnum(JadeIds.MC_PET_ARMOR);
 		if (mode == Mode.SHOW_DAMAGEABLE && !armor.isDamageableItem()) {
 			return;
 		}
@@ -52,7 +50,7 @@ public enum PetArmorProvider implements IEntityComponentProvider, StreamServerDa
 
 	@Override
 	public boolean shouldRequestData(EntityAccessor accessor) {
-		if (!(accessor.getEntity() instanceof OwnableEntity)) {
+		if (!(accessor.getEntity() instanceof OwnableEntity) && !(accessor.getEntity() instanceof HappyGhast)) {
 			return false;
 		}
 		Mode mode = IWailaConfig.get().plugin().getEnum(JadeIds.MC_PET_ARMOR);

@@ -43,7 +43,7 @@ public class OptionButton extends OptionsList.Entry {
 			boolean hovered,
 			float deltaTime) {
 		if (shouldRenderTitle()) {
-			guiGraphics.drawString(client.font, title, rowLeft + 10, rowTop + (height / 2) - (client.font.lineHeight / 2), 16777215);
+			guiGraphics.drawString(client.font, title, rowLeft + 10, rowTop + (height / 2) - (client.font.lineHeight / 2), 0xFFFFFFFF);
 		}
 		super.render(guiGraphics, index, rowTop, rowLeft, width, height, mouseX, mouseY, hovered, deltaTime);
 	}

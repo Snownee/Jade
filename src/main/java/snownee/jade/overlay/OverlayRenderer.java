@@ -1,11 +1,11 @@
 package snownee.jade.overlay;
 
+import org.joml.Matrix3x2fStack;
+
 import com.mojang.blaze3d.platform.Window;
-import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.util.Mth;
 import net.minecraft.util.profiling.Profiler;
@@ -178,42 +178,28 @@ public class OverlayRenderer {
 			}
 		}
 
-		PoseStack matrixStack = guiGraphics.pose();
-		matrixStack.pushPose();
-		Minecraft mc = Minecraft.getInstance();
-		Screen screen = mc.screen;
-		float z;
-		if (screen == null) {
-			z = 1;
-		} else if (ClientProxy.shouldShowAfterGui(mc, screen)) {
-			z = 100;
-		} else {
-			z = -999;
-		}
+		Matrix3x2fStack matrixStack = guiGraphics.pose();
+		matrixStack.pushMatrix();
 		Rect2i rect2i = rect.rect;
-		matrixStack.translate(rect2i.getX(), rect2i.getY(), z);
+		matrixStack.translate(rect2i.getX(), rect2i.getY());
 
 		float scale = rect.scale;
-		if (scale != 1) {
-			matrixStack.scale(scale, scale, 1.0F);
+		if (scale != 1f) {
+			matrixStack.scale(scale);
 		}
 		{
 			float maxWidth = rect2i.getWidth();
 			float maxHeight = rect2i.getHeight();
 			maxWidth = maxWidth / scale;
 			maxHeight = maxHeight / scale;
-			if (root.getStyle().hasRoundCorner()) {
-				maxWidth -= 2;
-				maxHeight -= 2;
-			}
-			root.render(guiGraphics, 0, 0, maxWidth, maxHeight);
+			root.render(guiGraphics, 0, 0, Math.round(maxWidth), Math.round(maxHeight));
 		}
 
 		WailaClientRegistration.instance().afterRenderCallback.call(callback -> {
 			callback.afterRender(root, rect, guiGraphics, ObjectDataCenter.get());
 		});
 
-		matrixStack.popPose();
+		matrixStack.popMatrix();
 
 		if (IWailaConfig.get().accessibility().shouldEnableTextToSpeech()) {
 			WailaTickHandler.narrate(root.getTooltip(), true);

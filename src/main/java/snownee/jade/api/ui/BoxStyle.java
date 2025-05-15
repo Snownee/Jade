@@ -1,58 +1,79 @@
 package snownee.jade.api.ui;
 
 import java.util.Optional;
-import java.util.function.Function;
 
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.MoreObjects;
-import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.gui.screens.inventory.tooltip.TooltipRenderUtil;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
-import snownee.jade.api.config.IWailaConfig;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.impl.ui.StyledElement;
-import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.util.JadeCodecs;
 
-public abstract class BoxStyle implements Cloneable {
-	private static final int[] DEFAULT_PADDING = new int[]{4, 4, 4, 4};
-	public static final Codec<GradientBorder> GRADIENT_BORDER_CODEC = RecordCodecBuilder.create(i -> i.group(
-			JadeCodecs.floatArrayCodec(4, Codec.FLOAT)
-					.optionalFieldOf("boxProgressOffset")
-					.forGetter($ -> Optional.ofNullable($.boxProgressOffset)),
-			ColorPalette.CODEC.optionalFieldOf("boxProgressColors", ColorPalette.DEFAULT).forGetter($ -> $.boxProgressColors),
-			JadeCodecs.intArrayCodec(4, Codec.INT).optionalFieldOf("padding").forGetter($ -> Optional.ofNullable($.padding)),
-			Color.CODEC.optionalFieldOf("backgroundColor", -1).forGetter($ -> $.bgColor),
-			JadeCodecs.intArrayCodec(4, Color.CODEC).fieldOf("borderColor").forGetter($ -> $.borderColor),
-			Codec.FLOAT.optionalFieldOf("borderWidth", 1F).forGetter($ -> $.borderWidth),
-			Codec.BOOL.optionalFieldOf("roundCorner").forGetter($ -> Optional.ofNullable($.roundCorner))
-	).apply(i, GradientBorder::new));
-	public static final Codec<SpriteBase> SPRITE_BASE_CODEC = RecordCodecBuilder.create(i -> i.group(
-			JadeCodecs.floatArrayCodec(4, Codec.FLOAT)
-					.optionalFieldOf("boxProgressOffset")
-					.forGetter($ -> Optional.ofNullable($.boxProgressOffset)),
-			ColorPalette.CODEC.optionalFieldOf("boxProgressColors", ColorPalette.DEFAULT).forGetter($ -> $.boxProgressColors),
-			JadeCodecs.intArrayCodec(4, Codec.INT).optionalFieldOf("padding").forGetter($ -> Optional.ofNullable($.padding)),
-			ResourceLocation.CODEC.fieldOf("sprite").forGetter($ -> $.sprite),
-			ResourceLocation.CODEC.optionalFieldOf("withIconSprite").forGetter($ -> Optional.ofNullable($.withIconSprite))
-	).apply(i, SpriteBase::new));
-	public static final Codec<BoxStyle> CODEC = Codec.either(GRADIENT_BORDER_CODEC, SPRITE_BASE_CODEC).xmap(
-			$ -> $.map(Function.identity(), Function.identity()),
-			$ -> $ instanceof GradientBorder ? Either.left((GradientBorder) $) : Either.right((SpriteBase) $));
+@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+public class BoxStyle implements Cloneable {
+	private static final int[] DEFAULT_PADDING = new int[]{3, 3, 3, 3};
+	public static final Codec<BoxStyle> CODEC = RecordCodecBuilder.create(i -> i.group(
+					JadeCodecs.floatArrayCodec(4, Codec.FLOAT)
+							.optionalFieldOf("boxProgressOffset")
+							.forGetter($ -> Optional.ofNullable($.boxProgressOffset)),
+					ColorPalette.CODEC.optionalFieldOf("boxProgressColors", ColorPalette.DEFAULT).forGetter($ -> $.boxProgressColors),
+					JadeCodecs.intArrayCodec(4, Codec.INT).optionalFieldOf("padding").forGetter($ -> Optional.ofNullable($.padding)),
+					Codec.INT.optionalFieldOf("borderWidth", 1).forGetter($ -> $.borderWidth),
+					ResourceLocation.CODEC.optionalFieldOf("sprite").forGetter($ -> Optional.ofNullable($.sprite)),
+					ResourceLocation.CODEC.optionalFieldOf("withIconSprite").forGetter($ -> Optional.ofNullable($.withIconSprite)))
+			.apply(i, BoxStyle::new));
+	private static final BoxStyle TRANSPARENT = new BoxStyle(
+			Optional.empty(),
+			ColorPalette.DEFAULT,
+			Optional.empty(),
+			0,
+			Optional.empty(),
+			Optional.empty());
+	public static final BoxStyle DEFAULT_NESTED_BOX = new BoxStyle(
+			Optional.empty(),
+			ColorPalette.DEFAULT,
+			Optional.empty(),
+			1,
+			Optional.of(JadeIds.JADE("nested_box")),
+			Optional.empty());
+	public static final BoxStyle DEFAULT_VIEW_GROUP = new BoxStyle(
+			Optional.empty(),
+			ColorPalette.DEFAULT,
+			Optional.of(new int[]{2, 2, 2, 2}),
+			1,
+			Optional.of(JadeIds.JADE("view_group")),
+			Optional.empty());
 	public final float[] boxProgressOffset;
 	public final int[] padding;
+	public int borderWidth;
 	public ColorPalette boxProgressColors;
+	@Nullable
+	public ResourceLocation sprite;
+	@Nullable
+	public ResourceLocation withIconSprite;
 
-	public BoxStyle(Optional<float[]> boxProgressOffset, ColorPalette boxProgressColors, Optional<int[]> padding) {
+	public BoxStyle(
+			Optional<float[]> boxProgressOffset,
+			ColorPalette boxProgressColors,
+			Optional<int[]> padding,
+			int borderWidth,
+			Optional<ResourceLocation> sprite,
+			Optional<ResourceLocation> withIconSprite) {
 		this.boxProgressOffset = boxProgressOffset.orElse(null);
 		this.boxProgressColors = boxProgressColors;
 		this.padding = padding.orElseGet(DEFAULT_PADDING::clone);
+		this.borderWidth = borderWidth;
+		this.sprite = sprite.orElse(null);
+		this.withIconSprite = withIconSprite.orElse(null);
 	}
 
 	public static BoxStyle getNestedBox() {
@@ -63,17 +84,23 @@ public abstract class BoxStyle implements Cloneable {
 		return IThemeHelper.get().theme().viewGroupStyle;
 	}
 
-	public static GradientBorder getTransparent() {
-		return GradientBorder.TRANSPARENT;
+	public static BoxStyle getTransparent() {
+		return BoxStyle.TRANSPARENT;
 	}
 
 	public static BoxStyle getSprite(ResourceLocation sprite, @Nullable int[] padding) {
-		return new BoxStyle.SpriteBase(Optional.empty(), ColorPalette.DEFAULT, Optional.ofNullable(padding), sprite, Optional.empty());
+		return getSprite(sprite, padding, 1);
 	}
 
-	public abstract void render(GuiGraphics guiGraphics, StyledElement element, float x, float y, float w, float h, float alpha);
-
-	public abstract float borderWidth();
+	public static BoxStyle getSprite(ResourceLocation sprite, @Nullable int[] padding, int borderWidth) {
+		return new BoxStyle(
+				Optional.empty(),
+				ColorPalette.DEFAULT,
+				Optional.ofNullable(padding),
+				borderWidth,
+				Optional.ofNullable(sprite),
+				Optional.empty());
+	}
 
 	public float boxProgressOffset(ScreenDirection dir) {
 		return boxProgressOffset == null ? 0 : boxProgressOffset[dir.ordinal()];
@@ -83,184 +110,177 @@ public abstract class BoxStyle implements Cloneable {
 		return MoreObjects.firstNonNull(padding, DEFAULT_PADDING)[dir.ordinal()];
 	}
 
+	public void render(GuiGraphics guiGraphics, StyledElement element, float x, float y, float w, float h, float alpha) {
+		ResourceLocation texture = sprite;
+		if (withIconSprite != null && element.getIcon() != null) {
+			texture = withIconSprite;
+		}
+		if (texture == null) {
+			return;
+		}
+		int roundedX = Math.round(x);
+		int roundedY = Math.round(y);
+		int roundedW = Math.round(w);
+		int roundedH = Math.round(h);
+		int col = ARGB.white(alpha);
+		roundedX = roundedX - 9;
+		roundedY = roundedY - 9;
+		roundedW = roundedW + 9 + 9;
+		roundedH = roundedH + 9 + 9;
+		guiGraphics.blitSprite(
+				RenderPipelines.GUI_TEXTURED,
+				TooltipRenderUtil.getBackgroundSprite(texture),
+				roundedX,
+				roundedY,
+				roundedW,
+				roundedH,
+				col);
+		guiGraphics.blitSprite(
+				RenderPipelines.GUI_TEXTURED,
+				TooltipRenderUtil.getFrameSprite(texture),
+				roundedX,
+				roundedY,
+				roundedW,
+				roundedH,
+				col);
+	}
+
+	public int borderWidth() {
+		return borderWidth;
+	}
+
 	@Override
-	public abstract BoxStyle clone();
-
-	public boolean hasRoundCorner() {
-		return false;
+	public BoxStyle clone() {
+		return new BoxStyle(
+				JadeCodecs.nullableClone(boxProgressOffset),
+				boxProgressColors,
+				JadeCodecs.nullableClone(padding),
+				borderWidth,
+				Optional.ofNullable(sprite),
+				Optional.ofNullable(withIconSprite));
 	}
 
-	public static class GradientBorder extends BoxStyle {
-		public static final GradientBorder TRANSPARENT = new GradientBorder(
-				Optional.empty(),
-				ColorPalette.DEFAULT,
-				Optional.empty(),
-				-1,
-				new int[]{-1, -1, -1, -1},
-				0,
-				Optional.of(false));
-		public static final GradientBorder DEFAULT_NESTED_BOX = new GradientBorder(
-				Optional.empty(),
-				ColorPalette.DEFAULT,
-				Optional.empty(),
-				-1,
-				new int[]{0xFF808080, 0xFF808080, 0xFF808080, 0xFF808080},
-				1,
-				Optional.empty());
-		public static final GradientBorder DEFAULT_VIEW_GROUP = new GradientBorder(
-				Optional.empty(),
-				ColorPalette.DEFAULT,
-				Optional.of(new int[]{2, 2, 2, 2}),
-				0x44444444,
-				new int[]{0x44444444, 0x44444444, 0x44444444, 0x44444444},
-				0.75F,
-				Optional.empty());
-		public int bgColor;
-		public int[] borderColor;
-		public float borderWidth;
-		@Nullable
-		public Boolean roundCorner;
-
-		private GradientBorder(
-				Optional<float[]> boxProgressOffset,
-				ColorPalette boxProgressColors,
-				Optional<int[]> padding,
-				int bgColor,
-				int[] borderColor,
-				float borderWidth,
-				Optional<Boolean> roundCorner) {
-			super(boxProgressOffset, boxProgressColors, padding);
-			this.bgColor = bgColor;
-			this.borderColor = borderColor;
-			this.borderWidth = borderWidth;
-			this.roundCorner = roundCorner.orElse(null);
-		}
-
-		@Override
-		public float borderWidth() {
-			return borderWidth;
-		}
-
-		@Override
-		public void render(GuiGraphics guiGraphics, StyledElement element, float x, float y, float w, float h, float alpha) {
-			boolean roundCorner = hasRoundCorner();
-			if (bgColor != -1) {
-				int bg = IWailaConfig.Overlay.applyAlpha(bgColor, alpha);
-				DisplayHelper.INSTANCE.drawGradientRect(
-						guiGraphics,
-						x + borderWidth,
-						y + borderWidth,
-						w - borderWidth - borderWidth,
-						h - borderWidth - borderWidth,
-						bg,
-						bg);//center
-				if (roundCorner) {
-					DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x, y - 1, w, 1, bg, bg);
-					DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x, y + h, w, 1, bg, bg);
-					DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x - 1, y, 1, h, bg, bg);
-					DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x + w, y, 1, h, bg, bg);
-				}
-			}
-			if (borderWidth > 0) {
-				int[] borderColors = new int[4];
-				for (int i = 0; i < 4; i++) {
-					if (borderColor[i] != -1) {
-						borderColors[i] = IWailaConfig.Overlay.applyAlpha(borderColor[i], alpha);
-					}
-				}
-				DisplayHelper.INSTANCE.drawGradientRect(
-						guiGraphics,
-						x,
-						y + borderWidth,
-						borderWidth,
-						h - borderWidth - borderWidth,
-						borderColors[0],
-						borderColors[3]);
-				DisplayHelper.INSTANCE.drawGradientRect(
-						guiGraphics,
-						x + w - borderWidth,
-						y + borderWidth,
-						borderWidth,
-						h - borderWidth - borderWidth,
-						borderColors[1],
-						borderColors[2]);
-				DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x, y, w, borderWidth, borderColors[0], borderColors[1]);
-				DisplayHelper.INSTANCE.drawGradientRect(
-						guiGraphics,
-						x,
-						y + h - borderWidth,
-						w,
-						borderWidth,
-						borderColors[3],
-						borderColors[2]);
-			}
-		}
-
-		@Override
-		public GradientBorder clone() {
-			return new GradientBorder(
-					JadeCodecs.nullableClone(boxProgressOffset),
-					boxProgressColors,
-					JadeCodecs.nullableClone(padding),
-					bgColor,
-					borderColor,
-					borderWidth,
-					Optional.ofNullable(roundCorner));
-		}
-
-		@Override
-		public boolean hasRoundCorner() {
-			return roundCorner == null ? !IWailaConfig.get().overlay().getSquare() : roundCorner;
-		}
-	}
-
-	public static class SpriteBase extends BoxStyle {
-		public ResourceLocation sprite;
-		@Nullable
-		public ResourceLocation withIconSprite;
-
-		@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-		public SpriteBase(
-				Optional<float[]> boxProgressOffset,
-				ColorPalette boxProgressColors,
-				Optional<int[]> padding,
-				ResourceLocation sprite,
-				Optional<ResourceLocation> withIconSprite) {
-			super(boxProgressOffset, boxProgressColors, padding);
-			this.sprite = sprite;
-			this.withIconSprite = withIconSprite.orElse(null);
-		}
-
-		@Override
-		public void render(GuiGraphics guiGraphics, StyledElement element, float x, float y, float w, float h, float alpha) {
-			ResourceLocation texture = sprite;
-			if (withIconSprite != null && element.getIcon() != null) {
-				texture = withIconSprite;
-			}
-			guiGraphics.blitSprite(
-					RenderType::guiTextured,
-					texture,
-					Math.round(x),
-					Math.round(y),
-					Math.round(w),
-					Math.round(h),
-					ARGB.white(alpha));
-		}
-
-		@Override
-		public float borderWidth() {
-			return 0;
-		}
-
-		@Override
-		public SpriteBase clone() {
-			return new SpriteBase(
-					JadeCodecs.nullableClone(boxProgressOffset),
-					boxProgressColors,
-					JadeCodecs.nullableClone(padding),
-					sprite,
-					Optional.ofNullable(withIconSprite));
-		}
-	}
-
+//	public static class GradientBorder extends BoxStyle {
+//		public static final GradientBorder TRANSPARENT = new GradientBorder(
+//				Optional.empty(),
+//				ColorPalette.DEFAULT,
+//				Optional.empty(),
+//				-1,
+//				new int[]{-1, -1, -1, -1},
+//				0,
+//				Optional.of(false));
+//		public static final GradientBorder DEFAULT_NESTED_BOX = new GradientBorder(
+//				Optional.empty(),
+//				ColorPalette.DEFAULT,
+//				Optional.empty(),
+//				-1,
+//				new int[]{0xFF808080, 0xFF808080, 0xFF808080, 0xFF808080},
+//				1,
+//				Optional.empty());
+//		public static final GradientBorder DEFAULT_VIEW_GROUP = new GradientBorder(
+//				Optional.empty(),
+//				ColorPalette.DEFAULT,
+//				Optional.of(new int[]{2, 2, 2, 2}),
+//				0x44444444,
+//				new int[]{0x44444444, 0x44444444, 0x44444444, 0x44444444},
+//				0.75F,
+//				Optional.empty());
+//		public int bgColor;
+//		public int[] borderColor;
+//		public float borderWidth;
+//		@Nullable
+//		public Boolean roundCorner;
+//
+//		private GradientBorder(
+//				Optional<float[]> boxProgressOffset,
+//				ColorPalette boxProgressColors,
+//				Optional<int[]> padding,
+//				int bgColor,
+//				int[] borderColor,
+//				float borderWidth,
+//				Optional<Boolean> roundCorner) {
+//			super(boxProgressOffset, boxProgressColors, padding);
+//			this.bgColor = bgColor;
+//			this.borderColor = borderColor;
+//			this.borderWidth = borderWidth;
+//			this.roundCorner = roundCorner.orElse(null);
+//		}
+//
+//		@Override
+//		public float borderWidth() {
+//			return borderWidth;
+//		}
+//
+//		@Override
+//		public void render(GuiGraphics guiGraphics, StyledElement element, float x, float y, float w, float h, float alpha) {
+//			boolean roundCorner = hasRoundCorner();
+//			if (bgColor != -1) {
+//				int bg = IWailaConfig.Overlay.applyAlpha(bgColor, alpha);
+//				DisplayHelper.INSTANCE.drawGradientRect(
+//						guiGraphics,
+//						x + borderWidth,
+//						y + borderWidth,
+//						w - borderWidth - borderWidth,
+//						h - borderWidth - borderWidth,
+//						bg,
+//						bg);//center
+//				if (roundCorner) {
+//					DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x, y - 1, w, 1, bg, bg);
+//					DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x, y + h, w, 1, bg, bg);
+//					DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x - 1, y, 1, h, bg, bg);
+//					DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x + w, y, 1, h, bg, bg);
+//				}
+//			}
+//			if (borderWidth > 0) {
+//				int[] borderColors = new int[4];
+//				for (int i = 0; i < 4; i++) {
+//					if (borderColor[i] != -1) {
+//						borderColors[i] = IWailaConfig.Overlay.applyAlpha(borderColor[i], alpha);
+//					}
+//				}
+//				DisplayHelper.INSTANCE.drawGradientRect(
+//						guiGraphics,
+//						x,
+//						y + borderWidth,
+//						borderWidth,
+//						h - borderWidth - borderWidth,
+//						borderColors[0],
+//						borderColors[3]);
+//				DisplayHelper.INSTANCE.drawGradientRect(
+//						guiGraphics,
+//						x + w - borderWidth,
+//						y + borderWidth,
+//						borderWidth,
+//						h - borderWidth - borderWidth,
+//						borderColors[1],
+//						borderColors[2]);
+//				DisplayHelper.INSTANCE.drawGradientRect(guiGraphics, x, y, w, borderWidth, borderColors[0], borderColors[1]);
+//				DisplayHelper.INSTANCE.drawGradientRect(
+//						guiGraphics,
+//						x,
+//						y + h - borderWidth,
+//						w,
+//						borderWidth,
+//						borderColors[3],
+//						borderColors[2]);
+//			}
+//		}
+//
+//		@Override
+//		public GradientBorder clone() {
+//			return new GradientBorder(
+//					JadeCodecs.nullableClone(boxProgressOffset),
+//					boxProgressColors,
+//					JadeCodecs.nullableClone(padding),
+//					bgColor,
+//					borderColor,
+//					borderWidth,
+//					Optional.ofNullable(roundCorner));
+//		}
+//
+//		@Override
+//		public boolean hasRoundCorner() {
+//			return roundCorner == null ? !IWailaConfig.get().overlay().getSquare() : roundCorner;
+//		}
+//	}
 }

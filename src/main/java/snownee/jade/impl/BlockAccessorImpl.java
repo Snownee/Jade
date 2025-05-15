@@ -59,7 +59,7 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 				return;
 			}
 			BlockPos pos = accessor.getPosition();
-			ServerLevel world = player.serverLevel();
+			ServerLevel world = player.level();
 			double maxDistance = Mth.square(player.blockInteractionRange() + 21);
 			if (pos.distSqr(player.blockPosition()) > maxDistance || !world.isLoaded(pos)) {
 				return;

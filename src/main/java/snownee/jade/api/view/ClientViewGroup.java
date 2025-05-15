@@ -11,10 +11,10 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.ui.BoxStyle;
-import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.ui.IBoxElement;
 import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.api.ui.MessageType;
+import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.impl.ui.HorizontalLineElement;
 
 public class ClientViewGroup<T> {
@@ -67,10 +67,6 @@ public class ClientViewGroup<T> {
 					box.size(null);
 				}
 				tooltip.add(box);
-				if (box.getStyle().hasRoundCorner()) {
-					tooltip.setLineMargin(-1, ScreenDirection.UP, 3);
-					tooltip.setLineMargin(-1, ScreenDirection.DOWN, 3);
-				}
 			}
 		}
 	}

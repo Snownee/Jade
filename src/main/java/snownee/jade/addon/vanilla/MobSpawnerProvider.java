@@ -11,7 +11,7 @@ import net.minecraft.world.entity.vehicle.MinecartSpawner;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
 import net.minecraft.world.level.block.entity.TrialSpawnerBlockEntity;
-import net.minecraft.world.level.block.entity.trialspawner.TrialSpawnerData;
+import net.minecraft.world.level.block.entity.trialspawner.TrialSpawnerStateData;
 import snownee.jade.addon.core.ObjectNameProvider;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
@@ -44,7 +44,7 @@ public abstract class MobSpawnerProvider implements IToggleableProvider {
 			if (accessor.getBlockEntity() instanceof SpawnerBlockEntity spawner) {
 				appendTooltip(tooltip, spawner.getSpawner().getOrCreateDisplayEntity(level, pos), name);
 			} else if (accessor.getBlockEntity() instanceof TrialSpawnerBlockEntity spawner) {
-				TrialSpawnerData data = spawner.getTrialSpawner().getData();
+				TrialSpawnerStateData data = spawner.getTrialSpawner().getStateData();
 				appendTooltip(tooltip, data.getOrCreateDisplayEntity(spawner.getTrialSpawner(), level, spawner.getState()), name);
 			}
 		}

@@ -1,11 +1,11 @@
 package snownee.jade.impl.ui;
 
 import java.util.Objects;
-import java.util.function.Function;
 
 import org.jetbrains.annotations.Nullable;
 
-import net.minecraft.client.renderer.RenderType;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
+
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -105,8 +105,8 @@ public class ElementHelper implements IElementHelper {
 	}
 
 	@Override
-	public IElement sprite(Function<ResourceLocation, RenderType> function, ResourceLocation sprite, int width, int height) {
-		return new SpriteElement(function, sprite, width, height);
+	public IElement sprite(RenderPipeline renderPipeline, ResourceLocation sprite, int width, int height) {
+		return new SpriteElement(renderPipeline, sprite, width, height);
 	}
 
 	@Override

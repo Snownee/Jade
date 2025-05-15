@@ -25,10 +25,11 @@ public class CompoundElement extends Element {
 		Vec2 largeSize = large.getCachedSize();
 		Vec2 smallSize = small.getCachedSize();
 		large.render(guiGraphics, x, y, maxX, maxY);
-		guiGraphics.pose().pushPose();
-		guiGraphics.pose().translate(0, 0, 100);
+		guiGraphics.pose().pushMatrix();
+		//FIXME
+//		guiGraphics.pose().translate(0, 0, 100);
 		small.render(guiGraphics, x + largeSize.x - smallSize.x, y + largeSize.y - smallSize.y, maxX, maxY);
-		guiGraphics.pose().popPose();
+		guiGraphics.pose().popMatrix();
 	}
 
 }

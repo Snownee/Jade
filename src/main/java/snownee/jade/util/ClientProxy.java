@@ -25,8 +25,7 @@ import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback;
-import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
@@ -302,12 +301,11 @@ public final class ClientProxy implements ClientModInitializer {
 		ClientTickEvents.END_CLIENT_TICK.register(ClientProxy::onKeyPressed);
 		ScreenEvents.AFTER_INIT.register((Minecraft client, Screen screen, int scaledWidth, int scaledHeight) -> onGui(screen));
 		ClientCommandRegistrationCallback.EVENT.register(ClientProxy::registerClientCommand);
-		HudLayerRegistrationCallback.EVENT.register(layeredDrawer -> layeredDrawer.addLayer(IdentifiedLayer.of(
-				JadeIds.UI_MAIN, (guiGraphics, deltaTracker) -> {
-					if (Minecraft.getInstance().screen == null) {
-						onRenderTick(guiGraphics, deltaTracker.getRealtimeDeltaTicks());
-					}
-				})));
+		HudRenderCallback.EVENT.register((guiGraphics, deltaTracker) -> {
+			if (Minecraft.getInstance().screen == null) {
+				onRenderTick(guiGraphics, deltaTracker.getRealtimeDeltaTicks());
+			}
+		});
 		ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
 			if (shouldShowAfterGui(client, screen)) {
 				ScreenEvents.afterRender(screen).register((screen1, guiGraphics, mouseX, mouseY, tickDelta) -> {

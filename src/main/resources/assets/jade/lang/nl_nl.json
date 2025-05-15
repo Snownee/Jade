@@ -99,7 +99,6 @@
 	"config.jade.overlay_pos.adjust": "Aanpassen...",
 	"config.jade.overlay_pos_extra_msg": "bovenkant,omlaag,links,rechts,centrum",
 	"config.jade.overlay_scale": "Schaal weergeven",
-	"config.jade.overlay_square": "Vierkante rand",
 	"config.jade.flip_main_hand": "Flip positie met hoofdhand",
 	"config.jade.flip_main_hand_desc": "Spiegel de tooltip positie wanneer de hoofdhand links is.",
 	"config.jade.overlay_alpha": "Achtergronddekking",

@@ -7,7 +7,6 @@ import java.util.Objects;
 import org.apache.commons.lang3.mutable.MutableInt;
 
 import com.google.common.collect.Lists;
-import com.mojang.math.Axis;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -113,14 +112,16 @@ public class HomeConfigScreen extends Screen {
 		int maxWidth = Math.max(100, Math.max(font.width(modSettings) + 8, font.width(pluginSettings) + 8));
 		maxWidth = Math.min(maxWidth, Math.min(240, width / 2 - 40));
 
-		addRenderableWidget(Button.builder(modSettings, w -> {
-			visitedChildScreen();
-			minecraft.setScreen(new WailaConfigScreen(HomeConfigScreen.this));
-		}).bounds(width / 2 - 5 - maxWidth, height / 2 - 10, maxWidth, 20).build());
-		addRenderableWidget(Button.builder(pluginSettings, w -> {
-			visitedChildScreen();
-			minecraft.setScreen(new PluginsConfigScreen(HomeConfigScreen.this));
-		}).bounds(width / 2 + 5, height / 2 - 10, maxWidth, 20).build());
+		addRenderableWidget(Button.builder(
+				modSettings, w -> {
+					visitedChildScreen();
+					minecraft.setScreen(new WailaConfigScreen(HomeConfigScreen.this));
+				}).bounds(width / 2 - 5 - maxWidth, height / 2 - 10, maxWidth, 20).build());
+		addRenderableWidget(Button.builder(
+				pluginSettings, w -> {
+					visitedChildScreen();
+					minecraft.setScreen(new PluginsConfigScreen(HomeConfigScreen.this));
+				}).bounds(width / 2 + 5, height / 2 - 10, maxWidth, 20).build());
 		ItemButton profileButton = new ItemButton(
 				width / 2 + 10 + maxWidth,
 				height / 2 - 10,
@@ -234,21 +235,21 @@ public class HomeConfigScreen extends Screen {
 		boolean smallUI = minecraft.getWindow().getGuiScale() < 3;
 		int left = width / 2 - 105;
 		int top = height / 4 - 20;
-		guiGraphics.pose().pushPose();
-		guiGraphics.pose().translate(left, top, 0);
+		guiGraphics.pose().pushMatrix();
+		guiGraphics.pose().translate(left, top);
 
 		float scale = smallUI ? 2F : 1.5F;
-		guiGraphics.pose().scale(scale, scale, scale);
-		guiGraphics.drawString(font, ModIdentification.getModFullName(Jade.ID).orElse("Jade"), 0, 0, 0xFFFFFF);
+		guiGraphics.pose().scale(scale);
+		guiGraphics.drawString(font, ModIdentification.getModFullName(Jade.ID).orElse("Jade"), 0, 0, 0xFFFFFFFF);
 
-		guiGraphics.pose().scale(0.5F, 0.5F, 0.5F);
+		guiGraphics.pose().scale(0.5F);
 		titleY.tick(deltaTicks);
 		String desc2 = I18n.get("gui.jade.configuration.desc2");
 		float scaledX, scaledY;
 		if (desc2.isEmpty()) {
-			guiGraphics.pose().popPose();
-			guiGraphics.pose().pushPose();
-			guiGraphics.pose().translate(left, top, 0);
+			guiGraphics.pose().popMatrix();
+			guiGraphics.pose().pushMatrix();
+			guiGraphics.pose().translate(left, top);
 			scaledX = mouseX - left;
 			scaledY = mouseY - top;
 		} else {
@@ -259,7 +260,7 @@ public class HomeConfigScreen extends Screen {
 		if (!desc2.isEmpty()) {
 			drawFancyTitle(guiGraphics, desc2, Math.min(titleY.value + 3F, 32F), 32F, scaledX, scaledY);
 		}
-		guiGraphics.pose().popPose();
+		guiGraphics.pose().popMatrix();
 
 		particles.removeIf(p -> {
 			p.tick(deltaTicks);
@@ -349,26 +350,27 @@ public class HomeConfigScreen extends Screen {
 
 		MutableComponent component = Component.empty();
 		MutableInt curX = new MutableInt();
-		StringDecomposer.iterateFormatted(text, Style.EMPTY, (index, style, codePoint) -> {
-			String s = Character.toString(codePoint);
-			int width = font.width(s);
-			int curXVal = curX.getValue();
-			curX.add(width);
-			curXVal += width / 2;
-			float dist = Math.abs(curXVal - glint1);
-			float localGlint1 = 0.65F + Mth.clamp(1 - dist / 20, 0, 1) * 0.35F * glint1Strength;
-			dist = Math.abs(curXVal - glint2);
-			float localGlint2 = 0.65F + Mth.clamp(1 - dist / 20, 0, 1) * 0.35F * glint2Strength;
-			float colorMul = Math.max(localGlint1, localGlint2);
-			int originalColor = style.getColor() == null ? 0xAAAAAA : style.getColor().getValue();
-			component.append(Component.literal(s).withStyle(style).withColor(ARGB.scaleRGB(originalColor, colorMul)));
-			return true;
-		});
+		StringDecomposer.iterateFormatted(
+				text, Style.EMPTY, (index, style, codePoint) -> {
+					String s = Character.toString(codePoint);
+					int width = font.width(s);
+					int curXVal = curX.getValue();
+					curX.add(width);
+					curXVal += width / 2;
+					float dist = Math.abs(curXVal - glint1);
+					float localGlint1 = 0.65F + Mth.clamp(1 - dist / 20, 0, 1) * 0.35F * glint1Strength;
+					dist = Math.abs(curXVal - glint2);
+					float localGlint2 = 0.65F + Mth.clamp(1 - dist / 20, 0, 1) * 0.35F * glint2Strength;
+					float colorMul = Math.max(localGlint1, localGlint2);
+					int originalColor = style.getColor() == null ? 0xAAAAAA : style.getColor().getValue();
+					component.append(Component.literal(s).withStyle(style).withColor(ARGB.scaleRGB(originalColor, colorMul)));
+					return true;
+				});
 
-		guiGraphics.pose().pushPose();
-		guiGraphics.pose().translate(0, y, 0);
+		guiGraphics.pose().pushMatrix();
+		guiGraphics.pose().translate(0, y);
 		guiGraphics.drawString(font, component, 0, 0, color);
-		guiGraphics.pose().popPose();
+		guiGraphics.pose().popMatrix();
 	}
 
 	private class TextParticle {
@@ -404,9 +406,10 @@ public class HomeConfigScreen extends Screen {
 					text = random.nextBoolean() ? "✴" : "✳";
 					color = random.nextBoolean() ? 0xFFD427 : 0xF0C415;
 					Objects.requireNonNull(minecraft);
-					minecraft.getSoundManager().play(SimpleSoundInstance.forUI(random.nextBoolean() ?
-							SoundEvents.FIREWORK_ROCKET_BLAST :
-							SoundEvents.FIREWORK_ROCKET_LARGE_BLAST, 0.7F));
+					minecraft.getSoundManager().play(SimpleSoundInstance.forUI(
+							random.nextBoolean() ?
+									SoundEvents.FIREWORK_ROCKET_BLAST :
+									SoundEvents.FIREWORK_ROCKET_LARGE_BLAST, 0.7F));
 				}
 			} else if (festival == 1) {
 				age -= partialTicks;
@@ -417,14 +420,15 @@ public class HomeConfigScreen extends Screen {
 			if (festival == 99 && age < -4) {
 				return;
 			}
-			guiGraphics.pose().pushPose();
-			guiGraphics.pose().translate(x, y, 0);
-			guiGraphics.pose().scale(scale, scale, scale);
+			guiGraphics.pose().pushMatrix();
+			guiGraphics.pose().translate(x, y);
+			guiGraphics.pose().scale(scale);
 			if (festival == 1) {
-				guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees(age));
+				//FIXME
+				guiGraphics.pose().rotate(age);
 			}
 			guiGraphics.drawString(font, text, 0, 0, color);
-			guiGraphics.pose().popPose();
+			guiGraphics.pose().popMatrix();
 		}
 	}
 

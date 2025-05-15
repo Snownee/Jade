@@ -21,7 +21,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
-import net.minecraft.client.renderer.FogRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
@@ -57,7 +56,6 @@ import snownee.jade.api.config.IWailaConfig.Overlay;
 import snownee.jade.api.config.IWailaConfig.TTSMode;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
-import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.ColorPalette;
 import snownee.jade.api.ui.IBoxElement;
 import snownee.jade.api.ui.ScreenDirection;
@@ -89,6 +87,8 @@ public final class JadeClient {
 			.weakValues()
 			.expireAfterAccess(1, TimeUnit.SECONDS)
 			.build();
+	public static float renderDistanceStart;
+	public static float renderDistanceEnd;
 	private static boolean translationChecked;
 	private static float savedProgress;
 	private static float progressAlpha;
@@ -268,6 +268,9 @@ public final class JadeClient {
 		if (accessor == null) {
 			return null;
 		}
+		if (WailaClientRegistration.instance().maybeLowVisionUser()) {
+			return accessor;
+		}
 		Player player = accessor.getPlayer();
 		Minecraft mc = Minecraft.getInstance();
 		LightTexture lightTexture = mc.gameRenderer.lightTexture();
@@ -277,18 +280,10 @@ public final class JadeClient {
 		if (gamma > 0.15f && accessor.getLevel().getMaxLocalRawBrightness(BlockPos.containing(accessor.getHitResult().getLocation())) < 7) {
 			return null;
 		}
-		FogRenderer.MobEffectFogFunction fogFunction = FogRenderer.getPriorityFogFunction(player, 1);
-		if (fogFunction == null) {
+		if (renderDistanceStart == 0f && renderDistanceEnd == 0f) {
 			return accessor;
 		}
-		FogRenderer.FogData fogData = new FogRenderer.FogData(FogRenderer.FogMode.FOG_TERRAIN);
-		fogFunction.setupFog(
-				fogData,
-				player,
-				player.getEffect(fogFunction.getMobEffect()),
-				Math.max(32, mc.gameRenderer.getRenderDistance()),
-				1);
-		float dist = (fogData.start + fogData.end) * 0.5F;
+		float dist = (renderDistanceStart + renderDistanceEnd) * 0.5f;
 		if (accessor.getHitResult().distanceTo(player) > dist * dist) {
 			return null;
 		}
@@ -318,13 +313,9 @@ public final class JadeClient {
 		}
 		Theme theme = IThemeHelper.get().theme();
 		ColorPalette colors = theme.tooltipStyle.boxProgressColors;
-		int color = canHarvest ? colors.normal() : colors.failure();
-		float top = rootElement.getCachedSize().y;
-		float width = rootElement.getCachedSize().x;
-		boolean roundCorner = !IWailaConfig.get().overlay().getSquare();
-		if (roundCorner && theme.tooltipStyle instanceof BoxStyle.GradientBorder) {
-			top += 1;
-		}
+		int color = canHarvest ? colors.title() : colors.failure();
+		float top = rect.rect.getHeight();
+		float width = rect.rect.getWidth();
 		progressAlpha += mc.getDeltaTracker().getGameTimeDeltaTicks() * (playerController.isDestroying() ? 0.1F : -0.1F);
 		if (playerController.isDestroying()) {
 			progressAlpha = Math.min(progressAlpha, 0.6F);

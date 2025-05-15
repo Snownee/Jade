@@ -99,7 +99,6 @@
 	"config.jade.overlay_pos.adjust": "Ajustar...",
 	"config.jade.overlay_pos_extra_msg": "arriba, abajo, izquierda, derecha, centro",
 	"config.jade.overlay_scale": "Escala de visualización",
-	"config.jade.overlay_square": "Borde cuadrado",
 	"config.jade.flip_main_hand": "Posición de giro con la mano principal",
 	"config.jade.flip_main_hand_desc": "Posición reflejada de la información sobre herramientas cuando la mano principal está hacia la izquierda.",
 	"config.jade.overlay_alpha": "Opacidad del fondo",

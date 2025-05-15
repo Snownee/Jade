@@ -126,7 +126,7 @@ public class Jade {
 						config.general().setDisplayMode(IWailaConfig.DisplayMode.LITE);
 						config.general().setBossBarOverlapMode(IWailaConfig.BossBarOverlapMode.HIDE_TOOLTIP);
 						config.overlay().setAlpha(0);
-						config.overlay().setSquare(true);
+						config.overlay().applyTheme(JadeIds.JADE("dark_slim"));
 						config.overlay().setIconMode(IWailaConfig.IconMode.INLINE);
 						config.plugin().set(JadeIds.MC_BREAKING_PROGRESS, false);
 						config.plugin().set(JadeIds.MC_HARVEST_TOOL, false);

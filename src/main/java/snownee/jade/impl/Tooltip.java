@@ -32,21 +32,26 @@ public class Tooltip implements ITooltip {
 	public boolean sneakyDetails;
 
 	public static void drawDebugBorder(GuiGraphics guiGraphics, float x, float y, IElement element) {
-		if (IWailaConfig.get().general().isDebug() && Screen.hasControlDown()) {
-			Vec2 translate = element.getTranslation();
-			Vec2 size = element.getCachedSize();
-			DisplayHelper.INSTANCE.drawBorder(guiGraphics, x, y, x + size.x, y + size.y, 1, 0x88FF0000, true);
-			if (!Vec2.ZERO.equals(translate)) {
-				DisplayHelper.INSTANCE.drawBorder(
-						guiGraphics,
-						x + translate.x,
-						y + translate.y,
-						x + translate.x + size.x,
-						y + translate.y + size.y,
-						1,
-						0x880000FF,
-						true);
-			}
+		if (!IWailaConfig.get().general().isDebug() || !Screen.hasControlDown()) {
+			return;
+		}
+		Vec2 translate = element.getTranslation();
+		Vec2 size = element.getCachedSize();
+		int left = Math.round(x);
+		int top = Math.round(y);
+		int right = Math.round(x + size.x);
+		int bottom = Math.round(y + size.y);
+		DisplayHelper.INSTANCE.drawBorder(guiGraphics, left, top, right, bottom, 1, 0x88FF0000, true);
+		if (!Vec2.ZERO.equals(translate)) {
+			DisplayHelper.INSTANCE.drawBorder(
+					guiGraphics,
+					left + translate.x,
+					top + translate.y,
+					right + translate.x,
+					bottom + translate.y,
+					1,
+					0x880000FF,
+					true);
 		}
 	}
 
@@ -182,11 +187,12 @@ public class Tooltip implements ITooltip {
 		List<String> msgs = Lists.newArrayList();
 		for (Line line : lines) {
 			/* off */
-			msgs.add(String.join(" ", line.sortedElements().stream()
-					.filter(e -> !JadeIds.CORE_MOD_NAME.equals(e.getTag()))
-					.map(IElement::getCachedMessage)
-					.filter(java.util.Objects::nonNull)
-					.toList()));
+			msgs.add(String.join(
+					" ", line.sortedElements().stream()
+							.filter(e -> !JadeIds.CORE_MOD_NAME.equals(e.getTag()))
+							.map(IElement::getCachedMessage)
+							.filter(java.util.Objects::nonNull)
+							.toList()));
 			/* on */
 		}
 		return String.join("\n", msgs);
@@ -194,10 +200,11 @@ public class Tooltip implements ITooltip {
 
 	@Override
 	public String getMessage(ResourceLocation tag) {
-		return String.join(" ", get(tag).stream()
-				.map(IElement::getCachedMessage)
-				.filter(java.util.Objects::nonNull)
-				.toList());
+		return String.join(
+				" ", get(tag).stream()
+						.map(IElement::getCachedMessage)
+						.filter(java.util.Objects::nonNull)
+						.toList());
 	}
 
 	@Override

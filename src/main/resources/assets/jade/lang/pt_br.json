@@ -132,7 +132,6 @@
 	"config.jade.overlay_pos.exit": "Pressione ESC ou clique no centro para sair",
 	"config.jade.overlay_pos_extra_msg": "topo,baixo,esquerda,direita,centro",
 	"config.jade.overlay_scale": "Escala de Exibição",
-	"config.jade.overlay_square": "Borda Quadrada",
 	"config.jade.text_background_opacity": "Opacidade do Fundo do Texto",
 	"config.jade.text_background_opacity_desc": "Desenha o fundo atrás de textos em barras de progresso como tanques de fluido e energia.",
 	"config.jade.flip_main_hand": "Inverter Posição com a Mão Principal",

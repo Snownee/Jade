@@ -9,7 +9,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.entity.TrialSpawnerBlockEntity;
-import net.minecraft.world.level.block.entity.trialspawner.TrialSpawnerData;
+import net.minecraft.world.level.block.entity.trialspawner.TrialSpawnerStateData;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.ITooltip;
@@ -34,7 +34,7 @@ public enum MobSpawnerCooldownProvider implements IBlockComponentProvider, Strea
 	@Override
 	public @Nullable Integer streamData(BlockAccessor accessor) {
 		TrialSpawnerBlockEntity spawner = (TrialSpawnerBlockEntity) accessor.getBlockEntity();
-		TrialSpawnerData spawnerData = spawner.getTrialSpawner().getData();
+		TrialSpawnerStateData spawnerData = spawner.getTrialSpawner().getStateData();
 		ServerLevel level = ((ServerLevel) accessor.getLevel());
 		if (spawner.getTrialSpawner().canSpawnInLevel(level) && level.getGameTime() < spawnerData.cooldownEndsAt) {
 			return (int) (spawnerData.cooldownEndsAt - level.getGameTime());

@@ -14,13 +14,12 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -31,7 +30,7 @@ import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraft.util.StringUtil;
 
-public class NotUglyEditBox extends AbstractWidget implements Renderable {
+public class NotUglyEditBox extends AbstractWidget {
 	private final Font font;
 	public int paddingLeft;
 	public int paddingRight;
@@ -48,8 +47,8 @@ public class NotUglyEditBox extends AbstractWidget implements Renderable {
 	private int displayPos;
 	private int cursorPos;
 	private int highlightPos;
-	private int textColor = 0xE0E0E0;
-	private int textColorUneditable = 0x707070;
+	private int textColor = 0xFFE0E0E0;
+	private int textColorUneditable = 0xFF707070;
 	@Nullable
 	private String suggestion;
 	private Predicate<String> filter = Objects::nonNull;
@@ -362,7 +361,7 @@ public class NotUglyEditBox extends AbstractWidget implements Renderable {
 		if (bgAlpha > 0F) {
 			ResourceLocation resourceLocation = background.get(this.isActive(), this.isFocused());
 			guiGraphics.blitSprite(
-					RenderType::guiTextured,
+					RenderPipelines.GUI_TEXTURED,
 					resourceLocation,
 					this.getX(),
 					this.getY(),
@@ -392,7 +391,9 @@ public class NotUglyEditBox extends AbstractWidget implements Renderable {
 		}
 		if (!string.isEmpty()) {
 			String string2 = bl ? string.substring(0, l) : string;
-			p = guiGraphics.drawString(this.font, this.formatter.apply(string2, this.displayPos), p, o, textColor);
+			FormattedCharSequence sequence = this.formatter.apply(string2, this.displayPos);
+			guiGraphics.drawString(this.font, sequence, p, o, textColor);
+			p += this.font.width(sequence) + 1;
 		}
 		boolean bl3 = this.cursorPos < this.value.length() || this.value.length() >= this.getMaxLength();
 		int q = p;
@@ -406,13 +407,13 @@ public class NotUglyEditBox extends AbstractWidget implements Renderable {
 			guiGraphics.drawString(this.font, this.formatter.apply(string.substring(l), this.cursorPos), p, o, textColor);
 		}
 		if (this.hint != null && string.isEmpty() && !this.isFocused()) {
-			guiGraphics.drawString(this.font, this.hint, p, o, backgroundMode == BackgroundMode.HOVERING ? textColor : 0x808080);
+			guiGraphics.drawString(this.font, this.hint, p, o, backgroundMode == BackgroundMode.HOVERING ? textColor : 0xFF808080);
 		}
 		if (!bl3 && this.suggestion != null) {
-			guiGraphics.drawString(this.font, this.suggestion, q - 1, o, -8355712);
+			guiGraphics.drawString(this.font, this.suggestion, q - 1, o, 0xFF808080);
 		}
 		if (bl2) {
-			guiGraphics.fill(RenderType.guiOverlay(), q, o - 1, q + 1, o + 1 + this.font.lineHeight, -3092272);
+			guiGraphics.fill(q, o - 1, q + 1, o + 1 + this.font.lineHeight, 0xFFD0D0D0);
 		}
 		if (m != l) {
 			int r = n + this.font.width(string.substring(0, m));
@@ -438,7 +439,7 @@ public class NotUglyEditBox extends AbstractWidget implements Renderable {
 		if (i > this.getX() + this.width) {
 			i = this.getX() + this.width;
 		}
-		guiGraphics.fill(RenderType.guiTextHighlight(), i, j, k, l, -16776961);
+		guiGraphics.fill(RenderPipelines.GUI_TEXT_HIGHLIGHT, i, j, k, l, 0xFF0000FF);
 	}
 
 	private int getMaxLength() {

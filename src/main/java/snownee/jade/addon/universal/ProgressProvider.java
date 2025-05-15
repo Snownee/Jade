@@ -65,20 +65,22 @@ public abstract class ProgressProvider<T extends Accessor<?>> implements ICompon
 
 		IElementHelper helper = IElementHelper.get();
 		boolean renderGroup = groups.size() > 1 || groups.getFirst().shouldRenderGroup();
-		BoxStyle.GradientBorder boxStyle = BoxStyle.getTransparent().clone();
-		boxStyle.bgColor = 0x44FFFFFF;
-		ClientViewGroup.tooltip(tooltip, groups, renderGroup, (theTooltip, group) -> {
-			if (renderGroup) {
-				group.renderHeader(theTooltip);
-			}
-			for (var view : group.views) {
-				if (view.text != null) {
-					theTooltip.add(helper.text(view.text).scale(0.75F));
-					theTooltip.setLineMargin(-1, ScreenDirection.DOWN, 0);
-				}
-				theTooltip.add(helper.progress(view.progress, null, view.style, boxStyle, false).size(new Vec2(10, 2)));
-			}
-		});
+		BoxStyle boxStyle = BoxStyle.getTransparent();
+		//FIXME
+//		boxStyle.bgColor = 0x44FFFFFF;
+		ClientViewGroup.tooltip(
+				tooltip, groups, renderGroup, (theTooltip, group) -> {
+					if (renderGroup) {
+						group.renderHeader(theTooltip);
+					}
+					for (var view : group.views) {
+						if (view.text != null) {
+							theTooltip.add(helper.text(view.text).scale(0.75F));
+							theTooltip.setLineMargin(-1, ScreenDirection.DOWN, 0);
+						}
+						theTooltip.add(helper.progress(view.progress, null, view.style, boxStyle, false).size(new Vec2(10, 2)));
+					}
+				});
 	}
 
 	@Override

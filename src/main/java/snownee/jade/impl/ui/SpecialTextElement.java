@@ -1,6 +1,6 @@
 package snownee.jade.impl.ui;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import org.joml.Matrix3x2fStack;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.FormattedText;
@@ -25,12 +25,14 @@ public class SpecialTextElement extends TextElement {
 
 	@Override
 	public void render(GuiGraphics guiGraphics, float x, float y, float maxX, float maxY) {
-		PoseStack matrixStack = guiGraphics.pose();
-		matrixStack.pushPose();
-		matrixStack.translate(x, y + scale, zOffset);
-		matrixStack.scale(scale, scale, 1);
+		Matrix3x2fStack matrixStack = guiGraphics.pose();
+		matrixStack.pushMatrix();
+		//FIXME
+//		matrixStack.translate(x, y + scale, zOffset);
+		matrixStack.translate(x, y + scale);
+		matrixStack.scale(scale);
 		DisplayHelper.INSTANCE.drawText(guiGraphics, text, 0, 0, IThemeHelper.get().getNormalColor());
-		matrixStack.popPose();
+		matrixStack.popMatrix();
 	}
 
 	@Override

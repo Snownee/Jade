@@ -146,17 +146,14 @@ public class SimpleProgressStyle extends ProgressStyle {
 				y += font.lineHeight + 2;
 			}
 			int color = Overlay.applyAlpha(textColor, OverlayRenderer.alpha);
-			DisplayHelper.font().drawInBatch(
-					text,
-					(int) x + 1,
-					(int) y - 1,
-					color,
-					true,
-					guiGraphics.pose().last().pose(),
-					guiGraphics.bufferSource,
-					Font.DisplayMode.NORMAL,
-					ARGB.as8BitChannel(IWailaConfig.get().accessibility().getTextBackgroundOpacity()) << 24,
-					0xF000F0);
+			int textWidth = font.width(text);
+			guiGraphics.fill(
+					(int) x,
+					(int) y - 2,
+					(int) x + textWidth + 1,
+					(int) y + font.lineHeight,
+					ARGB.as8BitChannel(IWailaConfig.get().accessibility().getTextBackgroundOpacity()) << 24);
+			guiGraphics.drawString(font, text, (int) x + 2, (int) y - 1, color);
 		}
 	}
 

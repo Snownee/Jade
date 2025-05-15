@@ -1,12 +1,12 @@
 package snownee.jade.api.ui;
 
 import java.text.Format;
-import java.util.function.Function;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.mojang.blaze3d.pipeline.RenderPipeline;
+
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
@@ -41,7 +41,7 @@ public interface IDisplayHelper {
 
 	void blitSprite(
 			GuiGraphics guiGraphics,
-			Function<ResourceLocation, RenderType> function,
+			RenderPipeline renderPipeline,
 			ResourceLocation resourceLocation,
 			int i,
 			int j,
@@ -50,7 +50,7 @@ public interface IDisplayHelper {
 
 	void blitSprite(
 			GuiGraphics guiGraphics,
-			Function<ResourceLocation, RenderType> function,
+			RenderPipeline renderPipeline,
 			ResourceLocation resourceLocation,
 			int i,
 			int j,
@@ -60,7 +60,7 @@ public interface IDisplayHelper {
 
 	void blitSprite(
 			GuiGraphics guiGraphics,
-			Function<ResourceLocation, RenderType> function,
+			RenderPipeline renderPipeline,
 			ResourceLocation resourceLocation,
 			int i,
 			int j,
