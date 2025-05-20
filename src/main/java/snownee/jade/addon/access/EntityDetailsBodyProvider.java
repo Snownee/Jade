@@ -13,6 +13,7 @@ import net.minecraft.world.entity.animal.armadillo.Armadillo;
 import net.minecraft.world.entity.animal.axolotl.Axolotl;
 import net.minecraft.world.entity.animal.camel.Camel;
 import net.minecraft.world.entity.decoration.LeashFenceKnotEntity;
+import snownee.jade.JadeClient;
 import snownee.jade.addon.core.DistanceProvider;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
@@ -35,6 +36,10 @@ public class EntityDetailsBodyProvider implements IEntityComponentProvider {
 			if (I18n.exists(key)) {
 				tooltip.add(Component.translatable("jade.access.entity.pose", Component.translatable(key)));
 			}
+		}
+		int passengers = entity.getPassengers().size();
+		if (passengers > 0) {
+			tooltip.add(JadeClient.format("jade.access.entity.passengers", passengers));
 		}
 		if (entity instanceof Leashable leashable && leashable.isLeashed()) {
 			Entity holder = leashable.getLeashHolder();
