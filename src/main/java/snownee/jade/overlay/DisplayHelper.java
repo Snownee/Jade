@@ -11,11 +11,10 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3x2f;
-import org.joml.Matrix4f;
 
 import com.google.common.base.Suppliers;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.textures.GpuTextureView;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -47,8 +46,6 @@ public class DisplayHelper implements IDisplayHelper {
 
 	public static final DisplayHelper INSTANCE = new DisplayHelper();
 	//https://github.com/mezz/JustEnoughItems/blob/1.16/src/main/java/mezz/jei/plugins/vanilla/ingredients/fluid/FluidStackRenderer.java
-	private static final int TEX_WIDTH = 16;
-	private static final int TEX_HEIGHT = 16;
 	private static final int MIN_FLUID_HEIGHT = 1; // ensure tiny amounts of fluid are still visible
 	private static final Pattern STRIP_COLOR = Pattern.compile("(?i)\u00a7[0-9A-F]");
 	public static DecimalFormat dfCommas = new DecimalFormat("0.##");
@@ -83,29 +80,6 @@ public class DisplayHelper implements IDisplayHelper {
 		}
 		guiGraphics.pose().popMatrix();
 		ClientProxy.renderItemDecorationsExtra(guiGraphics, font, stack, i, j, text);
-	}
-
-	private static void drawTextureWithMasking(
-			Matrix4f matrix,
-			VertexConsumer vertexConsumer,
-			float xCoord,
-			float yCoord,
-			TextureAtlasSprite textureSprite,
-			float maskTop,
-			float maskRight,
-			float zLevel,
-			int color) {
-		float uMin = textureSprite.getU0();
-		float uMax = textureSprite.getU1();
-		float vMin = textureSprite.getV0();
-		float vMax = textureSprite.getV1();
-		uMax = uMax - (maskRight / 16F * (uMax - uMin));
-		vMax = vMax - (maskTop / 16F * (vMax - vMin));
-
-		vertexConsumer.addVertex(matrix, xCoord, yCoord + 16, zLevel).setUv(uMin, vMax).setColor(color);
-		vertexConsumer.addVertex(matrix, xCoord + 16 - maskRight, yCoord + 16, zLevel).setUv(uMax, vMax).setColor(color);
-		vertexConsumer.addVertex(matrix, xCoord + 16 - maskRight, yCoord + maskTop, zLevel).setUv(uMax, vMin).setColor(color);
-		vertexConsumer.addVertex(matrix, xCoord, yCoord + maskTop, zLevel).setUv(uMin, vMin).setColor(color);
 	}
 
 	public static void fill(GuiGraphics guiGraphics, float minX, float minY, float maxX, float maxY, int color) {
@@ -239,57 +213,55 @@ public class DisplayHelper implements IDisplayHelper {
 						if (opacity() != 1) {
 							color = Overlay.applyAlpha(color, opacity());
 						}
-						drawTiledSprite(
+						blitTiledSprite(
 								guiGraphics,
 								RenderPipelines.GUI_TEXTURED,
+								sprite,
 								xPosition,
 								yPosition,
 								width,
 								height,
-								color,
-								scaledAmount.floatValue(),
-								sprite);
+								0,
+								0,
+								16,
+								16,
+								16,
+								16,
+								color);
 					}
 				});
 	}
 
-	private void drawTiledSprite(
+	private void blitSprite(
 			GuiGraphics guiGraphics,
 			RenderPipeline renderPipeline,
-			final float xPosition,
-			final float yPosition,
-			final float tiledWidth,
-			final float tiledHeight,
-			int color,
-			float scaledAmount,
-			TextureAtlasSprite sprite) {
-		if (tiledWidth == 0 || tiledHeight == 0 || scaledAmount == 0) {
+			TextureAtlasSprite textureAtlasSprite,
+			int i,
+			int j,
+			int k,
+			int l,
+			float x,
+			float y,
+			float w,
+			float h,
+			int color) {
+		if (w == 0 || h == 0) {
 			return;
 		}
-//		Matrix4f matrix = guiGraphics.pose().last().pose();
-//		VertexConsumer vertexConsumer = guiGraphics.bufferSource.getBuffer(function.apply(sprite.atlasLocation()));
-//
-//		final int xTileCount = (int) (tiledWidth / TEX_WIDTH);
-//		final float xRemainder = tiledWidth - (xTileCount * TEX_WIDTH);
-//		final int yTileCount = (int) (scaledAmount / TEX_HEIGHT);
-//		final float yRemainder = scaledAmount - (yTileCount * TEX_HEIGHT);
-//
-//		final float yStart = yPosition + tiledHeight;
-//
-//		for (int xTile = 0; xTile <= xTileCount; xTile++) {
-//			for (int yTile = 0; yTile <= yTileCount; yTile++) {
-//				float width = (xTile == xTileCount) ? xRemainder : TEX_WIDTH;
-//				float height = (yTile == yTileCount) ? yRemainder : TEX_HEIGHT;
-//				float x = xPosition + (xTile * TEX_WIDTH);
-//				float y = yStart - ((yTile + 1) * TEX_HEIGHT);
-//				if (width > 0 && height > 0) {
-//					float maskTop = TEX_HEIGHT - height;
-//					float maskRight = TEX_WIDTH - width;
-//
-//					drawTextureWithMasking(matrix, vertexConsumer, x, y, sprite, maskTop, maskRight, 0, color);
-//				}
-//			}
-//		}
+		this.innerBlit(
+				guiGraphics,
+				renderPipeline,
+				textureAtlasSprite.atlasLocation(),
+				x,
+				x + w,
+				y,
+				y + h,
+				textureAtlasSprite.getU(k / i),
+				textureAtlasSprite.getU((k + w) / i),
+				textureAtlasSprite.getV(l / j),
+				textureAtlasSprite.getV((l + h) / j),
+				color
+		);
 	}
 
 	@Override
@@ -445,6 +417,181 @@ public class DisplayHelper implements IDisplayHelper {
 			int o,
 			int p) {
 		guiGraphics.blitSprite(renderPipeline, resourceLocation, i, j, k, l, m, n, o, p);
+	}
+
+	private void blitTiledSprite(
+			GuiGraphics guiGraphics,
+			RenderPipeline renderPipeline,
+			TextureAtlasSprite textureAtlasSprite,
+			float i,
+			float j,
+			float k,
+			float l,
+			int m,
+			int n,
+			int o,
+			int p,
+			int q,
+			int r,
+			int color
+	) {
+		if (k > 0 && l > 0) {
+			if (o > 0 && p > 0) {
+				for (int t = 0; t < k; t += o) {
+					float u = Math.min(o, k - t);
+
+					for (int v = 0; v < l; v += p) {
+						float w = Math.min(p, l - v);
+						this.blitSprite(guiGraphics, renderPipeline, textureAtlasSprite, q, r, m, n, i + t, j + v, u, w, color);
+					}
+				}
+			} else {
+				throw new IllegalArgumentException("Tiled sprite texture size must be positive, got " + o + "x" + p);
+			}
+		}
+	}
+
+	public void blit(
+			GuiGraphics guiGraphics,
+			RenderPipeline renderPipeline,
+			ResourceLocation resourceLocation,
+			int i,
+			int j,
+			float f,
+			float g,
+			int k,
+			int l,
+			int m,
+			int n,
+			int o) {
+		this.blit(guiGraphics, renderPipeline, resourceLocation, i, j, f, g, k, l, k, l, m, n, o);
+	}
+
+	public void blit(
+			GuiGraphics guiGraphics,
+			RenderPipeline renderPipeline,
+			ResourceLocation resourceLocation,
+			int i,
+			int j,
+			float f,
+			float g,
+			int k,
+			int l,
+			int m,
+			int n) {
+		this.blit(guiGraphics, renderPipeline, resourceLocation, i, j, f, g, k, l, k, l, m, n);
+	}
+
+	public void blit(
+			GuiGraphics guiGraphics,
+			RenderPipeline renderPipeline,
+			ResourceLocation resourceLocation,
+			int i,
+			int j,
+			float f,
+			float g,
+			int k,
+			int l,
+			int m,
+			int n,
+			int o,
+			int p) {
+		this.blit(guiGraphics, renderPipeline, resourceLocation, i, j, f, g, k, l, m, n, o, p, -1);
+	}
+
+	public void blit(
+			GuiGraphics guiGraphics,
+			RenderPipeline renderPipeline,
+			ResourceLocation resourceLocation,
+			int i,
+			int j,
+			float f,
+			float g,
+			int k,
+			int l,
+			int m,
+			int n,
+			int o,
+			int p,
+			int q
+	) {
+		this.innerBlit(
+				guiGraphics,
+				renderPipeline,
+				resourceLocation,
+				i,
+				i + k,
+				j,
+				j + l,
+				(f + 0.0F) / o,
+				(f + m) / o,
+				(g + 0.0F) / p,
+				(g + n) / p,
+				q);
+	}
+
+	public void blit(
+			GuiGraphics guiGraphics,
+			ResourceLocation resourceLocation,
+			int i,
+			int j,
+			int k,
+			int l,
+			float f,
+			float g,
+			float h,
+			float m) {
+		this.innerBlit(guiGraphics, RenderPipelines.GUI_TEXTURED, resourceLocation, i, k, j, l, f, g, h, m, -1);
+	}
+
+	private void innerBlit(
+			GuiGraphics guiGraphics,
+			RenderPipeline renderPipeline,
+			ResourceLocation resourceLocation,
+			float x0,
+			float x1,
+			float y0,
+			float y1,
+			float u0,
+			float v0,
+			float u1,
+			float v1,
+			int color) {
+		GpuTextureView gpuTextureView = Minecraft.getInstance().getTextureManager().getTexture(resourceLocation).getTextureView();
+		this.submitBlit(guiGraphics, renderPipeline, gpuTextureView, x0, y0, x1, y1, u0, v0, u1, v1, color);
+	}
+
+	private void submitBlit(
+			GuiGraphics guiGraphics,
+			RenderPipeline renderPipeline,
+			GpuTextureView gpuTextureView,
+			float x0,
+			float y0,
+			float x1,
+			float y1,
+			float u0,
+			float v0,
+			float u1,
+			float v1,
+			int color) {
+		guiGraphics.guiRenderState
+				.submitGuiElement(
+						new FloatBlitRenderState(
+								renderPipeline,
+								TextureSetup.singleTexture(gpuTextureView),
+								new Matrix3x2f(guiGraphics.pose()),
+								x0,
+								y0,
+								x1,
+								y1,
+								u0,
+								v0,
+								u1,
+								v1,
+								color,
+								guiGraphics.scissorStack.peek()
+						)
+				);
 	}
 
 	@Override

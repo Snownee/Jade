@@ -49,7 +49,7 @@ public class BoxStyle implements Cloneable {
 			Optional.empty(),
 			ColorPalette.DEFAULT,
 			Optional.of(new int[]{2, 2, 2, 2}),
-			1,
+			0,
 			Optional.of(JadeIds.JADE("view_group")),
 			Optional.empty());
 	public final float[] boxProgressOffset;
@@ -264,23 +264,6 @@ public class BoxStyle implements Cloneable {
 //						borderColors[3],
 //						borderColors[2]);
 //			}
-//		}
-//
-//		@Override
-//		public GradientBorder clone() {
-//			return new GradientBorder(
-//					JadeCodecs.nullableClone(boxProgressOffset),
-//					boxProgressColors,
-//					JadeCodecs.nullableClone(padding),
-//					bgColor,
-//					borderColor,
-//					borderWidth,
-//					Optional.ofNullable(roundCorner));
-//		}
-//
-//		@Override
-//		public boolean hasRoundCorner() {
-//			return roundCorner == null ? !IWailaConfig.get().overlay().getSquare() : roundCorner;
 //		}
 //	}
 }

@@ -39,6 +39,8 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.GenericMessageScreen;
+import net.minecraft.client.gui.screens.ProgressScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -212,7 +214,7 @@ public final class ClientProxy implements ClientModInitializer {
 	}
 
 	public static boolean shouldShowBeforeGui(Minecraft mc, @NotNull Screen screen) {
-		if (mc.level == null) {
+		if (mc.level == null || mc.screen instanceof GenericMessageScreen || mc.screen instanceof ProgressScreen) {
 			return false;
 		}
 		IWailaConfig.General config = IWailaConfig.get().general();
