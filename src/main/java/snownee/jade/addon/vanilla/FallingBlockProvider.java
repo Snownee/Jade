@@ -1,5 +1,7 @@
 package snownee.jade.addon.vanilla;
 
+import org.jetbrains.annotations.Nullable;
+
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.item.ItemStack;
@@ -8,7 +10,7 @@ import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
-import snownee.jade.api.ui.IElement;
+import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.IElementHelper;
 
 public enum FallingBlockProvider implements IEntityComponentProvider {
@@ -21,7 +23,7 @@ public enum FallingBlockProvider implements IEntityComponentProvider {
 	}
 
 	@Override
-	public IElement getIcon(EntityAccessor accessor, IPluginConfig config, IElement currentIcon) {
+	public @Nullable Element getIcon(EntityAccessor accessor, IPluginConfig config, Element currentIcon) {
 		FallingBlockEntity entity = (FallingBlockEntity) accessor.getEntity();
 		ItemStack stack = new ItemStack(entity.getBlockState().getBlock());
 		if (stack.isEmpty()) {

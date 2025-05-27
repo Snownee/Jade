@@ -8,7 +8,7 @@ import net.minecraft.nbt.CompoundTag;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.AccessorClientHandler;
 import snownee.jade.api.BlockAccessor;
-import snownee.jade.api.ui.IElement;
+import snownee.jade.api.ui.Element;
 import snownee.jade.overlay.WailaTickHandler;
 
 public final class ObjectDataCenter {
@@ -83,7 +83,7 @@ public final class ObjectDataCenter {
 		timeLastUpdate = System.currentTimeMillis();
 	}
 
-	public static IElement getIcon() {
+	public static Element getIcon() {
 		if (accessor == null || clientHandler == null) {
 			return null;
 		}

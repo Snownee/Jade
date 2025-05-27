@@ -10,11 +10,10 @@ import org.jetbrains.annotations.Nullable;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import snownee.jade.api.ITooltip;
+import snownee.jade.api.ui.BoxElement;
 import snownee.jade.api.ui.BoxStyle;
-import snownee.jade.api.ui.IBoxElement;
 import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.api.ui.MessageType;
-import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.impl.ui.HorizontalLineElement;
 
 public class ClientViewGroup<T> {
@@ -60,12 +59,12 @@ public class ClientViewGroup<T> {
 			consumer.accept(theTooltip, group);
 			if (renderGroup) {
 				BoxStyle boxStyle = BoxStyle.getViewGroup().clone();
-				IBoxElement box = IElementHelper.get().box(theTooltip, boxStyle);
-				box.setBoxProgress(group.messageType, group.boxProgress);
-				if (group.title != null) {
-					box.setPadding(ScreenDirection.UP, 0);
-					box.size(null);
-				}
+				BoxElement box = IElementHelper.get().box(theTooltip, boxStyle);
+//				box.setBoxProgress(group.messageType, group.boxProgress); //TODO
+//				if (group.title != null) {
+//					box.setPadding(ScreenDirection.UP, 0);
+//					box.size(null);
+//				}
 				tooltip.add(box);
 			}
 		}

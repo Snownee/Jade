@@ -34,8 +34,7 @@ import snownee.jade.api.JadeIds;
 import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
-import snownee.jade.api.ui.IElement;
-import snownee.jade.api.ui.IElement.Align;
+import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
@@ -135,27 +134,27 @@ public class HarvestToolProvider implements IBlockComponentProvider, KeyedResour
 		if (destroySpeed < 0 || destroyProgress <= 0) {
 			if (config.get(JadeIds.MC_SHOW_UNBREAKABLE)) {
 				Component text = IThemeHelper.get().failure(Component.translatable("jade.harvest_tool.unbreakable"));
-				tooltip.add(IElementHelper.get().text(text).message(null));
+				tooltip.add(IElementHelper.get().text(text).narration(""));
 			}
 			//TODO: high priority handlers?
 			return;
 		}
 
 		boolean newLine = config.get(JadeIds.MC_HARVEST_TOOL_NEW_LINE);
-		List<IElement> elements = getText(accessor, config);
+		List<Element> elements = getText(accessor, config);
 		if (elements.isEmpty()) {
 			return;
 		}
-		elements.forEach(e -> e.message(null));
+		elements.forEach(e -> e.narration(""));
 		if (newLine) {
 			tooltip.add(elements);
 		} else {
-			elements.forEach(e -> e.align(Align.RIGHT));
+//			elements.forEach(e -> e.align(Align.RIGHT));//TODO
 			tooltip.append(0, elements);
 		}
 	}
 
-	public List<IElement> getText(BlockAccessor accessor, IPluginConfig config) {
+	public List<Element> getText(BlockAccessor accessor, IPluginConfig config) {
 		BlockState state = accessor.getBlockState();
 		if (!state.requiresCorrectToolForDrops() && !config.get(JadeIds.MC_EFFECTIVE_TOOL)) {
 			return List.of();
@@ -172,9 +171,9 @@ public class HarvestToolProvider implements IBlockComponentProvider, KeyedResour
 
 		int offsetY = -3;
 		boolean newLine = config.get(JadeIds.MC_HARVEST_TOOL_NEW_LINE);
-		List<IElement> elements = Lists.newArrayList();
+		List<Element> elements = Lists.newArrayList();
 		for (ItemStack tool : tools) {
-			elements.add(IElementHelper.get().item(tool, 0.75f).translate(new Vec2(-1, offsetY)).size(ITEM_SIZE).message(null));
+			elements.add(IElementHelper.get().item(tool, 0.75f).offset(-1, offsetY).size(ITEM_SIZE).narration(""));
 		}
 
 		if (!elements.isEmpty()) {
@@ -186,9 +185,8 @@ public class HarvestToolProvider implements IBlockComponentProvider, KeyedResour
 				Component text = canHarvest ? t.success(CHECK) : t.danger(X);
 				elements.add(IElementHelper.get().text(text)
 						.scale(0.75F)
-						.zOffset(800)
 						.size(Vec2.ZERO)
-						.translate(new Vec2(-3, 6.25F + offsetY))
+						.offset(-3, 6 + offsetY)
 				);
 			}
 		}

@@ -1,8 +1,8 @@
 package snownee.jade.addon.vanilla;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
@@ -29,11 +29,12 @@ public enum BrewingStandProvider implements IBlockComponentProvider, StreamServe
 			return;
 		}
 		IElementHelper helper = IElementHelper.get();
-		tooltip.add(helper.smallItem(new ItemStack(Items.BLAZE_POWDER)).message(null));
-		tooltip.append(helper.text(IThemeHelper.get().info(data.fuel)).message(I18n.get("narration.jade.brewingStand.fuel", data.fuel)));
+		tooltip.add(helper.smallItem(new ItemStack(Items.BLAZE_POWDER)).narration(""));
+		tooltip.append(helper.text(IThemeHelper.get().info(data.fuel))
+				.narration(Component.translatable("narration.jade.brewingStand.fuel", data.fuel)));
 		if (data.time > 0) {
 			tooltip.append(helper.spacer(5, 0));
-			tooltip.append(helper.smallItem(new ItemStack(Items.CLOCK)).message(" "));
+			tooltip.append(helper.smallItem(new ItemStack(Items.CLOCK)).narration(""));
 			tooltip.append(IThemeHelper.get().seconds(data.time, accessor.tickRate()));
 		}
 	}

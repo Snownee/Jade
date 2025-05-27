@@ -27,7 +27,7 @@ public class EntityDetailsProvider implements IEntityComponentProvider {
 	@Override
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		Entity entity = accessor.getEntity();
-		String objectName = tooltip.getMessage(JadeIds.CORE_OBJECT_NAME);
+		String objectName = tooltip.getNarration(JadeIds.CORE_OBJECT_NAME);
 		if (entity instanceof Creeper creeper && creeper.isPowered()) {
 			AccessibilityPlugin.replaceTitle(tooltip, objectName, "creeper.powered");
 		} else if (entity instanceof WitherBoss witherBoss && witherBoss.isPowered()) {
@@ -44,7 +44,7 @@ public class EntityDetailsProvider implements IEntityComponentProvider {
 				AccessibilityPlugin.replaceTitle(tooltip, objectName, "entity.angry");
 			}
 		} else if (entity instanceof Slime slime) {
-			String message = tooltip.getMessage(JadeIds.CORE_OBJECT_NAME);
+			String message = tooltip.getNarration(JadeIds.CORE_OBJECT_NAME);
 			Component title = IThemeHelper.get().title(JadeClient.format("jade.access.slime.size", message, slime.getSize()));
 			tooltip.replace(JadeIds.CORE_OBJECT_NAME, title);
 		}

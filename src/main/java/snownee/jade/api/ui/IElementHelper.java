@@ -17,25 +17,25 @@ public interface IElementHelper {
 		return JadeInternals.getElementHelper();
 	}
 
-	ITextElement text(Component component);
+	TextElement text(Component component);
 
-	IElement spacer(int x, int y);
+	Element spacer(int x, int y);
 
-	IElement item(ItemStack itemStack);
+	Element item(ItemStack itemStack);
 
-	IElement item(ItemStack itemStack, float scale);
+	Element item(ItemStack itemStack, float scale);
 
-	IElement item(ItemStack itemStack, float scale, @Nullable String text);
+	Element item(ItemStack itemStack, float scale, @Nullable String text);
 
-	IElement smallItem(ItemStack itemStack);
+	Element smallItem(ItemStack itemStack);
 
-	IElement fluid(JadeFluidObject fluid);
+	Element fluid(JadeFluidObject fluid);
 
-	IElement progress(float progress, @Nullable Component text, ProgressStyle style, BoxStyle boxStyle, boolean canDecrease);
+	Element progress(float progress, @Nullable Component text, ProgressStyle style, BoxStyle boxStyle, boolean canDecrease);
 
-	IElement progress(float progress);
+	Element progress(float progress);
 
-	IElement progress(
+	Element progress(
 			float progress,
 			ResourceLocation baseSprite,
 			ResourceLocation progressSprite,
@@ -46,7 +46,7 @@ public interface IElementHelper {
 	/**
 	 * Display a nested tooltip
 	 */
-	IBoxElement box(ITooltip tooltip, BoxStyle boxStyle);
+	BoxElement box(ITooltip tooltip, BoxStyle boxStyle);
 
 	/**
 	 * Create an empty tooltip. Used by the {@code box} method.
@@ -55,7 +55,7 @@ public interface IElementHelper {
 
 	ProgressStyle progressStyle();
 
-	IElement sprite(RenderPipeline renderPipeline, ResourceLocation sprite, int width, int height);
+	Element sprite(RenderPipeline renderPipeline, ResourceLocation sprite, int width, int height);
 
-	IElement sprite(ResourceLocation sprite, int width, int height);
+	Element sprite(ResourceLocation sprite, int width, int height);
 }

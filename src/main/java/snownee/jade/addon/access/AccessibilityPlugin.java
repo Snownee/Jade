@@ -45,7 +45,7 @@ public class AccessibilityPlugin implements IWailaPlugin {
 	}
 
 	public static void replaceTitle(ITooltip tooltip, String objectName, String key) {
-		String message = tooltip.getMessage(JadeIds.CORE_OBJECT_NAME);
+		String message = tooltip.getNarration(JadeIds.CORE_OBJECT_NAME);
 		key = "jade.access." + key;
 		if (!message.isBlank() && I18n.exists(key)) {
 			var nameClass = JadeLanguages.INSTANCE.getNameClass(objectName);

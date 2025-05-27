@@ -8,7 +8,6 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
-import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.ITooltip;
@@ -31,7 +30,7 @@ public enum FurnaceProvider implements IBlockComponentProvider, StreamServerData
 		tooltip.add(helper.item(data.inventory.get(0)));
 		tooltip.append(helper.item(data.inventory.get(1)));
 		tooltip.append(helper.spacer(4, 0));
-		tooltip.append(helper.progress((float) data.progress / data.total).translate(new Vec2(-2, 0)));
+		tooltip.append(helper.progress((float) data.progress / data.total).offset(-2, 0));
 		tooltip.append(helper.item(data.inventory.get(2)));
 	}
 

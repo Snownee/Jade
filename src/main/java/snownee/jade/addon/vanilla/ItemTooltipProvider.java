@@ -27,7 +27,7 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.TraceableException;
 import snownee.jade.api.config.IPluginConfig;
-import snownee.jade.impl.ui.TextElement;
+import snownee.jade.impl.ui.TextElementImpl;
 import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.util.ModIdentification;
 import snownee.jade.util.WailaExceptionHandler;
@@ -71,7 +71,7 @@ public enum ItemTooltipProvider implements IEntityComponentProvider {
 			if (width > maxWidth) {
 				tooltip.add(Component.literal(font.substrByWidth(text, maxWidth - 5).getString() + ".."));
 			} else {
-				tooltip.add(new TextElement(text));
+				tooltip.add(new TextElementImpl(text));
 			}
 		}
 	}

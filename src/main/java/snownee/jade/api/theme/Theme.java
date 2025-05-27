@@ -4,8 +4,8 @@ import java.util.Optional;
 
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.api.JadeIds;
+import snownee.jade.api.ui.BoxElement;
 import snownee.jade.api.ui.BoxStyle;
-import snownee.jade.api.ui.IBoxElement;
 
 public class Theme {
 
@@ -20,7 +20,7 @@ public class Theme {
 	public boolean lightColorScheme;
 	public ResourceLocation iconSlotSprite;
 	public int iconSlotInflation;
-	public IBoxElement iconSlotSpriteCache;
+	public BoxElement iconSlotSpriteCache;
 
 	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 	public Theme(

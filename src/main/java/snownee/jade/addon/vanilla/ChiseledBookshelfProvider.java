@@ -3,6 +3,8 @@ package snownee.jade.addon.vanilla;
 import java.util.List;
 import java.util.OptionalInt;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.google.common.collect.Lists;
 
 import net.minecraft.core.component.DataComponents;
@@ -23,8 +25,8 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.StreamServerDataProvider;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.IDisplayHelper;
-import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElementHelper;
 
 public enum ChiseledBookshelfProvider implements IBlockComponentProvider, StreamServerDataProvider<BlockAccessor, ItemStack> {
@@ -51,7 +53,7 @@ public enum ChiseledBookshelfProvider implements IBlockComponentProvider, Stream
 	}
 
 	@Override
-	public IElement getIcon(BlockAccessor accessor, IPluginConfig config, IElement currentIcon) {
+	public @Nullable Element getIcon(BlockAccessor accessor, IPluginConfig config, Element currentIcon) {
 		ItemStack item = getHitBook(accessor);
 		return item.isEmpty() ? null : IElementHelper.get().item(item);
 	}

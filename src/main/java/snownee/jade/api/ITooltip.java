@@ -5,9 +5,9 @@ import java.util.function.UnaryOperator;
 
 import org.jetbrains.annotations.ApiStatus.NonExtendable;
 
+import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElement.Align;
 import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.api.ui.ScreenDirection;
@@ -60,13 +60,13 @@ public interface ITooltip {
 	/**
 	 * Add a render-able element to a new line
 	 */
-	default void add(IElement element) {
+	default void add(LayoutElement element) {
 		add(size(), element);
 	}
 
-	default void add(int index, List<IElement> elements) {
+	default void add(int index, List<? extends LayoutElement> elements) {
 		boolean first = true;
-		for (IElement element : elements) {
+		for (LayoutElement element : elements) {
 			if (first) {
 				add(index, element);
 			} else {
@@ -76,11 +76,11 @@ public interface ITooltip {
 		}
 	}
 
-	default void add(List<IElement> elements) {
+	default void add(List<? extends LayoutElement> elements) {
 		add(size(), elements);
 	}
 
-	void add(int index, IElement element);
+	void add(int index, LayoutElement element);
 
 	/**
 	 * Append a text to the last line
@@ -103,20 +103,20 @@ public interface ITooltip {
 	/**
 	 * Append a render-able element to the last line
 	 */
-	default void append(IElement element) {
+	default void append(LayoutElement element) {
 		append(size() - 1, element);
 	}
 
 	/**
 	 * Append render-able elements to the last line
 	 */
-	default void append(int index, List<IElement> elements) {
-		for (IElement element : elements) {
+	default void append(int index, List<? extends LayoutElement> elements) {
+		for (LayoutElement element : elements) {
 			append(index, element);
 		}
 	}
 
-	void append(int index, IElement element);
+	void append(int index, LayoutElement element);
 
 	/**
 	 * Clear all elements that are tagged with this tag
@@ -130,20 +130,20 @@ public interface ITooltip {
 	 *
 	 * @return true if any element is replaced
 	 */
-	boolean replace(ResourceLocation tag, UnaryOperator<List<List<IElement>>> elements);
+	boolean replace(ResourceLocation tag, UnaryOperator<List<List<LayoutElement>>> elements);
 
 	boolean replace(ResourceLocation tag, Component component);
 
 	/**
 	 * Get all elements that are tagged with this tag
 	 */
-	List<IElement> get(ResourceLocation tag);
+	List<LayoutElement> get(ResourceLocation tag);
 
-	List<IElement> get(int index, Align align);
+	List<LayoutElement> get(int index, Align align);
 
-	String getMessage();
+	String getNarration();
 
-	String getMessage(ResourceLocation tag);
+	String getNarration(ResourceLocation tag);
 
 	void setLineMargin(int index, ScreenDirection side, int margin);
 }

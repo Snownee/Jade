@@ -56,8 +56,8 @@ import snownee.jade.api.config.IWailaConfig.Overlay;
 import snownee.jade.api.config.IWailaConfig.TTSMode;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
+import snownee.jade.api.ui.BoxElement;
 import snownee.jade.api.ui.ColorPalette;
-import snownee.jade.api.ui.IBoxElement;
 import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.ui.TooltipRect;
 import snownee.jade.conditional_key_mapping.ConditionalKeyMapping;
@@ -290,7 +290,7 @@ public final class JadeClient {
 		return accessor;
 	}
 
-	public static void drawBreakingProgress(IBoxElement rootElement, TooltipRect rect, GuiGraphics guiGraphics, Accessor<?> accessor) {
+	public static void drawBreakingProgress(BoxElement rootElement, TooltipRect rect, GuiGraphics guiGraphics, Accessor<?> accessor) {
 		if (!IWailaConfig.get().plugin().get(JadeIds.MC_BREAKING_PROGRESS)) {
 			progressAlpha = 0;
 			return;

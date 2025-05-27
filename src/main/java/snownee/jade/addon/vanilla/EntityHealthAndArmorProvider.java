@@ -13,7 +13,7 @@ import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
-import snownee.jade.api.ui.IElement;
+import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.impl.ui.ArmorElement;
 import snownee.jade.impl.ui.HealthElement;
@@ -26,7 +26,7 @@ public enum EntityHealthAndArmorProvider implements IEntityComponentProvider {
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		boolean healthText = false;
 		boolean armorText = false;
-		List<IElement> elements = Lists.newArrayListWithExpectedSize(2);
+		List<Element> elements = Lists.newArrayListWithExpectedSize(2);
 		LivingEntity living = (LivingEntity) accessor.getEntity();
 		if (config.get(JadeIds.MC_ENTITY_HEALTH) && isHealthVisible(living)) {
 			float health = living.getHealth();

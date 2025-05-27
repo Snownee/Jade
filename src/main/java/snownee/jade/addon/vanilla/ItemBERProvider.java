@@ -13,7 +13,7 @@ import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
-import snownee.jade.api.ui.IElement;
+import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.IElementHelper;
 
 public enum ItemBERProvider implements IBlockComponentProvider {
@@ -21,7 +21,7 @@ public enum ItemBERProvider implements IBlockComponentProvider {
 	INSTANCE;
 
 	@Override
-	public @Nullable IElement getIcon(BlockAccessor accessor, IPluginConfig config, IElement currentIcon) {
+	public @Nullable Element getIcon(BlockAccessor accessor, IPluginConfig config, Element currentIcon) {
 		BlockEntity blockEntity = accessor.getBlockEntity();
 		if (blockEntity != null) {
 			ItemStack itemStack = accessor.getPickedResult();

@@ -11,7 +11,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.level.material.Fluids;
 import snownee.jade.api.fluid.JadeFluidObject;
-import snownee.jade.api.ui.IElement;
+import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.util.FluidTextHelper;
 
@@ -19,7 +19,7 @@ public class FluidView {
 
 	public static final Component EMPTY_FLUID = Component.translatable("jade.fluid.empty");
 
-	public IElement overlay;
+	public Element overlay;
 	public String current;
 	public String max;
 	public float ratio;
@@ -28,7 +28,7 @@ public class FluidView {
 	@Nullable
 	public Component overrideText;
 
-	public FluidView(IElement overlay) {
+	public FluidView(Element overlay) {
 		this.overlay = overlay;
 		Objects.requireNonNull(overlay);
 	}

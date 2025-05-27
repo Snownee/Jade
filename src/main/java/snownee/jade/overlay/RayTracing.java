@@ -27,7 +27,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.config.IWailaConfig;
-import snownee.jade.api.ui.IElement;
+import snownee.jade.api.ui.Element;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.ui.ItemStackElement;
@@ -95,7 +95,7 @@ public class RayTracing {
 		return entity == null ? null : new EntityHitResult(entity);
 	}
 
-	public static boolean isEmptyElement(IElement element) {
+	public static boolean isEmptyElement(Element element) {
 		return element == null || element == ItemStackElement.EMPTY;
 	}
 
@@ -241,13 +241,13 @@ public class RayTracing {
 		return !WailaClientRegistration.instance().shouldHide(target) && ENTITY_FILTER.test(target);
 	}
 
-	public IElement getIcon() {
+	public Element getIcon() {
 		Accessor<?> accessor = ObjectDataCenter.get();
 		if (accessor == null) {
 			return null;
 		}
 
-		IElement icon = ObjectDataCenter.getIcon();
+		Element icon = ObjectDataCenter.getIcon();
 		if (isEmptyElement(icon)) {
 			return null;
 		} else {

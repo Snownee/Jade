@@ -40,8 +40,8 @@ import snownee.jade.api.JadeIds;
 import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
+import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.IDisplayHelper;
-import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.view.ClientViewGroup;
@@ -153,7 +153,7 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 							JadeIds.UNIVERSAL_ITEM_STORAGE_DETAILED_AMOUNT :
 							JadeIds.UNIVERSAL_ITEM_STORAGE_NORMAL_AMOUNT);
 					realSize = Math.min(group.views.size(), realSize);
-					List<IElement> elements = Lists.newArrayList();
+					List<Element> elements = Lists.newArrayList();
 					for (int i = 0; i < realSize; i++) {
 						ItemView itemView = group.views.get(i);
 						ItemStack stack = itemView.item;
@@ -174,7 +174,7 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 								elements.add(helper.smallItem(stack));
 								elements.addAll(itemView.description);
 							} else {
-								elements.add(helper.smallItem(stack).clearCachedMessage());
+								elements.add(helper.smallItem(stack).refreshNarration());
 								String s = IDisplayHelper.get().humanReadableNumber(stack.getCount(), "", false, null);
 								int width = Minecraft.getInstance().font.width(s);
 								if (width < amountWidth.intValue()) {
@@ -182,7 +182,7 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 								}
 								elements.add(helper.text(Component.literal(s)
 										.append("× ")
-										.append(IDisplayHelper.get().stripColor(stack.getHoverName()))).message(null));
+										.append(IDisplayHelper.get().stripColor(stack.getHoverName()))).narration(""));
 							}
 						} else if (itemView.amountText != null) {
 							elements.add(helper.item(stack, 1, itemView.amountText));

@@ -1,58 +1,32 @@
 package snownee.jade.impl;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.function.UnaryOperator;
+import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.ITooltip;
-import snownee.jade.api.JadeIds;
-import snownee.jade.api.config.IWailaConfig;
-import snownee.jade.api.ui.IElement;
+import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.IElement.Align;
 import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.impl.ui.ElementHelper;
-import snownee.jade.overlay.DisplayHelper;
 
 public class Tooltip implements ITooltip {
 
 	public final List<Line> lines = new ArrayList<>();
 	public boolean sneakyDetails;
 
-	public static void drawDebugBorder(GuiGraphics guiGraphics, float x, float y, IElement element) {
-		if (!IWailaConfig.get().general().isDebug() || !Screen.hasControlDown()) {
-			return;
-		}
-		Vec2 translate = element.getTranslation();
-		Vec2 size = element.getCachedSize();
-		int left = Math.round(x);
-		int top = Math.round(y);
-		int right = Math.round(x + size.x);
-		int bottom = Math.round(y + size.y);
-		DisplayHelper.INSTANCE.drawBorder(guiGraphics, left, top, right, bottom, 1, 0x88FF0000, true);
-		if (!Vec2.ZERO.equals(translate)) {
-			DisplayHelper.INSTANCE.drawBorder(
-					guiGraphics,
-					left + translate.x,
-					top + translate.y,
-					right + translate.x,
-					bottom + translate.y,
-					1,
-					0x880000FF,
-					true);
-		}
+	public Stream<LayoutElement> layoutElements() {
+		return lines.stream().flatMap(line -> line.sortedElements().stream());
 	}
 
 	@Override
@@ -61,9 +35,9 @@ public class Tooltip implements ITooltip {
 	}
 
 	@Override
-	public void append(int index, IElement element) {
-		if (element.getTag() == null) {
-			element.tag(ElementHelper.INSTANCE.currentUid());
+	public void append(int index, LayoutElement element) {
+		if (element instanceof Element taggable && taggable.getTag() == null) {
+			taggable.tag(ElementHelper.INSTANCE.currentUid());
 		}
 		if (isEmpty() || index == size()) {
 			add(element);
@@ -80,9 +54,9 @@ public class Tooltip implements ITooltip {
 	}
 
 	@Override
-	public void add(int index, IElement element) {
-		if (element.getTag() == null) {
-			element.tag(ElementHelper.INSTANCE.currentUid());
+	public void add(int index, LayoutElement element) {
+		if (element instanceof Element taggable && taggable.getTag() == null) {
+			taggable.tag(ElementHelper.INSTANCE.currentUid());
 		}
 		Line line = new Line();
 		line.elements.add(element);
@@ -90,16 +64,17 @@ public class Tooltip implements ITooltip {
 	}
 
 	@Override
-	public List<IElement> get(ResourceLocation tag) {
-		List<IElement> elements = Lists.newArrayList();
-		for (Line line : lines) {
-			line.sortedElements().stream().filter(e -> Objects.equal(tag, e.getTag())).forEach(elements::add);
-		}
+	public List<LayoutElement> get(ResourceLocation tag) {
+		List<LayoutElement> elements = Lists.newArrayList();
+		//TODO
+//		for (Line line : lines) {
+//			line.sortedElements().stream().filter(e -> Objects.equal(tag, e.getTag())).forEach(elements::add);
+//		}
 		return elements;
 	}
 
 	@Override
-	public List<IElement> get(int index, Align align) {
+	public List<LayoutElement> get(int index, Align align) {
 		Line line = lines.get(index);
 		return line.alignedElements(align);
 	}
@@ -109,31 +84,31 @@ public class Tooltip implements ITooltip {
 		return removeInternal(tag, true, null);
 	}
 
-	private boolean removeInternal(ResourceLocation tag, boolean removeFirstLineIfEmpty, @Nullable List<List<IElement>> collector) {
+	private boolean removeInternal(ResourceLocation tag, boolean removeFirstLineIfEmpty, @Nullable List<List<LayoutElement>> collector) {
 		boolean removed = false;
-		List<IElement> collected = collector == null ? null : Lists.newArrayList();
-		for (Iterator<Line> iterator = lines.iterator(); iterator.hasNext(); ) {
-			Line line = iterator.next();
-			if (line.elements.removeIf(e -> {
-				if (Objects.equal(tag, e.getTag())) {
-					if (collector != null) {
-						collected.add(e);
-					}
-					return true;
-				}
-				return false;
-			})) {
-				line.markDirty();
-				if (line.elements.isEmpty() && (removed || removeFirstLineIfEmpty)) {
-					iterator.remove();
-				}
-				removed = true;
-				if (collector != null && !collected.isEmpty()) {
-					collector.add(Lists.newArrayList(collected));
-					collected.clear();
-				}
-			}
-		}
+//		List<LayoutElement> collected = collector == null ? null : Lists.newArrayList();
+//		for (Iterator<Line> iterator = lines.iterator(); iterator.hasNext(); ) {
+//			Line line = iterator.next();
+//			if (line.elements.removeIf(e -> {
+//				if (Objects.equal(tag, e.getTag())) {
+//					if (collector != null) {
+//						collected.add(e);
+//					}
+//					return true;
+//				}
+//				return false;
+//			})) {
+//				line.markDirty();
+//				if (line.elements.isEmpty() && (removed || removeFirstLineIfEmpty)) {
+//					iterator.remove();
+//				}
+//				removed = true;
+//				if (collector != null && !collected.isEmpty()) {
+//					collector.add(Lists.newArrayList(collected));
+//					collected.clear();
+//				}
+//			}
+//		}
 		return removed;
 	}
 
@@ -143,68 +118,70 @@ public class Tooltip implements ITooltip {
 	}
 
 	@Override
-	public boolean replace(ResourceLocation tag, UnaryOperator<List<List<IElement>>> operator) {
-		int firstX = -1, firstY = -1;
-		for (int y = 0; y < lines.size(); y++) {
-			Line line = lines.get(y);
-			for (int x = 0; x < line.sortedElements().size(); x++) {
-				IElement element = line.sortedElements().get(x);
-				if (Objects.equal(tag, element.getTag())) {
-					if (firstX == -1) {
-						firstX = x;
-						firstY = y;
-					}
-				}
-			}
-		}
-		if (firstX != -1) {
-			List<List<IElement>> elements = Lists.newArrayList();
-			removeInternal(tag, false, elements);
-			elements = operator.apply(elements);
-			for (List<IElement> elementList : elements) {
-				for (IElement element : elementList) {
-					if (element.getTag() == null) {
-						element.tag(tag);
-					}
-				}
-			}
-			for (int i = 0; i < elements.size(); i++) {
-				List<IElement> list = elements.get(i);
-				if (i == 0) {
-					Line line = lines.get(firstY);
-					line.sortedElements().addAll(firstX, list);
-					line.markDirty();
-				} else {
-					add(firstY + i, list);
-				}
-			}
-		}
-		return firstX != -1;
+	public boolean replace(ResourceLocation tag, UnaryOperator<List<List<LayoutElement>>> operator) {
+		return false;//TODO
+//		int firstX = -1, firstY = -1;
+//		for (int y = 0; y < lines.size(); y++) {
+//			Line line = lines.get(y);
+//			for (int x = 0; x < line.sortedElements().size(); x++) {
+//				LayoutElement element = line.sortedElements().get(x);
+//				if (Objects.equal(tag, element.getTag())) {
+//					if (firstX == -1) {
+//						firstX = x;
+//						firstY = y;
+//					}
+//				}
+//			}
+//		}
+//		if (firstX != -1) {
+//			List<List<LayoutElement>> elements = Lists.newArrayList();
+//			removeInternal(tag, false, elements);
+//			elements = operator.apply(elements);
+//			for (List<LayoutElement> elementList : elements) {
+//				for (LayoutElement element : elementList) {
+//					if (element.getTag() == null) {
+//						element.tag(tag);
+//					}
+//				}
+//			}
+//			for (int i = 0; i < elements.size(); i++) {
+//				List<LayoutElement> list = elements.get(i);
+//				if (i == 0) {
+//					Line line = lines.get(firstY);
+//					line.sortedElements().addAll(firstX, list);
+//					line.markDirty();
+//				} else {
+//					add(firstY + i, list);
+//				}
+//			}
+//		}
+//		return firstX != -1;
 	}
 
 	@Override
-	public String getMessage() {
+	public String getNarration() {
 		List<String> msgs = Lists.newArrayList();
 		for (Line line : lines) {
 			/* off */
-			msgs.add(String.join(
-					" ", line.sortedElements().stream()
-							.filter(e -> !JadeIds.CORE_MOD_NAME.equals(e.getTag()))
-							.map(IElement::getCachedMessage)
-							.filter(java.util.Objects::nonNull)
-							.toList()));
+//			msgs.add(String.join(
+//					" ", line.sortedElements().stream()
+//							.filter(e -> !JadeIds.CORE_MOD_NAME.equals(e.getTag()))
+//							.map(LayoutElement::getCachedMessage)
+//							.filter(java.util.Objects::nonNull)
+//							.toList()));//TODO
 			/* on */
 		}
 		return String.join("\n", msgs);
 	}
 
 	@Override
-	public String getMessage(ResourceLocation tag) {
-		return String.join(
-				" ", get(tag).stream()
-						.map(IElement::getCachedMessage)
-						.filter(java.util.Objects::nonNull)
-						.toList());
+	public String getNarration(ResourceLocation tag) {
+		return "";//TODO
+//		return String.join(
+//				" ", get(tag).stream()
+//						.map(LayoutElement::getCachedMessage)
+//						.filter(java.util.Objects::nonNull)
+//						.toList());
 	}
 
 	@Override
@@ -221,7 +198,7 @@ public class Tooltip implements ITooltip {
 	}
 
 	public static class Line {
-		private final List<IElement> elements = Lists.newArrayList();
+		private final List<LayoutElement> elements = Lists.newArrayList();
 		private final int[] starts = new int[3 - 1];
 		private final float[] widths = new float[3];
 		public int marginTop = 0;
@@ -230,30 +207,30 @@ public class Tooltip implements ITooltip {
 		private boolean sorted;
 
 		public void sort() {
-			if (sorted) {
-				return;
-			}
-			sorted = true;
-			Arrays.fill(starts, 0);
-			Arrays.fill(widths, 0);
-			List<IElement> tempList = Lists.newArrayListWithExpectedSize(elements.size());
-			float width = 0;
-			float height = 0;
-			for (IElement element : elements) {
-				int index = element.getAlignment().ordinal();
-				int start = index == 2 ? tempList.size() : starts[index];
-				tempList.add(start, element);
-				for (int i = index; i < starts.length; i++) {
-					starts[i]++;
-				}
-				Vec2 elementSize = element.getCachedSize();
-				widths[index] += elementSize.x;
-				width += elementSize.x;
-				height = Math.max(height, elementSize.y);
-			}
-			elements.clear();
-			elements.addAll(tempList);
-			size = new Vec2(width, height);
+//			if (sorted) {
+//				return;
+//			}
+//			sorted = true;
+//			Arrays.fill(starts, 0);
+//			Arrays.fill(widths, 0);
+//			List<LayoutElement> tempList = Lists.newArrayListWithExpectedSize(elements.size());
+//			float width = 0;
+//			float height = 0;
+//			for (LayoutElement element : elements) {
+//				int index = element.getAlignment().ordinal();
+//				int start = index == 2 ? tempList.size() : starts[index];
+//				tempList.add(start, element);
+//				for (int i = index; i < starts.length; i++) {
+//					starts[i]++;
+//				}
+//				Vec2 elementSize = element.getCachedSize();
+//				widths[index] += elementSize.x;
+//				width += elementSize.x;
+//				height = Math.max(height, elementSize.y);
+//			}
+//			elements.clear();
+//			elements.addAll(tempList);
+//			size = new Vec2(width, height);
 		}
 
 		public void markDirty() {
@@ -261,12 +238,12 @@ public class Tooltip implements ITooltip {
 			size = null;
 		}
 
-		public List<IElement> sortedElements() {
+		public List<LayoutElement> sortedElements() {
 			sort();
 			return elements;
 		}
 
-		public List<IElement> alignedElements(Align align) {
+		public List<LayoutElement> alignedElements(Align align) {
 			sort();
 			int index = align.ordinal();
 			int start = index == 0 ? 0 : starts[index - 1];
@@ -277,41 +254,6 @@ public class Tooltip implements ITooltip {
 		public Vec2 size() {
 			sort();
 			return size;
-		}
-
-		public void render(GuiGraphics guiGraphics, float x, float y, float maxX, float maxY) {
-			sort();
-			for (Align align : Align.VALUES) {
-				renderAligned(guiGraphics, x, y, maxX, maxY, align);
-			}
-		}
-
-		private void renderAligned(GuiGraphics guiGraphics, float x, float y, float maxX, float maxY, Align align) {
-			List<IElement> alignedElements = alignedElements(align);
-			float ox = switch (align) {
-				case LEFT -> x;
-				case RIGHT -> maxX - widths[1];
-				case CENTER -> {
-					float left = x + widths[0];
-					float right = maxX - widths[1];
-					yield left + (right - left - widths[2]) / 2;
-				}
-			};
-
-			boolean extendable = align == Align.LEFT && alignedElements.size() == elements.size();
-			IElement lastElement = alignedElements.isEmpty() ? null : alignedElements.getLast();
-			for (IElement element : alignedElements) {
-				Vec2 translate = element.getTranslation();
-				Vec2 size = element.getCachedSize();
-				drawDebugBorder(guiGraphics, ox, y, element);
-				element.render(
-						guiGraphics,
-						ox + translate.x,
-						y + translate.y,
-						(extendable && element == lastElement ? maxX : (ox + size.x)) + translate.x,
-						maxY + translate.y);
-				ox += size.x;
-			}
 		}
 	}
 

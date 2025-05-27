@@ -76,7 +76,7 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.fluid.JadeFluidObject;
-import snownee.jade.api.ui.IElement;
+import snownee.jade.api.ui.Element;
 import snownee.jade.api.view.ClientViewGroup;
 import snownee.jade.api.view.IClientExtensionProvider;
 import snownee.jade.api.view.ViewGroup;
@@ -178,7 +178,7 @@ public final class ClientProxy implements ClientModInitializer {
 		return hasJEI || hasREI;
 	}
 
-	public static IElement elementFromLiquid(BlockState blockState) {
+	public static Element elementFromLiquid(BlockState blockState) {
 		FluidState fluidState = blockState.getFluidState();
 		return new FluidStackElement(JadeFluidObject.of(fluidState.getType()));//.size(new Size(18, 18));
 	}

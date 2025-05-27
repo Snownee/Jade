@@ -24,7 +24,7 @@ public enum HopperLockProvider implements IBlockComponentProvider, StreamServerD
 		if (decodeFromData(accessor).orElse(false)) {
 			if (config.get(JadeIds.MC_REDSTONE) ||
 					(IWailaConfig.get().accessibility().getEnableAccessibilityPlugin() && config.get(JadeIds.ACCESS_BLOCK_DETAILS))) {
-				String objectName = tooltip.getMessage(JadeIds.CORE_OBJECT_NAME);
+				String objectName = tooltip.getNarration(JadeIds.CORE_OBJECT_NAME);
 				AccessibilityPlugin.replaceTitle(tooltip, objectName, "block.locked");
 			}
 		}

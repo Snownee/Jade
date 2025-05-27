@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.world.item.ItemStack;
-import snownee.jade.api.ui.IElement;
+import snownee.jade.api.ui.Element;
 
 public class ItemView {
 
@@ -15,7 +15,7 @@ public class ItemView {
 	@Nullable
 	public String amountText;
 	@Nullable
-	public List<IElement> description;
+	public List<Element> description;
 
 	public ItemView(ItemStack item) {
 		Objects.requireNonNull(item);
@@ -29,7 +29,7 @@ public class ItemView {
 	}
 
 	@Contract("_ -> this")
-	public ItemView description(List<IElement> description) {
+	public ItemView description(List<Element> description) {
 		this.description = description;
 		return this;
 	}

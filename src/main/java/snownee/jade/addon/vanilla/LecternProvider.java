@@ -1,7 +1,7 @@
 package snownee.jade.addon.vanilla;
 
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -29,7 +29,7 @@ public enum LecternProvider implements IBlockComponentProvider, StreamServerData
 		IElementHelper helper = IElementHelper.get();
 		tooltip.add(helper.smallItem(stack));
 		tooltip.append(helper.text(IDisplayHelper.get().stripColor(stack.getHoverName()))
-				.message(I18n.get("narration.jade.bookName", stack.getHoverName().getString())));
+				.narration(Component.translatable("narration.jade.bookName", stack.getHoverName())));
 	}
 
 	@Override

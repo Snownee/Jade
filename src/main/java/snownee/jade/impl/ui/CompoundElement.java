@@ -1,35 +1,47 @@
 package snownee.jade.impl.ui;
 
+import org.jetbrains.annotations.Nullable;
+
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.world.phys.Vec2;
+import net.minecraft.network.chat.Component;
 import snownee.jade.api.ui.Element;
-import snownee.jade.api.ui.IElement;
 
 public class CompoundElement extends Element {
 
-	protected final IElement large;
-	protected final IElement small;
+	protected final Element large;
+	protected final Element small;
 
-	public CompoundElement(IElement large, IElement small) {
+	public CompoundElement(Element large, Element small) {
 		this.large = large;
 		this.small = small;
+		width = large.getWidth();
+		height = large.getHeight();
 	}
 
 	@Override
-	public Vec2 getSize() {
-		return large.getSize();
+	public @Nullable Component getNarration() {
+		return large.getNarration();
 	}
 
 	@Override
-	public void render(GuiGraphics guiGraphics, float x, float y, float maxX, float maxY) {
-		Vec2 largeSize = large.getCachedSize();
-		Vec2 smallSize = small.getCachedSize();
-		large.render(guiGraphics, x, y, maxX, maxY);
-		guiGraphics.pose().pushMatrix();
-		//FIXME
-//		guiGraphics.pose().translate(0, 0, 100);
-		small.render(guiGraphics, x + largeSize.x - smallSize.x, y + largeSize.y - smallSize.y, maxX, maxY);
-		guiGraphics.pose().popMatrix();
+	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+		large.render(graphics, mouseX, mouseY, partialTicks);
+		graphics.pose().pushMatrix();
+		small.render(graphics, mouseX, mouseY, partialTicks);
+		graphics.pose().popMatrix();
 	}
 
+	@Override
+	public void setX(int x) {
+		super.setX(x);
+		large.setX(x);
+		small.setX(x + large.getWidth() - small.getWidth());
+	}
+
+	@Override
+	public void setY(int y) {
+		super.setY(y);
+		large.setY(y);
+		small.setY(y + large.getHeight() - small.getHeight());
+	}
 }

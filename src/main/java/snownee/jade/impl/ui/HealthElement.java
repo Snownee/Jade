@@ -1,14 +1,11 @@
 package snownee.jade.impl.ui;
 
-import org.jetbrains.annotations.Nullable;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
@@ -51,19 +48,17 @@ public class HealthElement extends Element {
 			iconsPerLine = Math.min(maxHeartsPerLine, iconCount);
 			lineCount = Mth.ceil(maxHealth / maxHeartsPerLine);
 		}
-	}
-
-	@Override
-	public Vec2 getSize() {
 		if (showText()) {
-			return new Vec2(DisplayHelper.font().width(text) + 10, 9);
+			width = DisplayHelper.font().width(text) + 10;
+			height = 9;
 		} else {
-			return new Vec2(8 * iconsPerLine + 1, 5 + 4 * lineCount);
+			width = 8 * iconsPerLine + 1;
+			height = 5 + 4 * lineCount;
 		}
 	}
 
 	@Override
-	public void render(GuiGraphics guiGraphics, float x, float y, float maxX, float maxY) {
+	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
 		float health = this.health * 0.5F;
 		float lastHealth = health;
 		boolean blink = false;
@@ -84,22 +79,22 @@ public class HealthElement extends Element {
 		int xOffset = (iconCount - 1) % iconsPerLine * 8;
 		int yOffset = lineCount * 4 - 4;
 		for (int i = iconCount; i > 0; --i) {
-			int xPos = (int) (x + xOffset);
-			int yPos = (int) (y + yOffset);
-			helper.blitSprite(guiGraphics, RenderPipelines.GUI_TEXTURED, blink ? EMPTY_HEART_BLINKING : EMPTY_HEART, xPos, yPos, 9, 9);
+			int xPos = getX() + xOffset;
+			int yPos = getY() + yOffset;
+			helper.blitSprite(graphics, RenderPipelines.GUI_TEXTURED, blink ? EMPTY_HEART_BLINKING : EMPTY_HEART, xPos, yPos, 9, 9);
 
 			if (i <= Mth.floor(health)) {
-				helper.blitSprite(guiGraphics, RenderPipelines.GUI_TEXTURED, HEART, xPos, yPos, 9, 9);
+				helper.blitSprite(graphics, RenderPipelines.GUI_TEXTURED, HEART, xPos, yPos, 9, 9);
 			}
 
 			if (i > health) {
 				if (i <= Mth.floor(lastHealth)) {
-					helper.blitSprite(guiGraphics, RenderPipelines.GUI_TEXTURED, HEART_BLINKING, xPos, yPos, 9, 9);
+					helper.blitSprite(graphics, RenderPipelines.GUI_TEXTURED, HEART_BLINKING, xPos, yPos, 9, 9);
 				} else if ((i > lastHealth) && (i < lastHealth + 1)) {
-					helper.blitSprite(guiGraphics, RenderPipelines.GUI_TEXTURED, HALF_HEART_BLINKING, xPos, yPos, 9, 9);
+					helper.blitSprite(graphics, RenderPipelines.GUI_TEXTURED, HALF_HEART_BLINKING, xPos, yPos, 9, 9);
 				}
 				if (i < health + 1) {
-					helper.blitSprite(guiGraphics, RenderPipelines.GUI_TEXTURED, HALF_HEART, xPos, yPos, 9, 9);
+					helper.blitSprite(graphics, RenderPipelines.GUI_TEXTURED, HALF_HEART, xPos, yPos, 9, 9);
 				}
 			}
 
@@ -111,13 +106,13 @@ public class HealthElement extends Element {
 		}
 
 		if (showText()) {
-			helper.drawText(guiGraphics, text, x + 10, y + 1, IThemeHelper.get().getNormalColor());
+			helper.drawText(graphics, text, getX() + 10, getY() + 1, IThemeHelper.get().getNormalColor());
 		}
 	}
 
 	@Override
-	public @Nullable String getMessage() {
-		return I18n.get("narration.jade.health", Mth.ceil(health));
+	public Component getNarration() {
+		return Component.translatable("narration.jade.health", Mth.ceil(health));
 	}
 
 	public boolean showText() {

@@ -20,7 +20,7 @@ import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.IElementHelper;
-import snownee.jade.api.ui.ITextElement;
+import snownee.jade.api.ui.TextElement;
 import snownee.jade.impl.theme.ThemeHelper;
 
 public abstract class DistanceProvider implements IToggleableProvider {
@@ -59,11 +59,15 @@ public abstract class DistanceProvider implements IToggleableProvider {
 		return fmt.format(accessor.getPlayer().getEyePosition(partialTick).distanceTo(accessor.getHitResult().getLocation()));
 	}
 
-	public static ITextElement xyz(Vec3i pos) {
+	public static TextElement xyz(Vec3i pos) {
 		Component display = Component.translatable("jade.blockpos", display(pos.getX(), 0), display(pos.getY(), 1), display(pos.getZ(), 2));
-		String narrate = I18n.get("narration.jade.blockpos", narrate(pos.getX()), narrate(pos.getY()), narrate(pos.getZ()));
-		ITextElement text = IElementHelper.get().text(display);
-		text.message(narrate);
+		Component narration = Component.translatable(
+				"narration.jade.blockpos",
+				narrate(pos.getX()),
+				narrate(pos.getY()),
+				narrate(pos.getZ()));
+		TextElement text = IElementHelper.get().text(display);
+		text.narration(narration);
 		return text;
 	}
 
@@ -89,10 +93,14 @@ public abstract class DistanceProvider implements IToggleableProvider {
 				tooltip.add(xyz(pos));
 			}
 			if (distance) {
-				tooltip.append(IElementHelper.get().text(Component.translatable("jade.distance1", distanceVal)).message(distanceMsg));
+				tooltip.append(IElementHelper.get()
+						.text(Component.translatable("jade.distance1", distanceVal))
+						.narration(Component.literal(distanceMsg)));
 			}
 		} else if (distance) {
-			tooltip.add(IElementHelper.get().text(Component.translatable("jade.distance2", distanceVal)).message(distanceMsg));
+			tooltip.add(IElementHelper.get()
+					.text(Component.translatable("jade.distance2", distanceVal))
+					.narration(Component.literal(distanceMsg)));
 		}
 	}
 

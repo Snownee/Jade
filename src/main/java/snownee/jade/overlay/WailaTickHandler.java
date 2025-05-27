@@ -35,7 +35,7 @@ import snownee.jade.impl.Tooltip;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.impl.theme.ThemeHelper;
-import snownee.jade.impl.ui.BoxElement;
+import snownee.jade.impl.ui.BoxElementImpl;
 import snownee.jade.track.ProgressTracker;
 import snownee.jade.util.ClientProxy;
 
@@ -44,7 +44,7 @@ public class WailaTickHandler {
 	private static WailaTickHandler INSTANCE = new WailaTickHandler();
 	private static String lastNarration = "";
 	private static long lastNarrationTime = 0;
-	public BoxElement rootElement;
+	public BoxElementImpl rootElement;
 	public ProgressTracker progressTracker = new ProgressTracker();
 
 	public static WailaTickHandler instance() {
@@ -61,7 +61,7 @@ public class WailaTickHandler {
 		if (System.currentTimeMillis() - lastNarrationTime < 500) {
 			return;
 		}
-		narrate(StringUtil.stripColor(tooltip.getMessage()), dedupe);
+		narrate(StringUtil.stripColor(tooltip.getNarration()), dedupe);
 		lastNarrationTime = System.currentTimeMillis();
 	}
 
@@ -211,7 +211,7 @@ public class WailaTickHandler {
 			handler.gatherComponents(accessor, $ -> tooltip);
 		}
 
-		BoxElement newElement = new BoxElement(tooltip, IThemeHelper.get().theme().tooltipStyle);
+		BoxElementImpl newElement = new BoxElementImpl(tooltip, IThemeHelper.get().theme().tooltipStyle);
 		newElement.tag(JadeIds.ROOT);
 		newElement.setThemeIcon(RayTracing.INSTANCE.getIcon(), IThemeHelper.get().theme());
 		for (JadeTooltipCollectedCallback callback : WailaClientRegistration.instance().tooltipCollectedCallback.callbacks()) {

@@ -12,6 +12,7 @@ import net.minecraft.world.phys.Vec2;
  *
  * @author Snownee
  */
+@Deprecated
 public interface IElement {
 
 	/**

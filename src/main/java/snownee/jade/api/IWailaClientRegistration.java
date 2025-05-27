@@ -27,9 +27,7 @@ import snownee.jade.api.callback.JadeBeforeTooltipCollectCallback;
 import snownee.jade.api.callback.JadeItemModNameCallback;
 import snownee.jade.api.callback.JadeRayTraceCallback;
 import snownee.jade.api.callback.JadeTooltipCollectedCallback;
-import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.platform.PlatformWailaClientRegistration;
-import snownee.jade.api.ui.IElement;
 import snownee.jade.api.view.EnergyView;
 import snownee.jade.api.view.FluidView;
 import snownee.jade.api.view.IClientExtensionProvider;
@@ -65,7 +63,7 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 
 	/**
 	 * Register an {@link IJadeProvider} instance to allow overriding the icon for a block via the
-	 * {@link IComponentProvider#getIcon(Accessor, IPluginConfig, IElement)} method.
+	 * {@link IComponentProvider#getIcon(Accessor, snownee.jade.api.config.IPluginConfig, snownee.jade.api.ui.Element)} method.
 	 *
 	 * @param provider   The data provider instance
 	 * @param blockClass The highest level class to apply to
@@ -83,7 +81,7 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 
 	/**
 	 * Register an {@link IEntityComponentProvider} instance to allow overriding the icon for a entity via the
-	 * {@link IComponentProvider#getIcon(Accessor, IPluginConfig, IElement)} method.
+	 * {@link IComponentProvider#getIcon(Accessor, snownee.jade.api.config.IPluginConfig, snownee.jade.api.ui.Element)} method.
 	 *
 	 * @param provider    The data provider instance
 	 * @param entityClass The highest level class to apply to

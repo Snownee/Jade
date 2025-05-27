@@ -6,6 +6,7 @@ import com.mojang.blaze3d.platform.Window;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.util.Mth;
 import net.minecraft.util.profiling.Profiler;
@@ -25,7 +26,7 @@ import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.Tooltip;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.config.WailaConfig.General;
-import snownee.jade.impl.ui.BoxElement;
+import snownee.jade.impl.ui.BoxElementImpl;
 import snownee.jade.impl.ui.ItemStackElement;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.ModIdentification;
@@ -36,7 +37,7 @@ public class OverlayRenderer {
 	public static float ticks;
 	public static boolean shown;
 	public static float alpha;
-	private static BoxElement lingerTooltip;
+	private static BoxElementImpl lingerTooltip;
 	private static float disappearTicks;
 
 	public static boolean shouldShow() {
@@ -62,7 +63,7 @@ public class OverlayRenderer {
 		return true;
 	}
 
-	public static boolean shouldShowImmediately(BoxElement box) {
+	public static boolean shouldShowImmediately(BoxElementImpl box) {
 		if (box.getTooltip().isEmpty()) {
 			return false;
 		}
@@ -111,16 +112,16 @@ public class OverlayRenderer {
 	 * Secondly, please notice the license that Jade is using.
 	 * I don't think it is compatible with some open-source licenses.
 	 */
-	public static void renderOverlay478757(GuiGraphics guiGraphics, float delta) {
+	public static void renderOverlay478757(GuiGraphics graphics, float delta) {
 		ticks += delta;
 		shown = false;
-		BoxElement root = WailaTickHandler.instance().rootElement;
+		BoxElementImpl root = WailaTickHandler.instance().rootElement;
 		boolean show;
 		if (root == null && PreviewOptionsScreen.isAdjustingPosition()) {
 			Tooltip tooltip = new Tooltip();
 			tooltip.add(IThemeHelper.get().title(Blocks.GRASS_BLOCK.getName()));
 			tooltip.add(IThemeHelper.get().modName(ModIdentification.getModName(Blocks.GRASS_BLOCK)));
-			root = new BoxElement(tooltip, IThemeHelper.get().theme().tooltipStyle);
+			root = new BoxElementImpl(tooltip, IThemeHelper.get().theme().tooltipStyle);
 			root.tag(JadeIds.ROOT);
 			root.setThemeIcon(ItemStackElement.of(new ItemStack(Blocks.GRASS_BLOCK)), IThemeHelper.get().theme());
 			root.updateExpectedRect(rect);
@@ -165,20 +166,20 @@ public class OverlayRenderer {
 		}
 
 		Profiler.get().push("Jade Overlay");
-		renderOverlay(root, guiGraphics);
+		renderOverlay(root, graphics, 0, 0, delta); //TODO pass correct mouseX, mouseY
 		Profiler.get().pop();
 	}
 
-	public static void renderOverlay(BoxElement root, GuiGraphics guiGraphics) {
+	public static void renderOverlay(BoxElementImpl root, GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
 		root.updateRect(rect);
 
 		for (JadeBeforeRenderCallback callback : WailaClientRegistration.instance().beforeRenderCallback.callbacks()) {
-			if (callback.beforeRender(root, rect, guiGraphics, ObjectDataCenter.get())) {
+			if (callback.beforeRender(root, rect, graphics, ObjectDataCenter.get())) {
 				return;
 			}
 		}
 
-		Matrix3x2fStack matrixStack = guiGraphics.pose();
+		Matrix3x2fStack matrixStack = graphics.pose();
 		matrixStack.pushMatrix();
 		Rect2i rect2i = rect.rect;
 		matrixStack.translate(rect2i.getX(), rect2i.getY());
@@ -192,11 +193,14 @@ public class OverlayRenderer {
 			float maxHeight = rect2i.getHeight();
 			maxWidth = maxWidth / scale;
 			maxHeight = maxHeight / scale;
-			root.render(guiGraphics, 0, 0, Math.round(maxWidth), Math.round(maxHeight));
+			root.render(graphics, mouseX, mouseY, partialTicks);
+			if (IWailaConfig.get().general().isDebug() && Screen.hasControlDown()) {
+				root.renderDebug(graphics, mouseX, mouseY, partialTicks);
+			}
 		}
 
 		WailaClientRegistration.instance().afterRenderCallback.call(callback -> {
-			callback.afterRender(root, rect, guiGraphics, ObjectDataCenter.get());
+			callback.afterRender(root, rect, graphics, ObjectDataCenter.get());
 		});
 
 		matrixStack.popMatrix();

@@ -13,12 +13,12 @@ import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.fluid.JadeFluidObject;
+import snownee.jade.api.ui.BoxElement;
 import snownee.jade.api.ui.BoxStyle;
-import snownee.jade.api.ui.IBoxElement;
-import snownee.jade.api.ui.IElement;
+import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.IElementHelper;
-import snownee.jade.api.ui.ITextElement;
 import snownee.jade.api.ui.ProgressStyle;
+import snownee.jade.api.ui.TextElement;
 import snownee.jade.impl.Tooltip;
 
 public class ElementHelper implements IElementHelper {
@@ -30,68 +30,69 @@ public class ElementHelper implements IElementHelper {
 	private ResourceLocation uid;
 
 	@Override
-	public ITextElement text(Component component) {
-		return new TextElement(component);
+	public TextElement text(Component component) {
+		return new TextElementImpl(component);
 	}
 
 	@Override
-	public IElement item(ItemStack stack) {
+	public Element item(ItemStack stack) {
 		return ItemStackElement.of(stack);
 	}
 
 	@Override
-	public IElement item(ItemStack stack, float scale) {
+	public Element item(ItemStack stack, float scale) {
 		return ItemStackElement.of(stack, scale);
 	}
 
 	@Override
-	public IElement item(ItemStack stack, float scale, String text) {
+	public Element item(ItemStack stack, float scale, String text) {
 		return ItemStackElement.of(stack, scale, text);
 	}
 
 	@Override
-	public IElement smallItem(ItemStack stack) {
-		return item(stack, 0.5F, "").size(SMALL_ITEM_SIZE).translate(SMALL_ITEM_OFFSET).message(null);
+	public Element smallItem(ItemStack stack) {
+		return item(stack, 0.5F, "").narration("");
 	}
 
 	@Override
-	public IElement fluid(JadeFluidObject fluid) {
+	public Element fluid(JadeFluidObject fluid) {
 		return new FluidStackElement(fluid);
 	}
 
 	@Override
-	public IElement spacer(int width, int height) {
-		return new SpacerElement(new Vec2(width, height));
+	public Element spacer(int width, int height) {
+		return new SpacerElement(width, height);
 	}
 
 	@Override
-	public IElement progress(float progress, @Nullable Component text, ProgressStyle style, BoxStyle boxStyle, boolean canDecrease) {
+	public Element progress(float progress, @Nullable Component text, ProgressStyle style, BoxStyle boxStyle, boolean canDecrease) {
 		Objects.requireNonNull(style);
 		Objects.requireNonNull(boxStyle);
 		return new ProgressElement(progress, text, style, boxStyle, canDecrease);
 	}
 
 	@Override
-	public IElement progress(float progress) {
+	public Element progress(float progress) {
 		return progress(progress, DEFAULT_PROGRESS_BASE, DEFAULT_PROGRESS, 22, 16, false);
 	}
 
 	@Override
-	public IElement progress(
+	public Element progress(
 			float progress,
 			ResourceLocation baseSprite,
 			ResourceLocation progressSprite,
 			int width,
 			int height,
 			boolean canDecrease) {
-		ProgressStyle style = progressStyle().fitContentX(false).overlay(sprite(progressSprite, width, height));
-		BoxStyle boxStyle = BoxStyle.getSprite(baseSprite, null);
-		return progress(progress, null, style, boxStyle, canDecrease).size(new Vec2(width, height));
+//		ProgressStyle style = progressStyle().fitContentX(false).overlay(sprite(progressSprite, width, height));
+//		BoxStyle boxStyle = BoxStyle.getSprite(baseSprite, null);
+//		return progress(progress, null, style, boxStyle, canDecrease).size(new Vec2(width, height));
+		return spacer(10, 10);
 	}
 
 	@Override
-	public IBoxElement box(ITooltip tooltip, BoxStyle boxStyle) {
-		return new BoxElement((Tooltip) tooltip, boxStyle);
+	public BoxElement box(ITooltip tooltip, BoxStyle boxStyle) {
+		return new BoxElementImpl((Tooltip) tooltip, boxStyle);
 	}
 
 	@Override
@@ -105,12 +106,12 @@ public class ElementHelper implements IElementHelper {
 	}
 
 	@Override
-	public IElement sprite(RenderPipeline renderPipeline, ResourceLocation sprite, int width, int height) {
+	public Element sprite(RenderPipeline renderPipeline, ResourceLocation sprite, int width, int height) {
 		return new SpriteElement(renderPipeline, sprite, width, height);
 	}
 
 	@Override
-	public IElement sprite(ResourceLocation sprite, int width, int height) {
+	public Element sprite(ResourceLocation sprite, int width, int height) {
 		return new SpriteElement(sprite, width, height);
 	}
 
@@ -122,11 +123,5 @@ public class ElementHelper implements IElementHelper {
 	public void setCurrentUid(ResourceLocation uid) {
 		this.uid = uid;
 	}
-
-	//    public static IElement sub(String text) {
-	//        CompoundTag tag = new CompoundTag();
-	//        tag.putString("text", text);
-	//        return new RenderableTextComponent(SUB, tag);
-	//    }
 
 }

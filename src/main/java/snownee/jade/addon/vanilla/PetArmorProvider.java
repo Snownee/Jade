@@ -18,7 +18,7 @@ import snownee.jade.api.StreamServerDataProvider;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.ui.IElementHelper;
-import snownee.jade.api.ui.ITextElement;
+import snownee.jade.api.ui.TextElement;
 
 public enum PetArmorProvider implements IEntityComponentProvider, StreamServerDataProvider<EntityAccessor, ItemStack> {
 	INSTANCE;
@@ -38,12 +38,12 @@ public enum PetArmorProvider implements IEntityComponentProvider, StreamServerDa
 		}
 		IElementHelper helper = IElementHelper.get();
 		tooltip.add(helper.smallItem(armor));
-		ITextElement text = helper.text(armor.getHoverName());
+		TextElement text = helper.text(armor.getHoverName());
 		if (armor.isDamageableItem()) {
-			text.message(JadeClient.format(
+			text.narration(JadeClient.format(
 					"narration.jade.item_durability",
 					armor.getHoverName(),
-					armor.getMaxDamage() - armor.getDamageValue()).getString());
+					armor.getMaxDamage() - armor.getDamageValue()));
 		}
 		tooltip.append(text);
 	}

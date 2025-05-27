@@ -14,7 +14,7 @@ import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.theme.IThemeHelper;
-import snownee.jade.api.ui.IElement;
+import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.impl.ui.CompoundElement;
 
@@ -23,12 +23,12 @@ public enum WaxedProvider implements IBlockComponentProvider {
 	INSTANCE;
 
 	@Override
-	public @Nullable IElement getIcon(BlockAccessor accessor, IPluginConfig config, IElement currentIcon) {
+	public @Nullable Element getIcon(BlockAccessor accessor, IPluginConfig config, Element currentIcon) {
 		if (accessor.getPickedResult().isEmpty()) {
 			return currentIcon;
 		}
 		IElementHelper helper = IElementHelper.get();
-		IElement largeIcon = helper.item(accessor.getPickedResult());
+		Element largeIcon = helper.item(accessor.getPickedResult());
 		if (accessor.getBlockEntity() instanceof SignBlockEntity sign) {
 			if (sign.isWaxed()) {
 				return new CompoundElement(largeIcon, helper.item(Items.HONEYCOMB.getDefaultInstance(), 0.5f));
@@ -44,7 +44,7 @@ public enum WaxedProvider implements IBlockComponentProvider {
 		if (IWailaConfig.get().accessibility().getEnableAccessibilityPlugin() &&
 				accessor.getBlockEntity() instanceof SignBlockEntity sign &&
 				sign.isWaxed()) {
-			String message = tooltip.getMessage(JadeIds.CORE_OBJECT_NAME);
+			String message = tooltip.getNarration(JadeIds.CORE_OBJECT_NAME);
 			if (!message.isBlank()) {
 				tooltip.replace(JadeIds.CORE_OBJECT_NAME, IThemeHelper.get().title(Component.translatable("jade.waxed", message)));
 			}

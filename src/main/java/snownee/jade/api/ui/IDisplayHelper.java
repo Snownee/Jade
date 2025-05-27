@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
@@ -21,26 +22,26 @@ public interface IDisplayHelper {
 		return JadeInternals.getDisplayHelper();
 	}
 
-	void drawItem(GuiGraphics guiGraphics, float x, float y, ItemStack stack, float scale, @Nullable String text);
+	void drawItem(GuiGraphics graphics, float x, float y, ItemStack stack, float scale, @Nullable String text);
 
-	void drawGradientRect(GuiGraphics guiGraphics, float left, float top, float right, float bottom, int startColor, int endColor);
+	void drawGradientRect(GuiGraphics graphics, float left, float top, float right, float bottom, int startColor, int endColor);
 
-	void drawBorder(GuiGraphics guiGraphics, float minX, float minY, float maxX, float maxY, float width, int color, boolean corner);
+	void drawBorder(GuiGraphics graphics, ScreenRectangle rectangle, int width, int color, boolean corner);
 
 	String humanReadableNumber(double number, String unit, boolean milli);
 
 	String humanReadableNumber(double number, String unit, boolean milli, @Nullable Format formatter);
 
-	void drawText(GuiGraphics guiGraphics, String text, float x, float y, int color);
+	void drawText(GuiGraphics graphics, String text, float x, float y, int color);
 
-	void drawText(GuiGraphics guiGraphics, FormattedText text, float x, float y, int color);
+	void drawText(GuiGraphics graphics, FormattedText text, float x, float y, int color);
 
-	void drawText(GuiGraphics guiGraphics, FormattedCharSequence text, float x, float y, int color);
+	void drawText(GuiGraphics graphics, FormattedCharSequence text, float x, float y, int color);
 
 	MutableComponent stripColor(Component component);
 
 	void blitSprite(
-			GuiGraphics guiGraphics,
+			GuiGraphics graphics,
 			RenderPipeline renderPipeline,
 			ResourceLocation resourceLocation,
 			int i,
@@ -49,7 +50,7 @@ public interface IDisplayHelper {
 			int l);
 
 	void blitSprite(
-			GuiGraphics guiGraphics,
+			GuiGraphics graphics,
 			RenderPipeline renderPipeline,
 			ResourceLocation resourceLocation,
 			int i,
@@ -59,7 +60,7 @@ public interface IDisplayHelper {
 			int m);
 
 	void blitSprite(
-			GuiGraphics guiGraphics,
+			GuiGraphics graphics,
 			RenderPipeline renderPipeline,
 			ResourceLocation resourceLocation,
 			int i,

@@ -120,7 +120,7 @@ public abstract class FluidStorageProvider<T extends Accessor<?>> implements ICo
 								theTooltip.append(text);
 							}
 							case PROGRESS_BAR -> {
-								ProgressStyle progressStyle = helper.progressStyle().overlay(view.overlay);
+								ProgressStyle progressStyle = helper.progressStyle();
 								theTooltip.add(helper.progress(view.ratio, text, progressStyle, BoxStyle.getNestedBox(), true));
 							}
 						}

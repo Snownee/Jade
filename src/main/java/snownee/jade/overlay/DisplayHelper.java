@@ -19,6 +19,7 @@ import com.mojang.blaze3d.textures.GpuTextureView;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.render.TextureSetup;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -58,76 +59,76 @@ public class DisplayHelper implements IDisplayHelper {
 		}
 	}
 
-	private static void renderGuiItemDecorations(GuiGraphics guiGraphics, Font font, ItemStack stack, int i, int j, @Nullable String text) {
+	private static void renderGuiItemDecorations(GuiGraphics graphics, Font font, ItemStack stack, int i, int j, @Nullable String text) {
 		if (stack.isEmpty()) {
 			return;
 		}
-		guiGraphics.pose().pushMatrix();
-		guiGraphics.renderItemBar(stack, i, j);
+		graphics.pose().pushMatrix();
+		graphics.renderItemBar(stack, i, j);
 		if (stack.getCount() != 1 || text != null) {
 			String s = text == null ? INSTANCE.humanReadableNumber(stack.getCount(), "", false, null) : text;
 			boolean smaller = s.length() > 3;
 			float scale = smaller ? 0.5F : 0.75F;
 			int x = smaller ? 32 : 22;
 			int y = smaller ? 23 : 13;
-			guiGraphics.pose().pushMatrix();
+			graphics.pose().pushMatrix();
 			//FIXME
-//			guiGraphics.pose().translate(0.0f, 0.0f, 200.0f);
-			guiGraphics.pose().scale(scale);
+//			graphics.pose().translate(0.0f, 0.0f, 200.0f);
+			graphics.pose().scale(scale);
 			int color = IThemeHelper.get().theme().text.itemAmountColor();
-			guiGraphics.drawString(font, s, i + x - font.width(s), j + y, color, true);
-			guiGraphics.pose().popMatrix();
+			graphics.drawString(font, s, i + x - font.width(s), j + y, color, true);
+			graphics.pose().popMatrix();
 		}
-		guiGraphics.pose().popMatrix();
-		ClientProxy.renderItemDecorationsExtra(guiGraphics, font, stack, i, j, text);
+		graphics.pose().popMatrix();
+		ClientProxy.renderItemDecorationsExtra(graphics, font, stack, i, j, text);
 	}
 
-	public static void fill(GuiGraphics guiGraphics, float minX, float minY, float maxX, float maxY, int color) {
-		fill(guiGraphics, RenderPipelines.GUI, minX, minY, maxX, maxY, color);
+	public static void fill(GuiGraphics graphics, float minX, float minY, float maxX, float maxY, int color) {
+		fill(graphics, RenderPipelines.GUI, minX, minY, maxX, maxY, color);
 	}
 
 	public static void fill(
-			GuiGraphics guiGraphics,
+			GuiGraphics graphics,
 			RenderPipeline renderPipeline,
 			float minX,
 			float minY,
 			float maxX,
 			float maxY,
 			int color) {
-		guiGraphics.guiRenderState.submitGuiElement(new FloatColoredRectangleRenderState(
+		graphics.guiRenderState.submitGuiElement(new FloatColoredRectangleRenderState(
 				renderPipeline,
 				TextureSetup.noTexture(),
-				new Matrix3x2f(guiGraphics.pose()),
+				new Matrix3x2f(graphics.pose()),
 				minX,
 				minY,
 				maxX,
 				maxY,
 				color,
 				color,
-				guiGraphics.scissorStack.peek()
+				graphics.scissorStack.peek()
 		));
 	}
 
 	@Override
-	public void drawItem(GuiGraphics guiGraphics, float x, float y, ItemStack stack, float scale, @Nullable String text) {
+	public void drawItem(GuiGraphics graphics, float x, float y, ItemStack stack, float scale, @Nullable String text) {
 		if (opacity() < 0.5F) {
 			return;
 		}
-		guiGraphics.pose().pushMatrix();
-		guiGraphics.pose().translate(x, y);
-		guiGraphics.pose().scale(scale);
-		guiGraphics.renderFakeItem(stack, 0, 0);
-		renderGuiItemDecorations(guiGraphics, font(), stack, 0, 0, text);
-		guiGraphics.pose().popMatrix();
+		graphics.pose().pushMatrix();
+		graphics.pose().translate(x, y);
+		graphics.pose().scale(scale);
+		graphics.renderFakeItem(stack, 0, 0);
+		renderGuiItemDecorations(graphics, font(), stack, 0, 0, text);
+		graphics.pose().popMatrix();
 	}
 
 	@Override
-	public void drawGradientRect(GuiGraphics guiGraphics, float left, float top, float width, float height, int startColor, int endColor) {
-		drawGradientRect(guiGraphics, left, top, width, height, startColor, endColor, false);
+	public void drawGradientRect(GuiGraphics graphics, float left, float top, float width, float height, int startColor, int endColor) {
+		drawGradientRect(graphics, left, top, width, height, startColor, endColor, false);
 	}
 
 	public void drawGradientRect(
-			GuiGraphics guiGraphics,
+			GuiGraphics graphics,
 			float left,
 			float top,
 			float width,
@@ -140,11 +141,11 @@ public class DisplayHelper implements IDisplayHelper {
 		}
 
 //		float zLevel = 0.0F;
-//		Matrix4f matrix = guiGraphics.pose().last().pose();
+//		Matrix4f matrix = graphics.pose().last().pose();
 //
 //		startColor = Overlay.applyAlpha(startColor, opacity());
 //		endColor = Overlay.applyAlpha(endColor, opacity());
-//		VertexConsumer buffer = guiGraphics.bufferSource.getBuffer(RenderType.gui());
+//		VertexConsumer buffer = graphics.bufferSource.getBuffer(RenderType.gui());
 //		if (horizontal) {
 //			buffer.addVertex(matrix, left + width, top, zLevel).setColor(endColor);
 //			buffer.addVertex(matrix, left, top, zLevel).setColor(startColor);
@@ -156,32 +157,28 @@ public class DisplayHelper implements IDisplayHelper {
 //			buffer.addVertex(matrix, left, top + height, zLevel).setColor(endColor);
 //			buffer.addVertex(matrix, left + width, top + height, zLevel).setColor(endColor);
 //		}
-//		guiGraphics.flush();
+//		graphics.flush();
 	}
 
 	@Override
-	public void drawBorder(
-			GuiGraphics guiGraphics,
-			float minX,
-			float minY,
-			float maxX,
-			float maxY,
-			float width,
-			int color,
-			boolean corner) {
-		fill(guiGraphics, minX + width, minY, maxX - width, minY + width, color);
-		fill(guiGraphics, minX + width, maxY - width, maxX - width, maxY, color);
+	public void drawBorder(GuiGraphics graphics, ScreenRectangle rectangle, int width, int color, boolean corner) {
+		int minX = rectangle.left();
+		int minY = rectangle.top();
+		int maxX = rectangle.right();
+		int maxY = rectangle.bottom();
+		fill(graphics, minX + width, minY, maxX - width, minY + width, color);
+		fill(graphics, minX + width, maxY - width, maxX - width, maxY, color);
 		if (corner) {
-			fill(guiGraphics, minX, minY, minX + width, maxY, color);
-			fill(guiGraphics, maxX - width, minY, maxX, maxY, color);
+			fill(graphics, minX, minY, minX + width, maxY, color);
+			fill(graphics, maxX - width, minY, maxX, maxY, color);
 		} else {
-			fill(guiGraphics, minX, minY + width, minX + width, maxY - width, color);
-			fill(guiGraphics, maxX - width, minY + width, maxX, maxY - width, color);
+			fill(graphics, minX, minY + width, minX + width, maxY - width, color);
+			fill(graphics, maxX - width, minY + width, maxX, maxY - width, color);
 		}
 	}
 
 	public void drawFluid(
-			GuiGraphics guiGraphics,
+			GuiGraphics graphics,
 			final float xPosition,
 			final float yPosition,
 			JadeFluidObject fluid,
@@ -208,13 +205,13 @@ public class DisplayHelper implements IDisplayHelper {
 						if (color == -1) {
 							color = 0xAAAAAAAA;
 						}
-						fill(guiGraphics, xPosition, maxY - scaledAmount.floatValue(), xPosition + width, maxY, color);
+						fill(graphics, xPosition, maxY - scaledAmount.floatValue(), xPosition + width, maxY, color);
 					} else {
 						if (opacity() != 1) {
 							color = Overlay.applyAlpha(color, opacity());
 						}
 						blitTiledSprite(
-								guiGraphics,
+								graphics,
 								RenderPipelines.GUI_TEXTURED,
 								sprite,
 								xPosition,
@@ -233,7 +230,7 @@ public class DisplayHelper implements IDisplayHelper {
 	}
 
 	private void blitSprite(
-			GuiGraphics guiGraphics,
+			GuiGraphics graphics,
 			RenderPipeline renderPipeline,
 			TextureAtlasSprite textureAtlasSprite,
 			int i,
@@ -249,7 +246,7 @@ public class DisplayHelper implements IDisplayHelper {
 			return;
 		}
 		this.innerBlit(
-				guiGraphics,
+				graphics,
 				renderPipeline,
 				textureAtlasSprite.atlasLocation(),
 				x,
@@ -319,32 +316,32 @@ public class DisplayHelper implements IDisplayHelper {
 	}
 
 	@Override
-	public void drawText(GuiGraphics guiGraphics, String text, float x, float y, int color) {
-		drawText(guiGraphics, Component.literal(text), x, y, color);
+	public void drawText(GuiGraphics graphics, String text, float x, float y, int color) {
+		drawText(graphics, Component.literal(text), x, y, color);
 	}
 
 	@Override
-	public void drawText(GuiGraphics guiGraphics, FormattedText text, float x, float y, int color) {
+	public void drawText(GuiGraphics graphics, FormattedText text, float x, float y, int color) {
 		FormattedCharSequence sequence;
 		if (text instanceof Component component) {
 			sequence = component.getVisualOrderText();
 		} else {
 			sequence = Language.getInstance().getVisualOrder(text);
 		}
-		drawText(guiGraphics, sequence, x, y, color);
+		drawText(graphics, sequence, x, y, color);
 	}
 
 	@Override
-	public void drawText(GuiGraphics guiGraphics, FormattedCharSequence text, float x, float y, int color) {
+	public void drawText(GuiGraphics graphics, FormattedCharSequence text, float x, float y, int color) {
 		boolean shadow = IWailaConfig.get().overlay().getTheme().text.shadow();
 		if (opacity() != 1) {
 			color = Overlay.applyAlpha(color, opacity());
 		}
-		guiGraphics.drawString(font(), text, (int) x, (int) y, color, shadow);
+		graphics.drawString(font(), text, (int) x, (int) y, color, shadow);
 	}
 
 	public void drawGradientProgress(
-			GuiGraphics guiGraphics,
+			GuiGraphics graphics,
 			float left,
 			float top,
 			float width,
@@ -354,12 +351,12 @@ public class DisplayHelper implements IDisplayHelper {
 		Color color = Color.rgb(progressColor);
 		Color highlight = Color.hsl(color.getHue(), color.getSaturation(), Math.min(color.getLightness() + 0.2, 1), color.getOpacity());
 		if (progress < 0.1F) {
-			drawGradientRect(guiGraphics, left, top, width * progress, height, progressColor, highlight.toInt(), true);
+			drawGradientRect(graphics, left, top, width * progress, height, progressColor, highlight.toInt(), true);
 		} else {
 			float hlWidth = width * 0.1F;
 			float normalWidth = width * progress - hlWidth;
-			fill(guiGraphics, left, top, left + normalWidth, top + height, progressColor);
-			drawGradientRect(guiGraphics, left + normalWidth, top, hlWidth, height, progressColor, highlight.toInt(), true);
+			fill(graphics, left, top, left + normalWidth, top + height, progressColor);
+			drawGradientRect(graphics, left + normalWidth, top, hlWidth, height, progressColor, highlight.toInt(), true);
 		}
 	}
 
@@ -380,19 +377,19 @@ public class DisplayHelper implements IDisplayHelper {
 
 	@Override
 	public void blitSprite(
-			GuiGraphics guiGraphics,
+			GuiGraphics graphics,
 			RenderPipeline renderPipeline,
 			ResourceLocation resourceLocation,
 			int i,
 			int j,
 			int k,
 			int l) {
-		guiGraphics.blitSprite(renderPipeline, resourceLocation, i, j, k, l, ARGB.white(opacity()));
+		graphics.blitSprite(renderPipeline, resourceLocation, i, j, k, l, ARGB.white(opacity()));
 	}
 
 	@Override
 	public void blitSprite(
-			GuiGraphics guiGraphics,
+			GuiGraphics graphics,
 			RenderPipeline renderPipeline,
 			ResourceLocation resourceLocation,
 			int i,
@@ -400,12 +397,12 @@ public class DisplayHelper implements IDisplayHelper {
 			int k,
 			int l,
 			int m) {
-		guiGraphics.blitSprite(renderPipeline, resourceLocation, i, j, k, l, ARGB.color(ARGB.as8BitChannel(opacity()), m));
+		graphics.blitSprite(renderPipeline, resourceLocation, i, j, k, l, ARGB.color(ARGB.as8BitChannel(opacity()), m));
 	}
 
 	@Override
 	public void blitSprite(
-			GuiGraphics guiGraphics,
+			GuiGraphics graphics,
 			RenderPipeline renderPipeline,
 			ResourceLocation resourceLocation,
 			int i,
@@ -416,11 +413,11 @@ public class DisplayHelper implements IDisplayHelper {
 			int n,
 			int o,
 			int p) {
-		guiGraphics.blitSprite(renderPipeline, resourceLocation, i, j, k, l, m, n, o, p);
+		graphics.blitSprite(renderPipeline, resourceLocation, i, j, k, l, m, n, o, p);
 	}
 
 	private void blitTiledSprite(
-			GuiGraphics guiGraphics,
+			GuiGraphics graphics,
 			RenderPipeline renderPipeline,
 			TextureAtlasSprite textureAtlasSprite,
 			float i,
@@ -442,7 +439,7 @@ public class DisplayHelper implements IDisplayHelper {
 
 					for (int v = 0; v < l; v += p) {
 						float w = Math.min(p, l - v);
-						this.blitSprite(guiGraphics, renderPipeline, textureAtlasSprite, q, r, m, n, i + t, j + v, u, w, color);
+						this.blitSprite(graphics, renderPipeline, textureAtlasSprite, q, r, m, n, i + t, j + v, u, w, color);
 					}
 				}
 			} else {
@@ -452,7 +449,7 @@ public class DisplayHelper implements IDisplayHelper {
 	}
 
 	public void blit(
-			GuiGraphics guiGraphics,
+			GuiGraphics graphics,
 			RenderPipeline renderPipeline,
 			ResourceLocation resourceLocation,
 			int i,
@@ -464,11 +461,11 @@ public class DisplayHelper implements IDisplayHelper {
 			int m,
 			int n,
 			int o) {
-		this.blit(guiGraphics, renderPipeline, resourceLocation, i, j, f, g, k, l, k, l, m, n, o);
+		this.blit(graphics, renderPipeline, resourceLocation, i, j, f, g, k, l, k, l, m, n, o);
 	}
 
 	public void blit(
-			GuiGraphics guiGraphics,
+			GuiGraphics graphics,
 			RenderPipeline renderPipeline,
 			ResourceLocation resourceLocation,
 			int i,
@@ -479,11 +476,11 @@ public class DisplayHelper implements IDisplayHelper {
 			int l,
 			int m,
 			int n) {
-		this.blit(guiGraphics, renderPipeline, resourceLocation, i, j, f, g, k, l, k, l, m, n);
+		this.blit(graphics, renderPipeline, resourceLocation, i, j, f, g, k, l, k, l, m, n);
 	}
 
 	public void blit(
-			GuiGraphics guiGraphics,
+			GuiGraphics graphics,
 			RenderPipeline renderPipeline,
 			ResourceLocation resourceLocation,
 			int i,
@@ -496,11 +493,11 @@ public class DisplayHelper implements IDisplayHelper {
 			int n,
 			int o,
 			int p) {
-		this.blit(guiGraphics, renderPipeline, resourceLocation, i, j, f, g, k, l, m, n, o, p, -1);
+		this.blit(graphics, renderPipeline, resourceLocation, i, j, f, g, k, l, m, n, o, p, -1);
 	}
 
 	public void blit(
-			GuiGraphics guiGraphics,
+			GuiGraphics graphics,
 			RenderPipeline renderPipeline,
 			ResourceLocation resourceLocation,
 			int i,
@@ -516,7 +513,7 @@ public class DisplayHelper implements IDisplayHelper {
 			int q
 	) {
 		this.innerBlit(
-				guiGraphics,
+				graphics,
 				renderPipeline,
 				resourceLocation,
 				i,
@@ -531,7 +528,7 @@ public class DisplayHelper implements IDisplayHelper {
 	}
 
 	public void blit(
-			GuiGraphics guiGraphics,
+			GuiGraphics graphics,
 			ResourceLocation resourceLocation,
 			int i,
 			int j,
@@ -541,11 +538,11 @@ public class DisplayHelper implements IDisplayHelper {
 			float g,
 			float h,
 			float m) {
-		this.innerBlit(guiGraphics, RenderPipelines.GUI_TEXTURED, resourceLocation, i, k, j, l, f, g, h, m, -1);
+		this.innerBlit(graphics, RenderPipelines.GUI_TEXTURED, resourceLocation, i, k, j, l, f, g, h, m, -1);
 	}
 
 	private void innerBlit(
-			GuiGraphics guiGraphics,
+			GuiGraphics graphics,
 			RenderPipeline renderPipeline,
 			ResourceLocation resourceLocation,
 			float x0,
@@ -558,11 +555,11 @@ public class DisplayHelper implements IDisplayHelper {
 			float v1,
 			int color) {
 		GpuTextureView gpuTextureView = Minecraft.getInstance().getTextureManager().getTexture(resourceLocation).getTextureView();
-		this.submitBlit(guiGraphics, renderPipeline, gpuTextureView, x0, y0, x1, y1, u0, v0, u1, v1, color);
+		this.submitBlit(graphics, renderPipeline, gpuTextureView, x0, y0, x1, y1, u0, v0, u1, v1, color);
 	}
 
 	private void submitBlit(
-			GuiGraphics guiGraphics,
+			GuiGraphics graphics,
 			RenderPipeline renderPipeline,
 			GpuTextureView gpuTextureView,
 			float x0,
@@ -574,12 +571,12 @@ public class DisplayHelper implements IDisplayHelper {
 			float u1,
 			float v1,
 			int color) {
-		guiGraphics.guiRenderState
+		graphics.guiRenderState
 				.submitGuiElement(
 						new FloatBlitRenderState(
 								renderPipeline,
 								TextureSetup.singleTexture(gpuTextureView),
-								new Matrix3x2f(guiGraphics.pose()),
+								new Matrix3x2f(graphics.pose()),
 								x0,
 								y0,
 								x1,
@@ -589,7 +586,7 @@ public class DisplayHelper implements IDisplayHelper {
 								u1,
 								v1,
 								color,
-								guiGraphics.scissorStack.peek()
+								graphics.scissorStack.peek()
 						)
 				);
 	}

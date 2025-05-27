@@ -1,5 +1,7 @@
 package snownee.jade.addon.vanilla;
 
+import org.jetbrains.annotations.Nullable;
+
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -20,7 +22,7 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
-import snownee.jade.api.ui.IElement;
+import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.IElementHelper;
 
 public enum CropProgressProvider implements IBlockComponentProvider {
@@ -28,7 +30,7 @@ public enum CropProgressProvider implements IBlockComponentProvider {
 	INSTANCE;
 
 	@Override
-	public IElement getIcon(BlockAccessor accessor, IPluginConfig config, IElement currentIcon) {
+	public @Nullable Element getIcon(BlockAccessor accessor, IPluginConfig config, Element currentIcon) {
 		if (accessor.getBlock() == Blocks.WHEAT) {
 			return IElementHelper.get().item(new ItemStack(Items.WHEAT));
 		}

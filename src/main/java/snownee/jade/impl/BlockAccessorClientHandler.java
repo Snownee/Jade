@@ -14,7 +14,7 @@ import snownee.jade.api.IJadeProvider;
 import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IWailaConfig;
-import snownee.jade.api.ui.IElement;
+import snownee.jade.api.ui.Element;
 import snownee.jade.impl.ui.ElementHelper;
 import snownee.jade.impl.ui.ItemStackElement;
 import snownee.jade.network.RequestBlockPacket;
@@ -46,13 +46,13 @@ public class BlockAccessorClientHandler implements AccessorClientHandler<BlockAc
 	}
 
 	@Override
-	public IElement getIcon(BlockAccessor accessor) {
+	public Element getIcon(BlockAccessor accessor) {
 		BlockState blockState = accessor.getBlockState();
 		Block block = blockState.getBlock();
 		if (blockState.isAir()) {
 			return null;
 		}
-		IElement icon = null;
+		Element icon = null;
 
 		if (accessor.isFakeBlock()) {
 			icon = ItemStackElement.of(accessor.getFakeBlock());
@@ -73,7 +73,7 @@ public class BlockAccessorClientHandler implements AccessorClientHandler<BlockAc
 
 		for (var provider : WailaClientRegistration.instance().getBlockIconProviders(block, this::isEnabled)) {
 			try {
-				IElement element = provider.getIcon(accessor, IWailaConfig.get().plugin(), icon);
+				Element element = provider.getIcon(accessor, IWailaConfig.get().plugin(), icon);
 				if (!RayTracing.isEmptyElement(element)) {
 					icon = element;
 				}

@@ -117,11 +117,11 @@ public abstract class EnergyStorageProvider<T extends Accessor<?>> implements IC
 							case ICON -> {
 								theTooltip.add(helper.sprite(JadeIds.JADE("energy"), 10, 10)
 										.size(ElementHelper.SMALL_ITEM_SIZE)
-										.translate(ElementHelper.SMALL_ITEM_OFFSET));
+										.offset(0, -1));
 								theTooltip.append(text);
 							}
 							case PROGRESS_BAR -> {
-								ProgressStyle progressStyle = helper.progressStyle().color(0xFFAA0000, 0xFF660000);
+								ProgressStyle progressStyle = helper.progressStyle();
 								theTooltip.add(helper.progress(view.ratio, text, progressStyle, BoxStyle.getNestedBox(), true));
 							}
 						}
