@@ -10,7 +10,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
-import net.minecraft.world.phys.Vec2;
 import snownee.jade.Jade;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
@@ -32,26 +31,21 @@ public enum ExampleComponentProvider implements IBlockComponentProvider, IServer
 					Jade.LOGGER.info("Button clicked in ExampleComponentProvider");
 				}).build());
 		if (accessor.getServerData().contains("Fuel")) {
-			Element icon = IElementHelper.get().item(new ItemStack(Items.CLOCK), 0.5f).size(new Vec2(10, 10)).offset(0, -1);
-			icon.narration("");
+			Element icon = IElementHelper.get().smallItem(new ItemStack(Items.CLOCK));
 			tooltip.add(icon);
 			tooltip.append(Component.translatable("mymod.fuel", accessor.getServerData().getIntOr("Fuel", 0)));
 		}
 
-//		Component test1 = Component.literal("1");
-//		Component test2 = Component.literal("2");
-//		Component test3 = Component.literal("3");
-//		tooltip.add(IElementHelper.get().text(test2).align(IElement.Align.RIGHT));
-//		tooltip.add(IElementHelper.get().text(test3).align(IElement.Align.CENTER));
-//		tooltip.add(IElementHelper.get().text(test1).align(IElement.Align.LEFT));
-//		tooltip.append(IElementHelper.get().text(test1).align(IElement.Align.RIGHT));
-//		tooltip.append(IElementHelper.get().text(test1).align(IElement.Align.CENTER));
-//		tooltip.append(IElementHelper.get().text(test2).align(IElement.Align.CENTER));
-//		tooltip.append(IElementHelper.get().text(test2).align(IElement.Align.RIGHT));
-//		tooltip.append(IElementHelper.get().text(test3).align(IElement.Align.RIGHT));
-//		tooltip.append(IElementHelper.get().text(test2).align(IElement.Align.LEFT));
-//		tooltip.append(IElementHelper.get().text(test3).align(IElement.Align.LEFT));
-//		tooltip.append(IElementHelper.get().text(test3).align(IElement.Align.CENTER));
+		Component test1 = Component.literal("1");
+		Component test2 = Component.literal("2");
+		Component test3 = Component.literal("3");
+		tooltip.add(IElementHelper.get().text(test1).flexGrow(1));
+		tooltip.append(IElementHelper.get().text(test2).flexGrow(1));
+		tooltip.append(IElementHelper.get().text(test3).flexGrow(2));
+
+		tooltip.add(IElementHelper.get().text(test1).flexGrow(1));
+		tooltip.append(IElementHelper.get().text(test2).flexGrow(0));
+		tooltip.append(IElementHelper.get().text(test3).flexGrow(2));
 
 		Element text = IElementHelper.get().text(Component.literal("test"));
 		tooltip.replace(JadeIds.CORE_OBJECT_NAME, $ -> List.of(List.of(text), List.of(text), List.of(text)));

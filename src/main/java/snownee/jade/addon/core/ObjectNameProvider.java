@@ -99,6 +99,26 @@ public abstract class ObjectNameProvider implements IToggleableProvider {
 		return displayName;
 	}
 
+	public static void addName(ITooltip tooltip, Component name) {
+		name = IThemeHelper.get().title(name);
+		if (IWailaConfig.get().overlay().getIconMode() != IWailaConfig.IconMode.INLINE) {
+			tooltip.add(name);
+			return;
+		}
+
+//		if (icon instanceof ItemStackElement itemStackElement) {
+//			Element newIcon = IElementHelper.get().smallItem(itemStackElement.getItem()).tag(JadeIds.CORE_ROOT_ICON);
+//			newIcon.size(new Vec2(newIcon.getCachedSize().x + 1, newIcon.getCachedSize().y - 1));
+//			tooltip.replace(
+//					JadeIds.CORE_OBJECT_NAME, list -> {
+//						if (!list.isEmpty()) {
+//							list.getFirst().addFirst(newIcon);
+//						}
+//						return list;
+//					});
+//		}
+	}
+
 	public static class ForBlock extends ObjectNameProvider implements IBlockComponentProvider, StreamServerDataProvider<BlockAccessor, Component> {
 		private static final ForBlock INSTANCE = new ForBlock();
 
@@ -127,7 +147,7 @@ public abstract class ObjectNameProvider implements IToggleableProvider {
 					}
 				}
 			}
-			tooltip.add(IThemeHelper.get().title(name));
+			addName(tooltip, name);
 		}
 
 		@Override
@@ -175,7 +195,7 @@ public abstract class ObjectNameProvider implements IToggleableProvider {
 			Component name = getEntityName(
 					accessor.getEntity(),
 					IWailaConfig.get().accessibility().getEnableAccessibilityPlugin() && config.get(JadeIds.ACCESS_ENTITY_DETAILS));
-			tooltip.add(IThemeHelper.get().title(name));
+			addName(tooltip, name);
 		}
 	}
 

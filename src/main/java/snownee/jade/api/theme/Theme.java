@@ -1,11 +1,23 @@
 package snownee.jade.api.theme;
 
+import java.util.Arrays;
 import java.util.Optional;
 
+import org.jetbrains.annotations.Nullable;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiSpriteManager;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.metadata.gui.GuiSpriteScaling;
 import net.minecraft.resources.ResourceLocation;
+import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
+import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.ui.BoxElement;
 import snownee.jade.api.ui.BoxStyle;
+import snownee.jade.api.ui.Element;
+import snownee.jade.impl.Tooltip;
+import snownee.jade.impl.ui.BoxElementImpl;
 
 public class Theme {
 
@@ -58,5 +70,39 @@ public class Theme {
 		} else {
 			return "";
 		}
+	}
+
+	public @Nullable Element modifyIcon(@Nullable Element icon) {
+		if (icon == null) {
+			return null;
+		}
+
+		IWailaConfig.Overlay overlay = IWailaConfig.get().overlay();
+		if (!overlay.shouldShowIcon() || overlay.getIconMode() == IWailaConfig.IconMode.INLINE) {
+			return null;
+		}
+
+		if (iconSlotSprite != null) {
+			if (iconSlotSpriteCache == null) {
+				GuiSpriteManager guiSprites = Minecraft.getInstance().getGuiSprites();
+				TextureAtlasSprite textureAtlasSprite = guiSprites.getSprite(iconSlotSprite);
+				GuiSpriteScaling scaling = guiSprites.getSpriteScaling(textureAtlasSprite);
+				int[] padding = new int[4];
+				Arrays.fill(padding, iconSlotInflation);
+				if (scaling instanceof GuiSpriteScaling.NineSlice nineSlice) {
+					GuiSpriteScaling.NineSlice.Border border = nineSlice.border();
+					padding[0] += border.top();
+					padding[1] += border.right();
+					padding[2] += border.bottom();
+					padding[3] += border.left();
+				}
+				iconSlotSpriteCache = new BoxElementImpl(new Tooltip(), BoxStyle.getSprite(iconSlotSprite, padding), null);
+			}
+			ITooltip tooltip1 = iconSlotSpriteCache.getTooltip();
+			tooltip1.clear();
+			tooltip1.add(icon);
+			icon = iconSlotSpriteCache;
+		}
+		return icon.tag(JadeIds.CORE_ROOT_ICON);
 	}
 }

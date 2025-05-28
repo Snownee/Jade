@@ -5,6 +5,8 @@ import java.util.function.Consumer;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
+import com.google.common.base.Preconditions;
+
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Renderable;
@@ -16,7 +18,6 @@ import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.phys.Vec2;
 import snownee.jade.JadeInternals;
 
 public abstract class Element implements Renderable, LayoutElement, NarrationSupplier {
@@ -29,16 +30,17 @@ public abstract class Element implements Renderable, LayoutElement, NarrationSup
 	private @Nullable Component narration = CommonComponents.EMPTY;
 
 	@Contract("_, _ -> new")
-	public Element offset(int x, int y) {
-		return this; //TODO
+	public ResizeableElement offset(int x, int y) {
+		return IElementHelper.get().offset(this, x, y);
 	}
 
-	public Element size(Vec2 itemSize) {
-		return this; //TODO
+	@Contract("_, _ -> new")
+	public ResizeableElement size(int width, int height) {
+		return IElementHelper.get().size(this, width, height);
 	}
 
 	@Contract("_ -> this")
-	public Element tag(ResourceLocation tag) {
+	public Element tag(@Nullable ResourceLocation tag) {
 		this.tag = tag;
 		return this;
 	}
@@ -64,12 +66,14 @@ public abstract class Element implements Renderable, LayoutElement, NarrationSup
 
 	@Contract("_ -> this")
 	public Element narration(String narration) {
+		Preconditions.checkNotNull(narration, "narration must not be null");
 		this.narration = narration.isEmpty() ? null : Component.literal(narration);
 		return this;
 	}
 
 	@Contract("_ -> this")
 	public Element narration(Component narration) {
+		Preconditions.checkNotNull(narration, "narration must not be null");
 		this.narration = narration;
 		return this;
 	}

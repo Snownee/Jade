@@ -8,7 +8,6 @@ import org.jetbrains.annotations.Nullable;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
@@ -78,7 +77,7 @@ public abstract class ProgressProvider<T extends Accessor<?>> implements ICompon
 							theTooltip.add(helper.text(view.text).scale(0.75F));
 							theTooltip.setLineMargin(-1, ScreenDirection.DOWN, 0);
 						}
-						theTooltip.add(helper.progress(view.progress, null, view.style, boxStyle, false).size(new Vec2(10, 2)));
+						theTooltip.add(helper.progress(view.progress, null, view.style, boxStyle, false).size(10, 2));
 					}
 				});
 	}

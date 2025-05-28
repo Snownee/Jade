@@ -19,7 +19,7 @@ public interface IElementHelper {
 
 	TextElement text(Component component);
 
-	Element spacer(int x, int y);
+	ResizeableElement spacer(int x, int y);
 
 	Element item(ItemStack itemStack);
 
@@ -58,4 +58,8 @@ public interface IElementHelper {
 	Element sprite(RenderPipeline renderPipeline, ResourceLocation sprite, int width, int height);
 
 	Element sprite(ResourceLocation sprite, int width, int height);
+
+	ResizeableElement offset(Element element, int x, int y);
+
+	ResizeableElement size(Element element, int width, int height);
 }

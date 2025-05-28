@@ -1,8 +1,12 @@
 package snownee.jade.gui;
 
+import java.util.BitSet;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.jetbrains.annotations.Nullable;
+
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
 import net.minecraft.Util;
@@ -11,17 +15,29 @@ import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.client.gui.layouts.LayoutSettings;
 
 public class JadeLinearLayout extends AbstractLayout implements ResizeableLayout {
-	private final Orientation orientation;
+	private Orientation orientation;
+	private Align alignItems = Align.START;
 	private final List<ChildContainer> children = Lists.newArrayList();
 	private final LayoutSettings defaultChildLayoutSettings = LayoutSettings.defaults();
 	private int defaultHeadMargin;
 	private int defaultTailMargin;
 	private int minWidth;
 	private int minHeight;
+	private int flexGrow;
 
 	public JadeLinearLayout(Orientation orientation) {
 		super(0, 0, 0, 0);
 		this.orientation = orientation;
+	}
+
+	public JadeLinearLayout orientation(Orientation orientation) {
+		this.orientation = orientation;
+		return this;
+	}
+
+	public JadeLinearLayout alignItems(Align align) {
+		this.alignItems = align;
+		return this;
 	}
 
 	public JadeLinearLayout spacing(int i) {
@@ -60,9 +76,16 @@ public class JadeLinearLayout extends AbstractLayout implements ResizeableLayout
 	}
 
 	public <T extends LayoutElement> T addChild(T element, LayoutSettings layoutSettings) {
+		return addChild(element, layoutSettings, null);
+	}
+
+	public <T extends LayoutElement> T addChild(T element, LayoutSettings layoutSettings, @Nullable Consumer<ChildContainer> consumer) {
 		ChildContainer container = new ChildContainer(element, layoutSettings);
 		container.headMargin = defaultHeadMargin;
 		container.tailMargin = defaultTailMargin;
+		if (consumer != null) {
+			consumer.accept(container);
+		}
 		children.add(container);
 		return element;
 	}
@@ -76,15 +99,19 @@ public class JadeLinearLayout extends AbstractLayout implements ResizeableLayout
 	public void arrangeElements() {
 		int size = children.size();
 		if (size == 0) {
+			width = height = 0;
 			return;
 		}
 		super.arrangeElements();
 		int axis = 0;
 		int crossAxis = 0;
+		int sumGrow = 0;
 		int[] margins = null;
 		if (size == 1) {
-			axis = orientation.getAxisLength(children.getFirst());
-			crossAxis = orientation.getCrossAxisLength(children.getFirst());
+			ChildContainer child = children.getFirst();
+			axis = orientation.getAxisLength(child);
+			crossAxis = orientation.getCrossAxisLength(child);
+			sumGrow = child.flexGrow;
 		} else {
 			margins = new int[size - 1];
 			ChildContainer lastChild = null;
@@ -98,31 +125,86 @@ public class JadeLinearLayout extends AbstractLayout implements ResizeableLayout
 
 				axis += orientation.getAxisLength(child);
 				crossAxis = Math.max(crossAxis, orientation.getCrossAxisLength(child));
+				sumGrow += child.flexGrow;
 
 				lastChild = child;
 			}
 		}
 
 		int minAxis = orientation == Orientation.HORIZONTAL ? minWidth : minHeight;
-//		int freeAxisSpace = Math.max(0, getWidth() - axis);
+		int extraAxisSpace = Math.max(0, minAxis - axis);
 		axis = Math.max(axis, minAxis);
 		int minCrossAxis = orientation == Orientation.HORIZONTAL ? minHeight : minWidth;
 		crossAxis = Math.max(crossAxis, minCrossAxis);
+
+		resolveFlexGrow(extraAxisSpace, crossAxis, sumGrow);
 
 		int axisPos = orientation.getAxisPosition(this);
 		int crossAxisPos = orientation.getCrossAxisPosition(this);
 		for (int i = 0; i < size; i++) {
 			ChildContainer child = children.get(i);
 			int childAxisLength = orientation.getAxisLength(child);
-//			int childCrossAxisLength = orientation.getCrossAxisLength(child);
 
 			if (i != 0) {
-				axisPos += margins[i];
+				axisPos += margins[i - 1];
 			}
 
-			orientation.setPosition(child, axisPos, crossAxisPos);
+			alignItems.align(orientation, child, axisPos, crossAxisPos, crossAxis);
 
 			axisPos += childAxisLength;
+		}
+
+		width = orientation == Orientation.HORIZONTAL ? axis : crossAxis;
+		height = orientation == Orientation.HORIZONTAL ? crossAxis : axis;
+	}
+
+	private void resolveFlexGrow(int extraAxisSpace, int crossAxis, int sumGrow) {
+		if (sumGrow == 0 || extraAxisSpace <= 0) {
+			return;
+		}
+
+		List<ChildContainer> children = this.children.stream()
+				.filter(it -> it.flexGrow > 0)
+				.toList();
+		int size = children.size();
+		if (size == 1) {
+			ChildContainer child = children.getFirst();
+			orientation.setFreeSpace(child, orientation.getAxisLength(child) + extraAxisSpace, crossAxis);
+			return;
+		}
+
+		int reachLimitAmount = 0;
+		BitSet reachLimitFlags = new BitSet(size);
+		outer:
+		while (reachLimitAmount < size && extraAxisSpace > 0) {
+			int virtualSumGrow = sumGrow;
+			for (int i = 0; i < size; i++) {
+				ChildContainer child = children.get(i);
+				if (reachLimitFlags.get(i)) {
+					continue;
+				}
+				int childAxisLength = orientation.getAxisLength(child);
+				int grow = child.flexGrow;
+				int extraChildAxis = extraAxisSpace * grow / virtualSumGrow;
+				if (extraChildAxis <= 0) {
+					continue;
+				}
+				int newAxisLength = childAxisLength + extraChildAxis;
+				orientation.setFreeSpace(child, newAxisLength, crossAxis);
+				if (newAxisLength > orientation.getAxisLength(child)) {
+					reachLimitFlags.set(i);
+					reachLimitAmount++;
+					sumGrow -= grow;
+					if (sumGrow <= 0) {
+						break outer; // no more children to grow
+					}
+				}
+				extraAxisSpace -= extraChildAxis;
+				virtualSumGrow -= grow;
+				if (virtualSumGrow <= 0) {
+					break;
+				}
+			}
 		}
 	}
 
@@ -144,9 +226,35 @@ public class JadeLinearLayout extends AbstractLayout implements ResizeableLayout
 		return new JadeLinearLayout(JadeLinearLayout.Orientation.HORIZONTAL);
 	}
 
-	static class ChildContainer extends AbstractLayout.AbstractChildWrapper {
-		int headMargin;
-		int tailMargin;
+	@Override
+	public void setFreeSpace(int width, int height) {
+		if (this.width >= width && this.height >= height) {
+			return; // no need to resize
+		}
+		int oldMinWidth = minWidth;
+		int oldMinHeight = minHeight;
+		minWidth = Math.max(minWidth, width);
+		minHeight = Math.max(minHeight, height);
+		arrangeElements();
+		minWidth = oldMinWidth;
+		minHeight = oldMinHeight;
+	}
+
+	@Override
+	public void setFlexGrow(int flexGrow) {
+		Preconditions.checkArgument(flexGrow >= 0, "flexGrow must be non-negative");
+		this.flexGrow = flexGrow;
+	}
+
+	@Override
+	public int getFlexGrow() {
+		return flexGrow;
+	}
+
+	public static class ChildContainer extends AbstractLayout.AbstractChildWrapper {
+		public int headMargin;
+		public int tailMargin;
+		public int flexGrow;
 
 		protected ChildContainer(LayoutElement element, LayoutSettings settings) {
 			super(element, settings);
@@ -157,11 +265,11 @@ public class JadeLinearLayout extends AbstractLayout implements ResizeableLayout
 		HORIZONTAL, VERTICAL;
 
 		private int getAxisLength(ChildContainer child) {
-			return this == HORIZONTAL ? child.getHeight() : child.getWidth();
+			return this == HORIZONTAL ? child.getWidth() : child.getHeight();
 		}
 
 		private int getCrossAxisLength(ChildContainer child) {
-			return this == HORIZONTAL ? child.getWidth() : child.getHeight();
+			return this == HORIZONTAL ? child.getHeight() : child.getWidth();
 		}
 
 		private int getAxisPosition(LayoutElement element) {
@@ -180,6 +288,43 @@ public class JadeLinearLayout extends AbstractLayout implements ResizeableLayout
 				child.setX(crossAxis, child.getWidth());
 				child.setY(axis, child.getHeight());
 			}
+		}
+
+		public void setFreeSpace(ChildContainer child, int axis, int crossAxis) {
+			if (child.child instanceof ResizeableLayout resizeableLayout) {
+				if (this == Orientation.HORIZONTAL) {
+					resizeableLayout.setFreeSpace(axis, crossAxis);
+				} else {
+					resizeableLayout.setFreeSpace(crossAxis, axis);
+				}
+			} else {
+				throw new IllegalStateException("Child " + child.child + " is not a ResizeableLayout");
+			}
+		}
+	}
+
+	public enum Align {
+		START, CENTER, END, STRETCH;
+
+		private void align(Orientation orientation, ChildContainer child, int axisPos, int crossAxisPos, int crossAxisFreeSpace) {
+			int axisLength = orientation.getAxisLength(child);
+			int crossAxisLength = orientation.getCrossAxisLength(child);
+			switch (this) {
+				case START -> {
+					// do nothing
+				}
+				case CENTER -> {
+					crossAxisPos += (crossAxisFreeSpace - crossAxisLength) / 2;
+				}
+				case END -> {
+					crossAxisPos += crossAxisFreeSpace - crossAxisLength;
+				}
+				case STRETCH -> {
+					// stretch to fill the cross axis
+					orientation.setFreeSpace(child, axisLength, crossAxisFreeSpace);
+				}
+			}
+			orientation.setPosition(child, axisPos, crossAxisPos);
 		}
 	}
 }

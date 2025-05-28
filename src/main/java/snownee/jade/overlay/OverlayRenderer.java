@@ -19,6 +19,8 @@ import snownee.jade.api.callback.JadeBeforeRenderCallback;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.IWailaConfig.BossBarOverlapMode;
 import snownee.jade.api.theme.IThemeHelper;
+import snownee.jade.api.theme.Theme;
+import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.TooltipRect;
 import snownee.jade.gui.BaseOptionsScreen;
 import snownee.jade.gui.PreviewOptionsScreen;
@@ -121,9 +123,10 @@ public class OverlayRenderer {
 			Tooltip tooltip = new Tooltip();
 			tooltip.add(IThemeHelper.get().title(Blocks.GRASS_BLOCK.getName()));
 			tooltip.add(IThemeHelper.get().modName(ModIdentification.getModName(Blocks.GRASS_BLOCK)));
-			root = new BoxElementImpl(tooltip, IThemeHelper.get().theme().tooltipStyle);
+			Theme theme = IThemeHelper.get().theme();
+			Element icon = theme.modifyIcon(ItemStackElement.of(new ItemStack(Blocks.GRASS_BLOCK)));
+			root = new BoxElementImpl(tooltip, theme.tooltipStyle, icon);
 			root.tag(JadeIds.ROOT);
-			root.setThemeIcon(ItemStackElement.of(new ItemStack(Blocks.GRASS_BLOCK)), IThemeHelper.get().theme());
 			root.updateExpectedRect(rect);
 			show = true;
 		} else {

@@ -5,8 +5,9 @@ import java.util.function.Consumer;
 import net.minecraft.client.gui.layouts.Layout;
 import net.minecraft.client.gui.layouts.LayoutElement;
 
-public class LayoutWithPadding implements Layout {
+public class LayoutWithPadding implements Layout, ResizeableLayout {
 	private final LayoutElement wrapped;
+	private final boolean resizeable;
 	public int paddingLeft;
 	public int paddingTop;
 	public int paddingRight;
@@ -14,10 +15,11 @@ public class LayoutWithPadding implements Layout {
 
 	public LayoutWithPadding(LayoutElement wrapped) {
 		this.wrapped = wrapped;
+		this.resizeable = wrapped instanceof ResizeableLayout;
 	}
 
 	public LayoutWithPadding(LayoutElement wrapped, int paddingLeft, int paddingTop, int paddingRight, int paddingBottom) {
-		this.wrapped = wrapped;
+		this(wrapped);
 		this.paddingLeft = paddingLeft;
 		this.paddingTop = paddingTop;
 		this.paddingRight = paddingRight;
@@ -74,5 +76,25 @@ public class LayoutWithPadding implements Layout {
 	@Override
 	public int getY() {
 		return wrapped.getY() - paddingTop;
+	}
+
+	@Override
+	public void setFreeSpace(int width, int height) {
+		if (resizeable) {
+			((ResizeableLayout) wrapped).setFreeSpace(width - paddingLeft - paddingRight, height - paddingTop - paddingBottom);
+			setPosition(wrapped.getX(), wrapped.getY());
+		}
+	}
+
+	@Override
+	public void setFlexGrow(int flexGrow) {
+		if (resizeable) {
+			((ResizeableLayout) wrapped).setFlexGrow(flexGrow);
+		}
+	}
+
+	@Override
+	public int getFlexGrow() {
+		return resizeable ? ((ResizeableLayout) wrapped).getFlexGrow() : 0;
 	}
 }

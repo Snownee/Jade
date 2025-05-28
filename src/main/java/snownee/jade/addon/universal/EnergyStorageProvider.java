@@ -31,7 +31,6 @@ import snownee.jade.api.view.IServerExtensionProvider;
 import snownee.jade.api.view.ViewGroup;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
-import snownee.jade.impl.ui.ElementHelper;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
 
@@ -116,7 +115,7 @@ public abstract class EnergyStorageProvider<T extends Accessor<?>> implements IC
 							case PLAIN_TEXT -> theTooltip.add(Component.translatable("jade.energy.text", text));
 							case ICON -> {
 								theTooltip.add(helper.sprite(JadeIds.JADE("energy"), 10, 10)
-										.size(ElementHelper.SMALL_ITEM_SIZE)
+										.size(10, 9)
 										.offset(0, -1));
 								theTooltip.append(text);
 							}

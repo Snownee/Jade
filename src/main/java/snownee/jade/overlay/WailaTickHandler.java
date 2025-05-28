@@ -29,6 +29,7 @@ import snownee.jade.api.config.IWailaConfig.DisplayMode;
 import snownee.jade.api.config.IWailaConfig.General;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
+import snownee.jade.api.ui.Element;
 import snownee.jade.gui.PreviewOptionsScreen;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.Tooltip;
@@ -211,9 +212,9 @@ public class WailaTickHandler {
 			handler.gatherComponents(accessor, $ -> tooltip);
 		}
 
-		BoxElementImpl newElement = new BoxElementImpl(tooltip, IThemeHelper.get().theme().tooltipStyle);
+		Element icon = IThemeHelper.get().theme().modifyIcon(RayTracing.INSTANCE.getIcon());
+		BoxElementImpl newElement = new BoxElementImpl(tooltip, IThemeHelper.get().theme().tooltipStyle, icon);
 		newElement.tag(JadeIds.ROOT);
-		newElement.setThemeIcon(RayTracing.INSTANCE.getIcon(), IThemeHelper.get().theme());
 		for (JadeTooltipCollectedCallback callback : WailaClientRegistration.instance().tooltipCollectedCallback.callbacks()) {
 			callback.onTooltipCollected(newElement, accessor);
 		}

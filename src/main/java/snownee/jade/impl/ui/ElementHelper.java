@@ -18,6 +18,7 @@ import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.api.ui.ProgressStyle;
+import snownee.jade.api.ui.ResizeableElement;
 import snownee.jade.api.ui.TextElement;
 import snownee.jade.impl.Tooltip;
 
@@ -60,7 +61,7 @@ public class ElementHelper implements IElementHelper {
 	}
 
 	@Override
-	public Element spacer(int width, int height) {
+	public SpacerElement spacer(int width, int height) {
 		return new SpacerElement(width, height);
 	}
 
@@ -92,7 +93,7 @@ public class ElementHelper implements IElementHelper {
 
 	@Override
 	public BoxElement box(ITooltip tooltip, BoxStyle boxStyle) {
-		return new BoxElementImpl((Tooltip) tooltip, boxStyle);
+		return new BoxElementImpl((Tooltip) tooltip, boxStyle, null);
 	}
 
 	@Override
@@ -113,6 +114,16 @@ public class ElementHelper implements IElementHelper {
 	@Override
 	public Element sprite(ResourceLocation sprite, int width, int height) {
 		return new SpriteElement(sprite, width, height);
+	}
+
+	@Override
+	public ResizeableElement offset(Element element, int x, int y) {
+		return spacer(element.getWidth(), element.getHeight()).wrapped(element).offset(x, y);
+	}
+
+	@Override
+	public ResizeableElement size(Element element, int width, int height) {
+		return spacer(width, height).wrapped(element);
 	}
 
 	@Nullable

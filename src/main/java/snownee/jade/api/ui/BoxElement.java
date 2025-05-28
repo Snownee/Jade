@@ -5,7 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import snownee.jade.impl.Tooltip;
 import snownee.jade.impl.ui.StyledElement;
 
-public abstract class BoxElement extends Element implements StyledElement {
+public abstract class BoxElement extends ResizeableElement implements StyledElement {
 	public abstract Tooltip getTooltip();
 
 	public abstract void setBoxProgress(MessageType type, float progress);

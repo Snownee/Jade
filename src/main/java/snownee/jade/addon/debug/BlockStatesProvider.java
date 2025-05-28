@@ -39,7 +39,7 @@ public enum BlockStatesProvider implements IBlockComponentProvider {
 			}
 			box.add(Component.literal(p.getName() + ":").append(valueText));
 		});
-		tooltip.add(helper.box(box, BoxStyle.getNestedBox()));
+		tooltip.add(helper.box(box, BoxStyle.getNestedBox()).flexGrow(1));
 	}
 
 	@Override

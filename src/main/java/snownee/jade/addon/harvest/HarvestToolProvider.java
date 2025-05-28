@@ -25,7 +25,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.Vec2;
 import snownee.jade.Jade;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
@@ -48,7 +47,6 @@ public class HarvestToolProvider implements IBlockComponentProvider, KeyedResour
 	private static List<Block> shearableBlocks = List.of();
 	private static final Component CHECK = Component.literal("✔");
 	private static final Component X = Component.literal("✕");
-	private static final Vec2 ITEM_SIZE = new Vec2(10, 0);
 	private final Cache<BlockState, ImmutableList<ItemStack>> resultCache = CacheBuilder.newBuilder().expireAfterAccess(
 			5,
 			TimeUnit.MINUTES).build();
@@ -149,7 +147,6 @@ public class HarvestToolProvider implements IBlockComponentProvider, KeyedResour
 		if (newLine) {
 			tooltip.add(elements);
 		} else {
-//			elements.forEach(e -> e.align(Align.RIGHT));//TODO
 			tooltip.append(0, elements);
 		}
 	}
@@ -173,11 +170,11 @@ public class HarvestToolProvider implements IBlockComponentProvider, KeyedResour
 		boolean newLine = config.get(JadeIds.MC_HARVEST_TOOL_NEW_LINE);
 		List<Element> elements = Lists.newArrayList();
 		for (ItemStack tool : tools) {
-			elements.add(IElementHelper.get().item(tool, 0.75f).offset(-1, offsetY).size(ITEM_SIZE).narration(""));
+			elements.add(IElementHelper.get().item(tool, 0.75f).offset(-1, offsetY).size(10, 0).narration(""));
 		}
 
 		if (!elements.isEmpty()) {
-			elements.addFirst(IElementHelper.get().spacer(newLine ? -2 : 5, newLine ? 10 : 0));
+			elements.addFirst(IElementHelper.get().spacer(newLine ? -2 : 5, newLine ? 10 : 0).flexGrow(1000));
 			Player player = accessor.getPlayer();
 			boolean canHarvest = CommonProxy.isCorrectToolForDrops(state, player, accessor.getLevel(), accessor.getPosition());
 			if (state.requiresCorrectToolForDrops() || !canHarvest) {
@@ -185,7 +182,7 @@ public class HarvestToolProvider implements IBlockComponentProvider, KeyedResour
 				Component text = canHarvest ? t.success(CHECK) : t.danger(X);
 				elements.add(IElementHelper.get().text(text)
 						.scale(0.75F)
-						.size(Vec2.ZERO)
+						.size(0, 0)
 						.offset(-3, 6 + offsetY)
 				);
 			}

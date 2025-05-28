@@ -12,10 +12,8 @@ import com.google.common.collect.Lists;
 import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.ui.Element;
-import snownee.jade.api.ui.IElement.Align;
 import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.impl.ui.ElementHelper;
@@ -26,7 +24,7 @@ public class Tooltip implements ITooltip {
 	public boolean sneakyDetails;
 
 	public Stream<LayoutElement> layoutElements() {
-		return lines.stream().flatMap(line -> line.sortedElements().stream());
+		return lines.stream().flatMap(line -> line.elements().stream());
 	}
 
 	@Override
@@ -44,7 +42,6 @@ public class Tooltip implements ITooltip {
 		} else {
 			Line line = lines.get(index);
 			line.elements.add(element);
-			line.markDirty();
 		}
 	}
 
@@ -71,12 +68,6 @@ public class Tooltip implements ITooltip {
 //			line.sortedElements().stream().filter(e -> Objects.equal(tag, e.getTag())).forEach(elements::add);
 //		}
 		return elements;
-	}
-
-	@Override
-	public List<LayoutElement> get(int index, Align align) {
-		Line line = lines.get(index);
-		return line.alignedElements(align);
 	}
 
 	@Override
@@ -199,61 +190,11 @@ public class Tooltip implements ITooltip {
 
 	public static class Line {
 		private final List<LayoutElement> elements = Lists.newArrayList();
-		private final int[] starts = new int[3 - 1];
-		private final float[] widths = new float[3];
 		public int marginTop = 0;
 		public int marginBottom = 2;
-		private Vec2 size;
-		private boolean sorted;
 
-		public void sort() {
-//			if (sorted) {
-//				return;
-//			}
-//			sorted = true;
-//			Arrays.fill(starts, 0);
-//			Arrays.fill(widths, 0);
-//			List<LayoutElement> tempList = Lists.newArrayListWithExpectedSize(elements.size());
-//			float width = 0;
-//			float height = 0;
-//			for (LayoutElement element : elements) {
-//				int index = element.getAlignment().ordinal();
-//				int start = index == 2 ? tempList.size() : starts[index];
-//				tempList.add(start, element);
-//				for (int i = index; i < starts.length; i++) {
-//					starts[i]++;
-//				}
-//				Vec2 elementSize = element.getCachedSize();
-//				widths[index] += elementSize.x;
-//				width += elementSize.x;
-//				height = Math.max(height, elementSize.y);
-//			}
-//			elements.clear();
-//			elements.addAll(tempList);
-//			size = new Vec2(width, height);
-		}
-
-		public void markDirty() {
-			sorted = false;
-			size = null;
-		}
-
-		public List<LayoutElement> sortedElements() {
-			sort();
+		public List<LayoutElement> elements() {
 			return elements;
-		}
-
-		public List<LayoutElement> alignedElements(Align align) {
-			sort();
-			int index = align.ordinal();
-			int start = index == 0 ? 0 : starts[index - 1];
-			int end = index == 2 ? elements.size() : starts[index];
-			return elements.subList(start, end);
-		}
-
-		public Vec2 size() {
-			sort();
-			return size;
 		}
 	}
 

@@ -32,6 +32,7 @@ public class JadeLanguages implements KeyedResourceManagerReloadListener, WordCu
 	private Map<String, Pattern> nameClasses = Map.of();
 	private final Cache<String, String> nameClassCache = CacheBuilder.newBuilder().maximumSize(100).build();
 	private Locale locale = Locale.ENGLISH;
+	private boolean rtl;
 
 	@Override
 	public void onResourceManagerReload(ResourceManager resourceManager) {
@@ -49,12 +50,17 @@ public class JadeLanguages implements KeyedResourceManagerReloadListener, WordCu
 			String[] langSplit = langCode.split("_", 2);
 			//noinspection deprecation
 			locale = langSplit.length == 1 ? new Locale(langSplit[0]) : new Locale(langSplit[0], langSplit[1]);
+			rtl = metadata.rtl;
 			Preconditions.checkState(!metadata.tokens.containsKey(WordCutter.TokenType.WORD), "Word token type is not allowed");
 			tokens.putAll(metadata.tokens);
 			nameClasses = metadata.nameClasses;
 		} catch (Throwable e) {
 			Jade.LOGGER.error("Failed to load Jade language metadata", e);
 		}
+	}
+
+	public boolean isRTL() {
+		return rtl;
 	}
 
 	public String getNameClass(String name) {
@@ -115,9 +121,10 @@ public class JadeLanguages implements KeyedResourceManagerReloadListener, WordCu
 		}
 	}
 
-	private record Metadata(List<String> lang, Map<WordCutter.TokenType, Pattern> tokens, Map<String, Pattern> nameClasses) {
+	private record Metadata(List<String> lang, boolean rtl, Map<WordCutter.TokenType, Pattern> tokens, Map<String, Pattern> nameClasses) {
 		static final Codec<Metadata> CODEC = RecordCodecBuilder.create(i -> i.group(
 				Codec.STRING.listOf().fieldOf("lang").forGetter(Metadata::lang),
+				Codec.BOOL.optionalFieldOf("rtl", false).forGetter(Metadata::rtl),
 				Codec.unboundedMap(StringRepresentable.fromEnum(WordCutter.TokenType::values), ExtraCodecs.PATTERN)
 						.optionalFieldOf("tokens", Map.of())
 						.forGetter(Metadata::tokens),

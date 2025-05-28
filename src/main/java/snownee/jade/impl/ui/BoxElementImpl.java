@@ -13,13 +13,12 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.layouts.Layout;
 import net.minecraft.client.gui.layouts.LayoutElement;
-import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
+import snownee.jade.JadeInternals;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IWailaConfig;
-import snownee.jade.api.theme.Theme;
 import snownee.jade.api.ui.BoxElement;
 import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.Element;
@@ -27,14 +26,16 @@ import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.MessageType;
 import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.ui.TooltipRect;
+import snownee.jade.gui.JadeLinearLayout;
 import snownee.jade.gui.LayoutWithPadding;
 import snownee.jade.gui.PreviewOptionsScreen;
+import snownee.jade.gui.ResizeableLayout;
 import snownee.jade.impl.Tooltip;
 import snownee.jade.track.ProgressTrackInfo;
 import snownee.jade.util.ClientProxy;
 
 public class BoxElementImpl extends BoxElement {
-	public Layout layout;
+	public LayoutWithPadding layout;
 	private final Tooltip tooltip;
 	private final BoxStyle style;
 	private int[] padding;
@@ -43,22 +44,45 @@ public class BoxElementImpl extends BoxElement {
 	private MessageType boxProgressType;
 	private ProgressTrackInfo track;
 
-	public BoxElementImpl(Tooltip tooltip, BoxStyle style) {
+	public BoxElementImpl(Tooltip tooltip, BoxStyle style, @Nullable Element icon) {
 		this.tooltip = Objects.requireNonNull(tooltip);
 		this.style = Objects.requireNonNull(style);
+		this.icon = icon;
 
 		arrangeElements();
 	}
 
 	private void arrangeElements() {
-		LinearLayout linearLayout = LinearLayout.vertical();
+		JadeLinearLayout linearLayout = JadeLinearLayout.vertical().alignItems(JadeLinearLayout.Align.STRETCH);
 		for (Tooltip.Line line : tooltip.lines) {
-			LinearLayout lineLayout = LinearLayout.horizontal();
-			for (LayoutElement element : line.sortedElements()) {
-				lineLayout.addChild(element);
+			JadeLinearLayout lineLayout = JadeLinearLayout.horizontal();
+			for (LayoutElement element : line.elements()) {
+				if (element instanceof ResizeableLayout resizeableLayout) {
+					lineLayout.addChild(
+							element, lineLayout.newChildLayoutSettings(), container -> {
+								container.flexGrow = resizeableLayout.getFlexGrow();
+							});
+				} else {
+					lineLayout.addChild(element);
+				}
 			}
-			linearLayout.addChild(lineLayout);
+			linearLayout.addChild(
+					lineLayout, linearLayout.newChildLayoutSettings(), container -> {
+						container.headMargin = line.marginTop;
+						container.tailMargin = line.marginBottom;
+					});
 		}
+
+		if (icon != null) {
+			JadeLinearLayout iconLayout = JadeLinearLayout.horizontal().alignItems(JadeLinearLayout.Align.START);
+			if (IWailaConfig.get().overlay().getIconMode() == IWailaConfig.IconMode.CENTERED) {
+				iconLayout.alignItems(JadeLinearLayout.Align.CENTER);
+			}
+			iconLayout.addChild(icon);
+			iconLayout.addChild(linearLayout);
+			linearLayout = iconLayout;
+		}
+
 		layout = new LayoutWithPadding(
 				linearLayout,
 				style.padding(ScreenDirection.LEFT),
@@ -104,16 +128,6 @@ public class BoxElementImpl extends BoxElement {
 			setter.accept((int) (source + diff));
 		} else {
 			setter.accept(getter.applyAsInt(rect.expectedRect));
-		}
-	}
-
-	private static int calculateMargin(int margin1, int margin2) {
-		if (margin1 >= 0 && margin2 >= 0) {
-			return Math.max(margin1, margin2);
-		} else if (margin1 < 0 && margin2 < 0) {
-			return Math.min(margin1, margin2);
-		} else {
-			return margin1 + margin2;
 		}
 	}
 
@@ -181,11 +195,17 @@ public class BoxElementImpl extends BoxElement {
 	@Override
 	public void renderDebug(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
 		super.renderDebug(graphics, mouseX, mouseY, partialTicks);
-		for (LayoutElement layoutElement : tooltip.layoutElements().toList()) {
-			if (!(layoutElement instanceof Element element)) {
-				continue;
+		layout.visitChildren(layoutElement -> {
+			if (layoutElement instanceof Layout) {
+				JadeInternals.getDisplayHelper().drawBorder(graphics, layoutElement.getRectangle(), 1, 0x8800FF00, true);
 			}
-			element.renderDebug(graphics, mouseX, mouseY, partialTicks);
+		});
+		for (LayoutElement layoutElement : tooltip.layoutElements().toList()) {
+			if (layoutElement instanceof Element element) {
+				element.renderDebug(graphics, mouseX, mouseY, partialTicks);
+			} else if (layoutElement instanceof Layout) {
+				JadeInternals.getDisplayHelper().drawBorder(graphics, layoutElement.getRectangle(), 1, 0x8800FF00, true);
+			}
 		}
 	}
 
@@ -331,55 +351,6 @@ public class BoxElementImpl extends BoxElement {
 		this.icon = icon;
 	}
 
-	public void setThemeIcon(@Nullable Element icon, Theme theme) {
-//		Overlay overlay = IWailaConfig.get().overlay();
-//		if (!overlay.shouldShowIcon()) {
-//			return;
-//		}
-//		if (icon == null) {
-//			setIcon(null);
-//			return;
-//		}
-//		IWailaConfig.IconMode iconMode = overlay.getIconMode();
-//		if (iconMode == IWailaConfig.IconMode.INLINE) {
-//			if (icon instanceof ItemStackElement itemStackElement) {
-//				Element newIcon = IElementHelper.get().smallItem(itemStackElement.getItem()).tag(JadeIds.CORE_ROOT_ICON);
-//				newIcon.size(new Vec2(newIcon.getCachedSize().x + 1, newIcon.getCachedSize().y - 1));
-//				tooltip.replace(
-//						JadeIds.CORE_OBJECT_NAME, list -> {
-//							if (!list.isEmpty()) {
-//								list.getFirst().addFirst(newIcon);
-//							}
-//							return list;
-//						});
-//			}
-//			return;
-//		}
-//		if (theme.iconSlotSprite != null) {
-//			if (theme.iconSlotSpriteCache == null) {
-//				GuiSpriteManager guiSprites = Minecraft.getInstance().getGuiSprites();
-//				TextureAtlasSprite textureAtlasSprite = guiSprites.getSprite(theme.iconSlotSprite);
-//				GuiSpriteScaling scaling = guiSprites.getSpriteScaling(textureAtlasSprite);
-//				int[] padding = new int[4];
-//				Arrays.fill(padding, theme.iconSlotInflation);
-//				if (scaling instanceof GuiSpriteScaling.NineSlice nineSlice) {
-//					GuiSpriteScaling.NineSlice.Border border = nineSlice.border();
-//					padding[0] += border.top();
-//					padding[1] += border.right();
-//					padding[2] += border.bottom();
-//					padding[3] += border.left();
-//				}
-//				theme.iconSlotSpriteCache = new BoxElement(new Tooltip(), BoxStyle.getSprite(theme.iconSlotSprite, padding));
-//			}
-//			ITooltip tooltip1 = theme.iconSlotSpriteCache.getTooltip();
-//			tooltip1.clear();
-//			tooltip1.add(icon);
-//			icon = theme.iconSlotSpriteCache.size(null);
-//		}
-//		icon.tag(JadeIds.CORE_ROOT_ICON);
-//		setIcon(icon);
-	}
-
 	public void updateExpectedRect(TooltipRect rect) {
 		Window window = Minecraft.getInstance().getWindow();
 		IWailaConfig.Overlay overlay = IWailaConfig.get().overlay();
@@ -468,5 +439,12 @@ public class BoxElementImpl extends BoxElement {
 	@Override
 	public @Nullable Component getNarration() {
 		return tooltip.isEmpty() ? null : Component.literal(tooltip.getNarration());
+	}
+
+	@Override
+	public void setFreeSpace(int width, int height) {
+		layout.setFreeSpace(width, height);
+		this.width = layout.getWidth();
+		this.height = layout.getHeight();
 	}
 }

@@ -8,7 +8,6 @@ import org.jetbrains.annotations.ApiStatus.NonExtendable;
 import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import snownee.jade.api.ui.IElement.Align;
 import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.api.ui.ScreenDirection;
 
@@ -138,8 +137,6 @@ public interface ITooltip {
 	 * Get all elements that are tagged with this tag
 	 */
 	List<LayoutElement> get(ResourceLocation tag);
-
-	List<LayoutElement> get(int index, Align align);
 
 	String getNarration();
 
