@@ -1,5 +1,6 @@
 package snownee.jade.api.view;
 
+import java.util.List;
 import java.util.Objects;
 
 import org.jetbrains.annotations.Nullable;
@@ -8,25 +9,38 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import snownee.jade.api.ui.BoxStyle;
+import snownee.jade.api.ui.Element;
+import snownee.jade.api.ui.MessageType;
 import snownee.jade.api.ui.ProgressStyle;
-import snownee.jade.impl.ui.SlimProgressStyle;
 
 public class ProgressView {
 
-	public ProgressStyle style;
-	public float progress;
-	@Nullable
-	public Component text;
+	public List<Part> parts = List.of();
+	public final ProgressStyle style;
+	public final BoxStyle boxStyle;
+	public @Nullable Component text;
 
-	public ProgressView(ProgressStyle style) {
-		this.style = style;
-		Objects.requireNonNull(style);
+	public ProgressView(ProgressStyle style, BoxStyle boxStyle) {
+		this.style = Objects.requireNonNull(style);
+		this.boxStyle = Objects.requireNonNull(boxStyle);
+	}
+
+	public ProgressView(ProgressView.Part progress, @Nullable Component text, ProgressStyle style, BoxStyle boxStyle) {
+		this(List.of(progress), text, style, boxStyle);
+	}
+
+	public ProgressView(List<ProgressView.Part> progress, @Nullable Component text, ProgressStyle style, BoxStyle boxStyle) {
+		this(style, boxStyle);
+		this.parts = Objects.requireNonNull(progress);
+		this.text = text;
 	}
 
 	public static ProgressView read(Data data) {
-		ProgressView progressView = new ProgressView(new SlimProgressStyle());
-		progressView.progress = data.progress;
-		return progressView;
+//		ProgressView progressView = new ProgressView(new SlimProgressStyle());
+//		progressView.progress = data.progress;
+//		return progressView;
+		return null;//TODO
 	}
 
 	public record Data(float progress) {
@@ -36,4 +50,21 @@ public class ProgressView {
 				Data::new);
 	}
 
+	public record Part(float progress, @Nullable Element overlay, @Nullable MessageType messageType, int color) {
+		public static Part of(float progress) {
+			return of(progress, MessageType.NORMAL);
+		}
+
+		public static Part of(float progress, MessageType messageType) {
+			return new Part(progress, null, messageType, -1);
+		}
+
+		public static Part of(float progress, Element overlay) {
+			return new Part(progress, overlay, null, -1);
+		}
+
+		public static Part of(float progress, int color) {
+			return new Part(progress, null, null, color);
+		}
+	}
 }

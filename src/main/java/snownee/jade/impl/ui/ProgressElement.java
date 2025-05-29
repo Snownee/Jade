@@ -4,27 +4,19 @@ import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.Mth;
 import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.Element;
-import snownee.jade.api.ui.ProgressStyle;
+import snownee.jade.api.ui.ResizeableElement;
+import snownee.jade.api.view.ProgressView;
 import snownee.jade.track.ProgressTrackInfo;
 
-public class ProgressElement extends Element implements StyledElement {
-	private final float progress;
-	@Nullable
-	private final Component text;
-	private final ProgressStyle style;
-	private final BoxStyle boxStyle;
+public class ProgressElement extends ResizeableElement implements StyledElement {
+	private final ProgressView view;
 	private ProgressTrackInfo track;
-	private boolean canDecrease;
 
-	public ProgressElement(float progress, Component text, ProgressStyle style, BoxStyle boxStyle, boolean canDecrease) {
-		this.progress = Mth.clamp(progress, 0, 1);
-		this.text = text;
-		this.style = style;
-		this.boxStyle = boxStyle;
-		this.canDecrease = canDecrease;
+	public ProgressElement(ProgressView view) {
+		this.view = view;
+		height = view.text == null ? 8 : 14;
 	}
 
 //	@Override
@@ -77,7 +69,7 @@ public class ProgressElement extends Element implements StyledElement {
 
 	@Override
 	public @Nullable Component getNarration() {
-		return text;
+		return view.text;
 	}
 
 	@Override
@@ -87,6 +79,11 @@ public class ProgressElement extends Element implements StyledElement {
 
 	@Override
 	public BoxStyle getStyle() {
-		return boxStyle;
+		return view.boxStyle;
+	}
+
+	@Override
+	public void setFreeSpace(int width, int height) {
+
 	}
 }

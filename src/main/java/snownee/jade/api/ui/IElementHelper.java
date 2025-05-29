@@ -10,6 +10,7 @@ import net.minecraft.world.item.ItemStack;
 import snownee.jade.JadeInternals;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.fluid.JadeFluidObject;
+import snownee.jade.api.view.ProgressView;
 
 public interface IElementHelper {
 
@@ -33,17 +34,18 @@ public interface IElementHelper {
 
 	Element fluid(JadeFluidObject fluid);
 
-	Element progress(float progress, @Nullable Component text, ProgressStyle style, BoxStyle boxStyle, boolean canDecrease);
+	Element progressArrow(float progress);
 
-	Element progress(float progress);
+	ResizeableElement progress(ProgressView view);
 
-	Element progress(
+	ResizeableElement progress(
 			float progress,
 			ResourceLocation baseSprite,
 			ResourceLocation progressSprite,
 			int width,
 			int height,
-			boolean canDecrease);
+			@Nullable Component text,
+			@Nullable ProgressStyle style);
 
 	/**
 	 * Display a nested tooltip

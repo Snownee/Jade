@@ -62,7 +62,7 @@ public class FurnaceProvider implements StreamServerDataProvider<BlockAccessor, 
 			tooltip.add(helper.item(data.inventory.get(0)));
 			tooltip.append(helper.item(data.inventory.get(1)));
 			tooltip.append(helper.spacer(4, 0));
-			tooltip.append(helper.progress((float) data.progress / data.total).offset(-2, 0));
+			tooltip.append(helper.progressArrow((float) data.progress / data.total).offset(-2, 0));
 			tooltip.append(helper.item(data.inventory.get(2)));
 		}
 

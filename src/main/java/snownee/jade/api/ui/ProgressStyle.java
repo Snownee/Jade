@@ -6,12 +6,15 @@ import org.jetbrains.annotations.Contract;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 
 public abstract class ProgressStyle {
 
 	protected boolean fitContentX = true;
 	protected boolean fitContentY = true;
 	protected ScreenDirection direction = ScreenDirection.RIGHT;
+	protected ResourceLocation foreground;
+	protected boolean canDecrease;
 
 	@Contract("_ -> this")
 	public abstract ProgressStyle textColor(int color);

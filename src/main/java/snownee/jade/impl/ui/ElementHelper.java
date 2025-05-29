@@ -1,7 +1,5 @@
 package snownee.jade.impl.ui;
 
-import java.util.Objects;
-
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.blaze3d.pipeline.RenderPipeline;
@@ -19,6 +17,7 @@ import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.api.ui.ProgressStyle;
 import snownee.jade.api.ui.ResizeableElement;
 import snownee.jade.api.ui.TextElement;
+import snownee.jade.api.view.ProgressView;
 import snownee.jade.impl.Tooltip;
 import snownee.jade.overlay.DisplayHelper;
 
@@ -73,29 +72,29 @@ public class ElementHelper implements IElementHelper {
 	}
 
 	@Override
-	public Element progress(float progress, @Nullable Component text, ProgressStyle style, BoxStyle boxStyle, boolean canDecrease) {
-		Objects.requireNonNull(style);
-		Objects.requireNonNull(boxStyle);
-		return new ProgressElement(progress, text, style, boxStyle, canDecrease);
+	public Element progressArrow(float progress) {
+		return progress(progress, DEFAULT_PROGRESS_BASE, DEFAULT_PROGRESS, 22, 16, null, null);
 	}
 
 	@Override
-	public Element progress(float progress) {
-		return progress(progress, DEFAULT_PROGRESS_BASE, DEFAULT_PROGRESS, 22, 16, false);
+	public ResizeableElement progress(ProgressView view) {
+		return new ProgressElement(view);
 	}
 
 	@Override
-	public Element progress(
+	public ResizeableElement progress(
 			float progress,
 			ResourceLocation baseSprite,
 			ResourceLocation progressSprite,
 			int width,
 			int height,
-			boolean canDecrease) {
-//		ProgressStyle style = progressStyle().fitContentX(false).overlay(sprite(progressSprite, width, height));
-//		BoxStyle boxStyle = BoxStyle.getSprite(baseSprite, null);
-//		return progress(progress, null, style, boxStyle, canDecrease).size(new Vec2(width, height));
-		return spacer(10, 10);
+			@Nullable Component text,
+			@Nullable ProgressStyle style) {
+		return progress(new ProgressView(
+				ProgressView.Part.of(progress, sprite(progressSprite, width, height)),
+				text,
+				style == null ? progressStyle() : style,
+				BoxStyle.getSprite(baseSprite, null)));
 	}
 
 	@Override

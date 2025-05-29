@@ -25,11 +25,11 @@ import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.IElementHelper;
-import snownee.jade.api.ui.ProgressStyle;
 import snownee.jade.api.view.ClientViewGroup;
 import snownee.jade.api.view.FluidView;
 import snownee.jade.api.view.IClientExtensionProvider;
 import snownee.jade.api.view.IServerExtensionProvider;
+import snownee.jade.api.view.ProgressView;
 import snownee.jade.api.view.ViewGroup;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
@@ -101,8 +101,12 @@ public class FluidStorageProvider<T extends Accessor<?>> implements StreamServer
 									theTooltip.append(text);
 								}
 								case PROGRESS_BAR -> {
-									ProgressStyle progressStyle = helper.progressStyle();
-									theTooltip.add(helper.progress(view.ratio, text, progressStyle, BoxStyle.getNestedBox(), true));
+									ProgressView progressView = new ProgressView(
+											ProgressView.Part.of(view.ratio),
+											text,
+											helper.progressStyle(),
+											BoxStyle.getNestedBox());
+									theTooltip.add(helper.progress(progressView));
 								}
 							}
 						}

@@ -68,7 +68,7 @@ public class ProgressProvider<T extends Accessor<?>> implements StreamServerData
 								theTooltip.add(helper.text(view.text).scale(0.75F));
 								theTooltip.setLineMargin(-1, ScreenDirection.DOWN, 0);
 							}
-							theTooltip.add(helper.progress(view.progress, null, view.style, boxStyle, false).size(10, 2));
+							theTooltip.add(helper.progress(view));
 						}
 					});
 		}

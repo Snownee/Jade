@@ -23,11 +23,11 @@ import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.IElementHelper;
-import snownee.jade.api.ui.ProgressStyle;
 import snownee.jade.api.view.ClientViewGroup;
 import snownee.jade.api.view.EnergyView;
 import snownee.jade.api.view.IClientExtensionProvider;
 import snownee.jade.api.view.IServerExtensionProvider;
+import snownee.jade.api.view.ProgressView;
 import snownee.jade.api.view.ViewGroup;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
@@ -91,8 +91,12 @@ public class EnergyStorageProvider<T extends Accessor<?>> implements StreamServe
 									theTooltip.append(text);
 								}
 								case PROGRESS_BAR -> {
-									ProgressStyle progressStyle = helper.progressStyle();
-									theTooltip.add(helper.progress(view.ratio, text, progressStyle, BoxStyle.getNestedBox(), true));
+									ProgressView progressView = new ProgressView(
+											ProgressView.Part.of(view.ratio),
+											text,
+											helper.progressStyle(),
+											BoxStyle.getNestedBox());
+									theTooltip.add(helper.progress(progressView));
 								}
 							}
 						}
