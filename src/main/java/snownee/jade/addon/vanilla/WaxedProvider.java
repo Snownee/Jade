@@ -18,9 +18,8 @@ import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.impl.ui.CompoundElement;
 
-public enum WaxedProvider implements IBlockComponentProvider {
-
-	INSTANCE;
+public class WaxedProvider implements IBlockComponentProvider {
+	public static final WaxedProvider INSTANCE = new WaxedProvider();
 
 	@Override
 	public @Nullable Element getIcon(BlockAccessor accessor, IPluginConfig config, Element currentIcon) {
@@ -44,7 +43,7 @@ public enum WaxedProvider implements IBlockComponentProvider {
 		if (IWailaConfig.get().accessibility().getEnableAccessibilityPlugin() &&
 				accessor.getBlockEntity() instanceof SignBlockEntity sign &&
 				sign.isWaxed()) {
-			String message = tooltip.getNarration(JadeIds.CORE_OBJECT_NAME);
+			String message = tooltip.getString(JadeIds.CORE_OBJECT_NAME);
 			if (!message.isBlank()) {
 				tooltip.replace(JadeIds.CORE_OBJECT_NAME, IThemeHelper.get().title(Component.translatable("jade.waxed", message)));
 			}

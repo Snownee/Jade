@@ -17,29 +17,8 @@ import snownee.jade.api.StreamServerDataProvider;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.IDisplayHelper;
 
-public enum JukeboxProvider implements IBlockComponentProvider, StreamServerDataProvider<BlockAccessor, ItemStack> {
-
-	INSTANCE;
-
-	@Override
-	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		ItemStack stack = decodeFromData(accessor).orElse(ItemStack.EMPTY);
-		if (stack.isEmpty()) {
-			tooltip.add(Component.translatable("tooltip.jade.empty"));
-			return;
-		}
-		Component name;
-		JukeboxPlayable playable = stack.get(DataComponents.JUKEBOX_PLAYABLE);
-		if (playable != null) {
-			name = playable.song()
-					.unwrap(accessor.getLevel().registryAccess())
-					.map($ -> $.value().description())
-					.orElse(stack.getHoverName());
-		} else {
-			name = stack.getHoverName();
-		}
-		tooltip.add(Component.translatable("record.nowPlaying", IDisplayHelper.get().stripColor(name)));
-	}
+public class JukeboxProvider implements StreamServerDataProvider<BlockAccessor, ItemStack> {
+	public static final JukeboxProvider INSTANCE = new JukeboxProvider();
 
 	@Override
 	public boolean shouldRequestData(BlockAccessor accessor) {
@@ -59,5 +38,34 @@ public enum JukeboxProvider implements IBlockComponentProvider, StreamServerData
 	@Override
 	public ResourceLocation getUid() {
 		return JadeIds.MC_JUKEBOX;
+	}
+
+	public static class Client implements IBlockComponentProvider {
+		public static final Client INSTANCE = new Client();
+
+		@Override
+		public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
+			ItemStack stack = JukeboxProvider.INSTANCE.decodeFromData(accessor).orElse(ItemStack.EMPTY);
+			if (stack.isEmpty()) {
+				tooltip.add(Component.translatable("tooltip.jade.empty"));
+				return;
+			}
+			Component name;
+			JukeboxPlayable playable = stack.get(DataComponents.JUKEBOX_PLAYABLE);
+			if (playable != null) {
+				name = playable.song()
+						.unwrap(accessor.getLevel().registryAccess())
+						.map($ -> $.value().description())
+						.orElse(stack.getHoverName());
+			} else {
+				name = stack.getHoverName();
+			}
+			tooltip.add(Component.translatable("record.nowPlaying", IDisplayHelper.get().stripColor(name)));
+		}
+
+		@Override
+		public ResourceLocation getUid() {
+			return JadeIds.MC_JUKEBOX;
+		}
 	}
 }

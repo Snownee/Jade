@@ -14,9 +14,8 @@ import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
 
-public enum PlayerHeadProvider implements IBlockComponentProvider {
-
-	INSTANCE;
+public class PlayerHeadProvider implements IBlockComponentProvider {
+	public static final PlayerHeadProvider INSTANCE = new PlayerHeadProvider();
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {

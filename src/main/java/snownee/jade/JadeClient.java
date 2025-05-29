@@ -75,6 +75,7 @@ public final class JadeClient {
 
 	public static final SystemToast.SystemToastId JADE_PLEASE_WAIT = new SystemToast.SystemToastId(2000L);
 	public static final KeyMapping[] profiles = new KeyMapping[4];
+	private static final WailaTickHandler tickHandler = new WailaTickHandler();
 	public static KeyMapping openConfig;
 	public static KeyMapping showOverlay;
 	public static KeyMapping toggleLiquid;
@@ -111,6 +112,10 @@ public final class JadeClient {
 		ClientProxy.registerReloadListener(ModIdentification.INSTANCE);
 		ClientProxy.registerReloadListener(HarvestToolProvider.INSTANCE);
 		ClientProxy.registerReloadListener(ThemeHelper.INSTANCE);
+	}
+
+	public static WailaTickHandler tickHandler() {
+		return tickHandler;
 	}
 
 	public static void onKeyPressed(int action) {
@@ -162,8 +167,8 @@ public final class JadeClient {
 					Jade.history().hintNarratorToggle = false;
 				}
 				IWailaConfig.get().save();
-			} else if (WailaTickHandler.instance().rootElement != null) {
-				WailaTickHandler.narrate(WailaTickHandler.instance().rootElement.getTooltip(), false);
+			} else if (tickHandler.rootElement != null) {
+				tickHandler.narrate(tickHandler.rootElement, false);
 			}
 		}
 
@@ -172,7 +177,7 @@ public final class JadeClient {
 				while (profiles[i].consumeClick()) {
 					Jade.useProfile(i);
 					if (IWailaConfig.get().accessibility().getNarrateKeys()) {
-						WailaTickHandler.narrate(I18n.get("narration.jade.key.profile", profiles[i].getName()), false);
+						tickHandler.narrate(I18n.get("narration.jade.key.profile", profiles[i].getName()), false);
 					}
 				}
 			}
@@ -182,7 +187,7 @@ public final class JadeClient {
 	public static void narrateKey(String key, boolean bl) {
 		if (IWailaConfig.get().accessibility().getNarrateKeys()) {
 			key = "narration.jade.key.%s.%s".formatted(key, bl ? "on" : "off");
-			WailaTickHandler.narrate(I18n.get(key), false);
+			tickHandler.narrate(I18n.get(key), false);
 		}
 	}
 

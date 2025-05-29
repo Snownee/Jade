@@ -1,5 +1,6 @@
 package snownee.jade.addon.core;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 
 import net.minecraft.resources.ResourceLocation;
@@ -32,6 +33,9 @@ public abstract class ModNameProvider implements IToggleableProvider {
 
 		@Override
 		public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
+			if (Objects.equal(config.getEnum(JadeIds.CORE_MOD_NAME), Mode.OFF)) {
+				return;
+			}
 			String modName = null;
 			if (accessor.isFakeBlock()) {
 				modName = ModIdentification.getModName(accessor.getFakeBlock());
@@ -57,6 +61,9 @@ public abstract class ModNameProvider implements IToggleableProvider {
 
 		@Override
 		public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
+			if (Objects.equal(config.getEnum(JadeIds.CORE_MOD_NAME), Mode.OFF)) {
+				return;
+			}
 			tooltip.add(IThemeHelper.get().modName(ModIdentification.getModName(accessor.getEntity())));
 		}
 	}
@@ -67,8 +74,16 @@ public abstract class ModNameProvider implements IToggleableProvider {
 	}
 
 	@Override
+	public boolean isRequired() {
+		return true;
+	}
+
+	@Override
 	public int getDefaultPriority() {
 		return TooltipPosition.TAIL - 1;
 	}
 
+	public enum Mode {
+		ON, OFF, SMALLER
+	}
 }

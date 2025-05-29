@@ -42,7 +42,7 @@
 	"narration.jade.health": "Gezondheid: %s",
 	"narration.jade.armor": "Harnas: %s",
 	"narration.jade.bookName": "Boek Name: %s",
-	"narration.jade.blockpos": "X%s Y%s Z%s ",
+	"narration.jade.blockpos": "X %s Y %s Z %s ",
 	"narration.jade.negative": "negatief %s",
 	"narration.jade.distance": "D%s",
 	"narration.jade.category": "%s categorie",

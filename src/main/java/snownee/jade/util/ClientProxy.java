@@ -93,7 +93,6 @@ import snownee.jade.network.ServerHandshakePacket;
 import snownee.jade.network.ShowOverlayPacket;
 import snownee.jade.overlay.DatapackBlockManager;
 import snownee.jade.overlay.OverlayRenderer;
-import snownee.jade.overlay.WailaTickHandler;
 
 public final class ClientProxy implements ClientModInitializer {
 
@@ -143,7 +142,7 @@ public final class ClientProxy implements ClientModInitializer {
 
 	private static void onClientTick(Minecraft mc) {
 		try {
-			WailaTickHandler.instance().tickClient();
+			JadeClient.tickHandler().tickClient();
 		} catch (Throwable e) {
 			WailaExceptionHandler.handleErr(e, null, null);
 		}

@@ -1,27 +1,42 @@
 package snownee.jade.impl;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 
 import net.minecraft.client.gui.layouts.LayoutElement;
+import net.minecraft.client.gui.narration.NarratedElementType;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.gui.narration.NarrationSupplier;
+import net.minecraft.client.gui.narration.NarrationThunk;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.api.ui.ScreenDirection;
+import snownee.jade.api.ui.TextElement;
 import snownee.jade.impl.ui.ElementHelper;
 
 public class Tooltip implements ITooltip {
+	private static ResourceLocation getTag(LayoutElement element) {
+		if (element instanceof Element taggable) {
+			return taggable.getTag();
+		}
+		return null;
+	}
 
 	public final List<Line> lines = new ArrayList<>();
 	public boolean sneakyDetails;
+	public @Nullable Element icon;
 
 	public Stream<LayoutElement> layoutElements() {
 		return lines.stream().flatMap(line -> line.elements().stream());
@@ -30,6 +45,11 @@ public class Tooltip implements ITooltip {
 	@Override
 	public void clear() {
 		lines.clear();
+	}
+
+	@Override
+	public int size() {
+		return lines.size();
 	}
 
 	@Override
@@ -46,27 +66,17 @@ public class Tooltip implements ITooltip {
 	}
 
 	@Override
-	public int size() {
-		return lines.size();
-	}
-
-	@Override
 	public void add(int index, LayoutElement element) {
-		if (element instanceof Element taggable && taggable.getTag() == null) {
-			taggable.tag(ElementHelper.INSTANCE.currentUid());
-		}
-		Line line = new Line();
-		line.elements.add(element);
-		lines.add(index, line);
+		lines.add(index, new Line());
+		append(index, element);
 	}
 
 	@Override
 	public List<LayoutElement> get(ResourceLocation tag) {
 		List<LayoutElement> elements = Lists.newArrayList();
-		//TODO
-//		for (Line line : lines) {
-//			line.sortedElements().stream().filter(e -> Objects.equal(tag, e.getTag())).forEach(elements::add);
-//		}
+		for (Line line : lines) {
+			line.elements().stream().filter(e -> Objects.equal(tag, getTag(e))).forEach(elements::add);
+		}
 		return elements;
 	}
 
@@ -77,29 +87,28 @@ public class Tooltip implements ITooltip {
 
 	private boolean removeInternal(ResourceLocation tag, boolean removeFirstLineIfEmpty, @Nullable List<List<LayoutElement>> collector) {
 		boolean removed = false;
-//		List<LayoutElement> collected = collector == null ? null : Lists.newArrayList();
-//		for (Iterator<Line> iterator = lines.iterator(); iterator.hasNext(); ) {
-//			Line line = iterator.next();
-//			if (line.elements.removeIf(e -> {
-//				if (Objects.equal(tag, e.getTag())) {
-//					if (collector != null) {
-//						collected.add(e);
-//					}
-//					return true;
-//				}
-//				return false;
-//			})) {
-//				line.markDirty();
-//				if (line.elements.isEmpty() && (removed || removeFirstLineIfEmpty)) {
-//					iterator.remove();
-//				}
-//				removed = true;
-//				if (collector != null && !collected.isEmpty()) {
-//					collector.add(Lists.newArrayList(collected));
-//					collected.clear();
-//				}
-//			}
-//		}
+		List<LayoutElement> collected = collector == null ? null : Lists.newArrayList();
+		for (Iterator<Line> iterator = lines.iterator(); iterator.hasNext(); ) {
+			Line line = iterator.next();
+			if (line.elements.removeIf(e -> {
+				if (Objects.equal(tag, getTag(e))) {
+					if (collector != null) {
+						collected.add(e);
+					}
+					return true;
+				}
+				return false;
+			})) {
+				if (line.elements.isEmpty() && (removed || removeFirstLineIfEmpty)) {
+					iterator.remove();
+				}
+				removed = true;
+				if (collector != null && !collected.isEmpty()) {
+					collector.add(Lists.newArrayList(collected));
+					collected.clear();
+				}
+			}
+		}
 		return removed;
 	}
 
@@ -110,69 +119,41 @@ public class Tooltip implements ITooltip {
 
 	@Override
 	public boolean replace(ResourceLocation tag, UnaryOperator<List<List<LayoutElement>>> operator) {
-		return false;//TODO
-//		int firstX = -1, firstY = -1;
-//		for (int y = 0; y < lines.size(); y++) {
-//			Line line = lines.get(y);
-//			for (int x = 0; x < line.sortedElements().size(); x++) {
-//				LayoutElement element = line.sortedElements().get(x);
-//				if (Objects.equal(tag, element.getTag())) {
-//					if (firstX == -1) {
-//						firstX = x;
-//						firstY = y;
-//					}
-//				}
-//			}
-//		}
-//		if (firstX != -1) {
-//			List<List<LayoutElement>> elements = Lists.newArrayList();
-//			removeInternal(tag, false, elements);
-//			elements = operator.apply(elements);
-//			for (List<LayoutElement> elementList : elements) {
-//				for (LayoutElement element : elementList) {
-//					if (element.getTag() == null) {
-//						element.tag(tag);
-//					}
-//				}
-//			}
-//			for (int i = 0; i < elements.size(); i++) {
-//				List<LayoutElement> list = elements.get(i);
-//				if (i == 0) {
-//					Line line = lines.get(firstY);
-//					line.sortedElements().addAll(firstX, list);
-//					line.markDirty();
-//				} else {
-//					add(firstY + i, list);
-//				}
-//			}
-//		}
-//		return firstX != -1;
-	}
-
-	@Override
-	public String getNarration() {
-		List<String> msgs = Lists.newArrayList();
-		for (Line line : lines) {
-			/* off */
-//			msgs.add(String.join(
-//					" ", line.sortedElements().stream()
-//							.filter(e -> !JadeIds.CORE_MOD_NAME.equals(e.getTag()))
-//							.map(LayoutElement::getCachedMessage)
-//							.filter(java.util.Objects::nonNull)
-//							.toList()));//TODO
-			/* on */
+		int firstX = -1, firstY = -1;
+		for (int y = 0; y < lines.size(); y++) {
+			Line line = lines.get(y);
+			for (int x = 0; x < line.elements().size(); x++) {
+				LayoutElement element = line.elements().get(x);
+				if (Objects.equal(tag, getTag(element))) {
+					if (firstX == -1) {
+						firstX = x;
+						firstY = y;
+					}
+				}
+			}
 		}
-		return String.join("\n", msgs);
-	}
-
-	@Override
-	public String getNarration(ResourceLocation tag) {
-		return "";//TODO
-//		return String.join(
-//				" ", get(tag).stream()
-//						.map(LayoutElement::getCachedMessage)
-//						.filter(java.util.Objects::nonNull)
-//						.toList());
+		if (firstX != -1) {
+			List<List<LayoutElement>> elements = Lists.newArrayList();
+			removeInternal(tag, false, elements);
+			elements = operator.apply(elements);
+			for (List<LayoutElement> elementList : elements) {
+				for (LayoutElement element : elementList) {
+					if (element instanceof Element taggable && taggable.getTag() == null) {
+						taggable.tag(tag);
+					}
+				}
+			}
+			for (int i = 0; i < elements.size(); i++) {
+				List<LayoutElement> list = elements.get(i);
+				if (i == 0) {
+					Line line = lines.get(firstY);
+					line.elements().addAll(firstX, list);
+				} else {
+					add(firstY + i, list);
+				}
+			}
+		}
+		return firstX != -1;
 	}
 
 	@Override
@@ -186,6 +167,66 @@ public class Tooltip implements ITooltip {
 			case DOWN -> line.marginBottom = margin;
 			default -> throw new IllegalArgumentException("Only TOP and BOTTOM are allowed.");
 		}
+	}
+
+	@Override
+	public String getNarration() {
+		StringBuilder sb = new StringBuilder();
+		NarrationElementOutput output = new NarrationElementOutput() {
+			@Override
+			public void add(NarratedElementType narratedElementType, NarrationThunk<?> narrationThunk) {
+				if (narratedElementType != NarratedElementType.TITLE) {
+					return;
+				}
+				narrationThunk.getText(text -> sb.append(text).append(". "));
+			}
+
+			@Override
+			public @NotNull NarrationElementOutput nest() {
+				return this;
+			}
+		};
+		for (Line line : lines) {
+			boolean hasSupplier = false;
+			for (LayoutElement element : line.elements()) {
+				if (element instanceof NarrationSupplier supplier) {
+					supplier.updateNarration(output);
+					hasSupplier = true;
+				}
+			}
+			if (hasSupplier && !sb.isEmpty()) {
+				sb.append('\n');
+			}
+		}
+		if (sb.isEmpty()) {
+			return "";
+		}
+		if (sb.charAt(sb.length() - 1) == '\n') {
+			sb.deleteCharAt(sb.length() - 1);
+		}
+		return sb.toString();
+	}
+
+	@Override
+	public String getString(ResourceLocation tag) {
+		return get(tag).stream().filter($ -> $ instanceof TextElement).map($ -> ((TextElement) $).getString()).findFirst().orElse("");
+	}
+
+	@Override
+	public void updateNarration(NarrationElementOutput narrationElementOutput) {
+		String narration = getNarration();
+		if (!narration.isEmpty()) {
+			narrationElementOutput.add(NarratedElementType.TITLE, narration);
+		}
+	}
+
+	@Override
+	public @Nullable Element getIcon() {
+		return icon;
+	}
+
+	public void setIcon(@Nullable Element icon) {
+		this.icon = icon;
 	}
 
 	public static class Line {

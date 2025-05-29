@@ -16,23 +16,8 @@ import snownee.jade.api.StreamServerDataProvider;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.IElementHelper;
 
-public enum FurnaceProvider implements IBlockComponentProvider, StreamServerDataProvider<BlockAccessor, FurnaceProvider.Data> {
-
-	INSTANCE;
-
-	@Override
-	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		Data data = decodeFromData(accessor).orElse(null);
-		if (data == null) {
-			return;
-		}
-		IElementHelper helper = IElementHelper.get();
-		tooltip.add(helper.item(data.inventory.get(0)));
-		tooltip.append(helper.item(data.inventory.get(1)));
-		tooltip.append(helper.spacer(4, 0));
-		tooltip.append(helper.progress((float) data.progress / data.total).offset(-2, 0));
-		tooltip.append(helper.item(data.inventory.get(2)));
-	}
+public class FurnaceProvider implements StreamServerDataProvider<BlockAccessor, FurnaceProvider.Data> {
+	public static final FurnaceProvider INSTANCE = new FurnaceProvider();
 
 	@Override
 	public Data streamData(BlockAccessor accessor) {
@@ -62,6 +47,29 @@ public enum FurnaceProvider implements IBlockComponentProvider, StreamServerData
 				ItemStack.OPTIONAL_LIST_STREAM_CODEC,
 				Data::inventory,
 				Data::new);
+	}
+
+	public static class Client implements IBlockComponentProvider {
+		public static final Client INSTANCE = new Client();
+
+		@Override
+		public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
+			Data data = FurnaceProvider.INSTANCE.decodeFromData(accessor).orElse(null);
+			if (data == null) {
+				return;
+			}
+			IElementHelper helper = IElementHelper.get();
+			tooltip.add(helper.item(data.inventory.get(0)));
+			tooltip.append(helper.item(data.inventory.get(1)));
+			tooltip.append(helper.spacer(4, 0));
+			tooltip.append(helper.progress((float) data.progress / data.total).offset(-2, 0));
+			tooltip.append(helper.item(data.inventory.get(2)));
+		}
+
+		@Override
+		public ResourceLocation getUid() {
+			return JadeIds.MC_FURNACE;
+		}
 	}
 
 }

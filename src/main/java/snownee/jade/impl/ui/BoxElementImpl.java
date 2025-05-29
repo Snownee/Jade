@@ -1,11 +1,13 @@
 package snownee.jade.impl.ui;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.function.IntConsumer;
 import java.util.function.ToIntFunction;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.Window;
 
 import net.minecraft.client.Minecraft;
@@ -38,18 +40,25 @@ public class BoxElementImpl extends BoxElement {
 	public LayoutWithPadding layout;
 	private final Tooltip tooltip;
 	private final BoxStyle style;
+	private final List<Renderable> renderables;
 	private int[] padding;
 	private Element icon;
 	private float boxProgress;
 	private MessageType boxProgressType;
 	private ProgressTrackInfo track;
 
-	public BoxElementImpl(Tooltip tooltip, BoxStyle style, @Nullable Element icon) {
+	public BoxElementImpl(Tooltip tooltip, BoxStyle style) {
 		this.tooltip = Objects.requireNonNull(tooltip);
 		this.style = Objects.requireNonNull(style);
-		this.icon = icon;
-
+		this.icon = tooltip.getIcon();
 		arrangeElements();
+		renderables = Lists.newArrayListWithExpectedSize(tooltip.size() + 1);
+		if (icon != null) {
+			renderables.add(icon);
+		}
+		tooltip.layoutElements()
+				.filter($ -> $ instanceof Renderable)
+				.forEach($ -> renderables.add((Renderable) $));
 	}
 
 	private void arrangeElements() {
@@ -74,7 +83,7 @@ public class BoxElementImpl extends BoxElement {
 		}
 
 		if (icon != null) {
-			JadeLinearLayout iconLayout = JadeLinearLayout.horizontal().alignItems(JadeLinearLayout.Align.START);
+			JadeLinearLayout iconLayout = JadeLinearLayout.horizontal().alignItems(JadeLinearLayout.Align.START).spacing(3);
 			if (IWailaConfig.get().overlay().getIconMode() == IWailaConfig.IconMode.CENTERED) {
 				iconLayout.alignItems(JadeLinearLayout.Align.CENTER);
 			}
@@ -184,10 +193,7 @@ public class BoxElementImpl extends BoxElement {
 			style.render(graphics, this, getX(), getY(), getWidth(), getHeight(), alpha);
 		}
 
-		for (LayoutElement layoutElement : tooltip.layoutElements().toList()) {
-			if (!(layoutElement instanceof Renderable renderable)) {
-				continue;
-			}
+		for (Renderable renderable : renderables) {
 			renderable.render(graphics, mouseX, mouseY, partialTicks);
 		}
 	}
@@ -195,6 +201,9 @@ public class BoxElementImpl extends BoxElement {
 	@Override
 	public void renderDebug(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
 		super.renderDebug(graphics, mouseX, mouseY, partialTicks);
+		if (icon != null) {
+			icon.renderDebug(graphics, mouseX, mouseY, partialTicks);
+		}
 		layout.visitChildren(layoutElement -> {
 			if (layoutElement instanceof Layout) {
 				JadeInternals.getDisplayHelper().drawBorder(graphics, layoutElement.getRectangle(), 1, 0x8800FF00, true);
@@ -438,7 +447,14 @@ public class BoxElementImpl extends BoxElement {
 
 	@Override
 	public @Nullable Component getNarration() {
-		return tooltip.isEmpty() ? null : Component.literal(tooltip.getNarration());
+		if (tooltip.isEmpty()) {
+			return null;
+		}
+		String narration = tooltip.getNarration();
+		if (narration.isEmpty()) {
+			return null;
+		}
+		return Component.literal(narration);
 	}
 
 	@Override

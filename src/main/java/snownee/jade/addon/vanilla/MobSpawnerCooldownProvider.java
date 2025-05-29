@@ -18,18 +18,8 @@ import snownee.jade.api.StreamServerDataProvider;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
 
-public enum MobSpawnerCooldownProvider implements IBlockComponentProvider, StreamServerDataProvider<BlockAccessor, Integer> {
-
-	INSTANCE;
-
-	@Override
-	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		if (!config.get(JadeIds.MC_MOB_SPAWNER)) {
-			return;
-		}
-		int cooldown = decodeFromData(accessor).orElse(0);
-		tooltip.add(Component.translatable("jade.trial_spawner_cd", IThemeHelper.get().seconds(cooldown, accessor.tickRate())));
-	}
+public class MobSpawnerCooldownProvider implements StreamServerDataProvider<BlockAccessor, Integer> {
+	public static final MobSpawnerCooldownProvider INSTANCE = new MobSpawnerCooldownProvider();
 
 	@Override
 	public @Nullable Integer streamData(BlockAccessor accessor) {
@@ -52,8 +42,26 @@ public enum MobSpawnerCooldownProvider implements IBlockComponentProvider, Strea
 		return JadeIds.MC_MOB_SPAWNER_COOLDOWN;
 	}
 
-	@Override
-	public boolean isRequired() {
-		return true;
+	public static class Client implements IBlockComponentProvider {
+		public static final Client INSTANCE = new Client();
+
+		@Override
+		public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
+			if (!config.get(JadeIds.MC_MOB_SPAWNER)) {
+				return;
+			}
+			int cooldown = MobSpawnerCooldownProvider.INSTANCE.decodeFromData(accessor).orElse(0);
+			tooltip.add(Component.translatable("jade.trial_spawner_cd", IThemeHelper.get().seconds(cooldown, accessor.tickRate())));
+		}
+
+		@Override
+		public boolean isRequired() {
+			return true;
+		}
+
+		@Override
+		public ResourceLocation getUid() {
+			return JadeIds.MC_MOB_SPAWNER_COOLDOWN;
+		}
 	}
 }

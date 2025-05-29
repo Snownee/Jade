@@ -18,7 +18,7 @@ public class CorePlugin implements IWailaPlugin {
 
 	@Override
 	public void register(IWailaCommonRegistration registration) {
-		registration.registerBlockDataProvider(ObjectNameProvider.getBlock(), BlockEntity.class);
+		registration.registerBlockDataProvider(ObjectNameProvider.getServer(), BlockEntity.class);
 	}
 
 	@Override
@@ -29,6 +29,7 @@ public class CorePlugin implements IWailaPlugin {
 		registration.addConfig(JadeIds.CORE_DISTANCE, false);
 		registration.addConfig(JadeIds.CORE_COORDINATES, false);
 		registration.addConfig(JadeIds.CORE_REL_COORDINATES, false);
+		registration.addConfig(JadeIds.CORE_MOD_NAME, ModNameProvider.Mode.ON);
 
 		registration.registerBlockComponent(ObjectNameProvider.getBlock(), Block.class);
 		registration.registerBlockComponent(ModNameProvider.getBlock(), Block.class);

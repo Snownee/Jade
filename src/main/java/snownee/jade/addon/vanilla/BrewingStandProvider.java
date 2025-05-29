@@ -18,26 +18,8 @@ import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.IElementHelper;
 
-public enum BrewingStandProvider implements IBlockComponentProvider, StreamServerDataProvider<BlockAccessor, BrewingStandProvider.Data> {
-
-	INSTANCE;
-
-	@Override
-	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		Data data = decodeFromData(accessor).orElse(null);
-		if (data == null) {
-			return;
-		}
-		IElementHelper helper = IElementHelper.get();
-		tooltip.add(helper.smallItem(new ItemStack(Items.BLAZE_POWDER)).narration(""));
-		tooltip.append(helper.text(IThemeHelper.get().info(data.fuel))
-				.narration(Component.translatable("narration.jade.brewingStand.fuel", data.fuel)));
-		if (data.time > 0) {
-			tooltip.append(helper.spacer(5, 0));
-			tooltip.append(helper.smallItem(new ItemStack(Items.CLOCK)).narration(""));
-			tooltip.append(IThemeHelper.get().seconds(data.time, accessor.tickRate()));
-		}
-	}
+public class BrewingStandProvider implements StreamServerDataProvider<BlockAccessor, BrewingStandProvider.Data> {
+	public static final BrewingStandProvider INSTANCE = new BrewingStandProvider();
 
 	@Override
 	public Data streamData(BlockAccessor accessor) {
@@ -62,5 +44,31 @@ public enum BrewingStandProvider implements IBlockComponentProvider, StreamServe
 				ByteBufCodecs.VAR_INT,
 				Data::time,
 				Data::new);
+	}
+
+	public static class Client implements IBlockComponentProvider {
+		public static final Client INSTANCE = new Client();
+
+		@Override
+		public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
+			Data data = BrewingStandProvider.INSTANCE.decodeFromData(accessor).orElse(null);
+			if (data == null) {
+				return;
+			}
+			IElementHelper helper = IElementHelper.get();
+			tooltip.add(helper.smallItem(new ItemStack(Items.BLAZE_POWDER)).narration(""));
+			tooltip.append(helper.text(IThemeHelper.get().info(data.fuel))
+					.narration(Component.translatable("narration.jade.brewingStand.fuel", data.fuel)));
+			if (data.time > 0) {
+				tooltip.append(helper.spacer(5, 0));
+				tooltip.append(helper.smallItem(new ItemStack(Items.CLOCK)).narration(""));
+				tooltip.append(IThemeHelper.get().seconds(data.time, accessor.tickRate()));
+			}
+		}
+
+		@Override
+		public ResourceLocation getUid() {
+			return JadeIds.MC_BREWING_STAND;
+		}
 	}
 }

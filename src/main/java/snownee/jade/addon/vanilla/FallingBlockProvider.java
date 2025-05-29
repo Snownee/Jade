@@ -13,13 +13,12 @@ import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.IElementHelper;
 
-public enum FallingBlockProvider implements IEntityComponentProvider {
-
-	INSTANCE;
+public class FallingBlockProvider implements IEntityComponentProvider {
+	public static final FallingBlockProvider INSTANCE = new FallingBlockProvider();
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
-
+		// No additional tooltip for falling blocks
 	}
 
 	@Override

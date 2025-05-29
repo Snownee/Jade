@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.JadeInternals;
+import snownee.jade.api.ui.TextElement;
 
 public interface IThemeHelper {
 	static IThemeHelper get() {
@@ -38,7 +39,7 @@ public interface IThemeHelper {
 
 	MutableComponent title(Object componentOrString);
 
-	MutableComponent modName(Object componentOrString);
+	TextElement modName(Object componentOrString);
 
 	MutableComponent seconds(int ticks, float tickRate);
 

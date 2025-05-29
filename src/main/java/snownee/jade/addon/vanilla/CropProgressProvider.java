@@ -25,9 +25,8 @@ import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.IElementHelper;
 
-public enum CropProgressProvider implements IBlockComponentProvider {
-
-	INSTANCE;
+public class CropProgressProvider implements IBlockComponentProvider {
+	public static final CropProgressProvider INSTANCE = new CropProgressProvider();
 
 	@Override
 	public @Nullable Element getIcon(BlockAccessor accessor, IPluginConfig config, Element currentIcon) {

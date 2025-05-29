@@ -10,9 +10,8 @@ import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
 
-public enum PaintingProvider implements IEntityComponentProvider {
-
-	INSTANCE;
+public class PaintingProvider implements IEntityComponentProvider {
+	public static final PaintingProvider INSTANCE = new PaintingProvider();
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {

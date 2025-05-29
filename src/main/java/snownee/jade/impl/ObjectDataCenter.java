@@ -5,11 +5,12 @@ import java.util.Objects;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.nbt.CompoundTag;
+import snownee.jade.JadeClient;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.AccessorClientHandler;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.ui.Element;
-import snownee.jade.overlay.WailaTickHandler;
+import snownee.jade.api.ui.IElementHelper;
 
 public final class ObjectDataCenter {
 
@@ -27,7 +28,7 @@ public final class ObjectDataCenter {
 	public static void set(@Nullable Accessor<?> accessor) {
 		ObjectDataCenter.accessor = accessor;
 		if (accessor == null) {
-			WailaTickHandler.instance().progressTracker.clear();
+			JadeClient.tickHandler().progressTracker.clear();
 			lastObject = null;
 			clientHandler = null;
 			return;
@@ -40,7 +41,7 @@ public final class ObjectDataCenter {
 		}
 
 		if (!Objects.equals(object, lastObject)) {
-			WailaTickHandler.instance().progressTracker.clear();
+			JadeClient.tickHandler().progressTracker.clear();
 			lastObject = object;
 			serverData = null;
 			requestServerData();
@@ -87,6 +88,10 @@ public final class ObjectDataCenter {
 		if (accessor == null || clientHandler == null) {
 			return null;
 		}
-		return clientHandler.getIcon(accessor);
+		Element icon = clientHandler.getIcon(accessor);
+		if (IElementHelper.get().isEmptyElement(icon)) {
+			return null;
+		}
+		return icon;
 	}
 }

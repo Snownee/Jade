@@ -22,14 +22,21 @@ public class SpacerElement extends ResizeableElement {
 
 	public SpacerElement wrapped(LayoutElement wrapped) {
 		this.wrapped = wrapped;
+		if (wrapped instanceof Element element) {
+			if (element.cachedNarration() != null) {
+				narration(element.cachedNarration());
+			} else {
+				narration("");
+			}
+			if (tag == null) {
+				tag(element.getTag());
+			}
+		}
 		return this;
 	}
 
 	@Override
 	public @Nullable Component getNarration() {
-		if (wrapped instanceof Element element) {
-			return element.getNarration();
-		}
 		return null;
 	}
 

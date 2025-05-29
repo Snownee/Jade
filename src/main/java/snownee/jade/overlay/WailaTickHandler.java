@@ -8,6 +8,7 @@ import com.google.common.base.Preconditions;
 import net.minecraft.client.GameNarrator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.StringUtil;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
@@ -18,9 +19,9 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import snownee.jade.Jade;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.IServerDataProvider;
-import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.callback.JadeRayTraceCallback;
 import snownee.jade.api.callback.JadeTooltipCollectedCallback;
@@ -41,32 +42,24 @@ import snownee.jade.track.ProgressTracker;
 import snownee.jade.util.ClientProxy;
 
 public class WailaTickHandler {
-
-	private static WailaTickHandler INSTANCE = new WailaTickHandler();
-	private static String lastNarration = "";
-	private static long lastNarrationTime = 0;
+	private String lastNarration = "";
+	private long lastNarrationTime = 0;
 	public BoxElementImpl rootElement;
 	public ProgressTracker progressTracker = new ProgressTracker();
 
-	public static WailaTickHandler instance() {
-		if (INSTANCE == null) {
-			INSTANCE = new WailaTickHandler();
-		}
-		return INSTANCE;
-	}
-
-	public static void narrate(ITooltip tooltip, boolean dedupe) {
-		if (tooltip.isEmpty()) {
-			return;
-		}
+	public void narrate(Element element, boolean dedupe) {
 		if (System.currentTimeMillis() - lastNarrationTime < 500) {
 			return;
 		}
-		narrate(StringUtil.stripColor(tooltip.getNarration()), dedupe);
+		Component component = element.cachedNarration();
+		if (component == null) {
+			return;
+		}
+		narrate(StringUtil.stripColor(component.getString()), dedupe);
 		lastNarrationTime = System.currentTimeMillis();
 	}
 
-	public static void narrate(String message, boolean dedupe) {
+	public void narrate(String message, boolean dedupe) {
 		if (message.isEmpty()) {
 			return;
 		}
@@ -76,6 +69,9 @@ public class WailaTickHandler {
 		CompletableFuture.runAsync(() -> {
 			GameNarrator narrator = Minecraft.getInstance().getNarrator();
 			narrator.logNarratedMessage(message);
+			if (IWailaConfig.get().general().isDebug()) {
+				Jade.LOGGER.info("Narrating: {}", message);
+			}
 			if (narrator.isActive()) {
 				narrator.clear();
 				narrator.narrateMessage(message, true);
@@ -84,7 +80,7 @@ public class WailaTickHandler {
 		lastNarration = message;
 	}
 
-	public static void clearLastNarration() {
+	public void clearLastNarration() {
 		lastNarration = "";
 	}
 
@@ -195,6 +191,9 @@ public class WailaTickHandler {
 		});
 		Preconditions.checkNotNull(ThemeHelper.theme.getValue(), "Theme cannot be null");
 
+		Element icon = ObjectDataCenter.getIcon();
+		tooltip.setIcon(icon);
+
 		if (config.getDisplayMode() == DisplayMode.LITE && !ClientProxy.isShowDetailsPressed()) {
 			Tooltip dummyTooltip = new Tooltip();
 			handler.gatherComponents(
@@ -212,8 +211,8 @@ public class WailaTickHandler {
 			handler.gatherComponents(accessor, $ -> tooltip);
 		}
 
-		Element icon = IThemeHelper.get().theme().modifyIcon(RayTracing.INSTANCE.getIcon());
-		BoxElementImpl newElement = new BoxElementImpl(tooltip, IThemeHelper.get().theme().tooltipStyle, icon);
+		tooltip.setIcon(IThemeHelper.get().theme().modifyIcon(tooltip.getIcon()));
+		BoxElementImpl newElement = new BoxElementImpl(tooltip, IThemeHelper.get().theme().tooltipStyle);
 		newElement.tag(JadeIds.ROOT);
 		for (JadeTooltipCollectedCallback callback : WailaClientRegistration.instance().tooltipCollectedCallback.callbacks()) {
 			callback.onTooltipCollected(newElement, accessor);

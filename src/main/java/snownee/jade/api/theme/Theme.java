@@ -21,7 +21,6 @@ import snownee.jade.impl.ui.BoxElementImpl;
 
 public class Theme {
 
-	public static final ResourceLocation DEFAULT_THEME_ID = JadeIds.JADE("dark");
 	public ResourceLocation id;
 	public String styleName;
 	public BoxStyle tooltipStyle;
@@ -96,7 +95,7 @@ public class Theme {
 					padding[2] += border.bottom();
 					padding[3] += border.left();
 				}
-				iconSlotSpriteCache = new BoxElementImpl(new Tooltip(), BoxStyle.getSprite(iconSlotSprite, padding), null);
+				iconSlotSpriteCache = new BoxElementImpl(new Tooltip(), BoxStyle.getSprite(iconSlotSprite, padding));
 			}
 			ITooltip tooltip1 = iconSlotSpriteCache.getTooltip();
 			tooltip1.clear();

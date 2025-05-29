@@ -20,33 +20,8 @@ import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.api.ui.TextElement;
 
-public enum PetArmorProvider implements IEntityComponentProvider, StreamServerDataProvider<EntityAccessor, ItemStack> {
-	INSTANCE;
-
-	@Override
-	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
-		if (!shouldRequestData(accessor)) {
-			return;
-		}
-		ItemStack armor = decodeFromData(accessor).orElse(ItemStack.EMPTY);
-		if (armor.isEmpty()) {
-			return;
-		}
-		Mode mode = IWailaConfig.get().plugin().getEnum(JadeIds.MC_PET_ARMOR);
-		if (mode == Mode.SHOW_DAMAGEABLE && !armor.isDamageableItem()) {
-			return;
-		}
-		IElementHelper helper = IElementHelper.get();
-		tooltip.add(helper.smallItem(armor));
-		TextElement text = helper.text(armor.getHoverName());
-		if (armor.isDamageableItem()) {
-			text.narration(JadeClient.format(
-					"narration.jade.item_durability",
-					armor.getHoverName(),
-					armor.getMaxDamage() - armor.getDamageValue()));
-		}
-		tooltip.append(text);
-	}
+public class PetArmorProvider implements StreamServerDataProvider<EntityAccessor, ItemStack> {
+	public static final PetArmorProvider INSTANCE = new PetArmorProvider();
 
 	@Override
 	public boolean shouldRequestData(EntityAccessor accessor) {
@@ -73,12 +48,46 @@ public enum PetArmorProvider implements IEntityComponentProvider, StreamServerDa
 		return JadeIds.MC_PET_ARMOR;
 	}
 
-	@Override
-	public boolean isRequired() {
-		return true;
-	}
-
 	public enum Mode {
 		OFF, SHOW_ALL, SHOW_DAMAGEABLE
+	}
+
+	public static class Client implements IEntityComponentProvider {
+		public static final Client INSTANCE = new Client();
+
+		@Override
+		public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
+			if (!PetArmorProvider.INSTANCE.shouldRequestData(accessor)) {
+				return;
+			}
+			ItemStack armor = PetArmorProvider.INSTANCE.decodeFromData(accessor).orElse(ItemStack.EMPTY);
+			if (armor.isEmpty()) {
+				return;
+			}
+			Mode mode = IWailaConfig.get().plugin().getEnum(JadeIds.MC_PET_ARMOR);
+			if (mode == Mode.SHOW_DAMAGEABLE && !armor.isDamageableItem()) {
+				return;
+			}
+			IElementHelper helper = IElementHelper.get();
+			tooltip.add(helper.smallItem(armor));
+			TextElement text = helper.text(armor.getHoverName());
+			if (armor.isDamageableItem()) {
+				text.narration(JadeClient.format(
+						"narration.jade.item_durability",
+						armor.getHoverName(),
+						armor.getMaxDamage() - armor.getDamageValue()));
+			}
+			tooltip.append(text);
+		}
+
+		@Override
+		public boolean isRequired() {
+			return true;
+		}
+
+		@Override
+		public ResourceLocation getUid() {
+			return JadeIds.MC_PET_ARMOR;
+		}
 	}
 }

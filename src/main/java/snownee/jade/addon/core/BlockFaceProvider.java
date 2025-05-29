@@ -1,5 +1,8 @@
 package snownee.jade.addon.core;
 
+import java.util.List;
+
+import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -9,19 +12,19 @@ import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.ui.IElementHelper;
 
-public enum BlockFaceProvider implements IBlockComponentProvider {
-
-	INSTANCE;
+public class BlockFaceProvider implements IBlockComponentProvider {
+	public static final BlockFaceProvider INSTANCE = new BlockFaceProvider();
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		//TODO
-//		tooltip.replace(JadeIds.CORE_OBJECT_NAME, lists -> {
-//			List<Element> lastList = lists.getLast();
-//			lastList.add(IElementHelper.get().text(Component.translatable("jade.blockFace", directionName(accessor.getSide()))));
-//			return lists;
-//		});
+		tooltip.replace(
+				JadeIds.CORE_OBJECT_NAME, lists -> {
+					List<LayoutElement> lastList = lists.getLast();
+					lastList.add(IElementHelper.get().text(Component.translatable("jade.blockFace", directionName(accessor.getSide()))));
+					return lists;
+				});
 	}
 
 	@Override

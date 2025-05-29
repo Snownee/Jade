@@ -14,9 +14,8 @@ import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.overlay.DisplayHelper;
 
-public enum HorseStatsProvider implements IEntityComponentProvider {
-
-	INSTANCE;
+public class HorseStatsProvider implements IEntityComponentProvider {
+	public static final HorseStatsProvider INSTANCE = new HorseStatsProvider();
 
 	private static final double MAX_JUMP_HEIGHT = getJumpHeight(AbstractHorse.MAX_JUMP_STRENGTH);
 	private static final double MAX_MOVEMENT_SPEED = AbstractHorse.MAX_MOVEMENT_SPEED * 42.16;

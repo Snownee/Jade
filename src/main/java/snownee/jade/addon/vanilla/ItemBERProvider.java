@@ -16,9 +16,8 @@ import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.IElementHelper;
 
-public enum ItemBERProvider implements IBlockComponentProvider {
-
-	INSTANCE;
+public class ItemBERProvider implements IBlockComponentProvider {
+	public static final ItemBERProvider INSTANCE = new ItemBERProvider();
 
 	@Override
 	public @Nullable Element getIcon(BlockAccessor accessor, IPluginConfig config, Element currentIcon) {

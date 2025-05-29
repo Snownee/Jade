@@ -15,20 +15,8 @@ import snownee.jade.api.StreamServerDataProvider;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
 
-public enum HopperLockProvider implements IBlockComponentProvider, StreamServerDataProvider<BlockAccessor, Boolean> {
-
-	INSTANCE;
-
-	@Override
-	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		if (decodeFromData(accessor).orElse(false)) {
-			if (config.get(JadeIds.MC_REDSTONE) ||
-					(IWailaConfig.get().accessibility().getEnableAccessibilityPlugin() && config.get(JadeIds.ACCESS_BLOCK_DETAILS))) {
-				String objectName = tooltip.getNarration(JadeIds.CORE_OBJECT_NAME);
-				AccessibilityPlugin.replaceTitle(tooltip, objectName, "block.locked");
-			}
-		}
-	}
+public class HopperLockProvider implements StreamServerDataProvider<BlockAccessor, Boolean> {
+	public static final HopperLockProvider INSTANCE = new HopperLockProvider();
 
 	@Override
 	public Boolean streamData(BlockAccessor accessor) {
@@ -45,13 +33,34 @@ public enum HopperLockProvider implements IBlockComponentProvider, StreamServerD
 		return JadeIds.MC_HOPPER_LOCK;
 	}
 
-	@Override
-	public boolean isRequired() {
-		return true;
-	}
+	public static class Client implements IBlockComponentProvider {
+		public static final Client INSTANCE = new Client();
 
-	@Override
-	public int getDefaultPriority() {
-		return ObjectNameProvider.getBlock().getDefaultPriority() + 10;
+		@Override
+		public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
+			if (!HopperLockProvider.INSTANCE.decodeFromData(accessor).orElse(false)) {
+				return;
+			}
+			if (config.get(JadeIds.MC_REDSTONE) ||
+					(IWailaConfig.get().accessibility().getEnableAccessibilityPlugin() && config.get(JadeIds.ACCESS_BLOCK_DETAILS))) {
+				String objectName = tooltip.getString(JadeIds.CORE_OBJECT_NAME);
+				AccessibilityPlugin.replaceTitle(tooltip, objectName, "block.locked");
+			}
+		}
+
+		@Override
+		public boolean isRequired() {
+			return true;
+		}
+
+		@Override
+		public int getDefaultPriority() {
+			return ObjectNameProvider.getBlock().getDefaultPriority() + 10;
+		}
+
+		@Override
+		public ResourceLocation getUid() {
+			return JadeIds.MC_HOPPER_LOCK;
+		}
 	}
 }

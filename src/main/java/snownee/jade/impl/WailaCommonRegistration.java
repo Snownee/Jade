@@ -16,6 +16,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import snownee.jade.Jade;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
+import snownee.jade.api.IComponentProvider;
 import snownee.jade.api.IJadeProvider;
 import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.IWailaCommonRegistration;
@@ -27,6 +28,7 @@ import snownee.jade.api.view.ProgressView;
 import snownee.jade.impl.lookup.HierarchyLookup;
 import snownee.jade.impl.lookup.PairHierarchyLookup;
 import snownee.jade.impl.lookup.WrappedHierarchyLookup;
+import snownee.jade.util.CommonProxy;
 
 public class WailaCommonRegistration implements IWailaCommonRegistration {
 
@@ -86,12 +88,20 @@ public class WailaCommonRegistration implements IWailaCommonRegistration {
 
 	@Override
 	public void registerBlockDataProvider(IServerDataProvider<BlockAccessor> dataProvider, Class<?> blockOrBlobkEntityClass) {
+		checkDataProvider(dataProvider);
 		blockDataProviders.register(blockOrBlobkEntityClass, dataProvider);
 	}
 
 	@Override
 	public void registerEntityDataProvider(IServerDataProvider<EntityAccessor> dataProvider, Class<? extends Entity> entityClass) {
+		checkDataProvider(dataProvider);
 		entityDataProviders.register(entityClass, dataProvider);
+	}
+
+	private static void checkDataProvider(IServerDataProvider<?> dataProvider) {
+		if (CommonProxy.isPhysicallyClient() && dataProvider instanceof IComponentProvider) {
+			throw new IllegalArgumentException("Data providers cannot implement IComponentProvider. Use a separate client provider instead.");
+		}
 	}
 
 	/* PROVIDER GETTERS */

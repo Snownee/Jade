@@ -12,9 +12,8 @@ import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.IElementHelper;
 
-public enum ItemDisplayProvider implements IEntityComponentProvider {
-
-	INSTANCE;
+public class ItemDisplayProvider implements IEntityComponentProvider {
+	public static final ItemDisplayProvider INSTANCE = new ItemDisplayProvider();
 
 	@Override
 	public @Nullable Element getIcon(EntityAccessor accessor, IPluginConfig config, Element currentIcon) {

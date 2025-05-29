@@ -52,7 +52,7 @@
 	"narration.jade.health": "生命值：%s",
 	"narration.jade.armor": "护甲值：%s",
 	"narration.jade.bookName": "书名：《%s》",
-	"narration.jade.blockpos": "X%s Y%s Z%s ",
+	"narration.jade.blockpos": "X %s Y %s Z %s ",
 	"narration.jade.negative": "负%s",
 	"narration.jade.distance": "距离%s",
 	"narration.jade.category": "%s类别",

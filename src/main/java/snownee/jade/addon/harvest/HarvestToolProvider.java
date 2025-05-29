@@ -40,7 +40,6 @@ import snownee.jade.util.CommonProxy;
 import snownee.jade.util.KeyedResourceManagerReloadListener;
 
 public class HarvestToolProvider implements IBlockComponentProvider, KeyedResourceManagerReloadListener {
-
 	public static final HarvestToolProvider INSTANCE;
 
 	public static final Map<ResourceLocation, ToolHandler> TOOL_HANDLERS = Maps.newLinkedHashMap();

@@ -29,16 +29,8 @@ import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.IElementHelper;
 
-public enum ChiseledBookshelfProvider implements IBlockComponentProvider, StreamServerDataProvider<BlockAccessor, ItemStack> {
-
-	INSTANCE;
-
-	private ItemStack getHitBook(BlockAccessor accessor) {
-		if (accessor.showDetails()) {
-			return ItemStack.EMPTY;
-		}
-		return decodeFromData(accessor).orElse(ItemStack.EMPTY);
-	}
+public class ChiseledBookshelfProvider implements StreamServerDataProvider<BlockAccessor, ItemStack> {
+	public static final ChiseledBookshelfProvider INSTANCE = new ChiseledBookshelfProvider();
 
 	@Override
 	public boolean shouldRequestData(BlockAccessor accessor) {
@@ -50,33 +42,6 @@ public enum ChiseledBookshelfProvider implements IBlockComponentProvider, Stream
 			return false;
 		}
 		return accessor.getBlockState().getValue(ChiseledBookShelfBlock.SLOT_OCCUPIED_PROPERTIES.get(slot.getAsInt()));
-	}
-
-	@Override
-	public @Nullable Element getIcon(BlockAccessor accessor, IPluginConfig config, Element currentIcon) {
-		ItemStack item = getHitBook(accessor);
-		return item.isEmpty() ? null : IElementHelper.get().item(item);
-	}
-
-	@Override
-	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		ItemStack item = getHitBook(accessor);
-		if (item.isEmpty()) {
-			return;
-		}
-		tooltip.remove(JadeIds.UNIVERSAL_ITEM_STORAGE);
-		tooltip.add(IDisplayHelper.get().stripColor(item.getHoverName()));
-		if (item.has(DataComponents.STORED_ENCHANTMENTS)) {
-			List<Component> list = Lists.newArrayList();
-			TooltipDisplay tooltipDisplay = item.getOrDefault(DataComponents.TOOLTIP_DISPLAY, TooltipDisplay.DEFAULT);
-			item.addToTooltip(
-					DataComponents.STORED_ENCHANTMENTS,
-					Item.TooltipContext.of(accessor.getLevel()),
-					tooltipDisplay,
-					list::add,
-					TooltipFlag.NORMAL);
-			tooltip.addAll(list);
-		}
 	}
 
 	@Override
@@ -98,9 +63,51 @@ public enum ChiseledBookshelfProvider implements IBlockComponentProvider, Stream
 		return JadeIds.MC_CHISELED_BOOKSHELF;
 	}
 
-	@Override
-	public int getDefaultPriority() {
-		return ItemStorageProvider.getBlock().getDefaultPriority() + 1;
-	}
+	public static class Client implements IBlockComponentProvider {
+		public static final Client INSTANCE = new Client();
 
+		private static ItemStack getHitBook(BlockAccessor accessor) {
+			if (accessor.showDetails()) {
+				return ItemStack.EMPTY;
+			}
+			return ChiseledBookshelfProvider.INSTANCE.decodeFromData(accessor).orElse(ItemStack.EMPTY);
+		}
+
+		@Override
+		public @Nullable Element getIcon(BlockAccessor accessor, IPluginConfig config, Element currentIcon) {
+			ItemStack item = getHitBook(accessor);
+			return item.isEmpty() ? null : IElementHelper.get().item(item);
+		}
+
+		@Override
+		public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
+			ItemStack item = getHitBook(accessor);
+			if (item.isEmpty()) {
+				return;
+			}
+			tooltip.remove(JadeIds.UNIVERSAL_ITEM_STORAGE);
+			tooltip.add(IDisplayHelper.get().stripColor(item.getHoverName()));
+			if (item.has(DataComponents.STORED_ENCHANTMENTS)) {
+				List<Component> list = Lists.newArrayList();
+				TooltipDisplay tooltipDisplay = item.getOrDefault(DataComponents.TOOLTIP_DISPLAY, TooltipDisplay.DEFAULT);
+				item.addToTooltip(
+						DataComponents.STORED_ENCHANTMENTS,
+						Item.TooltipContext.of(accessor.getLevel()),
+						tooltipDisplay,
+						list::add,
+						TooltipFlag.NORMAL);
+				tooltip.addAll(list);
+			}
+		}
+
+		@Override
+		public int getDefaultPriority() {
+			return ItemStorageProvider.BLOCK.getDefaultPriority() + 1;
+		}
+
+		@Override
+		public ResourceLocation getUid() {
+			return JadeIds.MC_CHISELED_BOOKSHELF;
+		}
+	}
 }

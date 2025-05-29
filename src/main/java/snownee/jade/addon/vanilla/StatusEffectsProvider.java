@@ -26,9 +26,8 @@ import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.IElementHelper;
 
-public enum StatusEffectsProvider implements IEntityComponentProvider, StreamServerDataProvider<EntityAccessor, List<MobEffectInstance>> {
-
-	INSTANCE;
+public class StatusEffectsProvider implements StreamServerDataProvider<EntityAccessor, List<MobEffectInstance>> {
+	public static final StatusEffectsProvider INSTANCE = new StatusEffectsProvider();
 
 	private static final StreamCodec<RegistryFriendlyByteBuf, List<MobEffectInstance>> STREAM_CODEC = ByteBufCodecs.<RegistryFriendlyByteBuf, MobEffectInstance>list()
 			.apply(MobEffectInstance.STREAM_CODEC);
@@ -40,29 +39,6 @@ public enum StatusEffectsProvider implements IEntityComponentProvider, StreamSer
 					"enchantment.level." + (mobEffectInstance.getAmplifier() + 1)));
 		}
 		return mutableComponent;
-	}
-
-	@Override
-	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
-		List<MobEffectInstance> effects = decodeFromData(accessor).orElse(List.of());
-		if (effects.isEmpty()) {
-			return;
-		}
-		IElementHelper helper = IElementHelper.get();
-		ITooltip box = helper.tooltip();
-		for (var effect : effects) {
-			Component name = getEffectName(effect);
-			String duration;
-			if (effect.isInfiniteDuration()) {
-				duration = I18n.get("effect.duration.infinite");
-			} else {
-				duration = StringUtil.formatTickDuration(effect.getDuration(), accessor.tickRate());
-			}
-			MutableComponent s = Component.translatable("jade.potion", name, duration);
-			IThemeHelper t = IThemeHelper.get();
-			box.add(effect.getEffect().value().getCategory() == MobEffectCategory.HARMFUL ? t.danger(s) : t.success(s));
-		}
-		tooltip.add(helper.box(box, BoxStyle.getNestedBox()));
 	}
 
 	@Override
@@ -88,5 +64,37 @@ public enum StatusEffectsProvider implements IEntityComponentProvider, StreamSer
 	@Override
 	public ResourceLocation getUid() {
 		return JadeIds.MC_POTION_EFFECTS;
+	}
+
+	public static class Client implements IEntityComponentProvider {
+		public static final Client INSTANCE = new Client();
+
+		@Override
+		public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
+			List<MobEffectInstance> effects = StatusEffectsProvider.INSTANCE.decodeFromData(accessor).orElse(List.of());
+			if (effects.isEmpty()) {
+				return;
+			}
+			IElementHelper helper = IElementHelper.get();
+			ITooltip box = helper.tooltip();
+			for (var effect : effects) {
+				Component name = getEffectName(effect);
+				String duration;
+				if (effect.isInfiniteDuration()) {
+					duration = I18n.get("effect.duration.infinite");
+				} else {
+					duration = StringUtil.formatTickDuration(effect.getDuration(), accessor.tickRate());
+				}
+				MutableComponent s = Component.translatable("jade.potion", name, duration);
+				IThemeHelper t = IThemeHelper.get();
+				box.add(effect.getEffect().value().getCategory() == MobEffectCategory.HARMFUL ? t.danger(s) : t.success(s));
+			}
+			tooltip.add(helper.box(box, BoxStyle.getNestedBox()));
+		}
+
+		@Override
+		public ResourceLocation getUid() {
+			return JadeIds.MC_POTION_EFFECTS;
+		}
 	}
 }

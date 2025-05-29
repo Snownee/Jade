@@ -17,9 +17,8 @@ import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.IElementHelper;
 
-public enum BlockStatesProvider implements IBlockComponentProvider {
-
-	INSTANCE;
+public class BlockStatesProvider implements IBlockComponentProvider {
+	public static final BlockStatesProvider INSTANCE = new BlockStatesProvider();
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {

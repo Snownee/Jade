@@ -29,10 +29,13 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.profiling.ProfilerFiller;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
+import snownee.jade.addon.core.ModNameProvider;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
+import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.ui.TextElement;
 import snownee.jade.impl.config.WailaConfig;
 import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.util.JadeClientCodecs;
@@ -119,7 +122,7 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener<JadeClientCode
 	}
 
 	@Override
-	public MutableComponent modName(Object componentOrString) {
+	public TextElement modName(Object componentOrString) {
 		MutableComponent component;
 		if (componentOrString instanceof MutableComponent) {
 			component = (MutableComponent) componentOrString;
@@ -137,7 +140,11 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener<JadeClientCode
 			modNameStyleCache[1] = themeStyle;
 			modNameStyleCache[2] = style;
 		}
-		return component.withStyle(modNameStyleCache[2]);
+		return IElementHelper.get()
+				.text(component.withStyle(modNameStyleCache[2]))
+				.scale(Objects.equals(IWailaConfig.get().plugin().getEnum(JadeIds.CORE_MOD_NAME), ModNameProvider.Mode.SMALLER) ?
+						0.75F :
+						1F);
 	}
 
 	@Override
@@ -192,7 +199,7 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener<JadeClientCode
 				enable.setValue(theme);
 			}
 		});
-		fallback = themes.get(Theme.DEFAULT_THEME_ID);
+		fallback = themes.get(JadeIds.DEFAULT_THEME);
 		if (fallback == null) {
 			CrashReport crashreport = CrashReport.forThrowable(new NullPointerException(), "Missing default theme");
 			throw new ReportedException(crashreport);

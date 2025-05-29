@@ -15,10 +15,10 @@ import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.ui.Element;
+import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.impl.ui.ElementHelper;
 import snownee.jade.impl.ui.ItemStackElement;
 import snownee.jade.network.RequestEntityPacket;
-import snownee.jade.overlay.RayTracing;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
 import snownee.jade.util.WailaExceptionHandler;
@@ -71,7 +71,7 @@ public class EntityAccessorClientHandler implements AccessorClientHandler<Entity
 		for (var provider : WailaClientRegistration.instance().getEntityIconProviders(entity, this::isEnabled)) {
 			try {
 				Element element = provider.getIcon(accessor, IWailaConfig.get().plugin(), icon);
-				if (!RayTracing.isEmptyElement(element)) {
+				if (!IElementHelper.get().isEmptyElement(element)) {
 					icon = element;
 				}
 			} catch (Throwable e) {

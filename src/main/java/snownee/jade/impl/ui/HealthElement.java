@@ -6,6 +6,7 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import snownee.jade.JadeClient;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
@@ -13,7 +14,6 @@ import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.overlay.DisplayHelper;
-import snownee.jade.overlay.WailaTickHandler;
 import snownee.jade.track.HealthTrackInfo;
 
 public class HealthElement extends Element {
@@ -63,7 +63,7 @@ public class HealthElement extends Element {
 		float lastHealth = health;
 		boolean blink = false;
 		if (track == null && getTag() != null) {
-			track = WailaTickHandler.instance().progressTracker.getOrCreate(
+			track = JadeClient.tickHandler().progressTracker.getOrCreate(
 					getTag(), HealthTrackInfo.class, () -> {
 						return new HealthTrackInfo(this.health);
 					});

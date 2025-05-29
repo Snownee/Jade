@@ -13,9 +13,8 @@ import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.api.ui.ScreenDirection;
 
-public enum ArmorStandProvider implements IEntityComponentProvider {
-
-	INSTANCE;
+public class ArmorStandProvider implements IEntityComponentProvider {
+	public static final ArmorStandProvider INSTANCE = new ArmorStandProvider();
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {

@@ -53,7 +53,7 @@
 	"narration.jade.health": "Здоров'я: %s",
 	"narration.jade.armor": "Захист: %s",
 	"narration.jade.bookName": "Назва книги: %s",
-	"narration.jade.blockpos": "X%s Y%s Z%s ",
+	"narration.jade.blockpos": "X %s Y %s Z %s ",
 	"narration.jade.negative": "негативний %s",
 	"narration.jade.distance": "Д%s",
 	"narration.jade.category": "%s категорія",

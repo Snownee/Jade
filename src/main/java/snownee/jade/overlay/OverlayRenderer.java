@@ -20,7 +20,6 @@ import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.IWailaConfig.BossBarOverlapMode;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
-import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.TooltipRect;
 import snownee.jade.gui.BaseOptionsScreen;
 import snownee.jade.gui.PreviewOptionsScreen;
@@ -43,7 +42,7 @@ public class OverlayRenderer {
 	private static float disappearTicks;
 
 	public static boolean shouldShow() {
-		if (WailaTickHandler.instance().rootElement == null) {
+		if (JadeClient.tickHandler().rootElement == null) {
 			return false;
 		}
 
@@ -117,15 +116,15 @@ public class OverlayRenderer {
 	public static void renderOverlay478757(GuiGraphics graphics, float delta) {
 		ticks += delta;
 		shown = false;
-		BoxElementImpl root = WailaTickHandler.instance().rootElement;
+		BoxElementImpl root = JadeClient.tickHandler().rootElement;
 		boolean show;
 		if (root == null && PreviewOptionsScreen.isAdjustingPosition()) {
 			Tooltip tooltip = new Tooltip();
 			tooltip.add(IThemeHelper.get().title(Blocks.GRASS_BLOCK.getName()));
 			tooltip.add(IThemeHelper.get().modName(ModIdentification.getModName(Blocks.GRASS_BLOCK)));
 			Theme theme = IThemeHelper.get().theme();
-			Element icon = theme.modifyIcon(ItemStackElement.of(new ItemStack(Blocks.GRASS_BLOCK)));
-			root = new BoxElementImpl(tooltip, theme.tooltipStyle, icon);
+			tooltip.setIcon(theme.modifyIcon(ItemStackElement.of(new ItemStack(Blocks.GRASS_BLOCK))));
+			root = new BoxElementImpl(tooltip, theme.tooltipStyle);
 			root.tag(JadeIds.ROOT);
 			root.updateExpectedRect(rect);
 			show = true;
@@ -163,7 +162,7 @@ public class OverlayRenderer {
 			if (!PreviewOptionsScreen.isAdjustingPosition()) {
 				lingerTooltip = null;
 				rect.rect.setWidth(0); // mark dirty
-				WailaTickHandler.clearLastNarration();
+				JadeClient.tickHandler().clearLastNarration();
 				return;
 			}
 		}
@@ -209,7 +208,7 @@ public class OverlayRenderer {
 		matrixStack.popMatrix();
 
 		if (IWailaConfig.get().accessibility().shouldEnableTextToSpeech()) {
-			WailaTickHandler.narrate(root.getTooltip(), true);
+			JadeClient.tickHandler().narrate(root, true);
 		}
 
 		shown = true;
@@ -217,6 +216,6 @@ public class OverlayRenderer {
 
 	public static void clearState() {
 		lingerTooltip = null;
-		WailaTickHandler.clearLastNarration();
+		JadeClient.tickHandler().clearLastNarration();
 	}
 }

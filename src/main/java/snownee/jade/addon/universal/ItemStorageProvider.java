@@ -56,7 +56,7 @@ import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
 import snownee.jade.util.WailaExceptionHandler;
 
-public abstract class ItemStorageProvider<T extends Accessor<?>> implements IComponentProvider<T>, IServerDataProvider<T> {
+public class ItemStorageProvider<T extends Accessor<?>> implements IServerDataProvider<T> {
 
 	public static final Cache<Object, ItemCollector<?>> targetCache = CacheBuilder.newBuilder().weakKeys().expireAfterAccess(
 			60,
@@ -67,135 +67,135 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 	private static final StreamCodec<RegistryFriendlyByteBuf, Map.Entry<ResourceLocation, List<ViewGroup<ItemStack>>>> STREAM_CODEC = ViewGroup.listCodec(
 			ItemStack.OPTIONAL_STREAM_CODEC);
 
-	public static ForBlock getBlock() {
-		return ForBlock.INSTANCE;
-	}
+	public static final ItemStorageProvider<BlockAccessor> BLOCK = new ItemStorageProvider<>();
+	public static final ItemStorageProvider<EntityAccessor> ENTITY = new ItemStorageProvider<>();
 
-	public static ForEntity getEntity() {
-		return ForEntity.INSTANCE;
-	}
+	public static class Client<T extends Accessor<?>> extends ItemStorageProvider<T> implements IComponentProvider<T> {
+		public static final Client<BlockAccessor> BLOCK = new Client<>();
+		public static final Client<EntityAccessor> ENTITY = new Client<>();
 
-	public static class ForBlock extends ItemStorageProvider<BlockAccessor> {
-		private static final ForBlock INSTANCE = new ForBlock();
-	}
-
-	public static class ForEntity extends ItemStorageProvider<EntityAccessor> {
-		private static final ForEntity INSTANCE = new ForEntity();
-	}
-
-	public static void append(ITooltip tooltip, Accessor<?> accessor, IPluginConfig config) {
-		if (!accessor.getServerData().contains(JadeIds.UNIVERSAL_ITEM_STORAGE.toString())) {
-			if (accessor.getServerData().getBooleanOr("Loot", false)) {
-				tooltip.add(Component.translatable("jade.loot_not_generated"));
-			} else if (accessor.getServerData().getBooleanOr("Locked", false)) {
-				tooltip.add(Component.translatable("jade.locked"));
+		@Override
+		public void appendTooltip(ITooltip tooltip, T accessor, IPluginConfig config) {
+			if (accessor.getTarget() instanceof AbstractFurnaceBlockEntity) {
+				return;
 			}
-			return;
+			append(tooltip, accessor, config);
 		}
 
-		List<ClientViewGroup<ItemView>> groups = ClientProxy.mapToClientGroups(
-				accessor,
-				JadeIds.UNIVERSAL_ITEM_STORAGE,
-				STREAM_CODEC,
-				WailaClientRegistration.instance().itemStorageProviders::get,
-				tooltip);
-		if (groups == null || groups.isEmpty()) {
-			return;
-		}
+		public static void append(ITooltip tooltip, Accessor<?> accessor, IPluginConfig config) {
+			if (!accessor.getServerData().contains(JadeIds.UNIVERSAL_ITEM_STORAGE.toString())) {
+				if (accessor.getServerData().getBooleanOr("Loot", false)) {
+					tooltip.add(Component.translatable("jade.loot_not_generated"));
+				} else if (accessor.getServerData().getBooleanOr("Locked", false)) {
+					tooltip.add(Component.translatable("jade.locked"));
+				}
+				return;
+			}
 
-		MutableBoolean showName = new MutableBoolean(true);
-		MutableInt amountWidth = new MutableInt();
-		{
-			int showNameAmount = config.getInt(JadeIds.UNIVERSAL_ITEM_STORAGE_SHOW_NAME_AMOUNT);
-			int totalSize = 0;
-			for (var group : groups) {
-				for (var view : group.views) {
-					if (view.amountText != null) {
-						showName.setFalse();
-					}
-					if (!view.item.isEmpty()) {
-						++totalSize;
-						if (totalSize == showNameAmount) {
+			List<ClientViewGroup<ItemView>> groups = ClientProxy.mapToClientGroups(
+					accessor,
+					JadeIds.UNIVERSAL_ITEM_STORAGE,
+					STREAM_CODEC,
+					WailaClientRegistration.instance().itemStorageProviders::get,
+					tooltip);
+			if (groups == null || groups.isEmpty()) {
+				return;
+			}
+
+			MutableBoolean showName = new MutableBoolean(true);
+			MutableInt amountWidth = new MutableInt();
+			{
+				int showNameAmount = config.getInt(JadeIds.UNIVERSAL_ITEM_STORAGE_SHOW_NAME_AMOUNT);
+				int totalSize = 0;
+				for (var group : groups) {
+					for (var view : group.views) {
+						if (view.amountText != null) {
 							showName.setFalse();
 						}
-					}
-					if (showName.isTrue()) {
-						String s = IDisplayHelper.get().humanReadableNumber(view.item.getCount(), "", false, null);
-						amountWidth.setValue(Math.max(amountWidth.intValue(), Minecraft.getInstance().font.width(s)));
+						if (!view.item.isEmpty()) {
+							++totalSize;
+							if (totalSize == showNameAmount) {
+								showName.setFalse();
+							}
+						}
+						if (showName.isTrue()) {
+							String s = IDisplayHelper.get().humanReadableNumber(view.item.getCount(), "", false, null);
+							amountWidth.setValue(Math.max(amountWidth.intValue(), Minecraft.getInstance().font.width(s)));
+						}
 					}
 				}
 			}
-		}
 
-		IElementHelper helper = IElementHelper.get();
-		boolean renderGroup = groups.size() > 1 || groups.getFirst().shouldRenderGroup();
-		ClientViewGroup.tooltip(
-				tooltip, groups, renderGroup, (theTooltip, group) -> {
-					if (renderGroup) {
-						theTooltip.add(new HorizontalLineElement());
-						if (group.title != null) {
-							theTooltip.append(helper.text(group.title).scale(0.5F));
-							theTooltip.append(new HorizontalLineElement());
-						}
-					}
-					if (group.views.isEmpty() && group.extraData != null) {
-						float progress = group.extraData.getFloatOr("Collecting", -1F);
-						if (progress >= 0 && progress < 1) {
-							MutableComponent component = Component.translatable("jade.collectingItems");
-							if (progress != 0) {
-								component.append(" %s%%".formatted((int) (progress * 100)));
+			IElementHelper helper = IElementHelper.get();
+			boolean renderGroup = groups.size() > 1 || groups.getFirst().shouldRenderGroup();
+			ClientViewGroup.tooltip(
+					tooltip, groups, renderGroup, (theTooltip, group) -> {
+						if (renderGroup) {
+							theTooltip.add(new HorizontalLineElement());
+							if (group.title != null) {
+								theTooltip.append(helper.text(group.title).scale(0.5F));
+								theTooltip.append(new HorizontalLineElement());
 							}
-							theTooltip.add(component);
 						}
-					}
-					int drawnCount = 0;
-					int realSize = config.getInt(accessor.showDetails() ?
-							JadeIds.UNIVERSAL_ITEM_STORAGE_DETAILED_AMOUNT :
-							JadeIds.UNIVERSAL_ITEM_STORAGE_NORMAL_AMOUNT);
-					realSize = Math.min(group.views.size(), realSize);
-					List<Element> elements = Lists.newArrayList();
-					for (int i = 0; i < realSize; i++) {
-						ItemView itemView = group.views.get(i);
-						ItemStack stack = itemView.item;
-						if (stack.isEmpty()) {
-							continue;
-						}
-						if (i > 0 && (
-								showName.isTrue() ||
-										drawnCount >= config.getInt(JadeIds.UNIVERSAL_ITEM_STORAGE_ITEMS_PER_LINE))) {
-							theTooltip.add(elements);
-							theTooltip.setLineMargin(-1, ScreenDirection.DOWN, 0);
-							elements.clear();
-							drawnCount = 0;
-						}
-
-						if (showName.isTrue()) {
-							if (itemView.description != null) {
-								elements.add(helper.smallItem(stack));
-								elements.addAll(itemView.description);
-							} else {
-								elements.add(helper.smallItem(stack).refreshNarration());
-								String s = IDisplayHelper.get().humanReadableNumber(stack.getCount(), "", false, null);
-								int width = Minecraft.getInstance().font.width(s);
-								if (width < amountWidth.intValue()) {
-									elements.add(helper.spacer(amountWidth.intValue() - width, 0));
+						if (group.views.isEmpty() && group.extraData != null) {
+							float progress = group.extraData.getFloatOr("Collecting", -1F);
+							if (progress >= 0 && progress < 1) {
+								MutableComponent component = Component.translatable("jade.collectingItems");
+								if (progress != 0) {
+									component.append(" %s%%".formatted((int) (progress * 100)));
 								}
-								elements.add(helper.text(Component.literal(s)
-										.append("× ")
-										.append(IDisplayHelper.get().stripColor(stack.getHoverName()))).narration(""));
+								theTooltip.add(component);
 							}
-						} else if (itemView.amountText != null) {
-							elements.add(helper.item(stack, 1, itemView.amountText));
-						} else {
-							elements.add(helper.item(stack));
 						}
-						drawnCount += 1;
-					}
+						int drawnCount = 0;
+						int realSize = config.getInt(accessor.showDetails() ?
+								JadeIds.UNIVERSAL_ITEM_STORAGE_DETAILED_AMOUNT :
+								JadeIds.UNIVERSAL_ITEM_STORAGE_NORMAL_AMOUNT);
+						realSize = Math.min(group.views.size(), realSize);
+						List<Element> elements = Lists.newArrayList();
+						for (int i = 0; i < realSize; i++) {
+							ItemView itemView = group.views.get(i);
+							ItemStack stack = itemView.item;
+							if (stack.isEmpty()) {
+								continue;
+							}
+							if (i > 0 && (
+									showName.isTrue() ||
+											drawnCount >= config.getInt(JadeIds.UNIVERSAL_ITEM_STORAGE_ITEMS_PER_LINE))) {
+								theTooltip.add(elements);
+								theTooltip.setLineMargin(-1, ScreenDirection.DOWN, 0);
+								elements.clear();
+								drawnCount = 0;
+							}
 
-					if (!elements.isEmpty()) {
-						theTooltip.add(elements);
-					}
-				});
+							if (showName.isTrue()) {
+								if (itemView.description != null) {
+									elements.add(helper.smallItem(stack));
+									elements.addAll(itemView.description);
+								} else {
+									elements.add(helper.smallItem(stack).refreshNarration());
+									String s = IDisplayHelper.get().humanReadableNumber(stack.getCount(), "", false, null);
+									int width = Minecraft.getInstance().font.width(s);
+									if (width < amountWidth.intValue()) {
+										elements.add(helper.spacer(amountWidth.intValue() - width, 0));
+									}
+									elements.add(helper.text(Component.literal(s)
+											.append("× ")
+											.append(IDisplayHelper.get().stripColor(stack.getHoverName()))).narration(""));
+								}
+							} else if (itemView.amountText != null) {
+								elements.add(helper.item(stack, 1, itemView.amountText));
+							} else {
+								elements.add(helper.item(stack));
+							}
+							drawnCount += 1;
+						}
+
+						if (!elements.isEmpty()) {
+							theTooltip.add(elements);
+						}
+					});
+		}
 	}
 
 	public static void putData(Accessor<?> accessor) {
@@ -222,14 +222,6 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 				tag.putBoolean("Locked", true);
 			}
 		}
-	}
-
-	@Override
-	public void appendTooltip(ITooltip tooltip, T accessor, IPluginConfig config) {
-		if (accessor.getTarget() instanceof AbstractFurnaceBlockEntity) {
-			return;
-		}
-		append(tooltip, accessor, config);
 	}
 
 	@Override
@@ -267,8 +259,8 @@ public abstract class ItemStorageProvider<T extends Accessor<?>> implements ICom
 		return TooltipPosition.BODY + 1000;
 	}
 
-	public enum Extension implements IServerExtensionProvider<ItemStack>, IClientExtensionProvider<ItemStack, ItemView> {
-		INSTANCE;
+	public static class Extension implements IServerExtensionProvider<ItemStack>, IClientExtensionProvider<ItemStack, ItemView> {
+		public static final Extension INSTANCE = new Extension();
 
 		@Override
 		public ResourceLocation getUid() {

@@ -16,22 +16,22 @@ public class UniversalPlugin implements IWailaPlugin {
 
 	@Override
 	public void register(IWailaCommonRegistration registration) {
-		registration.registerBlockDataProvider(ItemStorageProvider.getBlock(), Block.class);
-		registration.registerEntityDataProvider(ItemStorageProvider.getEntity(), Entity.class);
+		registration.registerBlockDataProvider(ItemStorageProvider.BLOCK, Block.class);
+		registration.registerEntityDataProvider(ItemStorageProvider.ENTITY, Entity.class);
 		registration.registerItemStorage(ItemStorageProvider.Extension.INSTANCE, Object.class);
 		registration.registerItemStorage(ItemStorageProvider.Extension.INSTANCE, Block.class);
 
-		registration.registerBlockDataProvider(FluidStorageProvider.getBlock(), Block.class);
-		registration.registerEntityDataProvider(FluidStorageProvider.getEntity(), Entity.class);
+		registration.registerBlockDataProvider(FluidStorageProvider.BLOCK, Block.class);
+		registration.registerEntityDataProvider(FluidStorageProvider.ENTITY, Entity.class);
 		registration.registerFluidStorage(FluidStorageProvider.Extension.INSTANCE, Object.class);
 		registration.registerFluidStorage(FluidStorageProvider.Extension.INSTANCE, Block.class);
 
-		registration.registerBlockDataProvider(EnergyStorageProvider.getBlock(), Block.class);
-		registration.registerEntityDataProvider(EnergyStorageProvider.getEntity(), Entity.class);
+		registration.registerBlockDataProvider(EnergyStorageProvider.BLOCK, Block.class);
+		registration.registerEntityDataProvider(EnergyStorageProvider.ENTITY, Entity.class);
 		registration.registerEnergyStorage(EnergyStorageProvider.Extension.INSTANCE, Object.class);
 
-		registration.registerBlockDataProvider(ProgressProvider.getBlock(), Block.class);
-		registration.registerEntityDataProvider(ProgressProvider.getEntity(), Entity.class);
+		registration.registerBlockDataProvider(ProgressProvider.BLOCK, Block.class);
+		registration.registerEntityDataProvider(ProgressProvider.ENTITY, Entity.class);
 	}
 
 	@Override
@@ -50,20 +50,20 @@ public class UniversalPlugin implements IWailaPlugin {
 		registration.registerEnergyStorageClient(HideThingsExtensionProvider.instance());
 		registration.registerProgressClient(HideThingsExtensionProvider.instance());
 
-		registration.registerBlockComponent(ItemStorageProvider.getBlock(), Block.class);
-		registration.registerEntityComponent(ItemStorageProvider.getEntity(), Entity.class);
+		registration.registerBlockComponent(ItemStorageProvider.Client.BLOCK, Block.class);
+		registration.registerEntityComponent(ItemStorageProvider.Client.ENTITY, Entity.class);
 		registration.registerItemStorageClient(ItemStorageProvider.Extension.INSTANCE);
 
-		registration.registerBlockComponent(FluidStorageProvider.getBlock(), Block.class);
-		registration.registerEntityComponent(FluidStorageProvider.getEntity(), Entity.class);
+		registration.registerBlockComponent(FluidStorageProvider.Client.BLOCK, Block.class);
+		registration.registerEntityComponent(FluidStorageProvider.Client.ENTITY, Entity.class);
 		registration.registerFluidStorageClient(FluidStorageProvider.Extension.INSTANCE);
 
-		registration.registerBlockComponent(EnergyStorageProvider.getBlock(), Block.class);
-		registration.registerEntityComponent(EnergyStorageProvider.getEntity(), Entity.class);
+		registration.registerBlockComponent(EnergyStorageProvider.Client.BLOCK, Block.class);
+		registration.registerEntityComponent(EnergyStorageProvider.Client.ENTITY, Entity.class);
 		registration.registerEnergyStorageClient(EnergyStorageProvider.Extension.INSTANCE);
 
-		registration.registerBlockComponent(ProgressProvider.getBlock(), Block.class);
-		registration.registerEntityComponent(ProgressProvider.getEntity(), Entity.class);
+		registration.registerBlockComponent(ProgressProvider.Client.BLOCK, Block.class);
+		registration.registerEntityComponent(ProgressProvider.Client.ENTITY, Entity.class);
 
 		Component category = Component.translatable("config.jade.plugin_jade");
 		registration.setConfigCategoryOverride(JadeIds.UNIVERSAL_ITEM_STORAGE, category);

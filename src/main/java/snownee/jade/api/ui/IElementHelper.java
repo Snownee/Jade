@@ -17,6 +17,8 @@ public interface IElementHelper {
 		return JadeInternals.getElementHelper();
 	}
 
+	boolean isEmptyElement(@Nullable Element element);
+
 	TextElement text(Component component);
 
 	ResizeableElement spacer(int x, int y);
@@ -51,7 +53,11 @@ public interface IElementHelper {
 	/**
 	 * Create an empty tooltip. Used by the {@code box} method.
 	 */
-	ITooltip tooltip();
+	default ITooltip tooltip() {
+		return tooltip(null);
+	}
+
+	ITooltip tooltip(@Nullable Element icon);
 
 	ProgressStyle progressStyle();
 

@@ -34,25 +34,70 @@ import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
 
-public abstract class EnergyStorageProvider<T extends Accessor<?>> implements IComponentProvider<T>, StreamServerDataProvider<T, Map.Entry<ResourceLocation, List<ViewGroup<EnergyView.Data>>>> {
+public class EnergyStorageProvider<T extends Accessor<?>> implements StreamServerDataProvider<T, Map.Entry<ResourceLocation, List<ViewGroup<EnergyView.Data>>>> {
 
 	private static final StreamCodec<RegistryFriendlyByteBuf, Map.Entry<ResourceLocation, List<ViewGroup<EnergyView.Data>>>> STREAM_CODEC = ViewGroup.listCodec(
 			EnergyView.Data.STREAM_CODEC).cast();
 
-	public static ForBlock getBlock() {
-		return ForBlock.INSTANCE;
-	}
+	public static final EnergyStorageProvider<BlockAccessor> BLOCK = new EnergyStorageProvider<>();
+	public static final EnergyStorageProvider<EntityAccessor> ENTITY = new EnergyStorageProvider<>();
 
-	public static ForEntity getEntity() {
-		return ForEntity.INSTANCE;
-	}
+	public static class Client<T extends Accessor<?>> extends EnergyStorageProvider<T> implements IComponentProvider<T> {
+		public static final Client<BlockAccessor> BLOCK = new Client<>();
+		public static final Client<EntityAccessor> ENTITY = new Client<>();
 
-	public static class ForBlock extends EnergyStorageProvider<BlockAccessor> {
-		private static final ForBlock INSTANCE = new ForBlock();
-	}
+		@Override
+		public void appendTooltip(ITooltip tooltip, T accessor, IPluginConfig config) {
+			if ((!accessor.showDetails() && config.get(JadeIds.UNIVERSAL_ENERGY_STORAGE_DETAILED))) {
+				return;
+			}
 
-	public static class ForEntity extends EnergyStorageProvider<EntityAccessor> {
-		private static final ForEntity INSTANCE = new ForEntity();
+			List<ClientViewGroup<EnergyView>> groups = ClientProxy.mapToClientGroups(
+					accessor,
+					JadeIds.UNIVERSAL_ENERGY_STORAGE,
+					STREAM_CODEC,
+					WailaClientRegistration.instance().energyStorageProviders::get,
+					tooltip);
+			if (groups == null || groups.isEmpty()) {
+				return;
+			}
+
+			IElementHelper helper = IElementHelper.get();
+			boolean renderGroup = groups.size() > 1 || groups.getFirst().shouldRenderGroup();
+			ClientViewGroup.tooltip(
+					tooltip, groups, renderGroup, (theTooltip, group) -> {
+						if (renderGroup) {
+							group.renderHeader(theTooltip);
+						}
+						for (var view : group.views) {
+							IWailaConfig.HandlerDisplayStyle style = config.getEnum(JadeIds.UNIVERSAL_ENERGY_STORAGE_STYLE);
+							Component text;
+							if (view.overrideText != null) {
+								text = view.overrideText;
+							} else {
+								String current = view.current;
+								if (style == IWailaConfig.HandlerDisplayStyle.PROGRESS_BAR) {
+									current = ChatFormatting.WHITE + current;
+								}
+								text = Component.translatable("jade.fe", current, view.max);
+							}
+
+							switch (style) {
+								case PLAIN_TEXT -> theTooltip.add(Component.translatable("jade.energy.text", text));
+								case ICON -> {
+									theTooltip.add(helper.sprite(JadeIds.JADE("energy"), 10, 10)
+											.size(10, 9)
+											.offset(0, -1));
+									theTooltip.append(text);
+								}
+								case PROGRESS_BAR -> {
+									ProgressStyle progressStyle = helper.progressStyle();
+									theTooltip.add(helper.progress(view.ratio, text, progressStyle, BoxStyle.getNestedBox(), true));
+								}
+							}
+						}
+					});
+		}
 	}
 
 	@Override
@@ -76,59 +121,6 @@ public abstract class EnergyStorageProvider<T extends Accessor<?>> implements IC
 	}
 
 	@Override
-	public void appendTooltip(ITooltip tooltip, T accessor, IPluginConfig config) {
-		if ((!accessor.showDetails() && config.get(JadeIds.UNIVERSAL_ENERGY_STORAGE_DETAILED))) {
-			return;
-		}
-
-		List<ClientViewGroup<EnergyView>> groups = ClientProxy.mapToClientGroups(
-				accessor,
-				JadeIds.UNIVERSAL_ENERGY_STORAGE,
-				STREAM_CODEC,
-				WailaClientRegistration.instance().energyStorageProviders::get,
-				tooltip);
-		if (groups == null || groups.isEmpty()) {
-			return;
-		}
-
-		IElementHelper helper = IElementHelper.get();
-		boolean renderGroup = groups.size() > 1 || groups.getFirst().shouldRenderGroup();
-		ClientViewGroup.tooltip(
-				tooltip, groups, renderGroup, (theTooltip, group) -> {
-					if (renderGroup) {
-						group.renderHeader(theTooltip);
-					}
-					for (var view : group.views) {
-						IWailaConfig.HandlerDisplayStyle style = config.getEnum(JadeIds.UNIVERSAL_ENERGY_STORAGE_STYLE);
-						Component text;
-						if (view.overrideText != null) {
-							text = view.overrideText;
-						} else {
-							String current = view.current;
-							if (style == IWailaConfig.HandlerDisplayStyle.PROGRESS_BAR) {
-								current = ChatFormatting.WHITE + current;
-							}
-							text = Component.translatable("jade.fe", current, view.max);
-						}
-
-						switch (style) {
-							case PLAIN_TEXT -> theTooltip.add(Component.translatable("jade.energy.text", text));
-							case ICON -> {
-								theTooltip.add(helper.sprite(JadeIds.JADE("energy"), 10, 10)
-										.size(10, 9)
-										.offset(0, -1));
-								theTooltip.append(text);
-							}
-							case PROGRESS_BAR -> {
-								ProgressStyle progressStyle = helper.progressStyle();
-								theTooltip.add(helper.progress(view.ratio, text, progressStyle, BoxStyle.getNestedBox(), true));
-							}
-						}
-					}
-				});
-	}
-
-	@Override
 	public boolean shouldRequestData(T accessor) {
 		if (!accessor.showDetails() && IWailaConfig.get().plugin().get(JadeIds.UNIVERSAL_ENERGY_STORAGE_DETAILED)) {
 			return false;
@@ -136,8 +128,8 @@ public abstract class EnergyStorageProvider<T extends Accessor<?>> implements IC
 		return WailaCommonRegistration.instance().energyStorageProviders.hitsAny(accessor, IServerExtensionProvider::shouldRequestData);
 	}
 
-	public enum Extension implements IServerExtensionProvider<EnergyView.Data>, IClientExtensionProvider<EnergyView.Data, EnergyView> {
-		INSTANCE;
+	public static class Extension implements IServerExtensionProvider<EnergyView.Data>, IClientExtensionProvider<EnergyView.Data, EnergyView> {
+		public static final Extension INSTANCE = new Extension();
 
 		@Override
 		public ResourceLocation getUid() {

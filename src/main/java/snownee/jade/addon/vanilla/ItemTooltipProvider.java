@@ -32,9 +32,8 @@ import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.util.ModIdentification;
 import snownee.jade.util.WailaExceptionHandler;
 
-public enum ItemTooltipProvider implements IEntityComponentProvider {
-
-	INSTANCE;
+public class ItemTooltipProvider implements IEntityComponentProvider {
+	public static final ItemTooltipProvider INSTANCE = new ItemTooltipProvider();
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {

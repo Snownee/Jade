@@ -9,7 +9,6 @@ import com.mojang.blaze3d.pipeline.RenderPipeline;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.fluid.JadeFluidObject;
@@ -21,14 +20,18 @@ import snownee.jade.api.ui.ProgressStyle;
 import snownee.jade.api.ui.ResizeableElement;
 import snownee.jade.api.ui.TextElement;
 import snownee.jade.impl.Tooltip;
+import snownee.jade.overlay.DisplayHelper;
 
 public class ElementHelper implements IElementHelper {
 	public static final ElementHelper INSTANCE = new ElementHelper();
 	public static final ResourceLocation DEFAULT_PROGRESS = JadeIds.JADE("progress");
 	public static final ResourceLocation DEFAULT_PROGRESS_BASE = JadeIds.JADE("progress_base");
-	public static final Vec2 SMALL_ITEM_SIZE = new Vec2(10, 9);
-	public static final Vec2 SMALL_ITEM_OFFSET = new Vec2(0, -1); //Vec2.NEG_UNIT_Y nullified by Saturn mod
 	private ResourceLocation uid;
+
+	@Override
+	public boolean isEmptyElement(Element element) {
+		return element == null || element == ItemStackElement.EMPTY;
+	}
 
 	@Override
 	public TextElement text(Component component) {
@@ -52,7 +55,11 @@ public class ElementHelper implements IElementHelper {
 
 	@Override
 	public Element smallItem(ItemStack stack) {
-		return item(stack, 0.5F, "").narration("");
+		int lineHeight = DisplayHelper.font().lineHeight;
+		return item(stack, 0.5F, "")
+				.size(lineHeight + 1, lineHeight - 1)
+				.offset(0, -1)
+				.narration("");
 	}
 
 	@Override
@@ -93,12 +100,16 @@ public class ElementHelper implements IElementHelper {
 
 	@Override
 	public BoxElement box(ITooltip tooltip, BoxStyle boxStyle) {
-		return new BoxElementImpl((Tooltip) tooltip, boxStyle, null);
+		return new BoxElementImpl((Tooltip) tooltip, boxStyle);
 	}
 
 	@Override
-	public ITooltip tooltip() {
-		return new Tooltip();
+	public ITooltip tooltip(@Nullable Element icon) {
+		Tooltip tooltip = new Tooltip();
+		if (icon != null) {
+			tooltip.setIcon(icon);
+		}
+		return tooltip;
 	}
 
 	@Override

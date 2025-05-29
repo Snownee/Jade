@@ -18,9 +18,8 @@ import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.impl.ui.ArmorElement;
 import snownee.jade.impl.ui.HealthElement;
 
-public enum EntityHealthAndArmorProvider implements IEntityComponentProvider {
-
-	INSTANCE;
+public class EntityHealthAndArmorProvider implements IEntityComponentProvider {
+	public static final EntityHealthAndArmorProvider INSTANCE = new EntityHealthAndArmorProvider();
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {

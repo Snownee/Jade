@@ -4,10 +4,13 @@ import java.util.List;
 import java.util.function.UnaryOperator;
 
 import org.jetbrains.annotations.ApiStatus.NonExtendable;
+import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.client.gui.layouts.LayoutElement;
+import net.minecraft.client.gui.narration.NarrationSupplier;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.api.ui.ScreenDirection;
 
@@ -17,7 +20,7 @@ import snownee.jade.api.ui.ScreenDirection;
  * @author Snownee
  */
 @NonExtendable
-public interface ITooltip {
+public interface ITooltip extends NarrationSupplier {
 
 	void clear();
 
@@ -138,9 +141,11 @@ public interface ITooltip {
 	 */
 	List<LayoutElement> get(ResourceLocation tag);
 
+	void setLineMargin(int index, ScreenDirection side, int margin);
+
 	String getNarration();
 
-	String getNarration(ResourceLocation tag);
+	String getString(ResourceLocation tag);
 
-	void setLineMargin(int index, ScreenDirection side, int margin);
+	@Nullable Element getIcon();
 }
