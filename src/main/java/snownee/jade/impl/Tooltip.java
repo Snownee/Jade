@@ -55,7 +55,7 @@ public class Tooltip implements ITooltip {
 	@Override
 	public void append(int index, LayoutElement element) {
 		if (element instanceof Element taggable && taggable.getTag() == null) {
-			taggable.tag(JadeUIInternal.currentUid());
+			taggable.tag(JadeUIInternal.contextUid());
 		}
 		if (isEmpty() || index == size()) {
 			add(element);

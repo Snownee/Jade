@@ -11,6 +11,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.Element;
+import snownee.jade.api.ui.JadeUI;
 import snownee.jade.api.ui.MessageType;
 import snownee.jade.api.ui.ProgressStyle;
 
@@ -40,7 +41,7 @@ public class ProgressView {
 //		ProgressView progressView = new ProgressView(new SlimProgressStyle());
 //		progressView.progress = data.progress;
 //		return progressView;
-		return null;//TODO
+		return new ProgressView(JadeUI.progressStyle(), BoxStyle.getNestedBox());//TODO
 	}
 
 	public record Data(float progress) {

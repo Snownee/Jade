@@ -93,6 +93,6 @@ public class BlockDetailsProvider implements IBlockComponentProvider {
 
 	@Override
 	public int getDefaultPriority() {
-		return ObjectNameProvider.getBlock().getDefaultPriority() + 10;
+		return ObjectNameProvider.ForBlock.INSTANCE.getDefaultPriority() + 10;
 	}
 }

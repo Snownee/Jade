@@ -34,7 +34,7 @@ public class BlockFaceProvider implements IBlockComponentProvider {
 
 	@Override
 	public int getDefaultPriority() {
-		return ObjectNameProvider.getBlock().getDefaultPriority() + 30;
+		return ObjectNameProvider.ForBlock.INSTANCE.getDefaultPriority() + 30;
 	}
 
 	@Override

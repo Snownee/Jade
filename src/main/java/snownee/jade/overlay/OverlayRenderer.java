@@ -20,6 +20,8 @@ import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.IWailaConfig.BossBarOverlapMode;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
+import snownee.jade.api.ui.Element;
+import snownee.jade.api.ui.JadeUI;
 import snownee.jade.api.ui.TooltipRect;
 import snownee.jade.gui.BaseOptionsScreen;
 import snownee.jade.gui.PreviewOptionsScreen;
@@ -28,7 +30,6 @@ import snownee.jade.impl.Tooltip;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.config.WailaConfig.General;
 import snownee.jade.impl.ui.BoxElementImpl;
-import snownee.jade.impl.ui.ItemStackElement;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.ModIdentification;
 
@@ -123,7 +124,7 @@ public class OverlayRenderer {
 			tooltip.add(IThemeHelper.get().title(Blocks.GRASS_BLOCK.getName()));
 			tooltip.add(IThemeHelper.get().modName(ModIdentification.getModName(Blocks.GRASS_BLOCK)));
 			Theme theme = IThemeHelper.get().theme();
-			tooltip.setIcon(theme.modifyIcon(ItemStackElement.of(new ItemStack(Blocks.GRASS_BLOCK))));
+			tooltip.setIcon(theme.modifyIcon(JadeUI.item(new ItemStack(Blocks.GRASS_BLOCK))));
 			root = new BoxElementImpl(tooltip, theme.tooltipStyle);
 			root.tag(JadeIds.ROOT);
 			root.updateExpectedRect(rect);
@@ -197,7 +198,8 @@ public class OverlayRenderer {
 			maxHeight = maxHeight / scale;
 			root.render(graphics, mouseX, mouseY, partialTicks);
 			if (IWailaConfig.get().general().isDebug() && Screen.hasControlDown()) {
-				root.renderDebug(graphics, mouseX, mouseY, partialTicks);
+
+				root.renderDebug(graphics, mouseX, mouseY, partialTicks, new Element.RenderDebugContext(root, rect.rect));
 			}
 		}
 

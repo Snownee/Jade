@@ -71,6 +71,6 @@ public class EntityDetailsProvider implements IEntityComponentProvider {
 
 	@Override
 	public int getDefaultPriority() {
-		return ObjectNameProvider.getEntity().getDefaultPriority() + 10;
+		return ObjectNameProvider.ForEntity.INSTANCE.getDefaultPriority() + 10;
 	}
 }

@@ -55,7 +55,7 @@ public class HopperLockProvider implements StreamServerDataProvider<BlockAccesso
 
 		@Override
 		public int getDefaultPriority() {
-			return ObjectNameProvider.getBlock().getDefaultPriority() + 10;
+			return ObjectNameProvider.ForBlock.INSTANCE.getDefaultPriority() + 10;
 		}
 
 		@Override

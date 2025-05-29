@@ -44,96 +44,12 @@ import snownee.jade.impl.ui.ItemStackElement;
 import snownee.jade.mixin.EntityAccess;
 
 public abstract class ObjectNameProvider implements IToggleableProvider {
-
-	public static ForBlock getBlock() {
-		return ForBlock.INSTANCE;
-	}
-
-	public static ForEntity getEntity() {
-		return ForEntity.INSTANCE;
-	}
-
-	public static ForServer getServer() {
-		return ForServer.INSTANCE;
-	}
-
-	public static Component getEntityName(Entity entity, boolean accessibilityDetails) {
-		Component customName = entity.getCustomName();
-		if (customName != null && !accessibilityDetails) {
-			return customName;
-		}
-		Component displayName = null;
-		boolean wantTypeName = accessibilityDetails;
-		if (WailaClientRegistration.instance().shouldPick(entity)) {
-			ItemStack stack = entity.getPickResult();
-			if (stack != null && !stack.isEmpty()) {
-				displayName = stack.getHoverName();
-			}
-		}
-		if (displayName == null) {
-			displayName = switch (entity) {
-				case Player ignored -> {
-					wantTypeName = false;
-					yield entity.getDisplayName();
-				}
-				case Villager ignored -> {
-					wantTypeName = false;
-					yield entity.getType().getDescription();
-				}
-				case ItemEntity itemEntity -> itemEntity.getItem().getHoverName();
-				case ItemDisplay itemDisplay when !itemDisplay.getSlot(0).get().isEmpty() -> itemDisplay.getSlot(0).get().getHoverName();
-				case BlockDisplay blockDisplay when !blockDisplay.getBlockState().isAir() ->
-						blockDisplay.getBlockState().getBlock().getName();
-				default -> entity.getName();
-			};
-		}
-		Objects.requireNonNull(displayName);
-		if (accessibilityDetails) {
-			if (customName != null && displayName.getString().equals(customName.getString())) {
-				displayName = customName;
-				customName = null;
-			}
-			if (wantTypeName) {
-				Component typeName = ((EntityAccess) entity).callGetTypeName();
-				if (!displayName.getString().equals(typeName.getString())) {
-					displayName = Component.translatable("jade.typeNameEntity", displayName, typeName);
-				}
-			}
-			if (customName != null) {
-				return Component.translatable("jade.customNameEntity", customName, displayName);
-			}
-		}
-		return displayName;
-	}
-
-	public static void addName(ITooltip tooltip, Component name) {
-		name = IThemeHelper.get().title(name);
-		if (IWailaConfig.get().overlay().getIconMode() != IWailaConfig.IconMode.INLINE) {
-			tooltip.add(name);
-			return;
-		}
-
-		Element icon = tooltip.getIcon();
-		Element newIcon;
-		if (icon instanceof ItemStackElement itemStackElement) {
-			newIcon = JadeUI.smallItem(itemStackElement.getItem());
-		} else {
-			newIcon = null;
-		}
-		if (newIcon == null) {
-			tooltip.add(name);
-			return;
-		}
-		tooltip.add(newIcon.tag(JadeIds.CORE_ROOT_ICON));
-		tooltip.append(name);
-	}
-
 	public static class ForBlock extends ObjectNameProvider implements IBlockComponentProvider {
-		private static final ForBlock INSTANCE = new ForBlock();
+		public static final ForBlock INSTANCE = new ForBlock();
 
 		@Override
 		public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-			Component name = ForServer.INSTANCE.decodeFromData(accessor).orElse(null);
+			Component name = Server.INSTANCE.decodeFromData(accessor).orElse(null);
 			if (name == null && accessor.isFakeBlock()) {
 				name = accessor.getFakeBlock().getHoverName();
 			}
@@ -156,12 +72,84 @@ public abstract class ObjectNameProvider implements IToggleableProvider {
 					}
 				}
 			}
-			addName(tooltip, name);
+			ForEntity.addName(tooltip, name);
 		}
 	}
 
 	public static class ForEntity extends ObjectNameProvider implements IEntityComponentProvider {
-		private static final ForEntity INSTANCE = new ForEntity();
+		public static final ForEntity INSTANCE = new ForEntity();
+
+		public static Component getEntityName(Entity entity, boolean accessibilityDetails) {
+			Component customName = entity.getCustomName();
+			if (customName != null && !accessibilityDetails) {
+				return customName;
+			}
+			Component displayName = null;
+			boolean wantTypeName = accessibilityDetails;
+			if (WailaClientRegistration.instance().shouldPick(entity)) {
+				ItemStack stack = entity.getPickResult();
+				if (stack != null && !stack.isEmpty()) {
+					displayName = stack.getHoverName();
+				}
+			}
+			if (displayName == null) {
+				displayName = switch (entity) {
+					case Player ignored -> {
+						wantTypeName = false;
+						yield entity.getDisplayName();
+					}
+					case Villager ignored -> {
+						wantTypeName = false;
+						yield entity.getType().getDescription();
+					}
+					case ItemEntity itemEntity -> itemEntity.getItem().getHoverName();
+					case ItemDisplay itemDisplay when !itemDisplay.getSlot(0).get().isEmpty() ->
+							itemDisplay.getSlot(0).get().getHoverName();
+					case BlockDisplay blockDisplay when !blockDisplay.getBlockState().isAir() ->
+							blockDisplay.getBlockState().getBlock().getName();
+					default -> entity.getName();
+				};
+			}
+			Objects.requireNonNull(displayName);
+			if (accessibilityDetails) {
+				if (customName != null && displayName.getString().equals(customName.getString())) {
+					displayName = customName;
+					customName = null;
+				}
+				if (wantTypeName) {
+					Component typeName = ((EntityAccess) entity).callGetTypeName();
+					if (!displayName.getString().equals(typeName.getString())) {
+						displayName = Component.translatable("jade.typeNameEntity", displayName, typeName);
+					}
+				}
+				if (customName != null) {
+					return Component.translatable("jade.customNameEntity", customName, displayName);
+				}
+			}
+			return displayName;
+		}
+
+		public static void addName(ITooltip tooltip, Component name) {
+			name = IThemeHelper.get().title(name);
+			if (IWailaConfig.get().overlay().getIconMode() != IWailaConfig.IconMode.INLINE) {
+				tooltip.add(name);
+				return;
+			}
+
+			Element icon = tooltip.getIcon();
+			Element newIcon;
+			if (icon instanceof ItemStackElement itemStackElement) {
+				newIcon = JadeUI.smallItem(itemStackElement.getItem());
+			} else {
+				newIcon = null;
+			}
+			if (newIcon == null) {
+				tooltip.add(name);
+				return;
+			}
+			tooltip.add(newIcon.tag(JadeIds.CORE_ROOT_ICON));
+			tooltip.append(name);
+		}
 
 		@Override
 		public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
@@ -172,8 +160,8 @@ public abstract class ObjectNameProvider implements IToggleableProvider {
 		}
 	}
 
-	public static class ForServer extends ObjectNameProvider implements StreamServerDataProvider<BlockAccessor, Component> {
-		private static final ForServer INSTANCE = new ForServer();
+	public static class Server extends ObjectNameProvider implements StreamServerDataProvider<BlockAccessor, Component> {
+		public static final Server INSTANCE = new Server();
 
 		@Override
 		@Nullable

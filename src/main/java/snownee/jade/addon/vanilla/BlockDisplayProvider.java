@@ -15,7 +15,6 @@ import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.JadeUI;
-import snownee.jade.impl.ui.ItemStackElement;
 import snownee.jade.util.ClientProxy;
 
 public class BlockDisplayProvider implements IEntityComponentProvider {
@@ -28,7 +27,7 @@ public class BlockDisplayProvider implements IEntityComponentProvider {
 		if (block.asItem() == Items.AIR) {
 			return null;
 		}
-		Element icon = ItemStackElement.of(new ItemStack(block));
+		Element icon = JadeUI.item(new ItemStack(block));
 		if (JadeUI.isEmptyElement(icon) && block instanceof LiquidBlock) {
 			icon = ClientProxy.elementFromLiquid(itemDisplay.getBlockState());
 		}

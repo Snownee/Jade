@@ -1,9 +1,12 @@
 package snownee.jade.api.ui;
 
+import java.util.function.Consumer;
+
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 
+import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -26,11 +29,11 @@ public final class JadeUI {
 	}
 
 	public static Element item(ItemStack itemStack) {
-		return JadeUIInternal.item(itemStack);
+		return item(itemStack, 1F);
 	}
 
 	public static Element item(ItemStack itemStack, float scale) {
-		return JadeUIInternal.item(itemStack, scale);
+		return item(itemStack, scale, null);
 	}
 
 	public static Element item(ItemStack itemStack, float scale, @Nullable String text) {
@@ -100,5 +103,9 @@ public final class JadeUI {
 
 	public static ResizeableElement size(Element element, int width, int height) {
 		return JadeUIInternal.size(element, width, height);
+	}
+
+	public static void visitChildrenRecursive(LayoutElement layoutElement, Consumer<LayoutElement> consumer) {
+		JadeUIInternal.visitChildrenRecursive(layoutElement, consumer);
 	}
 }

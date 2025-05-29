@@ -48,10 +48,10 @@ public class SpacerElement extends ResizeableElement {
 	}
 
 	@Override
-	public void renderDebug(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-		super.renderDebug(graphics, mouseX, mouseY, partialTicks);
+	public void renderDebug(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks, RenderDebugContext context) {
+		super.renderDebug(graphics, mouseX, mouseY, partialTicks, context);
 		if (wrapped instanceof Element element) {
-			element.renderDebug(graphics, mouseX, mouseY, partialTicks);
+			element.renderDebug(graphics, mouseX, mouseY, partialTicks, context);
 		}
 		if (wrapped != null) {
 			JadeInternals.getDisplayHelper().drawBorder(graphics, getRectangle(), 1, 0x880000FF, true);

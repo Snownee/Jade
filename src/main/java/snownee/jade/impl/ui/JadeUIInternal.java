@@ -1,9 +1,15 @@
 package snownee.jade.impl.ui;
 
+import java.util.Set;
+import java.util.function.Consumer;
+
 import org.jetbrains.annotations.Nullable;
 
+import com.google.common.collect.Sets;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 
+import net.minecraft.client.gui.layouts.Layout;
+import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -23,25 +29,17 @@ import snownee.jade.overlay.DisplayHelper;
 public class JadeUIInternal {
 	public static final ResourceLocation DEFAULT_PROGRESS = JadeIds.JADE("progress");
 	public static final ResourceLocation DEFAULT_PROGRESS_BASE = JadeIds.JADE("progress_base");
-	private static ResourceLocation uid;
+	private static ResourceLocation contextUid;
 
 	public static boolean isEmptyElement(Element element) {
-		return element == null || element == ItemStackElement.EMPTY;
+		return element == null;
 	}
 
 	public static TextElement text(Component component) {
 		return new TextElementImpl(component);
 	}
 
-	public static Element item(ItemStack stack) {
-		return ItemStackElement.of(stack);
-	}
-
-	public static Element item(ItemStack stack, float scale) {
-		return ItemStackElement.of(stack, scale);
-	}
-
-	public static Element item(ItemStack stack, float scale, String text) {
+	public static Element item(ItemStack stack, float scale, @Nullable String text) {
 		return ItemStackElement.of(stack, scale, text);
 	}
 
@@ -113,11 +111,30 @@ public class JadeUIInternal {
 		return spacer(width, height).wrapped(element);
 	}
 
-	public static @Nullable ResourceLocation currentUid() {
-		return uid;
+	public static @Nullable ResourceLocation contextUid() {
+		return contextUid;
 	}
 
-	public static void setCurrentUid(ResourceLocation uid) {
-		JadeUIInternal.uid = uid;
+	public static void setContextUid(@Nullable ResourceLocation uid) {
+		JadeUIInternal.contextUid = uid;
+	}
+
+	public static void visitChildrenRecursive(LayoutElement layoutElement, Consumer<LayoutElement> consumer) {
+		visitChildrenRecursiveInternal(layoutElement, consumer, Sets.newIdentityHashSet());
+	}
+
+	private static void visitChildrenRecursiveInternal(
+			LayoutElement layoutElement,
+			Consumer<LayoutElement> consumer,
+			Set<LayoutElement> set) {
+		if (layoutElement == null || !set.add(layoutElement)) {
+			return;
+		}
+		consumer.accept(layoutElement);
+		if (layoutElement instanceof Layout layout) {
+			layout.visitChildren(element -> visitChildrenRecursiveInternal(element, consumer, set));
+		} else {
+			layoutElement.visitWidgets(widget -> visitChildrenRecursiveInternal(widget, consumer, set));
+		}
 	}
 }

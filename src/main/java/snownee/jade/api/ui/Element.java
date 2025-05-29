@@ -4,6 +4,7 @@ import java.util.function.Consumer;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix3x2fStack;
 
 import com.google.common.base.Preconditions;
 
@@ -15,10 +16,13 @@ import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.narration.NarrationSupplier;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.JadeInternals;
+import snownee.jade.overlay.DisplayHelper;
 
 public abstract class Element implements Renderable, LayoutElement, NarrationSupplier {
 
@@ -128,7 +132,36 @@ public abstract class Element implements Renderable, LayoutElement, NarrationSup
 		}
 	}
 
-	public void renderDebug(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+	public void renderDebug(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks, RenderDebugContext context) {
 		JadeInternals.getDisplayHelper().drawBorder(graphics, getRectangle(), 1, 0x88FF0000, true);
+		if (Screen.hasAltDown() && getTag() != null) {
+			int centerX = context.root.getX() + context.root.getWidth() / 2;
+			int x = getX();
+			int y = getY();
+			String s = getTag().toString();
+			int textWidth = DisplayHelper.font().width(s);
+			Matrix3x2fStack pose = graphics.pose();
+			pose.pushMatrix();
+			pose.translate(x, y);
+			pose.scale(0.5F);
+			if (x > centerX) {
+				pose.translate(getWidth(), 0);
+			} else {
+				pose.translate(-textWidth - 4, 0);
+			}
+			graphics.fill(0, 0, textWidth + 4, DisplayHelper.font().lineHeight + 4, 0x88000000);
+			graphics.drawString(DisplayHelper.font(), s, 2, 2, 0xFFFFFFFF, false);
+			pose.popMatrix();
+		}
+	}
+
+	public static class RenderDebugContext {
+		public final LayoutElement root;
+		public final Rect2i rootRect;
+
+		public RenderDebugContext(LayoutElement root, Rect2i rootRect) {
+			this.root = root;
+			this.rootRect = rootRect;
+		}
 	}
 }

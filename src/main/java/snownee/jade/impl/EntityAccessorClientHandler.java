@@ -16,7 +16,6 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.JadeUI;
-import snownee.jade.impl.ui.ItemStackElement;
 import snownee.jade.impl.ui.JadeUIInternal;
 import snownee.jade.network.RequestEntityPacket;
 import snownee.jade.util.ClientProxy;
@@ -60,11 +59,11 @@ public class EntityAccessorClientHandler implements AccessorClientHandler<Entity
 		Element icon = null;
 		Entity entity = accessor.getEntity();
 		if (entity instanceof ItemEntity) {
-			icon = ItemStackElement.of(((ItemEntity) entity).getItem());
+			icon = JadeUI.item(((ItemEntity) entity).getItem());
 		} else {
 			ItemStack stack = accessor.getPickedResult();
 			if ((!(stack.getItem() instanceof SpawnEggItem) || !(entity instanceof LivingEntity))) {
-				icon = ItemStackElement.of(stack);
+				icon = JadeUI.item(stack);
 			}
 		}
 
@@ -86,12 +85,12 @@ public class EntityAccessorClientHandler implements AccessorClientHandler<Entity
 		for (var provider : WailaClientRegistration.instance().getEntityProviders(accessor.getEntity(), this::isEnabled)) {
 			ITooltip tooltip = tooltipProvider.apply(provider);
 			try {
-				JadeUIInternal.setCurrentUid(provider.getUid());
+				JadeUIInternal.setContextUid(provider.getUid());
 				provider.appendTooltip(tooltip, accessor, IWailaConfig.get().plugin());
 			} catch (Throwable e) {
 				WailaExceptionHandler.handleErr(e, provider, tooltip::add);
 			} finally {
-				JadeUIInternal.setCurrentUid(null);
+				JadeUIInternal.setContextUid(null);
 			}
 		}
 	}

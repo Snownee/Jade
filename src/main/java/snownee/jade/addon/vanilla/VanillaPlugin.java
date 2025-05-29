@@ -193,9 +193,9 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerBlockComponent(CropProgressProvider.INSTANCE, Block.class);
 		registration.registerBlockComponent(JukeboxProvider.Client.INSTANCE, JukeboxBlock.class);
 		registration.registerBlockComponent(LecternProvider.Client.INSTANCE, LecternBlock.class);
-		registration.registerBlockComponent(MobSpawnerProvider.getBlock(), SpawnerBlock.class);
-		registration.registerBlockComponent(MobSpawnerProvider.getBlock(), TrialSpawnerBlock.class);
-		registration.registerEntityComponent(MobSpawnerProvider.getEntity(), MinecartSpawner.class);
+		registration.registerBlockComponent(MobSpawnerProvider.ForBlock.INSTANCE, SpawnerBlock.class);
+		registration.registerBlockComponent(MobSpawnerProvider.ForBlock.INSTANCE, TrialSpawnerBlock.class);
+		registration.registerEntityComponent(MobSpawnerProvider.ForEntity.INSTANCE, MinecartSpawner.class);
 		registration.registerBlockComponent(MobSpawnerCooldownProvider.Client.INSTANCE, TrialSpawnerBlock.class);
 		registration.registerBlockComponent(ChiseledBookshelfProvider.Client.INSTANCE, ChiseledBookShelfBlock.class);
 		registration.registerBlockIcon(ChiseledBookshelfProvider.Client.INSTANCE, ChiseledBookShelfBlock.class);

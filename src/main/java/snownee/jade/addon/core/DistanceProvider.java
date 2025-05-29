@@ -25,16 +25,8 @@ import snownee.jade.impl.theme.ThemeHelper;
 
 public abstract class DistanceProvider implements IToggleableProvider {
 
-	public static ForBlock getBlock() {
-		return ForBlock.INSTANCE;
-	}
-
-	public static ForEntity getEntity() {
-		return ForEntity.INSTANCE;
-	}
-
 	public static class ForBlock extends DistanceProvider implements IBlockComponentProvider {
-		private static final ForBlock INSTANCE = new ForBlock();
+		public static final ForBlock INSTANCE = new ForBlock();
 
 		@Override
 		public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
@@ -43,7 +35,7 @@ public abstract class DistanceProvider implements IToggleableProvider {
 	}
 
 	public static class ForEntity extends DistanceProvider implements IEntityComponentProvider {
-		private static final ForEntity INSTANCE = new ForEntity();
+		public static final ForEntity INSTANCE = new ForEntity();
 
 		@Override
 		public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {

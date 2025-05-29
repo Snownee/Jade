@@ -16,7 +16,6 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.JadeUI;
-import snownee.jade.impl.ui.ItemStackElement;
 import snownee.jade.impl.ui.JadeUIInternal;
 import snownee.jade.network.RequestBlockPacket;
 import snownee.jade.util.ClientProxy;
@@ -55,16 +54,16 @@ public class BlockAccessorClientHandler implements AccessorClientHandler<BlockAc
 		Element icon = null;
 
 		if (accessor.isFakeBlock()) {
-			icon = ItemStackElement.of(accessor.getFakeBlock());
+			icon = JadeUI.item(accessor.getFakeBlock());
 		} else {
 			ItemStack pick = accessor.getPickedResult();
 			if (!pick.isEmpty()) {
-				icon = ItemStackElement.of(pick);
+				icon = JadeUI.item(pick);
 			}
 		}
 
 		if (JadeUI.isEmptyElement(icon) && block.asItem() != Items.AIR) {
-			icon = ItemStackElement.of(new ItemStack(block));
+			icon = JadeUI.item(new ItemStack(block));
 		}
 
 		if (JadeUI.isEmptyElement(icon) && block instanceof LiquidBlock) {
@@ -89,12 +88,12 @@ public class BlockAccessorClientHandler implements AccessorClientHandler<BlockAc
 		for (var provider : WailaClientRegistration.instance().getBlockProviders(accessor.getBlock(), this::isEnabled)) {
 			ITooltip tooltip = tooltipProvider.apply(provider);
 			try {
-				JadeUIInternal.setCurrentUid(provider.getUid());
+				JadeUIInternal.setContextUid(provider.getUid());
 				provider.appendTooltip(tooltip, accessor, IWailaConfig.get().plugin());
 			} catch (Throwable e) {
 				WailaExceptionHandler.handleErr(e, provider, tooltip::add);
 			} finally {
-				JadeUIInternal.setCurrentUid(null);
+				JadeUIInternal.setContextUid(null);
 			}
 		}
 	}

@@ -14,7 +14,6 @@ public class ItemStackElement extends Element {
 	private final ItemStack item;
 	private final float scale;
 	private final String text;
-	public static final ItemStackElement EMPTY = new ItemStackElement(ItemStack.EMPTY, 1, null);
 
 	private ItemStackElement(ItemStack item, float scale, @Nullable String text) {
 		this.item = item;
@@ -32,9 +31,6 @@ public class ItemStackElement extends Element {
 	}
 
 	public static ItemStackElement of(ItemStack stack, float scale, @Nullable String text) {
-		if (scale == 1 && stack.isEmpty()) {
-			return EMPTY;
-		}
 		return new ItemStackElement(stack, scale, text);
 	}
 

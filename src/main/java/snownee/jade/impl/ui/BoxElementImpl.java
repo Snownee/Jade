@@ -25,6 +25,7 @@ import snownee.jade.api.ui.BoxElement;
 import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.IDisplayHelper;
+import snownee.jade.api.ui.JadeUI;
 import snownee.jade.api.ui.MessageType;
 import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.ui.TooltipRect;
@@ -53,12 +54,12 @@ public class BoxElementImpl extends BoxElement {
 		this.icon = tooltip.getIcon();
 		arrangeElements();
 		renderables = Lists.newArrayListWithExpectedSize(tooltip.size() + 1);
-		if (icon != null) {
-			renderables.add(icon);
-		}
-		tooltip.layoutElements()
-				.filter($ -> $ instanceof Renderable)
-				.forEach($ -> renderables.add((Renderable) $));
+		JadeUI.visitChildrenRecursive(
+				layout, element -> {
+					if (element instanceof Renderable renderable) {
+						renderables.add(renderable);
+					}
+				});
 	}
 
 	private void arrangeElements() {
@@ -199,23 +200,16 @@ public class BoxElementImpl extends BoxElement {
 	}
 
 	@Override
-	public void renderDebug(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-		super.renderDebug(graphics, mouseX, mouseY, partialTicks);
-		if (icon != null) {
-			icon.renderDebug(graphics, mouseX, mouseY, partialTicks);
-		}
-		layout.visitChildren(layoutElement -> {
-			if (layoutElement instanceof Layout) {
-				JadeInternals.getDisplayHelper().drawBorder(graphics, layoutElement.getRectangle(), 1, 0x8800FF00, true);
-			}
-		});
-		for (LayoutElement layoutElement : tooltip.layoutElements().toList()) {
-			if (layoutElement instanceof Element element) {
-				element.renderDebug(graphics, mouseX, mouseY, partialTicks);
-			} else if (layoutElement instanceof Layout) {
-				JadeInternals.getDisplayHelper().drawBorder(graphics, layoutElement.getRectangle(), 1, 0x8800FF00, true);
-			}
-		}
+	public void renderDebug(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks, RenderDebugContext context) {
+		super.renderDebug(graphics, mouseX, mouseY, partialTicks, context);
+		JadeUI.visitChildrenRecursive(
+				layout, layoutElement -> {
+					if (layoutElement instanceof Element element) {
+						element.renderDebug(graphics, mouseX, mouseY, partialTicks, context);
+					} else if (layoutElement instanceof Layout) {
+						JadeInternals.getDisplayHelper().drawBorder(graphics, layoutElement.getRectangle(), 1, 0x8800FF00, true);
+					}
+				});
 	}
 
 	//	@Override
