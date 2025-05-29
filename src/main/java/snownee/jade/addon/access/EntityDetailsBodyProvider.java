@@ -20,7 +20,7 @@ import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
-import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.ui.JadeUI;
 import snownee.jade.api.ui.TextElement;
 
 public class EntityDetailsBodyProvider implements IEntityComponentProvider {
@@ -45,7 +45,7 @@ public class EntityDetailsBodyProvider implements IEntityComponentProvider {
 			Entity holder = leashable.getLeashHolder();
 			if (holder instanceof LeashFenceKnotEntity knot) {
 				TextElement text = DistanceProvider.xyz(knot.blockPosition());
-				tooltip.add(IElementHelper.get()
+				tooltip.add(JadeUI
 						.text(Component.translatable("jade.access.entity.leashed_to", text.getString()))
 						.narration(Component.translatable("jade.access.entity.leashed_to", text.getString())));
 			} else if (holder != null) {

@@ -27,7 +27,7 @@ import snownee.jade.api.StreamServerDataProvider;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.IDisplayHelper;
-import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.ui.JadeUI;
 
 public class ChiseledBookshelfProvider implements StreamServerDataProvider<BlockAccessor, ItemStack> {
 	public static final ChiseledBookshelfProvider INSTANCE = new ChiseledBookshelfProvider();
@@ -76,7 +76,7 @@ public class ChiseledBookshelfProvider implements StreamServerDataProvider<Block
 		@Override
 		public @Nullable Element getIcon(BlockAccessor accessor, IPluginConfig config, Element currentIcon) {
 			ItemStack item = getHitBook(accessor);
-			return item.isEmpty() ? null : IElementHelper.get().item(item);
+			return item.isEmpty() ? null : JadeUI.item(item);
 		}
 
 		@Override

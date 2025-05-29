@@ -12,7 +12,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.level.material.Fluids;
 import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.ui.Element;
-import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.ui.JadeUI;
 import snownee.jade.util.FluidTextHelper;
 
 public class FluidView {
@@ -43,7 +43,7 @@ public class FluidView {
 			return null;
 		}
 		long amount = fluidObject.getAmount();
-		FluidView fluidView = new FluidView(IElementHelper.get().fluid(fluidObject));
+		FluidView fluidView = new FluidView(JadeUI.fluid(fluidObject));
 		fluidView.fluidName = fluidObject.getDisplayName();
 		fluidView.current = FluidTextHelper.getUnicodeMillibuckets(amount, true);
 		fluidView.max = FluidTextHelper.getUnicodeMillibuckets(data.capacity, true);

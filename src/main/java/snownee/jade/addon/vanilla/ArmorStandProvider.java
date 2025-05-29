@@ -10,7 +10,7 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.IDisplayHelper;
-import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.ui.JadeUI;
 import snownee.jade.api.ui.ScreenDirection;
 
 public class ArmorStandProvider implements IEntityComponentProvider {
@@ -25,7 +25,7 @@ public class ArmorStandProvider implements IEntityComponentProvider {
 			if (stack.isEmpty()) {
 				continue;
 			}
-			tooltip.add(IElementHelper.get().smallItem(stack));
+			tooltip.add(JadeUI.smallItem(stack));
 			tooltip.append(IDisplayHelper.get().stripColor(stack.getHoverName()));
 			tooltip.setLineMargin(-1, ScreenDirection.DOWN, -1);
 			empty = false;

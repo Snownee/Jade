@@ -13,7 +13,6 @@ import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.ui.BoxElement;
 import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.Element;
-import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.api.ui.ProgressStyle;
 import snownee.jade.api.ui.ResizeableElement;
 import snownee.jade.api.ui.TextElement;
@@ -21,68 +20,53 @@ import snownee.jade.api.view.ProgressView;
 import snownee.jade.impl.Tooltip;
 import snownee.jade.overlay.DisplayHelper;
 
-public class ElementHelper implements IElementHelper {
-	public static final ElementHelper INSTANCE = new ElementHelper();
+public class JadeUIInternal {
 	public static final ResourceLocation DEFAULT_PROGRESS = JadeIds.JADE("progress");
 	public static final ResourceLocation DEFAULT_PROGRESS_BASE = JadeIds.JADE("progress_base");
-	private ResourceLocation uid;
+	private static ResourceLocation uid;
 
-	@Override
-	public boolean isEmptyElement(Element element) {
+	public static boolean isEmptyElement(Element element) {
 		return element == null || element == ItemStackElement.EMPTY;
 	}
 
-	@Override
-	public TextElement text(Component component) {
+	public static TextElement text(Component component) {
 		return new TextElementImpl(component);
 	}
 
-	@Override
-	public Element item(ItemStack stack) {
+	public static Element item(ItemStack stack) {
 		return ItemStackElement.of(stack);
 	}
 
-	@Override
-	public Element item(ItemStack stack, float scale) {
+	public static Element item(ItemStack stack, float scale) {
 		return ItemStackElement.of(stack, scale);
 	}
 
-	@Override
-	public Element item(ItemStack stack, float scale, String text) {
+	public static Element item(ItemStack stack, float scale, String text) {
 		return ItemStackElement.of(stack, scale, text);
 	}
 
-	@Override
-	public Element smallItem(ItemStack stack) {
+	public static Element smallItem(ItemStack stack) {
 		int lineHeight = DisplayHelper.font().lineHeight;
-		return item(stack, 0.5F, "")
-				.size(lineHeight + 1, lineHeight - 1)
-				.offset(0, -1)
-				.narration("");
+		return item(stack, 0.5F, "").size(lineHeight + 1, lineHeight - 1).offset(0, -1).narration("");
 	}
 
-	@Override
-	public Element fluid(JadeFluidObject fluid) {
+	public static Element fluid(JadeFluidObject fluid) {
 		return new FluidStackElement(fluid);
 	}
 
-	@Override
-	public SpacerElement spacer(int width, int height) {
+	public static SpacerElement spacer(int width, int height) {
 		return new SpacerElement(width, height);
 	}
 
-	@Override
-	public Element progressArrow(float progress) {
+	public static Element progressArrow(float progress) {
 		return progress(progress, DEFAULT_PROGRESS_BASE, DEFAULT_PROGRESS, 22, 16, null, null);
 	}
 
-	@Override
-	public ResizeableElement progress(ProgressView view) {
+	public static ResizeableElement progress(ProgressView view) {
 		return new ProgressElement(view);
 	}
 
-	@Override
-	public ResizeableElement progress(
+	public static ResizeableElement progress(
 			float progress,
 			ResourceLocation baseSprite,
 			ResourceLocation progressSprite,
@@ -97,13 +81,11 @@ public class ElementHelper implements IElementHelper {
 				BoxStyle.getSprite(baseSprite, null)));
 	}
 
-	@Override
-	public BoxElement box(ITooltip tooltip, BoxStyle boxStyle) {
+	public static BoxElement box(ITooltip tooltip, BoxStyle boxStyle) {
 		return new BoxElementImpl((Tooltip) tooltip, boxStyle);
 	}
 
-	@Override
-	public ITooltip tooltip(@Nullable Element icon) {
+	public static ITooltip tooltip(@Nullable Element icon) {
 		Tooltip tooltip = new Tooltip();
 		if (icon != null) {
 			tooltip.setIcon(icon);
@@ -111,38 +93,31 @@ public class ElementHelper implements IElementHelper {
 		return tooltip;
 	}
 
-	@Override
-	public ProgressStyle progressStyle() {
+	public static ProgressStyle progressStyle() {
 		return new SimpleProgressStyle();
 	}
 
-	@Override
-	public Element sprite(RenderPipeline renderPipeline, ResourceLocation sprite, int width, int height) {
+	public static Element sprite(RenderPipeline renderPipeline, ResourceLocation sprite, int width, int height) {
 		return new SpriteElement(renderPipeline, sprite, width, height);
 	}
 
-	@Override
-	public Element sprite(ResourceLocation sprite, int width, int height) {
+	public static Element sprite(ResourceLocation sprite, int width, int height) {
 		return new SpriteElement(sprite, width, height);
 	}
 
-	@Override
-	public ResizeableElement offset(Element element, int x, int y) {
+	public static ResizeableElement offset(Element element, int x, int y) {
 		return spacer(element.getWidth(), element.getHeight()).wrapped(element).offset(x, y);
 	}
 
-	@Override
-	public ResizeableElement size(Element element, int width, int height) {
+	public static ResizeableElement size(Element element, int width, int height) {
 		return spacer(width, height).wrapped(element);
 	}
 
-	@Nullable
-	public ResourceLocation currentUid() {
+	public static @Nullable ResourceLocation currentUid() {
 		return uid;
 	}
 
-	public void setCurrentUid(ResourceLocation uid) {
-		this.uid = uid;
+	public static void setCurrentUid(ResourceLocation uid) {
+		JadeUIInternal.uid = uid;
 	}
-
 }

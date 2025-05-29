@@ -34,7 +34,7 @@ import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
-import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.ui.JadeUI;
 import snownee.jade.api.ui.TextElement;
 import snownee.jade.impl.config.WailaConfig;
 import snownee.jade.overlay.DisplayHelper;
@@ -140,7 +140,7 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener<JadeClientCode
 			modNameStyleCache[1] = themeStyle;
 			modNameStyleCache[2] = style;
 		}
-		return IElementHelper.get()
+		return JadeUI
 				.text(component.withStyle(modNameStyleCache[2]))
 				.scale(Objects.equals(IWailaConfig.get().plugin().getEnum(JadeIds.CORE_MOD_NAME), ModNameProvider.Mode.SMALLER) ?
 						0.75F :

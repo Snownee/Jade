@@ -15,9 +15,9 @@ import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.ui.Element;
-import snownee.jade.api.ui.IElementHelper;
-import snownee.jade.impl.ui.ElementHelper;
+import snownee.jade.api.ui.JadeUI;
 import snownee.jade.impl.ui.ItemStackElement;
+import snownee.jade.impl.ui.JadeUIInternal;
 import snownee.jade.network.RequestEntityPacket;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
@@ -71,7 +71,7 @@ public class EntityAccessorClientHandler implements AccessorClientHandler<Entity
 		for (var provider : WailaClientRegistration.instance().getEntityIconProviders(entity, this::isEnabled)) {
 			try {
 				Element element = provider.getIcon(accessor, IWailaConfig.get().plugin(), icon);
-				if (!IElementHelper.get().isEmptyElement(element)) {
+				if (!JadeUI.isEmptyElement(element)) {
 					icon = element;
 				}
 			} catch (Throwable e) {
@@ -86,12 +86,12 @@ public class EntityAccessorClientHandler implements AccessorClientHandler<Entity
 		for (var provider : WailaClientRegistration.instance().getEntityProviders(accessor.getEntity(), this::isEnabled)) {
 			ITooltip tooltip = tooltipProvider.apply(provider);
 			try {
-				ElementHelper.INSTANCE.setCurrentUid(provider.getUid());
+				JadeUIInternal.setCurrentUid(provider.getUid());
 				provider.appendTooltip(tooltip, accessor, IWailaConfig.get().plugin());
 			} catch (Throwable e) {
 				WailaExceptionHandler.handleErr(e, provider, tooltip::add);
 			} finally {
-				ElementHelper.INSTANCE.setCurrentUid(null);
+				JadeUIInternal.setCurrentUid(null);
 			}
 		}
 	}

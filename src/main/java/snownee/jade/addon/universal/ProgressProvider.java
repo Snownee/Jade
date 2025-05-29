@@ -18,7 +18,7 @@ import snownee.jade.api.StreamServerDataProvider;
 import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.BoxStyle;
-import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.ui.JadeUI;
 import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.view.ClientViewGroup;
 import snownee.jade.api.view.IServerExtensionProvider;
@@ -53,7 +53,6 @@ public class ProgressProvider<T extends Accessor<?>> implements StreamServerData
 				return;
 			}
 
-			IElementHelper helper = IElementHelper.get();
 			boolean renderGroup = groups.size() > 1 || groups.getFirst().shouldRenderGroup();
 			BoxStyle boxStyle = BoxStyle.getTransparent();
 			//FIXME
@@ -65,10 +64,10 @@ public class ProgressProvider<T extends Accessor<?>> implements StreamServerData
 						}
 						for (var view : group.views) {
 							if (view.text != null) {
-								theTooltip.add(helper.text(view.text).scale(0.75F));
+								theTooltip.add(JadeUI.text(view.text).scale(0.75F));
 								theTooltip.setLineMargin(-1, ScreenDirection.DOWN, 0);
 							}
-							theTooltip.add(helper.progress(view));
+							theTooltip.add(JadeUI.progress(view));
 						}
 					});
 		}

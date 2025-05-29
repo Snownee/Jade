@@ -15,7 +15,7 @@ import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.Element;
-import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.ui.JadeUI;
 import snownee.jade.impl.ui.CompoundElement;
 
 public class WaxedProvider implements IBlockComponentProvider {
@@ -26,11 +26,10 @@ public class WaxedProvider implements IBlockComponentProvider {
 		if (accessor.getPickedResult().isEmpty()) {
 			return currentIcon;
 		}
-		IElementHelper helper = IElementHelper.get();
-		Element largeIcon = helper.item(accessor.getPickedResult());
+		Element largeIcon = JadeUI.item(accessor.getPickedResult());
 		if (accessor.getBlockEntity() instanceof SignBlockEntity sign) {
 			if (sign.isWaxed()) {
-				return new CompoundElement(largeIcon, helper.item(Items.HONEYCOMB.getDefaultInstance(), 0.5f));
+				return new CompoundElement(largeIcon, JadeUI.item(Items.HONEYCOMB.getDefaultInstance(), 0.5f));
 			} else {
 				return largeIcon;
 			}

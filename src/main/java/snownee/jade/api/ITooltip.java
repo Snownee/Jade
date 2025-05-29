@@ -11,7 +11,7 @@ import net.minecraft.client.gui.narration.NarrationSupplier;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.api.ui.Element;
-import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.ui.JadeUI;
 import snownee.jade.api.ui.ScreenDirection;
 
 /**
@@ -52,7 +52,7 @@ public interface ITooltip extends NarrationSupplier {
 	}
 
 	default void add(int index, Component component, ResourceLocation tag) {
-		add(index, IElementHelper.get().text(component).tag(tag));
+		add(index, JadeUI.text(component).tag(tag));
 	}
 
 	default void addAll(List<Component> components) {
@@ -99,7 +99,7 @@ public interface ITooltip extends NarrationSupplier {
 	 * IMPORTANT: DO NOT use this to concat texts
 	 */
 	default void append(Component component, ResourceLocation tag) {
-		append(IElementHelper.get().text(component).tag(tag));
+		append(JadeUI.text(component).tag(tag));
 	}
 
 	/**

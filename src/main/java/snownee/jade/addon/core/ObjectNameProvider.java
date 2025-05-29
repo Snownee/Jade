@@ -38,7 +38,7 @@ import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.Element;
-import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.ui.JadeUI;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.ui.ItemStackElement;
 import snownee.jade.mixin.EntityAccess;
@@ -116,7 +116,7 @@ public abstract class ObjectNameProvider implements IToggleableProvider {
 		Element icon = tooltip.getIcon();
 		Element newIcon;
 		if (icon instanceof ItemStackElement itemStackElement) {
-			newIcon = IElementHelper.get().smallItem(itemStackElement.getItem());
+			newIcon = JadeUI.smallItem(itemStackElement.getItem());
 		} else {
 			newIcon = null;
 		}

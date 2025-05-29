@@ -11,7 +11,7 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.Element;
-import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.ui.JadeUI;
 
 public class FallingBlockProvider implements IEntityComponentProvider {
 	public static final FallingBlockProvider INSTANCE = new FallingBlockProvider();
@@ -28,7 +28,7 @@ public class FallingBlockProvider implements IEntityComponentProvider {
 		if (stack.isEmpty()) {
 			return currentIcon;
 		}
-		return IElementHelper.get().item(stack);
+		return JadeUI.item(stack);
 	}
 
 	@Override

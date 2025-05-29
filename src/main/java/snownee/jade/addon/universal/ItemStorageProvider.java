@@ -42,7 +42,7 @@ import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.IDisplayHelper;
-import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.ui.JadeUI;
 import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.view.ClientViewGroup;
 import snownee.jade.api.view.IClientExtensionProvider;
@@ -126,14 +126,13 @@ public class ItemStorageProvider<T extends Accessor<?>> implements IServerDataPr
 				}
 			}
 
-			IElementHelper helper = IElementHelper.get();
 			boolean renderGroup = groups.size() > 1 || groups.getFirst().shouldRenderGroup();
 			ClientViewGroup.tooltip(
 					tooltip, groups, renderGroup, (theTooltip, group) -> {
 						if (renderGroup) {
 							theTooltip.add(new HorizontalLineElement());
 							if (group.title != null) {
-								theTooltip.append(helper.text(group.title).scale(0.5F));
+								theTooltip.append(JadeUI.text(group.title).scale(0.5F));
 								theTooltip.append(new HorizontalLineElement());
 							}
 						}
@@ -170,23 +169,23 @@ public class ItemStorageProvider<T extends Accessor<?>> implements IServerDataPr
 
 							if (showName.isTrue()) {
 								if (itemView.description != null) {
-									elements.add(helper.smallItem(stack));
+									elements.add(JadeUI.smallItem(stack));
 									elements.addAll(itemView.description);
 								} else {
-									elements.add(helper.smallItem(stack).refreshNarration());
+									elements.add(JadeUI.smallItem(stack).refreshNarration());
 									String s = IDisplayHelper.get().humanReadableNumber(stack.getCount(), "", false, null);
 									int width = Minecraft.getInstance().font.width(s);
 									if (width < amountWidth.intValue()) {
-										elements.add(helper.spacer(amountWidth.intValue() - width, 0));
+										elements.add(JadeUI.spacer(amountWidth.intValue() - width, 0));
 									}
-									elements.add(helper.text(Component.literal(s)
+									elements.add(JadeUI.text(Component.literal(s)
 											.append("× ")
 											.append(IDisplayHelper.get().stripColor(stack.getHoverName()))).narration(""));
 								}
 							} else if (itemView.amountText != null) {
-								elements.add(helper.item(stack, 1, itemView.amountText));
+								elements.add(JadeUI.item(stack, 1, itemView.amountText));
 							} else {
-								elements.add(helper.item(stack));
+								elements.add(JadeUI.item(stack));
 							}
 							drawnCount += 1;
 						}

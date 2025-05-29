@@ -31,12 +31,12 @@ public abstract class Element implements Renderable, LayoutElement, NarrationSup
 
 	@Contract("_, _ -> new")
 	public ResizeableElement offset(int x, int y) {
-		return IElementHelper.get().offset(this, x, y);
+		return JadeUI.offset(this, x, y);
 	}
 
 	@Contract("_, _ -> new")
 	public ResizeableElement size(int width, int height) {
-		return IElementHelper.get().size(this, width, height);
+		return JadeUI.size(this, width, height);
 	}
 
 	@Contract("_ -> this")

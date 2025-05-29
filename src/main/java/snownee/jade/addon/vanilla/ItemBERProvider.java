@@ -14,7 +14,7 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.Element;
-import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.ui.JadeUI;
 
 public class ItemBERProvider implements IBlockComponentProvider {
 	public static final ItemBERProvider INSTANCE = new ItemBERProvider();
@@ -31,7 +31,7 @@ public class ItemBERProvider implements IBlockComponentProvider {
 			blockEntity.removeComponentsFromTag(tagValueOutput);
 			BlockItem.setBlockEntityData(itemStack, blockEntity.getType(), tagValueOutput);
 			itemStack.applyComponents(blockEntity.collectComponents());
-			return IElementHelper.get().item(itemStack);
+			return JadeUI.item(itemStack);
 		}
 		return null;
 	}

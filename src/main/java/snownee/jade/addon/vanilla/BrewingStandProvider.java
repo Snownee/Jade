@@ -16,7 +16,7 @@ import snownee.jade.api.JadeIds;
 import snownee.jade.api.StreamServerDataProvider;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
-import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.ui.JadeUI;
 
 public class BrewingStandProvider implements StreamServerDataProvider<BlockAccessor, BrewingStandProvider.Data> {
 	public static final BrewingStandProvider INSTANCE = new BrewingStandProvider();
@@ -55,13 +55,12 @@ public class BrewingStandProvider implements StreamServerDataProvider<BlockAcces
 			if (data == null) {
 				return;
 			}
-			IElementHelper helper = IElementHelper.get();
-			tooltip.add(helper.smallItem(new ItemStack(Items.BLAZE_POWDER)).narration(""));
-			tooltip.append(helper.text(IThemeHelper.get().info(data.fuel))
+			tooltip.add(JadeUI.smallItem(new ItemStack(Items.BLAZE_POWDER)).narration(""));
+			tooltip.append(JadeUI.text(IThemeHelper.get().info(data.fuel))
 					.narration(Component.translatable("narration.jade.brewingStand.fuel", data.fuel)));
 			if (data.time > 0) {
-				tooltip.append(helper.spacer(5, 0));
-				tooltip.append(helper.smallItem(new ItemStack(Items.CLOCK)).narration(""));
+				tooltip.append(JadeUI.spacer(5, 0));
+				tooltip.append(JadeUI.smallItem(new ItemStack(Items.CLOCK)).narration(""));
 				tooltip.append(IThemeHelper.get().seconds(data.time, accessor.tickRate()));
 			}
 		}

@@ -10,7 +10,7 @@ import snownee.jade.api.Accessor;
 import snownee.jade.api.AccessorClientHandler;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.ui.Element;
-import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.ui.JadeUI;
 
 public final class ObjectDataCenter {
 
@@ -89,7 +89,7 @@ public final class ObjectDataCenter {
 			return null;
 		}
 		Element icon = clientHandler.getIcon(accessor);
-		if (IElementHelper.get().isEmptyElement(icon)) {
+		if (JadeUI.isEmptyElement(icon)) {
 			return null;
 		}
 		return icon;

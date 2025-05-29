@@ -21,10 +21,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.ui.Element;
-import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.ui.JadeUI;
 import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.ui.TextElement;
-import snownee.jade.impl.ui.ElementHelper;
+import snownee.jade.impl.ui.JadeUIInternal;
 
 public class Tooltip implements ITooltip {
 	private static ResourceLocation getTag(LayoutElement element) {
@@ -55,7 +55,7 @@ public class Tooltip implements ITooltip {
 	@Override
 	public void append(int index, LayoutElement element) {
 		if (element instanceof Element taggable && taggable.getTag() == null) {
-			taggable.tag(ElementHelper.INSTANCE.currentUid());
+			taggable.tag(JadeUIInternal.currentUid());
 		}
 		if (isEmpty() || index == size()) {
 			add(element);
@@ -114,7 +114,7 @@ public class Tooltip implements ITooltip {
 
 	@Override
 	public boolean replace(ResourceLocation tag, Component component) {
-		return replace(tag, $ -> List.of(List.of(IElementHelper.get().text(component))));
+		return replace(tag, $ -> List.of(List.of(JadeUI.text(component))));
 	}
 
 	@Override

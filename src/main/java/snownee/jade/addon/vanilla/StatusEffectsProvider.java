@@ -24,7 +24,7 @@ import snownee.jade.api.StreamServerDataProvider;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.BoxStyle;
-import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.ui.JadeUI;
 
 public class StatusEffectsProvider implements StreamServerDataProvider<EntityAccessor, List<MobEffectInstance>> {
 	public static final StatusEffectsProvider INSTANCE = new StatusEffectsProvider();
@@ -75,8 +75,7 @@ public class StatusEffectsProvider implements StreamServerDataProvider<EntityAcc
 			if (effects.isEmpty()) {
 				return;
 			}
-			IElementHelper helper = IElementHelper.get();
-			ITooltip box = helper.tooltip();
+			ITooltip box = JadeUI.tooltip();
 			for (var effect : effects) {
 				Component name = getEffectName(effect);
 				String duration;
@@ -89,7 +88,7 @@ public class StatusEffectsProvider implements StreamServerDataProvider<EntityAcc
 				IThemeHelper t = IThemeHelper.get();
 				box.add(effect.getEffect().value().getCategory() == MobEffectCategory.HARMFUL ? t.danger(s) : t.success(s));
 			}
-			tooltip.add(helper.box(box, BoxStyle.getNestedBox()));
+			tooltip.add(JadeUI.box(box, BoxStyle.getNestedBox()));
 		}
 
 		@Override

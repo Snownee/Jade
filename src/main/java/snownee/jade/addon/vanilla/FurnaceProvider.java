@@ -14,7 +14,7 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.StreamServerDataProvider;
 import snownee.jade.api.config.IPluginConfig;
-import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.ui.JadeUI;
 
 public class FurnaceProvider implements StreamServerDataProvider<BlockAccessor, FurnaceProvider.Data> {
 	public static final FurnaceProvider INSTANCE = new FurnaceProvider();
@@ -58,12 +58,11 @@ public class FurnaceProvider implements StreamServerDataProvider<BlockAccessor, 
 			if (data == null) {
 				return;
 			}
-			IElementHelper helper = IElementHelper.get();
-			tooltip.add(helper.item(data.inventory.get(0)));
-			tooltip.append(helper.item(data.inventory.get(1)));
-			tooltip.append(helper.spacer(4, 0));
-			tooltip.append(helper.progressArrow((float) data.progress / data.total).offset(-2, 0));
-			tooltip.append(helper.item(data.inventory.get(2)));
+			tooltip.add(JadeUI.item(data.inventory.get(0)));
+			tooltip.append(JadeUI.item(data.inventory.get(1)));
+			tooltip.append(JadeUI.spacer(4, 0));
+			tooltip.append(JadeUI.progressArrow((float) data.progress / data.total).offset(-2, 0));
+			tooltip.append(JadeUI.item(data.inventory.get(2)));
 		}
 
 		@Override

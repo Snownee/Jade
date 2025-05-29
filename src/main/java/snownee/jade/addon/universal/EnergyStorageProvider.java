@@ -22,7 +22,7 @@ import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.ui.BoxStyle;
-import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.ui.JadeUI;
 import snownee.jade.api.view.ClientViewGroup;
 import snownee.jade.api.view.EnergyView;
 import snownee.jade.api.view.IClientExtensionProvider;
@@ -62,7 +62,6 @@ public class EnergyStorageProvider<T extends Accessor<?>> implements StreamServe
 				return;
 			}
 
-			IElementHelper helper = IElementHelper.get();
 			boolean renderGroup = groups.size() > 1 || groups.getFirst().shouldRenderGroup();
 			ClientViewGroup.tooltip(
 					tooltip, groups, renderGroup, (theTooltip, group) -> {
@@ -85,7 +84,7 @@ public class EnergyStorageProvider<T extends Accessor<?>> implements StreamServe
 							switch (style) {
 								case PLAIN_TEXT -> theTooltip.add(Component.translatable("jade.energy.text", text));
 								case ICON -> {
-									theTooltip.add(helper.sprite(JadeIds.JADE("energy"), 10, 10)
+									theTooltip.add(JadeUI.sprite(JadeIds.JADE("energy"), 10, 10)
 											.size(10, 9)
 											.offset(0, -1));
 									theTooltip.append(text);
@@ -94,9 +93,9 @@ public class EnergyStorageProvider<T extends Accessor<?>> implements StreamServe
 									ProgressView progressView = new ProgressView(
 											ProgressView.Part.of(view.ratio),
 											text,
-											helper.progressStyle(),
+											JadeUI.progressStyle(),
 											BoxStyle.getNestedBox());
-									theTooltip.add(helper.progress(progressView));
+									theTooltip.add(JadeUI.progress(progressView));
 								}
 							}
 						}

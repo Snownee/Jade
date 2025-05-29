@@ -18,7 +18,7 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.Element;
-import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.ui.JadeUI;
 
 public enum ExampleComponentProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
 
@@ -31,7 +31,7 @@ public enum ExampleComponentProvider implements IBlockComponentProvider, IServer
 					Jade.LOGGER.info("Button clicked in ExampleComponentProvider");
 				}).build());
 		if (accessor.getServerData().contains("Fuel")) {
-			Element icon = IElementHelper.get().smallItem(new ItemStack(Items.CLOCK));
+			Element icon = JadeUI.smallItem(new ItemStack(Items.CLOCK));
 			tooltip.add(icon);
 			tooltip.append(Component.translatable("mymod.fuel", accessor.getServerData().getIntOr("Fuel", 0)));
 		}
@@ -39,15 +39,15 @@ public enum ExampleComponentProvider implements IBlockComponentProvider, IServer
 		Component test1 = Component.literal("1");
 		Component test2 = Component.literal("2");
 		Component test3 = Component.literal("3");
-		tooltip.add(IElementHelper.get().text(test1).flexGrow(1));
-		tooltip.append(IElementHelper.get().text(test2).flexGrow(1));
-		tooltip.append(IElementHelper.get().text(test3).flexGrow(2));
+		tooltip.add(JadeUI.text(test1).flexGrow(1));
+		tooltip.append(JadeUI.text(test2).flexGrow(1));
+		tooltip.append(JadeUI.text(test3).flexGrow(2));
 
-		tooltip.add(IElementHelper.get().text(test1).flexGrow(1));
-		tooltip.append(IElementHelper.get().text(test2).flexGrow(0));
-		tooltip.append(IElementHelper.get().text(test3).flexGrow(2));
+		tooltip.add(JadeUI.text(test1).flexGrow(1));
+		tooltip.append(JadeUI.text(test2).flexGrow(0));
+		tooltip.append(JadeUI.text(test3).flexGrow(2));
 
-		Element text = IElementHelper.get().text(Component.literal("test"));
+		Element text = JadeUI.text(Component.literal("test"));
 		tooltip.replace(JadeIds.CORE_OBJECT_NAME, $ -> List.of(List.of(text), List.of(text), List.of(text)));
 	}
 

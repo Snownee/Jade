@@ -10,7 +10,7 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.Element;
-import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.ui.JadeUI;
 
 public class ItemDisplayProvider implements IEntityComponentProvider {
 	public static final ItemDisplayProvider INSTANCE = new ItemDisplayProvider();
@@ -21,7 +21,7 @@ public class ItemDisplayProvider implements IEntityComponentProvider {
 		if (itemDisplay.getSlot(0).get().isEmpty()) {
 			return null;
 		}
-		return IElementHelper.get().item(itemDisplay.getSlot(0).get());
+		return JadeUI.item(itemDisplay.getSlot(0).get());
 	}
 
 	@Override

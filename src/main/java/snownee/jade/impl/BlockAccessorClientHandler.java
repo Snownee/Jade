@@ -15,9 +15,9 @@ import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.ui.Element;
-import snownee.jade.api.ui.IElementHelper;
-import snownee.jade.impl.ui.ElementHelper;
+import snownee.jade.api.ui.JadeUI;
 import snownee.jade.impl.ui.ItemStackElement;
+import snownee.jade.impl.ui.JadeUIInternal;
 import snownee.jade.network.RequestBlockPacket;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.WailaExceptionHandler;
@@ -63,18 +63,18 @@ public class BlockAccessorClientHandler implements AccessorClientHandler<BlockAc
 			}
 		}
 
-		if (IElementHelper.get().isEmptyElement(icon) && block.asItem() != Items.AIR) {
+		if (JadeUI.isEmptyElement(icon) && block.asItem() != Items.AIR) {
 			icon = ItemStackElement.of(new ItemStack(block));
 		}
 
-		if (IElementHelper.get().isEmptyElement(icon) && block instanceof LiquidBlock) {
+		if (JadeUI.isEmptyElement(icon) && block instanceof LiquidBlock) {
 			icon = ClientProxy.elementFromLiquid(blockState);
 		}
 
 		for (var provider : WailaClientRegistration.instance().getBlockIconProviders(block, this::isEnabled)) {
 			try {
 				Element element = provider.getIcon(accessor, IWailaConfig.get().plugin(), icon);
-				if (!IElementHelper.get().isEmptyElement(element)) {
+				if (!JadeUI.isEmptyElement(element)) {
 					icon = element;
 				}
 			} catch (Throwable e) {
@@ -89,12 +89,12 @@ public class BlockAccessorClientHandler implements AccessorClientHandler<BlockAc
 		for (var provider : WailaClientRegistration.instance().getBlockProviders(accessor.getBlock(), this::isEnabled)) {
 			ITooltip tooltip = tooltipProvider.apply(provider);
 			try {
-				ElementHelper.INSTANCE.setCurrentUid(provider.getUid());
+				JadeUIInternal.setCurrentUid(provider.getUid());
 				provider.appendTooltip(tooltip, accessor, IWailaConfig.get().plugin());
 			} catch (Throwable e) {
 				WailaExceptionHandler.handleErr(e, provider, tooltip::add);
 			} finally {
-				ElementHelper.INSTANCE.setCurrentUid(null);
+				JadeUIInternal.setCurrentUid(null);
 			}
 		}
 	}

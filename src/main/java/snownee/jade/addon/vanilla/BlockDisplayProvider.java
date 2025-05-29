@@ -14,7 +14,7 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.Element;
-import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.ui.JadeUI;
 import snownee.jade.impl.ui.ItemStackElement;
 import snownee.jade.util.ClientProxy;
 
@@ -29,7 +29,7 @@ public class BlockDisplayProvider implements IEntityComponentProvider {
 			return null;
 		}
 		Element icon = ItemStackElement.of(new ItemStack(block));
-		if (IElementHelper.get().isEmptyElement(icon) && block instanceof LiquidBlock) {
+		if (JadeUI.isEmptyElement(icon) && block instanceof LiquidBlock) {
 			icon = ClientProxy.elementFromLiquid(itemDisplay.getBlockState());
 		}
 		return icon;

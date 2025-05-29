@@ -12,7 +12,7 @@ import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
-import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.ui.JadeUI;
 
 public class BlockFaceProvider implements IBlockComponentProvider {
 	public static final BlockFaceProvider INSTANCE = new BlockFaceProvider();
@@ -22,7 +22,7 @@ public class BlockFaceProvider implements IBlockComponentProvider {
 		tooltip.replace(
 				JadeIds.CORE_OBJECT_NAME, lists -> {
 					List<LayoutElement> lastList = lists.getLast();
-					lastList.add(IElementHelper.get().text(Component.translatable("jade.blockFace", directionName(accessor.getSide()))));
+					lastList.add(JadeUI.text(Component.translatable("jade.blockFace", directionName(accessor.getSide()))));
 					return lists;
 				});
 	}

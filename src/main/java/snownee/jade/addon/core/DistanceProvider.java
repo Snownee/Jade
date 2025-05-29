@@ -19,7 +19,7 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
-import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.ui.JadeUI;
 import snownee.jade.api.ui.TextElement;
 import snownee.jade.impl.theme.ThemeHelper;
 
@@ -66,7 +66,7 @@ public abstract class DistanceProvider implements IToggleableProvider {
 				narrate(pos.getX()),
 				narrate(pos.getY()),
 				narrate(pos.getZ()));
-		TextElement text = IElementHelper.get().text(display);
+		TextElement text = JadeUI.text(display);
 		text.narration(narration);
 		return text;
 	}
@@ -93,12 +93,12 @@ public abstract class DistanceProvider implements IToggleableProvider {
 				tooltip.add(xyz(pos));
 			}
 			if (distance) {
-				tooltip.append(IElementHelper.get()
+				tooltip.append(JadeUI
 						.text(Component.translatable("jade.distance1", distanceVal))
 						.narration(Component.literal(distanceMsg)));
 			}
 		} else if (distance) {
-			tooltip.add(IElementHelper.get()
+			tooltip.add(JadeUI
 					.text(Component.translatable("jade.distance2", distanceVal))
 					.narration(Component.literal(distanceMsg)));
 		}

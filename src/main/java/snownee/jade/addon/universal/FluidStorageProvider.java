@@ -24,7 +24,7 @@ import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.IDisplayHelper;
-import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.ui.JadeUI;
 import snownee.jade.api.view.ClientViewGroup;
 import snownee.jade.api.view.FluidView;
 import snownee.jade.api.view.IClientExtensionProvider;
@@ -64,7 +64,6 @@ public class FluidStorageProvider<T extends Accessor<?>> implements StreamServer
 				return;
 			}
 
-			IElementHelper helper = IElementHelper.get();
 			boolean renderGroup = groups.size() > 1 || groups.getFirst().shouldRenderGroup();
 			ClientViewGroup.tooltip(
 					tooltip, groups, renderGroup, (theTooltip, group) -> {
@@ -97,16 +96,16 @@ public class FluidStorageProvider<T extends Accessor<?>> implements StreamServer
 							switch (style) {
 								case PLAIN_TEXT -> theTooltip.add(text);
 								case ICON -> {
-									theTooltip.add(helper.smallItem(new ItemStack(Items.BUCKET)));
+									theTooltip.add(JadeUI.smallItem(new ItemStack(Items.BUCKET)));
 									theTooltip.append(text);
 								}
 								case PROGRESS_BAR -> {
 									ProgressView progressView = new ProgressView(
 											ProgressView.Part.of(view.ratio),
 											text,
-											helper.progressStyle(),
+											JadeUI.progressStyle(),
 											BoxStyle.getNestedBox());
-									theTooltip.add(helper.progress(progressView));
+									theTooltip.add(JadeUI.progress(progressView));
 								}
 							}
 						}

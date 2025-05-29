@@ -12,7 +12,7 @@ import net.minecraft.network.chat.Component;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.ui.BoxElement;
 import snownee.jade.api.ui.BoxStyle;
-import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.ui.JadeUI;
 import snownee.jade.api.ui.MessageType;
 import snownee.jade.impl.ui.HorizontalLineElement;
 
@@ -55,11 +55,11 @@ public class ClientViewGroup<T> {
 			boolean renderGroup,
 			BiConsumer<ITooltip, ClientViewGroup<T>> consumer) {
 		for (var group : groups) {
-			ITooltip theTooltip = renderGroup ? IElementHelper.get().tooltip() : tooltip;
+			ITooltip theTooltip = renderGroup ? JadeUI.tooltip() : tooltip;
 			consumer.accept(theTooltip, group);
 			if (renderGroup) {
 				BoxStyle boxStyle = BoxStyle.getViewGroup().clone();
-				BoxElement box = IElementHelper.get().box(theTooltip, boxStyle);
+				BoxElement box = JadeUI.box(theTooltip, boxStyle);
 //				box.setBoxProgress(group.messageType, group.boxProgress); //TODO
 //				if (group.title != null) {
 //					box.setPadding(ScreenDirection.UP, 0);
@@ -77,7 +77,7 @@ public class ClientViewGroup<T> {
 	public void renderHeader(ITooltip tooltip) {
 		if (title != null) {
 			tooltip.add(new HorizontalLineElement());
-			tooltip.append(IElementHelper.get().text(title).scale(0.5F));
+			tooltip.append(JadeUI.text(title).scale(0.5F));
 			tooltip.append(new HorizontalLineElement());
 		}
 //		else if (bgColor == 0) {

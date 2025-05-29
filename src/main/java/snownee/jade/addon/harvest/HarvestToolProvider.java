@@ -34,7 +34,7 @@ import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.Element;
-import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.ui.JadeUI;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
 import snownee.jade.util.KeyedResourceManagerReloadListener;
@@ -131,7 +131,7 @@ public class HarvestToolProvider implements IBlockComponentProvider, KeyedResour
 		if (destroySpeed < 0 || destroyProgress <= 0) {
 			if (config.get(JadeIds.MC_SHOW_UNBREAKABLE)) {
 				Component text = IThemeHelper.get().failure(Component.translatable("jade.harvest_tool.unbreakable"));
-				tooltip.add(IElementHelper.get().text(text).narration(""));
+				tooltip.add(JadeUI.text(text).narration(""));
 			}
 			//TODO: high priority handlers?
 			return;
@@ -169,17 +169,17 @@ public class HarvestToolProvider implements IBlockComponentProvider, KeyedResour
 		boolean newLine = config.get(JadeIds.MC_HARVEST_TOOL_NEW_LINE);
 		List<Element> elements = Lists.newArrayList();
 		for (ItemStack tool : tools) {
-			elements.add(IElementHelper.get().item(tool, 0.75f).offset(-1, offsetY).size(10, 0).narration(""));
+			elements.add(JadeUI.item(tool, 0.75f).offset(-1, offsetY).size(10, 0).narration(""));
 		}
 
 		if (!elements.isEmpty()) {
-			elements.addFirst(IElementHelper.get().spacer(newLine ? -2 : 5, newLine ? 10 : 0).flexGrow(1000));
+			elements.addFirst(JadeUI.spacer(newLine ? -2 : 5, newLine ? 10 : 0).flexGrow(1000));
 			Player player = accessor.getPlayer();
 			boolean canHarvest = CommonProxy.isCorrectToolForDrops(state, player, accessor.getLevel(), accessor.getPosition());
 			if (state.requiresCorrectToolForDrops() || !canHarvest) {
 				IThemeHelper t = IThemeHelper.get();
 				Component text = canHarvest ? t.success(CHECK) : t.danger(X);
-				elements.add(IElementHelper.get().text(text)
+				elements.add(JadeUI.text(text)
 						.scale(0.75F)
 						.size(0, 0)
 						.offset(-3, 6 + offsetY)

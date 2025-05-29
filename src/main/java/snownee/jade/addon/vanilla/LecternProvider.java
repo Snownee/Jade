@@ -14,7 +14,7 @@ import snownee.jade.api.JadeIds;
 import snownee.jade.api.StreamServerDataProvider;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.IDisplayHelper;
-import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.ui.JadeUI;
 
 public class LecternProvider implements StreamServerDataProvider<BlockAccessor, ItemStack> {
 	public static final LecternProvider INSTANCE = new LecternProvider();
@@ -48,9 +48,8 @@ public class LecternProvider implements StreamServerDataProvider<BlockAccessor, 
 			if (stack.isEmpty()) {
 				return;
 			}
-			IElementHelper helper = IElementHelper.get();
-			tooltip.add(helper.smallItem(stack));
-			tooltip.append(helper.text(IDisplayHelper.get().stripColor(stack.getHoverName()))
+			tooltip.add(JadeUI.smallItem(stack));
+			tooltip.append(JadeUI.text(IDisplayHelper.get().stripColor(stack.getHoverName()))
 					.narration(Component.translatable("narration.jade.bookName", stack.getHoverName())));
 		}
 
