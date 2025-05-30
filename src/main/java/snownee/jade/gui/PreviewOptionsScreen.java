@@ -106,7 +106,7 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 		}
 
 		Objects.requireNonNull(minecraft);
-		Rect2i rect = OverlayRenderer.rect.expectedRect;
+		Rect2i rect = OverlayRenderer.animation.expectedRect;
 		if (rect.contains((int) mouseX, (int) mouseY)) {
 			setDragging(true);
 			adjustDragging = true;
@@ -177,7 +177,7 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 		if (adjustingPosition && adjustDragging) {
 			float centerX = (float) d - (float) dragOffsetX;
 			float centerY = (float) e - (float) dragOffsetY;
-			Rect2i rect = OverlayRenderer.rect.expectedRect;
+			Rect2i rect = OverlayRenderer.animation.expectedRect;
 			int rectWidth = rect.getWidth();
 			int rectHeight = rect.getHeight();
 			float anchorX = calculateAnchor(centerX, width, rectWidth);
@@ -210,7 +210,7 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 			guiGraphics.drawString(font, text, x, y, 0xFFFFFFFF);
 
 			IWailaConfig.Overlay config = IWailaConfig.get().overlay();
-			Rect2i rect = OverlayRenderer.rect.expectedRect;
+			Rect2i rect = OverlayRenderer.animation.expectedRect;
 			if (IWailaConfig.get().general().isDebug()) {
 				int anchorX = (int) (rect.getX() + rect.getWidth() * config.getAnchorX());
 				int anchorY = (int) (rect.getY() + rect.getHeight() * config.getAnchorY());

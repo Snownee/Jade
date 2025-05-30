@@ -233,16 +233,16 @@ public class DisplayHelper implements IDisplayHelper {
 			GuiGraphics graphics,
 			RenderPipeline renderPipeline,
 			TextureAtlasSprite textureAtlasSprite,
-			int i,
-			int j,
-			int k,
-			int l,
+			int spriteWidth,
+			int spriteHeight,
+			float uStart,
+			float vStart,
 			float x,
 			float y,
-			float w,
-			float h,
+			float width,
+			float height,
 			int color) {
-		if (w == 0 || h == 0) {
+		if (width == 0 || height == 0) {
 			return;
 		}
 		this.innerBlit(
@@ -250,13 +250,13 @@ public class DisplayHelper implements IDisplayHelper {
 				renderPipeline,
 				textureAtlasSprite.atlasLocation(),
 				x,
-				x + w,
+				x + width,
 				y,
-				y + h,
-				textureAtlasSprite.getU(k / i),
-				textureAtlasSprite.getU((k + w) / i),
-				textureAtlasSprite.getV(l / j),
-				textureAtlasSprite.getV((l + h) / j),
+				y + height,
+				textureAtlasSprite.getU(uStart / spriteWidth),
+				textureAtlasSprite.getU((uStart + width) / spriteWidth),
+				textureAtlasSprite.getV(vStart / spriteHeight),
+				textureAtlasSprite.getV((vStart + height) / spriteHeight),
 				color
 		);
 	}
@@ -416,34 +416,46 @@ public class DisplayHelper implements IDisplayHelper {
 		graphics.blitSprite(renderPipeline, resourceLocation, i, j, k, l, m, n, o, p);
 	}
 
-	private void blitTiledSprite(
+	public void blitTiledSprite(
 			GuiGraphics graphics,
 			RenderPipeline renderPipeline,
 			TextureAtlasSprite textureAtlasSprite,
-			float i,
-			float j,
-			float k,
-			float l,
-			int m,
-			int n,
-			int o,
-			int p,
-			int q,
-			int r,
+			float x,
+			float y,
+			float width,
+			float height,
+			float uStart,
+			float vStart,
+			int tileWidth,
+			int tileHeight,
+			int spriteWidth,
+			int spriteHeight,
 			int color
 	) {
-		if (k > 0 && l > 0) {
-			if (o > 0 && p > 0) {
-				for (int t = 0; t < k; t += o) {
-					float u = Math.min(o, k - t);
+		if (width <= 0 || height <= 0) {
+			return;
+		}
+		if (tileWidth <= 0 || tileHeight <= 0) {
+			throw new IllegalArgumentException("Tiled sprite texture size must be positive, got " + tileWidth + "x" + tileHeight);
+		}
+		for (int i = 0; i < width; i += tileWidth) {
+			float u = Math.min(tileWidth, width - i);
 
-					for (int v = 0; v < l; v += p) {
-						float w = Math.min(p, l - v);
-						this.blitSprite(graphics, renderPipeline, textureAtlasSprite, q, r, m, n, i + t, j + v, u, w, color);
-					}
-				}
-			} else {
-				throw new IllegalArgumentException("Tiled sprite texture size must be positive, got " + o + "x" + p);
+			for (int j = 0; j < height; j += tileHeight) {
+				float w = Math.min(tileHeight, height - j);
+				this.blitSprite(
+						graphics,
+						renderPipeline,
+						textureAtlasSprite,
+						spriteWidth,
+						spriteHeight,
+						uStart,
+						vStart,
+						x + i,
+						y + j,
+						u,
+						w,
+						color);
 			}
 		}
 	}
@@ -593,7 +605,7 @@ public class DisplayHelper implements IDisplayHelper {
 
 	@Override
 	public float opacity() {
-		return OverlayRenderer.alpha;
+		return OverlayRenderer.animation.alpha;
 	}
 
 	public static Font font() {

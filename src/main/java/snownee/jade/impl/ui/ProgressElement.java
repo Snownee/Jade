@@ -4,10 +4,15 @@ import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
+import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.Element;
+import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.ResizeableElement;
 import snownee.jade.api.view.ProgressView;
+import snownee.jade.gui.ResizeableLayout;
+import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.track.ProgressTrackInfo;
 
 public class ProgressElement extends ResizeableElement implements StyledElement {
@@ -16,7 +21,12 @@ public class ProgressElement extends ResizeableElement implements StyledElement 
 
 	public ProgressElement(ProgressView view) {
 		this.view = view;
-		height = view.text == null ? 8 : 14;
+		width = 100;
+		height = 8;
+		if (view.text != null) {
+			width = Math.max(width, DisplayHelper.font().width(view.text) + 10);
+			height = 14;
+		}
 	}
 
 //	@Override
@@ -64,7 +74,80 @@ public class ProgressElement extends ResizeableElement implements StyledElement 
 
 	@Override
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+		view.boxStyle.render(graphics, this, getX(), getY(), width, height, IDisplayHelper.get().opacity());
 
+		int freeX = getX() + view.boxStyle.borderWidth();
+		int freeY = getY() + view.boxStyle.borderWidth();
+		int freeWidth = width - view.boxStyle.borderWidth() * 2;
+		int freeHeight = height - view.boxStyle.borderWidth() * 2;
+		float progress = 0;
+		float start = 0;
+		for (int i = 0; i < view.parts.size(); i++) {
+			ProgressView.Part part = view.parts.get(i);
+			if (part.progress() <= 0F) {
+				continue;
+			}
+			progress = Math.min(progress + part.progress(), 1F);
+			start = renderPart(graphics, partialTicks, part, start, freeX, freeY, freeWidth, freeHeight, i == view.parts.size() - 1);
+			if (progress == 1F) {
+				break;
+			}
+		}
+		if (progress > 0) {
+			//TODO draw foreground
+		}
+
+		if (view.text != null) {
+			IDisplayHelper.get().drawText(graphics, view.text, getX() + 4, getY() + 3, IThemeHelper.get().getNormalColor());
+		}
+	}
+
+	private float renderPart(
+			GuiGraphics graphics,
+			float partialTicks,
+			ProgressView.Part part,
+			float start,
+			int x,
+			int y,
+			int width,
+			int height,
+			boolean isLast) {
+		float partWidth = Math.min(part.progress() * width, width - start);
+		int roundedPartWidth = Mth.ceil(partWidth);
+		if (part.overlay() == null) {
+			return start + partWidth;//TODO
+		}
+		graphics.enableScissor(x + (int) start, y, (int) start - roundedPartWidth, height);
+		// we can only draw a sprite from its top-left corner, so only makes the last part more detailed
+		if (isLast && part.overlay() instanceof ProgressOverlayElement element) {
+			element.setFloatingRect(x + start, y, partWidth, height);
+			element.render(graphics, -1, -1, partialTicks);
+//			DisplayHelper.INSTANCE.blitTiledSprite(
+//					graphics,
+//					part.overlay(),
+//					getX() + view.boxStyle.borderWidth() + start,
+//					getY() + view.boxStyle.borderWidth(),
+//					end - start,
+//					height,
+//					0, 0, part.sprite().getWidth(), part.sprite().getHeight(),
+//					0, 0, 1F, 1F);
+			element.setFloatingRect(null);
+			graphics.disableScissor();
+			return start + partWidth;
+		} else {
+			resizeElement(part.overlay(), x + (int) start, y, roundedPartWidth, height);
+			part.overlay().render(graphics, -1, -1, partialTicks);
+			graphics.disableScissor();
+			return start + roundedPartWidth;
+		}
+	}
+
+	private void resizeElement(Element element, int x, int y, int width, int height) {
+		element.setX(x);
+		element.setY(y);
+		if (element instanceof ResizeableLayout resizeableLayout) {
+			resizeableLayout.setFreeSpace(width, height);
+		}
 	}
 
 	@Override
@@ -84,6 +167,11 @@ public class ProgressElement extends ResizeableElement implements StyledElement 
 
 	@Override
 	public void setFreeSpace(int width, int height) {
-
+		if (view.style.fitContentX()) {
+			this.width = width;
+		}
+		if (view.style.fitContentY()) {
+			this.height = height;
+		}
 	}
 }

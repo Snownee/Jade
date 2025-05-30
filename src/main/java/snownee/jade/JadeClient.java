@@ -59,7 +59,7 @@ import snownee.jade.api.theme.Theme;
 import snownee.jade.api.ui.BoxElement;
 import snownee.jade.api.ui.ColorPalette;
 import snownee.jade.api.ui.ScreenDirection;
-import snownee.jade.api.ui.TooltipRect;
+import snownee.jade.api.ui.TooltipAnimation;
 import snownee.jade.conditional_key_mapping.ConditionalKeyMapping;
 import snownee.jade.gui.HomeConfigScreen;
 import snownee.jade.impl.WailaClientRegistration;
@@ -295,12 +295,12 @@ public final class JadeClient {
 		return accessor;
 	}
 
-	public static void drawBreakingProgress(BoxElement rootElement, TooltipRect rect, GuiGraphics guiGraphics, Accessor<?> accessor) {
+	public static void drawBreakingProgress(BoxElement root, TooltipAnimation animation, GuiGraphics graphics, Accessor<?> accessor) {
 		if (!IWailaConfig.get().plugin().get(JadeIds.MC_BREAKING_PROGRESS)) {
 			progressAlpha = 0;
 			return;
 		}
-		if (!Float.isNaN(rootElement.getBoxProgress())) {
+		if (!Float.isNaN(root.getBoxProgress())) {
 			progressAlpha = 0;
 			return;
 		}
@@ -319,8 +319,8 @@ public final class JadeClient {
 		Theme theme = IThemeHelper.get().theme();
 		ColorPalette colors = theme.tooltipStyle.boxProgressColors;
 		int color = canHarvest ? colors.title() : colors.failure();
-		float top = rect.rect.getHeight();
-		float width = rect.rect.getWidth();
+		float top = animation.rect.getHeight();
+		float width = animation.rect.getWidth();
 		progressAlpha += mc.getDeltaTracker().getGameTimeDeltaTicks() * (playerController.isDestroying() ? 0.1F : -0.1F);
 		if (playerController.isDestroying()) {
 			progressAlpha = Math.min(progressAlpha, 0.6F);
@@ -343,7 +343,7 @@ public final class JadeClient {
 		float offset2 = theme.tooltipStyle.boxProgressOffset(ScreenDirection.DOWN);
 		float offset3 = theme.tooltipStyle.boxProgressOffset(ScreenDirection.LEFT);
 		width += offset1 - offset3;
-		DisplayHelper.fill(guiGraphics, offset3, top - 1 + offset0, offset3 + width * savedProgress, top + offset2, color);
+		DisplayHelper.fill(graphics, offset3, top - 1 + offset0, offset3 + width * savedProgress, top + offset2, color);
 	}
 
 	public static MutableComponent format(String s, Object... objects) {

@@ -28,7 +28,7 @@ import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.JadeUI;
 import snownee.jade.api.ui.MessageType;
 import snownee.jade.api.ui.ScreenDirection;
-import snownee.jade.api.ui.TooltipRect;
+import snownee.jade.api.ui.TooltipAnimation;
 import snownee.jade.gui.JadeLinearLayout;
 import snownee.jade.gui.LayoutWithPadding;
 import snownee.jade.gui.PreviewOptionsScreen;
@@ -116,10 +116,10 @@ public class BoxElementImpl extends BoxElement {
 		layout.setY(y);
 	}
 
-	private static void chase(TooltipRect rect, ToIntFunction<Rect2i> getter, IntConsumer setter) {
+	private static void chase(TooltipAnimation animation, ToIntFunction<Rect2i> getter, IntConsumer setter) {
 		if (IWailaConfig.get().overlay().getAnimation()) {
-			int source = getter.applyAsInt(rect.rect);
-			int target = getter.applyAsInt(rect.expectedRect);
+			int source = getter.applyAsInt(animation.rect);
+			int target = getter.applyAsInt(animation.expectedRect);
 			float diff = target - source;
 			if (diff == 0) {
 				return;
@@ -137,7 +137,7 @@ public class BoxElementImpl extends BoxElement {
 			}
 			setter.accept((int) (source + diff));
 		} else {
-			setter.accept(getter.applyAsInt(rect.expectedRect));
+			setter.accept(getter.applyAsInt(animation.expectedRect));
 		}
 	}
 
@@ -354,7 +354,7 @@ public class BoxElementImpl extends BoxElement {
 		this.icon = icon;
 	}
 
-	public void updateExpectedRect(TooltipRect rect) {
+	public void updateExpectedRect(TooltipAnimation animation) {
 		Window window = Minecraft.getInstance().getWindow();
 		IWailaConfig.Overlay overlay = IWailaConfig.get().overlay();
 		IWailaConfig.Accessibility accessibility = IWailaConfig.get().accessibility();
@@ -363,15 +363,15 @@ public class BoxElementImpl extends BoxElement {
 		float width = getWidth();
 		float height = getHeight();
 
-		rect.scale = overlay.getOverlayScale();
+		animation.scale = overlay.getOverlayScale();
 		float thresholdHeight = window.getGuiScaledHeight() * overlay.getAutoScaleThreshold();
-		if (getHeight() * rect.scale > thresholdHeight) {
-			rect.scale = Math.max(rect.scale * 0.5f, thresholdHeight / getHeight());
+		if (getHeight() * animation.scale > thresholdHeight) {
+			animation.scale = Math.max(animation.scale * 0.5f, thresholdHeight / getHeight());
 		}
 
-		Rect2i expectedRect = rect.expectedRect;
-		expectedRect.setWidth((int) (width * rect.scale));
-		expectedRect.setHeight((int) (height * rect.scale));
+		Rect2i expectedRect = animation.expectedRect;
+		expectedRect.setWidth((int) (width * animation.scale));
+		expectedRect.setHeight((int) (height * animation.scale));
 		expectedRect.setX((int) (x - expectedRect.getWidth() * accessibility.tryFlip(overlay.getAnchorX())));
 		expectedRect.setY((int) (y - expectedRect.getHeight() * overlay.getAnchorY()));
 
@@ -403,18 +403,18 @@ public class BoxElementImpl extends BoxElement {
 		}
 	}
 
-	public void updateRect(TooltipRect rect) {
-		Rect2i src = rect.rect;
+	public void updateRect(TooltipAnimation animation) {
+		Rect2i src = animation.rect;
 		if (src.getWidth() == 0) {
-			src.setX(rect.expectedRect.getX());
-			src.setY(rect.expectedRect.getY());
-			src.setWidth(rect.expectedRect.getWidth());
-			src.setHeight(rect.expectedRect.getHeight());
+			src.setX(animation.expectedRect.getX());
+			src.setY(animation.expectedRect.getY());
+			src.setWidth(animation.expectedRect.getWidth());
+			src.setHeight(animation.expectedRect.getHeight());
 		} else {
-			chase(rect, Rect2i::getX, src::setX);
-			chase(rect, Rect2i::getY, src::setY);
-			chase(rect, Rect2i::getWidth, src::setWidth);
-			chase(rect, Rect2i::getHeight, src::setHeight);
+			chase(animation, Rect2i::getX, src::setX);
+			chase(animation, Rect2i::getY, src::setY);
+			chase(animation, Rect2i::getWidth, src::setWidth);
+			chase(animation, Rect2i::getHeight, src::setHeight);
 		}
 	}
 

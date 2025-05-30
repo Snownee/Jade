@@ -100,12 +100,12 @@ public class WailaCommonRegistration implements IWailaCommonRegistration {
 
 	private static void checkDataProvider(IServerDataProvider<?> dataProvider) {
 		if (CommonProxy.isPhysicallyClient() && dataProvider instanceof IComponentProvider) {
-			throw new IllegalArgumentException("Data providers cannot implement IComponentProvider. Use a separate client provider instead.");
+			throw new IllegalArgumentException(
+					"Data providers cannot implement IComponentProvider since Minecraft 1.21.6. Use a separate client provider instead.");
 		}
 	}
 
 	/* PROVIDER GETTERS */
-
 	public List<IServerDataProvider<BlockAccessor>> getBlockNBTProviders(Block block, @Nullable BlockEntity blockEntity) {
 		if (blockEntity == null) {
 			return blockDataProviders.first.get(block);

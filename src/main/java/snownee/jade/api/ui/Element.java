@@ -145,7 +145,7 @@ public abstract class Element implements Renderable, LayoutElement, NarrationSup
 			pose.translate(x, y);
 			pose.scale(0.5F);
 			if (x > centerX) {
-				pose.translate(getWidth(), 0);
+				pose.translate(getWidth() + getWidth(), 0);
 			} else {
 				pose.translate(-textWidth - 4, 0);
 			}

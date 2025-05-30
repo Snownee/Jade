@@ -8,10 +8,9 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.IDisplayHelper;
 
-public class SpriteElement extends Element {
+public class SpriteElement extends ProgressOverlayElement {
 
 	private final RenderPipeline renderPipeline;
 	private final ResourceLocation sprite;
@@ -48,4 +47,8 @@ public class SpriteElement extends Element {
 				height);
 	}
 
+	@Override
+	public void setFreeSpace(int width, int height) {
+
+	}
 }

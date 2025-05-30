@@ -22,7 +22,7 @@ import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
 import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.JadeUI;
-import snownee.jade.api.ui.TooltipRect;
+import snownee.jade.api.ui.TooltipAnimation;
 import snownee.jade.gui.BaseOptionsScreen;
 import snownee.jade.gui.PreviewOptionsScreen;
 import snownee.jade.impl.ObjectDataCenter;
@@ -35,10 +35,9 @@ import snownee.jade.util.ModIdentification;
 
 public class OverlayRenderer {
 
-	public static final TooltipRect rect = new TooltipRect();
+	public static final TooltipAnimation animation = new TooltipAnimation();
 	public static float ticks;
 	public static boolean shown;
-	public static float alpha;
 	private static BoxElementImpl lingerTooltip;
 	private static float disappearTicks;
 
@@ -76,7 +75,7 @@ public class OverlayRenderer {
 			return false;
 		}
 
-		box.updateExpectedRect(rect);
+		box.updateExpectedRect(animation);
 		if (mc.screen instanceof PreviewOptionsScreen optionsScreen) {
 			if (optionsScreen.forcePreviewOverlay()) {
 				return true;
@@ -87,7 +86,7 @@ public class OverlayRenderer {
 			Window window = mc.getWindow();
 			double x = mc.mouseHandler.xpos() * window.getGuiScaledWidth() / window.getScreenWidth();
 			double y = mc.mouseHandler.ypos() * window.getGuiScaledHeight() / window.getScreenHeight();
-			if (rect.expectedRect.contains((int) x, (int) y)) {
+			if (animation.expectedRect.contains((int) x, (int) y)) {
 				return false;
 			}
 		}
@@ -127,7 +126,7 @@ public class OverlayRenderer {
 			tooltip.setIcon(theme.modifyIcon(JadeUI.item(new ItemStack(Blocks.GRASS_BLOCK))));
 			root = new BoxElementImpl(tooltip, theme.tooltipStyle);
 			root.tag(JadeIds.ROOT);
-			root.updateExpectedRect(rect);
+			root.updateExpectedRect(animation);
 			show = true;
 		} else {
 			show = shouldShow();
@@ -149,20 +148,20 @@ public class OverlayRenderer {
 		if (overlay.getAnimation() && lingerTooltip != null) {
 			root = lingerTooltip;
 			float speed = general.isDebug() ? 0.1F : 0.6F;
-			alpha += (show ? speed : -speed) * delta;
-			alpha = Mth.clamp(alpha, 0, 1);
+			animation.alpha += (show ? speed : -speed) * delta;
+			animation.alpha = Mth.clamp(animation.alpha, 0, 1);
 		} else {
-			alpha = show ? 1 : 0;
+			animation.alpha = show ? 1 : 0;
 		}
 
 		if (root == null) {
 			return;
 		}
 
-		if (alpha < 0.1F || !shouldShowImmediately(root)) {
+		if (animation.alpha < 0.1F || !shouldShowImmediately(root)) {
 			if (!PreviewOptionsScreen.isAdjustingPosition()) {
 				lingerTooltip = null;
-				rect.rect.setWidth(0); // mark dirty
+				animation.rect.setWidth(0); // mark dirty
 				JadeClient.tickHandler().clearLastNarration();
 				return;
 			}
@@ -174,20 +173,20 @@ public class OverlayRenderer {
 	}
 
 	public static void renderOverlay(BoxElementImpl root, GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-		root.updateRect(rect);
+		root.updateRect(animation);
 
 		for (JadeBeforeRenderCallback callback : WailaClientRegistration.instance().beforeRenderCallback.callbacks()) {
-			if (callback.beforeRender(root, rect, graphics, ObjectDataCenter.get())) {
+			if (callback.beforeRender(root, animation, graphics, ObjectDataCenter.get())) {
 				return;
 			}
 		}
 
 		Matrix3x2fStack matrixStack = graphics.pose();
 		matrixStack.pushMatrix();
-		Rect2i rect2i = rect.rect;
+		Rect2i rect2i = animation.rect;
 		matrixStack.translate(rect2i.getX(), rect2i.getY());
 
-		float scale = rect.scale;
+		float scale = animation.scale;
 		if (scale != 1f) {
 			matrixStack.scale(scale);
 		}
@@ -199,12 +198,12 @@ public class OverlayRenderer {
 			root.render(graphics, mouseX, mouseY, partialTicks);
 			if (IWailaConfig.get().general().isDebug() && Screen.hasControlDown()) {
 
-				root.renderDebug(graphics, mouseX, mouseY, partialTicks, new Element.RenderDebugContext(root, rect.rect));
+				root.renderDebug(graphics, mouseX, mouseY, partialTicks, new Element.RenderDebugContext(root, animation.rect));
 			}
 		}
 
 		WailaClientRegistration.instance().afterRenderCallback.call(callback -> {
-			callback.afterRender(root, rect, graphics, ObjectDataCenter.get());
+			callback.afterRender(root, animation, graphics, ObjectDataCenter.get());
 		});
 
 		matrixStack.popMatrix();

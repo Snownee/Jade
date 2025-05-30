@@ -7,10 +7,9 @@ import org.jetbrains.annotations.Nullable;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import snownee.jade.api.fluid.JadeFluidObject;
-import snownee.jade.api.ui.Element;
 import snownee.jade.overlay.DisplayHelper;
 
-public class FluidStackElement extends Element {
+public class FluidStackElement extends ProgressOverlayElement {
 
 	private final JadeFluidObject fluid;
 
@@ -27,5 +26,10 @@ public class FluidStackElement extends Element {
 	@Override
 	public @Nullable Component getNarration() {
 		return null;
+	}
+
+	@Override
+	public void setFreeSpace(int width, int height) {
+
 	}
 }
