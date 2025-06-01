@@ -58,7 +58,7 @@ public class ClientViewGroup<T> {
 			ITooltip theTooltip = renderGroup ? JadeUI.tooltip() : tooltip;
 			consumer.accept(theTooltip, group);
 			if (renderGroup) {
-				BoxStyle boxStyle = BoxStyle.getViewGroup().clone();
+				BoxStyle boxStyle = BoxStyle.viewGroup().clone();
 				BoxElement box = JadeUI.box(theTooltip, boxStyle);
 //				box.setBoxProgress(group.messageType, group.boxProgress); //TODO
 //				if (group.title != null) {

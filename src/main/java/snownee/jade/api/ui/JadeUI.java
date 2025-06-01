@@ -44,7 +44,7 @@ public final class JadeUI {
 		return JadeUIInternal.smallItem(itemStack);
 	}
 
-	public static Element fluid(JadeFluidObject fluid) {
+	public static ResizeableElement fluid(JadeFluidObject fluid) {
 		return JadeUIInternal.fluid(fluid);
 	}
 
@@ -54,6 +54,10 @@ public final class JadeUI {
 
 	public static ResizeableElement progress(ProgressView view) {
 		return JadeUIInternal.progress(view);
+	}
+
+	public static ResizeableElement progress(ProgressView view, int width, int height) {
+		return JadeUIInternal.progress(view, width, height);
 	}
 
 	public static ResizeableElement progress(

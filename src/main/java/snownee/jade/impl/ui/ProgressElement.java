@@ -3,6 +3,7 @@ package snownee.jade.impl.ui;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import snownee.jade.api.theme.IThemeHelper;
@@ -27,6 +28,12 @@ public class ProgressElement extends ResizeableElement implements StyledElement 
 			width = Math.max(width, DisplayHelper.font().width(view.text) + 10);
 			height = 14;
 		}
+	}
+
+	public ProgressElement(ProgressView view, int width, int height) {
+		this.view = view;
+		this.width = width;
+		this.height = height;
 	}
 
 //	@Override
@@ -93,8 +100,15 @@ public class ProgressElement extends ResizeableElement implements StyledElement 
 				break;
 			}
 		}
-		if (progress > 0) {
-			//TODO draw foreground
+		if (progress > 0 && view.style.foreground() != null) {
+			DisplayHelper.INSTANCE.blitSprite(
+					graphics,
+					RenderPipelines.GUI_TEXTURED,
+					view.style.foreground(),
+					freeX,
+					freeY,
+					(int) (freeWidth - start),
+					freeHeight);
 		}
 
 		if (view.text != null) {
@@ -119,18 +133,9 @@ public class ProgressElement extends ResizeableElement implements StyledElement 
 		}
 		graphics.enableScissor(x + (int) start, y, (int) start - roundedPartWidth, height);
 		// we can only draw a sprite from its top-left corner, so only makes the last part more detailed
-		if (isLast && part.overlay() instanceof ProgressOverlayElement element) {
+		if (isLast && view.style.foreground() == null && part.overlay() instanceof ProgressOverlayElement element) {
 			element.setFloatingRect(x + start, y, partWidth, height);
 			element.render(graphics, -1, -1, partialTicks);
-//			DisplayHelper.INSTANCE.blitTiledSprite(
-//					graphics,
-//					part.overlay(),
-//					getX() + view.boxStyle.borderWidth() + start,
-//					getY() + view.boxStyle.borderWidth(),
-//					end - start,
-//					height,
-//					0, 0, part.sprite().getWidth(), part.sprite().getHeight(),
-//					0, 0, 1F, 1F);
 			element.setFloatingRect(null);
 			graphics.disableScissor();
 			return start + partWidth;

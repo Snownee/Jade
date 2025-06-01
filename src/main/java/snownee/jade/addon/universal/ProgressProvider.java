@@ -54,7 +54,7 @@ public class ProgressProvider<T extends Accessor<?>> implements StreamServerData
 			}
 
 			boolean renderGroup = groups.size() > 1 || groups.getFirst().shouldRenderGroup();
-			BoxStyle boxStyle = BoxStyle.getTransparent();
+			BoxStyle boxStyle = BoxStyle.transparent();
 			//FIXME
 //		boxStyle.bgColor = 0x44FFFFFF;
 			ClientViewGroup.tooltip(

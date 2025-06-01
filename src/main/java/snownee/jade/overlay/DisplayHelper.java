@@ -611,4 +611,35 @@ public class DisplayHelper implements IDisplayHelper {
 	public static Font font() {
 		return FONT.get();
 	}
+
+	public void blitSprite(
+			GuiGraphics graphics,
+			RenderPipeline renderPipeline,
+			ResourceLocation sprite,
+			int spriteWidth,
+			int spriteHeight,
+			int u0,
+			int v0,
+			float x,
+			float y,
+			float width,
+			float height) {
+		if (width == 0 || height == 0) {
+			return;
+		}
+		TextureAtlasSprite textureAtlasSprite = Minecraft.getInstance().getGuiSprites().getSprite(sprite);
+		this.blitSprite(
+				graphics,
+				renderPipeline,
+				textureAtlasSprite,
+				spriteWidth,
+				spriteHeight,
+				u0,
+				v0,
+				x,
+				y,
+				width,
+				height,
+				ARGB.white(opacity()));
+	}
 }

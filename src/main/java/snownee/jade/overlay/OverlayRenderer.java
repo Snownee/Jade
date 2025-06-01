@@ -168,7 +168,7 @@ public class OverlayRenderer {
 		}
 
 		Profiler.get().push("Jade Overlay");
-		renderOverlay(root, graphics, 0, 0, delta); //TODO pass correct mouseX, mouseY
+		renderOverlay(root, graphics, -1, -1, delta); //TODO pass correct mouseX, mouseY
 		Profiler.get().pop();
 	}
 

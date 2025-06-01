@@ -11,7 +11,6 @@ public class SimpleProgressStyle extends ProgressStyle {
 
 	public boolean autoTextColor = true; // TODO
 	public int color;
-	public int textColor;
 	public boolean vertical;
 
 	@Override
@@ -105,13 +104,6 @@ public class SimpleProgressStyle extends ProgressStyle {
 
 	private float choose(boolean expand, float x, float y) {
 		return vertical ^ expand ? x : y;
-	}
-
-	@Override
-	public ProgressStyle textColor(int color) {
-		textColor = color;
-		autoTextColor = false;
-		return this;
 	}
 
 }

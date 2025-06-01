@@ -95,7 +95,7 @@ public class Theme {
 					padding[2] += border.bottom();
 					padding[3] += border.left();
 				}
-				iconSlotSpriteCache = new BoxElementImpl(new Tooltip(), BoxStyle.getSprite(iconSlotSprite, padding));
+				iconSlotSpriteCache = new BoxElementImpl(new Tooltip(), BoxStyle.tooltip(iconSlotSprite, padding));
 			}
 			ITooltip tooltip1 = iconSlotSpriteCache.getTooltip();
 			tooltip1.clear();

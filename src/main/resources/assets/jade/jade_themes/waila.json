@@ -1,6 +1,7 @@
 {
 	"version": 200,
 	"tooltipStyle": {
-		"sprite": "jade:waila"
+		"sprite": "jade:waila",
+		"tooltip": true
 	}
 }

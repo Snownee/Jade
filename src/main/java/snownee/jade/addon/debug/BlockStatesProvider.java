@@ -37,7 +37,7 @@ public class BlockStatesProvider implements IBlockComponentProvider {
 			}
 			box.add(Component.literal(p.getName() + ":").append(valueText));
 		});
-		tooltip.add(JadeUI.box(box, BoxStyle.getNestedBox()).flexGrow(1));
+		tooltip.add(JadeUI.box(box, BoxStyle.nestedBox()).flexGrow(1));
 	}
 
 	@Override

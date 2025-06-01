@@ -94,7 +94,7 @@ public class EnergyStorageProvider<T extends Accessor<?>> implements StreamServe
 											ProgressView.Part.of(view.ratio),
 											text,
 											JadeUI.progressStyle(),
-											BoxStyle.getNestedBox());
+											BoxStyle.nestedBox());
 									theTooltip.add(JadeUI.progress(progressView));
 								}
 							}

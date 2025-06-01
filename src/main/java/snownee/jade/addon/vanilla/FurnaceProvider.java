@@ -61,7 +61,7 @@ public class FurnaceProvider implements StreamServerDataProvider<BlockAccessor, 
 			tooltip.add(JadeUI.item(data.inventory.get(0)));
 			tooltip.append(JadeUI.item(data.inventory.get(1)));
 			tooltip.append(JadeUI.spacer(4, 0));
-			tooltip.append(JadeUI.progressArrow((float) data.progress / data.total).offset(-2, 0));
+			tooltip.append(JadeUI.progressArrow((float) data.progress / data.total));
 			tooltip.append(JadeUI.item(data.inventory.get(2)));
 		}
 

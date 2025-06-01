@@ -48,11 +48,11 @@ public class JadeUIInternal {
 		return item(stack, 0.5F, "").size(lineHeight + 1, lineHeight - 1).offset(0, -1).narration("");
 	}
 
-	public static Element fluid(JadeFluidObject fluid) {
+	public static ResizeableElement fluid(JadeFluidObject fluid) {
 		return new FluidStackElement(fluid);
 	}
 
-	public static SpacerElement spacer(int width, int height) {
+	public static ResizeableElement spacer(int width, int height) {
 		return new SpacerElement(width, height);
 	}
 
@@ -64,6 +64,10 @@ public class JadeUIInternal {
 		return new ProgressElement(view);
 	}
 
+	public static ResizeableElement progress(ProgressView view, int width, int height) {
+		return new ProgressElement(view, width, height);
+	}
+
 	public static ResizeableElement progress(
 			float progress,
 			ResourceLocation baseSprite,
@@ -72,11 +76,14 @@ public class JadeUIInternal {
 			int height,
 			@Nullable Component text,
 			@Nullable ProgressStyle style) {
-		return progress(new ProgressView(
-				ProgressView.Part.of(progress, sprite(progressSprite, width, height)),
-				text,
-				style == null ? progressStyle() : style,
-				BoxStyle.getSprite(baseSprite, null)));
+		return progress(
+				new ProgressView(
+						ProgressView.Part.of(progress, sprite(progressSprite, width, height)),
+						text,
+						style == null ? progressStyle().fitContentX(false).fitContentY(false) : style,
+						BoxStyle.sprite(baseSprite, null, 0)),
+				width,
+				height);
 	}
 
 	public static BoxElement box(ITooltip tooltip, BoxStyle boxStyle) {
@@ -104,11 +111,11 @@ public class JadeUIInternal {
 	}
 
 	public static ResizeableElement offset(Element element, int x, int y) {
-		return spacer(element.getWidth(), element.getHeight()).wrapped(element).offset(x, y);
+		return ((SpacerElement) spacer(element.getWidth(), element.getHeight())).wrapped(element).offset(x, y);
 	}
 
 	public static ResizeableElement size(Element element, int width, int height) {
-		return spacer(width, height).wrapped(element);
+		return ((SpacerElement) spacer(width, height)).wrapped(element);
 	}
 
 	public static @Nullable ResourceLocation contextUid() {

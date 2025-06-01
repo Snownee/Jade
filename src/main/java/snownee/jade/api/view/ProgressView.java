@@ -41,7 +41,7 @@ public class ProgressView {
 //		ProgressView progressView = new ProgressView(new SlimProgressStyle());
 //		progressView.progress = data.progress;
 //		return progressView;
-		return new ProgressView(JadeUI.progressStyle(), BoxStyle.getNestedBox());//TODO
+		return new ProgressView(JadeUI.progressStyle(), BoxStyle.nestedBox());//TODO
 	}
 
 	public record Data(float progress) {

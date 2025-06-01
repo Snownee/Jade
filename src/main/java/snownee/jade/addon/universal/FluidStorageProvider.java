@@ -104,7 +104,7 @@ public class FluidStorageProvider<T extends Accessor<?>> implements StreamServer
 											ProgressView.Part.of(view.ratio),
 											text,
 											JadeUI.progressStyle(),
-											BoxStyle.getNestedBox());
+											BoxStyle.nestedBox());
 									theTooltip.add(JadeUI.progress(progressView));
 								}
 							}

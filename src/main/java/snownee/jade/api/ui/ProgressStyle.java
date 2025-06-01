@@ -3,6 +3,7 @@ package snownee.jade.api.ui;
 import java.util.Objects;
 
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -13,11 +14,8 @@ public abstract class ProgressStyle {
 	protected boolean fitContentX = true;
 	protected boolean fitContentY = true;
 	protected ScreenDirection direction = ScreenDirection.RIGHT;
-	protected ResourceLocation foreground;
+	protected @Nullable ResourceLocation foreground;
 	protected boolean canDecrease;
-
-	@Contract("_ -> this")
-	public abstract ProgressStyle textColor(int color);
 
 	@Contract("_ -> this")
 	public ProgressStyle direction(ScreenDirection direction) {
@@ -47,6 +45,26 @@ public abstract class ProgressStyle {
 
 	public boolean fitContentY() {
 		return fitContentY;
+	}
+
+	@Contract("_ -> this")
+	public ProgressStyle foreground(@Nullable ResourceLocation foreground) {
+		this.foreground = foreground;
+		return this;
+	}
+
+	public @Nullable ResourceLocation foreground() {
+		return foreground;
+	}
+
+	@Contract("_ -> this")
+	public ProgressStyle canDecrease(boolean canDecrease) {
+		this.canDecrease = canDecrease;
+		return this;
+	}
+
+	public boolean canDecrease() {
+		return canDecrease;
 	}
 
 	public abstract void render(GuiGraphics guiGraphics, float x, float y, float w, float h, float progress, Component text);

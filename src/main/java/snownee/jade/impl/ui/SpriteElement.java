@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.api.ui.IDisplayHelper;
+import snownee.jade.overlay.DisplayHelper;
 
 public class SpriteElement extends ProgressOverlayElement {
 
@@ -33,18 +34,33 @@ public class SpriteElement extends ProgressOverlayElement {
 
 	@Override
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-		IDisplayHelper.get().blitSprite(
-				graphics,
-				renderPipeline,
-				sprite,
-				width,
-				height,
-				0,
-				0,
-				getX(),
-				getY(),
-				width,
-				height);
+		if (floatingRect == null) {
+			IDisplayHelper.get().blitSprite(
+					graphics,
+					renderPipeline,
+					sprite,
+					width,
+					height,
+					0,
+					0,
+					getX(),
+					getY(),
+					width,
+					height);
+		} else {
+			DisplayHelper.INSTANCE.blitSprite(
+					graphics,
+					renderPipeline,
+					sprite,
+					width,
+					height,
+					0,
+					0,
+					floatingRect.getX(),
+					floatingRect.getY(),
+					floatingRect.getWidth(),
+					floatingRect.getHeight());
+		}
 	}
 
 	@Override

@@ -88,7 +88,7 @@ public class StatusEffectsProvider implements StreamServerDataProvider<EntityAcc
 				IThemeHelper t = IThemeHelper.get();
 				box.add(effect.getEffect().value().getCategory() == MobEffectCategory.HARMFUL ? t.danger(s) : t.success(s));
 			}
-			tooltip.add(JadeUI.box(box, BoxStyle.getNestedBox()));
+			tooltip.add(JadeUI.box(box, BoxStyle.nestedBox()));
 		}
 
 		@Override
