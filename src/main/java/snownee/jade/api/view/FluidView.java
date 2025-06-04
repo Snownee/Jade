@@ -1,5 +1,6 @@
 package snownee.jade.api.view;
 
+import java.util.List;
 import java.util.Objects;
 
 import org.jetbrains.annotations.Nullable;
@@ -35,13 +36,10 @@ public class FluidView {
 
 	@Nullable
 	public static FluidView readDefault(Data data) {
-		if (data.capacity <= 0) {
+		if (data.capacity <= 0 || data.fluids.size() > 1) {
 			return null;
 		}
-		JadeFluidObject fluidObject = data.fluid;
-		if (fluidObject == null) {
-			return null;
-		}
+		JadeFluidObject fluidObject = data.fluids.isEmpty() ? JadeFluidObject.empty() : data.fluids.getFirst();
 		long amount = fluidObject.getAmount();
 		FluidView fluidView = new FluidView(JadeUI.fluid(fluidObject));
 		fluidView.fluidName = fluidObject.getDisplayName();
@@ -57,13 +55,17 @@ public class FluidView {
 		return fluidView;
 	}
 
-	public record Data(JadeFluidObject fluid, long capacity) {
+	public record Data(List<JadeFluidObject> fluids, long capacity) {
 		public static final StreamCodec<RegistryFriendlyByteBuf, Data> STREAM_CODEC = StreamCodec.composite(
-				JadeFluidObject.STREAM_CODEC,
-				Data::fluid,
+				JadeFluidObject.STREAM_CODEC.apply(ByteBufCodecs.list()),
+				Data::fluids,
 				ByteBufCodecs.LONG,
 				Data::capacity,
 				Data::new);
+
+		public Data(JadeFluidObject fluid, long capacity) {
+			this(List.of(fluid), capacity);
+		}
 	}
 
 }

@@ -15,12 +15,14 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.layouts.Layout;
 import net.minecraft.client.gui.layouts.LayoutElement;
+import net.minecraft.client.gui.layouts.LayoutSettings;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import snownee.jade.JadeInternals;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IWailaConfig;
+import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.BoxElement;
 import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.Element;
@@ -67,17 +69,22 @@ public class BoxElementImpl extends BoxElement {
 		for (Tooltip.Line line : tooltip.lines) {
 			JadeLinearLayout lineLayout = JadeLinearLayout.horizontal();
 			for (LayoutElement element : line.elements()) {
-				if (element instanceof ResizeableLayout resizeableLayout) {
-					lineLayout.addChild(
-							element, lineLayout.newChildLayoutSettings(), container -> {
+				lineLayout.addChild(
+						element, lineLayout.newChildLayoutSettings(element), container -> {
+							if (container.child instanceof Element element0 && element0.getAlignSelf() != null) {
+								container.alignSelf = element0.getAlignSelf();
+							}
+							if (container.child instanceof ResizeableLayout resizeableLayout) {
 								container.flexGrow = resizeableLayout.getFlexGrow();
-							});
-				} else {
-					lineLayout.addChild(element);
-				}
+							}
+						});
+			}
+			LayoutSettings lineSettings = linearLayout.newChildLayoutSettings(lineLayout);
+			if (line.settings != null) {
+				lineSettings = line.settings.apply(lineSettings);
 			}
 			linearLayout.addChild(
-					lineLayout, linearLayout.newChildLayoutSettings(), container -> {
+					lineLayout, lineSettings, container -> {
 						container.headMargin = line.marginTop;
 						container.tailMargin = line.marginBottom;
 					});
@@ -141,44 +148,6 @@ public class BoxElementImpl extends BoxElement {
 		}
 	}
 
-//	@Override
-//	public Vec2 getSize() {
-//		if (tooltip.isEmpty()) {
-//			return Vec2.ZERO;
-//		}
-//		float width = 0, height = 0;
-//		int lineCount = tooltip.lines.size();
-//		Tooltip.Line line = tooltip.lines.getFirst();
-//		for (int i = 0; i < lineCount; i++) {
-//			Vec2 size = line.size();
-//			width = Math.max(width, size.x);
-//			height += size.y;
-//			if (i < lineCount - 1) {
-//				int marginBottom = line.marginBottom;
-//				line = tooltip.lines.get(i + 1);
-//				height += calculateMargin(marginBottom, line.marginTop);
-//			}
-//		}
-//		contentSize = new Vec2(width, height);
-//		if (icon != null) {
-//			Vec2 size = icon.getCachedSize();
-//			width += size.x + 3;
-//			height = Math.max(height, size.y);
-//		}
-//		int twoOfBorder = style.borderWidth() * 2;
-//		width += padding(ScreenDirection.LEFT) + padding(ScreenDirection.RIGHT) + twoOfBorder;
-//		height += padding(ScreenDirection.UP) + padding(ScreenDirection.DOWN) + twoOfBorder;
-//		// our limited negative-padding support:
-//		width = Math.max(width, 0);
-//		height = Math.max(height, 0);
-//
-//		if (icon != null && icon.getCachedSize().y > contentSize.y) {
-//			setPadding(ScreenDirection.UP, padding(ScreenDirection.UP) + (int) (icon.getCachedSize().y - contentSize.y) / 2);
-//		}
-//
-//		return new Vec2(width, height);
-//	}
-
 	@Override
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
 		if (tooltip.isEmpty()) {
@@ -187,7 +156,8 @@ public class BoxElementImpl extends BoxElement {
 
 		// render background
 		float alpha = IDisplayHelper.get().opacity();
-		if (JadeIds.ROOT.equals(getTag())) {
+		boolean root = JadeIds.ROOT.equals(getTag());
+		if (root) {
 			alpha *= IWailaConfig.get().overlay().getAlpha();
 		}
 		if (alpha > 0) {
@@ -196,6 +166,10 @@ public class BoxElementImpl extends BoxElement {
 
 		for (Renderable renderable : renderables) {
 			renderable.render(graphics, mouseX, mouseY, partialTicks);
+		}
+
+		if (root && tooltip.sneakyDetails) {
+			IThemeHelper.get().theme().sneakyDetails.render(graphics, partialTicks, this);
 		}
 	}
 

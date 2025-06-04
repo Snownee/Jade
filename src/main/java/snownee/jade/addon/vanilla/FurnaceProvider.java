@@ -58,11 +58,12 @@ public class FurnaceProvider implements StreamServerDataProvider<BlockAccessor, 
 			if (data == null) {
 				return;
 			}
-			tooltip.add(JadeUI.item(data.inventory.get(0)));
-			tooltip.append(JadeUI.item(data.inventory.get(1)));
-			tooltip.append(JadeUI.spacer(4, 0));
-			tooltip.append(JadeUI.progressArrow((float) data.progress / data.total));
-			tooltip.append(JadeUI.item(data.inventory.get(2)));
+			tooltip.add(JadeUI.item(data.inventory.get(0)).alignSelfCenter());
+			tooltip.append(JadeUI.item(data.inventory.get(1)).alignSelfCenter());
+			tooltip.append(JadeUI.progressArrow((float) data.progress / data.total).alignSelfCenter().settings($ -> {
+				return $.paddingHorizontal(3);
+			}));
+			tooltip.append(JadeUI.item(data.inventory.get(2)).alignSelfCenter());
 		}
 
 		@Override

@@ -28,6 +28,11 @@ public class ProgressElement extends ResizeableElement implements StyledElement 
 			width = Math.max(width, DisplayHelper.font().width(view.text) + 10);
 			height = 14;
 		}
+		if (view.style.direction().isHorizontal() && view.style.fitContentX()) {
+			flexGrow(1);
+		} else if (view.style.direction().isVertical() && view.style.fitContentY()) {
+			flexGrow(1);
+		}
 	}
 
 	public ProgressElement(ProgressView view, int width, int height) {
@@ -83,10 +88,11 @@ public class ProgressElement extends ResizeableElement implements StyledElement 
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
 		view.boxStyle.render(graphics, this, getX(), getY(), width, height, IDisplayHelper.get().opacity());
 
-		int freeX = getX() + view.boxStyle.borderWidth();
-		int freeY = getY() + view.boxStyle.borderWidth();
-		int freeWidth = width - view.boxStyle.borderWidth() * 2;
-		int freeHeight = height - view.boxStyle.borderWidth() * 2;
+		int borderWidth = view.boxStyle.borderWidth();
+		int freeX = getX() + borderWidth;
+		int freeY = getY() + borderWidth;
+		int freeWidth = width - borderWidth * 2;
+		int freeHeight = height - borderWidth * 2;
 		float progress = 0;
 		float start = 0;
 		for (int i = 0; i < view.parts.size(); i++) {
@@ -131,7 +137,7 @@ public class ProgressElement extends ResizeableElement implements StyledElement 
 		if (part.overlay() == null) {
 			return start + partWidth;//TODO
 		}
-		graphics.enableScissor(x + (int) start, y, (int) start - roundedPartWidth, height);
+		graphics.enableScissor(x + (int) start, y, x + (int) start + roundedPartWidth, y + height);
 		// we can only draw a sprite from its top-left corner, so only makes the last part more detailed
 		if (isLast && view.style.foreground() == null && part.overlay() instanceof ProgressOverlayElement element) {
 			element.setFloatingRect(x + start, y, partWidth, height);

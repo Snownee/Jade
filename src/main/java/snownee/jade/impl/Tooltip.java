@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.UnaryOperator;
-import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -13,6 +12,7 @@ import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 
 import net.minecraft.client.gui.layouts.LayoutElement;
+import net.minecraft.client.gui.layouts.LayoutSettings;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.narration.NarrationSupplier;
@@ -37,10 +37,6 @@ public class Tooltip implements ITooltip {
 	public final List<Line> lines = new ArrayList<>();
 	public boolean sneakyDetails;
 	public @Nullable Element icon;
-
-	public Stream<LayoutElement> layoutElements() {
-		return lines.stream().flatMap(line -> line.elements().stream());
-	}
 
 	@Override
 	public void clear() {
@@ -170,6 +166,15 @@ public class Tooltip implements ITooltip {
 	}
 
 	@Override
+	public void setLineSettings(int index, UnaryOperator<LayoutSettings> settings) {
+		if (index < 0) {
+			index += lines.size();
+		}
+		Line line = lines.get(index);
+		line.settings = settings;
+	}
+
+	@Override
 	public String getNarration() {
 		StringBuilder sb = new StringBuilder();
 		NarrationElementOutput output = new NarrationElementOutput() {
@@ -233,6 +238,7 @@ public class Tooltip implements ITooltip {
 		private final List<LayoutElement> elements = Lists.newArrayList();
 		public int marginTop = 0;
 		public int marginBottom = 2;
+		public @Nullable UnaryOperator<LayoutSettings> settings;
 
 		public List<LayoutElement> elements() {
 			return elements;

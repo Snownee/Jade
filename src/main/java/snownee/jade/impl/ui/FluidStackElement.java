@@ -20,7 +20,18 @@ public class FluidStackElement extends ProgressOverlayElement {
 
 	@Override
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-		DisplayHelper.INSTANCE.drawFluid(graphics, getX(), getY(), fluid, width, height, JadeFluidObject.bucketVolume());
+		if (floatingRect == null) {
+			DisplayHelper.INSTANCE.drawFluid(graphics, getX(), getY(), fluid, width, height, JadeFluidObject.bucketVolume());
+		} else {
+			DisplayHelper.INSTANCE.drawFluid(
+					graphics,
+					floatingRect.getX(),
+					floatingRect.getY(),
+					fluid,
+					floatingRect.getWidth(),
+					floatingRect.getHeight(),
+					JadeFluidObject.bucketVolume());
+		}
 	}
 
 	@Override

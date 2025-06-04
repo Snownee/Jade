@@ -32,6 +32,7 @@ public class Theme {
 	public ResourceLocation iconSlotSprite;
 	public int iconSlotInflation;
 	public BoxElement iconSlotSpriteCache;
+	public SneakyDetails sneakyDetails;
 
 	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 	public Theme(
@@ -43,7 +44,8 @@ public class Theme {
 			float changeOpacity,
 			boolean lightColorScheme,
 			Optional<ResourceLocation> iconSlotSprite,
-			int iconSlotInflation) {
+			int iconSlotInflation,
+			SneakyDetails sneakyDetails) {
 		this.styleName = styleName;
 		this.tooltipStyle = tooltipStyle;
 		this.nestedBoxStyle = nestedBoxStyle;
@@ -53,6 +55,7 @@ public class Theme {
 		this.lightColorScheme = lightColorScheme;
 		this.iconSlotSprite = iconSlotSprite.orElse(null);
 		this.iconSlotInflation = iconSlotInflation;
+		this.sneakyDetails = sneakyDetails;
 	}
 
 	public ResourceLocation mainId() {

@@ -396,8 +396,10 @@ public class DisplayHelper implements IDisplayHelper {
 			int j,
 			int k,
 			int l,
-			int m) {
-		graphics.blitSprite(renderPipeline, resourceLocation, i, j, k, l, ARGB.color(ARGB.as8BitChannel(opacity()), m));
+			int color) {
+		float alpha = ARGB.alpha(color) / 255F;
+		alpha *= opacity();
+		graphics.blitSprite(renderPipeline, resourceLocation, i, j, k, l, ARGB.color(ARGB.as8BitChannel(alpha), color));
 	}
 
 	@Override

@@ -50,7 +50,7 @@ public class FluidStorageProvider<T extends Accessor<?>> implements StreamServer
 
 		@Override
 		public void appendTooltip(ITooltip tooltip, T accessor, IPluginConfig config) {
-			if ((!accessor.showDetails() && config.get(JadeIds.UNIVERSAL_FLUID_STORAGE_DETAILED))) {
+			if (!accessor.showDetails() && config.get(JadeIds.UNIVERSAL_FLUID_STORAGE_DETAILED)) {
 				return;
 			}
 
@@ -101,7 +101,7 @@ public class FluidStorageProvider<T extends Accessor<?>> implements StreamServer
 								}
 								case PROGRESS_BAR -> {
 									ProgressView progressView = new ProgressView(
-											ProgressView.Part.of(view.ratio),
+											ProgressView.Part.of(view.ratio, view.overlay),
 											text,
 											JadeUI.progressStyle(),
 											BoxStyle.nestedBox());

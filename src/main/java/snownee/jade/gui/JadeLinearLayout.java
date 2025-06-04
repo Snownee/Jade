@@ -6,6 +6,7 @@ import java.util.function.Consumer;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
@@ -13,6 +14,7 @@ import net.minecraft.Util;
 import net.minecraft.client.gui.layouts.AbstractLayout;
 import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.client.gui.layouts.LayoutSettings;
+import snownee.jade.api.ui.Element;
 
 public class JadeLinearLayout extends AbstractLayout implements ResizeableLayout {
 	private Orientation orientation;
@@ -68,11 +70,11 @@ public class JadeLinearLayout extends AbstractLayout implements ResizeableLayout
 	}
 
 	public <T extends LayoutElement> T addChild(T element) {
-		return addChild(element, newChildLayoutSettings());
+		return addChild(element, newChildLayoutSettings(element));
 	}
 
 	public <T extends LayoutElement> T addChild(T element, Consumer<LayoutSettings> consumer) {
-		return addChild(element, Util.make(newChildLayoutSettings(), consumer));
+		return addChild(element, Util.make(newChildLayoutSettings(element), consumer));
 	}
 
 	public <T extends LayoutElement> T addChild(T element, LayoutSettings layoutSettings) {
@@ -149,7 +151,8 @@ public class JadeLinearLayout extends AbstractLayout implements ResizeableLayout
 				axisPos += margins[i - 1];
 			}
 
-			alignItems.align(orientation, child, axisPos, crossAxisPos, crossAxis);
+			Align align = MoreObjects.firstNonNull(child.alignSelf, alignItems);
+			align.align(orientation, child, axisPos, crossAxisPos, crossAxis);
 
 			axisPos += childAxisLength;
 		}
@@ -175,8 +178,10 @@ public class JadeLinearLayout extends AbstractLayout implements ResizeableLayout
 
 		int reachLimitAmount = 0;
 		BitSet reachLimitFlags = new BitSet(size);
+		boolean changed = true;
 		outer:
-		while (reachLimitAmount < size && extraAxisSpace > 0) {
+		while (changed && reachLimitAmount < size && extraAxisSpace > 0) {
+			changed = false;
 			int virtualSumGrow = sumGrow;
 			for (int i = 0; i < size; i++) {
 				ChildContainer child = children.get(i);
@@ -191,7 +196,9 @@ public class JadeLinearLayout extends AbstractLayout implements ResizeableLayout
 				}
 				int newAxisLength = childAxisLength + extraChildAxis;
 				orientation.setFreeSpace(child, newAxisLength, crossAxis);
-				if (newAxisLength > orientation.getAxisLength(child)) {
+				int childAxisLengthNow = orientation.getAxisLength(child);
+				changed |= childAxisLength != childAxisLengthNow;
+				if (newAxisLength > childAxisLengthNow) {
 					reachLimitFlags.set(i);
 					reachLimitAmount++;
 					sumGrow -= grow;
@@ -251,10 +258,19 @@ public class JadeLinearLayout extends AbstractLayout implements ResizeableLayout
 		return flexGrow;
 	}
 
+	public LayoutSettings newChildLayoutSettings(LayoutElement layoutElement) {
+		LayoutSettings settings = newChildLayoutSettings();
+		if (layoutElement instanceof Element element && element.getSettings() != null) {
+			settings = element.getSettings().apply(settings);
+		}
+		return settings;
+	}
+
 	public static class ChildContainer extends AbstractLayout.AbstractChildWrapper {
 		public int headMargin;
 		public int tailMargin;
 		public int flexGrow;
+		public @Nullable Align alignSelf;
 
 		protected ChildContainer(LayoutElement element, LayoutSettings settings) {
 			super(element, settings);

@@ -1,6 +1,7 @@
 package snownee.jade.api.ui;
 
 import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
@@ -12,6 +13,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.layouts.LayoutElement;
+import net.minecraft.client.gui.layouts.LayoutSettings;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.narration.NarrationSupplier;
@@ -22,6 +24,7 @@ import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.JadeInternals;
+import snownee.jade.gui.JadeLinearLayout;
 import snownee.jade.overlay.DisplayHelper;
 
 public abstract class Element implements Renderable, LayoutElement, NarrationSupplier {
@@ -32,6 +35,8 @@ public abstract class Element implements Renderable, LayoutElement, NarrationSup
 	private int x;
 	private int y;
 	private @Nullable Component narration = CommonComponents.EMPTY;
+	private @Nullable UnaryOperator<LayoutSettings> settings;
+	private @Nullable JadeLinearLayout.Align alignSelf;
 
 	@Contract("_, _ -> new")
 	public ResizeableElement offset(int x, int y) {
@@ -41,6 +46,44 @@ public abstract class Element implements Renderable, LayoutElement, NarrationSup
 	@Contract("_, _ -> new")
 	public ResizeableElement size(int width, int height) {
 		return JadeUI.size(this, width, height);
+	}
+
+	@Contract("_ -> this")
+	public Element settings(UnaryOperator<LayoutSettings> settings) {
+		this.settings = settings;
+		return this;
+	}
+
+	public @Nullable UnaryOperator<LayoutSettings> getSettings() {
+		return settings;
+	}
+
+	@Contract("-> this")
+	public Element alignSelfStart() {
+		alignSelf = JadeLinearLayout.Align.START;
+		return this;
+	}
+
+	@Contract("-> this")
+	public Element alignSelfCenter() {
+		alignSelf = JadeLinearLayout.Align.CENTER;
+		return this;
+	}
+
+	@Contract("-> this")
+	public Element alignSelfEnd() {
+		alignSelf = JadeLinearLayout.Align.END;
+		return this;
+	}
+
+	@Contract("-> this")
+	public Element alignSelfStretch() {
+		alignSelf = JadeLinearLayout.Align.STRETCH;
+		return this;
+	}
+
+	public @Nullable JadeLinearLayout.Align getAlignSelf() {
+		return alignSelf;
 	}
 
 	@Contract("_ -> this")

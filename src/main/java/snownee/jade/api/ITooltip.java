@@ -7,6 +7,7 @@ import org.jetbrains.annotations.ApiStatus.NonExtendable;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.client.gui.layouts.LayoutElement;
+import net.minecraft.client.gui.layouts.LayoutSettings;
 import net.minecraft.client.gui.narration.NarrationSupplier;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -142,6 +143,8 @@ public interface ITooltip extends NarrationSupplier {
 	List<LayoutElement> get(ResourceLocation tag);
 
 	void setLineMargin(int index, ScreenDirection side, int margin);
+
+	void setLineSettings(int index, UnaryOperator<LayoutSettings> settings);
 
 	String getNarration();
 
