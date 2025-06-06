@@ -1,5 +1,7 @@
 package snownee.jade.api.ui;
 
+import net.minecraft.client.gui.layouts.LayoutElement;
+
 public class Rect2f {
 	private float xPos;
 	private float yPos;
@@ -11,6 +13,14 @@ public class Rect2f {
 		this.yPos = y;
 		this.width = width;
 		this.height = height;
+	}
+
+	public static Rect2f of(LayoutElement element) {
+		return new Rect2f(
+				element.getX(),
+				element.getY(),
+				element.getWidth(),
+				element.getHeight());
 	}
 
 	public Rect2f intersect(Rect2f otherRect) {
@@ -70,5 +80,9 @@ public class Rect2f {
 
 	public boolean contains(float x, float y) {
 		return x >= this.xPos && x <= this.xPos + this.width && y >= this.yPos && y <= this.yPos + this.height;
+	}
+
+	public Rect2f copy() {
+		return new Rect2f(xPos, yPos, width, height);
 	}
 }

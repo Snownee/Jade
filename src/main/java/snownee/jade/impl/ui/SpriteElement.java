@@ -7,7 +7,6 @@ import com.mojang.blaze3d.pipeline.RenderPipeline;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.GuiSpriteManager;
-import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.metadata.gui.GuiSpriteScaling;
@@ -15,6 +14,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.Orientation;
+import snownee.jade.api.ui.Rect2f;
 import snownee.jade.overlay.DisplayHelper;
 
 public class SpriteElement extends ProgressOverlayElement {
@@ -44,7 +44,38 @@ public class SpriteElement extends ProgressOverlayElement {
 	@Override
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
 		if (tiledOrientation != null) {
-			//TODO
+			Rect2f rect;
+			if (floatingRect == null) {
+				rect = Rect2f.of(this);
+			} else {
+				rect = floatingRect.copy();
+			}
+			float axisLength = tiledOrientation.getAxisLength(rect);
+			float axisPosition = tiledOrientation.getAxisPosition(rect);
+			float crossAxisLength = tiledOrientation.getCrossAxisLength(rect);
+			float crossAxisPosition = tiledOrientation.getCrossAxisPosition(rect);
+			float tileAxisStart = 0F;
+			float tileAxisStep = tiledOrientation == Orientation.HORIZONTAL ? oWidth : oHeight;
+			while (tileAxisStart < axisLength) {
+				float tileAxisEnd = Math.min(tileAxisStart + tileAxisStep, axisLength);
+				float tileSize = tileAxisEnd - tileAxisStart;
+				tiledOrientation.setPosition(rect, axisPosition + tileAxisStart, crossAxisPosition);
+				tiledOrientation.setSize(rect, tileSize, crossAxisLength);
+				DisplayHelper.INSTANCE.blitSprite(
+						graphics,
+						renderPipeline,
+						sprite,
+						oWidth,
+						oHeight,
+						0,
+						0,
+						rect.getX(),
+						rect.getY(),
+						rect.getWidth(),
+						rect.getHeight());
+				tileAxisStart += tileAxisStep;
+			}
+			return;
 		}
 		if (floatingRect == null) {
 			IDisplayHelper.get().blitSprite(
@@ -60,13 +91,6 @@ public class SpriteElement extends ProgressOverlayElement {
 					width,
 					height);
 		} else {
-			DisplayHelper.INSTANCE.drawBorder(
-					graphics, new ScreenRectangle(
-							((int) floatingRect.getX()),
-							((int) floatingRect.getY()),
-							(int) floatingRect.getWidth(),
-							(int) floatingRect.getHeight()),
-					1, 0xFF00AAAA, true);
 			DisplayHelper.INSTANCE.blitSprite(
 					graphics,
 					renderPipeline,
@@ -80,6 +104,15 @@ public class SpriteElement extends ProgressOverlayElement {
 					floatingRect.getWidth(),
 					floatingRect.getHeight());
 		}
+//		if (floatingRect != null) {
+//			DisplayHelper.INSTANCE.drawBorder(
+//					graphics, new ScreenRectangle(
+//							((int) floatingRect.getX()),
+//							((int) floatingRect.getY()),
+//							(int) floatingRect.getWidth(),
+//							(int) floatingRect.getHeight()),
+//					1, 0xFF00AAAA, true);
+//		}
 	}
 
 	@Override

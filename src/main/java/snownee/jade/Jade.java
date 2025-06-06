@@ -69,12 +69,11 @@ public class Jade {
 	}
 
 	public static void resetConfig() {
-		rootConfig().setEnableProfiles(false);
 		int themesHash = history().themesHash;
-		Preconditions.checkState(rootConfig.get().getFile().delete());
+		Preconditions.checkState(configHolder().getFile().delete());
 		invalidateConfig();
 		history().themesHash = themesHash;
-		rootConfig.get().save();
+		configHolder().save();
 	}
 
 	public static WailaConfig.Root rootConfig() {
