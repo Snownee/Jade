@@ -15,6 +15,7 @@ import net.minecraft.client.gui.layouts.AbstractLayout;
 import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.client.gui.layouts.LayoutSettings;
 import snownee.jade.api.ui.Element;
+import snownee.jade.api.ui.Orientation;
 
 public class JadeLinearLayout extends AbstractLayout implements ResizeableLayout {
 	private Orientation orientation;
@@ -226,11 +227,11 @@ public class JadeLinearLayout extends AbstractLayout implements ResizeableLayout
 	}
 
 	public static JadeLinearLayout vertical() {
-		return new JadeLinearLayout(JadeLinearLayout.Orientation.VERTICAL);
+		return new JadeLinearLayout(Orientation.VERTICAL);
 	}
 
 	public static JadeLinearLayout horizontal() {
-		return new JadeLinearLayout(JadeLinearLayout.Orientation.HORIZONTAL);
+		return new JadeLinearLayout(Orientation.HORIZONTAL);
 	}
 
 	@Override
@@ -274,48 +275,6 @@ public class JadeLinearLayout extends AbstractLayout implements ResizeableLayout
 
 		protected ChildContainer(LayoutElement element, LayoutSettings settings) {
 			super(element, settings);
-		}
-	}
-
-	public enum Orientation {
-		HORIZONTAL, VERTICAL;
-
-		private int getAxisLength(ChildContainer child) {
-			return this == HORIZONTAL ? child.getWidth() : child.getHeight();
-		}
-
-		private int getCrossAxisLength(ChildContainer child) {
-			return this == HORIZONTAL ? child.getHeight() : child.getWidth();
-		}
-
-		private int getAxisPosition(LayoutElement element) {
-			return this == HORIZONTAL ? element.getX() : element.getY();
-		}
-
-		private int getCrossAxisPosition(LayoutElement element) {
-			return this == HORIZONTAL ? element.getY() : element.getX();
-		}
-
-		private void setPosition(ChildContainer child, int axis, int crossAxis) {
-			if (this == HORIZONTAL) {
-				child.setX(axis, child.getWidth());
-				child.setY(crossAxis, child.getHeight());
-			} else {
-				child.setX(crossAxis, child.getWidth());
-				child.setY(axis, child.getHeight());
-			}
-		}
-
-		public void setFreeSpace(ChildContainer child, int axis, int crossAxis) {
-			if (child.child instanceof ResizeableLayout resizeableLayout) {
-				if (this == Orientation.HORIZONTAL) {
-					resizeableLayout.setFreeSpace(axis, crossAxis);
-				} else {
-					resizeableLayout.setFreeSpace(crossAxis, axis);
-				}
-			} else {
-				throw new IllegalStateException("Child " + child.child + " is not a ResizeableLayout");
-			}
 		}
 	}
 

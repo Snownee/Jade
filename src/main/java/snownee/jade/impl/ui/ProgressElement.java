@@ -137,18 +137,19 @@ public class ProgressElement extends ResizeableElement implements StyledElement 
 		if (part.overlay() == null) {
 			return start + partWidth;//TODO
 		}
-		graphics.enableScissor(x + (int) start, y, x + (int) start + roundedPartWidth, y + height);
+//		graphics.enableScissor(x + (int) start, y, x + (int) start + roundedPartWidth, y + height);
 		// we can only draw a sprite from its top-left corner, so only makes the last part more detailed
-		if (isLast && view.style.foreground() == null && part.overlay() instanceof ProgressOverlayElement element) {
+		if (isLast && view.style.foreground() == null && part.overlay() instanceof ProgressOverlayElement element &&
+				element.canUseFloatingRect()) {
 			element.setFloatingRect(x + start, y, partWidth, height);
 			element.render(graphics, -1, -1, partialTicks);
 			element.setFloatingRect(null);
-			graphics.disableScissor();
+//			graphics.disableScissor();
 			return start + partWidth;
 		} else {
 			resizeElement(part.overlay(), x + (int) start, y, roundedPartWidth, height);
 			part.overlay().render(graphics, -1, -1, partialTicks);
-			graphics.disableScissor();
+//			graphics.disableScissor();
 			return start + roundedPartWidth;
 		}
 	}

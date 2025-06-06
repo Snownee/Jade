@@ -5,6 +5,8 @@ import java.util.Objects;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.google.common.base.Preconditions;
+
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -52,6 +54,14 @@ public class ProgressView {
 	}
 
 	public record Part(float progress, @Nullable Element overlay, @Nullable MessageType messageType, int color) {
+		public Part(float progress, @Nullable Element overlay, @Nullable MessageType messageType, int color) {
+			this.progress = progress;
+			this.overlay = overlay;
+			this.messageType = messageType;
+			this.color = color;
+			Preconditions.checkArgument(progress >= 0 && progress <= 1, "Progress must be between 0 and 1, got: %s", progress);
+		}
+
 		public static Part of(float progress) {
 			return of(progress, MessageType.NORMAL);
 		}

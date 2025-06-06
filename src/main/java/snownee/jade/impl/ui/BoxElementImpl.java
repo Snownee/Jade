@@ -164,9 +164,11 @@ public class BoxElementImpl extends BoxElement {
 			style.render(graphics, this, getX(), getY(), getWidth(), getHeight(), alpha);
 		}
 
+		graphics.enableScissor(getX(), getY(), getX() + getWidth(), getY() + getHeight());
 		for (Renderable renderable : renderables) {
 			renderable.render(graphics, mouseX, mouseY, partialTicks);
 		}
+		graphics.disableScissor();
 
 		if (root && tooltip.sneakyDetails) {
 			IThemeHelper.get().theme().sneakyDetails.render(graphics, partialTicks, this);

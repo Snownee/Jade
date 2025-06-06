@@ -71,6 +71,7 @@
 	"config.jade.key_name_n_bind_1": "[%s](currently %s)",
 	"config.jade.key_name_n_bind_2": "[%s](currently %s, %s)",
 	"config.jade.general": "General",
+	"config.jade.profiles": "Profiles",
 	"config.jade.debug_mode": "Debug Mode",
 	"config.jade.edit_ignore_list": "Edit ignore list in Files...",
 	"config.jade.enable_profiles": "Enabled",

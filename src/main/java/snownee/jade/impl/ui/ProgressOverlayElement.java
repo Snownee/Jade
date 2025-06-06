@@ -25,4 +25,14 @@ public abstract class ProgressOverlayElement extends ResizeableElement {
 	public @Nullable Rect2f getFloatingRect() {
 		return floatingRect;
 	}
+
+	public boolean canUseFloatingRect() {
+		return true;
+	}
+
+	@Override
+	public void setFreeSpace(int width, int height) {
+		this.width = width;
+		this.height = height;
+	}
 }

@@ -93,12 +93,24 @@ public final class JadeUI {
 		return JadeUIInternal.progressStyle();
 	}
 
-	public static Element sprite(RenderPipeline renderPipeline, ResourceLocation sprite, int width, int height) {
+	public static ResizeableElement sprite(RenderPipeline renderPipeline, ResourceLocation sprite, int width, int height) {
 		return JadeUIInternal.sprite(renderPipeline, sprite, width, height);
 	}
 
-	public static Element sprite(ResourceLocation sprite, int width, int height) {
+	public static ResizeableElement sprite(ResourceLocation sprite, int width, int height) {
 		return JadeUIInternal.sprite(sprite, width, height);
+	}
+
+	public static ResizeableElement horizontalTiledSprite(
+			RenderPipeline renderPipeline,
+			ResourceLocation sprite,
+			int width,
+			int height) {
+		return JadeUIInternal.horizontalTiledSprite(renderPipeline, sprite, width, height);
+	}
+
+	public static ResizeableElement verticalTiledSprite(RenderPipeline renderPipeline, ResourceLocation sprite, int width, int height) {
+		return JadeUIInternal.verticalTiledSprite(renderPipeline, sprite, width, height);
 	}
 
 	public static ResizeableElement offset(Element element, int x, int y) {

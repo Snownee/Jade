@@ -581,7 +581,12 @@ public class WailaConfig implements IWailaConfig {
 
 		@Override
 		public void applyTheme(ResourceLocation id) {
-			activeThemeInstance = IThemeHelper.get().getTheme(id);
+			try {
+				activeThemeInstance = IThemeHelper.get().getTheme(id);
+			} catch (Exception e) {
+				Jade.LOGGER.error("Failed to apply theme", e);
+				activeThemeInstance = IThemeHelper.get().getTheme(JadeIds.DEFAULT_THEME);
+			}
 			activeTheme = activeThemeInstance.id;
 		}
 

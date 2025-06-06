@@ -60,7 +60,7 @@ public class FurnaceProvider implements StreamServerDataProvider<BlockAccessor, 
 			}
 			tooltip.add(JadeUI.item(data.inventory.get(0)).alignSelfCenter());
 			tooltip.append(JadeUI.item(data.inventory.get(1)).alignSelfCenter());
-			tooltip.append(JadeUI.progressArrow((float) data.progress / data.total).alignSelfCenter().settings($ -> {
+			tooltip.append(JadeUI.progressArrow(data.total == 0 ? 0 : (float) data.progress / data.total).alignSelfCenter().settings($ -> {
 				return $.paddingHorizontal(3);
 			}));
 			tooltip.append(JadeUI.item(data.inventory.get(2)).alignSelfCenter());

@@ -7,6 +7,7 @@ import java.util.Objects;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
@@ -22,6 +23,7 @@ import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.ui.BoxStyle;
+import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.JadeUI;
 import snownee.jade.api.view.ClientViewGroup;
 import snownee.jade.api.view.EnergyView;
@@ -45,6 +47,11 @@ public class EnergyStorageProvider<T extends Accessor<?>> implements StreamServe
 	public static class Client<T extends Accessor<?>> extends EnergyStorageProvider<T> implements IComponentProvider<T> {
 		public static final Client<BlockAccessor> BLOCK = new Client<>();
 		public static final Client<EntityAccessor> ENTITY = new Client<>();
+		private static final Element PROGRESS_OVERLAY = JadeUI.horizontalTiledSprite(
+				RenderPipelines.GUI_TEXTURED,
+				JadeIds.JADE("energy_progress"),
+				16,
+				16);
 
 		@Override
 		public void appendTooltip(ITooltip tooltip, T accessor, IPluginConfig config) {
@@ -91,7 +98,7 @@ public class EnergyStorageProvider<T extends Accessor<?>> implements StreamServe
 								}
 								case PROGRESS_BAR -> {
 									ProgressView progressView = new ProgressView(
-											ProgressView.Part.of(view.ratio),
+											ProgressView.Part.of(view.ratio, PROGRESS_OVERLAY),
 											text,
 											JadeUI.progressStyle(),
 											BoxStyle.nestedBox());

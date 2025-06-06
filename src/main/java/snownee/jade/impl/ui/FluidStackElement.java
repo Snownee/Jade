@@ -38,9 +38,4 @@ public class FluidStackElement extends ProgressOverlayElement {
 	public @Nullable Component getNarration() {
 		return null;
 	}
-
-	@Override
-	public void setFreeSpace(int width, int height) {
-
-	}
 }

@@ -8,6 +8,7 @@ import java.util.Set;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.NotNull;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -77,7 +78,7 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener<JadeClientCode
 	@Override
 	@NotNull
 	public Theme getTheme(ResourceLocation id) {
-		return Objects.requireNonNull(themes.getOrDefault(id, fallback));
+		return Preconditions.checkNotNull(themes.getOrDefault(id, fallback), "Theme not found: %s", id);
 	}
 
 	@Override

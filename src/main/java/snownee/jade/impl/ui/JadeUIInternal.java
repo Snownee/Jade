@@ -19,6 +19,7 @@ import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.ui.BoxElement;
 import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.Element;
+import snownee.jade.api.ui.Orientation;
 import snownee.jade.api.ui.ProgressStyle;
 import snownee.jade.api.ui.ResizeableElement;
 import snownee.jade.api.ui.TextElement;
@@ -102,11 +103,11 @@ public class JadeUIInternal {
 		return new SimpleProgressStyle();
 	}
 
-	public static Element sprite(RenderPipeline renderPipeline, ResourceLocation sprite, int width, int height) {
+	public static ResizeableElement sprite(RenderPipeline renderPipeline, ResourceLocation sprite, int width, int height) {
 		return new SpriteElement(renderPipeline, sprite, width, height);
 	}
 
-	public static Element sprite(ResourceLocation sprite, int width, int height) {
+	public static ResizeableElement sprite(ResourceLocation sprite, int width, int height) {
 		return new SpriteElement(sprite, width, height);
 	}
 
@@ -143,5 +144,21 @@ public class JadeUIInternal {
 		} else {
 			layoutElement.visitWidgets(widget -> visitChildrenRecursiveInternal(widget, consumer, set));
 		}
+	}
+
+	public static ResizeableElement horizontalTiledSprite(
+			RenderPipeline renderPipeline,
+			ResourceLocation sprite,
+			int width,
+			int height) {
+		SpriteElement element = (SpriteElement) sprite(renderPipeline, sprite, width, height);
+		element.tiledOrientation = Orientation.HORIZONTAL;
+		return element;
+	}
+
+	public static ResizeableElement verticalTiledSprite(RenderPipeline renderPipeline, ResourceLocation sprite, int width, int height) {
+		SpriteElement element = (SpriteElement) sprite(renderPipeline, sprite, width, height);
+		element.tiledOrientation = Orientation.VERTICAL;
+		return element;
 	}
 }
