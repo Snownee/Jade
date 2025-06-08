@@ -133,7 +133,7 @@ public class ItemStorageProvider<T extends Accessor<?>> implements IServerDataPr
 							theTooltip.add(new HorizontalLineElement());
 							if (group.title != null) {
 								theTooltip.append(JadeUI.text(group.title).scale(0.5F));
-								theTooltip.append(new HorizontalLineElement());
+								theTooltip.append(new HorizontalLineElement().flexGrow(1));
 							}
 						}
 						if (group.views.isEmpty() && group.extraData != null) {

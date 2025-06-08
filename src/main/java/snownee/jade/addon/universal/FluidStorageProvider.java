@@ -11,6 +11,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import snownee.jade.JadeClient;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
@@ -25,6 +26,7 @@ import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.JadeUI;
+import snownee.jade.api.ui.NarratableComponent;
 import snownee.jade.api.view.ClientViewGroup;
 import snownee.jade.api.view.FluidView;
 import snownee.jade.api.view.IClientExtensionProvider;
@@ -78,19 +80,24 @@ public class FluidStorageProvider<T extends Accessor<?>> implements StreamServer
 								text = view.overrideText;
 							} else if (view.fluidName == null) {
 								// when do we reach here?
-								text = IThemeHelper.get().info(view.current);
+								text = NarratableComponent.attach(IThemeHelper.get().info(view.current), view.current);
 							} else {
+								Component fluidAmount;
 								Component fluidName = IThemeHelper.get().info(IDisplayHelper.get().stripColor(view.fluidName));
 								if (accessor.showDetails() || style != IWailaConfig.HandlerDisplayStyle.PROGRESS_BAR) {
-									text = Component.translatable(
-											"jade.fluid.with_capacity",
-											IThemeHelper.get().info(view.current),
-											view.max);
+									fluidAmount = new NarratableComponent(
+											Component.translatable(
+													"jade.fluid.with_capacity",
+													IThemeHelper.get().info(view.current),
+													view.max), () -> JadeClient.formatString(
+											"narration.jade.withCapacity",
+											NarratableComponent.getNarration(view.current),
+											NarratableComponent.getNarration(view.max)));
 								} else {
-									text = IThemeHelper.get().info(view.current);
+									fluidAmount = NarratableComponent.attach(IThemeHelper.get().info(view.current), view.current);
 								}
 								String key = style == IWailaConfig.HandlerDisplayStyle.PLAIN_TEXT ? "jade.fluid.text" : "jade.fluid";
-								text = Component.translatable(key, fluidName, text);
+								text = NarratableComponent.translatable(key, fluidName, fluidAmount);
 							}
 
 							switch (style) {

@@ -10,6 +10,7 @@ import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.IDisplayHelper;
+import snownee.jade.api.ui.NarratableComponent;
 import snownee.jade.api.ui.ResizeableElement;
 import snownee.jade.api.view.ProgressView;
 import snownee.jade.gui.ResizeableLayout;
@@ -164,7 +165,7 @@ public class ProgressElement extends ResizeableElement implements StyledElement 
 
 	@Override
 	public @Nullable Component getNarration() {
-		return view.text;
+		return view.text == null ? null : NarratableComponent.getNarration(view.text);
 	}
 
 	@Override

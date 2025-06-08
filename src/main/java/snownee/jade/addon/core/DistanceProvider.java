@@ -4,11 +4,11 @@ import java.text.DecimalFormat;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import snownee.jade.JadeClient;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
@@ -22,6 +22,7 @@ import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.JadeUI;
 import snownee.jade.api.ui.TextElement;
 import snownee.jade.impl.theme.ThemeHelper;
+import snownee.jade.util.NarrationHelper;
 
 public abstract class DistanceProvider implements IToggleableProvider {
 
@@ -53,11 +54,11 @@ public abstract class DistanceProvider implements IToggleableProvider {
 
 	public static TextElement xyz(Vec3i pos) {
 		Component display = Component.translatable("jade.blockpos", display(pos.getX(), 0), display(pos.getY(), 1), display(pos.getZ(), 2));
-		Component narration = Component.translatable(
+		String narration = JadeClient.formatString(
 				"narration.jade.blockpos",
-				narrate(pos.getX()),
-				narrate(pos.getY()),
-				narrate(pos.getZ()));
+				NarrationHelper.number(pos.getX()),
+				NarrationHelper.number(pos.getY()),
+				NarrationHelper.number(pos.getZ()));
 		TextElement text = JadeUI.text(display);
 		text.narration(narration);
 		return text;
@@ -70,14 +71,10 @@ public abstract class DistanceProvider implements IToggleableProvider {
 		return Component.literal(Integer.toString(i)).withStyle(ThemeHelper.colorStyle(colors[colorIndex]));
 	}
 
-	public static String narrate(int i) {
-		return i >= 0 ? Integer.toString(i) : I18n.get("narration.jade.negative", -i);
-	}
-
 	public void append(ITooltip tooltip, Accessor<?> accessor, BlockPos pos, IPluginConfig config) {
 		boolean distance = config.get(JadeIds.CORE_DISTANCE);
 		String distanceVal = distance ? distance(accessor) : null;
-		String distanceMsg = distance ? I18n.get("narration.jade.distance", distanceVal) : null;
+		String distanceMsg = distance ? JadeClient.formatString("narration.jade.distance", distanceVal) : null;
 		if (config.get(JadeIds.CORE_COORDINATES)) {
 			if (config.get(JadeIds.CORE_REL_COORDINATES) && Screen.hasControlDown()) {
 				tooltip.add(xyz(pos.subtract(BlockPos.containing(accessor.getPlayer().getEyePosition()))));
@@ -87,12 +84,12 @@ public abstract class DistanceProvider implements IToggleableProvider {
 			if (distance) {
 				tooltip.append(JadeUI
 						.text(Component.translatable("jade.distance1", distanceVal))
-						.narration(Component.literal(distanceMsg)));
+						.narration(distanceMsg));
 			}
 		} else if (distance) {
 			tooltip.add(JadeUI
 					.text(Component.translatable("jade.distance2", distanceVal))
-					.narration(Component.literal(distanceMsg)));
+					.narration(distanceMsg));
 		}
 	}
 
