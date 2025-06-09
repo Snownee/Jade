@@ -19,7 +19,6 @@ import com.mojang.blaze3d.textures.GpuTextureView;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.render.TextureSetup;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -40,6 +39,7 @@ import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.Color;
 import snownee.jade.api.ui.IDisplayHelper;
+import snownee.jade.api.ui.Rect2f;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.JadeFont;
 
@@ -161,11 +161,11 @@ public class DisplayHelper implements IDisplayHelper {
 	}
 
 	@Override
-	public void drawBorder(GuiGraphics graphics, ScreenRectangle rectangle, int width, int color, boolean corner) {
-		int minX = rectangle.left();
-		int minY = rectangle.top();
-		int maxX = rectangle.right();
-		int maxY = rectangle.bottom();
+	public void drawBorder(GuiGraphics graphics, Rect2f rectangle, int width, int color, boolean corner) {
+		float minX = rectangle.getX();
+		float minY = rectangle.getY();
+		float maxX = rectangle.getRight();
+		float maxY = rectangle.getBottom();
 		fill(graphics, minX + width, minY, maxX - width, minY + width, color);
 		fill(graphics, minX + width, maxY - width, maxX - width, maxY, color);
 		if (corner) {

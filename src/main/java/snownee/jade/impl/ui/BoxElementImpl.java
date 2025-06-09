@@ -1,15 +1,15 @@
 package snownee.jade.impl.ui;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.IntConsumer;
-import java.util.function.ToIntFunction;
 
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.Window;
 
+import it.unimi.dsi.fastutil.floats.FloatConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
@@ -29,6 +29,7 @@ import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.JadeUI;
 import snownee.jade.api.ui.MessageType;
+import snownee.jade.api.ui.Rect2f;
 import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.ui.TooltipAnimation;
 import snownee.jade.gui.JadeLinearLayout;
@@ -38,6 +39,7 @@ import snownee.jade.gui.ResizeableLayout;
 import snownee.jade.impl.Tooltip;
 import snownee.jade.track.ProgressTrackInfo;
 import snownee.jade.util.ClientProxy;
+import snownee.jade.util.ToFloatFunction;
 
 public class BoxElementImpl extends BoxElement {
 	public LayoutWithPadding layout;
@@ -123,15 +125,16 @@ public class BoxElementImpl extends BoxElement {
 		layout.setY(y);
 	}
 
-	private static void chase(TooltipAnimation animation, ToIntFunction<Rect2i> getter, IntConsumer setter) {
+	private static void chase(TooltipAnimation animation, ToFloatFunction<Rect2f> getter, FloatConsumer setter, Duration duration) {
 		if (IWailaConfig.get().overlay().getAnimation()) {
-			int source = getter.applyAsInt(animation.rect);
-			int target = getter.applyAsInt(animation.expectedRect);
+			float source = getter.applyAsFloat(animation.rect);
+			float target = getter.applyAsFloat(animation.expectedRect);
 			float diff = target - source;
 			if (diff == 0) {
 				return;
 			}
-			float delta = Minecraft.getInstance().getDeltaTracker().getRealtimeDeltaTicks() * 2;
+			var realtimeDeltaMillis = Minecraft.getInstance().getDeltaTracker().getRealtimeDeltaTicks() * 50;
+			float delta = realtimeDeltaMillis / duration.toMillis();
 			if (delta == 0) {
 				diff = diff > 0 ? 1 : -1;
 			} else {
@@ -144,7 +147,7 @@ public class BoxElementImpl extends BoxElement {
 			}
 			setter.accept((int) (source + diff));
 		} else {
-			setter.accept(getter.applyAsInt(animation.expectedRect));
+			setter.accept(getter.applyAsFloat(animation.expectedRect));
 		}
 	}
 
@@ -345,7 +348,7 @@ public class BoxElementImpl extends BoxElement {
 			animation.scale = Math.max(animation.scale * 0.5f, thresholdHeight / getHeight());
 		}
 
-		Rect2i expectedRect = animation.expectedRect;
+		Rect2f expectedRect = animation.expectedRect;
 		expectedRect.setWidth((int) (width * animation.scale));
 		expectedRect.setHeight((int) (height * animation.scale));
 		expectedRect.setX((int) (x - expectedRect.getWidth() * accessibility.tryFlip(overlay.getAnchorX())));
@@ -380,17 +383,24 @@ public class BoxElementImpl extends BoxElement {
 	}
 
 	public void updateRect(TooltipAnimation animation) {
-		Rect2i src = animation.rect;
+		Rect2f src = animation.rect;
 		if (src.getWidth() == 0) {
 			src.setX(animation.expectedRect.getX());
 			src.setY(animation.expectedRect.getY());
 			src.setWidth(animation.expectedRect.getWidth());
 			src.setHeight(animation.expectedRect.getHeight());
 		} else {
-			chase(animation, Rect2i::getX, src::setX);
-			chase(animation, Rect2i::getY, src::setY);
-			chase(animation, Rect2i::getWidth, src::setWidth);
-			chase(animation, Rect2i::getHeight, src::setHeight);
+			Duration duration = Duration.ofMillis(125);
+			chase(animation, Rect2f::getX, src::setX, duration);
+			chase(animation, Rect2f::getY, src::setY, duration);
+			chase(animation, Rect2f::getWidth, it -> {
+				src.setWidth(it);
+				setWidth((int) it);
+			}, duration);
+			chase(animation, Rect2f::getHeight, it -> {
+				src.setHeight(it);
+				setHeight((int) it);
+			}, duration);
 		}
 	}
 
@@ -432,5 +442,13 @@ public class BoxElementImpl extends BoxElement {
 		layout.setFreeSpace(width, height);
 		this.width = layout.getWidth();
 		this.height = layout.getHeight();
+	}
+
+	public void setWidth(int width) {
+		this.width = width;
+	}
+
+	public void setHeight(int height) {
+		this.height = height;
 	}
 }

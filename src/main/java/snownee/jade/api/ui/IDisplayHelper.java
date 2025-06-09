@@ -26,7 +26,11 @@ public interface IDisplayHelper {
 
 	void drawGradientRect(GuiGraphics graphics, float left, float top, float right, float bottom, int startColor, int endColor);
 
-	void drawBorder(GuiGraphics graphics, ScreenRectangle rectangle, int width, int color, boolean corner);
+	void drawBorder(GuiGraphics graphics, Rect2f rectangle, int width, int color, boolean corner);
+
+	default void drawBorder(GuiGraphics graphics, ScreenRectangle rectangle, int width, int color, boolean corner) {
+		drawBorder(graphics, new Rect2f(rectangle.left(), rectangle.top(), rectangle.width(), rectangle.height()), width, color, corner);
+	}
 
 	String humanReadableNumber(double number, String unit, boolean milli);
 

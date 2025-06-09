@@ -85,4 +85,12 @@ public class Rect2f {
 	public Rect2f copy() {
 		return new Rect2f(xPos, yPos, width, height);
 	}
+
+	public float getRight() {
+		return xPos + width;
+	}
+
+	public float getBottom() {
+		return yPos + height;
+	}
 }

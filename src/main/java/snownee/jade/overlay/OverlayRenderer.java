@@ -7,7 +7,6 @@ import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.util.Mth;
 import net.minecraft.util.profiling.Profiler;
 import net.minecraft.world.item.ItemStack;
@@ -22,6 +21,7 @@ import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
 import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.JadeUI;
+import snownee.jade.api.ui.Rect2f;
 import snownee.jade.api.ui.TooltipAnimation;
 import snownee.jade.gui.BaseOptionsScreen;
 import snownee.jade.gui.PreviewOptionsScreen;
@@ -183,23 +183,17 @@ public class OverlayRenderer {
 
 		Matrix3x2fStack matrixStack = graphics.pose();
 		matrixStack.pushMatrix();
-		Rect2i rect2i = animation.rect;
-		matrixStack.translate(rect2i.getX(), rect2i.getY());
+		Rect2f rect = animation.rect;
+		matrixStack.translate(rect.getX(), rect.getY());
 
 		float scale = animation.scale;
 		if (scale != 1f) {
 			matrixStack.scale(scale);
 		}
-		{
-			float maxWidth = rect2i.getWidth();
-			float maxHeight = rect2i.getHeight();
-			maxWidth = maxWidth / scale;
-			maxHeight = maxHeight / scale;
-			root.render(graphics, mouseX, mouseY, partialTicks);
-			if (IWailaConfig.get().general().isDebug() && Screen.hasControlDown()) {
 
-				root.renderDebug(graphics, mouseX, mouseY, partialTicks, new Element.RenderDebugContext(root, animation.rect));
-			}
+		root.render(graphics, mouseX, mouseY, partialTicks);
+		if (IWailaConfig.get().general().isDebug() && Screen.hasControlDown()) {
+			root.renderDebug(graphics, mouseX, mouseY, partialTicks, new Element.RenderDebugContext(root, rect));
 		}
 
 		WailaClientRegistration.instance().afterRenderCallback.call(callback -> {
