@@ -38,8 +38,8 @@ import snownee.jade.gui.ResizeableLayout;
 import snownee.jade.impl.Tooltip;
 import snownee.jade.track.ProgressTrackInfo;
 import snownee.jade.util.ClientProxy;
-import snownee.jade.util.WailaExceptionHandler;
 import snownee.jade.util.ToFloatFunction;
+import snownee.jade.util.WailaExceptionHandler;
 
 public class BoxElementImpl extends BoxElement {
 	public LayoutWithPadding layout;
@@ -134,6 +134,7 @@ public class BoxElementImpl extends BoxElement {
 				return;
 			}
 			if (progress >= 1) {
+				animation.startTime = -1;
 				setter.accept(target);
 				return;
 			}
@@ -400,7 +401,7 @@ public class BoxElementImpl extends BoxElement {
 			float progress = (float) deltaTime / durationMillis;
 			chase(animation, Rect2f::getX, src::setX, progress);
 			chase(animation, Rect2f::getY, src::setY, progress);
-			chase(animation, it -> it.getWidth(), it -> src.setWidth(it), progress);
+			chase(animation, Rect2f::getWidth, src::setWidth, progress);
 			chase(animation, Rect2f::getHeight, src::setHeight, progress);
 			setWidth((int) (anchorXRatio == 0 ? src.getWidth() : (anchorX - src.getX()) / anchorXRatio));
 			setHeight((int) (anchorYRatio == 0 ? src.getHeight() : (anchorY - src.getY()) / anchorYRatio));
