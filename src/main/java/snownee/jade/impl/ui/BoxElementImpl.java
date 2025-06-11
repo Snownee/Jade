@@ -38,6 +38,7 @@ import snownee.jade.gui.ResizeableLayout;
 import snownee.jade.impl.Tooltip;
 import snownee.jade.track.ProgressTrackInfo;
 import snownee.jade.util.ClientProxy;
+import snownee.jade.util.WailaExceptionHandler;
 import snownee.jade.util.ToFloatFunction;
 
 public class BoxElementImpl extends BoxElement {
@@ -162,7 +163,12 @@ public class BoxElementImpl extends BoxElement {
 
 		graphics.enableScissor(getX(), getY(), getX() + getWidth(), getY() + getHeight());
 		for (Renderable renderable : renderables) {
-			renderable.render(graphics, mouseX, mouseY, partialTicks);
+			try {
+				renderable.render(graphics, mouseX, mouseY, partialTicks);
+			} catch (Exception e) {
+				WailaExceptionHandler.handleErr(e, null, null);
+				IDisplayHelper.get().drawBorder(graphics, ((LayoutElement) renderable).getRectangle(), 1, 0x88FF0000, true);
+			}
 		}
 		graphics.disableScissor();
 

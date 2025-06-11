@@ -6,6 +6,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import snownee.jade.api.theme.IThemeHelper;
+import snownee.jade.api.ui.NarratableComponent;
 import snownee.jade.api.ui.TextElement;
 import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.util.JadeLanguages;
@@ -54,7 +55,7 @@ public class TextElementImpl extends TextElement {
 
 	@Override
 	public Component getNarration() {
-		return Component.literal(getString());
+		return NarratableComponent.getNarration(text);
 	}
 
 	@Override

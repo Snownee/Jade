@@ -14,6 +14,7 @@ import net.minecraft.world.level.material.Fluids;
 import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.JadeUI;
+import snownee.jade.api.ui.NarratableComponent;
 import snownee.jade.util.FluidTextHelper;
 
 public class FluidView {
@@ -21,8 +22,8 @@ public class FluidView {
 	public static final Component EMPTY_FLUID = Component.translatable("jade.fluid.empty");
 
 	public Element overlay;
-	public String current;
-	public String max;
+	public Component current;
+	public Component max;
 	public float ratio;
 	@Nullable
 	public Component fluidName;
@@ -41,18 +42,18 @@ public class FluidView {
 		}
 		JadeFluidObject fluidObject = data.fluids.isEmpty() ? JadeFluidObject.empty() : data.fluids.getFirst();
 		long amount = fluidObject.getAmount();
-		FluidView fluidView = new FluidView(JadeUI.fluid(fluidObject));
-		fluidView.fluidName = fluidObject.getDisplayName();
-		fluidView.current = FluidTextHelper.getUnicodeMillibuckets(amount, true);
-		fluidView.max = FluidTextHelper.getUnicodeMillibuckets(data.capacity, true);
-		fluidView.ratio = (float) ((double) amount / data.capacity);
+		FluidView view = new FluidView(JadeUI.fluid(fluidObject));
+		view.fluidName = fluidObject.getDisplayName();
+		view.current = FluidTextHelper.getMillibuckets(amount, true);
+		view.max = FluidTextHelper.getMillibuckets(data.capacity, true);
+		view.ratio = (float) ((double) amount / data.capacity);
 		if (fluidObject.getType().isSame(Fluids.EMPTY)) {
-			fluidView.overrideText = Component.translatable(
+			view.overrideText = NarratableComponent.translatable(
 					"jade.fluid",
 					EMPTY_FLUID,
-					Component.literal(fluidView.max).withStyle(ChatFormatting.GRAY));
+					NarratableComponent.attach(Component.literal(view.max.getString()).withStyle(ChatFormatting.GRAY), view.max));
 		}
-		return fluidView;
+		return view;
 	}
 
 	public record Data(List<JadeFluidObject> fluids, long capacity) {

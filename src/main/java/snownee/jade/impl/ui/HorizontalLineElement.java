@@ -27,13 +27,13 @@ public class HorizontalLineElement extends ResizeableElement {
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
 		int x = getX();
 		int y = getY() + height / 2;
-		DisplayHelper.fill(graphics, x + 2, y, width, y + 0.5F, color);
+		DisplayHelper.fill(graphics, x + 2, y, x + width - 2, y + 0.5F, color);
 		if (IThemeHelper.get().theme().text.shadow()) {
 			++x;
 			++y; //FIXME
 			var shadow = Color.rgb(color);
 			shadow = Color.rgb(shadow.getRed() / 4, shadow.getGreen() / 4, shadow.getBlue() / 4, shadow.getOpacity());
-			DisplayHelper.fill(graphics, x + 2, y, width, y + 0.5F, shadow.toInt());
+			DisplayHelper.fill(graphics, x + 2, y, x + width - 2, y + 0.5F, shadow.toInt());
 		}
 	}
 

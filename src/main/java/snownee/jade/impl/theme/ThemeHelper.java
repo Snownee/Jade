@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
+import com.mojang.brigadier.Message;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -173,9 +174,18 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener<JadeClientCode
 			} else {
 				return component.setStyle(component.getStyle().withColor(color));
 			}
-		} else {
-			return Component.literal(Objects.toString(componentOrString)).setStyle(colorStyle(color));
 		}
+		if (componentOrString instanceof Component component) {
+			if (component.getStyle().isEmpty()) {
+				return component.copy().setStyle(colorStyle(color));
+			} else {
+				return component.copy().setStyle(component.getStyle().withColor(color));
+			}
+		}
+		if (componentOrString instanceof Message message) {
+			return Component.literal(message.getString()).setStyle(colorStyle(color));
+		}
+		return Component.literal(Objects.toString(componentOrString)).setStyle(colorStyle(color));
 	}
 
 	@Override

@@ -24,9 +24,14 @@ package snownee.jade.util;
  */
 
 import java.text.NumberFormat;
+import java.util.function.Supplier;
 
 import com.google.common.math.LongMath;
 
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.Component;
+import snownee.jade.JadeClient;
+import snownee.jade.api.ui.NarratableComponent;
 import snownee.jade.overlay.DisplayHelper;
 
 /**
@@ -66,36 +71,80 @@ public class FluidTextHelper {
 		return numString.reverse().toString() + FRACTION_BAR + denomString.reverse();
 	}
 
-	/**
-	 * Convert a non-negative fluid amount in droplets to a unicode string
-	 * representing the amount in millibuckets. For example, passing 163 will result
-	 * in
-	 *
-	 * <pre>
-	 * 2 ¹⁄₈₁
-	 * </pre>
-	 * <p>
-	 * .
-	 */
-	public static String getUnicodeMillibuckets(long droplets, boolean simplify) {
+	private static String getFractionNarration(long numerator, long denominator, boolean simplify) {
+		if (numerator < 0 || denominator < 0) {
+			throw new IllegalArgumentException("Numerator and denominator must be non negative.");
+		}
+
+		if (simplify && denominator != 0) {
+			long g = LongMath.gcd(numerator, denominator);
+			numerator /= g;
+			denominator /= g;
+		}
+
+		String key = "narration.jade.%s/%s".formatted(numerator, denominator);
+		if (I18n.exists(key)) {
+			return I18n.get(key);
+		}
+		return JadeClient.formatString("narration.jade.N/N", numerator, denominator);
+	}
+
+	public static NarratableComponent getMillibuckets(long droplets, boolean simplify) {
 		long mb = droplets / 81;
 		long leftover = droplets % BUCKET;
 		if (leftover == 0 || droplets >= BUCKET * 100) {
-			return DisplayHelper.INSTANCE.humanReadableNumber(mb, "B", true);
+			String s = DisplayHelper.INSTANCE.humanReadableNumber(mb, "B", true);
+			if (s.endsWith("mB")) {
+				return makeString(s.substring(0, s.length() - 2), mb, 0, 0, "mB");
+			} else {
+				return makeString(s.substring(0, s.length() - 1), mb / 1000L, 0, 0, "B");
+			}
 		}
 		if (droplets % 81 == 0) {
-			return NumberFormat.getNumberInstance().format(mb) + "mB";
+			return makeString(mb, 0, 0, "mB");
 		}
 		if (simplify) {
 			long g = LongMath.gcd(leftover, BUCKET);
 			if (g >= 1000) {
-				long b = mb / 1000;
-				String text = b == 0 ? "" : NumberFormat.getNumberInstance().format(b) + " ";
-				return text + getUnicodeFraction(leftover, BUCKET, true) + "B";
+				return makeString(mb / 1000, leftover / g, BUCKET / g, "B");
 			}
 		}
-		String text = mb == 0 ? "" : NumberFormat.getNumberInstance().format(mb) + " ";
-		return text + getUnicodeFraction(droplets % 81, 81, simplify) + "mB";
+		return makeString(mb, droplets % 81, 81, "mB");
+	}
+
+	private static NarratableComponent makeString(long integer, long numerator, long denominator, String unit) {
+		return makeString(
+				integer == 0L && denominator != 0L ? "" : NumberFormat.getNumberInstance().format(integer),
+				integer,
+				numerator,
+				denominator,
+				unit);
+	}
+
+	private static NarratableComponent makeString(String integerString, long integer, long numerator, long denominator, String unit) {
+		String string;
+		Supplier<String> narration;
+		if (denominator == 0) {
+			string = integerString + unit;
+			narration = () -> integerString;
+		} else if (integerString.isEmpty()) {
+			string = getUnicodeFraction(numerator, denominator, true) + unit;
+			narration = () -> getFractionNarration(numerator, denominator, true);
+		} else {
+			string = integerString + " " + getUnicodeFraction(numerator, denominator, true) + unit;
+			narration = () -> JadeClient.formatString(
+					"narration.jade.integer_and_fraction",
+					integerString,
+					getFractionNarration(numerator, denominator, true));
+		}
+		return new NarratableComponent(
+				Component.literal(string), () -> {
+			double number = integer;
+			if (denominator != 0) {
+				number += (double) numerator / (double) denominator;
+			}
+			return JadeClient.formatString("narration.jade.unit." + unit, narration.get(), number);
+		});
 	}
 
 	private static final char[] SUPERSCRIPT = new char[]{

@@ -347,15 +347,19 @@ public final class JadeClient {
 	}
 
 	public static MutableComponent format(String s, Object... objects) {
+		return Component.literal(formatString(s, objects));
+	}
+
+	public static String formatString(String s, Object... objects) {
 		try {
 			for (int i = 0; i < objects.length; i++) {
 				if (objects[i] instanceof Component component) {
 					objects[i] = component.getString();
 				}
 			}
-			return Component.literal(MessageFormat.format(I18n.get(s), objects));
+			return MessageFormat.format(I18n.get(s), objects);
 		} catch (Exception e) {
-			return Component.translatable(s, objects);
+			return I18n.get(s, objects);
 		}
 	}
 

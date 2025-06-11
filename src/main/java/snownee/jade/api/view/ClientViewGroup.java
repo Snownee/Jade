@@ -65,7 +65,7 @@ public class ClientViewGroup<T> {
 //					box.setPadding(ScreenDirection.UP, 0);
 //					box.size(null);
 //				}
-				tooltip.add(box);
+				tooltip.add(box.flexGrow(1));
 			}
 		}
 	}
@@ -78,7 +78,7 @@ public class ClientViewGroup<T> {
 		if (title != null) {
 			tooltip.add(new HorizontalLineElement());
 			tooltip.append(JadeUI.text(title).scale(0.5F));
-			tooltip.append(new HorizontalLineElement());
+			tooltip.append(new HorizontalLineElement().flexGrow(1));
 		}
 //		else if (bgColor == 0) {
 //			tooltip.add(new HorizontalLineElement());
