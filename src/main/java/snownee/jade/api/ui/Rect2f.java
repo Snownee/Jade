@@ -1,5 +1,7 @@
 package snownee.jade.api.ui;
 
+import com.google.common.base.Objects;
+
 import net.minecraft.client.gui.layouts.LayoutElement;
 
 public class Rect2f {
@@ -13,6 +15,20 @@ public class Rect2f {
 		this.yPos = y;
 		this.width = width;
 		this.height = height;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == null || getClass() != o.getClass())
+			return false;
+		final Rect2f rect2f = (Rect2f) o;
+		return Float.compare(xPos, rect2f.xPos) == 0 && Float.compare(yPos, rect2f.yPos) == 0 &&
+				Float.compare(width, rect2f.width) == 0 && Float.compare(height, rect2f.height) == 0;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(xPos, yPos, width, height);
 	}
 
 	public static Rect2f of(LayoutElement element) {
@@ -84,6 +100,13 @@ public class Rect2f {
 
 	public Rect2f copy() {
 		return new Rect2f(xPos, yPos, width, height);
+	}
+
+	public void copy(Rect2f src) {
+		this.xPos = src.xPos;
+		this.yPos = src.yPos;
+		this.width = src.width;
+		this.height = src.height;
 	}
 
 	public float getRight() {

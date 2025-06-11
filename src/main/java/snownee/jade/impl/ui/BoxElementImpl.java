@@ -18,7 +18,6 @@ import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.client.gui.layouts.LayoutSettings;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.Mth;
 import snownee.jade.JadeInternals;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IWailaConfig;
@@ -125,7 +124,7 @@ public class BoxElementImpl extends BoxElement {
 		layout.setY(y);
 	}
 
-	private static void chase(TooltipAnimation animation, ToFloatFunction<Rect2f> getter, FloatConsumer setter, Duration duration) {
+	private static void chase(TooltipAnimation animation, ToFloatFunction<Rect2f> getter, FloatConsumer setter, float progress) {
 		if (IWailaConfig.get().overlay().getAnimation()) {
 			float source = getter.applyAsFloat(animation.rect);
 			float target = getter.applyAsFloat(animation.expectedRect);
@@ -133,15 +132,13 @@ public class BoxElementImpl extends BoxElement {
 			if (diff == 0) {
 				return;
 			}
-			var realtimeDeltaMillis = Minecraft.getInstance().getDeltaTracker().getRealtimeDeltaTicks() * 50;
-			float delta = realtimeDeltaMillis / duration.toMillis();
-			if (delta < 1) {
-				diff *= delta;
+			if (progress >= 1) {
+				setter.accept(target);
+				return;
 			}
-			if (Mth.abs(diff) < 1) {
-				diff = diff > 0 ? 1 : -1;
-			}
-			setter.accept((int) (source + diff));
+			float startValue = getter.applyAsFloat(animation.startRect);
+			float deltaValue = target - startValue;
+			setter.accept(startValue + progress * deltaValue);
 		} else {
 			setter.accept(getter.applyAsFloat(animation.expectedRect));
 		}
@@ -335,8 +332,8 @@ public class BoxElementImpl extends BoxElement {
 		IWailaConfig.Accessibility accessibility = IWailaConfig.get().accessibility();
 		float x = window.getGuiScaledWidth() * accessibility.tryFlip(overlay.getOverlayPosX());
 		float y = window.getGuiScaledHeight() * (1.0F - overlay.getOverlayPosY());
-		float width = getWidth();
-		float height = getHeight();
+		float width = layout.getWidth();
+		float height = layout.getHeight();
 
 		animation.scale = overlay.getOverlayScale();
 		float thresholdHeight = window.getGuiScaledHeight() * overlay.getAutoScaleThreshold();
@@ -392,10 +389,13 @@ public class BoxElementImpl extends BoxElement {
 			float anchorYRatio = IWailaConfig.get().overlay().getAnchorY();
 			int anchorX = (int) (anchorXRatio * target.getWidth() + target.getX());
 			int anchorY = (int) (anchorYRatio * target.getHeight() + target.getY());
-			chase(animation, Rect2f::getX, src::setX, duration);
-			chase(animation, Rect2f::getY, src::setY, duration);
-			chase(animation, Rect2f::getWidth, src::setWidth, duration);
-			chase(animation, Rect2f::getHeight, src::setHeight, duration);
+			long deltaTime = System.currentTimeMillis() - animation.startTime;
+			long durationMillis = duration.toMillis();
+			float progress = (float) deltaTime / durationMillis;
+			chase(animation, Rect2f::getX, src::setX, progress);
+			chase(animation, Rect2f::getY, src::setY, progress);
+			chase(animation, it -> it.getWidth(), it -> src.setWidth(it), progress);
+			chase(animation, Rect2f::getHeight, src::setHeight, progress);
 			setWidth((int) (anchorXRatio == 0 ? src.getWidth() : (anchorX - src.getX()) / anchorXRatio));
 			setHeight((int) (anchorYRatio == 0 ? src.getHeight() : (anchorY - src.getY()) / anchorYRatio));
 		}
