@@ -135,15 +135,11 @@ public class BoxElementImpl extends BoxElement {
 			}
 			var realtimeDeltaMillis = Minecraft.getInstance().getDeltaTracker().getRealtimeDeltaTicks() * 50;
 			float delta = realtimeDeltaMillis / duration.toMillis();
-			if (delta == 0) {
+			if (delta < 1) {
+				diff *= delta;
+			}
+			if (Mth.abs(diff) < 1) {
 				diff = diff > 0 ? 1 : -1;
-			} else {
-				if (delta < 1) {
-					diff *= delta;
-				}
-				if (Mth.abs(diff) < 1) {
-					diff = diff > 0 ? 1 : -1;
-				}
 			}
 			setter.accept((int) (source + diff));
 		} else {
@@ -384,23 +380,24 @@ public class BoxElementImpl extends BoxElement {
 
 	public void updateRect(TooltipAnimation animation) {
 		Rect2f src = animation.rect;
+		Rect2f target = animation.expectedRect;
 		if (src.getWidth() == 0) {
-			src.setX(animation.expectedRect.getX());
-			src.setY(animation.expectedRect.getY());
-			src.setWidth(animation.expectedRect.getWidth());
-			src.setHeight(animation.expectedRect.getHeight());
+			src.setX(target.getX());
+			src.setY(target.getY());
+			src.setWidth(target.getWidth());
+			src.setHeight(target.getHeight());
 		} else {
 			Duration duration = Duration.ofMillis(125);
+			float anchorXRatio = IWailaConfig.get().overlay().getAnchorX();
+			float anchorYRatio = IWailaConfig.get().overlay().getAnchorY();
+			int anchorX = (int) (anchorXRatio * target.getWidth() + target.getX());
+			int anchorY = (int) (anchorYRatio * target.getHeight() + target.getY());
 			chase(animation, Rect2f::getX, src::setX, duration);
 			chase(animation, Rect2f::getY, src::setY, duration);
-			chase(animation, Rect2f::getWidth, it -> {
-				src.setWidth(it);
-				setWidth((int) it);
-			}, duration);
-			chase(animation, Rect2f::getHeight, it -> {
-				src.setHeight(it);
-				setHeight((int) it);
-			}, duration);
+			chase(animation, Rect2f::getWidth, src::setWidth, duration);
+			chase(animation, Rect2f::getHeight, src::setHeight, duration);
+			setWidth((int) (anchorXRatio == 0 ? src.getWidth() : (anchorX - src.getX()) / anchorXRatio));
+			setHeight((int) (anchorYRatio == 0 ? src.getHeight() : (anchorY - src.getY()) / anchorYRatio));
 		}
 	}
 
