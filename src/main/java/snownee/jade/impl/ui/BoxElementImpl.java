@@ -392,19 +392,19 @@ public class BoxElementImpl extends BoxElement {
 			src.setHeight(target.getHeight());
 		} else {
 			Duration duration = Duration.ofMillis(125);
-			float anchorXRatio = IWailaConfig.get().overlay().getAnchorX();
-			float anchorYRatio = IWailaConfig.get().overlay().getAnchorY();
-			int anchorX = (int) (anchorXRatio * target.getWidth() + target.getX());
-			int anchorY = (int) (anchorYRatio * target.getHeight() + target.getY());
 			long deltaTime = System.currentTimeMillis() - animation.startTime;
 			long durationMillis = duration.toMillis();
 			float progress = (float) deltaTime / durationMillis;
 			chase(animation, Rect2f::getX, src::setX, progress);
 			chase(animation, Rect2f::getY, src::setY, progress);
-			chase(animation, Rect2f::getWidth, src::setWidth, progress);
-			chase(animation, Rect2f::getHeight, src::setHeight, progress);
-			setWidth((int) (anchorXRatio == 0 ? src.getWidth() : (anchorX - src.getX()) / anchorXRatio));
-			setHeight((int) (anchorYRatio == 0 ? src.getHeight() : (anchorY - src.getY()) / anchorYRatio));
+			chase(animation, Rect2f::getWidth, it -> {
+				src.setWidth(it);
+				setWidth((int) it);
+			}, progress);
+			chase(animation, Rect2f::getHeight, it -> {
+				src.setHeight(it);
+				setHeight((int) it);
+			}, progress);
 		}
 	}
 
