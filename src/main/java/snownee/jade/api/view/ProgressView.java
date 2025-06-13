@@ -11,6 +11,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.JadeUI;
@@ -40,17 +41,24 @@ public class ProgressView {
 	}
 
 	public static ProgressView read(Data data) {
-//		ProgressView progressView = new ProgressView(new SlimProgressStyle());
-//		progressView.progress = data.progress;
-//		return progressView;
-		return new ProgressView(JadeUI.progressStyle(), BoxStyle.nestedBox());//TODO
+		ProgressView view = new ProgressView(JadeUI.progressStyle(), BoxStyle.nestedBox());
+		if (data.progress > 0) {
+			view.parts = List.of(Part.of(data.progress, data.messageType));
+		}
+		return view;
 	}
 
-	public record Data(float progress) {
+	public record Data(float progress, MessageType messageType) {
 		public static final StreamCodec<ByteBuf, Data> STREAM_CODEC = StreamCodec.composite(
 				ByteBufCodecs.FLOAT,
 				Data::progress,
+				MessageType.STREAM_CODEC,
+				Data::messageType,
 				Data::new);
+
+		public Data(float progress) {
+			this(progress, MessageType.NORMAL);
+		}
 	}
 
 	public record Part(float progress, @Nullable Element overlay, @Nullable MessageType messageType, int color) {
@@ -76,6 +84,16 @@ public class ProgressView {
 
 		public static Part of(float progress, int color) {
 			return new Part(progress, null, null, color);
+		}
+
+		public int themeColor() {
+			if (color != -1) {
+				return color;
+			}
+			if (messageType != null) {
+				return IThemeHelper.get().theme().progressColors.get(messageType);
+			}
+			return -1;
 		}
 	}
 }

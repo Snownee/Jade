@@ -17,7 +17,6 @@ import snownee.jade.api.JadeIds;
 import snownee.jade.api.StreamServerDataProvider;
 import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IPluginConfig;
-import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.JadeUI;
 import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.view.ClientViewGroup;
@@ -54,9 +53,6 @@ public class ProgressProvider<T extends Accessor<?>> implements StreamServerData
 			}
 
 			boolean renderGroup = groups.size() > 1 || groups.getFirst().shouldRenderGroup();
-			BoxStyle boxStyle = BoxStyle.transparent();
-			//FIXME
-//		boxStyle.bgColor = 0x44FFFFFF;
 			ClientViewGroup.tooltip(
 					tooltip, groups, renderGroup, (theTooltip, group) -> {
 						if (renderGroup) {
@@ -66,6 +62,7 @@ public class ProgressProvider<T extends Accessor<?>> implements StreamServerData
 							if (view.text != null) {
 								theTooltip.add(JadeUI.text(view.text).scale(0.75F));
 								theTooltip.setLineMargin(-1, ScreenDirection.DOWN, 0);
+								view.text = null;
 							}
 							theTooltip.add(JadeUI.progress(view));
 						}

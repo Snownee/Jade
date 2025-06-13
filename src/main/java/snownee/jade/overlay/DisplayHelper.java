@@ -38,7 +38,6 @@ import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.IWailaConfig.Overlay;
 import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.theme.IThemeHelper;
-import snownee.jade.api.ui.Color;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.JadeFont;
@@ -120,44 +119,6 @@ public class DisplayHelper implements IDisplayHelper {
 		graphics.renderFakeItem(stack, 0, 0);
 		renderGuiItemDecorations(graphics, font(), stack, 0, 0, text);
 		graphics.pose().popMatrix();
-	}
-
-	@Override
-	public void drawGradientRect(GuiGraphics graphics, float left, float top, float width, float height, int startColor, int endColor) {
-		drawGradientRect(graphics, left, top, width, height, startColor, endColor, false);
-	}
-
-	public void drawGradientRect(
-			GuiGraphics graphics,
-			float left,
-			float top,
-			float width,
-			float height,
-			int startColor,
-			int endColor,
-			boolean horizontal) {
-		if (startColor == -1 && endColor == -1) {
-			return;
-		}
-
-//		float zLevel = 0.0F;
-//		Matrix4f matrix = graphics.pose().last().pose();
-//
-//		startColor = Overlay.applyAlpha(startColor, opacity());
-//		endColor = Overlay.applyAlpha(endColor, opacity());
-//		VertexConsumer buffer = graphics.bufferSource.getBuffer(RenderType.gui());
-//		if (horizontal) {
-//			buffer.addVertex(matrix, left + width, top, zLevel).setColor(endColor);
-//			buffer.addVertex(matrix, left, top, zLevel).setColor(startColor);
-//			buffer.addVertex(matrix, left, top + height, zLevel).setColor(startColor);
-//			buffer.addVertex(matrix, left + width, top + height, zLevel).setColor(endColor);
-//		} else {
-//			buffer.addVertex(matrix, left + width, top, zLevel).setColor(startColor);
-//			buffer.addVertex(matrix, left, top, zLevel).setColor(startColor);
-//			buffer.addVertex(matrix, left, top + height, zLevel).setColor(endColor);
-//			buffer.addVertex(matrix, left + width, top + height, zLevel).setColor(endColor);
-//		}
-//		graphics.flush();
 	}
 
 	@Override
@@ -254,9 +215,9 @@ public class DisplayHelper implements IDisplayHelper {
 				y,
 				y + height,
 				textureAtlasSprite.getU(uStart / spriteWidth),
-				textureAtlasSprite.getU((uStart + width) / spriteWidth),
+				textureAtlasSprite.getU((uStart + spriteWidth) / spriteWidth),
 				textureAtlasSprite.getV(vStart / spriteHeight),
-				textureAtlasSprite.getV((vStart + height) / spriteHeight),
+				textureAtlasSprite.getV((vStart + spriteHeight) / spriteHeight),
 				color
 		);
 	}
@@ -340,26 +301,6 @@ public class DisplayHelper implements IDisplayHelper {
 		graphics.drawString(font(), text, (int) x, (int) y, color, shadow);
 	}
 
-	public void drawGradientProgress(
-			GuiGraphics graphics,
-			float left,
-			float top,
-			float width,
-			float height,
-			float progress,
-			int progressColor) {
-		Color color = Color.rgb(progressColor);
-		Color highlight = Color.hsl(color.getHue(), color.getSaturation(), Math.min(color.getLightness() + 0.2, 1), color.getOpacity());
-		if (progress < 0.1F) {
-			drawGradientRect(graphics, left, top, width * progress, height, progressColor, highlight.toInt(), true);
-		} else {
-			float hlWidth = width * 0.1F;
-			float normalWidth = width * progress - hlWidth;
-			fill(graphics, left, top, left + normalWidth, top + height, progressColor);
-			drawGradientRect(graphics, left + normalWidth, top, hlWidth, height, progressColor, highlight.toInt(), true);
-		}
-	}
-
 	@Override
 	public MutableComponent stripColor(Component component) {
 		MutableComponent mutableComponent = Component.empty();
@@ -379,43 +320,67 @@ public class DisplayHelper implements IDisplayHelper {
 	public void blitSprite(
 			GuiGraphics graphics,
 			RenderPipeline renderPipeline,
-			ResourceLocation resourceLocation,
+			ResourceLocation sprite,
 			int i,
 			int j,
 			int k,
 			int l) {
-		graphics.blitSprite(renderPipeline, resourceLocation, i, j, k, l, ARGB.white(opacity()));
+		sprite = IThemeHelper.get().theme().mapSprite(sprite);
+		graphics.blitSprite(renderPipeline, sprite, i, j, k, l, ARGB.white(opacity()));
 	}
 
 	@Override
 	public void blitSprite(
 			GuiGraphics graphics,
 			RenderPipeline renderPipeline,
-			ResourceLocation resourceLocation,
+			ResourceLocation sprite,
 			int i,
 			int j,
 			int k,
 			int l,
 			int color) {
-		float alpha = ARGB.alpha(color) / 255F;
-		alpha *= opacity();
-		graphics.blitSprite(renderPipeline, resourceLocation, i, j, k, l, ARGB.color(ARGB.as8BitChannel(alpha), color));
+		if (opacity() != 1) {
+			float alpha = ARGB.alpha(color) / 255F;
+			alpha *= opacity();
+			color = ARGB.color(ARGB.as8BitChannel(alpha), color);
+		}
+		sprite = IThemeHelper.get().theme().mapSprite(sprite);
+		graphics.blitSprite(renderPipeline, sprite, i, j, k, l, color);
 	}
 
 	@Override
 	public void blitSprite(
 			GuiGraphics graphics,
 			RenderPipeline renderPipeline,
-			ResourceLocation resourceLocation,
-			int i,
-			int j,
-			int k,
-			int l,
-			int m,
-			int n,
-			int o,
-			int p) {
-		graphics.blitSprite(renderPipeline, resourceLocation, i, j, k, l, m, n, o, p);
+			ResourceLocation sprite,
+			int spriteWidth,
+			int spriteHeight,
+			int uStart,
+			int vStart,
+			int x,
+			int y,
+			int width,
+			int height) {
+		sprite = IThemeHelper.get().theme().mapSprite(sprite);
+		graphics.blitSprite(renderPipeline, sprite, spriteWidth, spriteHeight, uStart, vStart, x, y, width, height);
+	}
+
+	@Override
+	public void blitSprite(
+			GuiGraphics graphics,
+			RenderPipeline renderPipeline,
+			ResourceLocation sprite,
+			int spriteWidth,
+			int spriteHeight,
+			int uStart,
+			int vStart,
+			int x,
+			int y,
+			int width,
+			int height,
+			int color) {
+		sprite = IThemeHelper.get().theme().mapSprite(sprite);
+		graphics.blitSprite(renderPipeline, sprite, spriteWidth, spriteHeight, uStart, vStart, x, y, width, height, color);
 	}
 
 	public void blitTiledSprite(
@@ -558,7 +523,7 @@ public class DisplayHelper implements IDisplayHelper {
 	private void innerBlit(
 			GuiGraphics graphics,
 			RenderPipeline renderPipeline,
-			ResourceLocation resourceLocation,
+			ResourceLocation sprite,
 			float x0,
 			float x1,
 			float y0,
@@ -568,7 +533,8 @@ public class DisplayHelper implements IDisplayHelper {
 			float u1,
 			float v1,
 			int color) {
-		GpuTextureView gpuTextureView = Minecraft.getInstance().getTextureManager().getTexture(resourceLocation).getTextureView();
+		sprite = IThemeHelper.get().theme().mapSprite(sprite);
+		GpuTextureView gpuTextureView = Minecraft.getInstance().getTextureManager().getTexture(sprite).getTextureView();
 		this.submitBlit(graphics, renderPipeline, gpuTextureView, x0, y0, x1, y1, u0, v0, u1, v1, color);
 	}
 
@@ -625,10 +591,17 @@ public class DisplayHelper implements IDisplayHelper {
 			float x,
 			float y,
 			float width,
-			float height) {
+			float height,
+			int color) {
 		if (width == 0 || height == 0) {
 			return;
 		}
+		if (opacity() != 1) {
+			float alpha = ARGB.alpha(color) / 255F;
+			alpha *= opacity();
+			color = ARGB.color(ARGB.as8BitChannel(alpha), color);
+		}
+		sprite = IThemeHelper.get().theme().mapSprite(sprite);
 		TextureAtlasSprite textureAtlasSprite = Minecraft.getInstance().getGuiSprites().getSprite(sprite);
 		this.blitSprite(
 				graphics,
@@ -642,6 +615,6 @@ public class DisplayHelper implements IDisplayHelper {
 				y,
 				width,
 				height,
-				ARGB.white(opacity()));
+				color);
 	}
 }

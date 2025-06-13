@@ -6,6 +6,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.Element;
@@ -18,6 +19,7 @@ import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.track.ProgressTrackInfo;
 
 public class ProgressElement extends ResizeableElement implements StyledElement {
+	private static final SpriteElement DEFAULT_OVERLAY = new SpriteElement(JadeIds.JADE("progressbar"), 16, 16);
 	private final ProgressView view;
 	private ProgressTrackInfo track;
 
@@ -135,12 +137,14 @@ public class ProgressElement extends ResizeableElement implements StyledElement 
 			boolean isLast) {
 		float partWidth = Math.min(part.progress() * width, width - start);
 		int roundedPartWidth = Mth.ceil(partWidth);
-		if (part.overlay() == null) {
-			return start + partWidth;//TODO
+		Element overlay = part.overlay();
+		if (overlay == null) {
+			DEFAULT_OVERLAY.setColor(part.themeColor());
+			overlay = DEFAULT_OVERLAY;
 		}
 //		graphics.enableScissor(x + (int) start, y, x + (int) start + roundedPartWidth, y + height);
 		// we can only draw a sprite from its top-left corner, so only makes the last part more detailed
-		if (isLast && view.style.foreground() == null && part.overlay() instanceof ProgressOverlayElement element &&
+		if (isLast && view.style.foreground() == null && overlay instanceof ProgressOverlayElement element &&
 				element.canUseFloatingRect()) {
 			element.setFloatingRect(x + start, y, partWidth, height);
 			element.render(graphics, -1, -1, partialTicks);
@@ -148,8 +152,8 @@ public class ProgressElement extends ResizeableElement implements StyledElement 
 //			graphics.disableScissor();
 			return start + partWidth;
 		} else {
-			resizeElement(part.overlay(), x + (int) start, y, roundedPartWidth, height);
-			part.overlay().render(graphics, -1, -1, partialTicks);
+			resizeElement(overlay, x + (int) start, y, roundedPartWidth, height);
+			overlay.render(graphics, -1, -1, partialTicks);
 //			graphics.disableScissor();
 			return start + roundedPartWidth;
 		}

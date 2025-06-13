@@ -24,8 +24,6 @@ public interface IDisplayHelper {
 
 	void drawItem(GuiGraphics graphics, float x, float y, ItemStack stack, float scale, @Nullable String text);
 
-	void drawGradientRect(GuiGraphics graphics, float left, float top, float right, float bottom, int startColor, int endColor);
-
 	void drawBorder(GuiGraphics graphics, ScreenRectangle rectangle, int width, int color, boolean corner);
 
 	String humanReadableNumber(double number, String unit, boolean milli);
@@ -40,14 +38,7 @@ public interface IDisplayHelper {
 
 	MutableComponent stripColor(Component component);
 
-	void blitSprite(
-			GuiGraphics graphics,
-			RenderPipeline renderPipeline,
-			ResourceLocation resourceLocation,
-			int i,
-			int j,
-			int k,
-			int l);
+	void blitSprite(GuiGraphics graphics, RenderPipeline renderPipeline, ResourceLocation resourceLocation, int i, int j, int k, int l);
 
 	void blitSprite(
 			GuiGraphics graphics,
@@ -63,14 +54,28 @@ public interface IDisplayHelper {
 			GuiGraphics graphics,
 			RenderPipeline renderPipeline,
 			ResourceLocation resourceLocation,
-			int i,
-			int j,
-			int k,
-			int l,
-			int m,
-			int n,
-			int o,
-			int p);
+			int spriteWidth,
+			int spriteHeight,
+			int uStart,
+			int vStart,
+			int x,
+			int y,
+			int width,
+			int height);
+
+	void blitSprite(
+			GuiGraphics graphics,
+			RenderPipeline renderPipeline,
+			ResourceLocation resourceLocation,
+			int spriteWidth,
+			int spriteHeight,
+			int uStart,
+			int vStart,
+			int x,
+			int y,
+			int width,
+			int height,
+			int color);
 
 	float opacity();
 }
