@@ -195,7 +195,8 @@ public class OverlayRenderer {
 			float maxHeight = rect2i.getHeight();
 			maxWidth = maxWidth / scale;
 			maxHeight = maxHeight / scale;
-			root.render(graphics, mouseX, mouseY, partialTicks);
+			root.setWidgetAlpha(animation.alpha);
+			root.render(graphics, -1, -1, partialTicks);
 			if (IWailaConfig.get().general().isDebug() && Screen.hasControlDown()) {
 
 				root.renderDebug(graphics, mouseX, mouseY, partialTicks, new Element.RenderDebugContext(root, animation.rect));

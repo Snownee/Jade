@@ -139,7 +139,9 @@ public class JadeUIInternal {
 			return;
 		}
 		consumer.accept(layoutElement);
-		if (layoutElement instanceof Layout layout) {
+		if (layoutElement instanceof BoxElement) {
+			return;
+		} else if (layoutElement instanceof Layout layout) {
 			layout.visitChildren(element -> visitChildrenRecursiveInternal(element, consumer, set));
 		} else {
 			layoutElement.visitWidgets(widget -> visitChildrenRecursiveInternal(widget, consumer, set));
