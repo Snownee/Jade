@@ -1,10 +1,9 @@
 package snownee.jade.impl.ui;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
-import java.util.function.IntConsumer;
-import java.util.function.ToIntFunction;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -12,6 +11,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.Window;
 
+import it.unimi.dsi.fastutil.floats.FloatConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -21,7 +21,6 @@ import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.client.gui.layouts.LayoutSettings;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.Mth;
 import snownee.jade.JadeInternals;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IWailaConfig;
@@ -32,6 +31,7 @@ import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.JadeUI;
 import snownee.jade.api.ui.MessageType;
+import snownee.jade.api.ui.Rect2f;
 import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.ui.TooltipAnimation;
 import snownee.jade.gui.JadeLinearLayout;
@@ -41,6 +41,7 @@ import snownee.jade.gui.ResizeableLayout;
 import snownee.jade.impl.Tooltip;
 import snownee.jade.track.ProgressTrackInfo;
 import snownee.jade.util.ClientProxy;
+import snownee.jade.util.ToFloatFunction;
 import snownee.jade.util.WailaExceptionHandler;
 
 public class BoxElementImpl extends BoxElement {
@@ -128,28 +129,24 @@ public class BoxElementImpl extends BoxElement {
 		layout.setY(y);
 	}
 
-	private static void chase(TooltipAnimation animation, ToIntFunction<Rect2i> getter, IntConsumer setter) {
+	private static void chase(TooltipAnimation animation, ToFloatFunction<Rect2f> getter, FloatConsumer setter, float progress) {
 		if (IWailaConfig.get().overlay().getAnimation()) {
-			int source = getter.applyAsInt(animation.rect);
-			int target = getter.applyAsInt(animation.expectedRect);
+			float source = getter.applyAsFloat(animation.rect);
+			float target = getter.applyAsFloat(animation.expectedRect);
 			float diff = target - source;
 			if (diff == 0) {
 				return;
 			}
-			float delta = Minecraft.getInstance().getDeltaTracker().getRealtimeDeltaTicks() * 2;
-			if (delta == 0) {
-				diff = diff > 0 ? 1 : -1;
-			} else {
-				if (delta < 1) {
-					diff *= delta;
-				}
-				if (Mth.abs(diff) < 1) {
-					diff = diff > 0 ? 1 : -1;
-				}
+			if (progress >= 1) {
+				animation.startTime = -1;
+				setter.accept(target);
+				return;
 			}
-			setter.accept((int) (source + diff));
+			float startValue = getter.applyAsFloat(animation.startRect);
+			float deltaValue = target - startValue;
+			setter.accept(startValue + progress * deltaValue);
 		} else {
-			setter.accept(getter.applyAsInt(animation.expectedRect));
+			setter.accept(getter.applyAsFloat(animation.expectedRect));
 		}
 	}
 
@@ -160,7 +157,7 @@ public class BoxElementImpl extends BoxElement {
 		}
 
 		// render background
-		float alpha = IDisplayHelper.get().opacity();
+		float alpha = IDisplayHelper.get().backgroundOpacity();
 		boolean root = JadeIds.ROOT.equals(getTag());
 		if (root) {
 			alpha *= IWailaConfig.get().overlay().getAlpha();
@@ -346,16 +343,16 @@ public class BoxElementImpl extends BoxElement {
 		IWailaConfig.Accessibility accessibility = IWailaConfig.get().accessibility();
 		float x = window.getGuiScaledWidth() * accessibility.tryFlip(overlay.getOverlayPosX());
 		float y = window.getGuiScaledHeight() * (1.0F - overlay.getOverlayPosY());
-		float width = getWidth();
-		float height = getHeight();
+		float width = layout.getWidth();
+		float height = layout.getHeight();
 
 		animation.scale = overlay.getOverlayScale();
 		float thresholdHeight = window.getGuiScaledHeight() * overlay.getAutoScaleThreshold();
-		if (getHeight() * animation.scale > thresholdHeight) {
-			animation.scale = Math.max(animation.scale * 0.5f, thresholdHeight / getHeight());
+		if (layout.getHeight() * animation.scale > thresholdHeight) {
+			animation.scale = Math.max(animation.scale * 0.5f, thresholdHeight / layout.getHeight());
 		}
 
-		Rect2i expectedRect = animation.expectedRect;
+		Rect2f expectedRect = animation.expectedRect;
 		expectedRect.setWidth((int) (width * animation.scale));
 		expectedRect.setHeight((int) (height * animation.scale));
 		expectedRect.setX((int) (x - expectedRect.getWidth() * accessibility.tryFlip(overlay.getAnchorX())));
@@ -390,17 +387,32 @@ public class BoxElementImpl extends BoxElement {
 	}
 
 	public void updateRect(TooltipAnimation animation) {
-		Rect2i src = animation.rect;
+		Rect2f src = animation.rect;
+		Rect2f target = animation.expectedRect;
 		if (src.getWidth() == 0) {
-			src.setX(animation.expectedRect.getX());
-			src.setY(animation.expectedRect.getY());
-			src.setWidth(animation.expectedRect.getWidth());
-			src.setHeight(animation.expectedRect.getHeight());
+			src.setX(target.getX());
+			src.setY(target.getY());
+			src.setWidth(target.getWidth());
+			src.setHeight(target.getHeight());
+			animation.alpha = animation.showHideAlpha;
 		} else {
-			chase(animation, Rect2i::getX, src::setX);
-			chase(animation, Rect2i::getY, src::setY);
-			chase(animation, Rect2i::getWidth, src::setWidth);
-			chase(animation, Rect2i::getHeight, src::setHeight);
+			Duration duration = Duration.ofMillis(75);
+			long deltaTime = System.currentTimeMillis() - animation.startTime;
+			long durationMillis = duration.toMillis();
+			float progress = (float) deltaTime / durationMillis;
+			animation.alpha = Math.min(animation.showHideAlpha, Math.max(progress, 0.55F));
+			chase(animation, Rect2f::getX, src::setX, progress);
+			chase(animation, Rect2f::getY, src::setY, progress);
+			chase(
+					animation, Rect2f::getWidth, it -> {
+						src.setWidth(it);
+						setWidth((int) (it / animation.scale));
+					}, progress);
+			chase(
+					animation, Rect2f::getHeight, it -> {
+						src.setHeight(it);
+						setHeight((int) (it / animation.scale));
+					}, progress);
 		}
 	}
 
@@ -458,5 +470,13 @@ public class BoxElementImpl extends BoxElement {
 		for (AbstractWidget widget : widgets) {
 			widget.setAlpha(alpha);
 		}
+	}
+
+	public void setWidth(int width) {
+		this.width = width;
+	}
+
+	public void setHeight(int height) {
+		this.height = height;
 	}
 }

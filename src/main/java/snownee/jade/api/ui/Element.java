@@ -19,7 +19,6 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.narration.NarrationSupplier;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -200,9 +199,9 @@ public abstract class Element implements Renderable, LayoutElement, NarrationSup
 
 	public static class RenderDebugContext {
 		public final LayoutElement root;
-		public final Rect2i rootRect;
+		public final Rect2f rootRect;
 
-		public RenderDebugContext(LayoutElement root, Rect2i rootRect) {
+		public RenderDebugContext(LayoutElement root, Rect2f rootRect) {
 			this.root = root;
 			this.rootRect = rootRect;
 		}

@@ -7,7 +7,6 @@ import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.util.Mth;
 import net.minecraft.util.profiling.Profiler;
 import net.minecraft.world.item.ItemStack;
@@ -22,6 +21,7 @@ import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
 import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.JadeUI;
+import snownee.jade.api.ui.Rect2f;
 import snownee.jade.api.ui.TooltipAnimation;
 import snownee.jade.gui.BaseOptionsScreen;
 import snownee.jade.gui.PreviewOptionsScreen;
@@ -148,17 +148,17 @@ public class OverlayRenderer {
 		if (overlay.getAnimation() && lingerTooltip != null) {
 			root = lingerTooltip;
 			float speed = general.isDebug() ? 0.1F : 0.6F;
-			animation.alpha += (show ? speed : -speed) * delta;
-			animation.alpha = Mth.clamp(animation.alpha, 0, 1);
+			animation.showHideAlpha += (show ? speed : -speed) * delta;
+			animation.showHideAlpha = Mth.clamp(animation.showHideAlpha, 0, 1);
 		} else {
-			animation.alpha = show ? 1 : 0;
+			animation.showHideAlpha = show ? 1 : 0;
 		}
 
 		if (root == null) {
 			return;
 		}
 
-		if (animation.alpha < 0.1F || !shouldShowImmediately(root)) {
+		if (animation.showHideAlpha < 0.1F || !shouldShowImmediately(root)) {
 			if (!PreviewOptionsScreen.isAdjustingPosition()) {
 				lingerTooltip = null;
 				animation.rect.setWidth(0); // mark dirty
@@ -183,24 +183,18 @@ public class OverlayRenderer {
 
 		Matrix3x2fStack matrixStack = graphics.pose();
 		matrixStack.pushMatrix();
-		Rect2i rect2i = animation.rect;
-		matrixStack.translate(rect2i.getX(), rect2i.getY());
+		Rect2f rect = animation.rect;
+		matrixStack.translate(rect.getX(), rect.getY());
 
 		float scale = animation.scale;
 		if (scale != 1f) {
 			matrixStack.scale(scale);
 		}
-		{
-			float maxWidth = rect2i.getWidth();
-			float maxHeight = rect2i.getHeight();
-			maxWidth = maxWidth / scale;
-			maxHeight = maxHeight / scale;
-			root.setWidgetAlpha(animation.alpha);
-			root.render(graphics, -1, -1, partialTicks);
-			if (IWailaConfig.get().general().isDebug() && Screen.hasControlDown()) {
 
-				root.renderDebug(graphics, mouseX, mouseY, partialTicks, new Element.RenderDebugContext(root, animation.rect));
-			}
+		root.setWidgetAlpha(animation.alpha);
+		root.render(graphics, -1, -1, partialTicks);
+		if (IWailaConfig.get().general().isDebug() && Screen.hasControlDown()) {
+			root.renderDebug(graphics, mouseX, mouseY, partialTicks, new Element.RenderDebugContext(root, rect));
 		}
 
 		WailaClientRegistration.instance().afterRenderCallback.call(callback -> {
