@@ -1,6 +1,7 @@
 package snownee.jade.overlay;
 
 import org.joml.Matrix3x2fStack;
+import org.joml.Vector2i;
 
 import com.mojang.blaze3d.platform.Window;
 
@@ -24,6 +25,7 @@ import snownee.jade.api.ui.JadeUI;
 import snownee.jade.api.ui.Rect2f;
 import snownee.jade.api.ui.TooltipAnimation;
 import snownee.jade.gui.BaseOptionsScreen;
+import snownee.jade.gui.PinScreen;
 import snownee.jade.gui.PreviewOptionsScreen;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.Tooltip;
@@ -31,6 +33,7 @@ import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.config.WailaConfig.General;
 import snownee.jade.impl.ui.BoxElementImpl;
 import snownee.jade.util.ClientProxy;
+import snownee.jade.util.JadeGuiGraphics;
 import snownee.jade.util.ModIdentification;
 
 public class OverlayRenderer {
@@ -84,8 +87,8 @@ public class OverlayRenderer {
 				return false;
 			}
 			Window window = mc.getWindow();
-			double x = mc.mouseHandler.xpos() * window.getGuiScaledWidth() / window.getScreenWidth();
-			double y = mc.mouseHandler.ypos() * window.getGuiScaledHeight() / window.getScreenHeight();
+			double x = mc.mouseHandler.getScaledXPos(window);
+			double y = mc.mouseHandler.getScaledYPos(window);
 			if (animation.expectedRect.contains((int) x, (int) y)) {
 				return false;
 			}
@@ -167,8 +170,17 @@ public class OverlayRenderer {
 			}
 		}
 
+		int mouseX = -1;
+		int mouseY = -1;
+		Minecraft mc = Minecraft.getInstance();
+		if (mc.screen instanceof PinScreen) {
+			Window window = mc.getWindow();
+			mouseX = (int) mc.mouseHandler.getScaledXPos(window);
+			mouseY = (int) mc.mouseHandler.getScaledYPos(window);
+		}
+
 		Profiler.get().push("Jade Overlay");
-		renderOverlay(root, graphics, -1, -1, delta); //TODO pass correct mouseX, mouseY
+		renderOverlay(root, graphics, mouseX, mouseY, delta); //TODO pass correct mouseX, mouseY
 		Profiler.get().pop();
 	}
 
@@ -191,10 +203,19 @@ public class OverlayRenderer {
 			matrixStack.scale(scale);
 		}
 
+		Vector2i mouse = new Vector2i(mouseX, mouseY);
+		if (mouseX != -1) {
+			animation.mapMousePosition(mouseX, mouseY, (x, y) -> mouse.set(x.intValue(), y.intValue()));
+		}
+
 		root.setWidgetAlpha(animation.alpha);
-		root.render(graphics, -1, -1, partialTicks);
+		((JadeGuiGraphics) graphics).jade$setIgnoreScissorTest(true);
+		graphics.deferredTooltip = null;
+		root.render(graphics, mouse.x, mouse.y, partialTicks);
+		graphics.renderDeferredTooltip();
+		((JadeGuiGraphics) graphics).jade$setIgnoreScissorTest(false);
 		if (IWailaConfig.get().general().isDebug() && Screen.hasControlDown()) {
-			root.renderDebug(graphics, mouseX, mouseY, partialTicks, new Element.RenderDebugContext(root, rect));
+			root.renderDebug(graphics, mouse.x, mouse.y, partialTicks, new Element.RenderDebugContext(root, rect));
 		}
 
 		WailaClientRegistration.instance().afterRenderCallback.call(callback -> {

@@ -15,8 +15,4 @@ public abstract class BoxElement extends ResizeableElement implements StyledElem
 	public abstract void clearBoxProgress();
 
 	public abstract void setIcon(@Nullable Element icon);
-
-	public abstract int padding(ScreenDirection direction);
-
-	public abstract void setPadding(ScreenDirection direction, int value);
 }

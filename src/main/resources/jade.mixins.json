@@ -13,10 +13,11 @@
 		"ClientLevelMixin",
 		"CreativeModeInventoryScreenMixin",
 		"FogRendererMixin",
+		"GuiGraphicsMixin",
 		"KeyAccess",
 		"LanguageManagerMixin",
-		"SessionSearchTreesMixin",
 		"PreparedTextBuilderMixin",
+		"SessionSearchTreesMixin",
 		"conditional_key_mapping.KeyBindsListMixin",
 		"conditional_key_mapping.KeyMappingMixin"
 	],

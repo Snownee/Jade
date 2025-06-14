@@ -31,6 +31,7 @@ import snownee.jade.api.config.IWailaConfig.General;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
 import snownee.jade.api.ui.Element;
+import snownee.jade.gui.PinScreen;
 import snownee.jade.gui.PreviewOptionsScreen;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.Tooltip;
@@ -102,6 +103,10 @@ public class WailaTickHandler {
 			return;
 		}
 
+		if (mc.screen instanceof PinScreen) {
+			return;
+		}
+
 		if (!ClientProxy.shouldShowWithGui(mc, mc.screen)) {
 			return;
 		}
@@ -114,9 +119,6 @@ public class WailaTickHandler {
 
 		RayTracing.INSTANCE.fire();
 		HitResult target = RayTracing.INSTANCE.getTarget();
-
-		Tooltip tooltip = new Tooltip();
-
 		if (target == null) {
 			rootElement = null;
 			return;
@@ -191,6 +193,7 @@ public class WailaTickHandler {
 		});
 		Preconditions.checkNotNull(ThemeHelper.theme.getValue(), "Theme cannot be null");
 
+		Tooltip tooltip = new Tooltip();
 		Element icon = ObjectDataCenter.getIcon();
 		tooltip.setIcon(icon);
 

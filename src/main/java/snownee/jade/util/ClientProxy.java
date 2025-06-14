@@ -82,6 +82,7 @@ import snownee.jade.api.view.IClientExtensionProvider;
 import snownee.jade.api.view.ViewGroup;
 import snownee.jade.command.JadeClientCommand;
 import snownee.jade.compat.JEICompat;
+import snownee.jade.gui.PinScreen;
 import snownee.jade.gui.PreviewOptionsScreen;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.WailaClientRegistration;
@@ -209,7 +210,7 @@ public final class ClientProxy implements ClientModInitializer {
 	}
 
 	public static boolean shouldShowAfterGui(Minecraft mc, @NotNull Screen screen) {
-		return screen instanceof PreviewOptionsScreen;
+		return screen instanceof PreviewOptionsScreen || screen instanceof PinScreen;
 	}
 
 	public static boolean shouldShowBeforeGui(Minecraft mc, @NotNull Screen screen) {

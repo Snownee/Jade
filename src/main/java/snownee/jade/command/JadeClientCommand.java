@@ -14,6 +14,7 @@ import net.minecraft.network.chat.Component;
 import snownee.jade.Jade;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.gui.HomeConfigScreen;
+import snownee.jade.gui.PinScreen;
 import snownee.jade.util.DumpGenerator;
 
 public class JadeClientCommand {
@@ -46,6 +47,9 @@ public class JadeClientCommand {
 					Minecraft.getInstance().execute(() -> Jade.useProfile(index));
 					return 1;
 				}))
-		);
+		).then(literalFactory.apply("pin").executes(context -> {
+			Minecraft.getInstance().schedule(() -> Minecraft.getInstance().setScreen(new PinScreen()));
+			return 1;
+		}));
 	}
 }

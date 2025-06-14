@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.ImmutableList;
@@ -16,6 +17,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.client.gui.components.events.ContainerEventHandler;
+import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.layouts.Layout;
 import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.client.gui.layouts.LayoutSettings;
@@ -36,6 +39,7 @@ import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.ui.TooltipAnimation;
 import snownee.jade.gui.JadeLinearLayout;
 import snownee.jade.gui.LayoutWithPadding;
+import snownee.jade.gui.PinScreen;
 import snownee.jade.gui.PreviewOptionsScreen;
 import snownee.jade.gui.ResizeableLayout;
 import snownee.jade.impl.Tooltip;
@@ -44,13 +48,13 @@ import snownee.jade.util.ClientProxy;
 import snownee.jade.util.ToFloatFunction;
 import snownee.jade.util.WailaExceptionHandler;
 
-public class BoxElementImpl extends BoxElement {
+public class BoxElementImpl extends BoxElement implements ContainerEventHandler {
 	public LayoutWithPadding layout;
 	private final Tooltip tooltip;
 	private final BoxStyle style;
 	private final List<Renderable> renderables;
 	private @Nullable List<AbstractWidget> widgets;
-	private int[] padding;
+	private @Nullable List<GuiEventListener> eventListeners;
 	private Element icon;
 	private float boxProgress;
 	private MessageType boxProgressType;
@@ -348,7 +352,7 @@ public class BoxElementImpl extends BoxElement {
 
 		animation.scale = overlay.getOverlayScale();
 		float thresholdHeight = window.getGuiScaledHeight() * overlay.getAutoScaleThreshold();
-		if (layout.getHeight() * animation.scale > thresholdHeight) {
+		if (!(Minecraft.getInstance().screen instanceof PinScreen) && layout.getHeight() * animation.scale > thresholdHeight) {
 			animation.scale = Math.max(animation.scale * 0.5f, thresholdHeight / layout.getHeight());
 		}
 
@@ -406,30 +410,14 @@ public class BoxElementImpl extends BoxElement {
 			chase(
 					animation, Rect2f::getWidth, it -> {
 						src.setWidth(it);
-						setWidth((int) (it / animation.scale));
+						width = (int) (it / animation.scale);
 					}, progress);
 			chase(
 					animation, Rect2f::getHeight, it -> {
 						src.setHeight(it);
-						setHeight((int) (it / animation.scale));
+						height = (int) (it / animation.scale);
 					}, progress);
 		}
-	}
-
-	@Override
-	public int padding(ScreenDirection direction) {
-		if (padding != null) {
-			return padding[direction.ordinal()];
-		}
-		return style.padding(direction);
-	}
-
-	@Override
-	public void setPadding(ScreenDirection direction, int value) {
-		if (padding == null) {
-			padding = style.padding.clone();
-		}
-		padding[direction.ordinal()] = value;
 	}
 
 	@Override
@@ -472,11 +460,35 @@ public class BoxElementImpl extends BoxElement {
 		}
 	}
 
-	public void setWidth(int width) {
-		this.width = width;
+	@Override
+	public @NotNull List<? extends GuiEventListener> children() {
+		if (eventListeners == null) {
+			ImmutableList.Builder<GuiEventListener> builder = ImmutableList.builder();
+			for (Renderable renderable : renderables) {
+				if (renderable instanceof GuiEventListener listener) {
+					builder.add(listener);
+				}
+			}
+			eventListeners = builder.build();
+		}
+		return eventListeners;
 	}
 
-	public void setHeight(int height) {
-		this.height = height;
+	@Override
+	public boolean isDragging() {
+		return false;
+	}
+
+	@Override
+	public void setDragging(boolean bl) {
+	}
+
+	@Override
+	public @Nullable GuiEventListener getFocused() {
+		return null;
+	}
+
+	@Override
+	public void setFocused(@Nullable GuiEventListener guiEventListener) {
 	}
 }

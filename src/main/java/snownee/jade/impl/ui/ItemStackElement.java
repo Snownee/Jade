@@ -2,6 +2,7 @@ package snownee.jade.impl.ui;
 
 import org.jetbrains.annotations.Nullable;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
@@ -38,6 +39,9 @@ public class ItemStackElement extends Element {
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
 		if (item.isEmpty()) {
 			return;
+		}
+		if (mouseX != -1 && getRectangle().containsPoint(mouseX, mouseY)) {
+			graphics.setTooltipForNextFrame(Minecraft.getInstance().font, item, mouseX, mouseY);
 		}
 		DisplayHelper.INSTANCE.drawItem(graphics, getX() + 1, getY() + 1, item, scale, text);
 	}
