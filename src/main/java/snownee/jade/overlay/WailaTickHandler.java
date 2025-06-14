@@ -217,7 +217,8 @@ public class WailaTickHandler {
 		for (JadeTooltipCollectedCallback callback : WailaClientRegistration.instance().tooltipCollectedCallback.callbacks()) {
 			callback.onTooltipCollected(newElement, accessor);
 		}
-		if (rootElement == null || rootElement.layout.getX() != newElement.layout.getX() || rootElement.layout.getY() != newElement.layout.getY() ||
+		if (rootElement == null || rootElement.layout.getX() != newElement.layout.getX() ||
+				rootElement.layout.getY() != newElement.layout.getY() ||
 				rootElement.layout.getWidth() != newElement.layout.getWidth() ||
 				rootElement.layout.getHeight() != newElement.layout.getHeight()) {
 			OverlayRenderer.animation.startRect.copy(OverlayRenderer.animation.rect);

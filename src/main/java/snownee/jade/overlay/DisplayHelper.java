@@ -576,6 +576,11 @@ public class DisplayHelper implements IDisplayHelper {
 		return OverlayRenderer.animation.alpha;
 	}
 
+	@Override
+	public float backgroundOpacity() {
+		return OverlayRenderer.animation.showHideAlpha;
+	}
+
 	public static Font font() {
 		return FONT.get();
 	}

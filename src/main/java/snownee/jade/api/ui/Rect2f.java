@@ -10,6 +10,8 @@ public class Rect2f {
 	private float width;
 	private float height;
 
+	public Rect2f() {}
+
 	public Rect2f(float x, float y, float width, float height) {
 		this.xPos = x;
 		this.yPos = y;
@@ -19,8 +21,9 @@ public class Rect2f {
 
 	@Override
 	public boolean equals(Object o) {
-		if (o == null || getClass() != o.getClass())
+		if (o == null || getClass() != o.getClass()) {
 			return false;
+		}
 		final Rect2f rect2f = (Rect2f) o;
 		return Float.compare(xPos, rect2f.xPos) == 0 && Float.compare(yPos, rect2f.yPos) == 0 &&
 				Float.compare(width, rect2f.width) == 0 && Float.compare(height, rect2f.height) == 0;

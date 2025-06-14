@@ -148,17 +148,17 @@ public class OverlayRenderer {
 		if (overlay.getAnimation() && lingerTooltip != null) {
 			root = lingerTooltip;
 			float speed = general.isDebug() ? 0.1F : 0.6F;
-			animation.alpha += (show ? speed : -speed) * delta;
-			animation.alpha = Mth.clamp(animation.alpha, 0, 1);
+			animation.showHideAlpha += (show ? speed : -speed) * delta;
+			animation.showHideAlpha = Mth.clamp(animation.showHideAlpha, 0, 1);
 		} else {
-			animation.alpha = show ? 1 : 0;
+			animation.showHideAlpha = show ? 1 : 0;
 		}
 
 		if (root == null) {
 			return;
 		}
 
-		if (animation.alpha < 0.1F || !shouldShowImmediately(root)) {
+		if (animation.showHideAlpha < 0.1F || !shouldShowImmediately(root)) {
 			if (!PreviewOptionsScreen.isAdjustingPosition()) {
 				lingerTooltip = null;
 				animation.rect.setWidth(0); // mark dirty

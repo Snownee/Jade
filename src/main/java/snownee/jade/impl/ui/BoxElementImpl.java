@@ -157,7 +157,7 @@ public class BoxElementImpl extends BoxElement {
 		}
 
 		// render background
-		float alpha = IDisplayHelper.get().opacity();
+		float alpha = IDisplayHelper.get().backgroundOpacity();
 		boolean root = JadeIds.ROOT.equals(getTag());
 		if (root) {
 			alpha *= IWailaConfig.get().overlay().getAlpha();
@@ -394,21 +394,25 @@ public class BoxElementImpl extends BoxElement {
 			src.setY(target.getY());
 			src.setWidth(target.getWidth());
 			src.setHeight(target.getHeight());
+			animation.alpha = animation.showHideAlpha;
 		} else {
-			Duration duration = Duration.ofMillis(125);
+			Duration duration = Duration.ofMillis(75);
 			long deltaTime = System.currentTimeMillis() - animation.startTime;
 			long durationMillis = duration.toMillis();
 			float progress = (float) deltaTime / durationMillis;
+			animation.alpha = Math.min(animation.showHideAlpha, Math.max(progress, 0.55F));
 			chase(animation, Rect2f::getX, src::setX, progress);
 			chase(animation, Rect2f::getY, src::setY, progress);
-			chase(animation, Rect2f::getWidth, it -> {
-				src.setWidth(it);
-				setWidth((int) (it / animation.scale));
-			}, progress);
-			chase(animation, Rect2f::getHeight, it -> {
-				src.setHeight(it);
-				setHeight((int) (it / animation.scale));
-			}, progress);
+			chase(
+					animation, Rect2f::getWidth, it -> {
+						src.setWidth(it);
+						setWidth((int) (it / animation.scale));
+					}, progress);
+			chase(
+					animation, Rect2f::getHeight, it -> {
+						src.setHeight(it);
+						setHeight((int) (it / animation.scale));
+					}, progress);
 		}
 	}
 

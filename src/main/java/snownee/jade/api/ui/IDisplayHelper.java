@@ -23,6 +23,7 @@ public interface IDisplayHelper {
 	}
 
 	void drawItem(GuiGraphics graphics, float x, float y, ItemStack stack, float scale, @Nullable String text);
+
 	default void drawBorder(GuiGraphics graphics, ScreenRectangle rectangle, int width, int color, boolean corner) {
 		drawBorder(graphics, new Rect2f(rectangle.left(), rectangle.top(), rectangle.width(), rectangle.height()), width, color, corner);
 	}
@@ -81,4 +82,6 @@ public interface IDisplayHelper {
 			int color);
 
 	float opacity();
+
+	float backgroundOpacity();
 }
