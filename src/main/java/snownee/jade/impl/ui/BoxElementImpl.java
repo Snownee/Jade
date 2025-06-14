@@ -4,8 +4,6 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
-import java.util.function.IntConsumer;
-import java.util.function.ToIntFunction;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -350,8 +348,8 @@ public class BoxElementImpl extends BoxElement {
 
 		animation.scale = overlay.getOverlayScale();
 		float thresholdHeight = window.getGuiScaledHeight() * overlay.getAutoScaleThreshold();
-		if (getHeight() * animation.scale > thresholdHeight) {
-			animation.scale = Math.max(animation.scale * 0.5f, thresholdHeight / getHeight());
+		if (layout.getHeight() * animation.scale > thresholdHeight) {
+			animation.scale = Math.max(animation.scale * 0.5f, thresholdHeight / layout.getHeight());
 		}
 
 		Rect2f expectedRect = animation.expectedRect;
