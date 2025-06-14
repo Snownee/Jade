@@ -3,15 +3,20 @@ package snownee.jade.impl.ui;
 import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.IntConsumer;
+import java.util.function.ToIntFunction;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.Window;
 
 import it.unimi.dsi.fastutil.floats.FloatConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.layouts.Layout;
 import net.minecraft.client.gui.layouts.LayoutElement;
@@ -46,6 +51,7 @@ public class BoxElementImpl extends BoxElement {
 	private final Tooltip tooltip;
 	private final BoxStyle style;
 	private final List<Renderable> renderables;
+	private @Nullable List<AbstractWidget> widgets;
 	private int[] padding;
 	private Element icon;
 	private float boxProgress;
@@ -446,6 +452,22 @@ public class BoxElementImpl extends BoxElement {
 		layout.setFreeSpace(width, height);
 		this.width = layout.getWidth();
 		this.height = layout.getHeight();
+	}
+
+	@Override
+	public void visitWidgets(Consumer<AbstractWidget> consumer) {
+		layout.visitWidgets(consumer);
+	}
+
+	public void setWidgetAlpha(float alpha) {
+		if (widgets == null) {
+			ImmutableList.Builder<AbstractWidget> builder = ImmutableList.builder();
+			visitWidgets(builder::add);
+			widgets = builder.build();
+		}
+		for (AbstractWidget widget : widgets) {
+			widget.setAlpha(alpha);
+		}
 	}
 
 	public void setWidth(int width) {

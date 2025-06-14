@@ -1,5 +1,6 @@
 package snownee.jade.util;
 
+import java.util.Map;
 import java.util.Optional;
 
 import com.mojang.serialization.Codec;
@@ -34,7 +35,11 @@ public class JadeClientCodecs {
 			Codec.BOOL.optionalFieldOf("lightColorScheme", false).forGetter($ -> $.lightColorScheme),
 			ResourceLocation.CODEC.optionalFieldOf("iconSlotSprite").forGetter($ -> Optional.ofNullable($.iconSlotSprite)),
 			Codec.INT.optionalFieldOf("iconSlotInflation", 0).forGetter($ -> $.iconSlotInflation),
-			SneakyDetails.CODEC.optionalFieldOf("sneakyDetails", SneakyDetails.DEFAULT).forGetter($ -> $.sneakyDetails)
+			SneakyDetails.CODEC.optionalFieldOf("sneakyDetails", SneakyDetails.DEFAULT).forGetter($ -> $.sneakyDetails),
+			ColorPalette.CODEC.optionalFieldOf("progressColors", ColorPalette.DEFAULT).forGetter($ -> $.progressColors),
+			Codec.unboundedMap(ResourceLocation.CODEC, ResourceLocation.CODEC)
+					.optionalFieldOf("spriteMapping", Map.of())
+					.forGetter($ -> $.spriteMapping)
 	).apply(i, Theme::new));
 
 	public record ThemeHolder(int version, boolean autoEnable, Theme theme) {}

@@ -1,6 +1,7 @@
 package snownee.jade.api.theme;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
@@ -15,6 +16,7 @@ import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.ui.BoxElement;
 import snownee.jade.api.ui.BoxStyle;
+import snownee.jade.api.ui.ColorPalette;
 import snownee.jade.api.ui.Element;
 import snownee.jade.impl.Tooltip;
 import snownee.jade.impl.ui.BoxElementImpl;
@@ -33,6 +35,8 @@ public class Theme {
 	public int iconSlotInflation;
 	public BoxElement iconSlotSpriteCache;
 	public SneakyDetails sneakyDetails;
+	public ColorPalette progressColors;
+	public Map<ResourceLocation, ResourceLocation> spriteMapping;
 
 	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 	public Theme(
@@ -45,7 +49,9 @@ public class Theme {
 			boolean lightColorScheme,
 			Optional<ResourceLocation> iconSlotSprite,
 			int iconSlotInflation,
-			SneakyDetails sneakyDetails) {
+			SneakyDetails sneakyDetails,
+			ColorPalette progressColors,
+			Map<ResourceLocation, ResourceLocation> spriteMapping) {
 		this.styleName = styleName;
 		this.tooltipStyle = tooltipStyle;
 		this.nestedBoxStyle = nestedBoxStyle;
@@ -56,6 +62,8 @@ public class Theme {
 		this.iconSlotSprite = iconSlotSprite.orElse(null);
 		this.iconSlotInflation = iconSlotInflation;
 		this.sneakyDetails = sneakyDetails;
+		this.progressColors = progressColors;
+		this.spriteMapping = spriteMapping;
 	}
 
 	public ResourceLocation mainId() {
@@ -72,6 +80,10 @@ public class Theme {
 		} else {
 			return "";
 		}
+	}
+
+	public ResourceLocation mapSprite(ResourceLocation sprite) {
+		return spriteMapping.getOrDefault(sprite, sprite);
 	}
 
 	public @Nullable Element modifyIcon(@Nullable Element icon) {

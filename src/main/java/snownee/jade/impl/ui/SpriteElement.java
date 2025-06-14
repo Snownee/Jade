@@ -7,11 +7,13 @@ import com.mojang.blaze3d.pipeline.RenderPipeline;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.GuiSpriteManager;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.metadata.gui.GuiSpriteScaling;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.Orientation;
 import snownee.jade.api.ui.Rect2f;
@@ -24,6 +26,7 @@ public class SpriteElement extends ProgressOverlayElement {
 	public @Nullable Orientation tiledOrientation;
 	private final int oWidth;
 	private final int oHeight;
+	private int color = -1;
 
 	public SpriteElement(ResourceLocation sprite, int width, int height) {
 		this(RenderPipelines.GUI_TEXTURED, sprite, width, height);
@@ -72,7 +75,8 @@ public class SpriteElement extends ProgressOverlayElement {
 						rect.getX(),
 						rect.getY(),
 						rect.getWidth(),
-						rect.getHeight());
+						rect.getHeight(),
+						color);
 				tileAxisStart += tileAxisStep;
 			}
 			return;
@@ -89,7 +93,8 @@ public class SpriteElement extends ProgressOverlayElement {
 					getX(),
 					getY(),
 					width,
-					height);
+					height,
+					color);
 		} else {
 			DisplayHelper.INSTANCE.blitSprite(
 					graphics,
@@ -102,17 +107,18 @@ public class SpriteElement extends ProgressOverlayElement {
 					floatingRect.getX(),
 					floatingRect.getY(),
 					floatingRect.getWidth(),
-					floatingRect.getHeight());
+					floatingRect.getHeight(),
+					color);
 		}
-//		if (floatingRect != null) {
-//			DisplayHelper.INSTANCE.drawBorder(
-//					graphics, new ScreenRectangle(
-//							((int) floatingRect.getX()),
-//							((int) floatingRect.getY()),
-//							(int) floatingRect.getWidth(),
-//							(int) floatingRect.getHeight()),
-//					1, 0xFF00AAAA, true);
-//		}
+		if (IWailaConfig.get().general().isDebug() && floatingRect != null) {
+			DisplayHelper.INSTANCE.drawBorder(
+					graphics, new ScreenRectangle(
+							(int) floatingRect.getX(),
+							(int) floatingRect.getY(),
+							(int) floatingRect.getWidth(),
+							(int) floatingRect.getHeight()),
+					1, 0xFF00AAAA, true);
+		}
 	}
 
 	@Override
@@ -121,5 +127,9 @@ public class SpriteElement extends ProgressOverlayElement {
 		TextureAtlasSprite textureAtlasSprite = guiSprites.getSprite(sprite);
 		GuiSpriteScaling scaling = guiSprites.getSpriteScaling(textureAtlasSprite);
 		return scaling instanceof GuiSpriteScaling.Stretch;
+	}
+
+	public void setColor(int color) {
+		this.color = color;
 	}
 }
