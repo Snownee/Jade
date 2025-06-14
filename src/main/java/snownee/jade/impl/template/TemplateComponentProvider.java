@@ -10,7 +10,7 @@ import snownee.jade.api.Accessor;
 import snownee.jade.api.IComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IPluginConfig;
-import snownee.jade.api.ui.IElement;
+import snownee.jade.api.ui.Element;
 
 /**
  * A template implementation for script languages like KubeJS
@@ -20,7 +20,7 @@ public abstract class TemplateComponentProvider<T extends Accessor<?>> implement
 	private final boolean required;
 	private final boolean enabledByDefault;
 	private final int defaultPriority;
-	private BiFunction<T, IElement, IElement> iconFunction = (accessor, currentIcon) -> null;
+	private BiFunction<T, Element, Element> iconFunction = (accessor, currentIcon) -> null;
 	private BiConsumer<ITooltip, T> tooltipFunction = (tooltip, accessor) -> {};
 
 	protected TemplateComponentProvider(ResourceLocation uid, boolean required, boolean enabledByDefault, int defaultPriority) {
@@ -51,7 +51,7 @@ public abstract class TemplateComponentProvider<T extends Accessor<?>> implement
 	}
 
 	@Override
-	public @Nullable IElement getIcon(T accessor, IPluginConfig config, IElement currentIcon) {
+	public @Nullable Element getIcon(T accessor, IPluginConfig config, Element currentIcon) {
 		return iconFunction.apply(accessor, currentIcon);
 	}
 
@@ -60,7 +60,7 @@ public abstract class TemplateComponentProvider<T extends Accessor<?>> implement
 		tooltipFunction.accept(tooltip, accessor);
 	}
 
-	public void setIconFunction(BiFunction<T, IElement, IElement> iconFunction) {
+	public void setIconFunction(BiFunction<T, Element, Element> iconFunction) {
 		this.iconFunction = iconFunction;
 	}
 

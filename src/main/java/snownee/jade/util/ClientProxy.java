@@ -25,7 +25,7 @@ import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
@@ -76,7 +76,7 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.fluid.JadeFluidObject;
-import snownee.jade.api.ui.IElement;
+import snownee.jade.api.ui.Element;
 import snownee.jade.api.view.ClientViewGroup;
 import snownee.jade.api.view.IClientExtensionProvider;
 import snownee.jade.api.view.ViewGroup;
@@ -93,7 +93,6 @@ import snownee.jade.network.ServerHandshakePacket;
 import snownee.jade.network.ShowOverlayPacket;
 import snownee.jade.overlay.DatapackBlockManager;
 import snownee.jade.overlay.OverlayRenderer;
-import snownee.jade.overlay.WailaTickHandler;
 
 public final class ClientProxy implements ClientModInitializer {
 
@@ -143,7 +142,7 @@ public final class ClientProxy implements ClientModInitializer {
 
 	private static void onClientTick(Minecraft mc) {
 		try {
-			WailaTickHandler.instance().tickClient();
+			JadeClient.tickHandler().tickClient();
 		} catch (Throwable e) {
 			WailaExceptionHandler.handleErr(e, null, null);
 		}
@@ -178,7 +177,7 @@ public final class ClientProxy implements ClientModInitializer {
 		return hasJEI || hasREI;
 	}
 
-	public static IElement elementFromLiquid(BlockState blockState) {
+	public static Element elementFromLiquid(BlockState blockState) {
 		FluidState fluidState = blockState.getFluidState();
 		return new FluidStackElement(JadeFluidObject.of(fluidState.getType()));//.size(new Size(18, 18));
 	}
@@ -303,11 +302,12 @@ public final class ClientProxy implements ClientModInitializer {
 		ClientTickEvents.END_CLIENT_TICK.register(ClientProxy::onKeyPressed);
 		ScreenEvents.AFTER_INIT.register((Minecraft client, Screen screen, int scaledWidth, int scaledHeight) -> onGui(screen));
 		ClientCommandRegistrationCallback.EVENT.register(ClientProxy::registerClientCommand);
-		HudRenderCallback.EVENT.register((guiGraphics, deltaTracker) -> {
-			if (Minecraft.getInstance().screen == null) {
-				onRenderTick(guiGraphics, deltaTracker.getRealtimeDeltaTicks());
-			}
-		});
+		HudElementRegistry.addFirst(
+				JadeIds.UI_MAIN, (guiGraphics, deltaTracker) -> {
+					if (Minecraft.getInstance().screen == null) {
+						onRenderTick(guiGraphics, deltaTracker.getRealtimeDeltaTicks());
+					}
+				});
 		ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
 			if (shouldShowAfterGui(client, screen)) {
 				ScreenEvents.afterRender(screen).register((screen1, guiGraphics, mouseX, mouseY, tickDelta) -> {

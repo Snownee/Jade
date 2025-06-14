@@ -14,24 +14,22 @@ import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.theme.IThemeHelper;
-import snownee.jade.api.ui.IElement;
-import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.ui.Element;
+import snownee.jade.api.ui.JadeUI;
 import snownee.jade.impl.ui.CompoundElement;
 
-public enum WaxedProvider implements IBlockComponentProvider {
-
-	INSTANCE;
+public class WaxedProvider implements IBlockComponentProvider {
+	public static final WaxedProvider INSTANCE = new WaxedProvider();
 
 	@Override
-	public @Nullable IElement getIcon(BlockAccessor accessor, IPluginConfig config, IElement currentIcon) {
+	public @Nullable Element getIcon(BlockAccessor accessor, IPluginConfig config, Element currentIcon) {
 		if (accessor.getPickedResult().isEmpty()) {
 			return currentIcon;
 		}
-		IElementHelper helper = IElementHelper.get();
-		IElement largeIcon = helper.item(accessor.getPickedResult());
+		Element largeIcon = JadeUI.item(accessor.getPickedResult());
 		if (accessor.getBlockEntity() instanceof SignBlockEntity sign) {
 			if (sign.isWaxed()) {
-				return new CompoundElement(largeIcon, helper.item(Items.HONEYCOMB.getDefaultInstance(), 0.5f));
+				return new CompoundElement(largeIcon, JadeUI.item(Items.HONEYCOMB.getDefaultInstance(), 0.5f));
 			} else {
 				return largeIcon;
 			}
@@ -44,7 +42,7 @@ public enum WaxedProvider implements IBlockComponentProvider {
 		if (IWailaConfig.get().accessibility().getEnableAccessibilityPlugin() &&
 				accessor.getBlockEntity() instanceof SignBlockEntity sign &&
 				sign.isWaxed()) {
-			String message = tooltip.getMessage(JadeIds.CORE_OBJECT_NAME);
+			String message = tooltip.getString(JadeIds.CORE_OBJECT_NAME);
 			if (!message.isBlank()) {
 				tooltip.replace(JadeIds.CORE_OBJECT_NAME, IThemeHelper.get().title(Component.translatable("jade.waxed", message)));
 			}
@@ -58,6 +56,6 @@ public enum WaxedProvider implements IBlockComponentProvider {
 
 	@Override
 	public int getDefaultPriority() {
-		return ObjectNameProvider.getBlock().getDefaultPriority() + 10;
+		return ObjectNameProvider.ForBlock.INSTANCE.getDefaultPriority() + 10;
 	}
 }

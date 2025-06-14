@@ -40,6 +40,6 @@ public enum ExampleFluidStorageProvider implements IServerExtensionProvider<Flui
 				new FluidView.Data(JadeFluidObject.of(Fluids.WATER, 500), 2000),
 				new FluidView.Data(JadeFluidObject.empty(), 2000)));
 		// tank2.id = "2";
-		return List.of(tank1, tank2, tank2, tank2, tank2);
+		return List.of(tank1, tank2);
 	}
 }

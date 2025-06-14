@@ -5,35 +5,37 @@ import java.util.Objects;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.world.phys.Vec2;
+import net.minecraft.network.chat.Component;
 import snownee.jade.api.fluid.JadeFluidObject;
-import snownee.jade.api.ui.Element;
 import snownee.jade.overlay.DisplayHelper;
 
-public class FluidStackElement extends Element {
+public class FluidStackElement extends ProgressOverlayElement {
 
-	private static final Vec2 DEFAULT_SIZE = new Vec2(16, 16);
 	private final JadeFluidObject fluid;
 
 	public FluidStackElement(JadeFluidObject fluid) {
-		this.fluid = fluid;
-		Objects.requireNonNull(fluid);
+		this.fluid = Objects.requireNonNull(fluid);
+		width = height = 16;
 	}
 
 	@Override
-	public Vec2 getSize() {
-		return DEFAULT_SIZE;
+	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+		if (floatingRect == null) {
+			DisplayHelper.INSTANCE.drawFluid(graphics, getX(), getY(), fluid, width, height, JadeFluidObject.bucketVolume());
+		} else {
+			DisplayHelper.INSTANCE.drawFluid(
+					graphics,
+					floatingRect.getX(),
+					floatingRect.getY(),
+					fluid,
+					floatingRect.getWidth(),
+					floatingRect.getHeight(),
+					JadeFluidObject.bucketVolume());
+		}
 	}
 
 	@Override
-	public void render(GuiGraphics guiGraphics, float x, float y, float maxX, float maxY) {
-		Vec2 size = getCachedSize();
-		DisplayHelper.INSTANCE.drawFluid(guiGraphics, x, y, fluid, size.x, size.y, JadeFluidObject.bucketVolume());
+	public @Nullable Component getNarration() {
+		return null;
 	}
-
-	@Override
-	public @Nullable String getMessage() {
-		return null; //TODO
-	}
-
 }

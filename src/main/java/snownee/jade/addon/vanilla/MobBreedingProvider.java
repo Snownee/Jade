@@ -18,19 +18,8 @@ import snownee.jade.api.StreamServerDataProvider;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
 
-public enum MobBreedingProvider implements IEntityComponentProvider, StreamServerDataProvider<EntityAccessor, Integer> {
-
-	INSTANCE;
-
-	@Override
-	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
-		int time = decodeFromData(accessor).orElse(0);
-		if (time > 0) {
-			tooltip.add(Component.translatable(
-					accessor.getEntity() instanceof Allay ? "jade.mobduplication.time" : "jade.mobbreeding.time",
-					IThemeHelper.get().seconds(time, accessor.tickRate())));
-		}
-	}
+public class MobBreedingProvider implements StreamServerDataProvider<EntityAccessor, Integer> {
+	public static final MobBreedingProvider INSTANCE = new MobBreedingProvider();
 
 	@Override
 	public @Nullable Integer streamData(EntityAccessor accessor) {
@@ -54,5 +43,24 @@ public enum MobBreedingProvider implements IEntityComponentProvider, StreamServe
 	@Override
 	public ResourceLocation getUid() {
 		return JadeIds.MC_MOB_BREEDING;
+	}
+
+	public static class Client implements IEntityComponentProvider {
+		public static final Client INSTANCE = new Client();
+
+		@Override
+		public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
+			int time = MobBreedingProvider.INSTANCE.decodeFromData(accessor).orElse(0);
+			if (time > 0) {
+				tooltip.add(Component.translatable(
+						accessor.getEntity() instanceof Allay ? "jade.mobduplication.time" : "jade.mobbreeding.time",
+						IThemeHelper.get().seconds(time, accessor.tickRate())));
+			}
+		}
+
+		@Override
+		public ResourceLocation getUid() {
+			return JadeIds.MC_MOB_BREEDING;
+		}
 	}
 }

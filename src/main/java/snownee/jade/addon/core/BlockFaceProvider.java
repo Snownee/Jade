@@ -2,6 +2,7 @@ package snownee.jade.addon.core;
 
 import java.util.List;
 
+import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -11,20 +12,19 @@ import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
-import snownee.jade.api.ui.IElement;
-import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.ui.JadeUI;
 
-public enum BlockFaceProvider implements IBlockComponentProvider {
-
-	INSTANCE;
+public class BlockFaceProvider implements IBlockComponentProvider {
+	public static final BlockFaceProvider INSTANCE = new BlockFaceProvider();
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		tooltip.replace(JadeIds.CORE_OBJECT_NAME, lists -> {
-			List<IElement> lastList = lists.getLast();
-			lastList.add(IElementHelper.get().text(Component.translatable("jade.blockFace", directionName(accessor.getSide()))));
-			return lists;
-		});
+		tooltip.replace(
+				JadeIds.CORE_OBJECT_NAME, lists -> {
+					List<LayoutElement> lastList = lists.getLast();
+					lastList.add(JadeUI.text(Component.translatable("jade.blockFace", directionName(accessor.getSide()))));
+					return lists;
+				});
 	}
 
 	@Override
@@ -34,7 +34,7 @@ public enum BlockFaceProvider implements IBlockComponentProvider {
 
 	@Override
 	public int getDefaultPriority() {
-		return ObjectNameProvider.getBlock().getDefaultPriority() + 30;
+		return ObjectNameProvider.ForBlock.INSTANCE.getDefaultPriority() + 30;
 	}
 
 	@Override

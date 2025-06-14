@@ -1,6 +1,7 @@
 {
 	"version": 200,
 	"tooltipStyle": {
-		"sprite": "jade:dark"
+		"sprite": "jade:dark",
+		"tooltip": true
 	}
 }

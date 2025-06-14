@@ -23,7 +23,7 @@ public class BlockDetailsProvider implements IBlockComponentProvider {
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		BlockState blockState = accessor.getBlockState();
 		Block block = blockState.getBlock();
-		String objectName = tooltip.getMessage(JadeIds.CORE_OBJECT_NAME);
+		String objectName = tooltip.getString(JadeIds.CORE_OBJECT_NAME);
 		if (blockState.hasProperty(BlockStateProperties.OPEN) && !(block instanceof BarrelBlock)) {
 			AccessibilityPlugin.replaceTitle(
 					tooltip,
@@ -93,6 +93,6 @@ public class BlockDetailsProvider implements IBlockComponentProvider {
 
 	@Override
 	public int getDefaultPriority() {
-		return ObjectNameProvider.getBlock().getDefaultPriority() + 10;
+		return ObjectNameProvider.ForBlock.INSTANCE.getDefaultPriority() + 10;
 	}
 }

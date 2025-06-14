@@ -14,9 +14,8 @@ import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.util.ClientProxy;
 
-public enum TotalEnchantmentPowerProvider implements IBlockComponentProvider {
-
-	INSTANCE;
+public class TotalEnchantmentPowerProvider implements IBlockComponentProvider {
+	public static final TotalEnchantmentPowerProvider INSTANCE = new TotalEnchantmentPowerProvider();
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {

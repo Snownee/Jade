@@ -1,13 +1,10 @@
 package snownee.jade.impl.ui;
 
-import org.jetbrains.annotations.Nullable;
-
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
@@ -43,31 +40,31 @@ public class ArmorElement extends Element {
 			iconsPerLine = Math.min(maxHeartsPerLine, iconCount);
 			lineCount = Mth.ceil(armor / maxHeartsPerLine);
 		}
-	}
-
-	@Override
-	public Vec2 getSize() {
 		if (showText()) {
-			return new Vec2(DisplayHelper.font().width(text) + 10, 9);
+			width = DisplayHelper.font().width(text) + 10;
+			height = 9;
 		} else {
-			return new Vec2(8 * iconsPerLine + 1, 5 + 4 * lineCount);
+			width = 8 * iconsPerLine + 1;
+			height = 5 + 4 * lineCount;
 		}
 	}
 
 	@Override
-	public void render(GuiGraphics guiGraphics, float x, float y, float maxX, float maxY) {
+	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
 		IDisplayHelper helper = IDisplayHelper.get();
+		int x = getX();
+		int y = getY();
 		int xOffset = (iconCount - 1) % iconsPerLine * 8;
 		int yOffset = lineCount * 4 - 4;
 		for (int i = iconCount; i > 0; --i) {
-			helper.blitSprite(guiGraphics, RenderPipelines.GUI_TEXTURED, EMPTY_ARMOR, (int) (x + xOffset), (int) (y + yOffset), 9, 9);
+			helper.blitSprite(graphics, RenderPipelines.GUI_TEXTURED, EMPTY_ARMOR, x + xOffset, y + yOffset, 9, 9);
 
 			if (i <= Mth.floor(armor)) {
-				helper.blitSprite(guiGraphics, RenderPipelines.GUI_TEXTURED, ARMOR, (int) (x + xOffset), (int) (y + yOffset), 9, 9);
+				helper.blitSprite(graphics, RenderPipelines.GUI_TEXTURED, ARMOR, x + xOffset, y + yOffset, 9, 9);
 			}
 
 			if ((i > armor) && (i < armor + 1)) {
-				helper.blitSprite(guiGraphics, RenderPipelines.GUI_TEXTURED, HALF_ARMOR, (int) (x + xOffset), (int) (y + yOffset), 9, 9);
+				helper.blitSprite(graphics, RenderPipelines.GUI_TEXTURED, HALF_ARMOR, x + xOffset, y + yOffset, 9, 9);
 			}
 
 			xOffset -= 8;
@@ -78,13 +75,13 @@ public class ArmorElement extends Element {
 		}
 
 		if (showText()) {
-			helper.drawText(guiGraphics, text, x + 10, y + 1, IThemeHelper.get().getNormalColor());
+			helper.drawText(graphics, text, x + 10, y + 1, IThemeHelper.get().getNormalColor());
 		}
 	}
 
 	@Override
-	public @Nullable String getMessage() {
-		return I18n.get("narration.jade.armor", Mth.ceil(armor));
+	public Component getNarration() {
+		return Component.translatable("narration.jade.armor", Mth.ceil(armor));
 	}
 
 	public boolean showText() {

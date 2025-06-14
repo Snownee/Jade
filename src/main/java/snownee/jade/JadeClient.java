@@ -56,10 +56,10 @@ import snownee.jade.api.config.IWailaConfig.Overlay;
 import snownee.jade.api.config.IWailaConfig.TTSMode;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
+import snownee.jade.api.ui.BoxElement;
 import snownee.jade.api.ui.ColorPalette;
-import snownee.jade.api.ui.IBoxElement;
 import snownee.jade.api.ui.ScreenDirection;
-import snownee.jade.api.ui.TooltipRect;
+import snownee.jade.api.ui.TooltipAnimation;
 import snownee.jade.conditional_key_mapping.ConditionalKeyMapping;
 import snownee.jade.gui.HomeConfigScreen;
 import snownee.jade.impl.WailaClientRegistration;
@@ -75,6 +75,7 @@ public final class JadeClient {
 
 	public static final SystemToast.SystemToastId JADE_PLEASE_WAIT = new SystemToast.SystemToastId(2000L);
 	public static final KeyMapping[] profiles = new KeyMapping[4];
+	private static final WailaTickHandler tickHandler = new WailaTickHandler();
 	public static KeyMapping openConfig;
 	public static KeyMapping showOverlay;
 	public static KeyMapping toggleLiquid;
@@ -111,6 +112,10 @@ public final class JadeClient {
 		ClientProxy.registerReloadListener(ModIdentification.INSTANCE);
 		ClientProxy.registerReloadListener(HarvestToolProvider.INSTANCE);
 		ClientProxy.registerReloadListener(ThemeHelper.INSTANCE);
+	}
+
+	public static WailaTickHandler tickHandler() {
+		return tickHandler;
 	}
 
 	public static void onKeyPressed(int action) {
@@ -162,8 +167,8 @@ public final class JadeClient {
 					Jade.history().hintNarratorToggle = false;
 				}
 				IWailaConfig.get().save();
-			} else if (WailaTickHandler.instance().rootElement != null) {
-				WailaTickHandler.narrate(WailaTickHandler.instance().rootElement.getTooltip(), false);
+			} else if (tickHandler.rootElement != null) {
+				tickHandler.narrate(tickHandler.rootElement, false);
 			}
 		}
 
@@ -172,7 +177,7 @@ public final class JadeClient {
 				while (profiles[i].consumeClick()) {
 					Jade.useProfile(i);
 					if (IWailaConfig.get().accessibility().getNarrateKeys()) {
-						WailaTickHandler.narrate(I18n.get("narration.jade.key.profile", profiles[i].getName()), false);
+						tickHandler.narrate(I18n.get("narration.jade.key.profile", profiles[i].getName()), false);
 					}
 				}
 			}
@@ -182,7 +187,7 @@ public final class JadeClient {
 	public static void narrateKey(String key, boolean bl) {
 		if (IWailaConfig.get().accessibility().getNarrateKeys()) {
 			key = "narration.jade.key.%s.%s".formatted(key, bl ? "on" : "off");
-			WailaTickHandler.narrate(I18n.get(key), false);
+			tickHandler.narrate(I18n.get(key), false);
 		}
 	}
 
@@ -290,12 +295,12 @@ public final class JadeClient {
 		return accessor;
 	}
 
-	public static void drawBreakingProgress(IBoxElement rootElement, TooltipRect rect, GuiGraphics guiGraphics, Accessor<?> accessor) {
+	public static void drawBreakingProgress(BoxElement root, TooltipAnimation animation, GuiGraphics graphics, Accessor<?> accessor) {
 		if (!IWailaConfig.get().plugin().get(JadeIds.MC_BREAKING_PROGRESS)) {
 			progressAlpha = 0;
 			return;
 		}
-		if (!Float.isNaN(rootElement.getBoxProgress())) {
+		if (!Float.isNaN(root.getBoxProgress())) {
 			progressAlpha = 0;
 			return;
 		}
@@ -314,8 +319,8 @@ public final class JadeClient {
 		Theme theme = IThemeHelper.get().theme();
 		ColorPalette colors = theme.tooltipStyle.boxProgressColors;
 		int color = canHarvest ? colors.title() : colors.failure();
-		float top = rect.rect.getHeight();
-		float width = rect.rect.getWidth();
+		float top = animation.rect.getHeight();
+		float width = animation.rect.getWidth();
 		progressAlpha += mc.getDeltaTracker().getGameTimeDeltaTicks() * (playerController.isDestroying() ? 0.1F : -0.1F);
 		if (playerController.isDestroying()) {
 			progressAlpha = Math.min(progressAlpha, 0.6F);
@@ -338,19 +343,23 @@ public final class JadeClient {
 		float offset2 = theme.tooltipStyle.boxProgressOffset(ScreenDirection.DOWN);
 		float offset3 = theme.tooltipStyle.boxProgressOffset(ScreenDirection.LEFT);
 		width += offset1 - offset3;
-		DisplayHelper.fill(guiGraphics, offset3, top - 1 + offset0, offset3 + width * savedProgress, top + offset2, color);
+		DisplayHelper.fill(graphics, offset3, top - 1 + offset0, offset3 + width * savedProgress, top + offset2, color);
 	}
 
 	public static MutableComponent format(String s, Object... objects) {
+		return Component.literal(formatString(s, objects));
+	}
+
+	public static String formatString(String s, Object... objects) {
 		try {
 			for (int i = 0; i < objects.length; i++) {
 				if (objects[i] instanceof Component component) {
 					objects[i] = component.getString();
 				}
 			}
-			return Component.literal(MessageFormat.format(I18n.get(s), objects));
+			return MessageFormat.format(I18n.get(s), objects);
 		} catch (Exception e) {
-			return Component.translatable(s, objects);
+			return I18n.get(s, objects);
 		}
 	}
 

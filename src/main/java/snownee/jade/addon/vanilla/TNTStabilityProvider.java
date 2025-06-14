@@ -11,9 +11,8 @@ import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
 
-public enum TNTStabilityProvider implements IBlockComponentProvider {
-
-	INSTANCE;
+public class TNTStabilityProvider implements IBlockComponentProvider {
+	public static final TNTStabilityProvider INSTANCE = new TNTStabilityProvider();
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {

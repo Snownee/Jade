@@ -7,25 +7,15 @@ import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 
 public abstract class ProgressStyle {
 
-	@Nullable
-	protected IElement overlay;
 	protected boolean fitContentX = true;
 	protected boolean fitContentY = true;
 	protected ScreenDirection direction = ScreenDirection.RIGHT;
-
-	@Contract("_ -> this")
-	public ProgressStyle color(int color) {
-		return color(color, color);
-	}
-
-	@Contract("_, _ -> this")
-	public abstract ProgressStyle color(int color, int color2);
-
-	@Contract("_ -> this")
-	public abstract ProgressStyle textColor(int color);
+	protected @Nullable ResourceLocation foreground;
+	protected boolean canDecrease;
 
 	@Contract("_ -> this")
 	public ProgressStyle direction(ScreenDirection direction) {
@@ -35,12 +25,6 @@ public abstract class ProgressStyle {
 
 	public ScreenDirection direction() {
 		return direction;
-	}
-
-	@Contract("_ -> this")
-	public ProgressStyle overlay(IElement overlay) {
-		this.overlay = overlay;
-		return this;
 	}
 
 	@Contract("_ -> this")
@@ -61,6 +45,26 @@ public abstract class ProgressStyle {
 
 	public boolean fitContentY() {
 		return fitContentY;
+	}
+
+	@Contract("_ -> this")
+	public ProgressStyle foreground(@Nullable ResourceLocation foreground) {
+		this.foreground = foreground;
+		return this;
+	}
+
+	public @Nullable ResourceLocation foreground() {
+		return foreground;
+	}
+
+	@Contract("_ -> this")
+	public ProgressStyle canDecrease(boolean canDecrease) {
+		this.canDecrease = canDecrease;
+		return this;
+	}
+
+	public boolean canDecrease() {
+		return canDecrease;
 	}
 
 	public abstract void render(GuiGraphics guiGraphics, float x, float y, float w, float h, float progress, Component text);

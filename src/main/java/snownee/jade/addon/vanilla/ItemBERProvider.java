@@ -13,15 +13,14 @@ import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
-import snownee.jade.api.ui.IElement;
-import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.ui.Element;
+import snownee.jade.api.ui.JadeUI;
 
-public enum ItemBERProvider implements IBlockComponentProvider {
-
-	INSTANCE;
+public class ItemBERProvider implements IBlockComponentProvider {
+	public static final ItemBERProvider INSTANCE = new ItemBERProvider();
 
 	@Override
-	public @Nullable IElement getIcon(BlockAccessor accessor, IPluginConfig config, IElement currentIcon) {
+	public @Nullable Element getIcon(BlockAccessor accessor, IPluginConfig config, Element currentIcon) {
 		BlockEntity blockEntity = accessor.getBlockEntity();
 		if (blockEntity != null) {
 			ItemStack itemStack = accessor.getPickedResult();
@@ -32,7 +31,7 @@ public enum ItemBERProvider implements IBlockComponentProvider {
 			blockEntity.removeComponentsFromTag(tagValueOutput);
 			BlockItem.setBlockEntityData(itemStack, blockEntity.getType(), tagValueOutput);
 			itemStack.applyComponents(blockEntity.collectComponents());
-			return IElementHelper.get().item(itemStack);
+			return JadeUI.item(itemStack);
 		}
 		return null;
 	}

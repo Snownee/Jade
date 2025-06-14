@@ -4,11 +4,11 @@ import java.text.DecimalFormat;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import snownee.jade.JadeClient;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
@@ -19,22 +19,15 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
-import snownee.jade.api.ui.IElementHelper;
-import snownee.jade.api.ui.ITextElement;
+import snownee.jade.api.ui.JadeUI;
+import snownee.jade.api.ui.TextElement;
 import snownee.jade.impl.theme.ThemeHelper;
+import snownee.jade.util.NarrationHelper;
 
 public abstract class DistanceProvider implements IToggleableProvider {
 
-	public static ForBlock getBlock() {
-		return ForBlock.INSTANCE;
-	}
-
-	public static ForEntity getEntity() {
-		return ForEntity.INSTANCE;
-	}
-
 	public static class ForBlock extends DistanceProvider implements IBlockComponentProvider {
-		private static final ForBlock INSTANCE = new ForBlock();
+		public static final ForBlock INSTANCE = new ForBlock();
 
 		@Override
 		public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
@@ -43,7 +36,7 @@ public abstract class DistanceProvider implements IToggleableProvider {
 	}
 
 	public static class ForEntity extends DistanceProvider implements IEntityComponentProvider {
-		private static final ForEntity INSTANCE = new ForEntity();
+		public static final ForEntity INSTANCE = new ForEntity();
 
 		@Override
 		public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
@@ -59,11 +52,15 @@ public abstract class DistanceProvider implements IToggleableProvider {
 		return fmt.format(accessor.getPlayer().getEyePosition(partialTick).distanceTo(accessor.getHitResult().getLocation()));
 	}
 
-	public static ITextElement xyz(Vec3i pos) {
+	public static TextElement xyz(Vec3i pos) {
 		Component display = Component.translatable("jade.blockpos", display(pos.getX(), 0), display(pos.getY(), 1), display(pos.getZ(), 2));
-		String narrate = I18n.get("narration.jade.blockpos", narrate(pos.getX()), narrate(pos.getY()), narrate(pos.getZ()));
-		ITextElement text = IElementHelper.get().text(display);
-		text.message(narrate);
+		String narration = JadeClient.formatString(
+				"narration.jade.blockpos",
+				NarrationHelper.number(pos.getX()),
+				NarrationHelper.number(pos.getY()),
+				NarrationHelper.number(pos.getZ()));
+		TextElement text = JadeUI.text(display);
+		text.narration(narration);
 		return text;
 	}
 
@@ -74,14 +71,10 @@ public abstract class DistanceProvider implements IToggleableProvider {
 		return Component.literal(Integer.toString(i)).withStyle(ThemeHelper.colorStyle(colors[colorIndex]));
 	}
 
-	public static String narrate(int i) {
-		return i >= 0 ? Integer.toString(i) : I18n.get("narration.jade.negative", -i);
-	}
-
 	public void append(ITooltip tooltip, Accessor<?> accessor, BlockPos pos, IPluginConfig config) {
 		boolean distance = config.get(JadeIds.CORE_DISTANCE);
 		String distanceVal = distance ? distance(accessor) : null;
-		String distanceMsg = distance ? I18n.get("narration.jade.distance", distanceVal) : null;
+		String distanceMsg = distance ? JadeClient.formatString("narration.jade.distance", distanceVal) : null;
 		if (config.get(JadeIds.CORE_COORDINATES)) {
 			if (config.get(JadeIds.CORE_REL_COORDINATES) && Screen.hasControlDown()) {
 				tooltip.add(xyz(pos.subtract(BlockPos.containing(accessor.getPlayer().getEyePosition()))));
@@ -89,10 +82,14 @@ public abstract class DistanceProvider implements IToggleableProvider {
 				tooltip.add(xyz(pos));
 			}
 			if (distance) {
-				tooltip.append(IElementHelper.get().text(Component.translatable("jade.distance1", distanceVal)).message(distanceMsg));
+				tooltip.append(JadeUI
+						.text(Component.translatable("jade.distance1", distanceVal))
+						.narration(distanceMsg));
 			}
 		} else if (distance) {
-			tooltip.add(IElementHelper.get().text(Component.translatable("jade.distance2", distanceVal)).message(distanceMsg));
+			tooltip.add(JadeUI
+					.text(Component.translatable("jade.distance2", distanceVal))
+					.narration(distanceMsg));
 		}
 	}
 

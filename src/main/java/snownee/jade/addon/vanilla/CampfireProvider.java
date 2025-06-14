@@ -24,8 +24,8 @@ import snownee.jade.api.view.IServerExtensionProvider;
 import snownee.jade.api.view.ItemView;
 import snownee.jade.api.view.ViewGroup;
 
-public enum CampfireProvider implements IServerExtensionProvider<ItemStack>, IClientExtensionProvider<ItemStack, ItemView> {
-	INSTANCE;
+public class CampfireProvider implements IServerExtensionProvider<ItemStack>, IClientExtensionProvider<ItemStack, ItemView> {
+	public static final CampfireProvider INSTANCE = new CampfireProvider();
 
 	private static final MapCodec<Integer> COOKING_TIME_CODEC = Codec.INT.fieldOf("jade:cooking");
 
@@ -36,18 +36,19 @@ public enum CampfireProvider implements IServerExtensionProvider<ItemStack>, ICl
 
 	@Override
 	public List<ClientViewGroup<ItemView>> getClientGroups(Accessor<?> accessor, List<ViewGroup<ItemStack>> groups) {
-		return ClientViewGroup.map(groups, stack -> {
-			CustomData customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
-			if (customData.isEmpty()) {
-				return null;
-			}
-			Optional<Integer> result = customData.read(COOKING_TIME_CODEC).result();
-			if (result.isEmpty()) {
-				return null;
-			}
-			String text = IThemeHelper.get().seconds(result.get(), accessor.tickRate()).getString();
-			return new ItemView(stack).amountText(text);
-		}, null);
+		return ClientViewGroup.map(
+				groups, stack -> {
+					CustomData customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+					if (customData.isEmpty()) {
+						return null;
+					}
+					Optional<Integer> result = customData.read(COOKING_TIME_CODEC).result();
+					if (result.isEmpty()) {
+						return null;
+					}
+					String text = IThemeHelper.get().seconds(result.get(), accessor.tickRate()).getString();
+					return new ItemView(stack).amountText(text);
+				}, null);
 	}
 
 	@Override

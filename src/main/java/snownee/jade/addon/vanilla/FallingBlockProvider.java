@@ -1,5 +1,7 @@
 package snownee.jade.addon.vanilla;
 
+import org.jetbrains.annotations.Nullable;
+
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.item.ItemStack;
@@ -8,26 +10,25 @@ import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
-import snownee.jade.api.ui.IElement;
-import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.ui.Element;
+import snownee.jade.api.ui.JadeUI;
 
-public enum FallingBlockProvider implements IEntityComponentProvider {
-
-	INSTANCE;
+public class FallingBlockProvider implements IEntityComponentProvider {
+	public static final FallingBlockProvider INSTANCE = new FallingBlockProvider();
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
-
+		// No additional tooltip for falling blocks
 	}
 
 	@Override
-	public IElement getIcon(EntityAccessor accessor, IPluginConfig config, IElement currentIcon) {
+	public @Nullable Element getIcon(EntityAccessor accessor, IPluginConfig config, Element currentIcon) {
 		FallingBlockEntity entity = (FallingBlockEntity) accessor.getEntity();
 		ItemStack stack = new ItemStack(entity.getBlockState().getBlock());
 		if (stack.isEmpty()) {
 			return currentIcon;
 		}
-		return IElementHelper.get().item(stack);
+		return JadeUI.item(stack);
 	}
 
 	@Override

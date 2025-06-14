@@ -1,93 +1,209 @@
 package snownee.jade.api.ui;
 
-import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix3x2fStack;
 
+import com.google.common.base.Preconditions;
+
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.client.gui.layouts.LayoutElement;
+import net.minecraft.client.gui.layouts.LayoutSettings;
+import net.minecraft.client.gui.narration.NarratedElementType;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.gui.narration.NarrationSupplier;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.phys.Vec2;
+import snownee.jade.JadeInternals;
+import snownee.jade.gui.JadeLinearLayout;
+import snownee.jade.overlay.DisplayHelper;
 
-/**
- * A general implementation of {@link IElement}
- *
- * @author Snownee
- */
-public abstract class Element implements IElement {
+public abstract class Element implements Renderable, LayoutElement, NarrationSupplier {
 
-	protected Align align = Align.LEFT;
-	protected Vec2 translation = Vec2.ZERO;
 	protected ResourceLocation tag;
-	protected Vec2 size;
-	private static final String DEFAULT_MESSAGE = "\u0000";
-	protected String message = DEFAULT_MESSAGE;
+	protected int width;
+	protected int height;
+	private int x;
+	private int y;
+	private @Nullable Component narration = CommonComponents.EMPTY;
+	private @Nullable UnaryOperator<LayoutSettings> settings;
+	private @Nullable JadeLinearLayout.Align alignSelf;
 
-	@Override
-	public IElement size(@Nullable Vec2 size) {
-		this.size = size;
+	@Contract("_, _ -> new")
+	public ResizeableElement offset(int x, int y) {
+		return JadeUI.offset(this, x, y);
+	}
+
+	@Contract("_, _ -> new")
+	public ResizeableElement size(int width, int height) {
+		return JadeUI.size(this, width, height);
+	}
+
+	@Contract("_ -> this")
+	public Element settings(UnaryOperator<LayoutSettings> settings) {
+		this.settings = settings;
 		return this;
 	}
 
-	@Override
-	public Vec2 getCachedSize() {
-		if (size == null) {
-			size = getSize();
-		}
-		return size;
+	public @Nullable UnaryOperator<LayoutSettings> getSettings() {
+		return settings;
 	}
 
-	@Override
-	public IElement align(Align align) {
-		Objects.requireNonNull(align);
-		this.align = align;
+	@Contract("-> this")
+	public Element alignSelfStart() {
+		alignSelf = JadeLinearLayout.Align.START;
 		return this;
 	}
 
-	@Override
-	public Align getAlignment() {
-		return align;
-	}
-
-	@Override
-	public IElement translate(Vec2 translation) {
-		Objects.requireNonNull(translation);
-		this.translation = translation;
+	@Contract("-> this")
+	public Element alignSelfCenter() {
+		alignSelf = JadeLinearLayout.Align.CENTER;
 		return this;
 	}
 
-	@Override
-	public Vec2 getTranslation() {
-		return translation;
+	@Contract("-> this")
+	public Element alignSelfEnd() {
+		alignSelf = JadeLinearLayout.Align.END;
+		return this;
 	}
 
-	@Override
-	public IElement tag(ResourceLocation tag) {
+	@Contract("-> this")
+	public Element alignSelfStretch() {
+		alignSelf = JadeLinearLayout.Align.STRETCH;
+		return this;
+	}
+
+	public @Nullable JadeLinearLayout.Align getAlignSelf() {
+		return alignSelf;
+	}
+
+	@Contract("_ -> this")
+	public Element tag(@Nullable ResourceLocation tag) {
 		this.tag = tag;
 		return this;
 	}
 
-	@Override
 	public @Nullable ResourceLocation getTag() {
 		return tag;
 	}
 
-	@Override
-	public @Nullable String getCachedMessage() {
-		if (Objects.equals(message, DEFAULT_MESSAGE)) {
-			message = getMessage();
+	public @Nullable Component cachedNarration() {
+		if (narration == CommonComponents.EMPTY) {
+			narration = getNarration();
 		}
-		return message;
+		return narration;
 	}
 
-	@Override
-	public IElement clearCachedMessage() {
-		message = DEFAULT_MESSAGE;
+	public abstract @Nullable Component getNarration();
+
+	@Contract("-> this")
+	public Element refreshNarration() {
+		narration = CommonComponents.EMPTY;
+		return this;
+	}
+
+	@Contract("_ -> this")
+	public Element narration(String narration) {
+		Preconditions.checkNotNull(narration, "narration must not be null");
+		this.narration = narration.isEmpty() ? null : Component.literal(narration);
+		return this;
+	}
+
+	@Contract("_ -> this")
+	public Element narration(Component narration) {
+		Preconditions.checkNotNull(narration, "narration must not be null");
+		this.narration = narration;
 		return this;
 	}
 
 	@Override
-	public IElement message(@Nullable String message) {
-		this.message = message;
-		return this;
+	public abstract void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks);
+
+	@Override
+	public void setX(int x) {
+		this.x = x;
 	}
 
+	@Override
+	public void setY(int y) {
+		this.y = y;
+	}
+
+	@Override
+	public final int getX() {
+		return x;
+	}
+
+	@Override
+	public final int getY() {
+		return y;
+	}
+
+	@Override
+	public final int getWidth() {
+		return width;
+	}
+
+	@Override
+	public final int getHeight() {
+		return height;
+	}
+
+	@Override
+	public final ScreenRectangle getRectangle() {
+		return LayoutElement.super.getRectangle();
+	}
+
+	@Override
+	public void visitWidgets(Consumer<AbstractWidget> consumer) {
+	}
+
+	@Override
+	public void updateNarration(NarrationElementOutput narrationElementOutput) {
+		Component message = cachedNarration();
+		if (message != null) {
+			narrationElementOutput.add(NarratedElementType.TITLE, message);
+		}
+	}
+
+	public void renderDebug(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks, RenderDebugContext context) {
+		JadeInternals.getDisplayHelper().drawBorder(graphics, getRectangle(), 1, 0x88FF0000, true);
+		if (Screen.hasAltDown() && getTag() != null) {
+			int centerX = context.root.getX() + context.root.getWidth() / 2;
+			int x = getX();
+			int y = getY();
+			String s = getTag().toString();
+			int textWidth = DisplayHelper.font().width(s);
+			Matrix3x2fStack pose = graphics.pose();
+			pose.pushMatrix();
+			pose.translate(x, y);
+			pose.scale(0.5F);
+			if (x > centerX) {
+				pose.translate(getWidth() + getWidth(), 0);
+			} else {
+				pose.translate(-textWidth - 4, 0);
+			}
+			graphics.fill(0, 0, textWidth + 4, DisplayHelper.font().lineHeight + 4, 0x88000000);
+			graphics.drawString(DisplayHelper.font(), s, 2, 2, 0xFFFFFFFF, false);
+			pose.popMatrix();
+		}
+	}
+
+	public static class RenderDebugContext {
+		public final LayoutElement root;
+		public final Rect2f rootRect;
+
+		public RenderDebugContext(LayoutElement root, Rect2f rootRect) {
+			this.root = root;
+			this.rootRect = rootRect;
+		}
+	}
 }

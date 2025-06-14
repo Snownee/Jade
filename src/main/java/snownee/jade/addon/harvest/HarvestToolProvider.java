@@ -25,7 +25,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.Vec2;
 import snownee.jade.Jade;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
@@ -34,22 +33,19 @@ import snownee.jade.api.JadeIds;
 import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
-import snownee.jade.api.ui.IElement;
-import snownee.jade.api.ui.IElement.Align;
-import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.ui.Element;
+import snownee.jade.api.ui.JadeUI;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
 import snownee.jade.util.KeyedResourceManagerReloadListener;
 
 public class HarvestToolProvider implements IBlockComponentProvider, KeyedResourceManagerReloadListener {
-
 	public static final HarvestToolProvider INSTANCE;
 
 	public static final Map<ResourceLocation, ToolHandler> TOOL_HANDLERS = Maps.newLinkedHashMap();
 	private static List<Block> shearableBlocks = List.of();
 	private static final Component CHECK = Component.literal("✔");
 	private static final Component X = Component.literal("✕");
-	private static final Vec2 ITEM_SIZE = new Vec2(10, 0);
 	private final Cache<BlockState, ImmutableList<ItemStack>> resultCache = CacheBuilder.newBuilder().expireAfterAccess(
 			5,
 			TimeUnit.MINUTES).build();
@@ -135,27 +131,26 @@ public class HarvestToolProvider implements IBlockComponentProvider, KeyedResour
 		if (destroySpeed < 0 || destroyProgress <= 0) {
 			if (config.get(JadeIds.MC_SHOW_UNBREAKABLE)) {
 				Component text = IThemeHelper.get().failure(Component.translatable("jade.harvest_tool.unbreakable"));
-				tooltip.add(IElementHelper.get().text(text).message(null));
+				tooltip.add(JadeUI.text(text).narration(""));
 			}
 			//TODO: high priority handlers?
 			return;
 		}
 
 		boolean newLine = config.get(JadeIds.MC_HARVEST_TOOL_NEW_LINE);
-		List<IElement> elements = getText(accessor, config);
+		List<Element> elements = getText(accessor, config);
 		if (elements.isEmpty()) {
 			return;
 		}
-		elements.forEach(e -> e.message(null));
+		elements.forEach(e -> e.narration(""));
 		if (newLine) {
 			tooltip.add(elements);
 		} else {
-			elements.forEach(e -> e.align(Align.RIGHT));
 			tooltip.append(0, elements);
 		}
 	}
 
-	public List<IElement> getText(BlockAccessor accessor, IPluginConfig config) {
+	public List<Element> getText(BlockAccessor accessor, IPluginConfig config) {
 		BlockState state = accessor.getBlockState();
 		if (!state.requiresCorrectToolForDrops() && !config.get(JadeIds.MC_EFFECTIVE_TOOL)) {
 			return List.of();
@@ -172,23 +167,22 @@ public class HarvestToolProvider implements IBlockComponentProvider, KeyedResour
 
 		int offsetY = -3;
 		boolean newLine = config.get(JadeIds.MC_HARVEST_TOOL_NEW_LINE);
-		List<IElement> elements = Lists.newArrayList();
+		List<Element> elements = Lists.newArrayList();
 		for (ItemStack tool : tools) {
-			elements.add(IElementHelper.get().item(tool, 0.75f).translate(new Vec2(-1, offsetY)).size(ITEM_SIZE).message(null));
+			elements.add(JadeUI.item(tool, 0.75f).offset(-1, offsetY).size(10, 0).narration(""));
 		}
 
 		if (!elements.isEmpty()) {
-			elements.addFirst(IElementHelper.get().spacer(newLine ? -2 : 5, newLine ? 10 : 0));
+			elements.addFirst(JadeUI.spacer(newLine ? -2 : 5, newLine ? 10 : 0).flexGrow(1000));
 			Player player = accessor.getPlayer();
 			boolean canHarvest = CommonProxy.isCorrectToolForDrops(state, player, accessor.getLevel(), accessor.getPosition());
 			if (state.requiresCorrectToolForDrops() || !canHarvest) {
 				IThemeHelper t = IThemeHelper.get();
 				Component text = canHarvest ? t.success(CHECK) : t.danger(X);
-				elements.add(IElementHelper.get().text(text)
+				elements.add(JadeUI.text(text)
 						.scale(0.75F)
-						.zOffset(800)
-						.size(Vec2.ZERO)
-						.translate(new Vec2(-3, 6.25F + offsetY))
+						.size(0, 0)
+						.offset(-3, 6 + offsetY)
 				);
 			}
 		}

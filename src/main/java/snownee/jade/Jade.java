@@ -8,12 +8,14 @@ import org.slf4j.Logger;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Stopwatch;
 import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 
 import net.minecraft.resources.ResourceLocation;
+import snownee.jade.addon.core.ModNameProvider;
 import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.TraceableException;
@@ -28,12 +30,12 @@ import snownee.jade.util.JsonConfig;
 
 public class Jade {
 	public static final String ID = "jade";
-	public static final String PROTOCOL_VERSION = "7";
+	public static final String PROTOCOL_VERSION = "8";
 	public static final Logger LOGGER = LogUtils.getLogger();
-	private static final JsonConfig<WailaConfig.Root> rootConfig = new JsonConfig<>(
+	private static final Supplier<JsonConfig<WailaConfig.Root>> rootConfig = Suppliers.memoize(() -> new JsonConfig<>(
 			ID + "/" + ID,
 			WailaConfig.Root.CODEC,
-			WailaConfig::fixData);
+			WailaConfig::fixData));
 	private static List<JsonConfig<? extends WailaConfig>> configs = List.of();
 
 	private static JsonConfig<? extends WailaConfig> configHolder() {
@@ -41,7 +43,7 @@ public class Jade {
 		if (root.isEnableProfiles() && root.profileIndex > 0 && root.profileIndex < configs.size()) {
 			return configs.get(root.profileIndex);
 		}
-		return rootConfig;
+		return rootConfig.get();
 	}
 
 	/**
@@ -54,7 +56,7 @@ public class Jade {
 	public static void saveConfig() {
 		configHolder().save();
 		if (config() != rootConfig()) {
-			rootConfig.save();
+			rootConfig.get().save();
 		}
 	}
 
@@ -67,16 +69,15 @@ public class Jade {
 	}
 
 	public static void resetConfig() {
-		rootConfig().setEnableProfiles(false);
 		int themesHash = history().themesHash;
-		Preconditions.checkState(rootConfig.getFile().delete());
+		Preconditions.checkState(configHolder().getFile().delete());
 		invalidateConfig();
 		history().themesHash = themesHash;
-		rootConfig.save();
+		configHolder().save();
 	}
 
 	public static WailaConfig.Root rootConfig() {
-		return rootConfig.get();
+		return rootConfig.get().get();
 	}
 
 	public static void loadComplete() {
@@ -104,7 +105,7 @@ public class Jade {
 
 			Codec<WailaConfig> codec = WailaConfig.MAP_CODEC.codec();
 			ImmutableList.Builder<JsonConfig<? extends WailaConfig>> list = ImmutableList.builderWithExpectedSize(4);
-			list.add(rootConfig);
+			list.add(rootConfig.get());
 			Supplier<WailaConfig> defaultFactory = () -> JadeCodecs.createFromEmptyMap(codec);
 			for (int i = 1; i < 4; ++i) {
 				Supplier<WailaConfig> factory = defaultFactory;
@@ -116,7 +117,7 @@ public class Jade {
 						config.overlay().setAnimation(false);
 						config.overlay().setAlpha(1);
 						config.plugin().set(JadeIds.CORE_BLOCK_FACE, true);
-						config.plugin().set(JadeIds.CORE_MOD_NAME, false);
+						config.plugin().set(JadeIds.CORE_MOD_NAME, ModNameProvider.Mode.OFF);
 						return config;
 					};
 				} else if (i == 2) {
@@ -126,7 +127,7 @@ public class Jade {
 						config.general().setDisplayMode(IWailaConfig.DisplayMode.LITE);
 						config.general().setBossBarOverlapMode(IWailaConfig.BossBarOverlapMode.HIDE_TOOLTIP);
 						config.overlay().setAlpha(0);
-						config.overlay().applyTheme(JadeIds.JADE("dark_slim"));
+						config.overlay().activeTheme = JadeIds.JADE("dark/slim");
 						config.overlay().setIconMode(IWailaConfig.IconMode.INLINE);
 						config.plugin().set(JadeIds.MC_BREAKING_PROGRESS, false);
 						config.plugin().set(JadeIds.MC_HARVEST_TOOL, false);
@@ -153,7 +154,7 @@ public class Jade {
 	public static void useProfile(int index) {
 		rootConfig().setEnableProfiles(true);
 		rootConfig().profileIndex = index;
-		rootConfig.save();
+		rootConfig.get().save();
 	}
 
 	public static void saveProfile(int index) {

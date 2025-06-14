@@ -11,6 +11,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import snownee.jade.JadeClient;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
@@ -24,37 +25,105 @@ import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.IDisplayHelper;
-import snownee.jade.api.ui.IElementHelper;
-import snownee.jade.api.ui.ProgressStyle;
+import snownee.jade.api.ui.JadeUI;
+import snownee.jade.api.ui.NarratableComponent;
 import snownee.jade.api.view.ClientViewGroup;
 import snownee.jade.api.view.FluidView;
 import snownee.jade.api.view.IClientExtensionProvider;
 import snownee.jade.api.view.IServerExtensionProvider;
+import snownee.jade.api.view.ProgressView;
 import snownee.jade.api.view.ViewGroup;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
 
-public abstract class FluidStorageProvider<T extends Accessor<?>> implements IComponentProvider<T>, StreamServerDataProvider<T, Map.Entry<ResourceLocation, List<ViewGroup<FluidView.Data>>>> {
+public class FluidStorageProvider<T extends Accessor<?>> implements StreamServerDataProvider<T, Map.Entry<ResourceLocation, List<ViewGroup<FluidView.Data>>>> {
 
 	private static final StreamCodec<RegistryFriendlyByteBuf, Map.Entry<ResourceLocation, List<ViewGroup<FluidView.Data>>>> STREAM_CODEC = ViewGroup.listCodec(
 			FluidView.Data.STREAM_CODEC);
 
-	public static ForBlock getBlock() {
-		return ForBlock.INSTANCE;
-	}
+	public static final FluidStorageProvider<BlockAccessor> BLOCK = new FluidStorageProvider<>();
+	public static final FluidStorageProvider<EntityAccessor> ENTITY = new FluidStorageProvider<>();
 
-	public static ForEntity getEntity() {
-		return ForEntity.INSTANCE;
-	}
+	public static class Client<T extends Accessor<?>> extends FluidStorageProvider<T> implements IComponentProvider<T> {
+		public static final Client<BlockAccessor> BLOCK = new Client<>();
+		public static final Client<EntityAccessor> ENTITY = new Client<>();
 
-	public static class ForBlock extends FluidStorageProvider<BlockAccessor> {
-		private static final ForBlock INSTANCE = new ForBlock();
-	}
+		@Override
+		public void appendTooltip(ITooltip tooltip, T accessor, IPluginConfig config) {
+			if (!accessor.showDetails() && config.get(JadeIds.UNIVERSAL_FLUID_STORAGE_DETAILED)) {
+				return;
+			}
 
-	public static class ForEntity extends FluidStorageProvider<EntityAccessor> {
-		private static final ForEntity INSTANCE = new ForEntity();
+			List<ClientViewGroup<FluidView>> groups = ClientProxy.mapToClientGroups(
+					accessor,
+					JadeIds.UNIVERSAL_FLUID_STORAGE,
+					STREAM_CODEC,
+					WailaClientRegistration.instance().fluidStorageProviders::get,
+					tooltip);
+			if (groups == null || groups.isEmpty()) {
+				return;
+			}
+
+			boolean renderGroup = groups.size() > 1 || groups.getFirst().shouldRenderGroup();
+			ClientViewGroup.tooltip(
+					tooltip, groups, renderGroup, (theTooltip, group) -> {
+						if (renderGroup) {
+							group.renderHeader(theTooltip);
+						}
+						for (var view : group.views) {
+							Component text;
+							IWailaConfig.HandlerDisplayStyle style = config.getEnum(JadeIds.UNIVERSAL_FLUID_STORAGE_STYLE);
+
+							if (view.overrideText != null) {
+								text = view.overrideText;
+							} else if (view.fluidName == null) {
+								// when do we reach here?
+								text = NarratableComponent.attach(IThemeHelper.get().info(view.current), view.current);
+							} else {
+								Component fluidAmount;
+								Component fluidName = IThemeHelper.get().info(IDisplayHelper.get().stripColor(view.fluidName));
+								if (accessor.showDetails() || style != IWailaConfig.HandlerDisplayStyle.PROGRESS_BAR) {
+									fluidAmount = new NarratableComponent(
+											Component.translatable(
+													"jade.fluid.with_capacity",
+													IThemeHelper.get().info(view.current),
+													view.max), () -> JadeClient.formatString(
+											"narration.jade.withCapacity",
+											NarratableComponent.getNarration(view.current),
+											NarratableComponent.getNarration(view.max)));
+								} else {
+									fluidAmount = NarratableComponent.attach(IThemeHelper.get().info(view.current), view.current);
+								}
+								String key = style == IWailaConfig.HandlerDisplayStyle.PLAIN_TEXT ? "jade.fluid.text" : "jade.fluid";
+								text = NarratableComponent.translatable(key, fluidName, fluidAmount);
+							}
+
+							switch (style) {
+								case PLAIN_TEXT -> theTooltip.add(text);
+								case ICON -> {
+									theTooltip.add(JadeUI.smallItem(new ItemStack(Items.BUCKET)));
+									theTooltip.append(text);
+								}
+								case PROGRESS_BAR -> {
+									ProgressView progressView = new ProgressView(
+											ProgressView.Part.of(view.ratio, view.overlay),
+											text,
+											JadeUI.progressStyle(),
+											BoxStyle.nestedBox());
+									theTooltip.add(JadeUI.progress(progressView));
+								}
+							}
+						}
+						if (group.extraData != null) {
+							int extra = group.extraData.getIntOr("+", 0);
+							if (extra > 0) {
+								theTooltip.add(Component.translatable("jade.fluid.more_tanks", extra));
+							}
+						}
+					});
+		}
 	}
 
 	@Override
@@ -65,73 +134,6 @@ public abstract class FluidStorageProvider<T extends Accessor<?>> implements ICo
 	@Override
 	public int getDefaultPriority() {
 		return TooltipPosition.BODY + 1000;
-	}
-
-	@Override
-	public void appendTooltip(ITooltip tooltip, T accessor, IPluginConfig config) {
-		if ((!accessor.showDetails() && config.get(JadeIds.UNIVERSAL_FLUID_STORAGE_DETAILED))) {
-			return;
-		}
-
-		List<ClientViewGroup<FluidView>> groups = ClientProxy.mapToClientGroups(
-				accessor,
-				JadeIds.UNIVERSAL_FLUID_STORAGE,
-				STREAM_CODEC,
-				WailaClientRegistration.instance().fluidStorageProviders::get,
-				tooltip);
-		if (groups == null || groups.isEmpty()) {
-			return;
-		}
-
-		IElementHelper helper = IElementHelper.get();
-		boolean renderGroup = groups.size() > 1 || groups.getFirst().shouldRenderGroup();
-		ClientViewGroup.tooltip(
-				tooltip, groups, renderGroup, (theTooltip, group) -> {
-					if (renderGroup) {
-						group.renderHeader(theTooltip);
-					}
-					for (var view : group.views) {
-						Component text;
-						IWailaConfig.HandlerDisplayStyle style = config.getEnum(JadeIds.UNIVERSAL_FLUID_STORAGE_STYLE);
-
-						if (view.overrideText != null) {
-							text = view.overrideText;
-						} else if (view.fluidName == null) {
-							// when do we reach here?
-							text = IThemeHelper.get().info(view.current);
-						} else {
-							Component fluidName = IThemeHelper.get().info(IDisplayHelper.get().stripColor(view.fluidName));
-							if (accessor.showDetails() || style != IWailaConfig.HandlerDisplayStyle.PROGRESS_BAR) {
-								text = Component.translatable(
-										"jade.fluid.with_capacity",
-										IThemeHelper.get().info(view.current),
-										view.max);
-							} else {
-								text = IThemeHelper.get().info(view.current);
-							}
-							String key = style == IWailaConfig.HandlerDisplayStyle.PLAIN_TEXT ? "jade.fluid.text" : "jade.fluid";
-							text = Component.translatable(key, fluidName, text);
-						}
-
-						switch (style) {
-							case PLAIN_TEXT -> theTooltip.add(text);
-							case ICON -> {
-								theTooltip.add(helper.smallItem(new ItemStack(Items.BUCKET)));
-								theTooltip.append(text);
-							}
-							case PROGRESS_BAR -> {
-								ProgressStyle progressStyle = helper.progressStyle().overlay(view.overlay);
-								theTooltip.add(helper.progress(view.ratio, text, progressStyle, BoxStyle.getNestedBox(), true));
-							}
-						}
-					}
-					if (group.extraData != null) {
-						int extra = group.extraData.getIntOr("+", 0);
-						if (extra > 0) {
-							theTooltip.add(Component.translatable("jade.fluid.more_tanks", extra));
-						}
-					}
-				});
 	}
 
 	@Override
@@ -152,8 +154,8 @@ public abstract class FluidStorageProvider<T extends Accessor<?>> implements ICo
 		return WailaCommonRegistration.instance().fluidStorageProviders.hitsAny(accessor, IServerExtensionProvider::shouldRequestData);
 	}
 
-	public enum Extension implements IServerExtensionProvider<FluidView.Data>, IClientExtensionProvider<FluidView.Data, FluidView> {
-		INSTANCE;
+	public static class Extension implements IServerExtensionProvider<FluidView.Data>, IClientExtensionProvider<FluidView.Data, FluidView> {
+		public static final Extension INSTANCE = new Extension();
 
 		@Override
 		public ResourceLocation getUid() {

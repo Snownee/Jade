@@ -44,11 +44,11 @@ public class AccessibilityPlugin implements IWailaPlugin {
 		registration.addEntityVariantMapping(EntityType.VILLAGER, null);
 	}
 
-	public static void replaceTitle(ITooltip tooltip, String objectName, String key) {
-		String message = tooltip.getMessage(JadeIds.CORE_OBJECT_NAME);
+	public static void replaceTitle(ITooltip tooltip, String originalName, String key) {
+		String message = tooltip.getString(JadeIds.CORE_OBJECT_NAME);
 		key = "jade.access." + key;
 		if (!message.isBlank() && I18n.exists(key)) {
-			var nameClass = JadeLanguages.INSTANCE.getNameClass(objectName);
+			var nameClass = JadeLanguages.INSTANCE.getNameClass(originalName);
 			var title = IThemeHelper.get().title(JadeClient.format(key, message, nameClass));
 			tooltip.replace(JadeIds.CORE_OBJECT_NAME, title);
 		}

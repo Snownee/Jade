@@ -1,64 +1,58 @@
 package snownee.jade.test;
 
 import java.util.List;
+import java.util.Optional;
 
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
-import net.minecraft.world.phys.Vec2;
+import snownee.jade.Jade;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
-import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
-import snownee.jade.api.ui.IElement;
-import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.ui.Element;
+import snownee.jade.api.ui.JadeUI;
+import snownee.jade.gui.LayoutWithPadding;
 
-public enum ExampleComponentProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
-
-	INSTANCE;
+public class ExampleComponentProvider implements IBlockComponentProvider {
+	public static final ExampleComponentProvider INSTANCE = new ExampleComponentProvider();
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		if (accessor.getServerData().contains("Fuel")) {
-			IElement icon = IElementHelper.get().item(new ItemStack(Items.CLOCK), 0.5f).size(new Vec2(10, 10)).translate(new Vec2(0, -1));
-			icon.message(null);
+		tooltip.add(Button.builder(
+				CommonComponents.GUI_DONE, $ -> {
+					Jade.LOGGER.info("Button clicked in ExampleComponentProvider");
+				}).build());
+		tooltip.add(new LayoutWithPadding(JadeUI.item(new ItemStack(Items.DIAMOND)), 2, 2, 2, 2));
+		Optional<Integer> fuel = ExampleDataProvider.INSTANCE.decodeFromData(accessor);
+		if (fuel.isPresent()) {
+			Element icon = JadeUI.smallItem(new ItemStack(Items.CLOCK));
 			tooltip.add(icon);
-			tooltip.append(Component.translatable("mymod.fuel", accessor.getServerData().getInt("Fuel")));
+			tooltip.append(Component.translatable("mymod.fuel", fuel.orElse(0)));
 		}
 
 		Component test1 = Component.literal("1");
 		Component test2 = Component.literal("2");
 		Component test3 = Component.literal("3");
-		tooltip.add(IElementHelper.get().text(test2).align(IElement.Align.RIGHT));
-		tooltip.add(IElementHelper.get().text(test3).align(IElement.Align.CENTER));
-		tooltip.add(IElementHelper.get().text(test1).align(IElement.Align.LEFT));
-		tooltip.append(IElementHelper.get().text(test1).align(IElement.Align.RIGHT));
-		tooltip.append(IElementHelper.get().text(test1).align(IElement.Align.CENTER));
-		tooltip.append(IElementHelper.get().text(test2).align(IElement.Align.CENTER));
-		tooltip.append(IElementHelper.get().text(test2).align(IElement.Align.RIGHT));
-		tooltip.append(IElementHelper.get().text(test3).align(IElement.Align.RIGHT));
-		tooltip.append(IElementHelper.get().text(test2).align(IElement.Align.LEFT));
-		tooltip.append(IElementHelper.get().text(test3).align(IElement.Align.LEFT));
-		tooltip.append(IElementHelper.get().text(test3).align(IElement.Align.CENTER));
+		tooltip.add(JadeUI.text(test1).flexGrow(1));
+		tooltip.append(JadeUI.text(test2).flexGrow(1));
+		tooltip.append(JadeUI.text(test3).flexGrow(2));
 
-		IElement text = IElementHelper.get().text(Component.literal("test"));
-		tooltip.replace(JadeIds.CORE_OBJECT_NAME, $ -> List.of(List.of(text), List.of(text), List.of(text)));
-	}
+		tooltip.add(JadeUI.text(test1).flexGrow(1));
+		tooltip.append(JadeUI.text(test2).flexGrow(0));
+		tooltip.append(JadeUI.text(test3).flexGrow(2));
 
-	@Override
-	public void appendServerData(CompoundTag data, BlockAccessor accessor) {
-		AbstractFurnaceBlockEntity furnace = (AbstractFurnaceBlockEntity) accessor.getBlockEntity();
-		data.putInt("Fuel", furnace.litTimeRemaining);
+		Element text = JadeUI.text(Component.literal("test"));
+		tooltip.replace(JadeIds.CORE_OBJECT_NAME, $ -> List.of(List.of(text)));
 	}
 
 	@Override
 	public ResourceLocation getUid() {
 		return ExamplePlugin.UID_TEST_FUEL;
 	}
-
 }

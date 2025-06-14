@@ -54,7 +54,7 @@ public class ProfileConfigScreen extends BaseOptionsScreen {
 		OptionsList options = new OptionsList(this, minecraft, width - 120, height - 32, 0, 26, IWailaConfig.get()::save);
 
 		WailaConfig.Root root = Jade.rootConfig();
-		options.title("general");
+		options.title("profiles");
 		enabledEntry = options.choices(
 				"enable_profiles", root::isEnableProfiles, value -> {
 					Jade.rootConfig().setEnableProfiles(value);

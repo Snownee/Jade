@@ -29,29 +29,12 @@ public class BoxStyle implements Cloneable {
 					JadeCodecs.intArrayCodec(4, Codec.INT).optionalFieldOf("padding").forGetter($ -> Optional.ofNullable($.padding)),
 					Codec.INT.optionalFieldOf("borderWidth", 1).forGetter($ -> $.borderWidth),
 					ResourceLocation.CODEC.optionalFieldOf("sprite").forGetter($ -> Optional.ofNullable($.sprite)),
-					ResourceLocation.CODEC.optionalFieldOf("withIconSprite").forGetter($ -> Optional.ofNullable($.withIconSprite)))
+					ResourceLocation.CODEC.optionalFieldOf("withIconSprite").forGetter($ -> Optional.ofNullable($.withIconSprite)),
+					Codec.BOOL.optionalFieldOf("tooltip", false).forGetter($ -> $.tooltip))
 			.apply(i, BoxStyle::new));
-	private static final BoxStyle TRANSPARENT = new BoxStyle(
-			Optional.empty(),
-			ColorPalette.DEFAULT,
-			Optional.empty(),
-			0,
-			Optional.empty(),
-			Optional.empty());
-	public static final BoxStyle DEFAULT_NESTED_BOX = new BoxStyle(
-			Optional.empty(),
-			ColorPalette.DEFAULT,
-			Optional.empty(),
-			1,
-			Optional.of(JadeIds.JADE("nested_box")),
-			Optional.empty());
-	public static final BoxStyle DEFAULT_VIEW_GROUP = new BoxStyle(
-			Optional.empty(),
-			ColorPalette.DEFAULT,
-			Optional.of(new int[]{2, 2, 2, 2}),
-			0,
-			Optional.of(JadeIds.JADE("view_group")),
-			Optional.empty());
+	private static final BoxStyle TRANSPARENT = sprite(null, null, 0);
+	public static final BoxStyle DEFAULT_NESTED_BOX = sprite(JadeIds.JADE("nested_box"), null);
+	public static final BoxStyle DEFAULT_VIEW_GROUP = sprite(JadeIds.JADE("view_group"), new int[]{2, 2, 2, 2}, 0);
 	public final float[] boxProgressOffset;
 	public final int[] padding;
 	public int borderWidth;
@@ -60,6 +43,7 @@ public class BoxStyle implements Cloneable {
 	public ResourceLocation sprite;
 	@Nullable
 	public ResourceLocation withIconSprite;
+	public boolean tooltip;
 
 	public BoxStyle(
 			Optional<float[]> boxProgressOffset,
@@ -67,39 +51,57 @@ public class BoxStyle implements Cloneable {
 			Optional<int[]> padding,
 			int borderWidth,
 			Optional<ResourceLocation> sprite,
-			Optional<ResourceLocation> withIconSprite) {
+			Optional<ResourceLocation> withIconSprite,
+			boolean tooltip) {
 		this.boxProgressOffset = boxProgressOffset.orElse(null);
 		this.boxProgressColors = boxProgressColors;
 		this.padding = padding.orElseGet(DEFAULT_PADDING::clone);
 		this.borderWidth = borderWidth;
 		this.sprite = sprite.orElse(null);
 		this.withIconSprite = withIconSprite.orElse(null);
+		this.tooltip = tooltip;
 	}
 
-	public static BoxStyle getNestedBox() {
+	public static BoxStyle nestedBox() {
 		return IThemeHelper.get().theme().nestedBoxStyle;
 	}
 
-	public static BoxStyle getViewGroup() {
+	public static BoxStyle viewGroup() {
 		return IThemeHelper.get().theme().viewGroupStyle;
 	}
 
-	public static BoxStyle getTransparent() {
+	public static BoxStyle transparent() {
 		return BoxStyle.TRANSPARENT;
 	}
 
-	public static BoxStyle getSprite(ResourceLocation sprite, @Nullable int[] padding) {
-		return getSprite(sprite, padding, 1);
+	public static BoxStyle tooltip(@Nullable ResourceLocation sprite, @Nullable int[] padding) {
+		return tooltip(sprite, padding, 1);
 	}
 
-	public static BoxStyle getSprite(ResourceLocation sprite, @Nullable int[] padding, int borderWidth) {
+	public static BoxStyle tooltip(@Nullable ResourceLocation sprite, @Nullable int[] padding, int borderWidth) {
 		return new BoxStyle(
 				Optional.empty(),
 				ColorPalette.DEFAULT,
 				Optional.ofNullable(padding),
 				borderWidth,
 				Optional.ofNullable(sprite),
-				Optional.empty());
+				Optional.empty(),
+				true);
+	}
+
+	public static BoxStyle sprite(@Nullable ResourceLocation sprite, @Nullable int[] padding) {
+		return sprite(sprite, padding, 1);
+	}
+
+	public static BoxStyle sprite(@Nullable ResourceLocation sprite, @Nullable int[] padding, int borderWidth) {
+		return new BoxStyle(
+				Optional.empty(),
+				ColorPalette.DEFAULT,
+				Optional.ofNullable(padding),
+				borderWidth,
+				Optional.ofNullable(sprite),
+				Optional.empty(),
+				false);
 	}
 
 	public float boxProgressOffset(ScreenDirection dir) {
@@ -123,26 +125,37 @@ public class BoxStyle implements Cloneable {
 		int roundedW = Math.round(w);
 		int roundedH = Math.round(h);
 		int col = ARGB.white(alpha);
-		roundedX = roundedX - 9;
-		roundedY = roundedY - 9;
-		roundedW = roundedW + 9 + 9;
-		roundedH = roundedH + 9 + 9;
-		guiGraphics.blitSprite(
-				RenderPipelines.GUI_TEXTURED,
-				TooltipRenderUtil.getBackgroundSprite(texture),
-				roundedX,
-				roundedY,
-				roundedW,
-				roundedH,
-				col);
-		guiGraphics.blitSprite(
-				RenderPipelines.GUI_TEXTURED,
-				TooltipRenderUtil.getFrameSprite(texture),
-				roundedX,
-				roundedY,
-				roundedW,
-				roundedH,
-				col);
+		if (tooltip) {
+			roundedX = roundedX - 9;
+			roundedY = roundedY - 9;
+			roundedW = roundedW + 9 + 9;
+			roundedH = roundedH + 9 + 9;
+			guiGraphics.blitSprite(
+					RenderPipelines.GUI_TEXTURED,
+					TooltipRenderUtil.getBackgroundSprite(texture),
+					roundedX,
+					roundedY,
+					roundedW,
+					roundedH,
+					col);
+			guiGraphics.blitSprite(
+					RenderPipelines.GUI_TEXTURED,
+					TooltipRenderUtil.getFrameSprite(texture),
+					roundedX,
+					roundedY,
+					roundedW,
+					roundedH,
+					col);
+		} else {
+			guiGraphics.blitSprite(
+					RenderPipelines.GUI_TEXTURED,
+					texture,
+					roundedX,
+					roundedY,
+					roundedW,
+					roundedH,
+					col);
+		}
 	}
 
 	public int borderWidth() {
@@ -157,7 +170,8 @@ public class BoxStyle implements Cloneable {
 				JadeCodecs.nullableClone(padding),
 				borderWidth,
 				Optional.ofNullable(sprite),
-				Optional.ofNullable(withIconSprite));
+				Optional.ofNullable(withIconSprite),
+				tooltip);
 	}
 
 //	public static class GradientBorder extends BoxStyle {

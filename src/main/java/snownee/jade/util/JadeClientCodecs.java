@@ -1,5 +1,6 @@
 package snownee.jade.util;
 
+import java.util.Map;
 import java.util.Optional;
 
 import com.mojang.serialization.Codec;
@@ -9,6 +10,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ExtraCodecs;
+import snownee.jade.api.theme.SneakyDetails;
 import snownee.jade.api.theme.TextSetting;
 import snownee.jade.api.theme.Theme;
 import snownee.jade.api.ui.BoxStyle;
@@ -32,7 +34,12 @@ public class JadeClientCodecs {
 			Codec.floatRange(0, 1).optionalFieldOf("changeOpacity", 0F).forGetter($ -> $.changeOpacity),
 			Codec.BOOL.optionalFieldOf("lightColorScheme", false).forGetter($ -> $.lightColorScheme),
 			ResourceLocation.CODEC.optionalFieldOf("iconSlotSprite").forGetter($ -> Optional.ofNullable($.iconSlotSprite)),
-			Codec.INT.optionalFieldOf("iconSlotInflation", 0).forGetter($ -> $.iconSlotInflation)
+			Codec.INT.optionalFieldOf("iconSlotInflation", 0).forGetter($ -> $.iconSlotInflation),
+			SneakyDetails.CODEC.optionalFieldOf("sneakyDetails", SneakyDetails.DEFAULT).forGetter($ -> $.sneakyDetails),
+			ColorPalette.CODEC.optionalFieldOf("progressColors", ColorPalette.DEFAULT).forGetter($ -> $.progressColors),
+			Codec.unboundedMap(ResourceLocation.CODEC, ResourceLocation.CODEC)
+					.optionalFieldOf("spriteMapping", Map.of())
+					.forGetter($ -> $.spriteMapping)
 	).apply(i, Theme::new));
 
 	public record ThemeHolder(int version, boolean autoEnable, Theme theme) {}

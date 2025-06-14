@@ -4,7 +4,7 @@ import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.nbt.CompoundTag;
 import snownee.jade.api.config.IPluginConfig;
-import snownee.jade.api.ui.IElement;
+import snownee.jade.api.ui.Element;
 
 /**
  * Callback class interface used to provide Block/BlockEntity tooltip information to Waila.<br>
@@ -28,10 +28,9 @@ public interface IComponentProvider<T extends Accessor<?>> extends IToggleablePr
 	 * @param accessor    Contains most of the relevant information about the current environment.
 	 * @param config      Current configuration of Waila.
 	 * @param currentIcon Current icon to show
-	 * @return {@code null} if override is not required, an {@link IElement} otherwise.
+	 * @return {@code null} if override is not required, an {@link Element} otherwise.
 	 */
-	@Nullable
-	default IElement getIcon(T accessor, IPluginConfig config, IElement currentIcon) {
+	default @Nullable Element getIcon(T accessor, IPluginConfig config, Element currentIcon) {
 		return null;
 	}
 

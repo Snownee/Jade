@@ -14,11 +14,10 @@ import snownee.jade.api.IJadeProvider;
 import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IWailaConfig;
-import snownee.jade.api.ui.IElement;
-import snownee.jade.impl.ui.ElementHelper;
-import snownee.jade.impl.ui.ItemStackElement;
+import snownee.jade.api.ui.Element;
+import snownee.jade.api.ui.JadeUI;
+import snownee.jade.impl.ui.JadeUIInternal;
 import snownee.jade.network.RequestBlockPacket;
-import snownee.jade.overlay.RayTracing;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.WailaExceptionHandler;
 
@@ -46,35 +45,35 @@ public class BlockAccessorClientHandler implements AccessorClientHandler<BlockAc
 	}
 
 	@Override
-	public IElement getIcon(BlockAccessor accessor) {
+	public Element getIcon(BlockAccessor accessor) {
 		BlockState blockState = accessor.getBlockState();
 		Block block = blockState.getBlock();
 		if (blockState.isAir()) {
 			return null;
 		}
-		IElement icon = null;
+		Element icon = null;
 
 		if (accessor.isFakeBlock()) {
-			icon = ItemStackElement.of(accessor.getFakeBlock());
+			icon = JadeUI.item(accessor.getFakeBlock());
 		} else {
 			ItemStack pick = accessor.getPickedResult();
 			if (!pick.isEmpty()) {
-				icon = ItemStackElement.of(pick);
+				icon = JadeUI.item(pick);
 			}
 		}
 
-		if (RayTracing.isEmptyElement(icon) && block.asItem() != Items.AIR) {
-			icon = ItemStackElement.of(new ItemStack(block));
+		if (JadeUI.isEmptyElement(icon) && block.asItem() != Items.AIR) {
+			icon = JadeUI.item(new ItemStack(block));
 		}
 
-		if (RayTracing.isEmptyElement(icon) && block instanceof LiquidBlock) {
+		if (JadeUI.isEmptyElement(icon) && block instanceof LiquidBlock) {
 			icon = ClientProxy.elementFromLiquid(blockState);
 		}
 
 		for (var provider : WailaClientRegistration.instance().getBlockIconProviders(block, this::isEnabled)) {
 			try {
-				IElement element = provider.getIcon(accessor, IWailaConfig.get().plugin(), icon);
-				if (!RayTracing.isEmptyElement(element)) {
+				Element element = provider.getIcon(accessor, IWailaConfig.get().plugin(), icon);
+				if (!JadeUI.isEmptyElement(element)) {
 					icon = element;
 				}
 			} catch (Throwable e) {
@@ -89,12 +88,12 @@ public class BlockAccessorClientHandler implements AccessorClientHandler<BlockAc
 		for (var provider : WailaClientRegistration.instance().getBlockProviders(accessor.getBlock(), this::isEnabled)) {
 			ITooltip tooltip = tooltipProvider.apply(provider);
 			try {
-				ElementHelper.INSTANCE.setCurrentUid(provider.getUid());
+				JadeUIInternal.setContextUid(provider.getUid());
 				provider.appendTooltip(tooltip, accessor, IWailaConfig.get().plugin());
 			} catch (Throwable e) {
 				WailaExceptionHandler.handleErr(e, provider, tooltip::add);
 			} finally {
-				ElementHelper.INSTANCE.setCurrentUid(null);
+				JadeUIInternal.setContextUid(null);
 			}
 		}
 	}

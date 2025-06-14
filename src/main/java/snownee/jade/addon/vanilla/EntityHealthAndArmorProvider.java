@@ -13,20 +13,19 @@ import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
-import snownee.jade.api.ui.IElement;
-import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.ui.Element;
+import snownee.jade.api.ui.JadeUI;
 import snownee.jade.impl.ui.ArmorElement;
 import snownee.jade.impl.ui.HealthElement;
 
-public enum EntityHealthAndArmorProvider implements IEntityComponentProvider {
-
-	INSTANCE;
+public class EntityHealthAndArmorProvider implements IEntityComponentProvider {
+	public static final EntityHealthAndArmorProvider INSTANCE = new EntityHealthAndArmorProvider();
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		boolean healthText = false;
 		boolean armorText = false;
-		List<IElement> elements = Lists.newArrayListWithExpectedSize(2);
+		List<Element> elements = Lists.newArrayListWithExpectedSize(2);
 		LivingEntity living = (LivingEntity) accessor.getEntity();
 		if (config.get(JadeIds.MC_ENTITY_HEALTH) && isHealthVisible(living)) {
 			float health = living.getHealth();
@@ -42,7 +41,7 @@ public enum EntityHealthAndArmorProvider implements IEntityComponentProvider {
 		}
 		if (healthText && armorText) {
 			tooltip.add(elements.get(0));
-			tooltip.append(IElementHelper.get().spacer(4, 0));
+			tooltip.append(JadeUI.spacer(4, 0));
 			tooltip.append(elements.get(1));
 		} else {
 			elements.forEach(tooltip::add);

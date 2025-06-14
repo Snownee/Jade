@@ -17,6 +17,7 @@ import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.HumanoidArm;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
@@ -454,7 +455,7 @@ public class WailaConfig implements IWailaConfig {
 	public static class Overlay implements IWailaConfig.Overlay {
 
 		public static final Codec<Overlay> CODEC = RecordCodecBuilder.create(i -> i.group(
-						ResourceLocation.CODEC.fieldOf("activeTheme").orElse(Theme.DEFAULT_THEME_ID).forGetter($ -> $.activeTheme),
+						ResourceLocation.CODEC.fieldOf("activeTheme").orElse(JadeIds.DEFAULT_THEME).forGetter($ -> $.activeTheme),
 						Codec.FLOAT.fieldOf("overlayPosX").orElse(0.5F).forGetter(Overlay::getOverlayPosX),
 						Codec.FLOAT.fieldOf("overlayPosY").orElse(1.0F).forGetter(Overlay::getOverlayPosY),
 						Codec.floatRange(0.2F, 2F).fieldOf("overlayScale").orElse(1.0F).forGetter(Overlay::getOverlayScale),
@@ -580,7 +581,12 @@ public class WailaConfig implements IWailaConfig {
 
 		@Override
 		public void applyTheme(ResourceLocation id) {
-			activeThemeInstance = IThemeHelper.get().getTheme(id);
+			try {
+				activeThemeInstance = IThemeHelper.get().getTheme(id);
+			} catch (Exception e) {
+				Jade.LOGGER.error("Failed to apply theme", e);
+				activeThemeInstance = IThemeHelper.get().getTheme(JadeIds.DEFAULT_THEME);
+			}
 			activeTheme = activeThemeInstance.id;
 		}
 

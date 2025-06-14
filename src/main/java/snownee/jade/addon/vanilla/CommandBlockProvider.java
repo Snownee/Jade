@@ -15,18 +15,8 @@ import snownee.jade.api.JadeIds;
 import snownee.jade.api.StreamServerDataProvider;
 import snownee.jade.api.config.IPluginConfig;
 
-public enum CommandBlockProvider implements IBlockComponentProvider, StreamServerDataProvider<BlockAccessor, String> {
-
-	INSTANCE;
-
-	@Override
-	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		String command = decodeFromData(accessor).orElse("");
-		if (command.isBlank()) {
-			return;
-		}
-		tooltip.add(Component.literal("> " + command));
-	}
+public class CommandBlockProvider implements StreamServerDataProvider<BlockAccessor, String> {
+	public static final CommandBlockProvider INSTANCE = new CommandBlockProvider();
 
 	@Override
 	@Nullable
@@ -56,4 +46,21 @@ public enum CommandBlockProvider implements IBlockComponentProvider, StreamServe
 		return JadeIds.MC_COMMAND_BLOCK;
 	}
 
+	public static class Client implements IBlockComponentProvider {
+		public static final Client INSTANCE = new Client();
+
+		@Override
+		public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
+			String command = CommandBlockProvider.INSTANCE.decodeFromData(accessor).orElse("");
+			if (command.isBlank()) {
+				return;
+			}
+			tooltip.add(Component.literal("> " + command));
+		}
+
+		@Override
+		public ResourceLocation getUid() {
+			return JadeIds.MC_COMMAND_BLOCK;
+		}
+	}
 }

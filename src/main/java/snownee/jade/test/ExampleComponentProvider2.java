@@ -7,9 +7,8 @@ import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IPluginConfig;
 
-public enum ExampleComponentProvider2 implements IBlockComponentProvider {
-
-	INSTANCE;
+public class ExampleComponentProvider2 implements IBlockComponentProvider {
+	public static final ExampleComponentProvider2 INSTANCE = new ExampleComponentProvider2();
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
@@ -20,5 +19,4 @@ public enum ExampleComponentProvider2 implements IBlockComponentProvider {
 	public ResourceLocation getUid() {
 		return ExamplePlugin.UID_TEST_FUEL;
 	}
-
 }

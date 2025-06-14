@@ -10,9 +10,8 @@ import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.IDisplayHelper;
 
-public enum ItemFrameProvider implements IEntityComponentProvider {
-
-	INSTANCE;
+public class ItemFrameProvider implements IEntityComponentProvider {
+	public static final ItemFrameProvider INSTANCE = new ItemFrameProvider();
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
