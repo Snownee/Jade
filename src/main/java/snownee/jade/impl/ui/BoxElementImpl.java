@@ -399,11 +399,11 @@ public class BoxElementImpl extends BoxElement {
 			chase(animation, Rect2f::getY, src::setY, progress);
 			chase(animation, Rect2f::getWidth, it -> {
 				src.setWidth(it);
-				setWidth((int) it);
+				setWidth((int) (it / animation.scale));
 			}, progress);
 			chase(animation, Rect2f::getHeight, it -> {
 				src.setHeight(it);
-				setHeight((int) it);
+				setHeight((int) (it / animation.scale));
 			}, progress);
 		}
 	}
