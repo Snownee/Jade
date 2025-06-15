@@ -437,6 +437,7 @@
 	"jade.access.entity.pose.1001": "Rolling Up",
 	"jade.access.entity.passengers": "Passengers: {0}",
 	"jade.access.entity.leashed_to": "Leashed to: %s",
+	"jade.access.entity.is_leashing": "is Leashing: %s",
 	"jade.access.held_item.main": "Main Hand: %s",
 	"jade.access.held_item.off": "Off Hand: %s",
 	"toast.jade.toggle_hint.1": "Jade is now closed",

@@ -14,6 +14,7 @@ import net.minecraft.client.resources.metadata.gui.GuiSpriteScaling;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.api.config.IWailaConfig;
+import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.Orientation;
 import snownee.jade.api.ui.Rect2f;
@@ -47,6 +48,8 @@ public class SpriteElement extends ProgressOverlayElement {
 	@Override
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
 		if (tiledOrientation != null) {
+			GuiSpriteManager guiSprites = Minecraft.getInstance().getGuiSprites();
+			TextureAtlasSprite textureAtlasSprite = guiSprites.getSprite(IThemeHelper.get().theme().mapSprite(sprite));
 			Rect2f rect;
 			if (floatingRect == null) {
 				rect = Rect2f.of(this);
@@ -64,19 +67,26 @@ public class SpriteElement extends ProgressOverlayElement {
 				float tileSize = tileAxisEnd - tileAxisStart;
 				tiledOrientation.setPosition(rect, axisPosition + tileAxisStart, crossAxisPosition);
 				tiledOrientation.setSize(rect, tileSize, crossAxisLength);
+				float tileWidth = oWidth;
+				float tileHeight = oHeight;
+				if (tiledOrientation == Orientation.HORIZONTAL) {
+					tileWidth = tileSize;
+				} else {
+					tileHeight = tileSize;
+				}
 				DisplayHelper.INSTANCE.blitSprite(
 						graphics,
 						renderPipeline,
-						sprite,
+						textureAtlasSprite,
 						oWidth,
 						oHeight,
 						0,
 						0,
+						tileWidth,
+						tileHeight,
 						rect.getX(),
 						rect.getY(),
-						rect.getWidth(),
-						rect.getHeight(),
-						color);
+						rect.getWidth(), rect.getHeight(), color);
 				tileAxisStart += tileAxisStep;
 			}
 			return;

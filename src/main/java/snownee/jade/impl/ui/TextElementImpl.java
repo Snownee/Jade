@@ -2,16 +2,21 @@ package snownee.jade.impl.ui;
 
 import org.joml.Matrix3x2fStack;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
+import net.minecraft.network.chat.Style;
+import net.minecraft.util.Mth;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.NarratableComponent;
 import snownee.jade.api.ui.TextElement;
 import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.util.JadeLanguages;
 
-public class TextElementImpl extends TextElement {
+public class TextElementImpl extends TextElement implements GuiEventListener {
 
 	protected final FormattedText text;
 	protected float scale = 1;
@@ -37,10 +42,7 @@ public class TextElementImpl extends TextElement {
 
 	@Override
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-		int x = getX();
-		if (JadeLanguages.INSTANCE.isRTL()) {
-			x += width - textWidth;
-		}
+		int x = textLeft();
 		if (scale == 1) {
 			DisplayHelper.INSTANCE.drawText(graphics, text, x, getY(), IThemeHelper.get().getNormalColor());
 		} else {
@@ -50,6 +52,11 @@ public class TextElementImpl extends TextElement {
 			matrixStack.scale(scale);
 			DisplayHelper.INSTANCE.drawText(graphics, text, 0, 0, IThemeHelper.get().getNormalColor());
 			matrixStack.popMatrix();
+		}
+		if (mouseX != -1 && getRectangle().containsPoint(mouseX, mouseY)) {
+			//TODO scale
+			Style style = DisplayHelper.font().getSplitter().componentStyleAtWidth(text, Mth.floor(mouseX - x));
+			graphics.renderComponentHoverEffect(DisplayHelper.font(), style, mouseX, mouseY);
 		}
 	}
 
@@ -67,5 +74,39 @@ public class TextElementImpl extends TextElement {
 	public void setFreeSpace(int width, int height) {
 		this.width = width;
 		this.height = height;
+	}
+
+	@Override
+	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+		Screen screen = Minecraft.getInstance().screen;
+		if (screen != null) {
+			//TODO scale
+			Style style = DisplayHelper.font().getSplitter().componentStyleAtWidth(text, Mth.floor(mouseX - textLeft()));
+			if (style != null) {
+				return screen.handleComponentClicked(style);
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public void setFocused(boolean bl) {}
+
+	@Override
+	public boolean isFocused() {
+		return false;
+	}
+
+	@Override
+	public boolean isMouseOver(double x, double y) {
+		return x >= textLeft() && x < textLeft() + textWidth && y >= getY() && y < getY() + height;
+	}
+
+	private int textLeft() {
+		int x = getX();
+		if (JadeLanguages.INSTANCE.isRTL()) {
+			x += width - textWidth;
+		}
+		return x;
 	}
 }

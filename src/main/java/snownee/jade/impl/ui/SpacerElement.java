@@ -1,19 +1,23 @@
 package snownee.jade.impl.ui;
 
+import java.util.function.Predicate;
+
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.network.chat.Component;
 import snownee.jade.JadeInternals;
 import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.ResizeableElement;
 
-public class SpacerElement extends ResizeableElement {
+public class SpacerElement extends ResizeableElement implements GuiEventListener {
 	private LayoutElement wrapped;
 	private int wrappedOffsetX;
 	private int wrappedOffsetY;
+	private @Nullable Predicate<LayoutElement> onClick;
 
 	public SpacerElement(int width, int height) {
 		this.width = width;
@@ -89,5 +93,26 @@ public class SpacerElement extends ResizeableElement {
 		if (wrapped != null) {
 			wrapped.setY(y + wrappedOffsetY);
 		}
+	}
+
+	@Override
+	public boolean isMouseOver(double x, double y) {
+		return wrapped != null && wrapped.getRectangle().containsPoint((int) x, (int) y);
+	}
+
+	@Override
+	public boolean mouseClicked(double x, double y, int button) {
+		if (button == 0 && onClick != null && isMouseOver(x, y)) {
+			return onClick.test(wrapped);
+		}
+		return false;
+	}
+
+	@Override
+	public void setFocused(boolean bl) {}
+
+	@Override
+	public boolean isFocused() {
+		return false;
 	}
 }

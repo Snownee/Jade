@@ -4,8 +4,11 @@ import java.util.List;
 import java.util.Optional;
 
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -36,9 +39,11 @@ public class ExampleComponentProvider implements IBlockComponentProvider {
 			tooltip.append(Component.translatable("mymod.fuel", fuel.orElse(0)));
 		}
 
-		Component test1 = Component.literal("1");
-		Component test2 = Component.literal("2");
-		Component test3 = Component.literal("3");
+		Component test1 = Component.literal("1").withStyle(Style.EMPTY.withHoverEvent(new HoverEvent.ShowText(Component.literal("1"))));
+		Component test2 = Component.literal("2")
+				.withStyle(Style.EMPTY.withHoverEvent(new HoverEvent.ShowItem(Items.DIAMOND.getDefaultInstance())));
+		Component test3 = Component.literal("3")
+				.withStyle(Style.EMPTY.withClickEvent(new ClickEvent.CopyToClipboard("test")));
 		tooltip.add(JadeUI.text(test1).flexGrow(1));
 		tooltip.append(JadeUI.text(test2).flexGrow(1));
 		tooltip.append(JadeUI.text(test3).flexGrow(2));

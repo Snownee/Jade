@@ -1,7 +1,10 @@
 package snownee.jade.addon.access;
 
+import java.util.List;
+
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Leashable;
@@ -41,15 +44,26 @@ public class EntityDetailsBodyProvider implements IEntityComponentProvider {
 		if (passengers > 0) {
 			tooltip.add(JadeClient.format("jade.access.entity.passengers", passengers));
 		}
-		if (entity instanceof Leashable leashable && leashable.isLeashed()) {
-			Entity holder = leashable.getLeashHolder();
-			if (holder instanceof LeashFenceKnotEntity knot) {
-				TextElement text = DistanceProvider.xyz(knot.blockPosition());
-				tooltip.add(JadeUI
-						.text(Component.translatable("jade.access.entity.leashed_to", text.getString()))
-						.narration(Component.translatable("jade.access.entity.leashed_to", text.getString())));
-			} else if (holder != null) {
-				tooltip.add(Component.translatable("jade.access.entity.leashed_to", holder.getName()));
+		if (entity instanceof Leashable leashable) {
+			if (leashable.isLeashed()) {
+				Entity holder = leashable.getLeashHolder();
+				if (holder instanceof LeashFenceKnotEntity knot) {
+					TextElement text = DistanceProvider.xyz(knot.blockPosition());
+					tooltip.add(JadeUI
+							.text(Component.translatable("jade.access.entity.leashed_to", text.getString()))
+							.narration(Component.translatable("jade.access.entity.leashed_to", text.getString())));
+				} else if (holder != null) {
+					tooltip.add(Component.translatable("jade.access.entity.leashed_to", holder.getName()));
+				}
+			}
+			List<Leashable> leashables = Leashable.leashableLeashedTo(entity);
+			if (!leashables.isEmpty()) {
+				tooltip.add(Component.translatable(
+						"jade.access.entity.is_leashing",
+						ComponentUtils.formatList(
+								leashables,
+								Component.literal(ComponentUtils.DEFAULT_SEPARATOR_TEXT),
+								$ -> ((Entity) $).getDisplayName())));
 			}
 		}
 	}

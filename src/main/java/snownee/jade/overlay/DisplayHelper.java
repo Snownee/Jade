@@ -190,14 +190,16 @@ public class DisplayHelper implements IDisplayHelper {
 				});
 	}
 
-	private void blitSprite(
+	public void blitSprite(
 			GuiGraphics graphics,
 			RenderPipeline renderPipeline,
 			TextureAtlasSprite textureAtlasSprite,
-			int spriteWidth,
-			int spriteHeight,
+			float spriteWidth,
+			float spriteHeight,
 			float uStart,
 			float vStart,
+			float uSize,
+			float vSize,
 			float x,
 			float y,
 			float width,
@@ -215,9 +217,9 @@ public class DisplayHelper implements IDisplayHelper {
 				y,
 				y + height,
 				textureAtlasSprite.getU(uStart / spriteWidth),
-				textureAtlasSprite.getU((uStart + spriteWidth) / spriteWidth),
+				textureAtlasSprite.getU((uStart + uSize) / spriteWidth),
 				textureAtlasSprite.getV(vStart / spriteHeight),
-				textureAtlasSprite.getV((vStart + spriteHeight) / spriteHeight),
+				textureAtlasSprite.getV((vStart + vSize) / spriteHeight),
 				color
 		);
 	}
@@ -418,11 +420,11 @@ public class DisplayHelper implements IDisplayHelper {
 						spriteHeight,
 						uStart,
 						vStart,
+						spriteWidth,
+						spriteWidth,
 						x + i,
 						y + j,
-						u,
-						w,
-						color);
+						u, w, color);
 			}
 		}
 	}
@@ -533,7 +535,6 @@ public class DisplayHelper implements IDisplayHelper {
 			float u1,
 			float v1,
 			int color) {
-		sprite = IThemeHelper.get().theme().mapSprite(sprite);
 		GpuTextureView gpuTextureView = Minecraft.getInstance().getTextureManager().getTexture(sprite).getTextureView();
 		this.submitBlit(graphics, renderPipeline, gpuTextureView, x0, y0, x1, y1, u0, v0, u1, v1, color);
 	}
@@ -616,10 +617,10 @@ public class DisplayHelper implements IDisplayHelper {
 				spriteHeight,
 				u0,
 				v0,
+				spriteWidth,
+				spriteHeight,
 				x,
 				y,
-				width,
-				height,
-				color);
+				width, height, color);
 	}
 }
