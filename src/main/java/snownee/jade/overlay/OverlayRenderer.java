@@ -25,7 +25,6 @@ import snownee.jade.api.ui.JadeUI;
 import snownee.jade.api.ui.Rect2f;
 import snownee.jade.api.ui.TooltipAnimation;
 import snownee.jade.gui.BaseOptionsScreen;
-import snownee.jade.gui.PinScreen;
 import snownee.jade.gui.PreviewOptionsScreen;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.Tooltip;
@@ -173,7 +172,7 @@ public class OverlayRenderer {
 		int mouseX = -1;
 		int mouseY = -1;
 		Minecraft mc = Minecraft.getInstance();
-		if (mc.screen instanceof PinScreen) {
+		if (JadeUI.isPinned()) {
 			Window window = mc.getWindow();
 			mouseX = (int) mc.mouseHandler.getScaledXPos(window);
 			mouseY = (int) mc.mouseHandler.getScaledYPos(window);

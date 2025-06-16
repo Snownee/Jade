@@ -35,11 +35,11 @@ import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.JadeUI;
 import snownee.jade.api.ui.MessageType;
 import snownee.jade.api.ui.Rect2f;
+import snownee.jade.api.ui.ResizeableElement;
 import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.ui.TooltipAnimation;
 import snownee.jade.gui.JadeLinearLayout;
 import snownee.jade.gui.LayoutWithPadding;
-import snownee.jade.gui.PinScreen;
 import snownee.jade.gui.PreviewOptionsScreen;
 import snownee.jade.gui.ResizeableLayout;
 import snownee.jade.impl.Tooltip;
@@ -64,7 +64,7 @@ public class BoxElementImpl extends BoxElement implements ContainerEventHandler 
 		this.tooltip = Objects.requireNonNull(tooltip);
 		this.style = Objects.requireNonNull(style);
 		this.icon = tooltip.getIcon();
-		arrangeElements();
+		updateSize();
 		renderables = Lists.newArrayListWithExpectedSize(tooltip.size() + 1);
 		JadeUI.visitChildrenRecursive(
 				layout, element -> {
@@ -74,11 +74,15 @@ public class BoxElementImpl extends BoxElement implements ContainerEventHandler 
 				});
 	}
 
-	private void arrangeElements() {
+	@Override
+	public void updateSize() {
 		JadeLinearLayout linearLayout = JadeLinearLayout.vertical().alignItems(JadeLinearLayout.Align.STRETCH);
 		for (Tooltip.Line line : tooltip.lines) {
 			JadeLinearLayout lineLayout = JadeLinearLayout.horizontal();
 			for (LayoutElement element : line.elements()) {
+				if (element instanceof ResizeableElement resizeableElement) {
+					resizeableElement.updateSize();
+				}
 				lineLayout.addChild(
 						element, lineLayout.newChildLayoutSettings(element), container -> {
 							if (container.child instanceof Element element0 && element0.getAlignSelf() != null) {
@@ -352,7 +356,7 @@ public class BoxElementImpl extends BoxElement implements ContainerEventHandler 
 
 		animation.scale = overlay.getOverlayScale();
 		float thresholdHeight = window.getGuiScaledHeight() * overlay.getAutoScaleThreshold();
-		if (!(Minecraft.getInstance().screen instanceof PinScreen) && layout.getHeight() * animation.scale > thresholdHeight) {
+		if (!JadeUI.isPinned() && layout.getHeight() * animation.scale > thresholdHeight) {
 			animation.scale = Math.max(animation.scale * 0.5f, thresholdHeight / layout.getHeight());
 		}
 

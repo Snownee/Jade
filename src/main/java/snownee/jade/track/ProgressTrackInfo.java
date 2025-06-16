@@ -4,21 +4,21 @@ import snownee.jade.util.SmoothChasingValue;
 
 public class ProgressTrackInfo extends TrackInfo {
 	private final boolean canDecrease;
-	private float width;
+	private int width;
 	private int ticksSinceWidthChanged;
 	private float ticksSinceValueChanged;
 	private final SmoothChasingValue smoothProgress = new SmoothChasingValue();
 	private float progress;
-	private float expectedWidth;
+	private int expectedWidth;
 
-	public ProgressTrackInfo(boolean canDecrease, float progress, float width) {
+	public ProgressTrackInfo(boolean canDecrease, float progress, int width) {
 		this.canDecrease = canDecrease;
 		this.progress = progress;
 		this.width = width;
 		smoothProgress.start(progress);
 	}
 
-	public float getWidth() {
+	public int getWidth() {
 		return width;
 	}
 
@@ -52,7 +52,7 @@ public class ProgressTrackInfo extends TrackInfo {
 		smoothProgress.tick(pTicks);
 	}
 
-	public void setExpectedWidth(float expectedWidth) {
+	public void setExpectedWidth(int expectedWidth) {
 		this.expectedWidth = expectedWidth;
 		if (expectedWidth > width) {
 			width = expectedWidth;

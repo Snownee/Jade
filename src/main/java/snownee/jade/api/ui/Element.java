@@ -1,6 +1,7 @@
 package snownee.jade.api.ui;
 
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 
 import org.jetbrains.annotations.Contract;
@@ -24,6 +25,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.JadeInternals;
 import snownee.jade.gui.JadeLinearLayout;
+import snownee.jade.impl.ui.JadeUIInternal;
 import snownee.jade.overlay.DisplayHelper;
 
 public abstract class Element implements Renderable, LayoutElement, NarrationSupplier {
@@ -39,12 +41,17 @@ public abstract class Element implements Renderable, LayoutElement, NarrationSup
 
 	@Contract("_, _ -> new")
 	public ResizeableElement offset(int x, int y) {
-		return JadeUI.offset(this, x, y);
+		return JadeUIInternal.offset(this, x, y);
 	}
 
 	@Contract("_, _ -> new")
 	public ResizeableElement size(int width, int height) {
-		return JadeUI.size(this, width, height);
+		return JadeUIInternal.size(this, width, height);
+	}
+
+	@Contract("_ -> new")
+	public ResizeableElement onClick(Predicate<Element> onClick) {
+		return JadeUIInternal.onClick(this, onClick);
 	}
 
 	@Contract("_ -> this")

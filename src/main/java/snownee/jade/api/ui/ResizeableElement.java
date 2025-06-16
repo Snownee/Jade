@@ -25,4 +25,6 @@ public abstract class ResizeableElement extends Element implements ResizeableLay
 	public int getFlexGrow() {
 		return flexGrow;
 	}
+
+	public void updateSize() {}
 }

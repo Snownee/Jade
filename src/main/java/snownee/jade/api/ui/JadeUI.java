@@ -113,15 +113,11 @@ public final class JadeUI {
 		return JadeUIInternal.verticalTiledSprite(renderPipeline, sprite, width, height);
 	}
 
-	public static ResizeableElement offset(Element element, int x, int y) {
-		return JadeUIInternal.offset(element, x, y);
-	}
-
-	public static ResizeableElement size(Element element, int width, int height) {
-		return JadeUIInternal.size(element, width, height);
-	}
-
 	public static void visitChildrenRecursive(LayoutElement layoutElement, Consumer<LayoutElement> consumer) {
 		JadeUIInternal.visitChildrenRecursive(layoutElement, consumer);
+	}
+
+	public static boolean isPinned() {
+		return JadeUIInternal.isPinned();
 	}
 }

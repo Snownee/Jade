@@ -2,10 +2,12 @@ package snownee.jade.impl.ui;
 
 import org.jetbrains.annotations.Nullable;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
+import snownee.jade.JadeClient;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.BoxStyle;
@@ -31,10 +33,20 @@ public class ProgressElement extends ResizeableElement implements StyledElement 
 			width = Math.max(width, DisplayHelper.font().width(view.text) + 10);
 			height = 14;
 		}
-		if (view.style.direction().isHorizontal() && view.style.fitContentX()) {
-			flexGrow(1);
-		} else if (view.style.direction().isVertical() && view.style.fitContentY()) {
-			flexGrow(1);
+		if (view.style.direction().isHorizontal()) {
+			if (view.style.fitContentX()) {
+				flexGrow(1);
+			}
+			if (view.style.fitContentY()) {
+				alignSelfStretch();
+			}
+		} else {
+			if (view.style.fitContentY()) {
+				flexGrow(1);
+			}
+			if (view.style.fitContentX()) {
+				alignSelfStretch();
+			}
 		}
 	}
 
@@ -44,26 +56,6 @@ public class ProgressElement extends ResizeableElement implements StyledElement 
 		this.height = height;
 	}
 
-//	@Override
-//	public Vec2 getSize() {
-//		int height = text == null ? 8 : 14;
-//		float width = 0;
-//		width += boxStyle.borderWidth() * 2;
-//		if (text != null) {
-//			width += DisplayHelper.font().width(text) + 3;
-//		}
-//		float finalWidth = width = Math.max(20, width);
-//		if (getTag() != null) {
-//			track = WailaTickHandler.instance().progressTracker.getOrCreate(
-//					getTag(), ProgressTrackInfo.class, () -> {
-//						return new ProgressTrackInfo(canDecrease, this.progress, finalWidth);
-//					});
-//			track.setExpectedWidth(width);
-//			width = track.getWidth();
-//		}
-//		return new Vec2(width, height);
-//	}
-//
 //	@Override
 //	public void render(GuiGraphics guiGraphics, float x, float y, float maxX, float maxY) {
 //		float width = style.direction().isHorizontal() && style.fitContentX() ? maxX - x : getCachedSize().x;
@@ -100,11 +92,27 @@ public class ProgressElement extends ResizeableElement implements StyledElement 
 		float start = 0;
 		for (int i = 0; i < view.parts.size(); i++) {
 			ProgressView.Part part = view.parts.get(i);
-			if (part.progress() <= 0F) {
+			float partProgress = part.progress();
+			if (partProgress <= 0F) {
 				continue;
 			}
-			progress = Math.min(progress + part.progress(), 1F);
-			start = renderPart(graphics, partialTicks, part, start, freeX, freeY, freeWidth, freeHeight, i == view.parts.size() - 1);
+			if (track != null) {
+				track.setProgress(partProgress);
+				track.update(Minecraft.getInstance().getDeltaTracker().getRealtimeDeltaTicks());
+				partProgress = track.getSmoothProgress();
+			}
+			progress = Math.min(progress + partProgress, 1F);
+			start = renderPart(
+					graphics,
+					partialTicks,
+					part,
+					partProgress,
+					start,
+					freeX,
+					freeY,
+					freeWidth,
+					freeHeight,
+					i == view.parts.size() - 1);
 			if (progress == 1F) {
 				break;
 			}
@@ -129,13 +137,14 @@ public class ProgressElement extends ResizeableElement implements StyledElement 
 			GuiGraphics graphics,
 			float partialTicks,
 			ProgressView.Part part,
+			float partProgress,
 			float start,
 			int x,
 			int y,
 			int width,
 			int height,
 			boolean isLast) {
-		float partWidth = Math.min(part.progress() * width, width - start);
+		float partWidth = Math.min(partProgress * width, width - start);
 		int roundedPartWidth = Mth.ceil(partWidth);
 		Element overlay = part.overlay();
 		if (overlay == null) {
@@ -184,11 +193,21 @@ public class ProgressElement extends ResizeableElement implements StyledElement 
 
 	@Override
 	public void setFreeSpace(int width, int height) {
-		if (view.style.fitContentX()) {
-			this.width = width;
-		}
-		if (view.style.fitContentY()) {
-			this.height = height;
+		this.width = width;
+		this.height = height;
+	}
+
+	@Override
+	public void updateSize() {
+		if (getTag() != null && view.parts.size() == 1) {
+			track = JadeClient.tickHandler().progressTracker.getOrCreate(
+					getTag(), ProgressTrackInfo.class, () -> {
+						return new ProgressTrackInfo(view.style.canDecrease(), view.parts.getFirst().progress(), width);
+					});
+			track.setExpectedWidth(width);
+			width = track.getWidth();
+		} else {
+			track = null;
 		}
 	}
 }

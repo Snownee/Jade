@@ -31,7 +31,7 @@ import snownee.jade.api.config.IWailaConfig.General;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
 import snownee.jade.api.ui.Element;
-import snownee.jade.gui.PinScreen;
+import snownee.jade.api.ui.JadeUI;
 import snownee.jade.gui.PreviewOptionsScreen;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.Tooltip;
@@ -103,7 +103,7 @@ public class WailaTickHandler {
 			return;
 		}
 
-		if (mc.screen instanceof PinScreen) {
+		if (JadeUI.isPinned()) {
 			return;
 		}
 

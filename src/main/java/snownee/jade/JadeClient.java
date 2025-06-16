@@ -319,8 +319,8 @@ public final class JadeClient {
 		Theme theme = IThemeHelper.get().theme();
 		ColorPalette colors = theme.tooltipStyle.boxProgressColors;
 		int color = canHarvest ? colors.title() : colors.failure();
-		float top = animation.rect.getHeight();
-		float width = animation.rect.getWidth();
+		float top = root.getY() + root.getHeight();
+		float width = root.getWidth();
 		progressAlpha += mc.getDeltaTracker().getGameTimeDeltaTicks() * (playerController.isDestroying() ? 0.1F : -0.1F);
 		if (playerController.isDestroying()) {
 			progressAlpha = Math.min(progressAlpha, 0.6F);

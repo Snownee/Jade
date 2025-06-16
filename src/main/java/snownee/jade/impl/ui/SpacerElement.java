@@ -17,7 +17,7 @@ public class SpacerElement extends ResizeableElement implements GuiEventListener
 	private LayoutElement wrapped;
 	private int wrappedOffsetX;
 	private int wrappedOffsetY;
-	private @Nullable Predicate<LayoutElement> onClick;
+	private @Nullable Predicate<? extends LayoutElement> onClick;
 
 	public SpacerElement(int width, int height) {
 		this.width = width;
@@ -72,7 +72,7 @@ public class SpacerElement extends ResizeableElement implements GuiEventListener
 	public SpacerElement offset(int x, int y) {
 		wrappedOffsetX = x;
 		wrappedOffsetY = y;
-		if (wrapped != null) {
+		if (wrapped != null && (x != 0 || y != 0)) {
 			wrapped.setX(x + wrappedOffsetX);
 			wrapped.setY(y + wrappedOffsetY);
 		}
@@ -96,6 +96,12 @@ public class SpacerElement extends ResizeableElement implements GuiEventListener
 	}
 
 	@Override
+	public ResizeableElement onClick(Predicate<Element> onClick) {
+		this.onClick = onClick;
+		return this;
+	}
+
+	@Override
 	public boolean isMouseOver(double x, double y) {
 		return wrapped != null && wrapped.getRectangle().containsPoint((int) x, (int) y);
 	}
@@ -103,7 +109,8 @@ public class SpacerElement extends ResizeableElement implements GuiEventListener
 	@Override
 	public boolean mouseClicked(double x, double y, int button) {
 		if (button == 0 && onClick != null && isMouseOver(x, y)) {
-			return onClick.test(wrapped);
+			//noinspection unchecked
+			return ((Predicate<LayoutElement>) onClick).test(wrapped);
 		}
 		return false;
 	}

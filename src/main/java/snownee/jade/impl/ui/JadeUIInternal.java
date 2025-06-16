@@ -2,12 +2,14 @@ package snownee.jade.impl.ui;
 
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.Sets;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.layouts.Layout;
 import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.network.chat.Component;
@@ -24,6 +26,7 @@ import snownee.jade.api.ui.ProgressStyle;
 import snownee.jade.api.ui.ResizeableElement;
 import snownee.jade.api.ui.TextElement;
 import snownee.jade.api.view.ProgressView;
+import snownee.jade.gui.PinScreen;
 import snownee.jade.impl.Tooltip;
 import snownee.jade.overlay.DisplayHelper;
 
@@ -119,6 +122,10 @@ public class JadeUIInternal {
 		return ((SpacerElement) spacer(width, height)).wrapped(element);
 	}
 
+	public static ResizeableElement onClick(Element element, Predicate<Element> onClick) {
+		return offset(element, 0, 0).onClick(onClick);
+	}
+
 	public static @Nullable ResourceLocation contextUid() {
 		return contextUid;
 	}
@@ -162,5 +169,9 @@ public class JadeUIInternal {
 		SpriteElement element = (SpriteElement) sprite(renderPipeline, sprite, width, height);
 		element.tiledOrientation = Orientation.VERTICAL;
 		return element;
+	}
+
+	public static boolean isPinned() {
+		return Minecraft.getInstance().screen instanceof PinScreen;
 	}
 }
