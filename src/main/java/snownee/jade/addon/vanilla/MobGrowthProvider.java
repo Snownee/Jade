@@ -18,17 +18,8 @@ import snownee.jade.api.StreamServerDataProvider;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
 
-public enum MobGrowthProvider implements IEntityComponentProvider, StreamServerDataProvider<EntityAccessor, Integer> {
-
-	INSTANCE;
-
-	@Override
-	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
-		int time = decodeFromData(accessor).orElse(0);
-		if (time > 0) {
-			tooltip.add(Component.translatable("jade.mobgrowth.time", IThemeHelper.get().seconds(time, accessor.tickRate())));
-		}
-	}
+public class MobGrowthProvider implements StreamServerDataProvider<EntityAccessor, Integer> {
+	public static final MobGrowthProvider INSTANCE = new MobGrowthProvider();
 
 	@Override
 	public @Nullable Integer streamData(EntityAccessor accessor) {
@@ -52,4 +43,20 @@ public enum MobGrowthProvider implements IEntityComponentProvider, StreamServerD
 		return JadeIds.MC_MOB_GROWTH;
 	}
 
+	public static class Client implements IEntityComponentProvider {
+		public static final Client INSTANCE = new Client();
+
+		@Override
+		public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
+			int time = MobGrowthProvider.INSTANCE.decodeFromData(accessor).orElse(0);
+			if (time > 0) {
+				tooltip.add(Component.translatable("jade.mobgrowth.time", IThemeHelper.get().seconds(time, accessor.tickRate())));
+			}
+		}
+
+		@Override
+		public ResourceLocation getUid() {
+			return JadeIds.MC_MOB_GROWTH;
+		}
+	}
 }

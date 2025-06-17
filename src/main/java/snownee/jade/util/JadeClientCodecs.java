@@ -1,5 +1,6 @@
 package snownee.jade.util;
 
+import java.util.Map;
 import java.util.Optional;
 
 import com.mojang.serialization.Codec;
@@ -8,6 +9,8 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ExtraCodecs;
+import snownee.jade.api.theme.SneakyDetails;
 import snownee.jade.api.theme.TextSetting;
 import snownee.jade.api.theme.Theme;
 import snownee.jade.api.ui.BoxStyle;
@@ -23,16 +26,20 @@ public class JadeClientCodecs {
 	).apply(i, TextSetting::new));
 
 	public static final MapCodec<Theme> THEME = RecordCodecBuilder.mapCodec(i -> i.group(
+			ExtraCodecs.NON_EMPTY_STRING.optionalFieldOf("styleName", "jade.default").forGetter($ -> $.styleName),
 			BoxStyle.CODEC.fieldOf("tooltipStyle").forGetter($ -> $.tooltipStyle),
-			BoxStyle.CODEC.optionalFieldOf("nestedBoxStyle", BoxStyle.GradientBorder.DEFAULT_NESTED_BOX).forGetter($ -> $.nestedBoxStyle),
-			BoxStyle.CODEC.optionalFieldOf("viewGroupStyle", BoxStyle.GradientBorder.DEFAULT_VIEW_GROUP).forGetter($ -> $.viewGroupStyle),
+			BoxStyle.CODEC.optionalFieldOf("nestedBoxStyle", BoxStyle.DEFAULT_NESTED_BOX).forGetter($ -> $.nestedBoxStyle),
+			BoxStyle.CODEC.optionalFieldOf("viewGroupStyle", BoxStyle.DEFAULT_VIEW_GROUP).forGetter($ -> $.viewGroupStyle),
 			TEXT_SETTING.optionalFieldOf("text", TextSetting.DEFAULT).forGetter($ -> $.text),
-			Codec.BOOL.optionalFieldOf("changeRoundCorner").forGetter($ -> Optional.ofNullable($.changeRoundCorner)),
 			Codec.floatRange(0, 1).optionalFieldOf("changeOpacity", 0F).forGetter($ -> $.changeOpacity),
 			Codec.BOOL.optionalFieldOf("lightColorScheme", false).forGetter($ -> $.lightColorScheme),
-			Codec.BOOL.optionalFieldOf("hidden", false).forGetter($ -> $.hidden),
 			ResourceLocation.CODEC.optionalFieldOf("iconSlotSprite").forGetter($ -> Optional.ofNullable($.iconSlotSprite)),
-			Codec.INT.optionalFieldOf("iconSlotInflation", 0).forGetter($ -> $.iconSlotInflation)
+			Codec.INT.optionalFieldOf("iconSlotInflation", 0).forGetter($ -> $.iconSlotInflation),
+			SneakyDetails.CODEC.optionalFieldOf("sneakyDetails", SneakyDetails.DEFAULT).forGetter($ -> $.sneakyDetails),
+			ColorPalette.CODEC.optionalFieldOf("progressColors", ColorPalette.DEFAULT).forGetter($ -> $.progressColors),
+			Codec.unboundedMap(ResourceLocation.CODEC, ResourceLocation.CODEC)
+					.optionalFieldOf("spriteMapping", Map.of())
+					.forGetter($ -> $.spriteMapping)
 	).apply(i, Theme::new));
 
 	public record ThemeHolder(int version, boolean autoEnable, Theme theme) {}

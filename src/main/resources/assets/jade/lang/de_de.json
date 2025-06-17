@@ -38,7 +38,6 @@
 	"config.jade.reach_distance": "Erweiterte Reichweite",
 	"config.jade.overlay": "Oberfläche",
 	"config.jade.overlay_scale": "Zeige Skala",
-	"config.jade.overlay_square": "Quadratischer Rahmen",
 	"config.jade.flip_main_hand": "Haupthand wechseln",
 	"config.jade.flip_main_hand_desc": "Position des Tooltips umkehren, wenn die Haupthand links ist",
 	"config.jade.overlay_alpha": "Alpha",

@@ -18,7 +18,7 @@ public class CorePlugin implements IWailaPlugin {
 
 	@Override
 	public void register(IWailaCommonRegistration registration) {
-		registration.registerBlockDataProvider(ObjectNameProvider.getBlock(), BlockEntity.class);
+		registration.registerBlockDataProvider(ObjectNameProvider.Server.INSTANCE, BlockEntity.class);
 	}
 
 	@Override
@@ -29,16 +29,18 @@ public class CorePlugin implements IWailaPlugin {
 		registration.addConfig(JadeIds.CORE_DISTANCE, false);
 		registration.addConfig(JadeIds.CORE_COORDINATES, false);
 		registration.addConfig(JadeIds.CORE_REL_COORDINATES, false);
+		registration.addConfig(JadeIds.CORE_MOD_NAME, ModNameProvider.Mode.ON);
 
-		registration.registerBlockComponent(ObjectNameProvider.getBlock(), Block.class);
-		registration.registerBlockComponent(ModNameProvider.getBlock(), Block.class);
-		registration.registerBlockComponent(DistanceProvider.getBlock(), Block.class);
+		registration.registerBlockComponent(ObjectNameProvider.ForBlock.INSTANCE, Block.class);
+		registration.registerBlockComponent(ModNameProvider.ForBlock.INSTANCE, Block.class);
+		registration.registerBlockComponent(DistanceProvider.ForBlock.INSTANCE, Block.class);
 		registration.registerBlockComponent(BlockFaceProvider.INSTANCE, Block.class);
 
-		registration.registerEntityComponent(ObjectNameProvider.getEntity(), Entity.class);
-		registration.registerEntityComponent(ModNameProvider.getEntity(), Entity.class);
-		registration.registerEntityComponent(DistanceProvider.getEntity(), Entity.class);
+		registration.registerEntityComponent(ObjectNameProvider.ForEntity.INSTANCE, Entity.class);
+		registration.registerEntityComponent(ModNameProvider.ForEntity.INSTANCE, Entity.class);
+		registration.registerEntityComponent(DistanceProvider.ForEntity.INSTANCE, Entity.class);
 
+		registration.markAsClientFeature(JadeIds.CORE_OBJECT_NAME);
 		registration.markAsClientFeature(JadeIds.CORE_DISTANCE);
 		registration.markAsClientFeature(JadeIds.CORE_COORDINATES);
 		registration.markAsClientFeature(JadeIds.CORE_REL_COORDINATES);

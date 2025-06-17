@@ -172,10 +172,6 @@ public interface IWailaConfig {
 
 		void setAnchorY(float overlayAnchorY);
 
-		boolean getSquare();
-
-		void setSquare(boolean overlaySquare);
-
 		float getAutoScaleThreshold();
 
 		float getAlpha();
@@ -239,5 +235,9 @@ public interface IWailaConfig {
 		void setNarrateKeys(boolean narrateKeys);
 
 		boolean getNarrateKeys();
+
+		void setNoKeyConflict(boolean noKeyConflict);
+
+		boolean getNoKeyConflict();
 	}
 }

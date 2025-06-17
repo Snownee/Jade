@@ -73,7 +73,8 @@ import snownee.jade.api.Accessor;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.fluid.JadeFluidObject;
-import snownee.jade.api.ui.IElement;
+import snownee.jade.api.ui.Element;
+import snownee.jade.api.ui.JadeUI;
 import snownee.jade.api.view.ClientViewGroup;
 import snownee.jade.api.view.IClientExtensionProvider;
 import snownee.jade.api.view.ViewGroup;
@@ -84,11 +85,11 @@ import snownee.jade.gui.PreviewOptionsScreen;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.ui.FluidStackElement;
+import snownee.jade.key_extension.KeyMappingEx;
 import snownee.jade.mixin.KeyAccess;
 import snownee.jade.network.ClientHandshakePacket;
 import snownee.jade.overlay.DatapackBlockManager;
 import snownee.jade.overlay.OverlayRenderer;
-import snownee.jade.overlay.WailaTickHandler;
 
 public final class ClientProxy {
 
@@ -144,7 +145,7 @@ public final class ClientProxy {
 
 	private static void onClientTick(ClientTickEvent.Post event) {
 		try {
-			WailaTickHandler.instance().tickClient();
+			JadeClient.tickHandler().tickClient();
 		} catch (Throwable e) {
 			WailaExceptionHandler.handleErr(e, null, null);
 		}
@@ -184,6 +185,7 @@ public final class ClientProxy {
 				InputConstants.Type.KEYSYM.getOrCreate(defaultKey),
 				"modmenu.nameTranslation.jade");
 		keys.add(key);
+		KeyMappingEx.setNoConflict(key, true);
 		return key;
 	}
 
@@ -191,7 +193,7 @@ public final class ClientProxy {
 		return hasJEI || hasREI;
 	}
 
-	public static IElement elementFromLiquid(BlockState blockState) {
+	public static Element elementFromLiquid(BlockState blockState) {
 		FluidState fluidState = blockState.getFluidState();
 		return new FluidStackElement(JadeFluidObject.of(fluidState.getType()));//.size(new Size(18, 18));
 	}
@@ -237,7 +239,7 @@ public final class ClientProxy {
 	}
 
 	public static boolean shouldShowAfterGui(Minecraft mc, @NotNull Screen screen) {
-		return screen instanceof PreviewOptionsScreen;
+		return screen instanceof PreviewOptionsScreen || JadeUI.isPinned();
 	}
 
 	public static boolean shouldShowBeforeGui(Minecraft mc, @NotNull Screen screen) {
@@ -255,22 +257,15 @@ public final class ClientProxy {
 		ResourceLocation fluidStill = handler.getStillTexture(fluidStack);
 		TextureAtlasSprite fluidStillSprite = FluidSpriteCache.getSprite(fluidStill);
 		int fluidColor = handler.getTintColor(fluidStack);
-		if (OverlayRenderer.alpha != 1) {
-			fluidColor = IWailaConfig.Overlay.applyAlpha(fluidColor, OverlayRenderer.alpha);
-		}
+		//FIXME
+//		if (OverlayRenderer.alpha != 1) {
+//			fluidColor = IWailaConfig.Overlay.applyAlpha(fluidColor, OverlayRenderer.alpha);
+//		}
 		consumer.accept(fluidStillSprite, fluidColor);
-	}
-
-	public static KeyMapping registerDetailsKeyBinding() {
-		return registerKeyBinding("show_details", InputConstants.KEY_LSHIFT);
 	}
 
 	public static void renderItemDecorationsExtra(GuiGraphics guiGraphics, Font font, ItemStack stack, int x, int y, String text) {
 		ItemDecoratorHandler.of(stack).render(guiGraphics, font, stack, x, y);
-	}
-
-	public static InputConstants.Key getBoundKeyOf(KeyMapping keyMapping) {
-		return keyMapping.getKey();
 	}
 
 	public static GameType getGameMode() {
@@ -372,5 +367,9 @@ public final class ClientProxy {
 
 	public static void sendPacket(CustomPacketPayload payload) {
 		Objects.requireNonNull(Minecraft.getInstance().getConnection()).send(payload);
+	}
+
+	public static boolean noBuiltInNoKeyConflict() {
+		return false;
 	}
 }

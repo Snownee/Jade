@@ -68,15 +68,15 @@ public class CreditButton extends Button {
 				alpha = Math.max(alpha, 17);
 			}
 		}
-		guiGraphics.pose().pushPose();
-		guiGraphics.pose().translate(getX() + width * 0.5F, getY(), 0);
+		guiGraphics.pose().pushMatrix();
+		guiGraphics.pose().translate(getX() + width * 0.5F, getY());
 		float scale = 1 + progress.value * 0.2F;
-		guiGraphics.pose().scale(scale, scale, scale);
+		guiGraphics.pose().scale(scale);
 		Component credit = hovered ? hoveredTitle : getMessage();
 		Font font = Minecraft.getInstance().font;
-		guiGraphics.pose().translate(font.width(credit) * -0.5F, 0, 0);
+		guiGraphics.pose().translate(font.width(credit) * -0.5F, 0);
 		guiGraphics.drawString(font, credit, 0, 0, 0xFFFFFF | (int) alpha << 24);
-		guiGraphics.pose().popPose();
+		guiGraphics.pose().popMatrix();
 		oldHovered = hovered;
 	}
 

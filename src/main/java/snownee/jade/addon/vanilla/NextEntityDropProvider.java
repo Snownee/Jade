@@ -19,24 +19,8 @@ import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
 
-public enum NextEntityDropProvider implements IEntityComponentProvider, IServerDataProvider<EntityAccessor> {
-
-	INSTANCE;
-
-	@Override
-	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
-		appendSeconds(tooltip, accessor, "NextEggIn", "jade.nextEgg");
-		appendSeconds(tooltip, accessor, "NextScuteIn", "jade.nextScute");
-		appendSeconds(tooltip, accessor, "NextSniffIn", "jade.nextSniff");
-	}
-
-	public static void appendSeconds(ITooltip tooltip, Accessor<?> accessor, String tagKey, String translationKey) {
-		Optional<Integer> i = accessor.getServerData().getInt(tagKey);
-		if (i.isEmpty()) {
-			return;
-		}
-		tooltip.add(Component.translatable(translationKey, IThemeHelper.get().seconds(i.get(), accessor.tickRate())));
-	}
+public class NextEntityDropProvider implements IServerDataProvider<EntityAccessor> {
+	public static final NextEntityDropProvider INSTANCE = new NextEntityDropProvider();
 
 	@Override
 	public void appendServerData(CompoundTag tag, EntityAccessor accessor) {
@@ -70,4 +54,27 @@ public enum NextEntityDropProvider implements IEntityComponentProvider, IServerD
 		return JadeIds.MC_NEXT_ENTITY_DROP;
 	}
 
+	public static class Client implements IEntityComponentProvider {
+		public static final Client INSTANCE = new Client();
+
+		@Override
+		public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
+			appendSeconds(tooltip, accessor, "NextEggIn", "jade.nextEgg");
+			appendSeconds(tooltip, accessor, "NextScuteIn", "jade.nextScute");
+			appendSeconds(tooltip, accessor, "NextSniffIn", "jade.nextSniff");
+		}
+
+		@Override
+		public ResourceLocation getUid() {
+			return JadeIds.MC_NEXT_ENTITY_DROP;
+		}
+
+		public static void appendSeconds(ITooltip tooltip, Accessor<?> accessor, String tagKey, String translationKey) {
+			Optional<Integer> i = accessor.getServerData().getInt(tagKey);
+			if (i.isEmpty()) {
+				return;
+			}
+			tooltip.add(Component.translatable(translationKey, IThemeHelper.get().seconds(i.get(), accessor.tickRate())));
+		}
+	}
 }

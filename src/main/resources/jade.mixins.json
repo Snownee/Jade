@@ -12,12 +12,15 @@
 		"BossHealthOverlayMixin",
 		"ClientLevelMixin",
 		"CreativeModeInventoryScreenMixin",
+		"FogRendererMixin",
+		"GuiGraphicsMixin",
 		"KeyAccess",
 		"LanguageManagerMixin",
+		"PreparedTextBuilderMixin",
 		"SessionSearchTreesMixin",
-		"StringRenderOutputMixin",
-		"conditional_key_mapping.KeyBindsListMixin",
-		"conditional_key_mapping.KeyMappingMixin"
+		"key_extension.KeyBindsListMixin",
+		"key_extension.KeyBindsListMixin$KeyEntryMixin",
+		"key_extension.KeyMappingMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

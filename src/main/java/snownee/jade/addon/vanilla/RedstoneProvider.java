@@ -22,51 +22,8 @@ import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
 
-public enum RedstoneProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
-
-	INSTANCE;
-
-	@Override
-	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		BlockState state = accessor.getBlockState();
-		Block block = state.getBlock();
-		IThemeHelper t = IThemeHelper.get();
-		if (block instanceof LeverBlock) {
-			Component info;
-			if (state.getValue(BlockStateProperties.POWERED)) {
-				info = t.success(Component.translatable("tooltip.jade.state_on"));
-			} else {
-				info = t.danger(Component.translatable("tooltip.jade.state_off"));
-			}
-			tooltip.add(Component.translatable("tooltip.jade.state", info));
-			return;
-		}
-
-		if (block == Blocks.REPEATER) {
-			int delay = state.getValue(BlockStateProperties.DELAY);
-			tooltip.add(Component.translatable("tooltip.jade.delay", t.info(delay)));
-			return;
-		}
-
-		if (block == Blocks.COMPARATOR) {
-			ComparatorMode mode = state.getValue(BlockStateProperties.MODE_COMPARATOR);
-			Component modeInfo = t.info(Component.translatable(
-					"tooltip.jade.mode_" + (mode == ComparatorMode.COMPARE ? "comparator" : "subtractor")));
-			tooltip.add(Component.translatable("tooltip.jade.mode", modeInfo));
-			if (accessor.getServerData().contains("Signal")) {
-				tooltip.add(Component.translatable("tooltip.jade.power", t.info(accessor.getServerData().getInt("Signal"))));
-			}
-			return;
-		}
-
-		if (block instanceof CalibratedSculkSensorBlock && accessor.getServerData().contains("Signal")) {
-			tooltip.add(Component.translatable("jade.input_signal", t.info(accessor.getServerData().getInt("Signal"))));
-		}
-
-		if (state.hasProperty(BlockStateProperties.POWER)) {
-			tooltip.add(Component.translatable("tooltip.jade.power", t.info(state.getValue(BlockStateProperties.POWER))));
-		}
-	}
+public class RedstoneProvider implements IServerDataProvider<BlockAccessor> {
+	public static final RedstoneProvider INSTANCE = new RedstoneProvider();
 
 	@Override
 	public void appendServerData(CompoundTag data, BlockAccessor accessor) {
@@ -85,4 +42,54 @@ public enum RedstoneProvider implements IBlockComponentProvider, IServerDataProv
 		return JadeIds.MC_REDSTONE;
 	}
 
+	public static class Client implements IBlockComponentProvider {
+		public static final Client INSTANCE = new Client();
+
+		@Override
+		public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
+			BlockState state = accessor.getBlockState();
+			Block block = state.getBlock();
+			IThemeHelper t = IThemeHelper.get();
+			if (block instanceof LeverBlock) {
+				Component info;
+				if (state.getValue(BlockStateProperties.POWERED)) {
+					info = t.success(Component.translatable("tooltip.jade.state_on"));
+				} else {
+					info = t.danger(Component.translatable("tooltip.jade.state_off"));
+				}
+				tooltip.add(Component.translatable("tooltip.jade.state", info));
+				return;
+			}
+
+			if (block == Blocks.REPEATER) {
+				int delay = state.getValue(BlockStateProperties.DELAY);
+				tooltip.add(Component.translatable("tooltip.jade.delay", t.info(delay)));
+				return;
+			}
+
+			if (block == Blocks.COMPARATOR) {
+				ComparatorMode mode = state.getValue(BlockStateProperties.MODE_COMPARATOR);
+				Component modeInfo = t.info(Component.translatable(
+						"tooltip.jade.mode_" + (mode == ComparatorMode.COMPARE ? "comparator" : "subtractor")));
+				tooltip.add(Component.translatable("tooltip.jade.mode", modeInfo));
+				if (accessor.getServerData().contains("Signal")) {
+					tooltip.add(Component.translatable("tooltip.jade.power", t.info(accessor.getServerData().getInt("Signal"))));
+				}
+				return;
+			}
+
+			if (block instanceof CalibratedSculkSensorBlock && accessor.getServerData().contains("Signal")) {
+				tooltip.add(Component.translatable("jade.input_signal", t.info(accessor.getServerData().getInt("Signal"))));
+			}
+
+			if (state.hasProperty(BlockStateProperties.POWER)) {
+				tooltip.add(Component.translatable("tooltip.jade.power", t.info(state.getValue(BlockStateProperties.POWER))));
+			}
+		}
+
+		@Override
+		public ResourceLocation getUid() {
+			return JadeIds.MC_REDSTONE;
+		}
+	}
 }

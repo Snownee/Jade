@@ -1,6 +1,7 @@
 package snownee.jade.gui;
 
 import java.io.File;
+import java.util.List;
 import java.util.Objects;
 
 import it.unimi.dsi.fastutil.floats.FloatUnaryOperator;
@@ -9,12 +10,14 @@ import net.minecraft.Util;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import snownee.jade.Jade;
@@ -24,21 +27,24 @@ import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
 import snownee.jade.gui.config.OptionButton;
 import snownee.jade.gui.config.OptionsList;
+import snownee.jade.gui.config.value.CycleOptionValue;
 import snownee.jade.gui.config.value.OptionValue;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.config.WailaConfig.General;
+import snownee.jade.impl.theme.ThemeHelper;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
 
 public class WailaConfigScreen extends PreviewOptionsScreen {
 
-	private OptionValue<Boolean> squareEntry;
+	private CycleOptionValue<ResourceLocation> styleEntry;
 	private OptionValue<Float> opacityEntry;
 
 	public WailaConfigScreen(Screen parent) {
 		super(parent, Component.translatable("gui.jade.jade_settings"));
 		saver = () -> {
 			IWailaConfig.get().save();
+			JadeClient.refreshKeyState();
 			KeyMapping.resetMapping();
 			Minecraft.getInstance().options.save();
 		};
@@ -111,25 +117,59 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 				adjust, w -> {
 					startAdjustingPosition();
 				}).size(100, 20)));
-		options.choices(
+		CycleButton.ValueListSupplier<ResourceLocation> valuesSupplier = new CycleButton.ValueListSupplier<>() {
+			@Override
+			public List<ResourceLocation> getSelectedList() {
+				return getDefaultList();
+			}
+
+			@Override
+			public List<ResourceLocation> getDefaultList() {
+				ResourceLocation mainId = overlay.getTheme().mainId();
+				return ThemeHelper.INSTANCE.getThemes().stream()
+						.filter($ -> $.mainId().equals(mainId))
+						.map($ -> $.id)
+						.toList();
+			}
+		};
+		var themeEntry = options.add(new CycleOptionValue<>(
 				"overlay_theme",
-				() -> overlay.getTheme().id,
-				IThemeHelper.get().getThemes().stream().filter($ -> !$.hidden).map($ -> $.id).toList(),
+				CycleButton.<ResourceLocation>builder(id -> Component.translatable(Util.makeDescriptionId("jade.theme", id)))
+						.withValues(IThemeHelper.get()
+								.getThemes()
+								.stream()
+								.filter($ -> $.styleId().isEmpty())
+								.map($ -> $.id)
+								.toList()),
+				() -> overlay.getTheme().mainId(),
 				id -> {
-					if (Objects.equals(id, overlay.getTheme().id)) {
+					if (Objects.equals(id, overlay.getTheme().mainId())) {
+						return;
+					}
+					if (!ThemeHelper.INSTANCE.hasTheme(id)) {
 						return;
 					}
 					overlay.applyTheme(id);
 					Theme theme = overlay.getTheme();
-					if (theme.changeRoundCorner != null) {
-						squareEntry.setValue(theme.changeRoundCorner);
-					}
 					if (theme.changeOpacity != 0) {
 						opacityEntry.setValue(theme.changeOpacity);
 					}
-				},
-				id -> Component.translatable(Util.makeDescriptionId("jade.theme", id)));
-		squareEntry = options.choices("overlay_square", overlay::getSquare, overlay::setSquare);
+					if (valuesSupplier.getDefaultList().size() > 1) {
+						styleEntry.button.active = true;
+						styleEntry.updateValue();
+					} else {
+						styleEntry.button.active = false;
+						styleEntry.button.setMessage(Component.translatable("jade.unavailable"));
+					}
+				}));
+		styleEntry = options.add(new CycleOptionValue<>(
+				"theme_style",
+				CycleButton.<ResourceLocation>builder(id -> Component.translatable(ThemeHelper.INSTANCE.getTheme(id).styleName))
+						.withValues(valuesSupplier),
+				() -> overlay.getTheme().id,
+				overlay::applyTheme));
+		styleEntry.parent(themeEntry);
+		styleEntry.updateValue();
 		opacityEntry = options.slider("overlay_alpha", overlay::getAlpha, overlay::setAlpha);
 		options.forcePreview.add(options.slider(
 				"overlay_scale",
@@ -163,13 +203,15 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 		options.title("danger_zone").withStyle(ChatFormatting.RED);
 		options.add(new OptionButton(
 				"reload_plugins", Button.builder(
-				OptionsList.Entry.makeTitle("reload_plugins.button"),
-				w -> {
+				OptionsList.Entry.makeTitle("reload_plugins.button"), w -> {
 					w.active = false;
 					Jade.loadPlugins();
 					w.active = true;
 					Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.PLAYER_LEVELUP, 1.0f));
 				}).size(100, 20).build()));
+		if (ClientProxy.noBuiltInNoKeyConflict()) {
+			options.choices("no_key_conflict", accessibility::getNoKeyConflict, accessibility::setNoKeyConflict);
+		}
 		Component reset = Component.translatable("controls.reset").withStyle(ChatFormatting.RED);
 		Component title = Component.translatable(OptionsList.Entry.makeKey("reset_settings")).withStyle(ChatFormatting.RED);
 		options.add(new OptionButton(

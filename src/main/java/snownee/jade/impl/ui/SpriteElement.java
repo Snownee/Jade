@@ -1,51 +1,145 @@
 package snownee.jade.impl.ui;
 
-import java.util.function.Function;
+import org.jetbrains.annotations.Nullable;
 
+import com.mojang.blaze3d.pipeline.RenderPipeline;
+
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.gui.GuiSpriteManager;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.metadata.gui.GuiSpriteScaling;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.phys.Vec2;
-import snownee.jade.api.ui.Element;
+import snownee.jade.api.config.IWailaConfig;
+import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.IDisplayHelper;
+import snownee.jade.api.ui.Orientation;
+import snownee.jade.api.ui.Rect2f;
+import snownee.jade.overlay.DisplayHelper;
 
-public class SpriteElement extends Element {
+public class SpriteElement extends ProgressOverlayElement {
 
-	private final Function<ResourceLocation, RenderType> function;
+	private final RenderPipeline renderPipeline;
 	private final ResourceLocation sprite;
-	private final int width;
-	private final int height;
+	public @Nullable Orientation tiledOrientation;
+	private final int oWidth;
+	private final int oHeight;
+	private int color = -1;
 
 	public SpriteElement(ResourceLocation sprite, int width, int height) {
-		this(RenderType::guiTextured, sprite, width, height);
+		this(RenderPipelines.GUI_TEXTURED, sprite, width, height);
 	}
 
-	public SpriteElement(Function<ResourceLocation, RenderType> function, ResourceLocation sprite, int width, int height) {
-		this.function = function;
+	public SpriteElement(RenderPipeline renderPipeline, ResourceLocation sprite, int width, int height) {
+		this.renderPipeline = renderPipeline;
 		this.sprite = sprite;
-		this.width = width;
-		this.height = height;
+		oWidth = this.width = width;
+		oHeight = this.height = height;
 	}
 
 	@Override
-	public Vec2 getSize() {
-		return new Vec2(width, height);
+	public @Nullable Component getNarration() {
+		return null;
 	}
 
 	@Override
-	public void render(GuiGraphics guiGraphics, float x, float y, float maxX, float maxY) {
-		IDisplayHelper.get().blitSprite(
-				guiGraphics,
-				function,
-				sprite,
-				width,
-				height,
-				0,
-				0,
-				Math.round(x),
-				Math.round(y),
-				Math.round(getCachedSize().x),
-				Math.round(getCachedSize().y));
+	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+		if (tiledOrientation != null) {
+			GuiSpriteManager guiSprites = Minecraft.getInstance().getGuiSprites();
+			TextureAtlasSprite textureAtlasSprite = guiSprites.getSprite(IThemeHelper.get().theme().mapSprite(sprite));
+			Rect2f rect;
+			if (floatingRect == null) {
+				rect = Rect2f.of(this);
+			} else {
+				rect = floatingRect.copy();
+			}
+			float axisLength = tiledOrientation.getAxisLength(rect);
+			float axisPosition = tiledOrientation.getAxisPosition(rect);
+			float crossAxisLength = tiledOrientation.getCrossAxisLength(rect);
+			float crossAxisPosition = tiledOrientation.getCrossAxisPosition(rect);
+			float tileAxisStart = 0F;
+			float tileAxisStep = tiledOrientation == Orientation.HORIZONTAL ? oWidth : oHeight;
+			while (tileAxisStart < axisLength) {
+				float tileAxisEnd = Math.min(tileAxisStart + tileAxisStep, axisLength);
+				float tileSize = tileAxisEnd - tileAxisStart;
+				tiledOrientation.setPosition(rect, axisPosition + tileAxisStart, crossAxisPosition);
+				tiledOrientation.setSize(rect, tileSize, crossAxisLength);
+				float tileWidth = oWidth;
+				float tileHeight = oHeight;
+				if (tiledOrientation == Orientation.HORIZONTAL) {
+					tileWidth = tileSize;
+				} else {
+					tileHeight = tileSize;
+				}
+				DisplayHelper.INSTANCE.blitSprite(
+						graphics,
+						renderPipeline,
+						textureAtlasSprite,
+						oWidth,
+						oHeight,
+						0,
+						0,
+						tileWidth,
+						tileHeight,
+						rect.getX(),
+						rect.getY(),
+						rect.getWidth(), rect.getHeight(), color);
+				tileAxisStart += tileAxisStep;
+			}
+			return;
+		}
+		if (floatingRect == null) {
+			IDisplayHelper.get().blitSprite(
+					graphics,
+					renderPipeline,
+					sprite,
+					oWidth,
+					oHeight,
+					0,
+					0,
+					getX(),
+					getY(),
+					width,
+					height,
+					color);
+		} else {
+			DisplayHelper.INSTANCE.blitSprite(
+					graphics,
+					renderPipeline,
+					sprite,
+					oWidth,
+					oHeight,
+					0,
+					0,
+					floatingRect.getX(),
+					floatingRect.getY(),
+					floatingRect.getWidth(),
+					floatingRect.getHeight(),
+					color);
+		}
+		if (IWailaConfig.get().general().isDebug() && floatingRect != null) {
+			DisplayHelper.INSTANCE.drawBorder(
+					graphics, new ScreenRectangle(
+							(int) floatingRect.getX(),
+							(int) floatingRect.getY(),
+							(int) floatingRect.getWidth(),
+							(int) floatingRect.getHeight()),
+					1, 0xFF00AAAA, true);
+		}
 	}
 
+	@Override
+	public boolean canUseFloatingRect() {
+		GuiSpriteManager guiSprites = Minecraft.getInstance().getGuiSprites();
+		TextureAtlasSprite textureAtlasSprite = guiSprites.getSprite(sprite);
+		GuiSpriteScaling scaling = guiSprites.getSpriteScaling(textureAtlasSprite);
+		return scaling instanceof GuiSpriteScaling.Stretch;
+	}
+
+	public void setColor(int color) {
+		this.color = color;
+	}
 }

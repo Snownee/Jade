@@ -19,25 +19,8 @@ import snownee.jade.api.StreamServerDataProvider;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.util.CommonProxy;
 
-public enum AnimalOwnerProvider implements IEntityComponentProvider, StreamServerDataProvider<EntityAccessor, String> {
-
-	INSTANCE;
-
-	@Override
-	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
-		String name = decodeFromData(accessor).orElse("");
-		if (name.isEmpty()) {
-			UUID ownerUUID = getOwnerUUID(accessor.getEntity());
-			if (ownerUUID == null) {
-				return;
-			}
-			name = CommonProxy.getLastKnownUsername(ownerUUID);
-			if (name == null) {
-				name = "???";
-			}
-		}
-		tooltip.add(Component.translatable("jade.owner", name));
-	}
+public class AnimalOwnerProvider implements StreamServerDataProvider<EntityAccessor, String> {
+	public static final AnimalOwnerProvider INSTANCE = new AnimalOwnerProvider();
 
 	@Override
 	public String streamData(EntityAccessor accessor) {
@@ -68,6 +51,31 @@ public enum AnimalOwnerProvider implements IEntityComponentProvider, StreamServe
 	@Override
 	public ResourceLocation getUid() {
 		return JadeIds.MC_ANIMAL_OWNER;
+	}
+
+	public static class Client implements IEntityComponentProvider {
+		public static final Client INSTANCE = new Client();
+
+		@Override
+		public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
+			String name = AnimalOwnerProvider.INSTANCE.decodeFromData(accessor).orElse("");
+			if (name.isEmpty()) {
+				UUID ownerUUID = getOwnerUUID(accessor.getEntity());
+				if (ownerUUID == null) {
+					return;
+				}
+				name = CommonProxy.getLastKnownUsername(ownerUUID);
+				if (name == null) {
+					name = "???";
+				}
+			}
+			tooltip.add(Component.translatable("jade.owner", name));
+		}
+
+		@Override
+		public ResourceLocation getUid() {
+			return JadeIds.MC_ANIMAL_OWNER;
+		}
 	}
 
 }

@@ -36,7 +36,7 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.gui.navigation.ScreenDirection;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -159,7 +159,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 	@Override
 	protected void renderListSeparators(GuiGraphics guiGraphics) {
 		ResourceLocation resourceLocation2 = this.minecraft.level == null ? Screen.FOOTER_SEPARATOR : Screen.INWORLD_FOOTER_SEPARATOR;
-		guiGraphics.blit(RenderType::guiTextured, resourceLocation2, 0, this.getBottom(), 0.0F, 0.0F, owner.width, 2, 32, 2);
+		guiGraphics.blit(RenderPipelines.GUI_TEXTURED, resourceLocation2, 0, this.getBottom(), 0.0F, 0.0F, owner.width, 2, 32, 2);
 	}
 
 	@Override
@@ -609,7 +609,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 				boolean hovered,
 				float deltaTime) {
 			x = rowLeft;
-			guiGraphics.drawString(client.font, title, getTextX(width), rowTop + height - client.font.lineHeight, 16777215);
+			guiGraphics.drawString(client.font, title, getTextX(width), rowTop + height - client.font.lineHeight, 0xFFFFFFFF);
 		}
 
 		@Override

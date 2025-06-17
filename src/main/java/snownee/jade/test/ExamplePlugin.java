@@ -30,7 +30,7 @@ public class ExamplePlugin implements IWailaPlugin {
 
 	@Override
 	public void register(IWailaCommonRegistration registration) {
-		registration.registerBlockDataProvider(ExampleComponentProvider.INSTANCE, AbstractFurnaceBlockEntity.class);
+		registration.registerBlockDataProvider(ExampleDataProvider.INSTANCE, AbstractFurnaceBlockEntity.class);
 		registration.registerItemStorage(ExampleItemStorageProvider.INSTANCE, BrewingStandBlockEntity.class);
 		registration.registerItemStorage(HideThingsExtensionProvider.instance(), DispenserBlockEntity.class);
 		registration.registerFluidStorage(ExampleFluidStorageProvider.INSTANCE, Slime.class);

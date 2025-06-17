@@ -1,7 +1,10 @@
 package snownee.jade.addon.access;
 
+import java.util.List;
+
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Leashable;
@@ -13,14 +16,15 @@ import net.minecraft.world.entity.animal.armadillo.Armadillo;
 import net.minecraft.world.entity.animal.axolotl.Axolotl;
 import net.minecraft.world.entity.animal.camel.Camel;
 import net.minecraft.world.entity.decoration.LeashFenceKnotEntity;
+import snownee.jade.JadeClient;
 import snownee.jade.addon.core.DistanceProvider;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
-import snownee.jade.api.ui.IElementHelper;
-import snownee.jade.api.ui.ITextElement;
+import snownee.jade.api.ui.JadeUI;
+import snownee.jade.api.ui.TextElement;
 
 public class EntityDetailsBodyProvider implements IEntityComponentProvider {
 	@Override
@@ -36,15 +40,30 @@ public class EntityDetailsBodyProvider implements IEntityComponentProvider {
 				tooltip.add(Component.translatable("jade.access.entity.pose", Component.translatable(key)));
 			}
 		}
-		if (entity instanceof Leashable leashable && leashable.isLeashed()) {
-			Entity holder = leashable.getLeashHolder();
-			if (holder instanceof LeashFenceKnotEntity knot) {
-				ITextElement text = DistanceProvider.xyz(knot.blockPosition());
-				tooltip.add(IElementHelper.get()
-						.text(Component.translatable("jade.access.entity.leashed_to", text.getString()))
-						.message(Component.translatable("jade.access.entity.leashed_to", text.getMessage()).getString()));
-			} else if (holder != null) {
-				tooltip.add(Component.translatable("jade.access.entity.leashed_to", holder.getName()));
+		int passengers = entity.getPassengers().size();
+		if (passengers > 0) {
+			tooltip.add(JadeClient.format("jade.access.entity.passengers", passengers));
+		}
+		if (entity instanceof Leashable leashable) {
+			if (leashable.isLeashed()) {
+				Entity holder = leashable.getLeashHolder();
+				if (holder instanceof LeashFenceKnotEntity knot) {
+					TextElement text = DistanceProvider.xyz(knot.blockPosition());
+					tooltip.add(JadeUI
+							.text(Component.translatable("jade.access.entity.leashed_to", text.getString()))
+							.narration(Component.translatable("jade.access.entity.leashed_to", text.getString())));
+				} else if (holder != null) {
+					tooltip.add(Component.translatable("jade.access.entity.leashed_to", holder.getName()));
+				}
+			}
+			List<Leashable> leashables = Leashable.leashableLeashedTo(entity);
+			if (!leashables.isEmpty()) {
+				tooltip.add(Component.translatable(
+						"jade.access.entity.is_leashing",
+						ComponentUtils.formatList(
+								leashables,
+								Component.literal(ComponentUtils.DEFAULT_SEPARATOR_TEXT),
+								$ -> ((Entity) $).getDisplayName())));
 			}
 		}
 	}
@@ -78,5 +97,10 @@ public class EntityDetailsBodyProvider implements IEntityComponentProvider {
 	@Override
 	public boolean isRequired() {
 		return true;
+	}
+
+	@Override
+	public int getDefaultPriority() {
+		return 3333;
 	}
 }

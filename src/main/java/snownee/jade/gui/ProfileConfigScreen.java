@@ -54,7 +54,7 @@ public class ProfileConfigScreen extends BaseOptionsScreen {
 		OptionsList options = new OptionsList(this, minecraft, width - 120, height - 32, 0, 26, IWailaConfig.get()::save);
 
 		WailaConfig.Root root = Jade.rootConfig();
-		options.title("general");
+		options.title("profiles");
 		enabledEntry = options.choices(
 				"enable_profiles", root::isEnableProfiles, value -> {
 					Jade.rootConfig().setEnableProfiles(value);
@@ -165,7 +165,7 @@ public class ProfileConfigScreen extends BaseOptionsScreen {
 			boolean enabled = root.isEnableProfiles();
 			for (AbstractWidget widget : children()) {
 				if (widget == editBox) {
-					editBox.setTextColor(enabled && current ? 16777045 : 0xE0E0E0);
+					editBox.setTextColor(enabled && current ? 0xFFFFFF55 : 0xFFE0E0E0);
 					editBox.setEditable(enabled);
 				} else if (enabled) {
 					widget.active = !current;

@@ -1,5 +1,6 @@
 package snownee.jade.addon.core;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 
 import net.minecraft.resources.ResourceLocation;
@@ -19,19 +20,14 @@ import snownee.jade.util.ModIdentification;
 
 public abstract class ModNameProvider implements IToggleableProvider {
 
-	public static ForBlock getBlock() {
-		return ForBlock.INSTANCE;
-	}
-
-	public static ForEntity getEntity() {
-		return ForEntity.INSTANCE;
-	}
-
 	public static class ForBlock extends ModNameProvider implements IBlockComponentProvider {
-		private static final ForBlock INSTANCE = new ForBlock();
+		public static final ForBlock INSTANCE = new ForBlock();
 
 		@Override
 		public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
+			if (Objects.equal(config.getEnum(JadeIds.CORE_MOD_NAME), Mode.OFF)) {
+				return;
+			}
 			String modName = null;
 			if (accessor.isFakeBlock()) {
 				modName = ModIdentification.getModName(accessor.getFakeBlock());
@@ -53,10 +49,13 @@ public abstract class ModNameProvider implements IToggleableProvider {
 	}
 
 	public static class ForEntity extends ModNameProvider implements IEntityComponentProvider {
-		private static final ForEntity INSTANCE = new ForEntity();
+		public static final ForEntity INSTANCE = new ForEntity();
 
 		@Override
 		public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
+			if (Objects.equal(config.getEnum(JadeIds.CORE_MOD_NAME), Mode.OFF)) {
+				return;
+			}
 			tooltip.add(IThemeHelper.get().modName(ModIdentification.getModName(accessor.getEntity())));
 		}
 	}
@@ -67,8 +66,16 @@ public abstract class ModNameProvider implements IToggleableProvider {
 	}
 
 	@Override
+	public boolean isRequired() {
+		return true;
+	}
+
+	@Override
 	public int getDefaultPriority() {
 		return TooltipPosition.TAIL - 1;
 	}
 
+	public enum Mode {
+		ON, OFF, SMALLER
+	}
 }

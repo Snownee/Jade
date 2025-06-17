@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.function.Function;
 
 import snownee.jade.api.config.IWailaConfig;
-import snownee.jade.api.ui.IElement;
+import snownee.jade.api.ui.Element;
 
 public interface AccessorClientHandler<T extends Accessor<?>> {
 
@@ -14,7 +14,7 @@ public interface AccessorClientHandler<T extends Accessor<?>> {
 
 	void requestData(T accessor, List<IServerDataProvider<T>> providers);
 
-	IElement getIcon(T accessor);
+	Element getIcon(T accessor);
 
 	void gatherComponents(T accessor, Function<IJadeProvider, ITooltip> tooltipProvider);
 

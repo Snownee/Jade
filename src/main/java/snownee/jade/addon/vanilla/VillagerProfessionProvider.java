@@ -14,9 +14,8 @@ import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 
 // @MerchantScreen / Villager.getTypeName
-public enum VillagerProfessionProvider implements IEntityComponentProvider {
-
-	INSTANCE;
+public class VillagerProfessionProvider implements IEntityComponentProvider {
+	public static final VillagerProfessionProvider INSTANCE = new VillagerProfessionProvider();
 
 	private static final Component LEVEL_SEPARATOR = Component.literal(" - ");
 

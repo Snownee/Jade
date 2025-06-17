@@ -15,11 +15,10 @@ import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.BoxStyle;
-import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.ui.JadeUI;
 
-public enum BlockStatesProvider implements IBlockComponentProvider {
-
-	INSTANCE;
+public class BlockStatesProvider implements IBlockComponentProvider {
+	public static final BlockStatesProvider INSTANCE = new BlockStatesProvider();
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
@@ -28,9 +27,8 @@ public enum BlockStatesProvider implements IBlockComponentProvider {
 		if (properties.isEmpty()) {
 			return;
 		}
-		IElementHelper helper = IElementHelper.get();
 		IThemeHelper t = IThemeHelper.get();
-		ITooltip box = helper.tooltip();
+		ITooltip box = JadeUI.tooltip();
 		properties.forEach(p -> {
 			Comparable<?> value = state.getValue(p);
 			MutableComponent valueText = Component.literal(" " + value).withStyle();
@@ -39,7 +37,7 @@ public enum BlockStatesProvider implements IBlockComponentProvider {
 			}
 			box.add(Component.literal(p.getName() + ":").append(valueText));
 		});
-		tooltip.add(helper.box(box, BoxStyle.getNestedBox()));
+		tooltip.add(JadeUI.box(box, BoxStyle.nestedBox()).flexGrow(1));
 	}
 
 	@Override

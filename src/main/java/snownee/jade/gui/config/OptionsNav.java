@@ -15,7 +15,7 @@ import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.gui.navigation.ScreenDirection;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.api.JadeIds;
@@ -41,18 +41,18 @@ public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
 		if (focused != null && minecraft.getLastInputType().isKeyboard()) {
 			current = children().indexOf(focused);
 		}
-		double top = getY() + 4 - this.scrollAmount() + current * this.itemHeight + this.headerHeight;
+		float top = getY() + 4 - (float) this.scrollAmount() + current * this.itemHeight + this.headerHeight;
 		int left = getRowLeft() + 2;
-		guiGraphics.pose().pushPose();
-		guiGraphics.pose().translate(0, top, 0);
+		guiGraphics.pose().pushMatrix();
+		guiGraphics.pose().translate(0, top);
 		guiGraphics.fill(left, 0, left + 2, itemHeight - 4, 0xFFFFFFFF);
-		guiGraphics.pose().popPose();
+		guiGraphics.pose().popMatrix();
 	}
 
 	@Override
 	protected void renderListBackground(GuiGraphics guiGraphics) {
 		ResourceLocation resourceLocation = minecraft.level == null ? NAVBAR_BACKGROUND : INWORLD_NAVBAR_BACKGROUND;
-		guiGraphics.blitSprite(RenderType::guiTextured, resourceLocation, getX(), getY(), getWidth(), getHeight());
+		guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, resourceLocation, getX(), getY(), getWidth(), getHeight());
 	}
 
 	@Override
@@ -157,7 +157,7 @@ public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
 					title.getTitle().getString(),
 					rowLeft + 10,
 					rowTop + (height / 2) - (title.client.font.lineHeight / 2),
-					0xFFFFFF);
+					0xFFFFFFFF);
 			if (isFocused() && parent.minecraft.getLastInputType().isKeyboard()) {
 				int color = 0xFFAAAAAA;
 				int left = rowLeft + 2;
@@ -175,6 +175,9 @@ public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
 			}
 			if (tooltip != null) {
 				tooltip.refreshTooltipForNextRenderPass(
+						guiGraphics,
+						mouseX,
+						mouseY,
 						isMouseOver(mouseX, mouseY),
 						isFocused(),
 						new ScreenRectangle(rowLeft, rowTop, width, height));

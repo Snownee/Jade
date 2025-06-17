@@ -18,9 +18,8 @@ import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
 
-public enum NoteBlockProvider implements IBlockComponentProvider {
-
-	INSTANCE;
+public class NoteBlockProvider implements IBlockComponentProvider {
+	public static final NoteBlockProvider INSTANCE = new NoteBlockProvider();
 
 	private static final String[] PITCH = {"F♯/G♭", "G", "G♯/A♭", "A", "A♯/B♭", "B", "C", "C♯/D♭", "D", "D♯/E♭", "E", "F"};
 	private static final ChatFormatting[] OCTAVE = {ChatFormatting.WHITE, ChatFormatting.YELLOW, ChatFormatting.GOLD};
@@ -35,9 +34,10 @@ public enum NoteBlockProvider implements IBlockComponentProvider {
 		if (I18n.exists(key)) {
 			name = I18n.get(key);
 		} else {
-			name = String.join(" ", Stream.of(instrument.getSerializedName().replace('_', ' ').split(" "))
-					.map(StringUtils::capitalize)
-					.toList());
+			name = String.join(
+					" ", Stream.of(instrument.getSerializedName().replace('_', ' ').split(" "))
+							.map(StringUtils::capitalize)
+							.toList());
 		}
 		if (instrument.isTunable()) {
 			int note = state.getValue(NoteBlock.NOTE);

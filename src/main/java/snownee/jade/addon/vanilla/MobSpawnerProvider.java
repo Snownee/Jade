@@ -11,7 +11,7 @@ import net.minecraft.world.entity.vehicle.MinecartSpawner;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
 import net.minecraft.world.level.block.entity.TrialSpawnerBlockEntity;
-import net.minecraft.world.level.block.entity.trialspawner.TrialSpawnerData;
+import net.minecraft.world.level.block.entity.trialspawner.TrialSpawnerStateData;
 import snownee.jade.addon.core.ObjectNameProvider;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
@@ -25,16 +25,8 @@ import snownee.jade.api.theme.IThemeHelper;
 
 public abstract class MobSpawnerProvider implements IToggleableProvider {
 
-	public static ForBlock getBlock() {
-		return ForBlock.INSTANCE;
-	}
-
-	public static ForEntity getEntity() {
-		return ForEntity.INSTANCE;
-	}
-
 	public static class ForBlock extends MobSpawnerProvider implements IBlockComponentProvider {
-		private static final ForBlock INSTANCE = new ForBlock();
+		public static final ForBlock INSTANCE = new ForBlock();
 
 		@Override
 		public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
@@ -44,19 +36,19 @@ public abstract class MobSpawnerProvider implements IToggleableProvider {
 			if (accessor.getBlockEntity() instanceof SpawnerBlockEntity spawner) {
 				appendTooltip(tooltip, spawner.getSpawner().getOrCreateDisplayEntity(level, pos), name);
 			} else if (accessor.getBlockEntity() instanceof TrialSpawnerBlockEntity spawner) {
-				TrialSpawnerData data = spawner.getTrialSpawner().getData();
+				TrialSpawnerStateData data = spawner.getTrialSpawner().getStateData();
 				appendTooltip(tooltip, data.getOrCreateDisplayEntity(spawner.getTrialSpawner(), level, spawner.getState()), name);
 			}
 		}
 	}
 
 	public static class ForEntity extends MobSpawnerProvider implements IEntityComponentProvider {
-		private static final ForEntity INSTANCE = new ForEntity();
+		public static final ForEntity INSTANCE = new ForEntity();
 
 		@Override
 		public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 			MinecartSpawner spawner = (MinecartSpawner) accessor.getEntity();
-			MutableComponent name = ObjectNameProvider.getEntityName(spawner, false).copy();
+			MutableComponent name = ObjectNameProvider.ForEntity.getEntityName(spawner, false).copy();
 			appendTooltip(
 					tooltip,
 					spawner.getSpawner().getOrCreateDisplayEntity(accessor.getLevel(), accessor.getEntity().blockPosition()),
@@ -79,7 +71,7 @@ public abstract class MobSpawnerProvider implements IToggleableProvider {
 
 	@Override
 	public int getDefaultPriority() {
-		return ObjectNameProvider.getEntity().getDefaultPriority() + 10;
+		return ObjectNameProvider.ForEntity.INSTANCE.getDefaultPriority() + 10;
 	}
 
 }

@@ -17,30 +17,8 @@ import snownee.jade.api.StreamServerDataProvider;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
 
-public enum BeehiveProvider implements IBlockComponentProvider, StreamServerDataProvider<BlockAccessor, Byte> {
-
-	INSTANCE;
-
-//	@Override
-//	public @Nullable IElement getIcon(BlockAccessor accessor, IPluginConfig config, IElement currentIcon) {
-//		// https://bugs.mojang.com/browse/MC-159508
-//	}
-
-	@Override
-	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		BlockState state = accessor.getBlockState();
-		int level = state.getValue(BeehiveBlock.HONEY_LEVEL); // 0~5
-		IThemeHelper t = IThemeHelper.get();
-		MutableComponent value = Component.translatable("jade.fraction", level, 5);
-		tooltip.add(Component.translatable("jade.beehive.honey", level == 5 ? t.success(value) : t.info(value)));
-		Byte b = decodeFromData(accessor).orElse(null);
-		if (b == null) {
-			return;
-		}
-		boolean full = b > 0;
-		int bees = Math.abs(b);
-		tooltip.add(Component.translatable("jade.beehive.bees", full ? t.success(bees) : t.info(bees)));
-	}
+public class BeehiveProvider implements StreamServerDataProvider<BlockAccessor, Byte> {
+	public static final BeehiveProvider INSTANCE = new BeehiveProvider();
 
 	@Override
 	public Byte streamData(BlockAccessor accessor) {
@@ -57,5 +35,30 @@ public enum BeehiveProvider implements IBlockComponentProvider, StreamServerData
 	@Override
 	public ResourceLocation getUid() {
 		return JadeIds.MC_BEEHIVE;
+	}
+
+	public static class Client implements IBlockComponentProvider {
+		public static final Client INSTANCE = new Client();
+
+		@Override
+		public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
+			BlockState state = accessor.getBlockState();
+			int level = state.getValue(BeehiveBlock.HONEY_LEVEL); // 0~5
+			IThemeHelper t = IThemeHelper.get();
+			MutableComponent value = Component.translatable("jade.fraction", level, 5);
+			tooltip.add(Component.translatable("jade.beehive.honey", level == 5 ? t.success(value) : t.info(value)));
+			Byte b = BeehiveProvider.INSTANCE.decodeFromData(accessor).orElse(null);
+			if (b == null) {
+				return;
+			}
+			boolean full = b > 0;
+			int bees = Math.abs(b);
+			tooltip.add(Component.translatable("jade.beehive.bees", full ? t.success(bees) : t.info(bees)));
+		}
+
+		@Override
+		public ResourceLocation getUid() {
+			return JadeIds.MC_BEEHIVE;
+		}
 	}
 }

@@ -13,24 +13,22 @@ import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
-import snownee.jade.api.ui.IElement;
-import snownee.jade.impl.ui.ItemStackElement;
-import snownee.jade.overlay.RayTracing;
+import snownee.jade.api.ui.Element;
+import snownee.jade.api.ui.JadeUI;
 import snownee.jade.util.ClientProxy;
 
-public enum BlockDisplayProvider implements IEntityComponentProvider {
-
-	INSTANCE;
+public class BlockDisplayProvider implements IEntityComponentProvider {
+	public static final BlockDisplayProvider INSTANCE = new BlockDisplayProvider();
 
 	@Override
-	public @Nullable IElement getIcon(EntityAccessor accessor, IPluginConfig config, IElement currentIcon) {
+	public @Nullable Element getIcon(EntityAccessor accessor, IPluginConfig config, Element currentIcon) {
 		BlockDisplay itemDisplay = (BlockDisplay) accessor.getEntity();
 		Block block = itemDisplay.getBlockState().getBlock();
 		if (block.asItem() == Items.AIR) {
 			return null;
 		}
-		IElement icon = ItemStackElement.of(new ItemStack(block));
-		if (RayTracing.isEmptyElement(icon) && block instanceof LiquidBlock) {
+		Element icon = JadeUI.item(new ItemStack(block));
+		if (JadeUI.isEmptyElement(icon) && block instanceof LiquidBlock) {
 			icon = ClientProxy.elementFromLiquid(itemDisplay.getBlockState());
 		}
 		return icon;

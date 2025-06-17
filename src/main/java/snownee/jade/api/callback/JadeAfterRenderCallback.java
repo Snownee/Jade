@@ -2,12 +2,12 @@ package snownee.jade.api.callback;
 
 import net.minecraft.client.gui.GuiGraphics;
 import snownee.jade.api.Accessor;
-import snownee.jade.api.ui.IBoxElement;
-import snownee.jade.api.ui.TooltipRect;
+import snownee.jade.api.ui.BoxElement;
+import snownee.jade.api.ui.TooltipAnimation;
 
 @FunctionalInterface
 public interface JadeAfterRenderCallback {
 
-	void afterRender(IBoxElement rootElement, TooltipRect rect, GuiGraphics guiGraphics, Accessor<?> accessor);
+	void afterRender(BoxElement root, TooltipAnimation animation, GuiGraphics graphics, Accessor<?> accessor);
 
 }

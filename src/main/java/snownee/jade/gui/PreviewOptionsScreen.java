@@ -11,7 +11,6 @@ import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -19,6 +18,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import snownee.jade.Jade;
 import snownee.jade.api.config.IWailaConfig;
+import snownee.jade.api.ui.Rect2f;
 import snownee.jade.gui.config.OptionsList;
 import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.overlay.OverlayRenderer;
@@ -38,7 +38,7 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 		return Minecraft.getInstance().screen instanceof PreviewOptionsScreen screen && screen.adjustingPosition;
 	}
 
-	private static float calculateAnchor(float center, float size, int rectSize) {
+	private static float calculateAnchor(float center, float size, float rectSize) {
 		float anchor = center / size;
 		if (anchor < 0.25F) {
 			return 0;
@@ -106,7 +106,7 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 		}
 
 		Objects.requireNonNull(minecraft);
-		Rect2i rect = OverlayRenderer.rect.expectedRect;
+		Rect2f rect = OverlayRenderer.animation.expectedRect;
 		if (rect.contains((int) mouseX, (int) mouseY)) {
 			setDragging(true);
 			adjustDragging = true;
@@ -177,9 +177,9 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 		if (adjustingPosition && adjustDragging) {
 			float centerX = (float) d - (float) dragOffsetX;
 			float centerY = (float) e - (float) dragOffsetY;
-			Rect2i rect = OverlayRenderer.rect.expectedRect;
-			int rectWidth = rect.getWidth();
-			int rectHeight = rect.getHeight();
+			Rect2f rect = OverlayRenderer.animation.expectedRect;
+			float rectWidth = rect.getWidth();
+			float rectHeight = rect.getHeight();
 			float anchorX = calculateAnchor(centerX, width, rectWidth);
 			float anchorY = calculateAnchor(centerY, height, rectHeight);
 			float posX = (centerX + rectWidth * (anchorX - 0.5F)) / width;
@@ -199,36 +199,29 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		if (adjustingPosition) {
 			super.render(guiGraphics, Integer.MAX_VALUE, Integer.MAX_VALUE, partialTicks);
-			guiGraphics.fill(0, 0, width, height, 50, 0x80808080);
-			guiGraphics.pose().pushPose();
-			guiGraphics.pose().translate(0, 0, 55);
+			guiGraphics.fill(0, 0, width, height, 0x80808080);
+
 			MutableComponent text = Component.translatable("config.jade.overlay_pos.exit");
-			DisplayHelper.font().drawInBatch(
-					text,
-					(float) (width - DisplayHelper.font().width(text)) / 2,
-					(float) height / 2 - 7,
-					0xFFFFFF,
-					true,
-					guiGraphics.pose().last().pose(),
-					guiGraphics.bufferSource,
-					Font.DisplayMode.NORMAL,
-					0x88000000,
-					0xF000F0);
-			guiGraphics.pose().popPose();
+			Font font = DisplayHelper.font();
+			int textWidth = font.width(text);
+			int x = (width - textWidth) / 2;
+			int y = height / 2 - 7;
+			guiGraphics.fill(x - 4, y - 4, x + textWidth + 4, y + font.lineHeight + 4, 0x88000000);
+			guiGraphics.drawString(font, text, x, y, 0xFFFFFFFF);
+
 			IWailaConfig.Overlay config = IWailaConfig.get().overlay();
-			Rect2i rect = OverlayRenderer.rect.expectedRect;
+			Rect2f rect = OverlayRenderer.animation.expectedRect;
 			if (IWailaConfig.get().general().isDebug()) {
 				int anchorX = (int) (rect.getX() + rect.getWidth() * config.getAnchorX());
 				int anchorY = (int) (rect.getY() + rect.getHeight() * config.getAnchorY());
-				guiGraphics.fill(anchorX - 2, anchorY - 2, anchorX + 1, anchorY + 1, 1000, 0xFFFF0000);
+				guiGraphics.fill(anchorX - 2, anchorY - 2, anchorX + 1, anchorY + 1, 0xFFFF0000);
 			}
 			if (config.getOverlayPosX() == 0.5f) {
-				guiGraphics.fill(width / 2, rect.getY() - 5, width / 2 + 1, rect.getY() + rect.getHeight() + 4, 1000, 0xFF0000FF);
+				guiGraphics.fill(width / 2, (int) (rect.getY() - 5), width / 2 + 1, (int) (rect.getY() + rect.getHeight() + 4), 0xFF0000FF);
 			}
 			if (config.getOverlayPosY() == 0.5f) {
-				guiGraphics.fill(rect.getX() - 5, height / 2, rect.getX() + rect.getWidth() + 4, height / 2 + 1, 1000, 0xFF0000FF);
+				guiGraphics.fill((int) (rect.getX() - 5), height / 2, (int) (rect.getX() + rect.getWidth() + 4), height / 2 + 1, 0xFF0000FF);
 			}
-			deferredTooltipRendering = null;
 		} else {
 			super.render(guiGraphics, mouseX, mouseY, partialTicks);
 		}

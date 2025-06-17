@@ -18,7 +18,7 @@ public class SignProvider implements IBlockComponentProvider {
 		boolean front = be.isFacingFrontText(accessor.getPlayer());
 		tooltip.add(Component.translatable("jade.access.sign." + (front ? "front" : "back")));
 		int i = 0;
-		for (Component message : be.getFrontText().getMessages(true)) {
+		for (Component message : (front ? be.getFrontText() : be.getBackText()).getMessages(true)) {
 			++i;
 			if (accessor.showDetails()) {
 				tooltip.add(Component.translatable("jade.access.sign.line" + i, message));

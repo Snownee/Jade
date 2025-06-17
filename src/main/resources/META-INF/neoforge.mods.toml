@@ -17,4 +17,4 @@ config = "jade.mixins.json"
 
 [[dependencies.jade]]
 modId = "neoforge"
-versionRange = "[21.5.0-beta, )"
+versionRange = "[21.6.0-beta, )"

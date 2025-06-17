@@ -8,32 +8,16 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
-import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.StreamServerDataProvider;
 import snownee.jade.api.config.IPluginConfig;
-import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.api.ui.JadeUI;
 
-public enum FurnaceProvider implements IBlockComponentProvider, StreamServerDataProvider<BlockAccessor, FurnaceProvider.Data> {
-
-	INSTANCE;
-
-	@Override
-	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		Data data = decodeFromData(accessor).orElse(null);
-		if (data == null) {
-			return;
-		}
-		IElementHelper helper = IElementHelper.get();
-		tooltip.add(helper.item(data.inventory.get(0)));
-		tooltip.append(helper.item(data.inventory.get(1)));
-		tooltip.append(helper.spacer(4, 0));
-		tooltip.append(helper.progress((float) data.progress / data.total).translate(new Vec2(-2, 0)));
-		tooltip.append(helper.item(data.inventory.get(2)));
-	}
+public class FurnaceProvider implements StreamServerDataProvider<BlockAccessor, FurnaceProvider.Data> {
+	public static final FurnaceProvider INSTANCE = new FurnaceProvider();
 
 	@Override
 	public Data streamData(BlockAccessor accessor) {
@@ -63,6 +47,29 @@ public enum FurnaceProvider implements IBlockComponentProvider, StreamServerData
 				ItemStack.OPTIONAL_LIST_STREAM_CODEC,
 				Data::inventory,
 				Data::new);
+	}
+
+	public static class Client implements IBlockComponentProvider {
+		public static final Client INSTANCE = new Client();
+
+		@Override
+		public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
+			Data data = FurnaceProvider.INSTANCE.decodeFromData(accessor).orElse(null);
+			if (data == null) {
+				return;
+			}
+			tooltip.add(JadeUI.item(data.inventory.get(0)).alignSelfCenter());
+			tooltip.append(JadeUI.item(data.inventory.get(1)).alignSelfCenter());
+			tooltip.append(JadeUI.progressArrow(data.total == 0 ? 0 : (float) data.progress / data.total).alignSelfCenter().settings($ -> {
+				return $.paddingHorizontal(3);
+			}));
+			tooltip.append(JadeUI.item(data.inventory.get(2)).alignSelfCenter());
+		}
+
+		@Override
+		public ResourceLocation getUid() {
+			return JadeIds.MC_FURNACE;
+		}
 	}
 
 }

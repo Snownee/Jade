@@ -21,7 +21,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
-import net.minecraft.client.renderer.FogRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
@@ -57,15 +56,15 @@ import snownee.jade.api.config.IWailaConfig.Overlay;
 import snownee.jade.api.config.IWailaConfig.TTSMode;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
-import snownee.jade.api.ui.BoxStyle;
+import snownee.jade.api.ui.BoxElement;
 import snownee.jade.api.ui.ColorPalette;
-import snownee.jade.api.ui.IBoxElement;
 import snownee.jade.api.ui.ScreenDirection;
-import snownee.jade.api.ui.TooltipRect;
-import snownee.jade.conditional_key_mapping.ConditionalKeyMapping;
+import snownee.jade.api.ui.TooltipAnimation;
 import snownee.jade.gui.HomeConfigScreen;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.theme.ThemeHelper;
+import snownee.jade.key_extension.KeyExManager;
+import snownee.jade.key_extension.KeyMappingEx;
 import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.overlay.WailaTickHandler;
 import snownee.jade.util.ClientProxy;
@@ -77,6 +76,7 @@ public final class JadeClient {
 
 	public static final SystemToast.SystemToastId JADE_PLEASE_WAIT = new SystemToast.SystemToastId(2000L);
 	public static final KeyMapping[] profiles = new KeyMapping[4];
+	private static final WailaTickHandler tickHandler = new WailaTickHandler();
 	public static KeyMapping openConfig;
 	public static KeyMapping showOverlay;
 	public static KeyMapping toggleLiquid;
@@ -89,6 +89,8 @@ public final class JadeClient {
 			.weakValues()
 			.expireAfterAccess(1, TimeUnit.SECONDS)
 			.build();
+	public static float renderDistanceStart;
+	public static float renderDistanceEnd;
 	private static boolean translationChecked;
 	private static float savedProgress;
 	private static float progressAlpha;
@@ -103,7 +105,7 @@ public final class JadeClient {
 			showUses = ClientProxy.registerKeyBinding("show_uses", InputConstants.KEY_NUMPAD4);
 		}
 		narrate = ClientProxy.registerKeyBinding("narrate", InputConstants.KEY_NUMPAD5);
-		showDetails = ClientProxy.registerDetailsKeyBinding();
+		showDetails = ClientProxy.registerKeyBinding("show_details", InputConstants.KEY_LSHIFT);
 		for (int i = 0; i < 4; i++) {
 			profiles[i] = ClientProxy.registerKeyBinding("profile." + i, InputConstants.UNKNOWN.getValue());
 		}
@@ -111,6 +113,10 @@ public final class JadeClient {
 		ClientProxy.registerReloadListener(ModIdentification.INSTANCE);
 		ClientProxy.registerReloadListener(HarvestToolProvider.INSTANCE);
 		ClientProxy.registerReloadListener(ThemeHelper.INSTANCE);
+	}
+
+	public static WailaTickHandler tickHandler() {
+		return tickHandler;
 	}
 
 	public static void onKeyPressed(int action) {
@@ -125,7 +131,7 @@ public final class JadeClient {
 		while (showOverlay.consumeClick()) {
 			IWailaConfig.General general = IWailaConfig.get().general();
 			DisplayMode mode = general.getDisplayMode();
-			if (mode == IWailaConfig.DisplayMode.TOGGLE) {
+			if (mode == DisplayMode.TOGGLE) {
 				general.setDisplayTooltip(!general.shouldDisplayTooltip());
 				if (!general.shouldDisplayTooltip() && Jade.history().hintOverlayToggle) {
 					mc.getChatListener().handleSystemMessage(
@@ -162,8 +168,8 @@ public final class JadeClient {
 					Jade.history().hintNarratorToggle = false;
 				}
 				IWailaConfig.get().save();
-			} else if (WailaTickHandler.instance().rootElement != null) {
-				WailaTickHandler.narrate(WailaTickHandler.instance().rootElement.getTooltip(), false);
+			} else if (tickHandler.rootElement != null) {
+				tickHandler.narrate(tickHandler.rootElement, false);
 			}
 		}
 
@@ -172,7 +178,7 @@ public final class JadeClient {
 				while (profiles[i].consumeClick()) {
 					Jade.useProfile(i);
 					if (IWailaConfig.get().accessibility().getNarrateKeys()) {
-						WailaTickHandler.narrate(I18n.get("narration.jade.key.profile", profiles[i].getName()), false);
+						tickHandler.narrate(I18n.get("narration.jade.key.profile", profiles[i].getName()), false);
 					}
 				}
 			}
@@ -182,7 +188,7 @@ public final class JadeClient {
 	public static void narrateKey(String key, boolean bl) {
 		if (IWailaConfig.get().accessibility().getNarrateKeys()) {
 			key = "narration.jade.key.%s.%s".formatted(key, bl ? "on" : "off");
-			WailaTickHandler.narrate(I18n.get(key), false);
+			tickHandler.narrate(I18n.get(key), false);
 		}
 	}
 
@@ -268,6 +274,9 @@ public final class JadeClient {
 		if (accessor == null) {
 			return null;
 		}
+		if (WailaClientRegistration.instance().maybeLowVisionUser()) {
+			return accessor;
+		}
 		Player player = accessor.getPlayer();
 		Minecraft mc = Minecraft.getInstance();
 		LightTexture lightTexture = mc.gameRenderer.lightTexture();
@@ -277,30 +286,22 @@ public final class JadeClient {
 		if (gamma > 0.15f && accessor.getLevel().getMaxLocalRawBrightness(BlockPos.containing(accessor.getHitResult().getLocation())) < 7) {
 			return null;
 		}
-		FogRenderer.MobEffectFogFunction fogFunction = FogRenderer.getPriorityFogFunction(player, 1);
-		if (fogFunction == null) {
+		if (renderDistanceStart == 0f && renderDistanceEnd == 0f) {
 			return accessor;
 		}
-		FogRenderer.FogData fogData = new FogRenderer.FogData(FogRenderer.FogMode.FOG_TERRAIN);
-		fogFunction.setupFog(
-				fogData,
-				player,
-				player.getEffect(fogFunction.getMobEffect()),
-				Math.max(32, mc.gameRenderer.getRenderDistance()),
-				1);
-		float dist = (fogData.start + fogData.end) * 0.5F;
+		float dist = (renderDistanceStart + renderDistanceEnd) * 0.5f;
 		if (accessor.getHitResult().distanceTo(player) > dist * dist) {
 			return null;
 		}
 		return accessor;
 	}
 
-	public static void drawBreakingProgress(IBoxElement rootElement, TooltipRect rect, GuiGraphics guiGraphics, Accessor<?> accessor) {
+	public static void drawBreakingProgress(BoxElement root, TooltipAnimation animation, GuiGraphics graphics, Accessor<?> accessor) {
 		if (!IWailaConfig.get().plugin().get(JadeIds.MC_BREAKING_PROGRESS)) {
 			progressAlpha = 0;
 			return;
 		}
-		if (!Float.isNaN(rootElement.getBoxProgress())) {
+		if (!Float.isNaN(root.getBoxProgress())) {
 			progressAlpha = 0;
 			return;
 		}
@@ -318,13 +319,9 @@ public final class JadeClient {
 		}
 		Theme theme = IThemeHelper.get().theme();
 		ColorPalette colors = theme.tooltipStyle.boxProgressColors;
-		int color = canHarvest ? colors.normal() : colors.failure();
-		float top = rootElement.getCachedSize().y;
-		float width = rootElement.getCachedSize().x;
-		boolean roundCorner = !IWailaConfig.get().overlay().getSquare();
-		if (roundCorner && theme.tooltipStyle instanceof BoxStyle.GradientBorder) {
-			top += 1;
-		}
+		int color = canHarvest ? colors.title() : colors.failure();
+		float top = root.getY() + root.getHeight();
+		float width = root.getWidth();
 		progressAlpha += mc.getDeltaTracker().getGameTimeDeltaTicks() * (playerController.isDestroying() ? 0.1F : -0.1F);
 		if (playerController.isDestroying()) {
 			progressAlpha = Math.min(progressAlpha, 0.6F);
@@ -347,19 +344,23 @@ public final class JadeClient {
 		float offset2 = theme.tooltipStyle.boxProgressOffset(ScreenDirection.DOWN);
 		float offset3 = theme.tooltipStyle.boxProgressOffset(ScreenDirection.LEFT);
 		width += offset1 - offset3;
-		DisplayHelper.fill(guiGraphics, offset3, top - 1 + offset0, offset3 + width * savedProgress, top + offset2, color);
+		DisplayHelper.fill(graphics, offset3, top - 1 + offset0, offset3 + width * savedProgress, top + offset2, color);
 	}
 
 	public static MutableComponent format(String s, Object... objects) {
+		return Component.literal(formatString(s, objects));
+	}
+
+	public static String formatString(String s, Object... objects) {
 		try {
 			for (int i = 0; i < objects.length; i++) {
 				if (objects[i] instanceof Component component) {
 					objects[i] = component.getString();
 				}
 			}
-			return Component.literal(MessageFormat.format(I18n.get(s), objects));
+			return MessageFormat.format(I18n.get(s), objects);
 		} catch (Exception e) {
-			return Component.translatable(s, objects);
+			return I18n.get(s, objects);
 		}
 	}
 
@@ -375,7 +376,7 @@ public final class JadeClient {
 		ImmutableMap.Builder<KeyMapping, InputConstants.Key> keyMapBuilder = ImmutableMap.builder();
 		for (KeyMapping keyMapping : Minecraft.getInstance().options.keyMappings) {
 			if (predicate.test(keyMapping)) {
-				keyMapBuilder.put(keyMapping, ClientProxy.getBoundKeyOf(keyMapping));
+				keyMapBuilder.put(keyMapping, ((KeyMappingEx) keyMapping).keyEx$key());
 			}
 		}
 		var keyMap = keyMapBuilder.build();
@@ -383,9 +384,10 @@ public final class JadeClient {
 	}
 
 	public static void refreshKeyState() {
-		boolean enabled = Jade.rootConfig().isEnableProfiles();
+		boolean active = Jade.rootConfig().isEnableProfiles();
 		for (KeyMapping keyMapping : profiles) {
-			ConditionalKeyMapping.set(keyMapping, enabled);
+			KeyMappingEx.setActive(keyMapping, active);
 		}
+		KeyExManager.setGlobalNoConflict(Jade.config().accessibility().getNoKeyConflict());
 	}
 }

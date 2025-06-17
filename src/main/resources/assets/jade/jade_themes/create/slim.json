@@ -1,0 +1,7 @@
+{
+	"version": 200,
+	"styleName": "jade.slim",
+	"tooltipStyle": {
+		"sprite": "jade:create_slim"
+	}
+}

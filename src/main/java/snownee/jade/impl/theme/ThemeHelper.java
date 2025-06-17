@@ -1,7 +1,6 @@
 package snownee.jade.impl.theme;
 
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -9,7 +8,9 @@ import java.util.Set;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.NotNull;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
+import com.mojang.brigadier.Message;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -30,10 +31,13 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.profiling.ProfilerFiller;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
+import snownee.jade.addon.core.ModNameProvider;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
+import snownee.jade.api.ui.JadeUI;
+import snownee.jade.api.ui.TextElement;
 import snownee.jade.impl.config.WailaConfig;
 import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.util.JadeClientCodecs;
@@ -44,8 +48,8 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener<JadeClientCode
 	public static final ResourceLocation ID = JadeIds.JADE("themes");
 	public static final MutableObject<Theme> theme = new MutableObject<>();
 	private static final Int2ObjectMap<Style> styleCache = new Int2ObjectOpenHashMap<>(6);
-	private final Map<ResourceLocation, Theme> themes = Maps.newTreeMap(Comparator.comparing(ResourceLocation::toString));
-	private final MinMaxBounds.Ints allowedVersions = MinMaxBounds.Ints.between(100, 199);
+	private final Map<ResourceLocation, Theme> themes = Maps.newTreeMap();
+	private final MinMaxBounds.Ints allowedVersions = MinMaxBounds.Ints.between(200, 299);
 	private final Style[] modNameStyleCache = new Style[3];
 	private Theme fallback;
 
@@ -75,7 +79,12 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener<JadeClientCode
 	@Override
 	@NotNull
 	public Theme getTheme(ResourceLocation id) {
-		return Objects.requireNonNull(themes.getOrDefault(id, fallback));
+		return Preconditions.checkNotNull(themes.getOrDefault(id, fallback), "Theme not found: %s", id);
+	}
+
+	@Override
+	public boolean hasTheme(ResourceLocation id) {
+		return themes.containsKey(id);
 	}
 
 	@Override
@@ -115,7 +124,7 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener<JadeClientCode
 	}
 
 	@Override
-	public MutableComponent modName(Object componentOrString) {
+	public TextElement modName(Object componentOrString) {
 		MutableComponent component;
 		if (componentOrString instanceof MutableComponent) {
 			component = (MutableComponent) componentOrString;
@@ -133,7 +142,11 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener<JadeClientCode
 			modNameStyleCache[1] = themeStyle;
 			modNameStyleCache[2] = style;
 		}
-		return component.withStyle(modNameStyleCache[2]);
+		return JadeUI
+				.text(component.withStyle(modNameStyleCache[2]))
+				.scale(Objects.equals(IWailaConfig.get().plugin().getEnum(JadeIds.CORE_MOD_NAME), ModNameProvider.Mode.SMALLER) ?
+						0.75F :
+						1F);
 	}
 
 	@Override
@@ -161,9 +174,18 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener<JadeClientCode
 			} else {
 				return component.setStyle(component.getStyle().withColor(color));
 			}
-		} else {
-			return Component.literal(Objects.toString(componentOrString)).setStyle(colorStyle(color));
 		}
+		if (componentOrString instanceof Component component) {
+			if (component.getStyle().isEmpty()) {
+				return component.copy().setStyle(colorStyle(color));
+			} else {
+				return component.copy().setStyle(component.getStyle().withColor(color));
+			}
+		}
+		if (componentOrString instanceof Message message) {
+			return Component.literal(message.getString()).setStyle(colorStyle(color));
+		}
+		return Component.literal(Objects.toString(componentOrString)).setStyle(colorStyle(color));
 	}
 
 	@Override
@@ -188,7 +210,7 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener<JadeClientCode
 				enable.setValue(theme);
 			}
 		});
-		fallback = themes.get(Theme.DEFAULT_THEME_ID);
+		fallback = themes.get(JadeIds.DEFAULT_THEME);
 		if (fallback == null) {
 			CrashReport crashreport = CrashReport.forThrowable(new NullPointerException(), "Missing default theme");
 			throw new ReportedException(crashreport);
@@ -202,9 +224,6 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener<JadeClientCode
 				Theme theme = enable.getValue();
 				config.activeTheme = theme.id;
 				Jade.LOGGER.info("Auto enabled theme {}", theme.id);
-				if (theme.changeRoundCorner != null) {
-					config.setSquare(theme.changeRoundCorner);
-				}
 				if (theme.changeOpacity != 0) {
 					config.setAlpha(theme.changeOpacity);
 				}

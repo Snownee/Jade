@@ -27,7 +27,6 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -42,7 +41,6 @@ import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.MushroomCow;
 import net.minecraft.world.entity.animal.sheep.Sheep;
 import net.minecraft.world.entity.decoration.PaintingVariant;
-import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -362,13 +360,6 @@ public final class CommonProxy {
 
 	public static String getPlatformIdentifier() {
 		return "neoforge";
-	}
-
-	public static MutableComponent getProfessionName(VillagerProfession profession) {
-		ResourceLocation profName = BuiltInRegistries.VILLAGER_PROFESSION.getKey(profession);
-		return Component.translatable(EntityType.VILLAGER.getDescriptionId() + '.' +
-				(!ResourceLocation.DEFAULT_NAMESPACE.equals(profName.getNamespace()) ? profName.getNamespace() + '.' : "") +
-				profName.getPath());
 	}
 
 	private static void registerServerCommand(RegisterCommandsEvent event) {

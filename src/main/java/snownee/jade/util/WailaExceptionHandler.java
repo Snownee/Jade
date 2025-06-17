@@ -19,6 +19,7 @@ import net.minecraft.resources.ResourceLocation;
 import snownee.jade.Jade;
 import snownee.jade.api.IJadeProvider;
 import snownee.jade.api.TraceableException;
+import snownee.jade.api.config.IWailaConfig;
 
 public class WailaExceptionHandler {
 
@@ -27,7 +28,7 @@ public class WailaExceptionHandler {
 	private static final File ERROR_OUTPUT = new File("logs", "JadeErrorOutput.txt");
 
 	public static void handleErr(Throwable e, @Nullable IJadeProvider provider, @Nullable Consumer<Component> tooltip) {
-		if (CommonProxy.isDevEnv()) {
+		if (CommonProxy.isDevEnv() && !IWailaConfig.get().general().isDebug()) {
 			ExceptionUtils.wrapAndThrow(e);
 			return;
 		}

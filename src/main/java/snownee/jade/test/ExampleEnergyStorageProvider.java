@@ -41,7 +41,7 @@ public enum ExampleEnergyStorageProvider
 		cell1.id = "1";
 		float period = 40;
 		cell1.setProgress(((world.getGameTime() % period) + 1) / period);
-		var cell2 = new ViewGroup<>(List.of(new EnergyView.Data(1500, 2000), new EnergyView.Data(1500, 2000)));
+		var cell2 = new ViewGroup<>(List.of(new EnergyView.Data(1500, 2000), new EnergyView.Data(2000, 2000)));
 		period = 100;
 		cell2.setProgress(((world.getGameTime() % period) + 1) / period);
 		return List.of(cell1, cell2);
