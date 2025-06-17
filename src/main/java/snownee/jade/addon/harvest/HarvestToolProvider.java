@@ -13,7 +13,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -43,7 +42,6 @@ public class HarvestToolProvider implements IBlockComponentProvider, KeyedResour
 	public static final HarvestToolProvider INSTANCE;
 
 	public static final Map<ResourceLocation, ToolHandler> TOOL_HANDLERS = Maps.newLinkedHashMap();
-	private static List<Block> shearableBlocks = List.of();
 	private static final Component CHECK = Component.literal("✔");
 	private static final Component X = Component.literal("✕");
 	private final Cache<BlockState, ImmutableList<ItemStack>> resultCache = CacheBuilder.newBuilder().expireAfterAccess(
@@ -51,50 +49,36 @@ public class HarvestToolProvider implements IBlockComponentProvider, KeyedResour
 			TimeUnit.MINUTES).build();
 
 	static {
-		if (CommonProxy.isPhysicallyClient()) {
-			INSTANCE = new HarvestToolProvider();
-			CommonProxy.registerTagsUpdatedListener((lookupProvider, client) -> INSTANCE.resultCache.invalidateAll());
-			registerHandler(SimpleToolHandler.create(
-					JadeIds.JADE("pickaxe"),
-					List.of(
-							Items.WOODEN_PICKAXE,
-							Items.GOLDEN_PICKAXE,
-							Items.STONE_PICKAXE,
-							Items.IRON_PICKAXE,
-							Items.DIAMOND_PICKAXE,
-							Items.NETHERITE_PICKAXE)));
-			registerHandler(SimpleToolHandler.create(
-					JadeIds.JADE("axe"),
-					List.of(Items.WOODEN_AXE, Items.GOLDEN_AXE, Items.STONE_AXE, Items.IRON_AXE, Items.DIAMOND_AXE, Items.NETHERITE_AXE)));
-			registerHandler(SimpleToolHandler.create(
-					JadeIds.JADE("shovel"),
-					List.of(
-							Items.WOODEN_SHOVEL,
-							Items.GOLDEN_SHOVEL,
-							Items.STONE_SHOVEL,
-							Items.IRON_SHOVEL,
-							Items.DIAMOND_SHOVEL,
-							Items.NETHERITE_SHOVEL)));
-			registerHandler(SimpleToolHandler.create(
-					JadeIds.JADE("hoe"),
-					List.of(Items.WOODEN_HOE, Items.GOLDEN_HOE, Items.STONE_HOE, Items.IRON_HOE, Items.DIAMOND_HOE, Items.NETHERITE_HOE)));
-			registerHandler(SimpleToolHandler.create(JadeIds.JADE("sword"), List.of(Items.WOODEN_SWORD))
-					.addExtraBlock(Blocks.BAMBOO)
-					.addExtraBlock(Blocks.BAMBOO_SAPLING));
-			registerHandler(ShearsToolHandler.getInstance());
-		} else {
-			INSTANCE = null;
-			CommonProxy.registerTagsUpdatedListener((lookupProvider, client) -> {
-				//TODO execute on a thread?
-				try {
-					shearableBlocks = LootTableMineableCollector.execute(
-							lookupProvider.lookupOrThrow(Registries.LOOT_TABLE),
-							Items.SHEARS.getDefaultInstance());
-				} catch (Throwable e) {
-					Jade.LOGGER.error("Failed to collect shearable blocks", e);
-				}
-			});
-		}
+		INSTANCE = new HarvestToolProvider();
+		CommonProxy.registerTagsUpdatedListener((lookupProvider, client) -> INSTANCE.resultCache.invalidateAll());
+		registerHandler(SimpleToolHandler.create(
+				JadeIds.JADE("pickaxe"),
+				List.of(
+						Items.WOODEN_PICKAXE,
+						Items.GOLDEN_PICKAXE,
+						Items.STONE_PICKAXE,
+						Items.IRON_PICKAXE,
+						Items.DIAMOND_PICKAXE,
+						Items.NETHERITE_PICKAXE)));
+		registerHandler(SimpleToolHandler.create(
+				JadeIds.JADE("axe"),
+				List.of(Items.WOODEN_AXE, Items.GOLDEN_AXE, Items.STONE_AXE, Items.IRON_AXE, Items.DIAMOND_AXE, Items.NETHERITE_AXE)));
+		registerHandler(SimpleToolHandler.create(
+				JadeIds.JADE("shovel"),
+				List.of(
+						Items.WOODEN_SHOVEL,
+						Items.GOLDEN_SHOVEL,
+						Items.STONE_SHOVEL,
+						Items.IRON_SHOVEL,
+						Items.DIAMOND_SHOVEL,
+						Items.NETHERITE_SHOVEL)));
+		registerHandler(SimpleToolHandler.create(
+				JadeIds.JADE("hoe"),
+				List.of(Items.WOODEN_HOE, Items.GOLDEN_HOE, Items.STONE_HOE, Items.IRON_HOE, Items.DIAMOND_HOE, Items.NETHERITE_HOE)));
+		registerHandler(SimpleToolHandler.create(JadeIds.JADE("sword"), List.of(Items.WOODEN_SWORD))
+				.addExtraBlock(Blocks.BAMBOO)
+				.addExtraBlock(Blocks.BAMBOO_SAPLING));
+		registerHandler(ShearsToolHandler.getInstance());
 	}
 
 	public static ImmutableList<ItemStack> getTool(BlockState state, Level world, BlockPos pos) {
@@ -193,10 +177,6 @@ public class HarvestToolProvider implements IBlockComponentProvider, KeyedResour
 	@Override
 	public void onResourceManagerReload(ResourceManager resourceManager) {
 		resultCache.invalidateAll();
-	}
-
-	public static List<Block> getShearableBlocks() {
-		return shearableBlocks;
 	}
 
 	public void setShearableBlocks(Collection<Block> blocks) {

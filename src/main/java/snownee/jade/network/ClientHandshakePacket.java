@@ -14,7 +14,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.Block;
 import snownee.jade.Jade;
-import snownee.jade.addon.harvest.HarvestToolProvider;
+import snownee.jade.addon.harvest.LootTableMineableCollector;
 import snownee.jade.api.JadeIds;
 import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.impl.config.ServerPluginConfig;
@@ -39,7 +39,7 @@ public record ClientHandshakePacket(String protocolVersion) implements CustomPac
 			}
 			((JadeServerPlayer) player).jade$setConnected(true);
 			Map<ResourceLocation, Object> configs = ServerPluginConfig.instance().values();
-			List<Block> shearableBlocks = HarvestToolProvider.getShearableBlocks();
+			List<Block> shearableBlocks = LootTableMineableCollector.getShearableBlocks();
 			if (!configs.isEmpty()) {
 				Jade.LOGGER.debug("Syncing config to {} ({})", player.getGameProfile().getName(), player.getGameProfile().getId());
 			}
