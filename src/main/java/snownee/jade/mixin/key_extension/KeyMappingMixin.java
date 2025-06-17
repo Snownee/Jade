@@ -19,6 +19,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import snownee.jade.key_extension.KeyExManager;
 import snownee.jade.key_extension.KeyMappingEx;
+import snownee.jade.util.ClientProxy;
 
 @Mixin(KeyMapping.class)
 public abstract class KeyMappingMixin implements KeyMappingEx {
@@ -78,7 +79,8 @@ public abstract class KeyMappingMixin implements KeyMappingEx {
 	@WrapOperation(method = "resetMapping", at = @At(value = "INVOKE", target = "Ljava/util/Map;values()Ljava/util/Collection;"))
 	private static Collection<KeyMapping> keyEx$resetMapping(Map<String, KeyMapping> map, Operation<Collection<KeyMapping>> original) {
 		return original.call(map).stream()
-				.filter($ -> ((KeyMappingEx) $).keyEx$isActive() && !((KeyMappingEx) $).keyEx$isNoConflict())
+				.filter($ -> ((KeyMappingEx) $).keyEx$isActive() &&
+						(!((KeyMappingEx) $).keyEx$isNoConflict() || !ClientProxy.noBuiltInNoKeyConflict()))
 				.toList();
 	}
 

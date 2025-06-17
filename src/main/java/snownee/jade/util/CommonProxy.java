@@ -47,7 +47,6 @@ import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -64,7 +63,6 @@ import net.minecraft.world.entity.animal.sheep.Sheep;
 import net.minecraft.world.entity.boss.EnderDragonPart;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.decoration.PaintingVariant;
-import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -375,11 +373,6 @@ public final class CommonProxy implements ModInitializer {
 
 	public static String getPlatformIdentifier() {
 		return "fabric";
-	}
-
-	public static MutableComponent getProfessionName(VillagerProfession profession) {
-		return Component.translatable(
-				EntityType.VILLAGER.getDescriptionId() + "." + BuiltInRegistries.VILLAGER_PROFESSION.getKey(profession).getPath());
 	}
 
 	private static void registerServerCommand(
