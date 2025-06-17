@@ -368,7 +368,7 @@
 	"jade.access.block.hatch.2": "裂纹的{0}",
 	"jade.access.block.amount": "数量：{0}",
 	"jade.access.block.level": "等级：{0}",
-	"jade.access.block.layers": "水位：{0}",
+	"jade.access.block.layers": "层数：{0}",
 	"jade.access.block.bites": "已食用{0}次",
 	"jade.access.block.facing": "朝向：%s",
 	"jade.access.block.redstone_wire": "形状：%s",
