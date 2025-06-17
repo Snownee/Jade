@@ -155,6 +155,7 @@ public class Jade {
 		rootConfig().setEnableProfiles(true);
 		rootConfig().profileIndex = index;
 		rootConfig.get().save();
+		JadeClient.refreshKeyState();
 	}
 
 	public static void saveProfile(int index) {

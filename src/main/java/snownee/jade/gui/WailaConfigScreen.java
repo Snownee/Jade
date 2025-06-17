@@ -44,6 +44,7 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 		super(parent, Component.translatable("gui.jade.jade_settings"));
 		saver = () -> {
 			IWailaConfig.get().save();
+			JadeClient.refreshKeyState();
 			KeyMapping.resetMapping();
 			Minecraft.getInstance().options.save();
 		};
@@ -208,6 +209,9 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 					w.active = true;
 					Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.PLAYER_LEVELUP, 1.0f));
 				}).size(100, 20).build()));
+		if (ClientProxy.noBuiltInNoKeyConflict()) {
+			options.choices("no_key_conflict", accessibility::getNoKeyConflict, accessibility::setNoKeyConflict);
+		}
 		Component reset = Component.translatable("controls.reset").withStyle(ChatFormatting.RED);
 		Component title = Component.translatable(OptionsList.Entry.makeKey("reset_settings")).withStyle(ChatFormatting.RED);
 		options.add(new OptionButton(

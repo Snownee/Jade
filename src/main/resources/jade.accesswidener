@@ -89,3 +89,5 @@ accessible field net/minecraft/client/gui/GuiGraphics deferredTooltip Ljava/lang
 
 accessible method net/minecraft/client/gui/screens/inventory/tooltip/TooltipRenderUtil getBackgroundSprite (Lnet/minecraft/resources/ResourceLocation;)Lnet/minecraft/resources/ResourceLocation;
 accessible method net/minecraft/client/gui/screens/inventory/tooltip/TooltipRenderUtil getFrameSprite (Lnet/minecraft/resources/ResourceLocation;)Lnet/minecraft/resources/ResourceLocation;
+
+accessible field net/minecraft/client/KeyMapping clickCount I

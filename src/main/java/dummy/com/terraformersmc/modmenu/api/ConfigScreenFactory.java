@@ -1,4 +1,4 @@
-package com.terraformersmc.modmenu.api;
+package dummy.com.terraformersmc.modmenu.api;
 
 import net.minecraft.client.gui.screens.Screen;
 

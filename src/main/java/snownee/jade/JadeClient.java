@@ -60,10 +60,11 @@ import snownee.jade.api.ui.BoxElement;
 import snownee.jade.api.ui.ColorPalette;
 import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.ui.TooltipAnimation;
-import snownee.jade.conditional_key_mapping.ConditionalKeyMapping;
 import snownee.jade.gui.HomeConfigScreen;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.theme.ThemeHelper;
+import snownee.jade.key_extension.KeyExManager;
+import snownee.jade.key_extension.KeyMappingEx;
 import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.overlay.WailaTickHandler;
 import snownee.jade.util.ClientProxy;
@@ -104,7 +105,7 @@ public final class JadeClient {
 			showUses = ClientProxy.registerKeyBinding("show_uses", InputConstants.KEY_NUMPAD4);
 		}
 		narrate = ClientProxy.registerKeyBinding("narrate", InputConstants.KEY_NUMPAD5);
-		showDetails = ClientProxy.registerDetailsKeyBinding();
+		showDetails = ClientProxy.registerKeyBinding("show_details", InputConstants.KEY_LSHIFT);
 		for (int i = 0; i < 4; i++) {
 			profiles[i] = ClientProxy.registerKeyBinding("profile." + i, InputConstants.UNKNOWN.getValue());
 		}
@@ -130,7 +131,7 @@ public final class JadeClient {
 		while (showOverlay.consumeClick()) {
 			IWailaConfig.General general = IWailaConfig.get().general();
 			DisplayMode mode = general.getDisplayMode();
-			if (mode == IWailaConfig.DisplayMode.TOGGLE) {
+			if (mode == DisplayMode.TOGGLE) {
 				general.setDisplayTooltip(!general.shouldDisplayTooltip());
 				if (!general.shouldDisplayTooltip() && Jade.history().hintOverlayToggle) {
 					mc.getChatListener().handleSystemMessage(
@@ -375,7 +376,7 @@ public final class JadeClient {
 		ImmutableMap.Builder<KeyMapping, InputConstants.Key> keyMapBuilder = ImmutableMap.builder();
 		for (KeyMapping keyMapping : Minecraft.getInstance().options.keyMappings) {
 			if (predicate.test(keyMapping)) {
-				keyMapBuilder.put(keyMapping, ClientProxy.getBoundKeyOf(keyMapping));
+				keyMapBuilder.put(keyMapping, ((KeyMappingEx) keyMapping).keyEx$key());
 			}
 		}
 		var keyMap = keyMapBuilder.build();
@@ -383,9 +384,10 @@ public final class JadeClient {
 	}
 
 	public static void refreshKeyState() {
-		boolean enabled = Jade.rootConfig().isEnableProfiles();
+		boolean active = Jade.rootConfig().isEnableProfiles();
 		for (KeyMapping keyMapping : profiles) {
-			ConditionalKeyMapping.set(keyMapping, enabled);
+			KeyMappingEx.setActive(keyMapping, active);
 		}
+		KeyExManager.setGlobalNoConflict(Jade.config().accessibility().getNoKeyConflict());
 	}
 }

@@ -51,7 +51,7 @@ dependencies {
     //modApi("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}") {
     //    exclude(group: "net.fabricmc.fabric-api")
     //}
-//    modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
+    modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
 
     //modCompileOnly "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
     //modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"

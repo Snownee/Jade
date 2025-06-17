@@ -7,7 +7,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.platform.InputConstants;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.ComponentPath;
@@ -147,9 +146,6 @@ public abstract class BaseOptionsScreen extends Screen {
 		if (component.getString().contains("${SHOW_DETAILS}")) {
 			List<Component> objects = Lists.newArrayListWithExpectedSize(3);
 			objects.add(Component.translatable("key.jade.show_details"));
-			if (JadeClient.showDetails.getName().contains("alternative")) {
-				objects.add(InputConstants.getKey("key.keyboard.left.shift").getDisplayName().copy().withStyle(ChatFormatting.AQUA));
-			}
 			if (!JadeClient.showDetails.isUnbound()) {
 				objects.add(JadeClient.showDetails.getTranslatedKeyMessage().copy().withStyle(ChatFormatting.AQUA));
 			}

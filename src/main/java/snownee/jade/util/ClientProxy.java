@@ -87,6 +87,7 @@ import snownee.jade.gui.PreviewOptionsScreen;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.ui.FluidStackElement;
+import snownee.jade.key_extension.KeyMappingEx;
 import snownee.jade.mixin.KeyAccess;
 import snownee.jade.network.ClientHandshakePacket;
 import snownee.jade.network.ReceiveDataPacket;
@@ -171,6 +172,7 @@ public final class ClientProxy implements ClientModInitializer {
 	public static KeyMapping registerKeyBinding(String desc, int defaultKey) {
 		KeyMapping key = new KeyMapping("key.jade." + desc, InputConstants.Type.KEYSYM, defaultKey, "modmenu.nameTranslation.jade");
 		KeyBindingHelper.registerKeyBinding(key);
+		KeyMappingEx.setNoConflict(key, true);
 		return key;
 	}
 
@@ -202,7 +204,7 @@ public final class ClientProxy implements ClientModInitializer {
 	}
 
 	public static boolean isShowDetailsPressed() {
-		return Screen.hasShiftDown() || JadeClient.showDetails.isDown();
+		return JadeClient.showDetails.isDown();
 	}
 
 	public static boolean shouldShowWithGui(Minecraft mc, @Nullable Screen screen) {
@@ -231,16 +233,8 @@ public final class ClientProxy implements ClientModInitializer {
 		consumer.accept(fluidStillSprite, fluidColor);
 	}
 
-	public static KeyMapping registerDetailsKeyBinding() {
-		return registerKeyBinding("show_details_alternative", InputConstants.UNKNOWN.getValue());
-	}
-
 	public static void renderItemDecorationsExtra(GuiGraphics guiGraphics, Font font, ItemStack stack, int x, int y, String text) {
 		// NO-OP
-	}
-
-	public static InputConstants.Key getBoundKeyOf(KeyMapping keyMapping) {
-		return KeyBindingHelper.getBoundKeyOf(keyMapping);
 	}
 
 	public static GameType getGameMode() {
@@ -288,6 +282,10 @@ public final class ClientProxy implements ClientModInitializer {
 
 	public static void sendPacket(CustomPacketPayload payload) {
 		ClientPlayNetworking.send(payload);
+	}
+
+	public static boolean noBuiltInNoKeyConflict() {
+		return true;
 	}
 
 	@Override
