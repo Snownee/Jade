@@ -16,6 +16,7 @@ import com.mojang.serialization.Codec;
 
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.addon.core.ModNameProvider;
+import snownee.jade.addon.harvest.LootTableMineableCollector;
 import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.TraceableException;
@@ -144,6 +145,8 @@ public class Jade {
 				config.save();
 			}
 			JadeClient.refreshKeyState();
+		} else {
+			CommonProxy.registerTagsUpdatedListener(LootTableMineableCollector::onTagsUpdated);
 		}
 	}
 

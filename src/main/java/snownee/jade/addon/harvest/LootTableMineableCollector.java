@@ -11,7 +11,9 @@ import com.google.common.collect.Lists;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
@@ -22,6 +24,7 @@ import snownee.jade.Jade;
 import snownee.jade.util.CommonProxy;
 
 public class LootTableMineableCollector {
+	private static List<Block> shearableBlocks = List.of();
 	private final HolderLookup.RegistryLookup<LootTable> lootRegistry;
 	private final ItemStack toolItem;
 
@@ -93,5 +96,20 @@ public class LootTableMineableCollector {
 			return CommonProxy.isCorrectConditions(entry.conditions, toolItem);
 		}
 		return false;
+	}
+
+	public static void onTagsUpdated(HolderLookup.Provider lookupProvider, boolean client) {
+		//TODO execute on a thread?
+		try {
+			shearableBlocks = LootTableMineableCollector.execute(
+					lookupProvider.lookupOrThrow(Registries.LOOT_TABLE),
+					Items.SHEARS.getDefaultInstance());
+		} catch (Throwable e) {
+			Jade.LOGGER.error("Failed to collect shearable blocks", e);
+		}
+	}
+
+	public static List<Block> getShearableBlocks() {
+		return shearableBlocks;
 	}
 }
