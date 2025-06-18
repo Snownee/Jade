@@ -296,23 +296,24 @@ public final class CommonProxy {
 		final Container container = findContainer(accessor);
 		if (container != null) {
 			if (container instanceof ChestBlockEntity) {
-				return new ItemCollector<>(new ItemIterator.ContainerItemIterator(a -> {
-					if (a.getTarget() instanceof ChestBlockEntity be) {
-						if (be.getBlockState().getBlock() instanceof ChestBlock chestBlock) {
-							Container compound = ChestBlock.getContainer(
-									chestBlock,
-									be.getBlockState(),
-									Objects.requireNonNull(be.getLevel()),
-									be.getBlockPos(),
-									false);
-							if (compound != null) {
-								return compound;
+				return new ItemCollector<>(new ItemIterator.ContainerItemIterator(
+						a -> {
+							if (a.getTarget() instanceof ChestBlockEntity be) {
+								if (be.getBlockState().getBlock() instanceof ChestBlock chestBlock) {
+									Container compound = ChestBlock.getContainer(
+											chestBlock,
+											be.getBlockState(),
+											Objects.requireNonNull(be.getLevel()),
+											be.getBlockPos(),
+											false);
+									if (compound != null) {
+										return compound;
+									}
+								}
+								return be;
 							}
-						}
-						return be;
-					}
-					return null;
-				}, 0));
+							return null;
+						}, 0));
 			}
 			return new ItemCollector<>(new ItemIterator.ContainerItemIterator(0));
 		}
@@ -473,7 +474,15 @@ public final class CommonProxy {
 	public static FluidStack toFluidStack(JadeFluidObject fluid) {
 		int id = BuiltInRegistries.FLUID.getId(fluid.getType());
 		Optional<Holder.Reference<Fluid>> holder = BuiltInRegistries.FLUID.getHolder(id);
-		return holder.isEmpty() ? FluidStack.EMPTY : new FluidStack(holder.get(), (int) fluid.getAmount(), fluid.getComponents());
+		if (holder.isEmpty()) {
+			return FluidStack.EMPTY;
+		} else {
+			long amount = fluid.getAmount();
+			if (amount > Integer.MAX_VALUE) {
+				amount = Integer.MAX_VALUE;
+			}
+			return new FluidStack(holder.get(), (int) amount, fluid.getComponents());
+		}
 	}
 
 	private void loadComplete(FMLLoadCompleteEvent event) {
