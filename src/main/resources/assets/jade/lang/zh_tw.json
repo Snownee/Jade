@@ -315,7 +315,7 @@
 	"jade.access.block.summonable": "可生怪的%s",
 	"jade.access.block.amount": "數量：%s",
 	"jade.access.block.level": "等級：%s",
-	"jade.access.block.layers": "水位：%s",
+	"jade.access.block.layers": "層數：%s",
 	"jade.access.block.bites": "已食用%s次",
 	"jade.access.block.facing": "朝向：%s",
 	"jade.access.block.redstone_wire": "形狀：%s",
