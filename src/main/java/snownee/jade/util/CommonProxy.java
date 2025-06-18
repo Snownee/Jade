@@ -423,7 +423,15 @@ public final class CommonProxy {
 	public static FluidStack toFluidStack(JadeFluidObject fluid) {
 		int id = BuiltInRegistries.FLUID.getId(fluid.getType());
 		Optional<Holder.Reference<Fluid>> holder = BuiltInRegistries.FLUID.get(id);
-		return holder.isEmpty() ? FluidStack.EMPTY : new FluidStack(holder.get(), (int) fluid.getAmount(), fluid.getComponents());
+		if (holder.isEmpty()) {
+			return FluidStack.EMPTY;
+		} else {
+			long amount = fluid.getAmount();
+			if (amount > Integer.MAX_VALUE) {
+				amount = Integer.MAX_VALUE;
+			}
+			return new FluidStack(holder.get(), (int) amount, fluid.getComponents());
+		}
 	}
 
 	public static boolean isMultipartEntity(Entity target) {
