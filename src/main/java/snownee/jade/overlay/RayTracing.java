@@ -32,12 +32,13 @@ import snownee.jade.util.CommonProxy;
 public class RayTracing {
 
 	public static final RayTracing INSTANCE = new RayTracing();
-	public static Predicate<Entity> ENTITY_FILTER = entity -> true;
 	private final Minecraft mc = Minecraft.getInstance();
+	public Predicate<Entity> entityFilter = entity -> true;
 	@Nullable
 	private HitResult target;
+	private Vec3 hitLocation = Vec3.ZERO;
 
-	private RayTracing() {
+	public RayTracing() {
 	}
 
 	public static BlockState wrapBlock(BlockGetter level, BlockHitResult hit, CollisionContext context) {
@@ -109,7 +110,10 @@ public class RayTracing {
 		float extendedReach = IWailaConfig.get().general().getExtendedReach();
 		double blockReach = viewPlayer.blockInteractionRange() + extendedReach;
 		double entityReach = viewPlayer.entityInteractionRange() + extendedReach;
-		target = rayTrace(viewEntity, blockReach, entityReach);
+		rayTrace(viewEntity, blockReach, entityReach);
+		if (target != null) {
+			hitLocation = target.getLocation();
+		}
 	}
 
 	@Nullable
@@ -117,7 +121,11 @@ public class RayTracing {
 		return target;
 	}
 
-	public HitResult rayTrace(Entity entity, double blockReach, double entityReach) {
+	public Vec3 getHitLocation() {
+		return hitLocation;
+	}
+
+	public void rayTrace(Entity entity, double blockReach, double entityReach) {
 		Camera camera = mc.gameRenderer.getMainCamera();
 		float partialTick = mc.getDeltaTracker().getGameTimeDeltaPartialTick(true);
 		Vec3 eyePosition = entity.getEyePosition(partialTick);
@@ -166,15 +174,18 @@ public class RayTracing {
 		ClipContext context = new ClipContext(traceStart, traceEnd, ClipContext.Block.OUTLINE, fluidView, collisionContext);
 
 		BlockHitResult blockResult = world.clip(context);
+		hitLocation = blockResult.getLocation();
 		if (entityResult != null) {
 			if (blockResult.getType() == Type.BLOCK) {
 				double entityDist = entityResult.getLocation().distanceToSqr(traceStart);
 				double blockDist = blockResult.getLocation().distanceToSqr(traceStart);
 				if (entityDist < blockDist) {
-					return entityResult;
+					target = entityResult;
+					return;
 				}
 			} else {
-				return entityResult;
+				target = entityResult;
+				return;
 			}
 		}
 		if (blockResult.getType() == Type.MISS && mc.hitResult instanceof BlockHitResult hit) {
@@ -192,13 +203,14 @@ public class RayTracing {
 		if (blockResult == null && fluidMode == IWailaConfig.FluidMode.FALLBACK) {
 			context = new ClipContext(traceStart, traceEnd, ClipContext.Block.OUTLINE, ClipContext.Fluid.ANY, collisionContext);
 			blockResult = world.clip(context);
+			hitLocation = blockResult.getLocation();
 			BlockState state = wrapBlock(world, blockResult, collisionContext);
 			if (WailaClientRegistration.instance().shouldHide(state)) {
 				blockResult = null;
 			}
 		}
 
-		return blockResult;
+		target = blockResult;
 	}
 
 	private boolean canBeTarget(Entity target, Entity viewEntity) {
@@ -230,7 +242,7 @@ public class RayTracing {
 				return false;
 			}
 		}
-		return !WailaClientRegistration.instance().shouldHide(target) && ENTITY_FILTER.test(target);
+		return !WailaClientRegistration.instance().shouldHide(target) && entityFilter.test(target);
 	}
 
 }
