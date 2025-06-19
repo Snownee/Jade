@@ -3,6 +3,7 @@ package snownee.jade.impl;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 
 import org.jetbrains.annotations.NotNull;
@@ -176,6 +177,10 @@ public class Tooltip implements ITooltip {
 
 	@Override
 	public String getNarration() {
+		return getNarration(line -> true);
+	}
+
+	public String getNarration(Predicate<Line> predicate) {
 		StringBuilder sb = new StringBuilder();
 		NarrationElementOutput output = new NarrationElementOutput() {
 			@Override
@@ -192,6 +197,9 @@ public class Tooltip implements ITooltip {
 			}
 		};
 		for (Line line : lines) {
+			if (!predicate.test(line)) {
+				continue;
+			}
 			boolean hasSupplier = false;
 			for (LayoutElement element : line.elements()) {
 				if (element instanceof NarrationSupplier supplier) {
