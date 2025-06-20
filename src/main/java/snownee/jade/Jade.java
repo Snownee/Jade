@@ -19,7 +19,6 @@ import snownee.jade.addon.core.ModNameProvider;
 import snownee.jade.addon.harvest.LootTableMineableCollector;
 import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.JadeIds;
-import snownee.jade.api.TraceableException;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
@@ -219,11 +218,8 @@ public class Jade {
 					LOGGER.info("%s loaded: %s".formatted(className, stopwatch.stop()));
 				}
 			} catch (Throwable e) {
-				LOGGER.error("", e);
-				if (entrypoint.modId().equals(ID)) {
-					throw e;
-				}
-				if (!(e instanceof TraceableException)) {
+				LOGGER.error("Failed to load plugin from %s: %s".formatted(entrypoint.modName(), className), e);
+				if (CommonProxy.isDevEnv() || entrypoint.modId().equals(ID)) {
 					throw e;
 				}
 				erroneousClasses.add(className);
