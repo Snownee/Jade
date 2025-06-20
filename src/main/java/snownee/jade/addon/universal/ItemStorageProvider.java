@@ -216,6 +216,8 @@ public class ItemStorageProvider<T extends Accessor<?>> implements IServerDataPr
 		}
 		if (target instanceof RandomizableContainer containerEntity && containerEntity.getLootTable() != null) {
 			tag.putBoolean("Loot", true);
+		} else if (target instanceof ContainerEntity containerEntity && containerEntity.getContainerLootTable() != null) {
+			tag.putBoolean("Loot", true);
 		} else if (!player.isCreative() && !player.isSpectator() && target instanceof BaseContainerBlockEntity te) {
 			if (te.lockKey != LockCode.NO_LOCK) {
 				tag.putBoolean("Locked", true);
