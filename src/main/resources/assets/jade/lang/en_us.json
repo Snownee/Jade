@@ -379,6 +379,7 @@
 	"jade.access.block.extended": "Extended {0}",
 	"jade.access.block.powered": "Powered {0}",
 	"jade.access.block.summonable": "Summonable {0}",
+	"jade.access.block.upside_down": "Upside-down {0}",
 	"jade.access.block.hatch.1": "Slightly Cracked {0}",
 	"jade.access.block.hatch.2": "Cracked {0}",
 	"jade.access.block.amount": "Amount: {0}",

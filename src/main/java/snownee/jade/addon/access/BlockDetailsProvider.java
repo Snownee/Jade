@@ -6,11 +6,13 @@ import net.minecraft.world.level.block.BaseRailBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.CreakingHeartBlock;
 import net.minecraft.world.level.block.RepeaterBlock;
+import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.entity.trialspawner.TrialSpawnerState;
 import net.minecraft.world.level.block.entity.vault.VaultState;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.CreakingHeartState;
+import net.minecraft.world.level.block.state.properties.Half;
 import snownee.jade.addon.core.ObjectNameProvider;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
@@ -56,6 +58,9 @@ public class BlockDetailsProvider implements IBlockComponentProvider {
 		}
 		if (blockState.hasProperty(BlockStateProperties.CAN_SUMMON) && blockState.getValue(BlockStateProperties.CAN_SUMMON)) {
 			AccessibilityPlugin.replaceTitle(tooltip, objectName, "block.summonable");
+		}
+		if (blockState.getBlock() instanceof StairBlock && blockState.getValue(StairBlock.HALF) == Half.TOP) {
+			AccessibilityPlugin.replaceTitle(tooltip, objectName, "block.upside_down");
 		}
 		if (blockState.hasProperty(BlockStateProperties.HATCH)) {
 			int i = blockState.getValue(BlockStateProperties.HATCH);

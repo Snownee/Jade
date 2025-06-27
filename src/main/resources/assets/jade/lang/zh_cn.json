@@ -364,6 +364,7 @@
 	"jade.access.block.extended": "伸长的{0}",
 	"jade.access.block.powered": "充能的{0}",
 	"jade.access.block.summonable": "可生怪的{0}",
+	"jade.access.block.upside_down": "上下颠倒的{0}",
 	"jade.access.block.hatch.1": "轻微裂纹的{0}",
 	"jade.access.block.hatch.2": "裂纹的{0}",
 	"jade.access.block.amount": "数量：{0}",
