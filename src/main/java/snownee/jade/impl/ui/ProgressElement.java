@@ -56,29 +56,6 @@ public class ProgressElement extends ResizeableElement implements StyledElement 
 		this.height = height;
 	}
 
-//	@Override
-//	public void render(GuiGraphics guiGraphics, float x, float y, float maxX, float maxY) {
-//		float width = style.direction().isHorizontal() && style.fitContentX() ? maxX - x : getCachedSize().x;
-//		float height = style.direction().isVertical() && style.fitContentY() ? maxY - y : getCachedSize().y;
-//		x = style.direction().isHorizontal() ? x : x + (maxX - x - width) / 2;
-//		y = style.direction().isVertical() ? y : y + (maxY - y - height) / 2;
-//		boxStyle.render(guiGraphics, this, x, y, width, height, IDisplayHelper.get().opacity());
-//		float progress = this.progress;
-//		if (track == null && getTag() != null) {
-//			track = WailaTickHandler.instance().progressTracker.getOrCreate(
-//					getTag(), ProgressTrackInfo.class, () -> {
-//						return new ProgressTrackInfo(canDecrease, this.progress, width);
-//					});
-//		}
-//		if (track != null) {
-//			track.setProgress(progress);
-//			track.update(Minecraft.getInstance().getDeltaTracker().getRealtimeDeltaTicks());
-//			progress = track.getSmoothProgress();
-//		}
-//		float b = boxStyle.borderWidth();
-//		style.render(guiGraphics, x + b, y + b, width - b * 2, height - b * 2, progress, text);
-//	}
-
 	@Override
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
 		view.boxStyle.render(graphics, this, getX(), getY(), width, height, IDisplayHelper.get().opacity());
@@ -199,10 +176,13 @@ public class ProgressElement extends ResizeableElement implements StyledElement 
 
 	@Override
 	public void updateSize() {
-		if (getTag() != null && view.parts.size() == 1) {
+		if (getTag() != null && view.parts.size() < 2) {
 			track = JadeClient.tickHandler().progressTracker.getOrCreate(
 					getTag(), ProgressTrackInfo.class, () -> {
-						return new ProgressTrackInfo(view.style.canDecrease(), view.parts.getFirst().progress(), width);
+						return new ProgressTrackInfo(
+								view.style.canDecrease(),
+								view.parts.isEmpty() ? 0 : view.parts.getFirst().progress(),
+								width);
 					});
 			track.setExpectedWidth(width);
 			width = track.getWidth();

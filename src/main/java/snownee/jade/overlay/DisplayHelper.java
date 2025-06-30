@@ -382,6 +382,11 @@ public class DisplayHelper implements IDisplayHelper {
 			int height,
 			int color) {
 		sprite = IThemeHelper.get().theme().mapSprite(sprite);
+		if (opacity() != 1) {
+			float alpha = ARGB.alpha(color) / 255F;
+			alpha *= opacity();
+			color = ARGB.color(ARGB.as8BitChannel(alpha), color);
+		}
 		graphics.blitSprite(renderPipeline, sprite, spriteWidth, spriteHeight, uStart, vStart, x, y, width, height, color);
 	}
 
@@ -617,10 +622,12 @@ public class DisplayHelper implements IDisplayHelper {
 				spriteHeight,
 				u0,
 				v0,
-				spriteWidth,
-				spriteHeight,
+				width,
+				height,
 				x,
 				y,
-				width, height, color);
+				width,
+				height,
+				color);
 	}
 }
