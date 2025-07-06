@@ -279,7 +279,7 @@ public final class CommonProxy {
 
 	public static ItemCollector<?> createItemCollector(Accessor<?> accessor, Cache<Object, ItemCollector<?>> containerCache) {
 		final Object target = accessor.getTarget();
-		if (!(target instanceof Entity) || target instanceof AbstractChestedHorse) {
+		if (!(target instanceof Entity || target instanceof ChestBlockEntity) || target instanceof AbstractChestedHorse) {
 			try {
 				IItemHandler itemHandler = findItemHandler(accessor);
 				if (itemHandler != null) {
