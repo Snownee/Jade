@@ -6,6 +6,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import snownee.jade.api.Accessor;
+import snownee.jade.api.ui.MessageType;
 import snownee.jade.api.view.ClientViewGroup;
 import snownee.jade.api.view.IClientExtensionProvider;
 import snownee.jade.api.view.IServerExtensionProvider;
@@ -40,7 +41,7 @@ public enum ExampleProgressProvider implements IServerExtensionProvider<Progress
 		float period = 40;
 		var progress1 = new ProgressView.Data(((world.getGameTime() % period) + 1) / period);
 		period = 200;
-		var progress2 = new ProgressView.Data(((world.getGameTime() % period) + 1) / period);
+		var progress2 = new ProgressView.Data(((world.getGameTime() % period) + 1) / period, MessageType.DANGER);
 		var group = new ViewGroup<>(List.of(progress1, progress2));
 		return List.of(group);
 	}

@@ -61,8 +61,9 @@ public class ProgressView {
 		}
 	}
 
-	public record Part(float progress, @Nullable Element overlay, @Nullable MessageType messageType, int color) {
-		public Part(float progress, @Nullable Element overlay, @Nullable MessageType messageType, int color) {
+	public record Part(int id, float progress, @Nullable Element overlay, @Nullable MessageType messageType, int color) {
+		public Part(int id, float progress, @Nullable Element overlay, @Nullable MessageType messageType, int color) {
+			this.id = id;
 			this.progress = progress;
 			this.overlay = overlay;
 			this.messageType = messageType;
@@ -71,19 +72,27 @@ public class ProgressView {
 		}
 
 		public static Part of(float progress) {
-			return of(progress, MessageType.NORMAL);
+			return of(0, progress);
+		}
+
+		public static Part of(int id, float progress) {
+			return of(id, progress, MessageType.NORMAL);
 		}
 
 		public static Part of(float progress, MessageType messageType) {
-			return new Part(progress, null, messageType, -1);
+			return of(0, progress, messageType);
+		}
+
+		public static Part of(int id, float progress, MessageType messageType) {
+			return new Part(id, progress, null, messageType, -1);
 		}
 
 		public static Part of(float progress, Element overlay) {
-			return new Part(progress, overlay, null, -1);
+			return new Part(0, progress, overlay, null, -1);
 		}
 
 		public static Part of(float progress, int color) {
-			return new Part(progress, null, null, color);
+			return new Part(0, progress, null, null, color);
 		}
 
 		public int themeColor() {

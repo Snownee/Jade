@@ -14,7 +14,9 @@ import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.NarratableComponent;
+import snownee.jade.api.ui.Orientation;
 import snownee.jade.api.ui.ResizeableElement;
+import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.view.ProgressView;
 import snownee.jade.gui.ResizeableLayout;
 import snownee.jade.overlay.DisplayHelper;
@@ -60,6 +62,11 @@ public class ProgressElement extends ResizeableElement implements StyledElement 
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
 		view.boxStyle.render(graphics, this, getX(), getY(), width, height, IDisplayHelper.get().opacity());
 
+		if (track != null) {
+			track.setProgress(view.parts);
+			track.update(Minecraft.getInstance().getDeltaTracker().getRealtimeDeltaTicks());
+		}
+
 		int borderWidth = view.boxStyle.borderWidth();
 		int freeX = getX() + borderWidth;
 		int freeY = getY() + borderWidth;
@@ -74,9 +81,7 @@ public class ProgressElement extends ResizeableElement implements StyledElement 
 				continue;
 			}
 			if (track != null) {
-				track.setProgress(partProgress);
-				track.update(Minecraft.getInstance().getDeltaTracker().getRealtimeDeltaTicks());
-				partProgress = track.getSmoothProgress();
+				partProgress = track.getSmoothProgress(part);
 			}
 			progress = Math.min(progress + partProgress, 1F);
 			start = renderPart(
@@ -126,6 +131,8 @@ public class ProgressElement extends ResizeableElement implements StyledElement 
 		Element overlay = part.overlay();
 		if (overlay == null) {
 			DEFAULT_OVERLAY.setColor(part.themeColor());
+			DEFAULT_OVERLAY.tiledOrientation =
+					view.style.direction() == ScreenDirection.RIGHT ? Orientation.HORIZONTAL : Orientation.VERTICAL;
 			overlay = DEFAULT_OVERLAY;
 		}
 //		graphics.enableScissor(x + (int) start, y, x + (int) start + roundedPartWidth, y + height);
@@ -179,10 +186,7 @@ public class ProgressElement extends ResizeableElement implements StyledElement 
 		if (getTag() != null && view.parts.size() < 2) {
 			track = JadeClient.tickHandler().progressTracker.getOrCreate(
 					getTag(), ProgressTrackInfo.class, () -> {
-						return new ProgressTrackInfo(
-								view.style.canDecrease(),
-								view.parts.isEmpty() ? 0 : view.parts.getFirst().progress(),
-								width);
+						return new ProgressTrackInfo(view.parts, view.style.canDecrease(), width);
 					});
 			track.setExpectedWidth(width);
 			width = track.getWidth();
