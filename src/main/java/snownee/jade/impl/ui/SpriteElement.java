@@ -86,7 +86,9 @@ public class SpriteElement extends ProgressOverlayElement {
 						tileHeight,
 						rect.getX(),
 						rect.getY(),
-						rect.getWidth(), rect.getHeight(), color);
+						rect.getWidth(),
+						rect.getHeight(),
+						color);
 				tileAxisStart += tileAxisStep;
 			}
 			return;

@@ -425,11 +425,13 @@ public class DisplayHelper implements IDisplayHelper {
 						spriteHeight,
 						uStart,
 						vStart,
-						spriteWidth,
-						spriteWidth,
+						u,
+						w,
 						x + i,
 						y + j,
-						u, w, color);
+						u,
+						w,
+						color);
 			}
 		}
 	}
