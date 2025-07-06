@@ -213,41 +213,45 @@ public final class CommonProxy implements ModInitializer {
 
 	public static ItemCollector<?> createItemCollector(Accessor<?> accessor, Cache<Object, ItemCollector<?>> containerCache) {
 		if (accessor.getTarget() instanceof AbstractHorseAccess) {
-			return new ItemCollector<>(new ItemIterator.ContainerItemIterator(o -> {
-				if (o instanceof AbstractHorseAccess horse) {
-					return horse.getInventory();
-				}
-				return null;
-			}, 2));
+			return new ItemCollector<>(new ItemIterator.ContainerItemIterator(
+					o -> {
+						if (o instanceof AbstractHorseAccess horse) {
+							return horse.getInventory();
+						}
+						return null;
+					}, 2));
 		}
-		try {
-			var storage = findItemHandler(accessor);
-			if (storage != null) {
-				return containerCache.get(storage, () -> new ItemCollector<>(JadeFabricUtils.fromItemStorage(storage, 0)));
+		if (!(accessor.getTarget() instanceof ChestBlockEntity)) {
+			try {
+				var storage = findItemHandler(accessor);
+				if (storage != null) {
+					return containerCache.get(storage, () -> new ItemCollector<>(JadeFabricUtils.fromItemStorage(storage, 0)));
+				}
+			} catch (Throwable e) {
+				WailaExceptionHandler.handleErr(e, null, null);
 			}
-		} catch (Throwable e) {
-			WailaExceptionHandler.handleErr(e, null, null);
 		}
 		final Container container = findContainer(accessor);
 		if (container != null) {
 			if (container instanceof ChestBlockEntity) {
-				return new ItemCollector<>(new ItemIterator.ContainerItemIterator(a -> {
-					if (a.getTarget() instanceof ChestBlockEntity be) {
-						if (be.getBlockState().getBlock() instanceof ChestBlock chestBlock) {
-							Container compound = ChestBlock.getContainer(
-									chestBlock,
-									be.getBlockState(),
-									Objects.requireNonNull(be.getLevel()),
-									be.getBlockPos(),
-									false);
-							if (compound != null) {
-								return compound;
+				return new ItemCollector<>(new ItemIterator.ContainerItemIterator(
+						a -> {
+							if (a.getTarget() instanceof ChestBlockEntity be) {
+								if (be.getBlockState().getBlock() instanceof ChestBlock chestBlock) {
+									Container compound = ChestBlock.getContainer(
+											chestBlock,
+											be.getBlockState(),
+											Objects.requireNonNull(be.getLevel()),
+											be.getBlockPos(),
+											false);
+									if (compound != null) {
+										return compound;
+									}
+								}
+								return be;
 							}
-						}
-						return be;
-					}
-					return null;
-				}, 0));
+							return null;
+						}, 0));
 			}
 			return new ItemCollector<>(new ItemIterator.ContainerItemIterator(0));
 		}
@@ -636,12 +640,14 @@ public final class CommonProxy implements ModInitializer {
 		PayloadTypeRegistry.playC2S().register(RequestEntityPacket.TYPE, RequestEntityPacket.CODEC);
 		PayloadTypeRegistry.playS2C().register(ServerPingPacket.TYPE, ServerPingPacket.CODEC);
 		PayloadTypeRegistry.playS2C().register(ShowOverlayPacket.TYPE, ShowOverlayPacket.CODEC);
-		ServerPlayNetworking.registerGlobalReceiver(RequestEntityPacket.TYPE, (payload, context) -> {
-			RequestEntityPacket.handle(payload, context::player);
-		});
-		ServerPlayNetworking.registerGlobalReceiver(RequestBlockPacket.TYPE, (payload, context) -> {
-			RequestBlockPacket.handle(payload, context::player);
-		});
+		ServerPlayNetworking.registerGlobalReceiver(
+				RequestEntityPacket.TYPE, (payload, context) -> {
+					RequestEntityPacket.handle(payload, context::player);
+				});
+		ServerPlayNetworking.registerGlobalReceiver(
+				RequestBlockPacket.TYPE, (payload, context) -> {
+					RequestBlockPacket.handle(payload, context::player);
+				});
 
 		CommandRegistrationCallback.EVENT.register(CommonProxy::registerServerCommand);
 		ServerPlayConnectionEvents.JOIN.register(CommonProxy::playerJoin);
