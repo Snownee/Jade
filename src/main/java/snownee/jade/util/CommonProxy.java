@@ -215,13 +215,15 @@ public final class CommonProxy {
 						return null;
 					}, 2));
 		}
-		try {
-			var storage = findItemHandler(accessor);
-			if (storage != null) {
-				return containerCache.get(storage, () -> new ItemCollector<>(JadeForgeUtils.fromItemHandler(storage, 0)));
+		if (!(accessor.getTarget() instanceof ChestBlockEntity)) {
+			try {
+				var storage = findItemHandler(accessor);
+				if (storage != null) {
+					return containerCache.get(storage, () -> new ItemCollector<>(JadeForgeUtils.fromItemHandler(storage, 0)));
+				}
+			} catch (Throwable e) {
+				WailaExceptionHandler.handleErr(e, null, null);
 			}
-		} catch (Throwable e) {
-			WailaExceptionHandler.handleErr(e, null, null);
 		}
 		final Container container = findContainer(accessor);
 		if (container != null) {
