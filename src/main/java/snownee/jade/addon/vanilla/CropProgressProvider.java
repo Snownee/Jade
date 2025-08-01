@@ -11,9 +11,9 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BonemealableBlock;
-import net.minecraft.world.level.block.BushBlock;
 import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.FarmBlock;
+import net.minecraft.world.level.block.NetherWartBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import snownee.jade.api.BlockAccessor;
@@ -48,7 +48,7 @@ public class CropProgressProvider implements IBlockComponentProvider {
 
 		if (block instanceof CropBlock crop) {
 			addMaturityTooltip(tooltip, crop.getAge(state) / (float) crop.getMaxAge());
-		} else if (block instanceof BushBlock || block instanceof BonemealableBlock) {
+		} else if (block instanceof NetherWartBlock || block instanceof BonemealableBlock) {
 			if (state.hasProperty(BlockStateProperties.AGE_2)) {
 				addMaturityTooltip(tooltip, state.getValue(BlockStateProperties.AGE_2) / 2F);
 			} else if (state.hasProperty(BlockStateProperties.AGE_3)) {
