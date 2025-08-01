@@ -191,14 +191,14 @@ public class Jade {
 			String className = entrypoint.className();
 			try {
 				if (excludedClasses.contains(className)) {
-					return;
+					continue;
 				}
 				if (className.startsWith("snownee.jade.") && !entrypoint.modId().equals(ID)) {
 					entrypoint.throwError("Built-in plugin registered by non-Jade mod");
 				}
 				String requiredMod = entrypoint.requiredMod();
 				if (!requiredMod.isEmpty() && !CommonProxy.isModLoaded(requiredMod)) {
-					return;
+					continue;
 				}
 				if (!classes.add(className)) {
 					entrypoint.throwError("Duplicate plugin class");
