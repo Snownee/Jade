@@ -261,7 +261,7 @@
 	"config.jade.plugin_minecraft.painting": "Картина",
 	"config.jade.plugin_minecraft.next_entity_drop": "Предмет через",
 	"config.jade.plugin_minecraft.next_entity_drop_desc": "Показувати час до того як із сутности випаде щось, як яйце чи щиток броненосця.",
-	"config.jade.plugin_minecraft.next_entity_drop_extra_msg": "яйце,щиток,нюхання,",
+	"config.jade.plugin_minecraft.next_entity_drop_extra_msg": "яйце,щиток,нюхання",
 	"jade.nextEgg": "Наступне яйце: %s",
 	"jade.nextScute": "Наступний щиток: %s",
 	"jade.nextSniff": "Наступне нюхання: %s",
