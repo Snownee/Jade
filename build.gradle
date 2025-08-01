@@ -1,7 +1,7 @@
 plugins {
     id 'java-library'
     id 'maven-publish'
-    id 'net.neoforged.moddev' version '2.0.78'
+    id 'net.neoforged.moddev' version '2.0.105'
     id "me.shedaniel.unified-publishing" version "0.1.+"
     id 'idea'
 }
@@ -111,7 +111,7 @@ configurations {
 }
 
 dependencies {
-    compileOnly "mezz.jei:jei-1.21.1-common-api:${jei_version}"
+    compileOnly "mezz.jei:jei-1.21.8-common-api:${jei_version}"
 }
 
 unifiedPublishing {
@@ -120,7 +120,7 @@ unifiedPublishing {
         version = realVersion // Optional, Inferred from project by default
         changelog = file("CHANGELOG.md").exists() ? file("CHANGELOG.md").text : "" // Optional, in markdown format
         releaseType = project.release_type // Optional, use "release", "beta" or "alpha"
-        gameVersions = [project.minecraft_version]
+        gameVersions = [project.minecraft_version, "1.21.6", "1.21.7"]
         gameLoaders = ["neoforge"]
 
         mainPublication tasks.jar // Declares the publicated jar
