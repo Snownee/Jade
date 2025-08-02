@@ -201,7 +201,11 @@ public final class CommonProxy implements ModInitializer {
 	}
 
 	public static ItemCollector<?> createItemCollector(Accessor<?> accessor, Cache<Object, ItemCollector<?>> containerCache) {
-		if (accessor.getTarget() instanceof AbstractHorseAccess) {
+		Object target = accessor.getTarget();
+		if (target instanceof Player) {
+			return ItemCollector.EMPTY;
+		}
+		if (target instanceof AbstractHorseAccess) {
 			return new ItemCollector<>(new ItemIterator.ContainerItemIterator(
 					o -> {
 						if (o instanceof AbstractHorseAccess horse) {
@@ -210,7 +214,7 @@ public final class CommonProxy implements ModInitializer {
 						return null;
 					}, 2));
 		}
-		if (!(accessor.getTarget() instanceof ChestBlockEntity)) {
+		if (!(target instanceof ChestBlockEntity)) {
 			try {
 				var storage = findItemHandler(accessor);
 				if (storage != null) {
