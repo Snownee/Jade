@@ -168,9 +168,7 @@ public class DisplayHelper implements IDisplayHelper {
 						}
 						fill(graphics, xPosition, maxY - scaledAmount.floatValue(), xPosition + width, maxY, color);
 					} else {
-						if (opacity() != 1) {
-							color = Overlay.applyAlpha(color, opacity());
-						}
+						color = Overlay.applyAlpha(color, opacity());
 						blitTiledSprite(
 								graphics,
 								RenderPipelines.GUI_TEXTURED,
@@ -208,6 +206,7 @@ public class DisplayHelper implements IDisplayHelper {
 		if (width == 0 || height == 0) {
 			return;
 		}
+		color = Overlay.applyAlpha(color, opacity());
 		this.innerBlit(
 				graphics,
 				renderPipeline,
@@ -297,9 +296,7 @@ public class DisplayHelper implements IDisplayHelper {
 	@Override
 	public void drawText(GuiGraphics graphics, FormattedCharSequence text, float x, float y, int color) {
 		boolean shadow = IWailaConfig.get().overlay().getTheme().text.shadow();
-		if (opacity() != 1) {
-			color = Overlay.applyAlpha(color, opacity());
-		}
+		color = Overlay.applyAlpha(color, opacity());
 		graphics.drawString(font(), text, (int) x, (int) y, color, shadow);
 	}
 
@@ -341,11 +338,7 @@ public class DisplayHelper implements IDisplayHelper {
 			int k,
 			int l,
 			int color) {
-		if (opacity() != 1) {
-			float alpha = ARGB.alpha(color) / 255F;
-			alpha *= opacity();
-			color = ARGB.color(ARGB.as8BitChannel(alpha), color);
-		}
+		color = Overlay.applyAlpha(color, opacity());
 		sprite = IThemeHelper.get().theme().mapSprite(sprite);
 		graphics.blitSprite(renderPipeline, sprite, i, j, k, l, color);
 	}
@@ -382,11 +375,7 @@ public class DisplayHelper implements IDisplayHelper {
 			int height,
 			int color) {
 		sprite = IThemeHelper.get().theme().mapSprite(sprite);
-		if (opacity() != 1) {
-			float alpha = ARGB.alpha(color) / 255F;
-			alpha *= opacity();
-			color = ARGB.color(ARGB.as8BitChannel(alpha), color);
-		}
+		color = Overlay.applyAlpha(color, opacity());
 		graphics.blitSprite(renderPipeline, sprite, spriteWidth, spriteHeight, uStart, vStart, x, y, width, height, color);
 	}
 
@@ -609,11 +598,7 @@ public class DisplayHelper implements IDisplayHelper {
 		if (width == 0 || height == 0) {
 			return;
 		}
-		if (opacity() != 1) {
-			float alpha = ARGB.alpha(color) / 255F;
-			alpha *= opacity();
-			color = ARGB.color(ARGB.as8BitChannel(alpha), color);
-		}
+		color = Overlay.applyAlpha(color, opacity());
 		sprite = IThemeHelper.get().theme().mapSprite(sprite);
 		TextureAtlasSprite textureAtlasSprite = Minecraft.getInstance().getGuiSprites().getSprite(sprite);
 		this.blitSprite(

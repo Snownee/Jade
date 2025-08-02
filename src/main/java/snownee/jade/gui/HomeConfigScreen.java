@@ -342,7 +342,7 @@ public class HomeConfigScreen extends Screen {
 		if (distY >= 9) {
 			return;
 		}
-		int color = IWailaConfig.Overlay.applyAlpha(0xAAAAAA, 1 - distY / 10F);
+		int color = IWailaConfig.Overlay.applyAlpha(0xFFAAAAAA, 1 - distY / 10F);
 		float glint1 = (ticks - y / 5F) % 90 / 45 * width;
 		float glint2 = mouseX;
 		float glint1Strength = 1;
