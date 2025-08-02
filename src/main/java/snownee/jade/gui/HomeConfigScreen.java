@@ -44,11 +44,13 @@ public class HomeConfigScreen extends Screen {
 	private final SmoothChasingValue titleY;
 	private final List<TextParticle> particles = Lists.newArrayList();
 	private final List<TextParticle> pendingParticles = Lists.newArrayList();
+	private final List<TextParticle> persistentParticles = Lists.newArrayList();
 	private float ticks;
 	private byte festival;
 	private float nextParticleIn;
-	private CreditButton creditButton;
 	private boolean showTranslators;
+	private int lastMouseX;
+	private int lastMouseY;
 
 	public HomeConfigScreen(Screen parent) {
 		super(Component.translatable("gui.jade.configuration"));
@@ -60,7 +62,7 @@ public class HomeConfigScreen extends Screen {
 		int day = now.getDayOfMonth();
 		if (month == 12 && day >= 24 && day <= 26) {
 			festival = 1;
-		} else if (month == 6 && day == 28) {
+		} else if (month == 6 && (day == 1 || day == 28)) {
 			festival = 2;
 		} else if (month <= 2 && isLunarNewYear(now)) {
 			festival = 99;
@@ -70,7 +72,6 @@ public class HomeConfigScreen extends Screen {
 	private static boolean isLunarNewYear(LocalDate now) {
 		int year = now.getYear();
 		int newYearMonthAndDay = switch (year) {
-			case 2025 -> 129;
 			case 2026 -> 217;
 			case 2027 -> 206;
 			case 2028 -> 126;
@@ -150,7 +151,7 @@ public class HomeConfigScreen extends Screen {
 		int btnX = (int) (width * 0.5F - btnWidth * 0.5F);
 		int btnY = (int) (height * 0.9F - 5);
 		Component narration = Component.translatable(festival == 99 ? "narration.jade.by.lunar" : "narration.jade.by");
-		creditButton = addRenderableWidget(new CreditButton(
+		CreditButton creditButton = addRenderableWidget(new CreditButton(
 				btnX,
 				btnY,
 				btnWidth,
@@ -171,11 +172,13 @@ public class HomeConfigScreen extends Screen {
 	}
 
 	private void triggerAuthorButton(Button button) {
+		if (festival == 2 || festival == 3) {
+			festival = 3;
+			return;
+		}
 		IntList colors = new IntArrayList();
 		String text = "❄";
-		if (festival == 2) {
-			festival = 3;
-		} else if (festival == 99) {
+		if (festival == 99) {
 			for (int i = 0; i < 11; i++) {
 				colors.add(random.nextBoolean() ? 0xA80000 : 0xC01800);
 			}
@@ -207,20 +210,33 @@ public class HomeConfigScreen extends Screen {
 	}
 
 	@Override
-	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
 		Objects.requireNonNull(minecraft);
 		float deltaTicks = Minecraft.getInstance().getDeltaTracker().getRealtimeDeltaTicks();
 		ticks += deltaTicks;
+		particle:
 		if (ticks > nextParticleIn) {
 			if (festival == 3) {
-				nextParticleIn = ticks + 1;
+				nextParticleIn = ticks;
 				if (pendingParticles.isEmpty()) {
 					festival3populateNew();
 				}
+				if (Mth.abs(mouseX - lastMouseX) < 3 && Mth.abs(mouseY - lastMouseY) < 3) {
+					break particle;
+				}
+				lastMouseX = mouseX;
+				lastMouseY = mouseY;
 				TextParticle particle = pendingParticles.removeFirst();
-				particle.x = mouseX - 5;
+				particle.x = mouseX;
 				particle.y = mouseY;
+				particle.gravity = 0F;
+				particle.age = 40;
 				particles.add(particle);
+				persistentParticles.add(particle);
+				if (persistentParticles.size() > 50) {
+					TextParticle first = persistentParticles.removeFirst();
+					first.persistent = false;
+				}
 			} else if (festival == 1) {
 				nextParticleIn = ticks + 10 + random.nextFloat() * 10;
 				int color = ARGB.colorFromFloat(1, 1 - random.nextFloat() * 0.6F, 1, 1);
@@ -231,43 +247,43 @@ public class HomeConfigScreen extends Screen {
 				particles.add(particle);
 			}
 		}
-		super.render(guiGraphics, mouseX, mouseY, partialTicks);
+		super.render(graphics, mouseX, mouseY, partialTicks);
 		boolean smallUI = minecraft.getWindow().getGuiScale() < 3;
 		int left = width / 2 - 105;
 		int top = height / 4 - 20;
-		guiGraphics.pose().pushMatrix();
-		guiGraphics.pose().translate(left, top);
+		graphics.pose().pushMatrix();
+		graphics.pose().translate(left, top);
 
 		float scale = smallUI ? 2F : 1.5F;
-		guiGraphics.pose().scale(scale);
-		guiGraphics.drawString(font, ModIdentification.getModFullName(Jade.ID).orElse("Jade"), 0, 0, 0xFFFFFFFF);
+		graphics.pose().scale(scale);
+		graphics.drawString(font, ModIdentification.getModFullName(Jade.ID).orElse("Jade"), 0, 0, 0xFFFFFFFF);
 
-		guiGraphics.pose().scale(0.5F);
+		graphics.pose().scale(0.5F);
 		titleY.tick(deltaTicks);
 		String desc2 = I18n.get("gui.jade.configuration.desc2");
 		float scaledX, scaledY;
 		if (desc2.isEmpty()) {
-			guiGraphics.pose().popMatrix();
-			guiGraphics.pose().pushMatrix();
-			guiGraphics.pose().translate(left, top);
+			graphics.pose().popMatrix();
+			graphics.pose().pushMatrix();
+			graphics.pose().translate(left, top);
 			scaledX = mouseX - left;
 			scaledY = mouseY - top;
 		} else {
 			scaledX = (mouseX - left) / scale * 2;
 			scaledY = (mouseY - top) / scale * 2;
 		}
-		drawFancyTitle(guiGraphics, I18n.get("gui.jade.configuration.desc1"), Math.min(titleY.value, 20F), 20F, scaledX, scaledY);
+		drawFancyTitle(graphics, I18n.get("gui.jade.configuration.desc1"), Math.min(titleY.value, 20F), 20F, scaledX, scaledY);
 		if (!desc2.isEmpty()) {
-			drawFancyTitle(guiGraphics, desc2, Math.min(titleY.value + 3F, 32F), 32F, scaledX, scaledY);
+			drawFancyTitle(graphics, desc2, Math.min(titleY.value + 3F, 32F), 32F, scaledX, scaledY);
 		}
-		guiGraphics.pose().popMatrix();
+		graphics.pose().popMatrix();
 
 		particles.removeIf(p -> {
 			p.tick(deltaTicks);
 			if (p.y > height + 20) {
 				return true;
 			}
-			p.render(guiGraphics, font);
+			p.render(graphics, font, mouseX, mouseY);
 			return false;
 		});
 	}
@@ -326,12 +342,12 @@ public class HomeConfigScreen extends Screen {
 				colors.add(0x2C2C2C);
 			}
 		}
-		int ox = random.nextIntBetweenInclusive(creditButton.getX(), creditButton.getX() + creditButton.getWidth());
-		float dx = ox * 0.08F;
-		float dy = -5 - random.nextFloat() * 3;
 		for (int color : colors) {
 			for (int i = 0; i < 5; i++) {
-				var particle = new TextParticle(text, 0, 0, dx, dy, color, 1);
+				float rot = random.nextFloat() * Mth.TWO_PI;
+				float dx = Mth.cos(rot) * 2;
+				float dy = Mth.sin(rot) * 2;
+				var particle = new TextParticle(text, 0, 0, dx, dy, color | 0xFF000000, 1);
 				pendingParticles.add(particle);
 			}
 		}
@@ -383,6 +399,8 @@ public class HomeConfigScreen extends Screen {
 		private int color;
 		private float scale;
 		private float gravity = 0.98F;
+		private boolean persistent = true;
+		private float fade = 1;
 
 		public TextParticle(String text, float x, float y, float motionX, float motionY, int color, float scale) {
 			this.text = text;
@@ -392,16 +410,22 @@ public class HomeConfigScreen extends Screen {
 			this.motionY = motionY;
 			this.color = color;
 			this.scale = scale;
-//			System.out.println(Color.rgb(color).getHex());
 		}
 
 		private void tick(float partialTicks) {
 			x += motionX * partialTicks;
 			y += motionY * partialTicks;
 			motionY += gravity * partialTicks;
+			if (festival == 3) {
+				motionX *= 0.88F;
+				motionY *= 0.88F;
+				if (age < 0) {
+					persistent = false;
+				}
+			}
+			boolean greaterThanZero = age > 0;
+			age -= partialTicks;
 			if (festival == 99) {
-				boolean greaterThanZero = age > 0;
-				age -= partialTicks;
 				if (greaterThanZero && age <= 0) {
 					text = random.nextBoolean() ? "✴" : "✳";
 					color = random.nextBoolean() ? 0xFFD427 : 0xF0C415;
@@ -411,24 +435,29 @@ public class HomeConfigScreen extends Screen {
 									SoundEvents.FIREWORK_ROCKET_BLAST :
 									SoundEvents.FIREWORK_ROCKET_LARGE_BLAST, 0.7F));
 				}
-			} else if (festival == 1) {
-				age -= partialTicks;
+			}
+			if (!persistent) {
+				fade = Math.max(0, fade - partialTicks * 0.25F);
 			}
 		}
 
-		private void render(GuiGraphics guiGraphics, Font font) {
+		private void render(GuiGraphics graphics, Font font, int mouseX, int mouseY) {
 			if (festival == 99 && age < -4) {
 				return;
 			}
-			guiGraphics.pose().pushMatrix();
-			guiGraphics.pose().translate(x, y);
-			guiGraphics.pose().scale(scale);
+			graphics.pose().pushMatrix();
+			graphics.pose().translate(x, y);
+			graphics.pose().scale(scale);
+			int color = this.color;
 			if (festival == 1) {
-				//FIXME
-				guiGraphics.pose().rotate(age);
+				graphics.pose().rotate(age / 50);
+				float alpha = Mth.clamp((Math.abs(mouseX - x) + Math.abs(mouseY - y)) / 50F, 0.25F, 1);
+				color = IWailaConfig.Overlay.applyAlpha(color, alpha);
+			} else if (fade != 1) {
+				color = IWailaConfig.Overlay.applyAlpha(color, fade);
 			}
-			guiGraphics.drawString(font, text, 0, 0, color);
-			guiGraphics.pose().popMatrix();
+			graphics.drawString(font, text, 0, 0, color);
+			graphics.pose().popMatrix();
 		}
 	}
 
