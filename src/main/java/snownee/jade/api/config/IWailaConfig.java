@@ -6,7 +6,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
-import net.minecraft.util.Mth;
 import net.minecraft.world.level.ClipContext;
 import snownee.jade.JadeInternals;
 import snownee.jade.api.SimpleStringRepresentable;
@@ -141,15 +140,17 @@ public interface IWailaConfig {
 	interface Overlay {
 
 		static int applyAlpha(int color, float alpha) {
+			if (alpha == 1) {
+				return color;
+			}
 			if (alpha == 0) {
 				return 0;
 			}
-			int prevAlphaChannel = ARGB.alpha(color);
-			if (prevAlphaChannel > 0) {
-				alpha *= prevAlphaChannel / 256f;
+			int prevAlpha = ARGB.alpha(color);
+			if (prevAlpha != 255) {
+				alpha *= prevAlpha / 255F;
 			}
-			int alphaChannel = Mth.clamp((int) (0xFF * alpha), 4, 255);
-			return ARGB.color(alphaChannel, color);
+			return ARGB.color(ARGB.as8BitChannel(alpha), color);
 		}
 
 		float getOverlayPosX();
