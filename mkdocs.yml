@@ -6,6 +6,8 @@ edit_uri: ''
 
 nav:
   - 'Preface': README.md
+  - '1.21.6+':
+      - 'Getting Started': plugins22/getting-started.md
   - '1.20+':
       - 'Getting Started': plugins20/getting-started.md
       - 'Overrides': plugins20/overrides.md
