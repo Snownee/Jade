@@ -57,7 +57,6 @@ import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.forgespi.language.IModInfo;
-import snownee.jade.Jade;
 import snownee.jade.JadeClient;
 import snownee.jade.addon.harvest.SpecialToolHandler;
 import snownee.jade.addon.harvest.ToolHandler;
@@ -111,31 +110,36 @@ public final class ClientProxy {
 		MinecraftForge.EVENT_BUS.addListener(ClientProxy::registerCommands);
 		MinecraftForge.EVENT_BUS.addListener(ClientProxy::onKeyPressed);
 		MinecraftForge.EVENT_BUS.addListener(ClientProxy::onGui);
-		MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, true, ClientProxy::onDrawBossBar);
-		MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, RenderGuiEvent.Post.class, event -> {
-			if (Minecraft.getInstance().screen == null) {
-				onRenderTick(event.getGuiGraphics());
-			}
-		});
-		MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, ScreenEvent.Render.Post.class, event -> {
-			onRenderTick(event.getGuiGraphics());
-		});
+		MinecraftForge.EVENT_BUS.addListener(EventPriority.HIGHEST, true, ClientProxy::drawBossBarPre);
+		MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, true, ClientProxy::drawBossBarPost);
+		MinecraftForge.EVENT_BUS.addListener(
+				EventPriority.NORMAL, false, RenderGuiEvent.Post.class, event -> {
+					if (Minecraft.getInstance().screen == null) {
+						onRenderTick(event.getGuiGraphics());
+					}
+				});
+		MinecraftForge.EVENT_BUS.addListener(
+				EventPriority.NORMAL, false, ScreenEvent.Render.Post.class, event -> {
+					onRenderTick(event.getGuiGraphics());
+				});
 		IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-		modEventBus.addListener(EventPriority.NORMAL, false, RegisterClientReloadListenersEvent.class, event -> {
-			for (int i = 320; i < 330; i++) {
-				InputConstants.Key key = InputConstants.Type.KEYSYM.getOrCreate(i);
-				//noinspection deprecation
-				key.displayName = new LazyLoadedValue<>(() -> Component.translatable(key.getName()));
-			}
-			JadeClient.init();
-			event.registerReloadListener(ThemeHelper.INSTANCE);
-			listeners.forEach(event::registerReloadListener);
-			listeners.clear();
-		});
-		modEventBus.addListener(EventPriority.NORMAL, false, RegisterKeyMappingsEvent.class, event -> {
-			keys.forEach(event::register);
-			keys.clear();
-		});
+		modEventBus.addListener(
+				EventPriority.NORMAL, false, RegisterClientReloadListenersEvent.class, event -> {
+					for (int i = 320; i < 330; i++) {
+						InputConstants.Key key = InputConstants.Type.KEYSYM.getOrCreate(i);
+						//noinspection deprecation
+						key.displayName = new LazyLoadedValue<>(() -> Component.translatable(key.getName()));
+					}
+					JadeClient.init();
+					event.registerReloadListener(ThemeHelper.INSTANCE);
+					listeners.forEach(event::registerReloadListener);
+					listeners.clear();
+				});
+		modEventBus.addListener(
+				EventPriority.NORMAL, false, RegisterKeyMappingsEvent.class, event -> {
+					keys.forEach(event::register);
+					keys.clear();
+				});
 		ModLoadingContext.get().registerExtensionPoint(
 				ConfigScreenFactory.class,
 				() -> new ConfigScreenFactory((minecraft, screen) -> new HomeConfigScreen(screen)));
@@ -227,20 +231,19 @@ public final class ClientProxy {
 		listeners.add(listener);
 	}
 
-	private static void onDrawBossBar(CustomizeGuiOverlayEvent.BossEventProgress event) {
-		BossBarOverlapMode mode = Jade.CONFIG.get().getGeneral().getBossBarOverlapMode();
-		if (mode == BossBarOverlapMode.NO_OPERATION) {
-			return;
-		}
+	private static void drawBossBarPre(CustomizeGuiOverlayEvent.BossEventProgress event) {
+		BossBarOverlapMode mode = IWailaConfig.get().getGeneral().getBossBarOverlapMode();
 		if (mode == BossBarOverlapMode.HIDE_BOSS_BAR && OverlayRenderer.shown) {
 			event.setCanceled(true);
-			return;
 		}
-		if (mode == BossBarOverlapMode.PUSH_DOWN && event.isCanceled()) {
-			return;
+	}
+
+	private static void drawBossBarPost(CustomizeGuiOverlayEvent.BossEventProgress event) {
+		BossBarOverlapMode mode = IWailaConfig.get().getGeneral().getBossBarOverlapMode();
+		if (mode == BossBarOverlapMode.PUSH_DOWN) {
+			bossbarHeight = event.getY() + event.getIncrement();
+			bossbarShown = true;
 		}
-		bossbarHeight = event.getY() + event.getIncrement();
-		bossbarShown = true;
 	}
 
 	@Nullable
