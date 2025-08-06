@@ -66,7 +66,6 @@ import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforgespi.language.IModInfo;
-import snownee.jade.Jade;
 import snownee.jade.JadeClient;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.BlockAccessor;
@@ -126,33 +125,39 @@ public final class ClientProxy {
 		NeoForge.EVENT_BUS.addListener(ClientProxy::registerCommands);
 		NeoForge.EVENT_BUS.addListener(ClientProxy::onKeyPressed);
 		NeoForge.EVENT_BUS.addListener(ClientProxy::onGui);
-		NeoForge.EVENT_BUS.addListener(EventPriority.LOWEST, true, ClientProxy::onDrawBossBar);
-		NeoForge.EVENT_BUS.addListener(RenderGuiEvent.Post.class, event -> {
-			if (Minecraft.getInstance().screen == null) {
-				onRenderTick(event.getGuiGraphics(), event.getPartialTick().getRealtimeDeltaTicks());
-			}
-		});
-		NeoForge.EVENT_BUS.addListener(ScreenEvent.Render.Pre.class, event -> {
-			Minecraft mc = Minecraft.getInstance();
-			Screen screen = event.getScreen();
-			if (shouldShowBeforeGui(mc, screen) && !shouldShowAfterGui(mc, screen)) {
-				onRenderTick(event.getGuiGraphics(), event.getPartialTick());
-			}
-		});
-		NeoForge.EVENT_BUS.addListener(ScreenEvent.Render.Post.class, event -> {
-			if (shouldShowAfterGui(Minecraft.getInstance(), event.getScreen())) {
-				onRenderTick(event.getGuiGraphics(), event.getPartialTick());
-			}
-		});
-		modBus.addListener(RegisterClientReloadListenersEvent.class, event -> {
-			event.registerReloadListener(ThemeHelper.INSTANCE);
-			listeners.forEach(event::registerReloadListener);
-			listeners.clear();
-		});
-		modBus.addListener(RegisterKeyMappingsEvent.class, event -> {
-			keys.forEach(event::register);
-			keys.clear();
-		});
+		NeoForge.EVENT_BUS.addListener(EventPriority.HIGHEST, true, ClientProxy::drawBossBarPre);
+		NeoForge.EVENT_BUS.addListener(EventPriority.LOWEST, true, ClientProxy::drawBossBarPost);
+		NeoForge.EVENT_BUS.addListener(
+				RenderGuiEvent.Post.class, event -> {
+					if (Minecraft.getInstance().screen == null) {
+						onRenderTick(event.getGuiGraphics(), event.getPartialTick().getRealtimeDeltaTicks());
+					}
+				});
+		NeoForge.EVENT_BUS.addListener(
+				ScreenEvent.Render.Pre.class, event -> {
+					Minecraft mc = Minecraft.getInstance();
+					Screen screen = event.getScreen();
+					if (shouldShowBeforeGui(mc, screen) && !shouldShowAfterGui(mc, screen)) {
+						onRenderTick(event.getGuiGraphics(), event.getPartialTick());
+					}
+				});
+		NeoForge.EVENT_BUS.addListener(
+				ScreenEvent.Render.Post.class, event -> {
+					if (shouldShowAfterGui(Minecraft.getInstance(), event.getScreen())) {
+						onRenderTick(event.getGuiGraphics(), event.getPartialTick());
+					}
+				});
+		modBus.addListener(
+				RegisterClientReloadListenersEvent.class, event -> {
+					event.registerReloadListener(ThemeHelper.INSTANCE);
+					listeners.forEach(event::registerReloadListener);
+					listeners.clear();
+				});
+		modBus.addListener(
+				RegisterKeyMappingsEvent.class, event -> {
+					keys.forEach(event::register);
+					keys.clear();
+				});
 		ModLoadingContext.get().registerExtensionPoint(
 				IConfigScreenFactory.class,
 				() -> (modContainer, screen) -> new HomeConfigScreen(screen));
@@ -254,19 +259,16 @@ public final class ClientProxy {
 		listeners.add(listener);
 	}
 
-	private static void onDrawBossBar(CustomizeGuiOverlayEvent.BossEventProgress event) {
-		BossBarOverlapMode mode = Jade.CONFIG.get().getGeneral().getBossBarOverlapMode();
-		if (mode == BossBarOverlapMode.NO_OPERATION) {
-			return;
-		}
+	private static void drawBossBarPre(CustomizeGuiOverlayEvent.BossEventProgress event) {
+		BossBarOverlapMode mode = IWailaConfig.get().getGeneral().getBossBarOverlapMode();
 		if (mode == BossBarOverlapMode.HIDE_BOSS_BAR && OverlayRenderer.shown) {
 			event.setCanceled(true);
-			return;
 		}
+	}
+
+	private static void drawBossBarPost(CustomizeGuiOverlayEvent.BossEventProgress event) {
+		BossBarOverlapMode mode = IWailaConfig.get().getGeneral().getBossBarOverlapMode();
 		if (mode == BossBarOverlapMode.PUSH_DOWN) {
-			if (event.isCanceled()) {
-				return;
-			}
 			bossbarHeight = event.getY() + event.getIncrement();
 			bossbarShown = true;
 		}
