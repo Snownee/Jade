@@ -26,7 +26,9 @@ public enum MobSpawnerProvider implements IBlockComponentProvider, IEntityCompon
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		SpawnerBlockEntity spawner = (SpawnerBlockEntity) accessor.getBlockEntity();
+		if (!(accessor.getBlockEntity() instanceof SpawnerBlockEntity spawner)) {
+			return;
+		}
 		MutableComponent name = accessor.getBlock().getName();
 		appendTooltip(tooltip, accessor, spawner.getSpawner(), accessor.getPosition(), name);
 	}
