@@ -202,19 +202,16 @@ public final class ClientProxy {
 		listeners.add(listener);
 	}
 
-	private static void onDrawBossBar(CustomizeGuiOverlayEvent.BossEventProgress event) {
+	private static void drawBossBarPre(CustomizeGuiOverlayEvent.BossEventProgress event) {
 		IWailaConfig.BossBarOverlapMode mode = Jade.config().general().getBossBarOverlapMode();
-		if (mode == IWailaConfig.BossBarOverlapMode.NO_OPERATION) {
-			return;
-		}
 		if (mode == IWailaConfig.BossBarOverlapMode.HIDE_BOSS_BAR && OverlayRenderer.shown) {
 			event.setCanceled(true);
-			return;
 		}
+	}
+
+	private static void drawBossBarPost(CustomizeGuiOverlayEvent.BossEventProgress event) {
+		IWailaConfig.BossBarOverlapMode mode = Jade.config().general().getBossBarOverlapMode();
 		if (mode == IWailaConfig.BossBarOverlapMode.PUSH_DOWN) {
-			if (event.isCanceled()) {
-				return;
-			}
 			bossbarHeight = event.getY() + event.getIncrement();
 			bossbarShown = true;
 		}
@@ -321,7 +318,8 @@ public final class ClientProxy {
 		NeoForge.EVENT_BUS.addListener(ClientProxy::registerCommands);
 		NeoForge.EVENT_BUS.addListener(ClientProxy::onKeyPressed);
 		NeoForge.EVENT_BUS.addListener(ClientProxy::onGui);
-		NeoForge.EVENT_BUS.addListener(EventPriority.LOWEST, true, ClientProxy::onDrawBossBar);
+		NeoForge.EVENT_BUS.addListener(EventPriority.HIGHEST, ClientProxy::drawBossBarPre);
+		NeoForge.EVENT_BUS.addListener(EventPriority.LOWEST, true, ClientProxy::drawBossBarPost);
 		NeoForge.EVENT_BUS.addListener(
 				RenderGuiEvent.Post.class, event -> {
 					if (Minecraft.getInstance().screen == null) {
