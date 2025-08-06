@@ -41,7 +41,11 @@ public interface IThemeHelper {
 
 	TextElement modName(Object componentOrString);
 
-	MutableComponent seconds(int ticks, float tickRate);
+	default MutableComponent seconds(int ticks, float tickRate) {
+		return seconds(ticks, tickRate, false);
+	}
+
+	MutableComponent seconds(int ticks, float tickRate, boolean alwaysOnePart);
 
 	default boolean isLightColorScheme() {
 		return theme().lightColorScheme;

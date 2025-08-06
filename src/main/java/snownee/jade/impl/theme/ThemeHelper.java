@@ -150,18 +150,28 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener<JadeClientCode
 	}
 
 	@Override
-	public MutableComponent seconds(int ticks, float tickRate) {
-		ticks = Mth.floor(ticks / tickRate);
-		if (ticks >= 60) {
-			int minutes = ticks / 60;
-			ticks %= 60;
-			if (ticks == 0) {
-				return info(JadeClient.format("jade.minutes", minutes));
+	public MutableComponent seconds(int ticks, float tickRate, boolean alwaysOnePart) {
+		int seconds = Mth.floor(ticks / tickRate);
+		if (seconds >= 3600) {
+			int hours = seconds / 3600;
+			seconds %= 3600;
+			int minutes = seconds / 60;
+			if (alwaysOnePart || minutes == 0) {
+				return info(JadeClient.format("jade.hours", hours));
 			} else {
-				return info(JadeClient.format("jade.minutes_seconds", minutes, ticks));
+				return info(JadeClient.format("jade.hours_minutes", hours, minutes));
 			}
 		}
-		return info(JadeClient.format("jade.seconds", ticks));
+		if (seconds >= 60) {
+			int minutes = seconds / 60;
+			seconds %= 60;
+			if (alwaysOnePart || seconds == 0) {
+				return info(JadeClient.format("jade.minutes", minutes));
+			} else {
+				return info(JadeClient.format("jade.minutes_seconds", minutes, seconds));
+			}
+		}
+		return info(JadeClient.format("jade.seconds", seconds));
 	}
 
 	protected MutableComponent color(Object componentOrString, int color) {
