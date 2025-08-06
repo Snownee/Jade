@@ -310,6 +310,8 @@
 	"jade.seconds": "{0}秒",
 	"jade.minutes": "{0}分",
 	"jade.minutes_seconds": "{0}分{1}秒",
+	"jade.hours": "{0}时",
+	"jade.hours_minutes": "{0}时{1}分",
 	"jade.error": "<发生错误，请反馈至%s>",
 	"jade.blockpos": "%s %s %s",
 	"jade.distance1": " [%s]",
