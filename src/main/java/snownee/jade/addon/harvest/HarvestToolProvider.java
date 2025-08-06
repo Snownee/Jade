@@ -109,15 +109,19 @@ public class HarvestToolProvider implements IBlockComponentProvider, KeyedResour
 			return;
 		}
 		BlockState state = accessor.getBlockState();
-		float destroySpeed = state.getDestroySpeed(level, pos);
-		// player-sensitive method, used by Waystones
-		float destroyProgress = state.getDestroyProgress(player, level, pos);
-		if (destroySpeed < 0 || destroyProgress <= 0) {
-			if (config.get(JadeIds.MC_SHOW_UNBREAKABLE)) {
-				Component text = IThemeHelper.get().failure(Component.translatable("jade.harvest_tool.unbreakable"));
-				tooltip.add(JadeUI.text(text).narration(""));
+		try {
+			float destroySpeed = state.getDestroySpeed(level, pos);
+			// player-sensitive method, used by Waystones
+			float destroyProgress = state.getDestroyProgress(player, level, pos);
+			if (destroySpeed < 0 || destroyProgress <= 0) {
+				if (config.get(JadeIds.MC_SHOW_UNBREAKABLE)) {
+					Component text = IThemeHelper.get().failure(Component.translatable("jade.harvest_tool.unbreakable"));
+					tooltip.add(JadeUI.text(text).narration(""));
+				}
+				//TODO: high priority handlers?
+				return;
 			}
-			//TODO: high priority handlers?
+		} catch (Exception ignored) {
 			return;
 		}
 
