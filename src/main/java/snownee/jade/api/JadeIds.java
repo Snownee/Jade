@@ -83,6 +83,7 @@ public interface JadeIds {
 	ResourceLocation MC_PET_ARMOR = MC("pet_armor");
 	ResourceLocation MC_PLAYER_HEAD = MC("player_head");
 	ResourceLocation MC_POTION_EFFECTS = MC("potion_effects");
+	ResourceLocation MC_POTION_EFFECTS_LIMIT = MC("potion_effects.limit");
 	ResourceLocation MC_REDSTONE = MC("redstone");
 	ResourceLocation MC_TNT_STABILITY = MC("tnt_stability");
 	ResourceLocation MC_TOTAL_ENCHANTMENT_POWER = MC("total_enchantment_power");

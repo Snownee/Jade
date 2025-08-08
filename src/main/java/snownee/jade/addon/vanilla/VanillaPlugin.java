@@ -157,6 +157,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.addConfig(JadeIds.MC_ENTITY_HEALTH_ICONS_PER_LINE, 10, 5, 40, false);
 		registration.addConfig(JadeIds.MC_ENTITY_HEALTH_SHOW_FRACTIONS, false);
 		registration.addConfig(JadeIds.MC_PET_ARMOR, PetArmorProvider.Mode.SHOW_DAMAGEABLE);
+		registration.addConfig(JadeIds.MC_POTION_EFFECTS_LIMIT, 7, 1, 99, false);
 
 		registration.registerBlockComponent(BrewingStandProvider.Client.INSTANCE, BrewingStandBlock.class);
 		registration.registerEntityComponent(HorseStatsProvider.INSTANCE, AbstractHorse.class);

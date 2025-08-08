@@ -6,6 +6,8 @@
 	"mixins": [
 		"AbstractHorseAccess",
 		"EntityAccess",
+		"LivingEntityMixin",
+		"MobEffectInstanceMixin",
 		"ServerPlayerMixin"
 	],
 	"client": [
