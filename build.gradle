@@ -148,7 +148,7 @@ unifiedPublishing {
         version = realVersion // Optional, Inferred from project by default
         changelog = file("CHANGELOG.md").exists() ? file("CHANGELOG.md").text : "" // Optional, in markdown format
         releaseType = project.release_type // Optional, use "release", "beta" or "alpha"
-        gameVersions = [project.archive_minecraft_version, "1.21.6", "1.21.7"]
+        gameVersions = [project.archive_minecraft_version]
         gameLoaders = ["fabric", "quilt"]
 
         mainPublication tasks.remapJar // Declares the publicated jar

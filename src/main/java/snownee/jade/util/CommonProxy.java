@@ -146,9 +146,13 @@ public final class CommonProxy implements ModInitializer {
 				}
 			}
 		}
+		String modid = stack.getItem().getCreatorNamespace(stack);
+		if (!ResourceLocation.DEFAULT_NAMESPACE.equals(modid)) {
+			return modid;
+		}
 		if (stack.has(DataComponents.STORED_ENCHANTMENTS)) {
 			ItemEnchantments enchantments = stack.getOrDefault(DataComponents.STORED_ENCHANTMENTS, ItemEnchantments.EMPTY);
-			String modid = null;
+			modid = null;
 			for (Holder<Enchantment> enchantmentHolder : enchantments.keySet()) {
 				ResourceLocation id = enchantmentHolder.unwrapKey().map(ResourceKey::location).orElse(null);
 				if (id != null) {
@@ -167,7 +171,7 @@ public final class CommonProxy implements ModInitializer {
 		}
 		PotionContents potionContents = stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
 		if (potionContents.hasEffects()) {
-			String modid = null;
+			modid = null;
 			for (MobEffectInstance effect : potionContents.getAllEffects()) {
 				ResourceLocation id = effect.getEffect().unwrapKey().map(ResourceKey::location).orElse(null);
 				if (id != null) {
@@ -193,7 +197,7 @@ public final class CommonProxy implements ModInitializer {
 						.orElse(ResourceLocation.DEFAULT_NAMESPACE);
 			}
 		}
-		return BuiltInRegistries.ITEM.getKey(stack.getItem()).getNamespace();
+		return ResourceLocation.DEFAULT_NAMESPACE;
 	}
 
 	public static boolean isPhysicallyClient() {
