@@ -10,6 +10,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.Mth;
+import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.NarratableComponent;
 import snownee.jade.api.ui.TextElement;
@@ -20,6 +21,7 @@ public class TextElementImpl extends TextElement implements GuiEventListener {
 
 	protected final FormattedText text;
 	protected float scale = 1;
+	protected float alpha = 1;
 	private int textWidth;
 
 	public TextElementImpl(Component component) {
@@ -41,16 +43,23 @@ public class TextElementImpl extends TextElement implements GuiEventListener {
 	}
 
 	@Override
+	public TextElement alpha(float alpha) {
+		this.alpha = alpha;
+		return this;
+	}
+
+	@Override
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
 		int x = textLeft();
+		int normalColor = IWailaConfig.Overlay.applyAlpha(IThemeHelper.get().getNormalColor(), alpha);
 		if (scale == 1) {
-			DisplayHelper.INSTANCE.drawText(graphics, text, x, getY(), IThemeHelper.get().getNormalColor());
+			DisplayHelper.INSTANCE.drawText(graphics, text, x, getY(), normalColor);
 		} else {
 			Matrix3x2fStack matrixStack = graphics.pose();
 			matrixStack.pushMatrix();
 			matrixStack.translate(x, getY() + scale);
 			matrixStack.scale(scale);
-			DisplayHelper.INSTANCE.drawText(graphics, text, 0, 0, IThemeHelper.get().getNormalColor());
+			DisplayHelper.INSTANCE.drawText(graphics, text, 0, 0, normalColor);
 			matrixStack.popMatrix();
 		}
 		if (mouseX != -1 && getRectangle().containsPoint(mouseX, mouseY)) {
