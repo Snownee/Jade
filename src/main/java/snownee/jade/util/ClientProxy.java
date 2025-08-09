@@ -21,13 +21,11 @@ import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
-import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRenderHandler;
 import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
@@ -59,9 +57,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.util.LazyLoadedValue;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -131,10 +127,6 @@ public final class ClientProxy implements ClientModInitializer {
 
 	private static void onEntityLeave(Entity entity, ClientLevel level) {
 		DatapackBlockManager.onEntityLeave(entity);
-	}
-
-	private static void onTooltip(ItemStack stack, Item.TooltipContext tooltipContext, TooltipFlag tooltipType, List<Component> lines) {
-		JadeClient.appendModName(lines, stack, tooltipContext, tooltipType);
 	}
 
 	public static void onRenderTick(GuiGraphics guiGraphics, float tickDelta) {
@@ -302,9 +294,6 @@ public final class ClientProxy implements ClientModInitializer {
 		ClientLifecycleEvents.CLIENT_STARTED.register(mc -> CommonProxy.loadComplete());
 		ClientEntityEvents.ENTITY_LOAD.register(ClientProxy::onEntityJoin);
 		ClientEntityEvents.ENTITY_UNLOAD.register(ClientProxy::onEntityLeave);
-		ResourceLocation lowest = JadeIds.CORE_MOD_NAME;
-		ItemTooltipCallback.EVENT.addPhaseOrdering(Event.DEFAULT_PHASE, lowest);
-		ItemTooltipCallback.EVENT.register(lowest, ClientProxy::onTooltip);
 		ClientPlayConnectionEvents.DISCONNECT.register(ClientProxy::onPlayerLeave);
 		ClientTickEvents.END_CLIENT_TICK.register(ClientProxy::onClientTick);
 		ClientTickEvents.END_CLIENT_TICK.register(ClientProxy::onKeyPressed);

@@ -19,7 +19,6 @@
 		"KeyAccess",
 		"LanguageManagerMixin",
 		"PreparedTextBuilderMixin",
-		"SessionSearchTreesMixin",
 		"key_extension.KeyBindsListMixin",
 		"key_extension.KeyBindsListMixin$KeyEntryMixin",
 		"key_extension.KeyMappingMixin"
