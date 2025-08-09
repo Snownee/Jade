@@ -39,13 +39,13 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.LerpingBossEvent;
 import net.minecraft.client.gui.screens.GenericMessageScreen;
 import net.minecraft.client.gui.screens.ProgressScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
-import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.commands.CommandBuildContext;
@@ -78,6 +78,7 @@ import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.JadeUI;
+import snownee.jade.api.ui.Rect2f;
 import snownee.jade.api.view.ClientViewGroup;
 import snownee.jade.api.view.IClientExtensionProvider;
 import snownee.jade.api.view.ViewGroup;
@@ -102,6 +103,8 @@ public final class ClientProxy implements ClientModInitializer {
 	public static boolean hasREI = false; //isModLoaded("roughlyenoughitems");
 	public static boolean hasFastScroll = CommonProxy.isModLoaded("fastscroll");
 	public static boolean hasAccessibilityMod = CommonProxy.isModLoaded("minecraft_access");
+	private static boolean bossbarShown;
+	private static int bossbarHeight;
 
 	public static Optional<String> getModName(String namespace) {
 		String modMenuKey = "modmenu.nameTranslation.%s".formatted(namespace);
@@ -139,6 +142,8 @@ public final class ClientProxy implements ClientModInitializer {
 			OverlayRenderer.renderOverlay478757(guiGraphics, tickDelta);
 		} catch (Throwable e) {
 			WailaExceptionHandler.handleErr(e, null, null);
+		} finally {
+			bossbarShown = false;
 		}
 	}
 
@@ -189,18 +194,22 @@ public final class ClientProxy implements ClientModInitializer {
 		ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(listener);
 	}
 
+	public static void drawBossBarPost(LerpingBossEvent bossEvent, int bottom) {
+		IWailaConfig.BossBarOverlapMode mode = Jade.config().general().getBossBarOverlapMode();
+		if (mode == IWailaConfig.BossBarOverlapMode.PUSH_DOWN) {
+			bossbarHeight = bottom;
+			bossbarShown = true;
+		}
+	}
+
 	@Nullable
-	public static Rect2i getBossBarRect() {
-		Minecraft mc = Minecraft.getInstance();
-		int size = mc.gui.getBossOverlay().events.size();
-		if (size == 0) {
+	public static Rect2f getBossBarRect() {
+		if (!bossbarShown) {
 			return null;
 		}
-		int i = mc.getWindow().getGuiScaledWidth();
+		int i = Minecraft.getInstance().getWindow().getGuiScaledWidth();
 		int k = i / 2 - 91;
-		int height = 10 + mc.font.lineHeight;
-		size = Math.min(size, (mc.getWindow().getGuiScaledHeight() / 3 - 12) / height + 1);
-		return new Rect2i(k, 12, 182, height * size);
+		return new Rect2f(k, 0, 182, bossbarHeight - 12);
 	}
 
 	public static boolean isShowDetailsPressed() {

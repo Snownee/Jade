@@ -8,7 +8,6 @@ import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.util.Mth;
 import net.minecraft.util.profiling.Profiler;
 import net.minecraft.world.item.ItemStack;
@@ -196,9 +195,9 @@ public class OverlayRenderer {
 
 		boolean renderDebug = IWailaConfig.get().general().isDebug() && Screen.hasControlDown();
 		if (renderDebug) {
-			Rect2i bossBarRect = ClientProxy.getBossBarRect();
+			Rect2f bossBarRect = ClientProxy.getBossBarRect();
 			if (bossBarRect != null) {
-				JadeInternals.getDisplayHelper().drawBorder(graphics, new Rect2f(bossBarRect), 2, 0x88FF00FF, true);
+				JadeInternals.getDisplayHelper().drawBorder(graphics, bossBarRect, 2, 0x88FF00FF, true);
 			}
 		}
 

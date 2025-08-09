@@ -22,7 +22,6 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.layouts.Layout;
 import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.client.gui.layouts.LayoutSettings;
-import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import snownee.jade.JadeInternals;
 import snownee.jade.api.JadeIds;
@@ -372,24 +371,10 @@ public class BoxElementImpl extends BoxElement implements ContainerEventHandler 
 
 		IWailaConfig.BossBarOverlapMode mode = IWailaConfig.get().general().getBossBarOverlapMode();
 		if (mode == IWailaConfig.BossBarOverlapMode.PUSH_DOWN) {
-			Rect2i bossBarRect = ClientProxy.getBossBarRect();
-			if (bossBarRect != null) {
-				width = expectedRect.getWidth();
-				height = expectedRect.getHeight();
-				int rw = bossBarRect.getWidth();
-				int rh = bossBarRect.getHeight();
-				x = expectedRect.getX();
-				y = expectedRect.getY();
-				int rx = bossBarRect.getX();
-				int ry = bossBarRect.getY();
-				rw += rx;
-				rh += ry;
-				width += x;
-				height += y;
-				// check if tooltip intersects with boss bar
-				if (rw > x && rh > y && width > rx && height > ry) {
-					expectedRect.setY(bossBarRect.getHeight());
-				}
+			Rect2f bossBarRect = ClientProxy.getBossBarRect();
+			// check if tooltip intersects with boss bar
+			if (bossBarRect != null && bossBarRect.intersects(expectedRect)) {
+				expectedRect.setY(bossBarRect.getY() + bossBarRect.getHeight());
 			}
 		}
 	}
