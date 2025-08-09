@@ -3,6 +3,7 @@ package snownee.jade.api.ui;
 import com.google.common.base.Objects;
 
 import net.minecraft.client.gui.layouts.LayoutElement;
+import net.minecraft.client.renderer.Rect2i;
 
 public class Rect2f {
 	private float xPos;
@@ -11,6 +12,10 @@ public class Rect2f {
 	private float height;
 
 	public Rect2f() {}
+
+	public Rect2f(Rect2i rect2i) {
+		this(rect2i.getX(), rect2i.getY(), rect2i.getWidth(), rect2i.getHeight());
+	}
 
 	public Rect2f(float x, float y, float width, float height) {
 		this.xPos = x;
