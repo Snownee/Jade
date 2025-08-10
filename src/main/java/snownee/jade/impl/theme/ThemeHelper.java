@@ -182,6 +182,14 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener<JadeClientCode
 		return generation;
 	}
 
+	public void setTheme(Theme theme) {
+		if (this.theme == theme) {
+			return;
+		}
+		this.theme = theme;
+		generation++;
+	}
+
 	@Override
 	public void setThemeOverride(@Nullable Theme theme) {
 		if (themeOverride == theme) {
@@ -259,8 +267,6 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener<JadeClientCode
 			IWailaConfig.get().save();
 		}
 		config.applyTheme(config.activeTheme);
-		theme = config.getTheme();
-		generation++;
 	}
 
 	@Override

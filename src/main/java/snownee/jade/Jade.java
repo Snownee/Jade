@@ -131,6 +131,7 @@ public class Jade {
 						config.overlay().setIconMode(IWailaConfig.IconMode.INLINE);
 						config.plugin().set(JadeIds.MC_BREAKING_PROGRESS, false);
 						config.plugin().set(JadeIds.MC_HARVEST_TOOL, false);
+						config.plugin().set(JadeIds.MC_ITEM_TOOLTIP, false);
 						return config;
 					};
 				}

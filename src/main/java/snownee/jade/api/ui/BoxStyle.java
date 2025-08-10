@@ -74,6 +74,17 @@ public class BoxStyle implements Cloneable {
 		return BoxStyle.TRANSPARENT;
 	}
 
+	public static BoxStyle simple(@Nullable ResourceLocation sprite, @Nullable int[] padding) {
+		return new BoxStyle(
+				Optional.empty(),
+				ColorPalette.DEFAULT,
+				Optional.ofNullable(padding),
+				1,
+				Optional.ofNullable(sprite),
+				Optional.empty(),
+				false);
+	}
+
 	public static BoxStyle tooltip(@Nullable ResourceLocation sprite, @Nullable int[] padding) {
 		return tooltip(sprite, padding, 1);
 	}
