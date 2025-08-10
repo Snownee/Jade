@@ -2,6 +2,12 @@
 	"version": 200,
 	"tooltipStyle": {
 		"sprite": "jade:top",
-		"borderWidth": 2
+		"borderWidth": 2,
+		"padding": [
+			5,
+			4,
+			5,
+			4
+		]
 	}
 }

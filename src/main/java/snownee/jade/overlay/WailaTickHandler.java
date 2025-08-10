@@ -3,6 +3,8 @@ package snownee.jade.overlay;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import org.apache.commons.lang3.mutable.MutableObject;
+
 import com.google.common.base.Preconditions;
 
 import net.minecraft.client.GameNarrator;
@@ -23,6 +25,7 @@ import snownee.jade.Jade;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.JadeIds;
+import snownee.jade.api.callback.JadeBeforeTooltipCollectCallback;
 import snownee.jade.api.callback.JadeRayTraceCallback;
 import snownee.jade.api.callback.JadeTooltipCollectedCallback;
 import snownee.jade.api.config.IWailaConfig;
@@ -37,7 +40,6 @@ import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.Tooltip;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
-import snownee.jade.impl.theme.ThemeHelper;
 import snownee.jade.impl.ui.BoxElementImpl;
 import snownee.jade.track.ProgressTracker;
 import snownee.jade.util.ClientProxy;
@@ -185,13 +187,20 @@ public class WailaTickHandler {
 		}
 
 		Theme theme = IWailaConfig.get().overlay().getTheme();
-		ThemeHelper.theme.setValue(theme);
+		MutableObject<Theme> holder = new MutableObject<>(theme);
 		Preconditions.checkNotNull(theme, "Theme cannot be null");
 		Accessor<?> accessor0 = accessor;
-		WailaClientRegistration.instance().beforeTooltipCollectCallback.call(callback -> {
-			callback.beforeCollecting(ThemeHelper.theme, accessor0);
-		});
-		Preconditions.checkNotNull(ThemeHelper.theme.getValue(), "Theme cannot be null");
+		for (JadeBeforeTooltipCollectCallback callback : WailaClientRegistration.instance().beforeTooltipCollectCallback.callbacks()) {
+			if (!callback.beforeCollecting(holder, accessor0)) {
+				return;
+			}
+		}
+		Preconditions.checkNotNull(holder.getValue(), "Theme cannot be null");
+		IThemeHelper themes = IThemeHelper.get();
+		if (theme != holder.getValue()) {
+			theme = holder.getValue();
+			themes.setThemeOverride(theme);
+		}
 
 		Tooltip tooltip = new Tooltip();
 		Element icon = ObjectDataCenter.getIcon();
@@ -214,8 +223,8 @@ public class WailaTickHandler {
 			handler.gatherComponents(accessor, $ -> tooltip);
 		}
 
-		tooltip.setIcon(IThemeHelper.get().theme().modifyIcon(tooltip.getIcon()));
-		BoxElementImpl newElement = new BoxElementImpl(tooltip, IThemeHelper.get().theme().tooltipStyle);
+		tooltip.setIcon(themes.theme().modifyIcon(tooltip.getIcon()));
+		BoxElementImpl newElement = new BoxElementImpl(tooltip, themes.theme().tooltipStyle);
 		newElement.tag(JadeIds.ROOT);
 		for (JadeTooltipCollectedCallback callback : WailaClientRegistration.instance().tooltipCollectedCallback.callbacks()) {
 			callback.onTooltipCollected(newElement, accessor);
@@ -228,6 +237,6 @@ public class WailaTickHandler {
 			OverlayRenderer.animation.startTime = System.currentTimeMillis();
 		}
 		rootElement = newElement;
-		ThemeHelper.theme.setValue(theme);
+		themes.setThemeOverride(null);
 	}
 }

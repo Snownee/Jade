@@ -110,11 +110,12 @@ public class Theme {
 					padding[2] += border.bottom();
 					padding[3] += border.left();
 				}
-				iconSlotSpriteCache = new BoxElementImpl(new Tooltip(), BoxStyle.tooltip(iconSlotSprite, padding));
+				iconSlotSpriteCache = new BoxElementImpl(new Tooltip(), BoxStyle.simple(iconSlotSprite, padding));
 			}
 			ITooltip tooltip1 = iconSlotSpriteCache.getTooltip();
 			tooltip1.clear();
 			tooltip1.add(icon);
+			iconSlotSpriteCache.updateSize();
 			icon = iconSlotSpriteCache;
 		}
 		return icon.tag(JadeIds.CORE_ROOT_ICON);

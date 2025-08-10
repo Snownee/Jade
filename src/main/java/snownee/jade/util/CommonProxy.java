@@ -146,7 +146,12 @@ public final class CommonProxy implements ModInitializer {
 				}
 			}
 		}
-		String modid = stack.getItem().getCreatorNamespace(stack);
+		String modid;
+		try {
+			modid = stack.getItem().getCreatorNamespace(stack);
+		} catch (Throwable ignored) {
+			modid = stack.getItemHolder().unwrapKey().orElseThrow().location().getNamespace();
+		}
 		if (!ResourceLocation.DEFAULT_NAMESPACE.equals(modid)) {
 			return modid;
 		}

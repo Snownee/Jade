@@ -63,14 +63,8 @@ public class BoxElementImpl extends BoxElement implements ContainerEventHandler 
 		this.tooltip = Objects.requireNonNull(tooltip);
 		this.style = Objects.requireNonNull(style);
 		this.icon = tooltip.getIcon();
-		updateSize();
 		renderables = Lists.newArrayListWithExpectedSize(tooltip.size() + 1);
-		JadeUI.visitChildrenRecursive(
-				layout, element -> {
-					if (element instanceof Renderable renderable) {
-						renderables.add(renderable);
-					}
-				});
+		updateSize();
 	}
 
 	@Override
@@ -122,6 +116,14 @@ public class BoxElementImpl extends BoxElement implements ContainerEventHandler 
 		layout.arrangeElements();
 		width = layout.getWidth();
 		height = layout.getHeight();
+
+		renderables.clear();
+		JadeUI.visitChildrenRecursive(
+				layout, element -> {
+					if (element instanceof Renderable renderable) {
+						renderables.add(renderable);
+					}
+				});
 	}
 
 	@Override
