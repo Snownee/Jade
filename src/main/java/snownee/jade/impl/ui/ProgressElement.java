@@ -138,7 +138,7 @@ public class ProgressElement extends ResizeableElement implements StyledElement 
 //		graphics.enableScissor(x + (int) start, y, x + (int) start + roundedPartWidth, y + height);
 		// we can only draw a sprite from its top-left corner, so only makes the last part more detailed
 		if (isLast && view.style.foreground() == null && overlay instanceof ProgressOverlayElement element &&
-				element.canUseFloatingRect()) {
+				element.canUseFloatingRect(graphics)) {
 			element.setFloatingRect(x + start, y, partWidth, height);
 			element.render(graphics, -1, -1, partialTicks);
 			element.setFloatingRect(null);

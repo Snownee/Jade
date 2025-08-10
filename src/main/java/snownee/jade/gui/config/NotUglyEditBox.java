@@ -325,7 +325,7 @@ public class NotUglyEditBox extends AbstractWidget {
 	}
 
 	@Override
-	public void onClick(double x, double y) {
+	public void onClick(double x, double y, boolean doubleClick) {
 		if (isMouseOverCross) {
 			setValue("");
 			super.playDownSound(Minecraft.getInstance().getSoundManager());

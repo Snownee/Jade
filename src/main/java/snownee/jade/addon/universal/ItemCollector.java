@@ -1,7 +1,6 @@
 package snownee.jade.addon.universal;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 
@@ -19,6 +18,12 @@ import snownee.jade.api.view.ViewGroup;
 public class ItemCollector<T> {
 	public static final int MAX_SIZE = 54;
 	public static final ItemCollector<?> EMPTY = new ItemCollector<>(null);
+	private static final CompoundTag IGNORED_TAG = new CompoundTag();
+
+	static {
+		IGNORED_TAG.putBoolean("__JadeClear", true);
+	}
+
 	private static final Predicate<ItemStack> SHOWN = stack -> {
 		if (stack.isEmpty()) {
 			return false;
@@ -28,12 +33,8 @@ public class ItemCollector<T> {
 		}
 		if (stack.hasNonDefault(DataComponents.CUSTOM_MODEL_DATA) || stack.hasNonDefault(DataComponents.ITEM_MODEL)) {
 			CustomData customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
-			//noinspection deprecation
-			CompoundTag tag = customData.getUnsafe();
-			for (String key : tag.keySet()) {
-				if (key.toLowerCase(Locale.ENGLISH).endsWith("clear") && tag.getBooleanOr(key, true)) {
-					return false;
-				}
+			if (customData.matchedBy(IGNORED_TAG)) {
+				return false;
 			}
 		}
 		return true;

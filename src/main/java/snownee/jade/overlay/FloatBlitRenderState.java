@@ -60,11 +60,11 @@ public record FloatBlitRenderState(
 	}
 
 	@Override
-	public void buildVertices(VertexConsumer vertexConsumer, float f) {
-		vertexConsumer.addVertexWith2DPose(this.pose(), this.x0(), this.y0(), f).setUv(this.u0(), this.v0()).setColor(this.color());
-		vertexConsumer.addVertexWith2DPose(this.pose(), this.x0(), this.y1(), f).setUv(this.u0(), this.v1()).setColor(this.color());
-		vertexConsumer.addVertexWith2DPose(this.pose(), this.x1(), this.y1(), f).setUv(this.u1(), this.v1()).setColor(this.color());
-		vertexConsumer.addVertexWith2DPose(this.pose(), this.x1(), this.y0(), f).setUv(this.u1(), this.v0()).setColor(this.color());
+	public void buildVertices(VertexConsumer vertexConsumer) {
+		vertexConsumer.addVertexWith2DPose(this.pose(), this.x0(), this.y0()).setUv(this.u0(), this.v0()).setColor(this.color());
+		vertexConsumer.addVertexWith2DPose(this.pose(), this.x0(), this.y1()).setUv(this.u0(), this.v1()).setColor(this.color());
+		vertexConsumer.addVertexWith2DPose(this.pose(), this.x1(), this.y1()).setUv(this.u1(), this.v1()).setColor(this.color());
+		vertexConsumer.addVertexWith2DPose(this.pose(), this.x1(), this.y0()).setUv(this.u1(), this.v0()).setColor(this.color());
 	}
 
 	@Nullable

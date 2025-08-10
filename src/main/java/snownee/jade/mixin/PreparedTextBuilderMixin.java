@@ -12,6 +12,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.font.GlyphInfo;
 
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.font.glyphs.BakeableGlyph;
 import net.minecraft.network.chat.Style;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.theme.IThemeHelper;
@@ -30,8 +31,18 @@ public class PreparedTextBuilderMixin {
 		return original.call(i, f);
 	}
 
-	@Inject(method = "accept", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/chat/Style;isObfuscated()Z"), cancellable = true)
-	private void jade$accept(int i, Style style, int j, CallbackInfoReturnable<Boolean> cir, @Local GlyphInfo glyphInfo) {
+	@Inject(
+			method = "accept(ILnet/minecraft/network/chat/Style;Lnet/minecraft/client/gui/font/glyphs/BakeableGlyph;)Z",
+			at = @At(
+					value = "INVOKE",
+					target = "Lnet/minecraft/client/gui/font/glyphs/BakeableGlyph;baked()Lnet/minecraft/client/gui/font/glyphs/BakedGlyph;"),
+			cancellable = true)
+	private void jade$accept(
+			int i,
+			Style style,
+			BakeableGlyph bakeableGlyph,
+			CallbackInfoReturnable<Boolean> cir,
+			@Local GlyphInfo glyphInfo) {
 		if (this$0.getClass() == JadeFont.class && JadeFont.isFilteredGlyph(glyphInfo, this$0.lineHeight)) {
 			cir.setReturnValue(false);
 		}

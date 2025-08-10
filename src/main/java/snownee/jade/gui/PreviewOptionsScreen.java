@@ -100,9 +100,9 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 	}
 
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int p_94697_) {
+	public boolean mouseClicked(double mouseX, double mouseY, int button, boolean doubleClick) {
 		if (!adjustingPosition) {
-			return super.mouseClicked(mouseX, mouseY, p_94697_);
+			return super.mouseClicked(mouseX, mouseY, button, doubleClick);
 		}
 
 		Objects.requireNonNull(minecraft);
@@ -220,7 +220,12 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 				guiGraphics.fill(width / 2, (int) (rect.getY() - 5), width / 2 + 1, (int) (rect.getY() + rect.getHeight() + 4), 0xFF0000FF);
 			}
 			if (config.getOverlayPosY() == 0.5f) {
-				guiGraphics.fill((int) (rect.getX() - 5), height / 2, (int) (rect.getX() + rect.getWidth() + 4), height / 2 + 1, 0xFF0000FF);
+				guiGraphics.fill(
+						(int) (rect.getX() - 5),
+						height / 2,
+						(int) (rect.getX() + rect.getWidth() + 4),
+						height / 2 + 1,
+						0xFF0000FF);
 			}
 		} else {
 			super.render(guiGraphics, mouseX, mouseY, partialTicks);

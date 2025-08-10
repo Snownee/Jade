@@ -30,7 +30,7 @@ import snownee.jade.util.JsonConfig;
 
 public class Jade {
 	public static final String ID = "jade";
-	public static final String PROTOCOL_VERSION = "8";
+	public static final String PROTOCOL_VERSION = "9";
 	public static final Logger LOGGER = LogUtils.getLogger();
 	private static final Supplier<JsonConfig<WailaConfig.Root>> rootConfig = Suppliers.memoize(() -> new JsonConfig<>(
 			ID + "/" + ID,

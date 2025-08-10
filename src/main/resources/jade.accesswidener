@@ -22,8 +22,7 @@ accessible field net/minecraft/world/entity/animal/allay/Allay duplicationCooldo
 
 accessible field net/minecraft/client/gui/components/BossHealthOverlay events Ljava/util/Map;
 
-accessible method net/minecraft/world/level/block/ChiseledBookShelfBlock getRelativeHitCoordinatesForBlockFace (Lnet/minecraft/world/phys/BlockHitResult;Lnet/minecraft/core/Direction;)Ljava/util/Optional;
-accessible method net/minecraft/world/level/block/ChiseledBookShelfBlock getHitSlot (Lnet/minecraft/world/phys/BlockHitResult;Lnet/minecraft/world/level/block/state/BlockState;)Ljava/util/OptionalInt;
+accessible method net/minecraft/world/level/block/SelectableSlotContainer getHitSlot (Lnet/minecraft/world/phys/BlockHitResult;Lnet/minecraft/core/Direction;)Ljava/util/OptionalInt;
 
 accessible method net/minecraft/world/entity/Display$BlockDisplay getBlockState ()Lnet/minecraft/world/level/block/state/BlockState;
 
@@ -32,11 +31,10 @@ accessible field net/minecraft/world/entity/monster/ZombieVillager villagerConve
 accessible field net/minecraft/world/entity/animal/horse/AbstractHorse MAX_MOVEMENT_SPEED F
 accessible field net/minecraft/world/entity/animal/horse/AbstractHorse MAX_JUMP_STRENGTH F
 
-accessible field net/minecraft/client/gui/Font fonts Ljava/util/function/Function;
-accessible field net/minecraft/client/gui/Font filterFishyGlyphs Z
+accessible field net/minecraft/client/gui/Font provider Lnet/minecraft/client/gui/Font$Provider;
+accessible method net/minecraft/client/gui/Font getGlyphSource (Lnet/minecraft/network/chat/FontDescription;)Lnet/minecraft/client/gui/GlyphSource;
 accessible field net/minecraft/client/gui/Font splitter Lnet/minecraft/client/StringSplitter;
 mutable field net/minecraft/client/gui/Font splitter Lnet/minecraft/client/StringSplitter;
-accessible method net/minecraft/client/gui/Font getFontSet (Lnet/minecraft/resources/ResourceLocation;)Lnet/minecraft/client/gui/font/FontSet;
 accessible field net/minecraft/client/gui/font/glyphs/BakedGlyph up F
 accessible field net/minecraft/client/gui/font/glyphs/BakedGlyph down F
 accessible class net/minecraft/client/gui/font/providers/BitmapProvider$Glyph
@@ -86,6 +84,7 @@ accessible field net/minecraft/client/gui/GuiGraphics scissorStack Lnet/minecraf
 accessible method net/minecraft/client/gui/GuiGraphics$ScissorStack peek ()Lnet/minecraft/client/gui/navigation/ScreenRectangle;
 accessible method net/minecraft/client/gui/GuiGraphics blitSprite (Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/client/renderer/texture/TextureAtlasSprite;IIIIIIIII)V
 accessible field net/minecraft/client/gui/GuiGraphics deferredTooltip Ljava/lang/Runnable;
+accessible field net/minecraft/client/gui/GuiGraphics guiSprites Lnet/minecraft/client/renderer/texture/TextureAtlas;
 
 accessible method net/minecraft/client/gui/screens/inventory/tooltip/TooltipRenderUtil getBackgroundSprite (Lnet/minecraft/resources/ResourceLocation;)Lnet/minecraft/resources/ResourceLocation;
 accessible method net/minecraft/client/gui/screens/inventory/tooltip/TooltipRenderUtil getFrameSprite (Lnet/minecraft/resources/ResourceLocation;)Lnet/minecraft/resources/ResourceLocation;

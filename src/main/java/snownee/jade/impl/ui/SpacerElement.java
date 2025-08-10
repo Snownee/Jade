@@ -107,7 +107,7 @@ public class SpacerElement extends ResizeableElement implements GuiEventListener
 	}
 
 	@Override
-	public boolean mouseClicked(double x, double y, int button) {
+	public boolean mouseClicked(double x, double y, int button, boolean doubleClick) {
 		if (button == 0 && onClick != null && isMouseOver(x, y)) {
 			//noinspection unchecked
 			return ((Predicate<LayoutElement>) onClick).test(wrapped);

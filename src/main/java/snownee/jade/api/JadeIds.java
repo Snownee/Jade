@@ -48,7 +48,6 @@ public interface JadeIds {
 	ResourceLocation MC_BREAKING_PROGRESS = MC("breaking_progress");
 	ResourceLocation MC_BREWING_STAND = MC("brewing_stand");
 	ResourceLocation MC_CAMPFIRE = MC("campfire");
-	ResourceLocation MC_CHISELED_BOOKSHELF = MC("chiseled_bookshelf");
 	ResourceLocation MC_COMMAND_BLOCK = MC("command_block");
 	ResourceLocation MC_CROP_PROGRESS = MC("crop_progress");
 	ResourceLocation MC_ENCHANTMENT_POWER = MC("enchantment_power");
@@ -85,6 +84,7 @@ public interface JadeIds {
 	ResourceLocation MC_POTION_EFFECTS = MC("potion_effects");
 	ResourceLocation MC_POTION_EFFECTS_LIMIT = MC("potion_effects.limit");
 	ResourceLocation MC_REDSTONE = MC("redstone");
+	ResourceLocation MC_SHELF = MC("shelf");
 	ResourceLocation MC_TNT_STABILITY = MC("tnt_stability");
 	ResourceLocation MC_TOTAL_ENCHANTMENT_POWER = MC("total_enchantment_power");
 	ResourceLocation MC_VILLAGER_PROFESSION = MC("villager_profession");

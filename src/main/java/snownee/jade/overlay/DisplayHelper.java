@@ -600,7 +600,7 @@ public class DisplayHelper implements IDisplayHelper {
 		}
 		color = Overlay.applyAlpha(color, opacity());
 		sprite = IThemeHelper.get().theme().mapSprite(sprite);
-		TextureAtlasSprite textureAtlasSprite = Minecraft.getInstance().getGuiSprites().getSprite(sprite);
+		TextureAtlasSprite textureAtlasSprite = graphics.guiSprites.getSprite(sprite);
 		this.blitSprite(
 				graphics,
 				renderPipeline,

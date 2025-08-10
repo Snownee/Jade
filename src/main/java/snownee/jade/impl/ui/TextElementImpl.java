@@ -86,7 +86,7 @@ public class TextElementImpl extends TextElement implements GuiEventListener {
 	}
 
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+	public boolean mouseClicked(double mouseX, double mouseY, int button, boolean doubleClick) {
 		Screen screen = Minecraft.getInstance().screen;
 		if (screen != null) {
 			//TODO scale

@@ -44,6 +44,7 @@ import net.minecraft.world.level.block.HopperBlock;
 import net.minecraft.world.level.block.JukeboxBlock;
 import net.minecraft.world.level.block.LecternBlock;
 import net.minecraft.world.level.block.NoteBlock;
+import net.minecraft.world.level.block.ShelfBlock;
 import net.minecraft.world.level.block.SignBlock;
 import net.minecraft.world.level.block.SpawnerBlock;
 import net.minecraft.world.level.block.TntBlock;
@@ -59,6 +60,7 @@ import net.minecraft.world.level.block.entity.ComparatorBlockEntity;
 import net.minecraft.world.level.block.entity.HopperBlockEntity;
 import net.minecraft.world.level.block.entity.JukeboxBlockEntity;
 import net.minecraft.world.level.block.entity.LecternBlockEntity;
+import net.minecraft.world.level.block.entity.ShelfBlockEntity;
 import net.minecraft.world.level.block.entity.TrialSpawnerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
@@ -124,7 +126,8 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerBlockDataProvider(RedstoneProvider.INSTANCE, ComparatorBlockEntity.class);
 		registration.registerBlockDataProvider(RedstoneProvider.INSTANCE, CalibratedSculkSensorBlockEntity.class);
 		registration.registerBlockDataProvider(FurnaceProvider.INSTANCE, AbstractFurnaceBlockEntity.class);
-		registration.registerBlockDataProvider(ChiseledBookshelfProvider.INSTANCE, ChiseledBookShelfBlockEntity.class);
+		registration.registerBlockDataProvider(ShelfProvider.INSTANCE, ChiseledBookShelfBlockEntity.class);
+		registration.registerBlockDataProvider(ShelfProvider.INSTANCE, ShelfBlockEntity.class);
 		registration.registerBlockDataProvider(MobSpawnerCooldownProvider.INSTANCE, TrialSpawnerBlockEntity.class);
 
 		registration.registerEntityDataProvider(AnimalOwnerProvider.INSTANCE, Entity.class);
@@ -198,8 +201,10 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerBlockComponent(MobSpawnerProvider.ForBlock.INSTANCE, TrialSpawnerBlock.class);
 		registration.registerEntityComponent(MobSpawnerProvider.ForEntity.INSTANCE, MinecartSpawner.class);
 		registration.registerBlockComponent(MobSpawnerCooldownProvider.Client.INSTANCE, TrialSpawnerBlock.class);
-		registration.registerBlockComponent(ChiseledBookshelfProvider.Client.INSTANCE, ChiseledBookShelfBlock.class);
-		registration.registerBlockIcon(ChiseledBookshelfProvider.Client.INSTANCE, ChiseledBookShelfBlock.class);
+		registration.registerBlockComponent(ShelfProvider.Client.INSTANCE, ChiseledBookShelfBlock.class);
+		registration.registerBlockIcon(ShelfProvider.Client.INSTANCE, ChiseledBookShelfBlock.class);
+		registration.registerBlockComponent(ShelfProvider.Client.INSTANCE, ShelfBlock.class);
+		registration.registerBlockIcon(ShelfProvider.Client.INSTANCE, ShelfBlock.class);
 		registration.registerEntityIcon(ItemDisplayProvider.INSTANCE, ItemDisplay.class);
 		registration.registerEntityIcon(BlockDisplayProvider.INSTANCE, BlockDisplay.class);
 		registration.registerEntityComponent(ZombieVillagerProvider.Client.INSTANCE, ZombieVillager.class);
@@ -249,7 +254,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.setConfigCategoryOverride(JadeIds.MC_BEEHIVE, block);
 		registration.setConfigCategoryOverride(JadeIds.MC_BREAKING_PROGRESS, block);
 		registration.setConfigCategoryOverride(JadeIds.MC_BREWING_STAND, block);
-		registration.setConfigCategoryOverride(JadeIds.MC_CHISELED_BOOKSHELF, block);
+		registration.setConfigCategoryOverride(JadeIds.MC_SHELF, block);
 		registration.setConfigCategoryOverride(JadeIds.MC_COMMAND_BLOCK, block);
 		registration.setConfigCategoryOverride(JadeIds.MC_CROP_PROGRESS, block);
 		registration.setConfigCategoryOverride(JadeIds.MC_ENCHANTMENT_POWER, block);

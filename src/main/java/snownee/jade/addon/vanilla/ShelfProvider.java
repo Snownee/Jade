@@ -17,7 +17,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.block.ChiseledBookShelfBlock;
-import net.minecraft.world.level.block.entity.ChiseledBookShelfBlockEntity;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
+import net.minecraft.world.level.block.SelectableSlotContainer;
+import net.minecraft.world.level.block.entity.ListBackedContainer;
 import snownee.jade.addon.universal.ItemStorageProvider;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
@@ -29,28 +31,35 @@ import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.JadeUI;
 
-public class ChiseledBookshelfProvider implements StreamServerDataProvider<BlockAccessor, ItemStack> {
-	public static final ChiseledBookshelfProvider INSTANCE = new ChiseledBookshelfProvider();
+public class ShelfProvider implements StreamServerDataProvider<BlockAccessor, ItemStack> {
+	public static final ShelfProvider INSTANCE = new ShelfProvider();
 
 	@Override
 	public boolean shouldRequestData(BlockAccessor accessor) {
 		if (accessor.showDetails()) {
 			return false;
 		}
-		OptionalInt slot = ((ChiseledBookShelfBlock) accessor.getBlock()).getHitSlot(accessor.getHitResult(), accessor.getBlockState());
-		if (slot.isEmpty() || slot.getAsInt() >= ChiseledBookShelfBlock.SLOT_OCCUPIED_PROPERTIES.size()) {
+		OptionalInt slot = ((SelectableSlotContainer) accessor.getBlock()).getHitSlot(
+				accessor.getHitResult(),
+				accessor.getBlockState().getValue(HorizontalDirectionalBlock.FACING));
+		if (slot.isEmpty()) {
 			return false;
 		}
-		return accessor.getBlockState().getValue(ChiseledBookShelfBlock.SLOT_OCCUPIED_PROPERTIES.get(slot.getAsInt()));
+		int i = slot.getAsInt();
+		if (accessor.getBlock() instanceof ChiseledBookShelfBlock && i < ChiseledBookShelfBlock.SLOT_OCCUPIED_PROPERTIES.size() &&
+				!accessor.getBlockState().getValue(ChiseledBookShelfBlock.SLOT_OCCUPIED_PROPERTIES.get(i))) {
+			return false;
+		}
+		return true;
 	}
 
 	@Override
 	public ItemStack streamData(BlockAccessor accessor) {
-		int slot = ((ChiseledBookShelfBlock) accessor.getBlock()).getHitSlot(accessor.getHitResult(), accessor.getBlockState()).orElse(-1);
+		int slot = ((SelectableSlotContainer) accessor.getBlock()).getHitSlot(accessor.getHitResult(), accessor.getSide()).orElse(-1);
 		if (slot == -1) {
 			return null;
 		}
-		return ((ChiseledBookShelfBlockEntity) accessor.getBlockEntity()).getItem(slot);
+		return ((ListBackedContainer) accessor.getBlockEntity()).getItem(slot);
 	}
 
 	@Override
@@ -60,7 +69,7 @@ public class ChiseledBookshelfProvider implements StreamServerDataProvider<Block
 
 	@Override
 	public ResourceLocation getUid() {
-		return JadeIds.MC_CHISELED_BOOKSHELF;
+		return JadeIds.MC_SHELF;
 	}
 
 	public static class Client implements IBlockComponentProvider {
@@ -70,7 +79,7 @@ public class ChiseledBookshelfProvider implements StreamServerDataProvider<Block
 			if (accessor.showDetails()) {
 				return ItemStack.EMPTY;
 			}
-			return ChiseledBookshelfProvider.INSTANCE.decodeFromData(accessor).orElse(ItemStack.EMPTY);
+			return ShelfProvider.INSTANCE.decodeFromData(accessor).orElse(ItemStack.EMPTY);
 		}
 
 		@Override
@@ -107,7 +116,7 @@ public class ChiseledBookshelfProvider implements StreamServerDataProvider<Block
 
 		@Override
 		public ResourceLocation getUid() {
-			return JadeIds.MC_CHISELED_BOOKSHELF;
+			return JadeIds.MC_SHELF;
 		}
 	}
 }

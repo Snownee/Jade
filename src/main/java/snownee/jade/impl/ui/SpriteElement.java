@@ -4,12 +4,11 @@ import org.jetbrains.annotations.Nullable;
 
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.GuiSpriteManager;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.metadata.gui.GuiMetadataSection;
 import net.minecraft.client.resources.metadata.gui.GuiSpriteScaling;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -28,6 +27,8 @@ public class SpriteElement extends ProgressOverlayElement {
 	private final int oWidth;
 	private final int oHeight;
 	private int color = -1;
+	private int generation;
+	private @Nullable ResourceLocation mappedSprite;
 
 	public SpriteElement(ResourceLocation sprite, int width, int height) {
 		this(RenderPipelines.GUI_TEXTURED, sprite, width, height);
@@ -48,8 +49,7 @@ public class SpriteElement extends ProgressOverlayElement {
 	@Override
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
 		if (tiledOrientation != null) {
-			GuiSpriteManager guiSprites = Minecraft.getInstance().getGuiSprites();
-			TextureAtlasSprite textureAtlasSprite = guiSprites.getSprite(IThemeHelper.get().theme().mapSprite(sprite));
+			TextureAtlasSprite textureAtlasSprite = graphics.guiSprites.getSprite(mappedSprite());
 			Rect2f rect;
 			if (floatingRect == null) {
 				rect = Rect2f.of(this);
@@ -97,7 +97,7 @@ public class SpriteElement extends ProgressOverlayElement {
 			IDisplayHelper.get().blitSprite(
 					graphics,
 					renderPipeline,
-					sprite,
+					mappedSprite(),
 					oWidth,
 					oHeight,
 					0,
@@ -111,7 +111,7 @@ public class SpriteElement extends ProgressOverlayElement {
 			DisplayHelper.INSTANCE.blitSprite(
 					graphics,
 					renderPipeline,
-					sprite,
+					mappedSprite(),
 					oWidth,
 					oHeight,
 					0,
@@ -133,11 +133,21 @@ public class SpriteElement extends ProgressOverlayElement {
 		}
 	}
 
+	private ResourceLocation mappedSprite() {
+		if (mappedSprite == null || generation != IThemeHelper.get().generation()) {
+			generation = IThemeHelper.get().generation();
+			mappedSprite = IThemeHelper.get().theme().mapSprite(sprite);
+		}
+		return mappedSprite;
+	}
+
 	@Override
-	public boolean canUseFloatingRect() {
-		GuiSpriteManager guiSprites = Minecraft.getInstance().getGuiSprites();
-		TextureAtlasSprite textureAtlasSprite = guiSprites.getSprite(sprite);
-		GuiSpriteScaling scaling = guiSprites.getSpriteScaling(textureAtlasSprite);
+	public boolean canUseFloatingRect(GuiGraphics graphics) {
+		TextureAtlasSprite textureAtlasSprite = graphics.guiSprites.getSprite(mappedSprite());
+		GuiSpriteScaling scaling = textureAtlasSprite.contents()
+				.getAdditionalMetadata(GuiMetadataSection.TYPE)
+				.orElse(GuiMetadataSection.DEFAULT)
+				.scaling();
 		return scaling instanceof GuiSpriteScaling.Stretch;
 	}
 

@@ -68,6 +68,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.component.CustomModelData;
+import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
@@ -75,7 +76,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
-import net.minecraft.world.level.block.entity.SkullBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.storage.loot.predicates.AnyOfCondition;
@@ -117,9 +117,9 @@ public final class CommonProxy implements ModInitializer {
 		if (uuid == null) {
 			return null;
 		}
-		Optional<GameProfile> optional = SkullBlockEntity.fetchGameProfile(uuid).getNow(Optional.empty());
-		if (optional.isPresent()) {
-			return optional.get().getName();
+		ResolvableProfile gameProfile = new ResolvableProfile(new GameProfile(uuid, "")).pollResolve();
+		if (gameProfile != null) {
+			return gameProfile.gameProfile().getName();
 		}
 		if (isPhysicallyClient()) {
 			return UsernameCache.getLastKnownUsername(uuid);

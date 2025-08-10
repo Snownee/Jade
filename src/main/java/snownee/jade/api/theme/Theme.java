@@ -7,9 +7,10 @@ import java.util.Optional;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiSpriteManager;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.metadata.gui.GuiMetadataSection;
 import net.minecraft.client.resources.metadata.gui.GuiSpriteScaling;
+import net.minecraft.data.AtlasIds;
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
@@ -98,9 +99,11 @@ public class Theme {
 
 		if (iconSlotSprite != null) {
 			if (iconSlotSpriteCache == null) {
-				GuiSpriteManager guiSprites = Minecraft.getInstance().getGuiSprites();
+				var guiSprites = Minecraft.getInstance().getAtlasManager().getAtlasOrThrow(AtlasIds.GUI);
 				TextureAtlasSprite textureAtlasSprite = guiSprites.getSprite(iconSlotSprite);
-				GuiSpriteScaling scaling = guiSprites.getSpriteScaling(textureAtlasSprite);
+				GuiSpriteScaling scaling = textureAtlasSprite.contents().getAdditionalMetadata(GuiMetadataSection.TYPE)
+						.orElse(GuiMetadataSection.DEFAULT)
+						.scaling();
 				int[] padding = new int[4];
 				Arrays.fill(padding, iconSlotInflation);
 				if (scaling instanceof GuiSpriteScaling.NineSlice nineSlice) {

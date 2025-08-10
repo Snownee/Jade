@@ -8,9 +8,9 @@ import net.minecraft.client.gui.font.providers.BitmapProvider;
 
 public class JadeFont extends Font {
 	public JadeFont(Font font) {
-		super(font.fonts, font.filterFishyGlyphs);
+		super(font.provider);
 		this.splitter = new StringSplitter((i, style) -> {
-			GlyphInfo glyphInfo = getFontSet(style.getFont()).getGlyphInfo(i, filterFishyGlyphs);
+			GlyphInfo glyphInfo = getGlyphSource(style.getFont()).getGlyph(i).info();
 			if (isFilteredGlyph(glyphInfo, lineHeight)) {
 				return 0;
 			}

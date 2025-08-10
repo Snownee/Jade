@@ -10,7 +10,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
@@ -42,7 +41,7 @@ public class CampfireProvider implements IServerExtensionProvider<ItemStack>, IC
 					if (customData.isEmpty()) {
 						return null;
 					}
-					Optional<Integer> result = customData.read(COOKING_TIME_CODEC).result();
+					Optional<Integer> result = customData.copyTag().read(COOKING_TIME_CODEC);
 					if (result.isEmpty()) {
 						return null;
 					}
@@ -61,10 +60,10 @@ public class CampfireProvider implements IServerExtensionProvider<ItemStack>, IC
 					continue;
 				}
 				stack = stack.copy();
-				CustomData customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).update(
-						NbtOps.INSTANCE,
-						COOKING_TIME_CODEC,
-						campfire.cookingTime[i] - campfire.cookingProgress[i]).getOrThrow();
+				int time = campfire.cookingTime[i] - campfire.cookingProgress[i];
+				CustomData customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).update(tag -> {
+					tag.putInt("jade:cooking", time);
+				});
 				stack.set(DataComponents.CUSTOM_DATA, customData);
 				list.add(stack);
 			}

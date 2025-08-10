@@ -23,12 +23,12 @@ public class PinScreen extends Screen {
 	}
 
 	@Override
-	public boolean mouseClicked(double x, double y, int button) {
+	public boolean mouseClicked(double x, double y, int button, boolean doubleClick) {
 		BoxElementImpl root = JadeClient.tickHandler().rootElement;
 		if (root != null) {
-			return OverlayRenderer.animation.mapMousePosition(x, y, (x0, y0) -> root.mouseClicked(x0, y0, button));
+			return OverlayRenderer.animation.mapMousePosition(x, y, (x0, y0) -> root.mouseClicked(x0, y0, button, doubleClick));
 		}
-		return super.mouseClicked(x, y, button);
+		return super.mouseClicked(x, y, button, doubleClick);
 	}
 
 	@Override

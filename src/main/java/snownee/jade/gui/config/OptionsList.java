@@ -425,13 +425,13 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 	}
 
 	@Override
-	public boolean mouseClicked(double d, double e, int i) {
+	public boolean mouseClicked(double mouseX, double mouseY, int button, boolean doubleClick) {
 		if (selectedKey != null) {
-			selectedKey.setKey(InputConstants.Type.MOUSE.getOrCreate(i));
+			selectedKey.setKey(InputConstants.Type.MOUSE.getOrCreate(button));
 			this.selectedKey = null;
 			resetMappingAndUpdateButtons();
 		}
-		return super.mouseClicked(d, e, i);
+		return super.mouseClicked(mouseX, mouseY, button, doubleClick);
 	}
 
 	public record EntryWidget(AbstractWidget widget, int offsetX, int offsetY, boolean floatRight) {}

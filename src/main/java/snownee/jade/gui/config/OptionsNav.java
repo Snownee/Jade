@@ -185,7 +185,7 @@ public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
 		}
 
 		@Override
-		public boolean mouseClicked(double mouseX, double mouseY, int button) {
+		public boolean mouseClicked(double mouseX, double mouseY, int button, boolean doubleClick) {
 			if (button == 0) {
 				onPress();
 			}
