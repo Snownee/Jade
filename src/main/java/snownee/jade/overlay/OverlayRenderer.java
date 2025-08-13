@@ -27,7 +27,6 @@ import snownee.jade.api.ui.Rect2f;
 import snownee.jade.api.ui.TooltipAnimation;
 import snownee.jade.gui.BaseOptionsScreen;
 import snownee.jade.gui.PreviewOptionsScreen;
-import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.Tooltip;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.config.WailaConfig.General;
@@ -165,7 +164,6 @@ public class OverlayRenderer {
 			if (!PreviewOptionsScreen.isAdjustingPosition()) {
 				lingerTooltip = null;
 				animation.rect.setWidth(0); // mark dirty
-				JadeClient.tickHandler().clearLastNarration();
 				return;
 			}
 		}
@@ -187,9 +185,12 @@ public class OverlayRenderer {
 	public static void renderOverlay(BoxElementImpl root, GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
 		root.updateRect(animation);
 
-		for (JadeBeforeRenderCallback callback : WailaClientRegistration.instance().beforeRenderCallback.callbacks()) {
-			if (callback.beforeRender(root, animation, graphics, ObjectDataCenter.get())) {
-				return;
+		WailaTickHandler tickHandler = JadeClient.tickHandler();
+		if (tickHandler.state != null) {
+			for (JadeBeforeRenderCallback callback : WailaClientRegistration.instance().beforeRenderCallback.callbacks()) {
+				if (callback.beforeRender(root, animation, graphics, tickHandler.state.accessor())) {
+					return;
+				}
 			}
 		}
 
@@ -220,27 +221,28 @@ public class OverlayRenderer {
 		((JadeGuiGraphics) graphics).jade$setIgnoreScissorTest(true);
 		graphics.deferredTooltip = null;
 		root.render(graphics, mouse.x, mouse.y, partialTicks);
-		graphics.renderDeferredTooltip();
+		graphics.renderDeferredElements();
 		((JadeGuiGraphics) graphics).jade$setIgnoreScissorTest(false);
 		if (renderDebug) {
 			root.renderDebug(graphics, mouse.x, mouse.y, partialTicks, new Element.RenderDebugContext(root, rect));
 		}
 
-		WailaClientRegistration.instance().afterRenderCallback.call(callback -> {
-			callback.afterRender(root, animation, graphics, ObjectDataCenter.get());
-		});
+		if (tickHandler.state != null) {
+			WailaClientRegistration.instance().afterRenderCallback.call(callback -> {
+				callback.afterRender(root, animation, graphics, tickHandler.state.accessor());
+			});
+		}
 
 		matrixStack.popMatrix();
 
 		if (IWailaConfig.get().accessibility().shouldEnableTextToSpeech()) {
-			JadeClient.tickHandler().narrate(root, true);
+			tickHandler.narrate(root, true);
 		}
 
 		shown = true;
 	}
 
-	public static void clearState() {
+	public static void clearLingerTooltip() {
 		lingerTooltip = null;
-		JadeClient.tickHandler().clearLastNarration();
 	}
 }

@@ -11,8 +11,8 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import snownee.jade.Jade;
+import snownee.jade.JadeClient;
 import snownee.jade.api.JadeIds;
-import snownee.jade.impl.ObjectDataCenter;
 
 public record ReceiveDataPacket(CompoundTag tag) implements CustomPacketPayload {
 	public static final int MAX_SIZE = 16 * 1024;
@@ -26,7 +26,7 @@ public record ReceiveDataPacket(CompoundTag tag) implements CustomPacketPayload 
 
 	public static void handle(ReceiveDataPacket message, ClientPayloadContext context) {
 		context.execute(() -> {
-			ObjectDataCenter.setServerData(message.tag);
+			JadeClient.tickHandler().setData(message.tag);
 		});
 	}
 

@@ -3,8 +3,6 @@ package snownee.jade.overlay;
 import java.util.List;
 import java.util.Set;
 
-import org.jetbrains.annotations.Nullable;
-
 import com.google.common.collect.Sets;
 
 import net.minecraft.core.BlockPos;
@@ -36,9 +34,10 @@ public class DatapackBlockManager {
 
 	public static ItemStack getFakeBlock(LevelAccessor level, BlockPos pos) {
 		if (itemFrames.contains(pos)) {
-			List<ItemFrame> entities = level.getEntitiesOfClass(ItemFrame.class, new AABB(pos), $ -> {
-				return $.isInvisible() && $.isAlive();
-			});
+			List<ItemFrame> entities = level.getEntitiesOfClass(
+					ItemFrame.class, new AABB(pos), $ -> {
+						return $.isInvisible() && $.isAlive();
+					});
 			if (entities.isEmpty()) {
 				itemFrames.remove(pos);
 			} else {
@@ -48,8 +47,7 @@ public class DatapackBlockManager {
 		return ItemStack.EMPTY;
 	}
 
-	@Nullable
-	public static Accessor<?> override(HitResult hitResult, @Nullable Accessor<?> accessor, @Nullable Accessor<?> originalAccessor) {
+	public static Accessor<?> override(HitResult hitResult, Accessor<?> accessor, Accessor<?> originalAccessor) {
 		if (accessor instanceof BlockAccessorImpl target && target.getFakeBlock().isEmpty()) {
 			target.setFakeBlock(getFakeBlock(target.getLevel(), target.getPosition()));
 		}

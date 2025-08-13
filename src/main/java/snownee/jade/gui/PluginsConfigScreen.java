@@ -15,7 +15,6 @@ import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.gui.config.OptionsList;
 import snownee.jade.gui.config.value.OptionValue;
-import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.WailaClientRegistration;
 
 public class PluginsConfigScreen extends PreviewOptionsScreen {
@@ -48,7 +47,8 @@ public class PluginsConfigScreen extends PreviewOptionsScreen {
 				0,
 				26,
 				IWailaConfig.get()::save);
-		boolean noteServerFeature = minecraft.level == null || IWailaConfig.get().general().isDebug() || !ObjectDataCenter.serverConnected;
+		boolean noteServerFeature = minecraft.level == null || IWailaConfig.get().general().isDebug() ||
+				!WailaClientRegistration.instance().isServerConnected();
 		BiConsumer<ResourceLocation, Object> setter = (key, value) -> {
 			IWailaConfig.get().plugin().set(key, value);
 			options.updateOptionValue(key);

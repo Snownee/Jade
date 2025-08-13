@@ -148,7 +148,7 @@ public final class ClientProxy implements ClientModInitializer {
 	}
 
 	private static void onPlayerLeave(ClientPacketListener handler, Minecraft client) {
-		ObjectDataCenter.serverConnected = false;
+		ObjectDataCenter.disconnect();
 		WailaClientRegistration.instance().setServerConfig(Map.of());
 	}
 

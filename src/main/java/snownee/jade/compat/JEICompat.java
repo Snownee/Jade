@@ -14,7 +14,6 @@ import net.minecraft.world.item.ItemStack;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
 import snownee.jade.api.Accessor;
-import snownee.jade.impl.ObjectDataCenter;
 
 @JeiPlugin
 public class JEICompat implements IModPlugin {
@@ -50,10 +49,10 @@ public class JEICompat implements IModPlugin {
 		if (!showRecipes && !showUses) {
 			return;
 		}
-		Accessor<?> accessor = ObjectDataCenter.get();
-		if (accessor == null) {
+		if (JadeClient.tickHandler().state == null) {
 			return;
 		}
+		Accessor<?> accessor = JadeClient.tickHandler().state.accessor();
 		ItemStack stack = accessor.getPickedResult();
 		if (stack.isEmpty()) {
 			return;

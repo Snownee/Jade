@@ -3,6 +3,8 @@ package snownee.jade.impl;
 import java.util.List;
 import java.util.function.Function;
 
+import org.jetbrains.annotations.Nullable;
+
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -55,7 +57,7 @@ public class EntityAccessorClientHandler implements AccessorClientHandler<Entity
 	}
 
 	@Override
-	public Element getIcon(EntityAccessor accessor) {
+	public @Nullable Element getIcon(EntityAccessor accessor) {
 		Element icon = null;
 		Entity entity = accessor.getEntity();
 		if (entity instanceof ItemEntity) {

@@ -9,6 +9,6 @@ import snownee.jade.api.Accessor;
 public interface JadeRayTraceCallback {
 
 	@Nullable
-	Accessor<?> onRayTrace(HitResult hitResult, @Nullable Accessor<?> accessor, @Nullable Accessor<?> originalAccessor);
+	Accessor<?> onRayTrace(HitResult hitResult, Accessor<?> accessor, Accessor<?> originalAccessor);
 
 }

@@ -1,10 +1,12 @@
 package snownee.jade.api;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import io.netty.buffer.Unpooled;
 import net.minecraft.nbt.ByteArrayTag;
@@ -32,10 +34,16 @@ public abstract class AccessorImpl<T extends HitResult> implements Accessor<T> {
 	protected boolean verify;
 	private RegistryFriendlyByteBuf buffer;
 
-	public AccessorImpl(Level level, Player player, CompoundTag serverData, Supplier<T> hit, boolean serverConnected, boolean showDetails) {
-		this.level = level;
-		this.player = player;
-		this.hit = hit;
+	public AccessorImpl(
+			Level level,
+			Player player,
+			@Nullable CompoundTag serverData,
+			Supplier<T> hit,
+			boolean serverConnected,
+			boolean showDetails) {
+		this.level = Objects.requireNonNull(level);
+		this.player = Objects.requireNonNull(player);
+		this.hit = Objects.requireNonNull(hit);
 		this.serverConnected = serverConnected;
 		this.showDetails = showDetails;
 		this.serverData = serverData == null ? new CompoundTag() : serverData.copy();

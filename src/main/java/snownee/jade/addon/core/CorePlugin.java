@@ -4,6 +4,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import snownee.jade.api.BlockAccessor;
+import snownee.jade.api.EmptyAccessor;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IWailaClientRegistration;
 import snownee.jade.api.IWailaCommonRegistration;
@@ -11,6 +12,7 @@ import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.WailaPlugin;
 import snownee.jade.impl.BlockAccessorClientHandler;
+import snownee.jade.impl.EmptyAccessorClientHandler;
 import snownee.jade.impl.EntityAccessorClientHandler;
 
 @WailaPlugin
@@ -23,6 +25,7 @@ public class CorePlugin implements IWailaPlugin {
 
 	@Override
 	public void registerClient(IWailaClientRegistration registration) {
+		registration.registerAccessorHandler(EmptyAccessor.class, new EmptyAccessorClientHandler());
 		registration.registerAccessorHandler(BlockAccessor.class, new BlockAccessorClientHandler());
 		registration.registerAccessorHandler(EntityAccessor.class, new EntityAccessorClientHandler());
 

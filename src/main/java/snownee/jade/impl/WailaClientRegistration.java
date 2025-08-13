@@ -44,10 +44,12 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import snownee.jade.Jade;
+import snownee.jade.JadeClient;
 import snownee.jade.addon.access.EntityVariantHelper;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.AccessorClientHandler;
 import snownee.jade.api.BlockAccessor;
+import snownee.jade.api.EmptyAccessor;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IComponentProvider;
 import snownee.jade.api.IToggleableProvider;
@@ -496,21 +498,24 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	}
 
 	@Override
+	public EmptyAccessor.Builder emptyAccessor() {
+		Minecraft mc = Minecraft.getInstance();
+		return new EmptyAccessorImpl.Builder().level(mc.level).player(mc.player).serverConnected(isServerConnected()).serverData(
+				getServerData()).showDetails(isShowDetailsPressed());
+	}
+
+	@Override
 	public BlockAccessor.Builder blockAccessor() {
 		Minecraft mc = Minecraft.getInstance();
-		/* off */
 		return new BlockAccessorImpl.Builder().level(mc.level).player(mc.player).serverConnected(isServerConnected()).serverData(
 				getServerData()).showDetails(isShowDetailsPressed());
-		/* on */
 	}
 
 	@Override
 	public EntityAccessor.Builder entityAccessor() {
 		Minecraft mc = Minecraft.getInstance();
-		/* off */
 		return new EntityAccessorImpl.Builder().level(mc.level).player(mc.player).serverConnected(isServerConnected()).serverData(
 				getServerData()).showDetails(isShowDetailsPressed());
-		/* on */
 	}
 
 	@Override
@@ -570,13 +575,13 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	}
 
 	@Override
-	public CompoundTag getServerData() {
-		return ObjectDataCenter.getServerData();
+	public @Nullable CompoundTag getServerData() {
+		return JadeClient.tickHandler().getData();
 	}
 
 	@Override
 	public void setServerData(CompoundTag tag) {
-		ObjectDataCenter.setServerData(tag);
+		JadeClient.tickHandler().setData(tag);
 	}
 
 	@Override

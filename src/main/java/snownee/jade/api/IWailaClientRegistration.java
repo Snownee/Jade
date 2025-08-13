@@ -118,6 +118,8 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 	 */
 	void usePickedResult(EntityType<?> entityType);
 
+	EmptyAccessor.Builder emptyAccessor();
+
 	BlockAccessor.Builder blockAccessor();
 
 	EntityAccessor.Builder entityAccessor();
@@ -188,7 +190,7 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 
 	boolean maybeLowVisionUser();
 
-	CompoundTag getServerData();
+	@Nullable CompoundTag getServerData();
 
 	void setServerData(CompoundTag tag);
 

@@ -229,9 +229,7 @@ public final class JadeClient {
 				.getVisualOrderText()));
 	}
 
-	@Nullable
-	public static Accessor<?> builtInOverrides(
-			HitResult hitResult, @Nullable Accessor<?> accessor, @Nullable Accessor<?> originalAccessor) {
+	public static Accessor<?> builtInOverrides(HitResult hitResult, Accessor<?> accessor, Accessor<?> originalAccessor) {
 		if (WailaClientRegistration.instance().maybeLowVisionUser() || !IWailaConfig.get().general().getBuiltinCamouflage()) {
 			return accessor;
 		}
@@ -263,11 +261,7 @@ public final class JadeClient {
 	}
 
 	@Nullable
-	public static Accessor<?> limitMobEffectFog(
-			HitResult hitResult, @Nullable Accessor<?> accessor, @Nullable Accessor<?> originalAccessor) {
-		if (accessor == null) {
-			return null;
-		}
+	public static Accessor<?> limitMobEffectFog(HitResult hitResult, Accessor<?> accessor, Accessor<?> originalAccessor) {
 		if (WailaClientRegistration.instance().maybeLowVisionUser()) {
 			return accessor;
 		}

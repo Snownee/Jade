@@ -3,6 +3,8 @@ package snownee.jade.impl;
 import java.util.List;
 import java.util.function.Function;
 
+import org.jetbrains.annotations.Nullable;
+
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
@@ -45,7 +47,7 @@ public class BlockAccessorClientHandler implements AccessorClientHandler<BlockAc
 	}
 
 	@Override
-	public Element getIcon(BlockAccessor accessor) {
+	public @Nullable Element getIcon(BlockAccessor accessor) {
 		BlockState blockState = accessor.getBlockState();
 		Block block = blockState.getBlock();
 		if (blockState.isAir()) {

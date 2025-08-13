@@ -4,12 +4,15 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.commons.lang3.mutable.MutableObject;
+import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Preconditions;
 
 import net.minecraft.client.GameNarrator;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.StringUtil;
 import net.minecraft.world.entity.Entity;
@@ -20,9 +23,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import snownee.jade.Jade;
 import snownee.jade.api.Accessor;
+import snownee.jade.api.AccessorClientHandler;
+import snownee.jade.api.EmptyAccessor;
 import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.callback.JadeBeforeTooltipCollectCallback;
@@ -47,8 +53,9 @@ import snownee.jade.util.ClientProxy;
 public class WailaTickHandler {
 	private String lastNarration = "";
 	private long lastNarrationTime = 0;
-	public BoxElementImpl rootElement;
 	public ProgressTracker progressTracker = new ProgressTracker();
+	public @Nullable BoxElementImpl rootElement;
+	public @Nullable State state;
 
 	public void narrate(Element element, boolean dedupe) {
 		if (System.currentTimeMillis() - lastNarrationTime < 500) {
@@ -83,17 +90,19 @@ public class WailaTickHandler {
 		lastNarration = message;
 	}
 
-	public void clearLastNarration() {
+	public void clearState() {
 		lastNarration = "";
+		state = null;
+		rootElement = null;
+		progressTracker.clear();
 	}
 
 	public void tickClient() {
 		Minecraft mc = Minecraft.getInstance();
 		Level level = mc.level;
 		if (level == null) {
-			rootElement = null;
-			progressTracker.clear();
-			OverlayRenderer.clearState();
+			OverlayRenderer.clearLingerTooltip();
+			clearState();
 			return;
 		}
 
@@ -101,7 +110,7 @@ public class WailaTickHandler {
 
 		General config = IWailaConfig.get().general();
 		if (!config.shouldDisplayTooltip()) {
-			rootElement = null;
+			clearState();
 			return;
 		}
 
@@ -115,18 +124,19 @@ public class WailaTickHandler {
 
 		Entity entity = mc.getCameraEntity();
 		if (entity == null) {
-			rootElement = null;
+			clearState();
 			return;
 		}
 
 		RayTracing.INSTANCE.fire();
 		HitResult target = RayTracing.INSTANCE.getTarget();
 		if (target == null) {
-			rootElement = null;
+			clearState();
 			return;
 		}
 
-		Accessor<?> accessor = null;
+		Accessor<?> accessor;
+		boolean useRayTraceCallback = true;
 		if (target instanceof BlockHitResult blockTarget && blockTarget.getType() != HitResult.Type.MISS) {
 			BlockState state = RayTracing.wrapBlock(level, blockTarget, CollisionContext.of(entity));
 			BlockEntity tileEntity = level.getBlockEntity(blockTarget.getBlockPos());
@@ -147,29 +157,40 @@ public class WailaTickHandler {
 					.build();
 			/* on */
 		} else if (mc.screen instanceof PreviewOptionsScreen) {
+			useRayTraceCallback = false;
 			/* off */
 			accessor = WailaClientRegistration.instance().blockAccessor()
 					.blockState(Blocks.GRASS_BLOCK.defaultBlockState())
 					.hit(new BlockHitResult(entity.position(), Direction.UP, entity.blockPosition(), false))
 					.build();
 			/* on */
+		} else {
+			accessor = createEmpty(target);
 		}
 
-		Accessor<?> originalAccessor = accessor;
-		for (JadeRayTraceCallback callback : WailaClientRegistration.instance().rayTraceCallback.callbacks()) {
-			accessor = callback.onRayTrace(target, accessor, originalAccessor);
+		if (useRayTraceCallback) {
+			Accessor<?> originalAccessor = accessor;
+			EmptyAccessor originalEmpty = originalAccessor instanceof EmptyAccessor emptyAccessor ? emptyAccessor : null;
+			for (JadeRayTraceCallback callback : WailaClientRegistration.instance().rayTraceCallback.callbacks()) {
+				accessor = callback.onRayTrace(target, accessor, originalAccessor);
+				if (accessor == null) {
+					if (originalEmpty == null) {
+						originalEmpty = createEmpty(originalAccessor.getHitResult());
+					}
+					accessor = originalEmpty;
+				}
+			}
 		}
+
 		ObjectDataCenter.set(accessor);
-		if (accessor == null || accessor.getHitResult() == null) {
-			rootElement = null;
+		var handler = WailaClientRegistration.instance().getAccessorHandler(accessor.getAccessorType());
+
+		if (!handler.shouldDisplay(accessor)) {
+			clearState();
 			return;
 		}
 
-		var handler = WailaClientRegistration.instance().getAccessorHandler(accessor.getAccessorType());
-		if (!handler.shouldDisplay(accessor)) {
-			rootElement = null;
-			return;
-		}
+		state = State.create(state, accessor, handler, state == null ? null : state.data);
 		if (accessor.isServerConnected()) {
 			if (!accessor.verifyData(accessor.getServerData())) {
 				accessor.getServerData().keySet().clear();
@@ -181,7 +202,7 @@ public class WailaTickHandler {
 					handler.requestData(accessor, providers);
 				}
 			}
-			if (!providers.isEmpty() && ObjectDataCenter.getServerData() == null) {
+			if (!providers.isEmpty() && getData() == null) {
 				return;
 			}
 		}
@@ -203,8 +224,7 @@ public class WailaTickHandler {
 		}
 
 		Tooltip tooltip = new Tooltip();
-		Element icon = ObjectDataCenter.getIcon();
-		tooltip.setIcon(icon);
+		tooltip.setIcon(state.getIcon());
 
 		if (config.getDisplayMode() == DisplayMode.LITE && !ClientProxy.isShowDetailsPressed()) {
 			Tooltip dummyTooltip = new Tooltip();
@@ -238,5 +258,66 @@ public class WailaTickHandler {
 		}
 		rootElement = newElement;
 		themes.setThemeOverride(null);
+	}
+
+	private static EmptyAccessor createEmpty(HitResult hit) {
+		BlockHitResult miss;
+		if (hit instanceof BlockHitResult blockHitResult && blockHitResult.getType() == HitResult.Type.MISS) {
+			miss = blockHitResult;
+		} else {
+			Vec3 vec = hit.getLocation();
+			miss = BlockHitResult.miss(
+					vec,
+					Direction.getApproximateNearest(vec.x, vec.y, vec.z),
+					BlockPos.containing(vec));
+		}
+		return WailaClientRegistration.instance().emptyAccessor().hit(miss).build();
+	}
+
+	public void setData(CompoundTag tag) {
+		if (state == null) {
+			return;
+		}
+		state = state.withData(tag);
+	}
+
+	public @Nullable CompoundTag getData() {
+		return state == null ? null : state.data;
+	}
+
+	public record State(Accessor<?> accessor, AccessorClientHandler<Accessor<?>> handler, @Nullable CompoundTag data) {
+		public static State create(
+				@Nullable State prev,
+				Accessor<?> accessor,
+				AccessorClientHandler<Accessor<?>> handler,
+				@Nullable CompoundTag data) {
+			return new State(accessor, handler, data != null && accessor.verifyData(data) ? data : null);
+		}
+
+		@Nullable
+		public Element getIcon() {
+			if (accessor == null || handler == null) {
+				return null;
+			}
+			Element icon = handler.getIcon(accessor);
+			if (JadeUI.isEmptyElement(icon)) {
+				return null;
+			}
+			return icon;
+		}
+
+		public State withData(CompoundTag data) {
+			if (!verifyData(data)) {
+				return this;
+			}
+			return new State(accessor, handler, data);
+		}
+
+		public boolean verifyData(CompoundTag data) {
+			if (data == null) {
+				return true;
+			}
+			return accessor.verifyData(data);
+		}
 	}
 }

@@ -4,37 +4,21 @@ import java.util.Objects;
 
 import org.jetbrains.annotations.Nullable;
 
-import net.minecraft.nbt.CompoundTag;
 import snownee.jade.JadeClient;
 import snownee.jade.api.Accessor;
-import snownee.jade.api.AccessorClientHandler;
 import snownee.jade.api.BlockAccessor;
-import snownee.jade.api.ui.Element;
-import snownee.jade.api.ui.JadeUI;
 
 public final class ObjectDataCenter {
 
 	public static int rateLimiter = 250;
 	public static long timeLastUpdate = System.currentTimeMillis();
 	public static boolean serverConnected;
-	private static Accessor<?> accessor;
-	private static AccessorClientHandler<Accessor<?>> clientHandler;
-	private static CompoundTag serverData;
-	private static Object lastObject;
+	private static @Nullable Object lastObject;
 
 	private ObjectDataCenter() {
 	}
 
-	public static void set(@Nullable Accessor<?> accessor) {
-		ObjectDataCenter.accessor = accessor;
-		if (accessor == null) {
-			JadeClient.tickHandler().progressTracker.clear();
-			lastObject = null;
-			clientHandler = null;
-			return;
-		}
-
-		clientHandler = WailaClientRegistration.instance().getAccessorHandler(accessor.getAccessorType());
+	public static void set(Accessor<?> accessor) {
 		Object object = accessor.getTarget();
 		if (object == null && accessor instanceof BlockAccessor blockAccessor) {
 			object = blockAccessor.getBlock();
@@ -43,37 +27,12 @@ public final class ObjectDataCenter {
 		if (!Objects.equals(object, lastObject)) {
 			JadeClient.tickHandler().progressTracker.clear();
 			lastObject = object;
-			serverData = null;
 			requestServerData();
 		}
 	}
 
-	@Nullable
-	public static Accessor<?> get() {
-		return accessor;
-	}
-
-	public static CompoundTag getServerData() {
-		if (accessor == null || clientHandler == null || serverData == null) {
-			return null;
-		}
-		if (accessor.verifyData(serverData)) {
-			return serverData;
-		}
-		requestServerData();
-		return null;
-	}
-
-	public static void setServerData(CompoundTag tag) {
-		serverData = tag;
-		if (accessor != null && accessor.verifyData(serverData)) {
-			accessor.getServerData().keySet().clear();
-			accessor.getServerData().merge(tag);
-		}
-	}
-
 	public static void requestServerData() {
-		timeLastUpdate = System.currentTimeMillis() - rateLimiter;
+		timeLastUpdate = 0;
 	}
 
 	public static boolean isTimeElapsed(long time) {
@@ -84,14 +43,9 @@ public final class ObjectDataCenter {
 		timeLastUpdate = System.currentTimeMillis();
 	}
 
-	public static Element getIcon() {
-		if (accessor == null || clientHandler == null) {
-			return null;
-		}
-		Element icon = clientHandler.getIcon(accessor);
-		if (JadeUI.isEmptyElement(icon)) {
-			return null;
-		}
-		return icon;
+	public static void disconnect() {
+		serverConnected = false;
+		lastObject = null;
+		JadeClient.tickHandler().clearState();
 	}
 }

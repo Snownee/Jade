@@ -3,6 +3,8 @@ package snownee.jade.api;
 import java.util.List;
 import java.util.function.Function;
 
+import org.jetbrains.annotations.Nullable;
+
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.ui.Element;
 
@@ -14,7 +16,7 @@ public interface AccessorClientHandler<T extends Accessor<?>> {
 
 	void requestData(T accessor, List<IServerDataProvider<T>> providers);
 
-	Element getIcon(T accessor);
+	@Nullable Element getIcon(T accessor);
 
 	void gatherComponents(T accessor, Function<IJadeProvider, ITooltip> tooltipProvider);
 
