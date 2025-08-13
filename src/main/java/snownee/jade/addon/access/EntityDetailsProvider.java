@@ -4,15 +4,18 @@ import com.mojang.datafixers.util.Either;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.TriState;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.Bee;
+import net.minecraft.world.entity.animal.coppergolem.CopperGolem;
 import net.minecraft.world.entity.animal.goat.Goat;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.Slime;
 import net.minecraft.world.entity.monster.ZombieVillager;
+import net.minecraft.world.level.block.WeatheringCopper;
 import snownee.jade.JadeClient;
 import snownee.jade.addon.core.ObjectNameProvider;
 import snownee.jade.api.EntityAccessor;
@@ -47,12 +50,26 @@ public class EntityDetailsProvider implements IEntityComponentProvider {
 			String message = tooltip.getString(JadeIds.CORE_OBJECT_NAME);
 			Component title = IThemeHelper.get().title(JadeClient.format("jade.access.slime.size", message, slime.getSize()));
 			tooltip.replace(JadeIds.CORE_OBJECT_NAME, title);
+		} else if (entity instanceof CopperGolem golem) {
+			WeatheringCopper.WeatherState state = golem.getWeatherState();
+			if (state != WeatheringCopper.WeatherState.UNAFFECTED) {
+				AccessibilityPlugin.replaceTitle(tooltip, objectName, "entity." + state.getSerializedName());
+			}
 		}
 		if (entity instanceof LivingEntity livingEntity && livingEntity.isBaby()) {
 			AccessibilityPlugin.replaceTitle(tooltip, objectName, "entity.baby");
 		}
-		if (CommonProxy.isSheared(entity)) {
-			AccessibilityPlugin.replaceTitle(tooltip, objectName, "entity.sheared");
+		TriState shearable = CommonProxy.isShearable(entity);
+		if (shearable != TriState.DEFAULT) {
+			if (entity instanceof CopperGolem) {
+				if (shearable == TriState.TRUE) {
+					AccessibilityPlugin.replaceTitle(tooltip, objectName, "entity.shearable");
+				}
+			} else {
+				if (shearable == TriState.FALSE) {
+					AccessibilityPlugin.replaceTitle(tooltip, objectName, "entity.sheared");
+				}
+			}
 		}
 		if (entity instanceof Mob mob && mob.isSaddled()) {
 			AccessibilityPlugin.replaceTitle(tooltip, objectName, "entity.saddled");

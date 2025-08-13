@@ -265,7 +265,6 @@
 	"config.jade.plugin_minecraft.villager_profession": "Dorpeling Beroep",
 	"jade.spawner": "%s (%s)",
 	"jade.trial_spawner_cd": "Cooldown: %s",
-	"config.jade.plugin_minecraft.chiseled_bookshelf": "Gebeitelde Boekenplank",
 	"config.jade.plugin_minecraft.zombie_villager": "Zombiedorpelingen Conversie",
 	"jade.zombieConversion.time": "Conversie Tijd: %s",
 	"config.jade.plugin_minecraft.waxed": "Gewaxte Staat",

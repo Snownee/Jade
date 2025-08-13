@@ -6,6 +6,7 @@ import net.minecraft.world.level.block.BaseRailBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.CreakingHeartBlock;
 import net.minecraft.world.level.block.RepeaterBlock;
+import net.minecraft.world.level.block.ShelfBlock;
 import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.entity.trialspawner.TrialSpawnerState;
 import net.minecraft.world.level.block.entity.vault.VaultState;
@@ -71,7 +72,7 @@ public class BlockDetailsProvider implements IBlockComponentProvider {
 			}
 		}
 		if (blockState.hasProperty(BlockStateProperties.POWERED) && blockState.getValue(BlockStateProperties.POWERED)) {
-			if (block instanceof RepeaterBlock || block instanceof BaseRailBlock) {
+			if (block instanceof RepeaterBlock || block instanceof BaseRailBlock || block instanceof ShelfBlock) {
 				AccessibilityPlugin.replaceTitle(tooltip, objectName, "block.powered");
 			}
 		}

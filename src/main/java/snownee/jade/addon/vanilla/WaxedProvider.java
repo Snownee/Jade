@@ -2,10 +2,10 @@ package snownee.jade.addon.vanilla;
 
 import org.jetbrains.annotations.Nullable;
 
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
+import snownee.jade.addon.access.AccessibilityPlugin;
 import snownee.jade.addon.core.ObjectNameProvider;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
@@ -13,7 +13,6 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
-import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.JadeUI;
 import snownee.jade.impl.ui.CompoundElement;
@@ -42,10 +41,8 @@ public class WaxedProvider implements IBlockComponentProvider {
 		if (IWailaConfig.get().accessibility().getEnableAccessibilityPlugin() &&
 				accessor.getBlockEntity() instanceof SignBlockEntity sign &&
 				sign.isWaxed()) {
-			String message = tooltip.getString(JadeIds.CORE_OBJECT_NAME);
-			if (!message.isBlank()) {
-				tooltip.replace(JadeIds.CORE_OBJECT_NAME, IThemeHelper.get().title(Component.translatable("jade.waxed", message)));
-			}
+			String objectName = tooltip.getString(JadeIds.CORE_OBJECT_NAME);
+			AccessibilityPlugin.replaceTitle(tooltip, objectName, "waxed");
 		}
 	}
 

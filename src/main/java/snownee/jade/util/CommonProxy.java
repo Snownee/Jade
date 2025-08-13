@@ -51,6 +51,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.TriState;
 import net.minecraft.world.Container;
 import net.minecraft.world.WorldlyContainerHolder;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -563,15 +564,16 @@ public final class CommonProxy implements ModInitializer {
 		ServerPlayNetworking.send(player, payload);
 	}
 
-	public static boolean isSheared(Entity entity) {
-		//noinspection deprecation
-		if (entity instanceof Shearable shearable && !shearable.readyForShearing()) {
+	public static TriState isShearable(Entity entity) {
+		if (entity instanceof Shearable shearable) {
 			if (entity instanceof Sheep || entity instanceof MushroomCow) {
-				return !((Animal) entity).isBaby();
+				if (((Animal) entity).isBaby()) {
+					return TriState.FALSE;
+				}
 			}
-			return true;
+			return shearable.readyForShearing() ? TriState.TRUE : TriState.FALSE;
 		}
-		return false;
+		return TriState.DEFAULT;
 	}
 
 	@Nullable

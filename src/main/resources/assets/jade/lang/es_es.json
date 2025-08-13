@@ -265,7 +265,6 @@
 	"config.jade.plugin_minecraft.villager_profession": "Profesión de aldeano",
 	"jade.spawner": "%s (%s)",
 	"jade.trial_spawner_cd": "Enfriamiento: %s",
-	"config.jade.plugin_minecraft.chiseled_bookshelf": "Estantería cincelada",
 	"config.jade.plugin_minecraft.zombie_villager": "Conversión de aldeano zombi",
 	"jade.zombieConversion.time": "Tiempo de conversión: %s",
 	"config.jade.plugin_minecraft.waxed": "Estado encerado",
