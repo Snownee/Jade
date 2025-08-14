@@ -90,3 +90,6 @@ accessible method net/minecraft/client/gui/screens/inventory/tooltip/TooltipRend
 accessible method net/minecraft/client/gui/screens/inventory/tooltip/TooltipRenderUtil getFrameSprite (Lnet/minecraft/resources/ResourceLocation;)Lnet/minecraft/resources/ResourceLocation;
 
 accessible field net/minecraft/client/KeyMapping clickCount I
+
+accessible field net/minecraft/world/entity/animal/coppergolem/CopperGolem IGNORE_WEATHERING_TICK J
+accessible field net/minecraft/world/entity/animal/coppergolem/CopperGolem nextWeatheringTick J

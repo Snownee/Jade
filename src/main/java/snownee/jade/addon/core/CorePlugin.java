@@ -20,7 +20,7 @@ public class CorePlugin implements IWailaPlugin {
 
 	@Override
 	public void register(IWailaCommonRegistration registration) {
-		registration.registerBlockDataProvider(ObjectNameProvider.Server.INSTANCE, BlockEntity.class);
+		registration.registerBlockDataProvider(ObjectNameProvider.BlockData.INSTANCE, BlockEntity.class);
 	}
 
 	@Override

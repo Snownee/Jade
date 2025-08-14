@@ -49,7 +49,7 @@ public abstract class ObjectNameProvider implements IToggleableProvider {
 
 		@Override
 		public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-			Component name = Server.INSTANCE.decodeFromData(accessor).orElse(null);
+			Component name = BlockData.INSTANCE.decodeFromData(accessor).orElse(null);
 			if (name == null && accessor.isFakeBlock()) {
 				name = accessor.getFakeBlock().getHoverName();
 			}
@@ -160,8 +160,8 @@ public abstract class ObjectNameProvider implements IToggleableProvider {
 		}
 	}
 
-	public static class Server extends ObjectNameProvider implements StreamServerDataProvider<BlockAccessor, Component> {
-		public static final Server INSTANCE = new Server();
+	public static class BlockData extends ObjectNameProvider implements StreamServerDataProvider<BlockAccessor, Component> {
+		public static final BlockData INSTANCE = new BlockData();
 
 		@Override
 		@Nullable

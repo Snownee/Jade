@@ -19,6 +19,7 @@ import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.Chicken;
 import net.minecraft.world.entity.animal.allay.Allay;
 import net.minecraft.world.entity.animal.armadillo.Armadillo;
+import net.minecraft.world.entity.animal.coppergolem.CopperGolem;
 import net.minecraft.world.entity.animal.frog.Tadpole;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.animal.sniffer.Sniffer;
@@ -141,6 +142,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerEntityDataProvider(NextEntityDropProvider.INSTANCE, Sniffer.class);
 		registration.registerEntityDataProvider(ZombieVillagerProvider.INSTANCE, ZombieVillager.class);
 		registration.registerEntityDataProvider(PetArmorProvider.INSTANCE, Mob.class);
+		registration.registerEntityDataProvider(WaxedProvider.EntityData.INSTANCE, CopperGolem.class);
 
 		registration.registerItemStorage(CampfireProvider.INSTANCE, CampfireBlockEntity.class);
 	}
@@ -208,8 +210,10 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerEntityIcon(ItemDisplayProvider.INSTANCE, ItemDisplay.class);
 		registration.registerEntityIcon(BlockDisplayProvider.INSTANCE, BlockDisplay.class);
 		registration.registerEntityComponent(ZombieVillagerProvider.Client.INSTANCE, ZombieVillager.class);
-		registration.registerBlockComponent(WaxedProvider.INSTANCE, SignBlock.class);
-		registration.registerBlockIcon(WaxedProvider.INSTANCE, SignBlock.class);
+		registration.registerBlockComponent(WaxedProvider.BlockComponent.INSTANCE, SignBlock.class);
+		registration.registerBlockIcon(WaxedProvider.BlockComponent.INSTANCE, SignBlock.class);
+		registration.registerEntityComponent(WaxedProvider.EntityComponent.INSTANCE, CopperGolem.class);
+		registration.registerEntityIcon(WaxedProvider.EntityComponent.INSTANCE, CopperGolem.class);
 		registration.registerEntityComponent(PetArmorProvider.Client.INSTANCE, Mob.class);
 
 		registration.registerItemStorageClient(CampfireProvider.INSTANCE);
