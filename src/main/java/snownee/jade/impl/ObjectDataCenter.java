@@ -11,7 +11,7 @@ import snownee.jade.api.BlockAccessor;
 public final class ObjectDataCenter {
 
 	public static int rateLimiter = 250;
-	public static long timeLastUpdate = System.currentTimeMillis();
+	public static long timeLastUpdate;
 	public static boolean serverConnected;
 	private static @Nullable Object lastObject;
 

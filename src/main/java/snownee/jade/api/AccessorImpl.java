@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import io.netty.buffer.Unpooled;
@@ -27,10 +26,10 @@ public abstract class AccessorImpl<T extends HitResult> implements Accessor<T> {
 
 	private final Level level;
 	private final Player player;
-	private final CompoundTag serverData;
 	private final Supplier<T> hit;
 	private final boolean serverConnected;
 	private final boolean showDetails;
+	private CompoundTag serverData;
 	protected boolean verify;
 	private RegistryFriendlyByteBuf buffer;
 
@@ -46,7 +45,7 @@ public abstract class AccessorImpl<T extends HitResult> implements Accessor<T> {
 		this.hit = Objects.requireNonNull(hit);
 		this.serverConnected = serverConnected;
 		this.showDetails = showDetails;
-		this.serverData = serverData == null ? new CompoundTag() : serverData.copy();
+		setServerData(serverData);
 	}
 
 	@Override
@@ -60,8 +59,18 @@ public abstract class AccessorImpl<T extends HitResult> implements Accessor<T> {
 	}
 
 	@Override
-	public final @NotNull CompoundTag getServerData() {
+	public final CompoundTag getServerData() {
 		return serverData;
+	}
+
+	/**
+	 * Do not call this
+	 */
+	@SuppressWarnings("DeprecatedIsStillUsed")
+	@Deprecated
+	@Override
+	public final void setServerData(@Nullable CompoundTag serverData) {
+		this.serverData = serverData == null ? new CompoundTag() : serverData;
 	}
 
 	private RegistryFriendlyByteBuf buffer() {

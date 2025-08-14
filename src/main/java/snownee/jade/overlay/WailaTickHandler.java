@@ -97,6 +97,7 @@ public class WailaTickHandler {
 		progressTracker.clear();
 	}
 
+	@SuppressWarnings("deprecation")
 	public void tickClient() {
 		Minecraft mc = Minecraft.getInstance();
 		Level level = mc.level;
@@ -182,6 +183,10 @@ public class WailaTickHandler {
 			}
 		}
 
+		if (!accessor.verifyData(accessor.getServerData())) {
+			accessor.setServerData(null);
+		}
+
 		ObjectDataCenter.set(accessor);
 		var handler = WailaClientRegistration.instance().getAccessorHandler(accessor.getAccessorType());
 
@@ -192,9 +197,8 @@ public class WailaTickHandler {
 
 		state = State.create(state, accessor, handler, state == null ? null : state.data);
 		if (accessor.isServerConnected()) {
-			if (!accessor.verifyData(accessor.getServerData())) {
-				accessor.getServerData().keySet().clear();
-			}
+			CompoundTag data = accessor.getServerData();
+			accessor.setServerData(null);
 			List<IServerDataProvider<Accessor<?>>> providers = handler.shouldRequestData(accessor);
 			if (ObjectDataCenter.isTimeElapsed(ObjectDataCenter.rateLimiter)) {
 				ObjectDataCenter.resetTimer();
@@ -205,6 +209,7 @@ public class WailaTickHandler {
 			if (!providers.isEmpty() && getData() == null) {
 				return;
 			}
+			accessor.setServerData(data);
 		}
 
 		Theme theme = IWailaConfig.get().overlay().getTheme();

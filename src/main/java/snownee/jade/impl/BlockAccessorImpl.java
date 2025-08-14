@@ -220,7 +220,7 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 		public Builder from(BlockAccessor accessor) {
 			level = accessor.getLevel();
 			player = accessor.getPlayer();
-			serverData = accessor.getServerData();
+			serverData = accessor.getServerData().copy();
 			connected = accessor.isServerConnected();
 			showDetails = accessor.showDetails();
 			hit = accessor.getHitResult();
@@ -246,7 +246,7 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 		}
 	}
 
-	public record SyncData(boolean showDetails, BlockHitResult hit, BlockState blockState, ItemStack fakeBlock) {
+	public record SyncData(boolean showDetails, BlockHitResult hit, BlockState blockState, ItemStack fakeBlock, CompoundTag data) {
 		public static final StreamCodec<RegistryFriendlyByteBuf, SyncData> STREAM_CODEC = StreamCodec.composite(
 				ByteBufCodecs.BOOL,
 				SyncData::showDetails,
@@ -256,11 +256,18 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 				SyncData::blockState,
 				ItemStack.OPTIONAL_STREAM_CODEC,
 				SyncData::fakeBlock,
+				ByteBufCodecs.COMPOUND_TAG,
+				SyncData::data,
 				SyncData::new
 		);
 
 		public SyncData(BlockAccessor accessor) {
-			this(accessor.showDetails(), accessor.getHitResult(), accessor.getBlockState(), accessor.getFakeBlock());
+			this(
+					accessor.showDetails(),
+					accessor.getHitResult(),
+					accessor.getBlockState(),
+					accessor.getFakeBlock(),
+					accessor.getServerData());
 		}
 
 		public BlockAccessor unpack(ServerPlayer player) {
@@ -276,6 +283,7 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 					.blockState(blockState)
 					.blockEntity(blockEntity)
 					.fakeBlock(fakeBlock)
+					.serverData(data)
 					.build();
 		}
 	}

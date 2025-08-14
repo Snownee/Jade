@@ -2,7 +2,6 @@ package snownee.jade.api;
 
 import java.util.Optional;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.nbt.CompoundTag;
@@ -24,8 +23,14 @@ public interface Accessor<T extends HitResult> {
 
 	Player getPlayer();
 
-	@NotNull
 	CompoundTag getServerData();
+
+	/**
+	 * Do not call this
+	 */
+	@SuppressWarnings("DeprecatedIsStillUsed")
+	@Deprecated
+	void setServerData(@Nullable CompoundTag serverData);
 
 	<D> Optional<D> decodeFromNbt(StreamDecoder<RegistryFriendlyByteBuf, D> codec, Tag tag);
 

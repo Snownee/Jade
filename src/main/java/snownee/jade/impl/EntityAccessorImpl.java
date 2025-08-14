@@ -156,7 +156,7 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 		public Builder from(EntityAccessor accessor) {
 			level = accessor.getLevel();
 			player = accessor.getPlayer();
-			serverData = accessor.getServerData();
+			serverData = accessor.getServerData().copy();
 			connected = accessor.isServerConnected();
 			showDetails = accessor.showDetails();
 			hit = accessor::getHitResult;
@@ -180,7 +180,7 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 		}
 	}
 
-	public record SyncData(boolean showDetails, int id, int partIndex, Vec3 hitVec) {
+	public record SyncData(boolean showDetails, int id, int partIndex, Vec3 hitVec, CompoundTag data) {
 		public static final StreamCodec<RegistryFriendlyByteBuf, SyncData> STREAM_CODEC = StreamCodec.composite(
 				ByteBufCodecs.BOOL,
 				SyncData::showDetails,
@@ -190,6 +190,8 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 				SyncData::partIndex,
 				ByteBufCodecs.VECTOR3F.map(Vec3::new, Vec3::toVector3f),
 				SyncData::hitVec,
+				ByteBufCodecs.COMPOUND_TAG,
+				SyncData::data,
 				SyncData::new
 		);
 
@@ -198,7 +200,8 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 					accessor.showDetails(),
 					accessor.getEntity().getId(),
 					CommonProxy.getPartEntityIndex(accessor.getRawEntity()),
-					accessor.getHitResult().getLocation());
+					accessor.getHitResult().getLocation(),
+					accessor.getServerData());
 		}
 
 		public EntityAccessor unpack(ServerPlayer player) {
@@ -209,6 +212,7 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 					.showDetails(showDetails)
 					.entity(entity)
 					.hit(Suppliers.memoize(() -> new EntityHitResult(entity.get(), hitVec)))
+					.serverData(data)
 					.build();
 		}
 	}

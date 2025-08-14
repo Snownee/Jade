@@ -89,7 +89,7 @@ public class EmptyAccessorImpl extends AccessorImpl<BlockHitResult> implements E
 		public Builder from(EmptyAccessor accessor) {
 			level = accessor.getLevel();
 			player = accessor.getPlayer();
-			serverData = accessor.getServerData();
+			serverData = accessor.getServerData().copy();
 			connected = accessor.isServerConnected();
 			showDetails = accessor.showDetails();
 			hit = accessor.getHitResult();
@@ -112,17 +112,19 @@ public class EmptyAccessorImpl extends AccessorImpl<BlockHitResult> implements E
 		}
 	}
 
-	public record SyncData(boolean showDetails, BlockHitResult hit) {
+	public record SyncData(boolean showDetails, BlockHitResult hit, CompoundTag data) {
 		public static final StreamCodec<RegistryFriendlyByteBuf, SyncData> STREAM_CODEC = StreamCodec.composite(
 				ByteBufCodecs.BOOL,
 				SyncData::showDetails,
 				StreamCodec.of(FriendlyByteBuf::writeBlockHitResult, FriendlyByteBuf::readBlockHitResult),
 				SyncData::hit,
+				ByteBufCodecs.COMPOUND_TAG,
+				SyncData::data,
 				SyncData::new
 		);
 
 		public SyncData(EmptyAccessor accessor) {
-			this(accessor.showDetails(), accessor.getHitResult());
+			this(accessor.showDetails(), accessor.getHitResult(), accessor.getServerData());
 		}
 
 		public EmptyAccessor unpack(ServerPlayer player) {
@@ -131,6 +133,7 @@ public class EmptyAccessorImpl extends AccessorImpl<BlockHitResult> implements E
 					.player(player)
 					.showDetails(showDetails)
 					.hit(hit)
+					.serverData(data)
 					.build();
 		}
 	}
