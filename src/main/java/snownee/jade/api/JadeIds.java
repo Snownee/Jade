@@ -31,6 +31,7 @@ public interface JadeIds {
 	ResourceLocation UNIVERSAL_ITEM_STORAGE_NORMAL_AMOUNT = MC("item_storage.normal_amount");
 	ResourceLocation UNIVERSAL_ITEM_STORAGE_SHOW_NAME_AMOUNT = MC("item_storage.show_name_amount");
 	ResourceLocation UNIVERSAL_ITEM_STORAGE_ITEMS_PER_LINE = MC("item_storage.items_per_line");
+	ResourceLocation UNIVERSAL_ITEM_STORAGE_SORT = MC("item_storage.sort");
 	ResourceLocation UNIVERSAL_FLUID_STORAGE = MC("fluid_storage");
 	ResourceLocation UNIVERSAL_FLUID_STORAGE_DEFAULT = MC("fluid_storage.default");
 	ResourceLocation UNIVERSAL_FLUID_STORAGE_DETAILED = MC("fluid_storage.detailed");

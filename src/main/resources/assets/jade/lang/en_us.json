@@ -291,6 +291,7 @@
 	"config.jade.plugin_minecraft.item_storage.show_name_amount": "Show Name Threshold",
 	"config.jade.plugin_minecraft.item_storage.show_name_amount_desc": "The maximum amount of items to show item names instead of just item icons.",
 	"config.jade.plugin_minecraft.item_storage.items_per_line": "Items per Line",
+	"config.jade.plugin_minecraft.item_storage.sort": "Sort by Count",
 	"jade.locked": "Inventory is locked",
 	"jade.loot_not_generated": "Loot not generated yet",
 	"config.jade.plugin_minecraft.energy_storage": "Energy Storage",

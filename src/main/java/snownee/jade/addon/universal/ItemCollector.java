@@ -1,8 +1,14 @@
 package snownee.jade.addon.universal;
 
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
+
+import org.jetbrains.annotations.Nullable;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
 import net.minecraft.core.component.DataComponentPatch;
@@ -39,14 +45,13 @@ public class ItemCollector<T> {
 		}
 		return true;
 	};
-	private final Object2IntLinkedOpenHashMap<ItemDefinition> items = new Object2IntLinkedOpenHashMap<>();
-	//	private final LinkedHashSet<ItemDefinition> sortedByCount = Sets.newLinkedHashSetWithExpectedSize(MAX_SIZE);
-//	private int lastEntryCount;
+	private final Items items = new Items();
 	private final ItemIterator<T> iterator;
 	public long version;
 	public long lastTimeFinished;
 	public boolean lastTimeIsEmpty;
-	public List<ViewGroup<ItemStack>> mergedResult;
+	public @Nullable List<ViewGroup<ItemStack>> mergedResult;
+	public @Nullable List<ViewGroup<ItemStack>> sortedMergedResult;
 
 	public ItemCollector(ItemIterator<T> iterator) {
 		this.iterator = iterator;
@@ -60,14 +65,16 @@ public class ItemCollector<T> {
 		if (container == null) {
 			return null;
 		}
+		boolean sorted = accessor.getServerData().getBooleanOr("SortItems", false);
 		long currentVersion = iterator.getVersion(container);
 		long gameTime = accessor.getLevel().getGameTime();
-		if (mergedResult != null && iterator.isFinished()) {
+		List<ViewGroup<ItemStack>> result = sorted ? sortedMergedResult : mergedResult;
+		if (result != null && iterator.isFinished()) {
 			if (version == currentVersion) {
-				return mergedResult; // content not changed
+				return result; // content not changed
 			}
 			if (lastTimeFinished + 5 > gameTime) {
-				return mergedResult; // avoid update too frequently
+				return result; // avoid update too frequently
 			}
 			iterator.reset();
 		}
@@ -80,18 +87,21 @@ public class ItemCollector<T> {
 			}
 		});
 		iterator.afterPopulate(count.get());
-		if (mergedResult != null && !iterator.isFinished()) {
-			updateCollectingProgress(mergedResult.getFirst());
-			return mergedResult;
+		if (result != null && !iterator.isFinished()) {
+			updateCollectingProgress(result.getFirst());
+			return result;
 		}
-		List<ItemStack> partialResult = items.object2IntEntrySet().stream().limit(MAX_SIZE).map(entry -> {
-			ItemDefinition def = entry.getKey();
-			return def.toStack(entry.getIntValue());
-		}).toList();
+		List<ItemStack> partialResult = items.partialResult(sorted);
 		List<ViewGroup<ItemStack>> groups = List.of(updateCollectingProgress(new ViewGroup<>(partialResult)));
 		if (iterator.isFinished()) {
-			mergedResult = groups;
-			lastTimeIsEmpty = mergedResult.getFirst().views.isEmpty();
+			if (sorted) {
+				mergedResult = List.of(updateCollectingProgress(new ViewGroup<>(items.partialResult(false))));
+				sortedMergedResult = groups;
+			} else {
+				mergedResult = groups;
+				sortedMergedResult = List.of(updateCollectingProgress(new ViewGroup<>(items.partialResult(true))));
+			}
+			lastTimeIsEmpty = groups.getFirst().views.isEmpty();
 			version = currentVersion;
 			lastTimeFinished = gameTime;
 			items.clear();
@@ -122,6 +132,57 @@ public class ItemCollector<T> {
 			ItemStack itemStack = new ItemStack(item, count);
 			itemStack.applyComponents(components);
 			return itemStack;
+		}
+	}
+
+	private static class Items {
+		private final Object2IntLinkedOpenHashMap<ItemDefinition> items = new Object2IntLinkedOpenHashMap<>();
+		private final List<ItemDefinition> sorted = Lists.newArrayList();
+		private final Set<ItemDefinition> sortedSet = Sets.newLinkedHashSet();
+		private int smallestCount;
+
+		public void clear() {
+			smallestCount = 0;
+			items.clear();
+			sorted.clear();
+			sortedSet.clear();
+		}
+
+		public List<ItemStack> partialResult(boolean sort) {
+			if (sort) {
+				sorted.sort((a, b) -> -Integer.compare(items.getInt(a), items.getInt(b)));
+				if (sorted.size() > MAX_SIZE) {
+					sorted.subList(MAX_SIZE, sorted.size()).clear();
+					sortedSet.clear();
+					sortedSet.addAll(sorted);
+				}
+				if (!sorted.isEmpty()) {
+					smallestCount = items.getInt(sorted.getLast());
+				}
+				return sorted.stream()
+						.map(def -> def.toStack(items.getInt(def)))
+						.toList();
+			} else {
+				return items.object2IntEntrySet().stream()
+						.limit(MAX_SIZE)
+						.map(entry -> entry.getKey().toStack(entry.getIntValue()))
+						.toList();
+			}
+		}
+
+		public void addTo(ItemDefinition def, int count) {
+			int old = items.addTo(def, count);
+			if (!sortedSet.contains(def)) {
+				count += old;
+				if (sorted.size() < MAX_SIZE) {
+					sortedSet.add(def);
+					sorted.add(def);
+					smallestCount = Math.min(smallestCount, count);
+				} else if (count > smallestCount) {
+					sortedSet.add(def);
+					sorted.add(def);
+				}
+			}
 		}
 	}
 }

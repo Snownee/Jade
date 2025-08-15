@@ -38,7 +38,14 @@ public class BlockAccessorClientHandler implements AccessorClientHandler<BlockAc
 		if (providers.isEmpty()) {
 			return List.of();
 		}
-		return providers.stream().filter(provider -> provider.shouldRequestData(accessor)).toList();
+		return providers.stream().filter(provider -> {
+			try {
+				return provider.shouldRequestData(accessor);
+			} catch (Exception e) {
+				WailaExceptionHandler.handleErr(e, provider, null);
+				return false;
+			}
+		}).toList();
 	}
 
 	@Override

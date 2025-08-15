@@ -247,6 +247,9 @@ public class ItemStorageProvider<T extends Accessor<?>> implements IServerDataPr
 		if (amount == 0) {
 			return false;
 		}
+		if (IWailaConfig.get().plugin().get(JadeIds.UNIVERSAL_ITEM_STORAGE_SORT)) {
+			accessor.getServerData().putBoolean("SortItems", true);
+		}
 		return WailaCommonRegistration.instance().itemStorageProviders.hitsAny(accessor, IServerExtensionProvider::shouldRequestData);
 	}
 
