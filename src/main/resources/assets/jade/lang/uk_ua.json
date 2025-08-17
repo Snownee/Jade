@@ -292,7 +292,7 @@
 	"config.jade.plugin_minecraft.item_storage.show_name_amount_desc": "Максимальна кількість предметів для показу назв замість значків предметів.",
 	"config.jade.plugin_minecraft.item_storage.items_per_line": "Предметів в рядку",
 	"jade.locked": "Інвентар заблоковано",
-	"jade.loot_not_generated": "Здобич іще не згенерувалася",
+	"jade.loot_not_generated": "Уміст іще не згенерувався",
 	"config.jade.plugin_minecraft.energy_storage": "Енергосховище",
 	"config.jade.plugin_minecraft.energy_storage.detailed": "Лише детально",
 	"config.jade.plugin_minecraft.energy_storage.detailed_desc": "Показувати інформацію про енергію коли натиснуто ${SHOW_DETAILS}.",
