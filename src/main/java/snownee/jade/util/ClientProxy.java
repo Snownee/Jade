@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.datafixers.util.Either;
 
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -30,6 +31,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
@@ -55,6 +57,7 @@ import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
+import net.neoforged.neoforge.client.event.RenderTooltipEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
@@ -126,6 +129,16 @@ public final class ClientProxy {
 
 	private static void onEntityLeave(EntityLeaveLevelEvent event) {
 		DatapackBlockManager.onEntityLeave(event.getEntity());
+	}
+
+	private static void onTooltip(RenderTooltipEvent.GatherComponents event) {
+		if (event.getItemStack().isEmpty()) {
+			return;
+		}
+		FormattedText name = JadeClient.appendModName(event.getItemStack());
+		if (name != null) {
+			event.getTooltipElements().add(Either.left(name));
+		}
 	}
 
 	public static void onRenderTick(GuiGraphics guiGraphics, float tickDelta) {
@@ -306,6 +319,7 @@ public final class ClientProxy {
 	public static void init(IEventBus modBus) {
 		NeoForge.EVENT_BUS.addListener(ClientProxy::onEntityJoin);
 		NeoForge.EVENT_BUS.addListener(ClientProxy::onEntityLeave);
+		NeoForge.EVENT_BUS.addListener(EventPriority.LOWEST, ClientProxy::onTooltip);
 		NeoForge.EVENT_BUS.addListener(ClientProxy::onClientTick);
 		NeoForge.EVENT_BUS.addListener(ClientProxy::onPlayerJoin);
 		NeoForge.EVENT_BUS.addListener(ClientProxy::onPlayerLeave);

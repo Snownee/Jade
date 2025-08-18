@@ -3,6 +3,7 @@ package snownee.jade;
 import java.util.List;
 import java.util.function.Predicate;
 
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.ImmutableMap;
@@ -17,14 +18,13 @@ import net.minecraft.client.gui.components.toasts.SystemToast;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
-import net.minecraft.client.gui.screens.inventory.tooltip.ClientTextTooltip;
-import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -201,32 +201,32 @@ public final class JadeClient {
 		}
 	}
 
-	public static void appendModName(List<ClientTooltipComponent> list, ItemStack itemStack) {
+	@Nullable
+	public static FormattedText appendModName(ItemStack itemStack) {
 		if (!IWailaConfig.get().general().showItemModNameTooltip()) {
-			return;
+			return null;
 		}
-		if (list.isEmpty() || itemStack.isEmpty()) {
-			return;
+		if (itemStack.isEmpty()) {
+			return null;
 		}
 		if (Minecraft.getInstance().screen instanceof CreativeModeInventoryScreen screen && screen.hoveredSlot != null) {
 			if (screen.hoveredSlot.container instanceof Inventory ||
 					CreativeModeInventoryScreen.selectedTab.getType() != CreativeModeTab.Type.CATEGORY) {
-				return;
+				return null;
 			}
 		}
 		String name;
 		try {
 			name = ModIdentification.getModName(itemStack);
 		} catch (Throwable e) {
+			MutableObject<Component> holder = new MutableObject<>();
 			WailaExceptionHandler.handleErr(
 					TraceableException.create(e, BuiltInRegistries.ITEM.getKey(itemStack.getItem()).getNamespace()),
 					null,
-					$ -> list.add(new ClientTextTooltip($.getVisualOrderText())));
-			return;
+					holder::setValue);
+			return holder.getValue();
 		}
-		list.add(new ClientTextTooltip(Component.literal(name)
-				.withStyle(IWailaConfig.get().formatting().getItemModNameStyle())
-				.getVisualOrderText()));
+		return Component.literal(name).withStyle(IWailaConfig.get().formatting().getItemModNameStyle());
 	}
 
 	@Nullable
