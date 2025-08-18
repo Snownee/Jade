@@ -147,9 +147,17 @@ public final class CommonProxy {
 				}
 			}
 		}
+		HolderLookup.Provider registries = RegistryAccess.EMPTY;
+		if (isPhysicallyClient() && Minecraft.getInstance().level != null) {
+			registries = Minecraft.getInstance().level.registryAccess();
+		}
+		String modid = stack.getItem().getCreatorModId(registries, stack);
+		if (!ResourceLocation.DEFAULT_NAMESPACE.equals(modid)) {
+			return modid;
+		}
 		if (stack.has(DataComponents.STORED_ENCHANTMENTS)) {
 			ItemEnchantments enchantments = stack.getOrDefault(DataComponents.STORED_ENCHANTMENTS, ItemEnchantments.EMPTY);
-			String modid = null;
+			modid = null;
 			for (Holder<Enchantment> enchantmentHolder : enchantments.keySet()) {
 				ResourceLocation id = enchantmentHolder.unwrapKey().map(ResourceKey::location).orElse(null);
 				if (id != null) {
@@ -168,7 +176,7 @@ public final class CommonProxy {
 		}
 		PotionContents potionContents = stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
 		if (potionContents.hasEffects()) {
-			String modid = null;
+			modid = null;
 			for (MobEffectInstance effect : potionContents.getAllEffects()) {
 				ResourceLocation id = effect.getEffect().unwrapKey().map(ResourceKey::location).orElse(null);
 				if (id != null) {
@@ -194,11 +202,7 @@ public final class CommonProxy {
 						.orElse(ResourceLocation.DEFAULT_NAMESPACE);
 			}
 		}
-		HolderLookup.Provider registries = RegistryAccess.EMPTY;
-		if (isPhysicallyClient() && Minecraft.getInstance().level != null) {
-			registries = Minecraft.getInstance().level.registryAccess();
-		}
-		return stack.getItem().getCreatorModId(registries, stack);
+		return ResourceLocation.DEFAULT_NAMESPACE;
 	}
 
 	public static boolean isPhysicallyClient() {
