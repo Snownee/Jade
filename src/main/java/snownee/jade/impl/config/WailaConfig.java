@@ -224,7 +224,7 @@ public class WailaConfig implements IWailaConfig {
 				ExtraOptions.CODEC.orElseGet(() -> JadeCodecs.createFromEmptyMap(ExtraOptions.CODEC.codec()))
 						.forGetter($ -> $.extraOptions)).apply(i, General::new));
 
-		public static final List<String> itemModNameTooltipDisabledByMods = Lists.newArrayList("emi");
+		public static final List<String> itemModNameTooltipDisabledByMods = Lists.newArrayList();
 		public static final List<String> itemModNameTooltipDisabledByModsNames = Lists.newArrayList();
 		private boolean displayTooltip;
 		private boolean displayBlocks;

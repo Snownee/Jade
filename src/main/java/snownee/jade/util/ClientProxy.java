@@ -64,7 +64,6 @@ import net.neoforged.neoforge.client.textures.FluidSpriteCache;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
-import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforgespi.language.IModInfo;
 import snownee.jade.Jade;
@@ -127,10 +126,6 @@ public final class ClientProxy {
 
 	private static void onEntityLeave(EntityLeaveLevelEvent event) {
 		DatapackBlockManager.onEntityLeave(event.getEntity());
-	}
-
-	private static void onTooltip(ItemTooltipEvent event) {
-		JadeClient.appendModName(event.getToolTip(), event.getItemStack(), event.getContext(), event.getFlags());
 	}
 
 	public static void onRenderTick(GuiGraphics guiGraphics, float tickDelta) {
@@ -311,7 +306,6 @@ public final class ClientProxy {
 	public static void init(IEventBus modBus) {
 		NeoForge.EVENT_BUS.addListener(ClientProxy::onEntityJoin);
 		NeoForge.EVENT_BUS.addListener(ClientProxy::onEntityLeave);
-		NeoForge.EVENT_BUS.addListener(EventPriority.LOWEST, ClientProxy::onTooltip);
 		NeoForge.EVENT_BUS.addListener(ClientProxy::onClientTick);
 		NeoForge.EVENT_BUS.addListener(ClientProxy::onPlayerJoin);
 		NeoForge.EVENT_BUS.addListener(ClientProxy::onPlayerLeave);

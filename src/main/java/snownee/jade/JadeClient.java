@@ -1,13 +1,10 @@
 package snownee.jade;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.ibm.icu.text.MessageFormat;
@@ -20,6 +17,8 @@ import net.minecraft.client.gui.components.toasts.SystemToast;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTextTooltip;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.resources.language.I18n;
@@ -30,11 +29,10 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BrushableBlock;
@@ -84,11 +82,6 @@ public final class JadeClient {
 	public static KeyMapping narrate;
 	public static KeyMapping showRecipes;
 	public static KeyMapping showUses;
-	private static final Cache<Item.TooltipContext, Item.TooltipContext> hideModName = CacheBuilder.newBuilder()
-			.weakKeys()
-			.weakValues()
-			.expireAfterAccess(1, TimeUnit.SECONDS)
-			.build();
 	public static float renderDistanceStart;
 	public static float renderDistanceEnd;
 	private static boolean translationChecked;
@@ -208,31 +201,32 @@ public final class JadeClient {
 		}
 	}
 
-	public static void hideModNameIn(Item.TooltipContext context) {
-		hideModName.put(context, context);
-	}
-
-	public static void appendModName(List<Component> tooltip, ItemStack stack, Item.TooltipContext tooltipContext, TooltipFlag flag) {
-		if (!IWailaConfig.get().general().showItemModNameTooltip() || hideModName.getIfPresent(tooltipContext) != null) {
+	public static void appendModName(List<ClientTooltipComponent> list, ItemStack itemStack) {
+		if (!IWailaConfig.get().general().showItemModNameTooltip()) {
 			return;
 		}
-		if (Minecraft.getInstance().screen instanceof CreativeModeInventoryScreen screen && screen.hoveredSlot != null &&
-				screen.hoveredSlot.getItem() == stack) {
-			if (CreativeModeInventoryScreen.selectedTab.getType() != CreativeModeTab.Type.CATEGORY || !flag.isCreative()) {
+		if (list.isEmpty() || itemStack.isEmpty()) {
+			return;
+		}
+		if (Minecraft.getInstance().screen instanceof CreativeModeInventoryScreen screen && screen.hoveredSlot != null) {
+			if (screen.hoveredSlot.container instanceof Inventory ||
+					CreativeModeInventoryScreen.selectedTab.getType() != CreativeModeTab.Type.CATEGORY) {
 				return;
 			}
 		}
 		String name;
 		try {
-			name = ModIdentification.getModName(stack);
+			name = ModIdentification.getModName(itemStack);
 		} catch (Throwable e) {
 			WailaExceptionHandler.handleErr(
-					TraceableException.create(e, BuiltInRegistries.ITEM.getKey(stack.getItem()).getNamespace()),
+					TraceableException.create(e, BuiltInRegistries.ITEM.getKey(itemStack.getItem()).getNamespace()),
 					null,
-					tooltip::add);
+					$ -> list.add(new ClientTextTooltip($.getVisualOrderText())));
 			return;
 		}
-		tooltip.add(Component.literal(name).withStyle(IWailaConfig.get().formatting().getItemModNameStyle()));
+		list.add(new ClientTextTooltip(Component.literal(name)
+				.withStyle(IWailaConfig.get().formatting().getItemModNameStyle())
+				.getVisualOrderText()));
 	}
 
 	@Nullable

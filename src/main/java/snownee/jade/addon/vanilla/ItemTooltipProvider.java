@@ -20,7 +20,6 @@ import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import snownee.jade.JadeClient;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
@@ -39,7 +38,6 @@ public class ItemTooltipProvider implements IEntityComponentProvider {
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		ItemStack stack = ((ItemEntity) accessor.getEntity()).getItem();
 		Item.TooltipContext tooltipContext = Item.TooltipContext.of(accessor.getLevel());
-		JadeClient.hideModNameIn(tooltipContext);
 		List<Either<FormattedText, TooltipComponent>> lines = Lists.newArrayList();
 		try {
 			stack.getTooltipLines(tooltipContext, null, TooltipFlag.Default.NORMAL)
