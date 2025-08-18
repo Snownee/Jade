@@ -23,6 +23,7 @@ import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.config.entry.ConfigEntry;
+import snownee.jade.impl.theme.ThemeHelper;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
 import snownee.jade.util.JadeCodecs;
@@ -588,6 +589,7 @@ public class WailaConfig implements IWailaConfig {
 				activeThemeInstance = IThemeHelper.get().getTheme(JadeIds.DEFAULT_THEME);
 			}
 			activeTheme = activeThemeInstance.id;
+			((ThemeHelper) IThemeHelper.get()).setTheme(activeThemeInstance);
 		}
 
 		@Override
@@ -782,9 +784,9 @@ public class WailaConfig implements IWailaConfig {
 				Codec.BOOL.fieldOf("enableProfiles").orElse(false).forGetter($ -> $.enableProfiles),
 				Codec.intRange(0, 3).fieldOf("profileIndex").orElse(0).forGetter($ -> $.profileIndex),
 				WailaConfig.MAP_CODEC.forGetter($ -> $),
-				WailaConfig.History.CODEC.fieldOf("history")
-						.orElseGet(() -> JadeCodecs.createFromEmptyMap(WailaConfig.History.CODEC))
-						.forGetter($ -> $.history)).apply(i, WailaConfig.Root::new));
+				History.CODEC.fieldOf("history")
+						.orElseGet(() -> JadeCodecs.createFromEmptyMap(History.CODEC))
+						.forGetter($ -> $.history)).apply(i, Root::new));
 
 		private boolean enableProfiles;
 		public int profileIndex;

@@ -3,6 +3,7 @@ package snownee.jade.api.theme;
 import java.util.Collection;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -50,4 +51,8 @@ public interface IThemeHelper {
 	default boolean isLightColorScheme() {
 		return theme().lightColorScheme;
 	}
+
+	int generation();
+
+	void setThemeOverride(@Nullable Theme theme);
 }

@@ -154,20 +154,25 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 					if (theme.changeOpacity != 0) {
 						opacityEntry.setValue(theme.changeOpacity);
 					}
-					if (valuesSupplier.getDefaultList().size() > 1) {
-						styleEntry.button.active = true;
-						styleEntry.updateValue();
-					} else {
-						styleEntry.button.active = false;
-						styleEntry.button.setMessage(Component.translatable("jade.unavailable"));
-					}
+					styleEntry.updateValue();
 				}));
 		styleEntry = options.add(new CycleOptionValue<>(
 				"theme_style",
 				CycleButton.<ResourceLocation>builder(id -> Component.translatable(ThemeHelper.INSTANCE.getTheme(id).styleName))
 						.withValues(valuesSupplier),
 				() -> overlay.getTheme().id,
-				overlay::applyTheme));
+				overlay::applyTheme) {
+			@Override
+			public void updateValue() {
+				super.updateValue();
+				if (valuesSupplier.getDefaultList().size() > 1) {
+					button.active = true;
+				} else {
+					button.active = false;
+					button.setMessage(Component.translatable("jade.unavailable"));
+				}
+			}
+		});
 		styleEntry.parent(themeEntry);
 		styleEntry.updateValue();
 		opacityEntry = options.slider("overlay_alpha", overlay::getAlpha, overlay::setAlpha);

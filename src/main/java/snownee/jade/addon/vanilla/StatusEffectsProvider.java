@@ -20,6 +20,7 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.StreamServerDataProvider;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.JadeUI;
@@ -84,10 +85,11 @@ public class StatusEffectsProvider implements StreamServerDataProvider<EntityAcc
 				return ms > 0;
 			}).sorted().limit(config.getInt(JadeIds.MC_POTION_EFFECTS_LIMIT)).toList();
 			float scale = effects.size() > 2 ? 0.75F : 1F;
+			boolean animation = IWailaConfig.get().overlay().getAnimation();
 			for (var data : effects) {
 				long ms = current - data.addTime() - 20;
 				float alpha = 1F;
-				if (ms < 480) {
+				if (animation && ms < 480) {
 					alpha = ms / 480F;
 				}
 				MobEffectInstance effect = data.effect();

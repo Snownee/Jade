@@ -5,7 +5,6 @@ import java.util.Objects;
 
 import org.jetbrains.annotations.Nullable;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -51,7 +50,7 @@ public class FluidView {
 			view.overrideText = NarratableComponent.translatable(
 					"jade.fluid",
 					EMPTY_FLUID,
-					NarratableComponent.attach(Component.literal(view.max.getString()).withStyle(ChatFormatting.GRAY), view.max));
+					NarratableComponent.attach(Component.literal(view.max.getString()), view.max));
 		}
 		return view;
 	}

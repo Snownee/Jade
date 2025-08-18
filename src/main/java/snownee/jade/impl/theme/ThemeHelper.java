@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
@@ -46,12 +47,14 @@ import snownee.jade.util.KeyedReloadListener;
 public class ThemeHelper extends SimpleJsonResourceReloadListener<JadeClientCodecs.ThemeHolder> implements IThemeHelper, KeyedReloadListener {
 	public static final ThemeHelper INSTANCE = new ThemeHelper();
 	public static final ResourceLocation ID = JadeIds.JADE("themes");
-	public static final MutableObject<Theme> theme = new MutableObject<>();
 	private static final Int2ObjectMap<Style> styleCache = new Int2ObjectOpenHashMap<>(6);
 	private final Map<ResourceLocation, Theme> themes = Maps.newTreeMap();
 	private final MinMaxBounds.Ints allowedVersions = MinMaxBounds.Ints.between(200, 299);
 	private final Style[] modNameStyleCache = new Style[3];
+	private Theme theme;
 	private Theme fallback;
+	private int generation;
+	private @Nullable Theme themeOverride;
 
 	public ThemeHelper() {
 		super(
@@ -68,7 +71,7 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener<JadeClientCode
 
 	@Override
 	public Theme theme() {
-		return theme.getValue();
+		return themeOverride != null ? themeOverride : theme;
 	}
 
 	@Override
@@ -174,6 +177,28 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener<JadeClientCode
 		return info(JadeClient.format("jade.seconds", seconds));
 	}
 
+	@Override
+	public int generation() {
+		return generation;
+	}
+
+	public void setTheme(Theme theme) {
+		if (this.theme == theme) {
+			return;
+		}
+		this.theme = theme;
+		generation++;
+	}
+
+	@Override
+	public void setThemeOverride(@Nullable Theme theme) {
+		if (themeOverride == theme) {
+			return;
+		}
+		generation++;
+		themeOverride = theme;
+	}
+
 	protected MutableComponent color(Object componentOrString, int color) {
 		if (componentOrString instanceof Number number) {
 			componentOrString = DisplayHelper.dfCommas.format(number.doubleValue());
@@ -242,7 +267,6 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener<JadeClientCode
 			IWailaConfig.get().save();
 		}
 		config.applyTheme(config.activeTheme);
-		theme.setValue(config.getTheme());
 	}
 
 	@Override
