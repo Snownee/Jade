@@ -13,7 +13,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.platform.InputConstants;
 
 import net.minecraft.client.KeyMapping;
@@ -21,7 +20,7 @@ import snownee.jade.key_extension.KeyExManager;
 import snownee.jade.key_extension.KeyMappingEx;
 import snownee.jade.util.ClientProxy;
 
-@Mixin(KeyMapping.class)
+@Mixin(value = KeyMapping.class, priority = 900)
 public abstract class KeyMappingMixin implements KeyMappingEx {
 
 	@Shadow
@@ -33,6 +32,9 @@ public abstract class KeyMappingMixin implements KeyMappingEx {
 	@Shadow
 	public abstract boolean isUnbound();
 
+	@Shadow
+	@Final
+	private static Map<InputConstants.Key, KeyMapping> MAP;
 	@Unique
 	private boolean active = true;
 	@Unique
@@ -84,19 +86,19 @@ public abstract class KeyMappingMixin implements KeyMappingEx {
 				.toList();
 	}
 
-	@Inject(method = {"click", "set"}, at = @At("HEAD"))
+	@Inject(method = {"click", "set"}, at = @At("HEAD"), order = 800)
 	private static void keyEx$checkDirty(CallbackInfo ci) {
 		KeyExManager.checkDirty();
 	}
 
-	@Inject(method = "click", at = @At("TAIL"))
-	private static void keyEx$click(InputConstants.Key key, CallbackInfo ci, @Local KeyMapping keyMapping) {
-		KeyExManager.click(key, keyMapping);
+	@Inject(method = "click", at = @At("HEAD"))
+	private static void keyEx$click(InputConstants.Key key, CallbackInfo ci) {
+		KeyExManager.click(key, MAP.get(key));
 	}
 
-	@Inject(method = "set", at = @At("TAIL"))
-	private static void keyEx$set(InputConstants.Key key, boolean bl, CallbackInfo ci, @Local KeyMapping keyMapping) {
-		KeyExManager.set(key, bl, keyMapping);
+	@Inject(method = "set", at = @At("HEAD"))
+	private static void keyEx$set(InputConstants.Key key, boolean bl, CallbackInfo ci) {
+		KeyExManager.set(key, bl, MAP.get(key));
 	}
 
 	@Inject(method = "resetMapping", at = @At("HEAD"))
