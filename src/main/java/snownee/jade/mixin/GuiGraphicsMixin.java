@@ -19,8 +19,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTextTooltip;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import snownee.jade.JadeClient;
@@ -76,7 +78,10 @@ public class GuiGraphicsMixin implements JadeGuiGraphics {
 			itemStack = screen.hoveredSlot.getItem();
 		}
 		try {
-			JadeClient.appendModName(list, itemStack);
+			Component name = JadeClient.appendModName(itemStack);
+			if (name != null) {
+				list.add(new ClientTextTooltip(name.getVisualOrderText()));
+			}
 		} catch (Exception ignored) {
 		}
 	}
