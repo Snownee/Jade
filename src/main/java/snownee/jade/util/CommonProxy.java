@@ -245,7 +245,7 @@ public final class CommonProxy implements ModInitializer {
 											be.getBlockState(),
 											Objects.requireNonNull(be.getLevel()),
 											be.getBlockPos(),
-											false);
+											true);
 									if (compound != null) {
 										return compound;
 									}
