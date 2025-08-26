@@ -5,7 +5,7 @@ public interface JadeMobEffectInstance {
 
 	void jade$setUpdateTime(long time);
 
-	long jade$addMs();
+	long jade$addTime();
 
-	void jade$setAddMs(long time);
+	void jade$setAddTime(long time);
 }
