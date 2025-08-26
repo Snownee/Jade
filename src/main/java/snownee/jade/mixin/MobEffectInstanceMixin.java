@@ -18,7 +18,7 @@ public abstract class MobEffectInstanceMixin implements JadeMobEffectInstance {
 	@Unique
 	private long jade$updateTime;
 	@Unique
-	private long jade$addMs; // use millis here because I don't want the animation stopped when the game is paused
+	private long jade$addTime;
 
 	@Override
 	public long jade$updateTime() {
@@ -31,19 +31,20 @@ public abstract class MobEffectInstanceMixin implements JadeMobEffectInstance {
 	}
 
 	@Override
-	public long jade$addMs() {
-		return jade$addMs;
+	public long jade$addTime() {
+		return jade$addTime;
 	}
 
 	@Override
-	public void jade$setAddMs(long ms) {
-		this.jade$addMs = ms;
+	public void jade$setAddTime(long time) {
+		this.jade$addTime = time;
 	}
 
 	@Inject(method = "onEffectAdded", at = @At("HEAD"))
 	private void jade$onEffectAdded(LivingEntity entity, CallbackInfo ci) {
-		jade$setAddMs(System.currentTimeMillis());
-		jade$setUpdateTime(entity.level().getGameTime());
+		long time = System.currentTimeMillis();
+		jade$setAddTime(time);
+		jade$setUpdateTime(time);
 	}
 
 	@WrapMethod(method = "update")

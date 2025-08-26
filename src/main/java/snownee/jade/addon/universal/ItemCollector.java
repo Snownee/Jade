@@ -60,12 +60,12 @@ public class ItemCollector<T> {
 			return null;
 		}
 		long currentVersion = iterator.getVersion(container);
-		long gameTime = accessor.getLevel().getGameTime();
+		long gameTime = System.currentTimeMillis();
 		if (mergedResult != null && iterator.isFinished()) {
 			if (version == currentVersion) {
 				return mergedResult; // content not changed
 			}
-			if (lastTimeFinished + 5 > gameTime) {
+			if (lastTimeFinished + 250 > gameTime) {
 				return mergedResult; // avoid update too frequently
 			}
 			iterator.reset();
