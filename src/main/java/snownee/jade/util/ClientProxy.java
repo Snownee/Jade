@@ -26,6 +26,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.CommonLifecycleEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRenderHandler;
 import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
@@ -341,6 +342,9 @@ public final class ClientProxy implements ClientModInitializer {
 		JadeClient.init();
 		ResourceManagerHelper.get(PackType.SERVER_DATA)
 				.registerReloadListener(HarvestToolProvider.INSTANCE);
+		CommonLifecycleEvents.TAGS_LOADED.register((registryAccess, client) -> {
+			HarvestToolProvider.INSTANCE.invalidateCache();
+		});
 		UsernameCache.load();
 	}
 }

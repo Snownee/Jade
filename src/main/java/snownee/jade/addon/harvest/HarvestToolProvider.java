@@ -180,6 +180,10 @@ public class HarvestToolProvider implements IBlockComponentProvider, KeyedResour
 
 	@Override
 	public void onResourceManagerReload(ResourceManager resourceManager) {
+		invalidateCache();
+	}
+
+	public void invalidateCache() {
 		resultCache.invalidateAll();
 	}
 
