@@ -67,13 +67,13 @@ public class ItemCollector<T> {
 		}
 		boolean sorted = accessor.getServerData().getBooleanOr("SortItems", false);
 		long currentVersion = iterator.getVersion(container);
-		long gameTime = accessor.getLevel().getGameTime();
+		long gameTime = System.currentTimeMillis();
 		List<ViewGroup<ItemStack>> result = sorted ? sortedMergedResult : mergedResult;
 		if (result != null && iterator.isFinished()) {
 			if (version == currentVersion) {
 				return result; // content not changed
 			}
-			if (lastTimeFinished + 5 > gameTime) {
+			if (lastTimeFinished + 250 > gameTime) {
 				return result; // avoid update too frequently
 			}
 			iterator.reset();

@@ -128,7 +128,7 @@ public class StatusEffectsProvider implements StreamServerDataProvider<EntityAcc
 				Effect::new);
 
 		public Effect(MobEffectInstance effect) {
-			this(effect, ((JadeMobEffectInstance) effect).jade$updateTime(), ((JadeMobEffectInstance) effect).jade$addMs());
+			this(effect, ((JadeMobEffectInstance) effect).jade$updateTime(), ((JadeMobEffectInstance) effect).jade$addTime());
 		}
 
 		@Override
