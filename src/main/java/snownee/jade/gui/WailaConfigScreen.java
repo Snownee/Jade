@@ -78,10 +78,7 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 	}
 
 	@Override
-	public OptionsList createOptions() {
-		Objects.requireNonNull(minecraft);
-		OptionsList options = new OptionsList(this, minecraft, width - 120, height - 32, 0, 26, IWailaConfig.get()::save);
-
+	public OptionsList createOptions(OptionsList options) {
 		IWailaConfig.General general = IWailaConfig.get().general();
 		options.title("general");
 		if (CommonProxy.isDevEnv()) {
@@ -214,9 +211,6 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 					w.active = true;
 					Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.PLAYER_LEVELUP, 1.0f));
 				}).size(100, 20).build()));
-		if (ClientProxy.noBuiltInNoKeyConflict()) {
-			options.choices("no_key_conflict", accessibility::getNoKeyConflict, accessibility::setNoKeyConflict);
-		}
 		Component reset = Component.translatable("controls.reset").withStyle(ChatFormatting.RED);
 		Component title = Component.translatable(OptionsList.Entry.makeKey("reset_settings")).withStyle(ChatFormatting.RED);
 		options.add(new OptionButton(

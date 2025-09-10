@@ -45,7 +45,7 @@
 	],
 	"accessWidener": "jade.accesswidener",
 	"depends": {
-		"fabric-api": ">=0.131.2",
+		"fabric-api": ">=0.133.5",
 		"minecraft": ">=1.21.9-"
 	},
 	"custom": {

@@ -1,7 +1,5 @@
 package snownee.jade.gui;
 
-import java.util.Objects;
-
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -12,7 +10,7 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
-import snownee.jade.api.config.IWailaConfig;
+import snownee.jade.api.ui.JadeUI;
 import snownee.jade.gui.config.NotUglyEditBox;
 import snownee.jade.gui.config.OptionButton;
 import snownee.jade.gui.config.OptionsList;
@@ -49,10 +47,7 @@ public class ProfileConfigScreen extends BaseOptionsScreen {
 	}
 
 	@Override
-	public OptionsList createOptions() {
-		Objects.requireNonNull(minecraft);
-		OptionsList options = new OptionsList(this, minecraft, width - 120, height - 32, 0, 26, IWailaConfig.get()::save);
-
+	public OptionsList createOptions(OptionsList options) {
 		WailaConfig.Root root = Jade.rootConfig();
 		options.title("profiles");
 		enabledEntry = options.choices(
@@ -105,9 +100,9 @@ public class ProfileConfigScreen extends BaseOptionsScreen {
 			this.normalTitle = title;
 
 			editBox = new NotUglyEditBox(Minecraft.getInstance().font, 0, 0, 120, 20, title);
-			editBox.paddingLeft = 4;
-			editBox.paddingRight = 12;
-			editBox.paddingTop = 6;
+			editBox.fixedTextX = 4;
+			editBox.fixedTextY = 6;
+			editBox.fixedInnerWidth = editBox.getWidth() - 4 - 12;
 			editBox.backgroundMode = NotUglyEditBox.BackgroundMode.HOVERING;
 			editBox.setMaxLength(WailaConfig.MAX_NAME_LENGTH);
 			editBox.setHint(normalTitle);
@@ -133,7 +128,7 @@ public class ProfileConfigScreen extends BaseOptionsScreen {
 			addWidget(
 					Button.builder(
 							SAVE, $ -> {
-								if (Screen.hasControlDown()) {
+								if (JadeUI.hasControlDown()) {
 									Jade.saveProfile(index);
 									return;
 								}

@@ -12,7 +12,6 @@
 	],
 	"client": [
 		"BossHealthOverlayMixin",
-		"ClientLevelMixin",
 		"CreativeModeInventoryScreenMixin",
 		"FogRendererMixin",
 		"GuiGraphicsMixin",
@@ -20,7 +19,6 @@
 		"LanguageManagerMixin",
 		"PreparedTextBuilderMixin",
 		"key_extension.KeyBindsListMixin",
-		"key_extension.KeyBindsListMixin$KeyEntryMixin",
 		"key_extension.KeyMappingMixin"
 	],
 	"injectors": {

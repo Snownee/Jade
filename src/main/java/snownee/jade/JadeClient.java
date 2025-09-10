@@ -60,7 +60,6 @@ import snownee.jade.api.ui.TooltipAnimation;
 import snownee.jade.gui.HomeConfigScreen;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.theme.ThemeHelper;
-import snownee.jade.key_extension.KeyExManager;
 import snownee.jade.key_extension.KeyMappingEx;
 import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.overlay.WailaTickHandler;
@@ -73,6 +72,7 @@ public final class JadeClient {
 
 	public static final SystemToast.SystemToastId JADE_PLEASE_WAIT = new SystemToast.SystemToastId(2000L);
 	public static final KeyMapping[] profiles = new KeyMapping[4];
+	public static final KeyMapping.Category keyMappingCategory = KeyMapping.Category.register(JadeIds.JADE("main"));
 	private static final WailaTickHandler tickHandler = new WailaTickHandler();
 	public static KeyMapping openConfig;
 	public static KeyMapping showOverlay;
@@ -375,6 +375,5 @@ public final class JadeClient {
 		for (KeyMapping keyMapping : profiles) {
 			KeyMappingEx.setActive(keyMapping, active);
 		}
-		KeyExManager.setGlobalNoConflict(Jade.config().accessibility().getNoKeyConflict());
 	}
 }

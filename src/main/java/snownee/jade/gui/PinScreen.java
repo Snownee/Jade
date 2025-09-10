@@ -2,6 +2,7 @@ package snownee.jade.gui;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import snownee.jade.JadeClient;
 import snownee.jade.impl.ui.BoxElementImpl;
@@ -23,21 +24,24 @@ public class PinScreen extends Screen {
 	}
 
 	@Override
-	public boolean mouseClicked(double x, double y, int button, boolean doubleClick) {
+	public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
 		BoxElementImpl root = JadeClient.tickHandler().rootElement;
 		if (root != null) {
-			return OverlayRenderer.animation.mapMousePosition(x, y, (x0, y0) -> root.mouseClicked(x0, y0, button, doubleClick));
+			return OverlayRenderer.animation.mapMousePosition(
+					event.x(),
+					event.y(),
+					(x0, y0) -> root.mouseClicked(event, doubleClick));
 		}
-		return super.mouseClicked(x, y, button, doubleClick);
+		return super.mouseClicked(event, doubleClick);
 	}
 
 	@Override
-	public boolean mouseReleased(double x, double y, int button) {
+	public boolean mouseReleased(MouseButtonEvent event) {
 		BoxElementImpl root = JadeClient.tickHandler().rootElement;
 		if (root != null) {
-			return OverlayRenderer.animation.mapMousePosition(x, y, (x0, y0) -> root.mouseReleased(x0, y0, button));
+			return OverlayRenderer.animation.mapMousePosition(event, root::mouseReleased);
 		}
-		return super.mouseReleased(x, y, button);
+		return super.mouseReleased(event);
 	}
 
 	@Override
@@ -50,12 +54,12 @@ public class PinScreen extends Screen {
 	}
 
 	@Override
-	public boolean mouseDragged(double x, double y, int button, double deltaX, double deltaY) {
+	public boolean mouseDragged(MouseButtonEvent event, double deltaX, double deltaY) {
 		BoxElementImpl root = JadeClient.tickHandler().rootElement;
 		if (root != null) {
-			return OverlayRenderer.animation.mapMousePosition(x, y, (x0, y0) -> root.mouseDragged(x0, y0, button, deltaX, deltaY));
+			return OverlayRenderer.animation.mapMousePosition(event, $ -> root.mouseDragged($, deltaX, deltaY));
 		}
-		return super.mouseDragged(x, y, button, deltaX, deltaY);
+		return super.mouseDragged(event, deltaX, deltaY);
 	}
 
 	@Override

@@ -162,8 +162,6 @@
 	"config.jade.accessibility": "Доступність",
 	"config.jade.narrate_keys": "Прив'язки клавіш диктора",
 	"config.jade.danger_zone": "Небезпечна зона",
-	"config.jade.no_key_conflict": "Немає конфлікту ключів",
-	"config.jade.no_key_conflict_desc": "Дозволити прив'язувати кілька прив'язок клавіш до одного ключа. Це може підтримувати не всі прив'язки клавіш.",
 	"config.jade.reset_settings": "Скинути налаштування",
 	"config.jade.reset_settings.confirm": "Ви впевнені, що хочете скинути налаштування?",
 	"config.jade.reload_plugins": "Перезавантажити плаґіни",

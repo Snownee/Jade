@@ -10,11 +10,12 @@ import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetTooltipHolder;
 import net.minecraft.client.gui.components.events.GuiEventListener;
-import net.minecraft.client.gui.navigation.CommonInputs;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.gui.navigation.ScreenDirection;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -41,11 +42,11 @@ public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
 		if (focused != null && minecraft.getLastInputType().isKeyboard()) {
 			current = children().indexOf(focused);
 		}
-		float top = getY() + 4 - (float) this.scrollAmount() + current * this.itemHeight + this.headerHeight;
+		float top = getY() + 4 - (float) this.scrollAmount() + current * this.defaultEntryHeight;
 		int left = getRowLeft() + 2;
 		guiGraphics.pose().pushMatrix();
 		guiGraphics.pose().translate(0, top);
-		guiGraphics.fill(left, 0, left + 2, itemHeight - 4, 0xFFFFFFFF);
+		guiGraphics.fill(left, 0, left + 2, defaultEntryHeight - 4, 0xFFFFFFFF);
 		guiGraphics.pose().popMatrix();
 	}
 
@@ -60,7 +61,8 @@ public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
 	}
 
 	@Override
-	protected void renderSelection(GuiGraphics guiGraphics, int i, int j, int k, int l, int m) {
+	protected void renderSelection(GuiGraphics guiGraphics, Entry entry, int i) {
+		// NO-OP
 	}
 
 	public void addEntry(OptionsList.Title entry) {
@@ -141,37 +143,28 @@ public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
 		}
 
 		@Override
-		public void render(
-				GuiGraphics guiGraphics,
-				int index,
-				int rowTop,
-				int rowLeft,
-				int width,
-				int height,
-				int mouseX,
-				int mouseY,
-				boolean hovered,
-				float deltaTime) {
+		public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovered, float deltaTime) {
 			guiGraphics.drawString(
 					title.client.font,
 					title.getTitle().getString(),
-					rowLeft + 10,
-					rowTop + (height / 2) - (title.client.font.lineHeight / 2),
+					getContentX() + 10,
+					getContentYMiddle() - (title.client.font.lineHeight / 2),
 					0xFFFFFFFF);
 			if (isFocused() && parent.minecraft.getLastInputType().isKeyboard()) {
 				int color = 0xFFAAAAAA;
-				int left = rowLeft + 2;
-				int right = rowLeft + width - 2;
-				int bottom = rowTop + height;
-				guiGraphics.fill(left, rowTop, right, rowTop + 1, color);
+				int left = getContentX() + 2;
+				int right = getContentRight() - 2;
+				int top = getContentY();
+				int bottom = getContentBottom();
+				guiGraphics.fill(left, top, right, top + 1, color);
 				guiGraphics.fill(left, bottom, right, bottom - 1, color);
-				guiGraphics.fill(left, rowTop, left + 1, bottom, color);
-				guiGraphics.fill(right, rowTop, right - 1, bottom, color);
+				guiGraphics.fill(left, top, left + 1, bottom, color);
+				guiGraphics.fill(right, top, right - 1, bottom, color);
 			} else if (parent.options.currentTitle == title) {
 				if (!parent.isMouseOver(mouseX, mouseY)) {
-					parent.ensureVisible(this);
+					parent.centerScrollOn(this);
 				}
-				parent.current = index;
+				parent.current = parent.children().indexOf(this);
 			}
 			if (tooltip != null) {
 				tooltip.refreshTooltipForNextRenderPass(
@@ -180,21 +173,22 @@ public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
 						mouseY,
 						isMouseOver(mouseX, mouseY),
 						isFocused(),
-						new ScreenRectangle(rowLeft, rowTop, width, height));
+						getRectangle());
 			}
 		}
 
 		@Override
-		public boolean mouseClicked(double mouseX, double mouseY, int button, boolean doubleClick) {
-			if (button == 0) {
+		public boolean mouseClicked(MouseButtonEvent event, boolean bl) {
+			if (event.button() == 0) {
 				onPress();
+				return true;
 			}
-			return true;
+			return super.mouseClicked(event, bl);
 		}
 
 		@Override
-		public boolean keyPressed(int i, int j, int k) {
-			if (CommonInputs.selected(i)) {
+		public boolean keyPressed(KeyEvent keyEvent) {
+			if (keyEvent.isSelection()) {
 				this.onPress();
 				return true;
 			}

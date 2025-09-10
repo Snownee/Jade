@@ -8,6 +8,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.layouts.LayoutElement;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import snownee.jade.JadeInternals;
 import snownee.jade.api.ui.Element;
@@ -107,8 +108,8 @@ public class SpacerElement extends ResizeableElement implements GuiEventListener
 	}
 
 	@Override
-	public boolean mouseClicked(double x, double y, int button, boolean doubleClick) {
-		if (button == 0 && onClick != null && isMouseOver(x, y)) {
+	public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean bl) {
+		if (mouseButtonEvent.button() == 0 && onClick != null && isMouseOver(mouseButtonEvent.x(), mouseButtonEvent.y())) {
 			//noinspection unchecked
 			return ((Predicate<LayoutElement>) onClick).test(wrapped);
 		}

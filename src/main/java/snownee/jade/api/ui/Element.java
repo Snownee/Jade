@@ -19,7 +19,6 @@ import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.narration.NarrationSupplier;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -183,7 +182,7 @@ public abstract class Element implements Renderable, LayoutElement, NarrationSup
 
 	public void renderDebug(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks, RenderDebugContext context) {
 		JadeInternals.getDisplayHelper().drawBorder(graphics, getRectangle(), 1, 0x88FF0000, true);
-		if (Screen.hasAltDown() && getTag() != null) {
+		if (JadeUI.hasAltDown() && getTag() != null) {
 			int centerX = context.root.getX() + context.root.getWidth() / 2;
 			int x = getX();
 			int y = getY();

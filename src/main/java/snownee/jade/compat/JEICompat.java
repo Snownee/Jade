@@ -11,14 +11,14 @@ import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.api.runtime.IRecipesGui;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import snownee.jade.Jade;
 import snownee.jade.JadeClient;
 import snownee.jade.api.Accessor;
+import snownee.jade.api.JadeIds;
 
 @JeiPlugin
 public class JEICompat implements IModPlugin {
 
-	public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(Jade.ID, "main");
+	public static final ResourceLocation ID = JadeIds.JADE("main");
 	private static IJeiRuntime runtime;
 	private static IJeiHelpers helpers;
 

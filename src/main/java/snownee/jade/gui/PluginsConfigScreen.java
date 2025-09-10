@@ -38,16 +38,8 @@ public class PluginsConfigScreen extends PreviewOptionsScreen {
 	}
 
 	@Override
-	public OptionsList createOptions() {
-		OptionsList options = new OptionsList(
-				this,
-				Objects.requireNonNull(minecraft),
-				width - 120,
-				height - 32,
-				0,
-				26,
-				IWailaConfig.get()::save);
-		boolean noteServerFeature = minecraft.level == null || IWailaConfig.get().general().isDebug() ||
+	public OptionsList createOptions(OptionsList options) {
+		boolean noteServerFeature = Objects.requireNonNull(minecraft).level == null || IWailaConfig.get().general().isDebug() ||
 				!WailaClientRegistration.instance().isServerConnected();
 		BiConsumer<ResourceLocation, Object> setter = (key, value) -> {
 			IWailaConfig.get().plugin().set(key, value);

@@ -13,6 +13,7 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
+import snownee.jade.util.ClientProxy;
 
 public class PlayerHeadProvider implements IBlockComponentProvider {
 	public static final PlayerHeadProvider INSTANCE = new PlayerHeadProvider();
@@ -20,11 +21,18 @@ public class PlayerHeadProvider implements IBlockComponentProvider {
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		if (accessor.getBlockEntity() instanceof SkullBlockEntity tile) {
+			if (tile.customName != null) {
+				tooltip.replace(JadeIds.CORE_OBJECT_NAME, IThemeHelper.get().title(tile.customName));
+				return;
+			}
 			ResolvableProfile profile = tile.getOwnerProfile();
-			if (profile == null || !profile.isResolved()) {
+			if (profile == null) {
 				return;
 			}
 			String name = profile.name().orElse(null);
+			if (name == null) {
+				name = ClientProxy.lookupPlayerName(profile.partialProfile().id());
+			}
 			if (StringUtils.isBlank(name)) {
 				return;
 			}

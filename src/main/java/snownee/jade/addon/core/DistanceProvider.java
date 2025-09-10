@@ -3,7 +3,6 @@ package snownee.jade.addon.core;
 import java.text.DecimalFormat;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.network.chat.Component;
@@ -76,7 +75,7 @@ public abstract class DistanceProvider implements IToggleableProvider {
 		String distanceVal = distance ? distance(accessor) : null;
 		String distanceMsg = distance ? JadeClient.formatString("narration.jade.distance", distanceVal) : null;
 		if (config.get(JadeIds.CORE_COORDINATES)) {
-			if (config.get(JadeIds.CORE_REL_COORDINATES) && Screen.hasControlDown()) {
+			if (config.get(JadeIds.CORE_REL_COORDINATES) && JadeUI.hasControlDown()) {
 				tooltip.add(xyz(pos.subtract(BlockPos.containing(accessor.getPlayer().getEyePosition()))));
 			} else {
 				tooltip.add(xyz(pos));

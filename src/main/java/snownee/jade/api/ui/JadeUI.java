@@ -5,7 +5,10 @@ import java.util.function.Consumer;
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.blaze3d.platform.InputConstants;
 
+import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -16,6 +19,8 @@ import snownee.jade.api.view.ProgressView;
 import snownee.jade.impl.ui.JadeUIInternal;
 
 public final class JadeUI {
+	private static final boolean ON_OSX = Util.getPlatform() == Util.OS.OSX;
+
 	public static boolean isEmptyElement(@Nullable Element element) {
 		return JadeUIInternal.isEmptyElement(element);
 	}
@@ -119,5 +124,24 @@ public final class JadeUI {
 
 	public static boolean isPinned() {
 		return JadeUIInternal.isPinned();
+	}
+
+	public static boolean hasControlDown() {
+		if (ON_OSX) {
+			return InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), 343) ||
+					InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), 347);
+		}
+		return InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), 341) ||
+				InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), 345);
+	}
+
+	public static boolean hasShiftDown() {
+		return InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), 340) ||
+				InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), 344);
+	}
+
+	public static boolean hasAltDown() {
+		return InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), 342) ||
+				InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), 346);
 	}
 }

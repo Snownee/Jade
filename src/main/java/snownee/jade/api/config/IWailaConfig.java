@@ -236,9 +236,5 @@ public interface IWailaConfig {
 		void setNarrateKeys(boolean narrateKeys);
 
 		boolean getNarrateKeys();
-
-		void setNoKeyConflict(boolean noKeyConflict);
-
-		boolean getNoKeyConflict();
 	}
 }

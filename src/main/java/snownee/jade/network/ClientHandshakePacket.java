@@ -41,7 +41,7 @@ public record ClientHandshakePacket(String protocolVersion) implements CustomPac
 			Map<ResourceLocation, Object> configs = ServerPluginConfig.instance().values();
 			List<Block> shearableBlocks = LootTableMineableCollector.getShearableBlocks();
 			if (!configs.isEmpty()) {
-				Jade.LOGGER.debug("Syncing config to {} ({})", player.getGameProfile().getName(), player.getGameProfile().getId());
+				Jade.LOGGER.debug("Syncing config to {} ({})", player.getGameProfile().name(), player.getGameProfile().id());
 			}
 			List<ResourceLocation> blockProviderIds = WailaCommonRegistration.instance().blockDataProviders.mappedIds();
 			List<ResourceLocation> entityProviderIds = WailaCommonRegistration.instance().entityDataProviders.mappedIds();

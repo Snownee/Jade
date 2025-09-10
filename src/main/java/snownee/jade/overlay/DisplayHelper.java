@@ -71,8 +71,6 @@ public class DisplayHelper implements IDisplayHelper {
 			int x = smaller ? 32 : 22;
 			int y = smaller ? 23 : 13;
 			graphics.pose().pushMatrix();
-			//FIXME
-//			graphics.pose().translate(0.0f, 0.0f, 200.0f);
 			graphics.pose().scale(scale);
 			int color = IThemeHelper.get().theme().text.itemAmountColor();
 			graphics.drawString(font, s, i + x - font.width(s), j + y, color, true);

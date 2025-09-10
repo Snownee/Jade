@@ -31,21 +31,11 @@ public class OptionButton extends OptionsList.Entry {
 	}
 
 	@Override
-	public void render(
-			GuiGraphics guiGraphics,
-			int index,
-			int rowTop,
-			int rowLeft,
-			int width,
-			int height,
-			int mouseX,
-			int mouseY,
-			boolean hovered,
-			float deltaTime) {
+	public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovered, float deltaTime) {
 		if (shouldRenderTitle()) {
-			guiGraphics.drawString(client.font, title, rowLeft + 10, rowTop + (height / 2) - (client.font.lineHeight / 2), 0xFFFFFFFF);
+			guiGraphics.drawString(client.font, title, getContentX() + 10, getContentYMiddle() - (client.font.lineHeight / 2), 0xFFFFFFFF);
 		}
-		super.render(guiGraphics, index, rowTop, rowLeft, width, height, mouseX, mouseY, hovered, deltaTime);
+		super.renderContent(guiGraphics, mouseX, mouseY, hovered, deltaTime);
 	}
 
 	protected boolean shouldRenderTitle() {

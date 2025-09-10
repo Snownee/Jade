@@ -8,11 +8,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.llamalad7.mixinextras.sugar.Local;
-import com.mojang.blaze3d.font.GlyphInfo;
 
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.font.glyphs.BakeableGlyph;
+import net.minecraft.client.gui.font.glyphs.BakedGlyph;
 import net.minecraft.network.chat.Style;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.theme.IThemeHelper;
@@ -32,18 +30,13 @@ public class PreparedTextBuilderMixin {
 	}
 
 	@Inject(
-			method = "accept(ILnet/minecraft/network/chat/Style;Lnet/minecraft/client/gui/font/glyphs/BakeableGlyph;)Z",
+			method = "accept(ILnet/minecraft/network/chat/Style;Lnet/minecraft/client/gui/font/glyphs/BakedGlyph;)Z",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/font/glyphs/BakeableGlyph;baked()Lnet/minecraft/client/gui/font/glyphs/BakedGlyph;"),
+					target = "Lnet/minecraft/network/chat/Style;isBold()Z"),
 			cancellable = true)
-	private void jade$accept(
-			int i,
-			Style style,
-			BakeableGlyph bakeableGlyph,
-			CallbackInfoReturnable<Boolean> cir,
-			@Local GlyphInfo glyphInfo) {
-		if (this$0.getClass() == JadeFont.class && JadeFont.isFilteredGlyph(glyphInfo, this$0.lineHeight)) {
+	private void jade$accept(int i, Style style, BakedGlyph bakedGlyph, CallbackInfoReturnable<Boolean> cir) {
+		if (this$0.getClass() == JadeFont.class && JadeFont.isFilteredGlyph(bakedGlyph, this$0.lineHeight)) {
 			cir.setReturnValue(false);
 		}
 	}

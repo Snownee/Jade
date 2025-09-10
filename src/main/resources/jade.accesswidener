@@ -35,8 +35,8 @@ accessible field net/minecraft/client/gui/Font provider Lnet/minecraft/client/gu
 accessible method net/minecraft/client/gui/Font getGlyphSource (Lnet/minecraft/network/chat/FontDescription;)Lnet/minecraft/client/gui/GlyphSource;
 accessible field net/minecraft/client/gui/Font splitter Lnet/minecraft/client/StringSplitter;
 mutable field net/minecraft/client/gui/Font splitter Lnet/minecraft/client/StringSplitter;
-accessible field net/minecraft/client/gui/font/glyphs/BakedGlyph up F
-accessible field net/minecraft/client/gui/font/glyphs/BakedGlyph down F
+accessible field net/minecraft/client/gui/font/glyphs/BakedSheetGlyph up F
+accessible field net/minecraft/client/gui/font/glyphs/BakedSheetGlyph down F
 accessible class net/minecraft/client/gui/font/providers/BitmapProvider$Glyph
 
 accessible field net/minecraft/client/gui/components/CycleButton onValueChange Lnet/minecraft/client/gui/components/CycleButton$OnValueChange;
@@ -46,6 +46,14 @@ accessible field net/minecraft/client/gui/screens/inventory/CreativeModeInventor
 accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen hoveredSlot Lnet/minecraft/world/inventory/Slot;
 
 accessible field net/minecraft/client/gui/components/EditBox SPRITES Lnet/minecraft/client/gui/components/WidgetSprites;
+accessible method net/minecraft/client/gui/components/EditBox updateTextPosition ()V
+extendable method net/minecraft/client/gui/components/EditBox updateTextPosition ()V
+accessible field net/minecraft/client/gui/components/EditBox textX I
+accessible field net/minecraft/client/gui/components/EditBox textY I
+accessible method net/minecraft/client/gui/components/EditBox isEditable ()Z
+accessible field net/minecraft/client/gui/components/EditBox font Lnet/minecraft/client/gui/Font;
+accessible field net/minecraft/client/gui/components/EditBox textColor I
+accessible field net/minecraft/client/gui/components/EditBox textColorUneditable I
 
 accessible field net/minecraft/world/level/block/entity/CampfireBlockEntity cookingProgress [I
 accessible field net/minecraft/world/level/block/entity/CampfireBlockEntity cookingTime [I
@@ -93,3 +101,5 @@ accessible field net/minecraft/client/KeyMapping clickCount I
 
 accessible field net/minecraft/world/entity/animal/coppergolem/CopperGolem IGNORE_WEATHERING_TICK J
 accessible field net/minecraft/world/entity/animal/coppergolem/CopperGolem nextWeatheringTick J
+
+accessible field net/minecraft/world/level/block/entity/SkullBlockEntity customName Lnet/minecraft/network/chat/Component;

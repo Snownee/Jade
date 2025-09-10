@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.Style;
@@ -86,11 +87,11 @@ public class TextElementImpl extends TextElement implements GuiEventListener {
 	}
 
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button, boolean doubleClick) {
+	public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
 		Screen screen = Minecraft.getInstance().screen;
 		if (screen != null) {
 			//TODO scale
-			Style style = DisplayHelper.font().getSplitter().componentStyleAtWidth(text, Mth.floor(mouseX - textLeft()));
+			Style style = DisplayHelper.font().getSplitter().componentStyleAtWidth(text, Mth.floor(event.x() - textLeft()));
 			if (style != null) {
 				return screen.handleComponentClicked(style);
 			}

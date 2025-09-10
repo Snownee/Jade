@@ -5,6 +5,8 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.mojang.blaze3d.platform.cursor.CursorTypes;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -78,6 +80,9 @@ public class CreditButton extends Button {
 		guiGraphics.drawString(font, credit, 0, 0, 0xFFFFFF | (int) alpha << 24);
 		guiGraphics.pose().popMatrix();
 		oldHovered = hovered;
+		if (isHovered()) {
+			guiGraphics.requestCursor(CursorTypes.POINTING_HAND);
+		}
 	}
 
 	public void showTranslators() {

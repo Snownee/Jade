@@ -2,7 +2,7 @@ package snownee.jade.gui;
 
 import java.util.Objects;
 
-import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.platform.cursor.CursorTypes;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -11,6 +11,8 @@ import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -18,6 +20,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import snownee.jade.Jade;
 import snownee.jade.api.config.IWailaConfig;
+import snownee.jade.api.ui.JadeUI;
 import snownee.jade.api.ui.Rect2f;
 import snownee.jade.gui.config.OptionsList;
 import snownee.jade.overlay.DisplayHelper;
@@ -58,7 +61,7 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 	}
 
 	private static float maybeSnap(float value) {
-		if (!Screen.hasControlDown() && value > 0.475f && value < 0.525f) {
+		if (!JadeUI.hasControlDown() && value > 0.475f && value < 0.525f) {
 			return 0.5f;
 		}
 		return value;
@@ -100,24 +103,24 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 	}
 
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button, boolean doubleClick) {
+	public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
 		if (!adjustingPosition) {
-			return super.mouseClicked(mouseX, mouseY, button, doubleClick);
+			return super.mouseClicked(event, doubleClick);
 		}
 
 		Objects.requireNonNull(minecraft);
 		Rect2f rect = OverlayRenderer.animation.expectedRect;
-		if (rect.contains((int) mouseX, (int) mouseY)) {
+		if (rect.contains((int) event.x(), (int) event.y())) {
 			setDragging(true);
 			adjustDragging = true;
 			float centerX = rect.getX() + rect.getWidth() / 2F;
 			float centerY = rect.getY() + rect.getHeight() / 2F;
-			dragOffsetX = mouseX - centerX;
-			dragOffsetY = mouseY - centerY;
+			dragOffsetX = event.x() - centerX;
+			dragOffsetY = event.y() - centerY;
 		} else {
 			minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0f));
-			int xIndex = Mth.clamp((int) (mouseX / (width / 3D)), 0, 2);
-			int yIndex = Mth.clamp((int) (mouseY / (height / 3D)), 0, 2);
+			int xIndex = Mth.clamp((int) (event.x() / (width / 3D)), 0, 2);
+			int yIndex = Mth.clamp((int) (event.y() / (height / 3D)), 0, 2);
 			if (xIndex == 1 && yIndex == 1) {
 				adjustingPosition = false;
 				adjustDragging = false;
@@ -133,13 +136,13 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 	}
 
 	@Override
-	public boolean mouseReleased(double d, double e, int i) {
+	public boolean mouseReleased(MouseButtonEvent event) {
 		if (adjustingPosition) {
 			setDragging(false);
 			adjustDragging = false;
 			return true;
 		}
-		return super.mouseReleased(d, e, i);
+		return super.mouseReleased(event);
 	}
 
 	@Override
@@ -151,32 +154,32 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 	}
 
 	@Override
-	public boolean keyPressed(int i, int j, int k) {
+	public boolean keyPressed(KeyEvent keyEvent) {
 		if (adjustingPosition) {
 			return true;
 		}
-		return super.keyPressed(i, j, k);
+		return super.keyPressed(keyEvent);
 	}
 
 	@Override
-	public boolean keyReleased(int i, int j, int k) {
+	public boolean keyReleased(KeyEvent keyEvent) {
 		Objects.requireNonNull(minecraft);
 		if (adjustingPosition) {
-			if (i == InputConstants.KEY_ESCAPE) {
+			if (keyEvent.isEscape()) {
 				adjustingPosition = false;
 				adjustDragging = false;
 				minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0f));
 			}
 			return true;
 		}
-		return super.keyReleased(i, j, k);
+		return super.keyReleased(keyEvent);
 	}
 
 	@Override
-	public boolean mouseDragged(double d, double e, int i, double f, double g) {
+	public boolean mouseDragged(MouseButtonEvent event, double d, double e) {
 		if (adjustingPosition && adjustDragging) {
-			float centerX = (float) d - (float) dragOffsetX;
-			float centerY = (float) e - (float) dragOffsetY;
+			float centerX = (float) event.x() - (float) dragOffsetX;
+			float centerY = (float) event.y() - (float) dragOffsetY;
 			Rect2f rect = OverlayRenderer.animation.expectedRect;
 			float rectWidth = rect.getWidth();
 			float rectHeight = rect.getHeight();
@@ -192,7 +195,7 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 			overlay.setAnchorY(anchorY);
 			return true;
 		}
-		return super.mouseDragged(d, e, i, f, g);
+		return super.mouseDragged(event, d, e);
 	}
 
 	@Override
@@ -211,6 +214,9 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 
 			IWailaConfig.Overlay config = IWailaConfig.get().overlay();
 			Rect2f rect = OverlayRenderer.animation.expectedRect;
+			if (rect.contains(mouseX, mouseY)) {
+				guiGraphics.requestCursor(CursorTypes.RESIZE_ALL);
+			}
 			if (IWailaConfig.get().general().isDebug()) {
 				int anchorX = (int) (rect.getX() + rect.getWidth() * config.getAnchorX());
 				int anchorY = (int) (rect.getY() + rect.getHeight() * config.getAnchorY());

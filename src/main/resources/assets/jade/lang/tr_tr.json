@@ -162,8 +162,6 @@
  "config.jade.accessibility": "Erişilebilirlik",
  "config.jade.narrate_keys": "Tuş Atamalarını Anlat",
  "config.jade.danger_zone": "Tehlike Bölgesi",
- "config.jade.no_key_conflict": "Tuş Çakışması Yok",
- "config.jade.no_key_conflict_desc": "Birden fazla tuş atamasının aynı tuşa atanmasına izin ver. Bu, tüm tuş atamalarını desteklemeyebilir.",
  "config.jade.reset_settings": "Ayarları Sıfırla",
  "config.jade.reset_settings.confirm": "Ayarları sıfırlamak istediğinize emin misiniz?",
  "config.jade.reload_plugins": "Eklentileri Yeniden Yükle",

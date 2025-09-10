@@ -18,7 +18,6 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import snownee.jade.key_extension.KeyExManager;
 import snownee.jade.key_extension.KeyMappingEx;
-import snownee.jade.util.ClientProxy;
 
 @Mixin(value = KeyMapping.class, priority = 900)
 public abstract class KeyMappingMixin implements KeyMappingEx {
@@ -27,18 +26,13 @@ public abstract class KeyMappingMixin implements KeyMappingEx {
 	@Final
 	private static Map<String, KeyMapping> ALL;
 	@Shadow
-	private InputConstants.Key key;
+	protected InputConstants.Key key;
 
 	@Shadow
 	public abstract boolean isUnbound();
 
-	@Shadow
-	@Final
-	private static Map<InputConstants.Key, KeyMapping> MAP;
 	@Unique
 	private boolean active = true;
-	@Unique
-	private boolean noConflict;
 
 	@Override
 	public boolean keyEx$isActive() {
@@ -49,20 +43,6 @@ public abstract class KeyMappingMixin implements KeyMappingEx {
 	public void keyEx$setActive(boolean active) {
 		boolean changed = this.active != active;
 		this.active = active;
-		if (changed && !isUnbound()) {
-			KeyExManager.markDirty();
-		}
-	}
-
-	@Override
-	public boolean keyEx$isNoConflict() {
-		return noConflict || KeyExManager.isGlobalNoConflict();
-	}
-
-	@Override
-	public void keyEx$setNoConflict(boolean noConflict) {
-		boolean changed = this.noConflict != noConflict;
-		this.noConflict = noConflict;
 		if (changed && !isUnbound()) {
 			KeyExManager.markDirty();
 		}
@@ -81,24 +61,13 @@ public abstract class KeyMappingMixin implements KeyMappingEx {
 	@WrapOperation(method = "resetMapping", at = @At(value = "INVOKE", target = "Ljava/util/Map;values()Ljava/util/Collection;"))
 	private static Collection<KeyMapping> keyEx$resetMapping(Map<String, KeyMapping> map, Operation<Collection<KeyMapping>> original) {
 		return original.call(map).stream()
-				.filter($ -> ((KeyMappingEx) $).keyEx$isActive() &&
-						(!((KeyMappingEx) $).keyEx$isNoConflict() || !ClientProxy.noBuiltInNoKeyConflict()))
+				.filter($ -> ((KeyMappingEx) $).keyEx$isActive())
 				.toList();
 	}
 
 	@Inject(method = {"click", "set"}, at = @At("HEAD"), order = 800)
 	private static void keyEx$checkDirty(CallbackInfo ci) {
 		KeyExManager.checkDirty();
-	}
-
-	@Inject(method = "click", at = @At("HEAD"))
-	private static void keyEx$click(InputConstants.Key key, CallbackInfo ci) {
-		KeyExManager.click(key, MAP.get(key));
-	}
-
-	@Inject(method = "set", at = @At("HEAD"))
-	private static void keyEx$set(InputConstants.Key key, boolean bl, CallbackInfo ci) {
-		KeyExManager.set(key, bl, MAP.get(key));
 	}
 
 	@Inject(method = "resetMapping", at = @At("HEAD"))

@@ -42,7 +42,7 @@ public class ExampleComponentProvider implements IBlockComponentProvider {
 		Component test1 = Component.literal("1").withStyle(Style.EMPTY.withHoverEvent(new HoverEvent.ShowText(Component.literal("1"))));
 		Component test2 = Component.literal("2")
 				.withStyle(Style.EMPTY.withHoverEvent(new HoverEvent.ShowItem(Items.DIAMOND.getDefaultInstance())));
-		Component test3 = Component.literal("3")
+		Component test3 = Component.translatable("container.dropper")
 				.withStyle(Style.EMPTY.withClickEvent(new ClickEvent.CopyToClipboard("test")));
 		tooltip.add(JadeUI.text(test1).flexGrow(1));
 		tooltip.append(JadeUI.text(test2).flexGrow(1));

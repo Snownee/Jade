@@ -16,6 +16,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.gui.navigation.ScreenAxis;
+import net.minecraft.client.gui.navigation.ScreenDirection;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -24,6 +25,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import snownee.jade.JadeClient;
 import snownee.jade.api.JadeIds;
+import snownee.jade.api.config.IWailaConfig;
+import snownee.jade.api.ui.JadeUI;
 import snownee.jade.gui.config.BelowOrAboveListEntryTooltipPositioner;
 import snownee.jade.gui.config.NotUglyEditBox;
 import snownee.jade.gui.config.OptionsList;
@@ -54,13 +57,14 @@ public abstract class BaseOptionsScreen extends Screen {
 		if (options != null) {
 			options.removed();
 		}
-		options = createOptions();
+		options = createOptions(new OptionsList(this, minecraft, 120, 0, width - 120, height - 32, 26, IWailaConfig.get()::save));
 		options.setX(120);
 		optionsNav = new OptionsNav(options, 120, height - 32 - 18, 18, 18);
 		searchBox = new NotUglyEditBox(font, 0, 0, 120, 18, searchBox, Component.translatable("gui.jade.search")) {
 			@Override
 			public @Nullable ComponentPath nextFocusPath(FocusNavigationEvent event) {
-				if (event instanceof FocusNavigationEvent.ArrowNavigation arrow && arrow.direction().getAxis() == ScreenAxis.HORIZONTAL) {
+				if (event instanceof FocusNavigationEvent.ArrowNavigation(ScreenDirection direction) &&
+						direction.getAxis() == ScreenAxis.HORIZONTAL) {
 					return null;
 				}
 				if (event instanceof FocusNavigationEvent.InitialFocus) {
@@ -69,22 +73,24 @@ public abstract class BaseOptionsScreen extends Screen {
 				return super.nextFocusPath(event);
 			}
 		};
-		ResourceLocation searchBoxBackground = JadeIds.JADE("search_box_background");
-		searchBox.background = new WidgetSprites(searchBoxBackground, searchBoxBackground);
 		searchBox.setHint(Component.translatable("gui.jade.search.hint"));
-		searchBox.responder = s -> {
+		searchBox.setResponder(s -> {
 			options.updateSearch(s);
 			optionsNav.refresh();
-		};
-		searchBox.paddingLeft = 12;
-		searchBox.paddingTop = 6;
-		searchBox.paddingRight = 18;
+		});
+		searchBox.fixedTextX = 12;
+		searchBox.fixedTextY = 6;
+		searchBox.fixedInnerWidth = searchBox.getWidth() - 12 - 18;
+		ResourceLocation searchBoxBackground = JadeIds.JADE("search_box_background");
+		searchBox.background = new WidgetSprites(searchBoxBackground, searchBoxBackground);
 		searchBox.alwaysRenderCross = true;
+		searchBox.updateTextPosition();
 		addRenderableWidget(optionsNav);
 		addRenderableWidget(searchBox);
 		addRenderableWidget(options);
 
-		searchBox.responder.accept(searchBox.getValue());
+		options.updateSearch(searchBox.getValue());
+		optionsNav.refresh();
 		options.forceSetScrollAmount(scroll);
 
 		saveButton = addRenderableWidget(Button.builder(
@@ -95,7 +101,7 @@ public abstract class BaseOptionsScreen extends Screen {
 						minecraft.setScreen(parent);
 					} else {
 						changeFocus(ComponentPath.path(options.invalidEntry.getFirstWidget(), options.invalidEntry, options, this));
-						options.ensureVisible(options.invalidEntry);
+						options.scrollToEntry(options.invalidEntry);
 					}
 				}).bounds(width - 100, height - 25, 90, 20).build());
 		if (canceller != null) {
@@ -118,7 +124,7 @@ public abstract class BaseOptionsScreen extends Screen {
 			if (mouseX >= valueX && mouseX < valueX + entry.getTextWidth()) {
 				List<Component> descs = Lists.newArrayListWithExpectedSize(3);
 				descs.addAll(entry.getDescription());
-				if (hasShiftDown()) {
+				if (JadeUI.hasShiftDown()) {
 					descs.addAll(entry.getDescriptionOnShift());
 				}
 				if (!descs.isEmpty()) {
@@ -187,7 +193,7 @@ public abstract class BaseOptionsScreen extends Screen {
 		return newComponent;
 	}
 
-	public abstract OptionsList createOptions();
+	public abstract OptionsList createOptions(OptionsList optionsList);
 
 	@Override
 	public boolean mouseScrolled(double mouseX, double mouseY, double deltaX, double deltaY) {

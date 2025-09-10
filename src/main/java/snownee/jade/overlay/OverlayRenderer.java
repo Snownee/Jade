@@ -7,7 +7,6 @@ import com.mojang.blaze3d.platform.Window;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.util.Mth;
 import net.minecraft.util.profiling.Profiler;
 import net.minecraft.world.item.ItemStack;
@@ -194,7 +193,7 @@ public class OverlayRenderer {
 			}
 		}
 
-		boolean renderDebug = IWailaConfig.get().general().isDebug() && Screen.hasControlDown();
+		boolean renderDebug = IWailaConfig.get().general().isDebug() && JadeUI.hasControlDown();
 		if (renderDebug) {
 			Rect2f bossBarRect = ClientProxy.getBossBarRect();
 			if (bossBarRect != null) {

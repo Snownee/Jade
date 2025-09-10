@@ -50,6 +50,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.TriState;
 import net.minecraft.world.Container;
@@ -69,7 +70,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.component.CustomModelData;
-import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
@@ -114,18 +114,12 @@ public final class CommonProxy implements ModInitializer {
 	public static boolean hasTechRebornEnergy = isModLoaded("team_reborn_energy");
 
 	@Nullable
-	public static String getLastKnownUsername(@Nullable UUID uuid) {
+	public static String lookupUsername(@Nullable UUID uuid, MinecraftServer server) {
 		if (uuid == null) {
 			return null;
 		}
-		ResolvableProfile gameProfile = new ResolvableProfile(new GameProfile(uuid, "")).pollResolve();
-		if (gameProfile != null) {
-			return gameProfile.gameProfile().getName();
-		}
-		if (isPhysicallyClient()) {
-			return UsernameCache.getLastKnownUsername(uuid);
-		}
-		return null;
+		GameProfile profile = server.services().profileResolver().fetchById(uuid).orElse(null);
+		return profile == null ? null : profile.name();
 	}
 
 	public static File getConfigDirectory() {

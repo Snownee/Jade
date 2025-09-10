@@ -48,7 +48,7 @@ public abstract class MobSpawnerProvider implements IToggleableProvider {
 		@Override
 		public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 			MinecartSpawner spawner = (MinecartSpawner) accessor.getEntity();
-			MutableComponent name = ObjectNameProvider.ForEntity.getEntityName(spawner, false).copy();
+			MutableComponent name = ObjectNameProvider.getEntityName(spawner, false).copy();
 			appendTooltip(
 					tooltip,
 					spawner.getSpawner().getOrCreateDisplayEntity(accessor.getLevel(), accessor.getEntity().blockPosition()),

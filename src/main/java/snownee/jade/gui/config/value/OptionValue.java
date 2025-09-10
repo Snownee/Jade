@@ -42,27 +42,16 @@ public abstract class OptionValue<T> extends OptionsList.Entry {
 	}
 
 	@Override
-	public final void render(
-			GuiGraphics guiGraphics,
-			int index,
-			int rowTop,
-			int rowLeft,
-			int width,
-			int height,
-			int mouseX,
-			int mouseY,
-			boolean hovered,
-			float deltaTime) {
+	public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovered, float deltaTime) {
 		AbstractWidget widget = getFirstWidget();
 		Component title0 = widget.active ? title : title.copy().withStyle(ChatFormatting.STRIKETHROUGH, ChatFormatting.GRAY);
-		int left = rowLeft + indent + 10;
-		int top = rowTop + (height / 2) - (client.font.lineHeight / 2);
+		int left = getContentX() + indent + 10;
+		int top = getContentY() + (getContentHeight() / 2) - (client.font.lineHeight / 2);
 		guiGraphics.drawString(client.font, title0, left, top, 0xFFFFFFFF);
 		if (serverFeature) {
 			guiGraphics.drawString(client.font, SERVER_FEATURE, left + getTextWidth() + 1, top, 0xFFFFFFFF);
 		}
-		super.render(guiGraphics, index, rowTop, rowLeft, width, height, mouseX, mouseY, hovered, deltaTime);
-		this.x = rowLeft;
+		super.renderContent(guiGraphics, mouseX, mouseY, hovered, deltaTime);
 	}
 
 	public void save() {
@@ -80,10 +69,6 @@ public abstract class OptionValue<T> extends OptionsList.Entry {
 			this.description.add(description);
 		}
 		addMessage(description.getString());
-	}
-
-	public int getX() {
-		return x;
 	}
 
 	@Override

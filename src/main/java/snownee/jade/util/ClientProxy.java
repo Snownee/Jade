@@ -3,6 +3,7 @@ package snownee.jade.util;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -68,6 +69,7 @@ import net.minecraft.world.level.material.FluidState;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
 import snownee.jade.addon.harvest.HarvestToolProvider;
+import snownee.jade.addon.vanilla.AnimalOwnerProvider;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
@@ -85,7 +87,6 @@ import snownee.jade.gui.PreviewOptionsScreen;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.ui.FluidStackElement;
-import snownee.jade.key_extension.KeyMappingEx;
 import snownee.jade.mixin.KeyAccess;
 import snownee.jade.network.ClientHandshakePacket;
 import snownee.jade.network.ReceiveDataPacket;
@@ -168,9 +169,8 @@ public final class ClientProxy implements ClientModInitializer {
 	}
 
 	public static KeyMapping registerKeyBinding(String desc, int defaultKey) {
-		KeyMapping key = new KeyMapping("key.jade." + desc, InputConstants.Type.KEYSYM, defaultKey, "modmenu.nameTranslation.jade");
+		KeyMapping key = new KeyMapping("key.jade." + desc, InputConstants.Type.KEYSYM, defaultKey, JadeClient.keyMappingCategory);
 		KeyBindingHelper.registerKeyBinding(key);
-		KeyMappingEx.setNoConflict(key, true);
 		return key;
 	}
 
@@ -286,8 +286,8 @@ public final class ClientProxy implements ClientModInitializer {
 		ClientPlayNetworking.send(payload);
 	}
 
-	public static boolean noBuiltInNoKeyConflict() {
-		return true;
+	public static String lookupPlayerName(UUID uuid) {
+		return AnimalOwnerProvider.lookupPlayerName(uuid, Minecraft.getInstance().services());
 	}
 
 	@Override
@@ -300,7 +300,7 @@ public final class ClientProxy implements ClientModInitializer {
 		ClientTickEvents.END_CLIENT_TICK.register(ClientProxy::onKeyPressed);
 		ScreenEvents.AFTER_INIT.register((Minecraft client, Screen screen, int scaledWidth, int scaledHeight) -> onGui(screen));
 		ClientCommandRegistrationCallback.EVENT.register(ClientProxy::registerClientCommand);
-		HudElementRegistry.addFirst(
+		HudElementRegistry.addLast(
 				JadeIds.UI_MAIN, (guiGraphics, deltaTracker) -> {
 					if (Minecraft.getInstance().screen == null) {
 						onRenderTick(guiGraphics, deltaTracker.getRealtimeDeltaTicks());
@@ -345,6 +345,5 @@ public final class ClientProxy implements ClientModInitializer {
 		CommonLifecycleEvents.TAGS_LOADED.register((registryAccess, client) -> {
 			HarvestToolProvider.INSTANCE.invalidateCache();
 		});
-		UsernameCache.load();
 	}
 }

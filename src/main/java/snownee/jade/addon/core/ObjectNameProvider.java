@@ -44,6 +44,55 @@ import snownee.jade.impl.ui.ItemStackElement;
 import snownee.jade.mixin.EntityAccess;
 
 public abstract class ObjectNameProvider implements IToggleableProvider {
+	public static Component getEntityName(Entity entity, boolean accessibilityDetails) {
+		Component customName = entity.getCustomName();
+		if (customName != null && !accessibilityDetails) {
+			return customName;
+		}
+		Component displayName = null;
+		boolean wantTypeName = accessibilityDetails;
+		if (WailaClientRegistration.instance().shouldPick(entity)) {
+			ItemStack stack = entity.getPickResult();
+			if (stack != null && !stack.isEmpty()) {
+				displayName = stack.getHoverName();
+			}
+		}
+		if (displayName == null) {
+			displayName = switch (entity) {
+				case Player ignored -> {
+					wantTypeName = false;
+					yield entity.getDisplayName();
+				}
+				case Villager ignored -> {
+					wantTypeName = false;
+					yield entity.getType().getDescription();
+				}
+				case ItemEntity itemEntity -> itemEntity.getItem().getHoverName();
+				case ItemDisplay itemDisplay when !itemDisplay.getSlot(0).get().isEmpty() -> itemDisplay.getSlot(0).get().getHoverName();
+				case BlockDisplay blockDisplay when !blockDisplay.getBlockState().isAir() ->
+						blockDisplay.getBlockState().getBlock().getName();
+				default -> entity.getName();
+			};
+		}
+		Objects.requireNonNull(displayName);
+		if (accessibilityDetails) {
+			if (customName != null && displayName.getString().equals(customName.getString())) {
+				displayName = customName;
+				customName = null;
+			}
+			if (wantTypeName) {
+				Component typeName = ((EntityAccess) entity).callGetTypeName();
+				if (!displayName.getString().equals(typeName.getString())) {
+					displayName = Component.translatable("jade.typeNameEntity", displayName, typeName);
+				}
+			}
+			if (customName != null) {
+				return Component.translatable("jade.customNameEntity", customName, displayName);
+			}
+		}
+		return displayName;
+	}
+
 	public static class ForBlock extends ObjectNameProvider implements IBlockComponentProvider {
 		public static final ForBlock INSTANCE = new ForBlock();
 
@@ -78,56 +127,6 @@ public abstract class ObjectNameProvider implements IToggleableProvider {
 
 	public static class ForEntity extends ObjectNameProvider implements IEntityComponentProvider {
 		public static final ForEntity INSTANCE = new ForEntity();
-
-		public static Component getEntityName(Entity entity, boolean accessibilityDetails) {
-			Component customName = entity.getCustomName();
-			if (customName != null && !accessibilityDetails) {
-				return customName;
-			}
-			Component displayName = null;
-			boolean wantTypeName = accessibilityDetails;
-			if (WailaClientRegistration.instance().shouldPick(entity)) {
-				ItemStack stack = entity.getPickResult();
-				if (stack != null && !stack.isEmpty()) {
-					displayName = stack.getHoverName();
-				}
-			}
-			if (displayName == null) {
-				displayName = switch (entity) {
-					case Player ignored -> {
-						wantTypeName = false;
-						yield entity.getDisplayName();
-					}
-					case Villager ignored -> {
-						wantTypeName = false;
-						yield entity.getType().getDescription();
-					}
-					case ItemEntity itemEntity -> itemEntity.getItem().getHoverName();
-					case ItemDisplay itemDisplay when !itemDisplay.getSlot(0).get().isEmpty() ->
-							itemDisplay.getSlot(0).get().getHoverName();
-					case BlockDisplay blockDisplay when !blockDisplay.getBlockState().isAir() ->
-							blockDisplay.getBlockState().getBlock().getName();
-					default -> entity.getName();
-				};
-			}
-			Objects.requireNonNull(displayName);
-			if (accessibilityDetails) {
-				if (customName != null && displayName.getString().equals(customName.getString())) {
-					displayName = customName;
-					customName = null;
-				}
-				if (wantTypeName) {
-					Component typeName = ((EntityAccess) entity).callGetTypeName();
-					if (!displayName.getString().equals(typeName.getString())) {
-						displayName = Component.translatable("jade.typeNameEntity", displayName, typeName);
-					}
-				}
-				if (customName != null) {
-					return Component.translatable("jade.customNameEntity", customName, displayName);
-				}
-			}
-			return displayName;
-		}
 
 		public static void addName(ITooltip tooltip, Component name) {
 			name = IThemeHelper.get().title(name);
