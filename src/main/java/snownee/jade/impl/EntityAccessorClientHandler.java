@@ -71,7 +71,7 @@ public class EntityAccessorClientHandler implements AccessorClientHandler<Entity
 			icon = JadeUI.item(((ItemEntity) entity).getItem());
 		} else {
 			ItemStack stack = accessor.getPickedResult();
-			if ((!(stack.getItem() instanceof SpawnEggItem) || !(entity instanceof LivingEntity))) {
+			if (!stack.isEmpty() && (!(stack.getItem() instanceof SpawnEggItem) || !(entity instanceof LivingEntity))) {
 				icon = JadeUI.item(stack);
 			}
 		}
