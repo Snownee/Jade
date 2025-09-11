@@ -83,13 +83,15 @@ public class WailaCommonRegistration implements IWailaCommonRegistration {
 				Registries.BLOCK,
 				$ -> $.getBlockHolder().unwrapKey().orElseThrow(),
 				"hide-blocks",
-				() -> List.of("barrier"));
+				() -> CommonProxy.isPhysicallyClient() ? List.of("barrier") : List.of());
 		//noinspection deprecation
 		entityTypeOperations = new TargetOperationRepositoryImpl<>(
 				Registries.ENTITY_TYPE,
 				$ -> $.getType().builtInRegistryHolder().key(),
 				"hide-entities",
-				() -> List.of("area_effect_cloud", "firework_rocket", "interaction", "text_display", "lightning_bolt"));
+				() -> CommonProxy.isPhysicallyClient() ?
+						List.of("area_effect_cloud", "firework_rocket", "interaction", "text_display", "lightning_bolt") :
+						List.of());
 		mobEffectOperations = new TargetOperationRepositoryImpl<>(
 				Registries.MOB_EFFECT,
 				$ -> $.getEffect().unwrapKey().orElseThrow(),
