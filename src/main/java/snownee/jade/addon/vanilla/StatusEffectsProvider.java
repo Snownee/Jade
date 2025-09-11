@@ -1,6 +1,7 @@
 package snownee.jade.addon.vanilla;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -24,6 +25,7 @@ import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.JadeUI;
+import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.util.JadeMobEffectInstance;
 
 public class StatusEffectsProvider implements StreamServerDataProvider<EntityAccessor, List<StatusEffectsProvider.Effect>> {
@@ -52,6 +54,7 @@ public class StatusEffectsProvider implements StreamServerDataProvider<EntityAcc
 		List<Effect> effects = ((LivingEntity) accessor.getEntity()).getActiveEffects()
 				.stream()
 				.filter(MobEffectInstance::isVisible)
+				.filter(Predicate.not(WailaCommonRegistration.instance().mobEffectOperations()::shouldHide))
 				.map(Effect::new)
 				.toList();
 		return effects.isEmpty() ? null : effects;
@@ -81,6 +84,9 @@ public class StatusEffectsProvider implements StreamServerDataProvider<EntityAcc
 			IThemeHelper t = IThemeHelper.get();
 			long current = System.currentTimeMillis();
 			effects = effects.stream().filter($ -> {
+				if (WailaCommonRegistration.instance().mobEffectOperations().shouldHide($.effect())) {
+					return false;
+				}
 				long ms = current - $.addTime() - 20;
 				return ms > 0;
 			}).sorted().limit(config.getInt(JadeIds.MC_POTION_EFFECTS_LIMIT)).toList();

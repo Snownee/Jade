@@ -8,11 +8,17 @@ import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
 
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import snownee.jade.Jade;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
@@ -21,10 +27,12 @@ import snownee.jade.api.IJadeProvider;
 import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.IWailaCommonRegistration;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.config.TargetOperationRepository;
 import snownee.jade.api.view.EnergyView;
 import snownee.jade.api.view.FluidView;
 import snownee.jade.api.view.IServerExtensionProvider;
 import snownee.jade.api.view.ProgressView;
+import snownee.jade.impl.config.TargetOperationRepositoryImpl;
 import snownee.jade.impl.lookup.HierarchyLookup;
 import snownee.jade.impl.lookup.PairHierarchyLookup;
 import snownee.jade.impl.lookup.WrappedHierarchyLookup;
@@ -42,6 +50,10 @@ public class WailaCommonRegistration implements IWailaCommonRegistration {
 	public final WrappedHierarchyLookup<IServerExtensionProvider<FluidView.Data>> fluidStorageProviders;
 	public final WrappedHierarchyLookup<IServerExtensionProvider<EnergyView.Data>> energyStorageProviders;
 	public final WrappedHierarchyLookup<IServerExtensionProvider<ProgressView.Data>> progressProviders;
+
+	private final TargetOperationRepositoryImpl<Block, BlockState> blockOperations;
+	private final TargetOperationRepositoryImpl<EntityType<?>, Entity> entityTypeOperations;
+	private final TargetOperationRepositoryImpl<MobEffect, MobEffectInstance> mobEffectOperations;
 
 	WailaCommonRegistration() {
 		blockDataProviders = new PairHierarchyLookup<>(new HierarchyLookup<>(Block.class), new HierarchyLookup<>(BlockEntity.class));
@@ -66,6 +78,23 @@ public class WailaCommonRegistration implements IWailaCommonRegistration {
 		fluidStorageProviders = WrappedHierarchyLookup.forAccessor();
 		energyStorageProviders = WrappedHierarchyLookup.forAccessor();
 		progressProviders = WrappedHierarchyLookup.forAccessor();
+
+		blockOperations = new TargetOperationRepositoryImpl<>(
+				Registries.BLOCK,
+				$ -> $.getBlockHolder().unwrapKey().orElseThrow(),
+				"hide-blocks",
+				() -> List.of("barrier"));
+		//noinspection deprecation
+		entityTypeOperations = new TargetOperationRepositoryImpl<>(
+				Registries.ENTITY_TYPE,
+				$ -> $.getType().builtInRegistryHolder().key(),
+				"hide-entities",
+				() -> List.of("area_effect_cloud", "firework_rocket", "interaction", "text_display", "lightning_bolt"));
+		mobEffectOperations = new TargetOperationRepositoryImpl<>(
+				Registries.MOB_EFFECT,
+				$ -> $.getEffect().unwrapKey().orElseThrow(),
+				"hide-mob-effects",
+				List::of);
 	}
 
 	public static WailaCommonRegistration instance() {
@@ -106,14 +135,20 @@ public class WailaCommonRegistration implements IWailaCommonRegistration {
 	}
 
 	/* PROVIDER GETTERS */
-	public List<IServerDataProvider<BlockAccessor>> getBlockNBTProviders(Block block, @Nullable BlockEntity blockEntity) {
-		if (blockEntity == null) {
-			return blockDataProviders.first.get(block);
+	public List<IServerDataProvider<BlockAccessor>> blockDataProvidersOf(BlockState blockState, @Nullable BlockEntity blockEntity) {
+		if (blockOperations().shouldHide(blockState)) {
+			return List.of();
 		}
-		return blockDataProviders.getMerged(block, blockEntity);
+		if (blockEntity == null) {
+			return blockDataProviders.first.get(blockState.getBlock());
+		}
+		return blockDataProviders.getMerged(blockState.getBlock(), blockEntity);
 	}
 
-	public List<IServerDataProvider<EntityAccessor>> getEntityNBTProviders(Entity entity) {
+	public List<IServerDataProvider<EntityAccessor>> entityDataProvidersOf(Entity entity) {
+		if (entityTypeOperations().shouldHide(entity)) {
+			return List.of();
+		}
 		return entityDataProviders.get(entity);
 	}
 
@@ -124,6 +159,27 @@ public class WailaCommonRegistration implements IWailaCommonRegistration {
 		fluidStorageProviders.loadComplete(priorities);
 		energyStorageProviders.loadComplete(priorities);
 		progressProviders.loadComplete(priorities);
+	}
+
+	public void reloadOperations(HolderLookup.Provider provider) {
+		blockOperations.reload(provider);
+		entityTypeOperations.reload(provider);
+		mobEffectOperations.reload(provider);
+	}
+
+	@Override
+	public TargetOperationRepository<Block, BlockState> blockOperations() {
+		return blockOperations;
+	}
+
+	@Override
+	public TargetOperationRepository<EntityType<?>, Entity> entityTypeOperations() {
+		return entityTypeOperations;
+	}
+
+	@Override
+	public TargetOperationRepository<MobEffect, MobEffectInstance> mobEffectOperations() {
+		return mobEffectOperations;
 	}
 
 	@Override

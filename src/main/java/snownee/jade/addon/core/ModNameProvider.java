@@ -15,7 +15,7 @@ import snownee.jade.api.JadeIds;
 import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
-import snownee.jade.impl.WailaClientRegistration;
+import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.util.ModIdentification;
 
 public abstract class ModNameProvider implements IToggleableProvider {
@@ -32,7 +32,7 @@ public abstract class ModNameProvider implements IToggleableProvider {
 			if (accessor.isFakeBlock()) {
 				modName = ModIdentification.getModName(accessor.getFakeBlock());
 			}
-			if (modName == null && WailaClientRegistration.instance().shouldPick(accessor.getBlockState())) {
+			if (modName == null && WailaCommonRegistration.instance().blockOperations().shouldPick(accessor.getBlockState())) {
 				ItemStack pick = accessor.getPickedResult();
 				if (!pick.isEmpty()) {
 					modName = ModIdentification.getModName(pick);

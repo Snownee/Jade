@@ -39,7 +39,7 @@ import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.JadeUI;
-import snownee.jade.impl.WailaClientRegistration;
+import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.impl.ui.ItemStackElement;
 import snownee.jade.mixin.EntityAccess;
 
@@ -51,7 +51,7 @@ public abstract class ObjectNameProvider implements IToggleableProvider {
 		}
 		Component displayName = null;
 		boolean wantTypeName = accessibilityDetails;
-		if (WailaClientRegistration.instance().shouldPick(entity)) {
+		if (WailaCommonRegistration.instance().entityTypeOperations().shouldPick(entity)) {
 			ItemStack stack = entity.getPickResult();
 			if (stack != null && !stack.isEmpty()) {
 				displayName = stack.getHoverName();
@@ -102,7 +102,7 @@ public abstract class ObjectNameProvider implements IToggleableProvider {
 			if (name == null && accessor.isFakeBlock()) {
 				name = accessor.getFakeBlock().getHoverName();
 			}
-			if (name == null && WailaClientRegistration.instance().shouldPick(accessor.getBlockState())) {
+			if (name == null && WailaCommonRegistration.instance().blockOperations().shouldPick(accessor.getBlockState())) {
 				ItemStack pick = accessor.getPickedResult();
 				if (pick != null && !pick.isEmpty()) {
 					name = pick.getHoverName();

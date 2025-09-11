@@ -20,7 +20,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
 import snownee.jade.api.callback.JadeAfterRenderCallback;
 import snownee.jade.api.callback.JadeBeforeRenderCallback;
 import snownee.jade.api.callback.JadeBeforeTooltipCollectCallback;
@@ -97,40 +96,11 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 	 */
 	void registerEntityComponent(IComponentProvider<EntityAccessor> provider, Class<? extends Entity> entityClass);
 
-	/**
-	 * Mark a block as hidden in tooltip.
-	 */
-	void hideTarget(Block block);
-
-	/**
-	 * Mark an entity as hidden in tooltip. If player is aiming to this entity, it will be ignored and
-	 * try to find next possible target.
-	 */
-	void hideTarget(EntityType<?> entityType);
-
-	/**
-	 * Mark a block to show name of the picked result, rather than block name.
-	 */
-	void usePickedResult(Block block);
-
-	/**
-	 * Mark an entity type to show name of the picked result, rather than entity name.
-	 */
-	void usePickedResult(EntityType<?> entityType);
-
 	EmptyAccessor.Builder emptyAccessor();
 
 	BlockAccessor.Builder blockAccessor();
 
 	EntityAccessor.Builder entityAccessor();
-
-	boolean shouldHide(Entity target);
-
-	boolean shouldHide(BlockState state);
-
-	boolean shouldPick(Entity entity);
-
-	boolean shouldPick(BlockState blockState);
 
 	default void addAfterRenderCallback(JadeAfterRenderCallback callback) {
 		addAfterRenderCallback(0, callback);
@@ -209,4 +179,6 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 	void addEntityVariantMapping(EntityType<?> entityType, @Nullable DataComponentType<?> variantType);
 
 	void addVariantType(DataComponentType<?> type, boolean isVariant);
+
+	void reloadIgnoreLists();
 }

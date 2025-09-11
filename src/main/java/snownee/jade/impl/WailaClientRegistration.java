@@ -19,30 +19,25 @@ import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentType;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
 import snownee.jade.addon.access.EntityVariantHelper;
@@ -63,7 +58,6 @@ import snownee.jade.api.callback.JadeRayTraceCallback;
 import snownee.jade.api.callback.JadeTooltipCollectedCallback;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
-import snownee.jade.api.config.IgnoreList;
 import snownee.jade.api.platform.CustomEnchantPower;
 import snownee.jade.api.view.EnergyView;
 import snownee.jade.api.view.FluidView;
@@ -81,8 +75,6 @@ import snownee.jade.impl.config.entry.StringConfigEntry;
 import snownee.jade.impl.lookup.HierarchyLookup;
 import snownee.jade.overlay.DatapackBlockManager;
 import snownee.jade.util.ClientProxy;
-import snownee.jade.util.JadeCodecs;
-import snownee.jade.util.JsonConfig;
 import snownee.jade.util.ModIdentification;
 
 public class WailaClientRegistration implements IWailaClientRegistration {
@@ -94,13 +86,6 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 
 	public final HierarchyLookup<IComponentProvider<EntityAccessor>> entityIconProviders;
 	public final HierarchyLookup<IComponentProvider<EntityAccessor>> entityComponentProviders;
-
-	public final Set<Block> hideBlocks = Sets.newHashSet();
-	private ImmutableSet<Block> hideBlocksReloadable = ImmutableSet.of();
-	public final Set<EntityType<?>> hideEntities = Sets.newHashSet();
-	private ImmutableSet<EntityType<?>> hideEntitiesReloadable = ImmutableSet.of();
-	public final Set<Block> pickBlocks = Sets.newHashSet();
-	public final Set<EntityType<?>> pickEntities = Sets.newHashSet();
 
 	public final CallbackContainer<JadeAfterRenderCallback> afterRenderCallback = new CallbackContainer<>();
 	public final CallbackContainer<JadeBeforeRenderCallback> beforeRenderCallback = new CallbackContainer<>();
@@ -148,19 +133,6 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 		}
 	}
 
-	public static <T> JsonConfig<IgnoreList<T>> createIgnoreListConfig(
-			String file,
-			ResourceKey<Registry<T>> registryKey,
-			List<String> defaultValues) {
-		List<String> values = List.copyOf(defaultValues);
-		return new JsonConfig<>(
-				Jade.ID + "/" + file, JadeCodecs.ignoreList(registryKey), null, () -> {
-			var ignoreList = new IgnoreList<T>();
-			ignoreList.values = values;
-			return ignoreList;
-		});
-	}
-
 	@Override
 	public void registerBlockIcon(IComponentProvider<BlockAccessor> provider, Class<? extends Block> blockClass) {
 		blockIconProviders.register(blockClass, provider);
@@ -205,50 +177,6 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	public List<IComponentProvider<EntityAccessor>> getEntityIconProviders(
 			Entity entity, Predicate<IComponentProvider<? extends Accessor<?>>> filter) {
 		return entityIconProviders.get(entity).stream().filter(filter).toList();
-	}
-
-	@Override
-	public void hideTarget(Block block) {
-		Objects.requireNonNull(block);
-		hideBlocks.add(block);
-	}
-
-	@Override
-	public void hideTarget(EntityType<?> entityType) {
-		Objects.requireNonNull(entityType);
-		hideEntities.add(entityType);
-	}
-
-	@Override
-	public void usePickedResult(Block block) {
-		Objects.requireNonNull(block);
-		pickBlocks.add(block);
-	}
-
-	@Override
-	public void usePickedResult(EntityType<?> entityType) {
-		Objects.requireNonNull(entityType);
-		pickEntities.add(entityType);
-	}
-
-	@Override
-	public boolean shouldHide(BlockState state) {
-		return state.isAir() || hideBlocksReloadable.contains(state.getBlock());
-	}
-
-	@Override
-	public boolean shouldPick(BlockState state) {
-		return pickBlocks.contains(state.getBlock());
-	}
-
-	@Override
-	public boolean shouldHide(Entity entity) {
-		return hideEntitiesReloadable.contains(entity.getType());
-	}
-
-	@Override
-	public boolean shouldPick(Entity entity) {
-		return pickEntities.contains(entity.getType());
 	}
 
 	public void addConfig(ConfigEntry<?> entry) {
@@ -421,7 +349,6 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	}
 
 	public void loadComplete() {
-		reloadIgnoreLists();
 		var priorities = WailaCommonRegistration.instance().priorities;
 		blockComponentProviders.loadComplete(priorities);
 		blockIconProviders.loadComplete(priorities);
@@ -434,31 +361,6 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 				tooltipCollectedCallback,
 				itemModNameCallback,
 				beforeTooltipCollectCallback).forEach(CallbackContainer::sort);
-	}
-
-	public synchronized void reloadIgnoreLists() {
-		{
-			ImmutableSet.Builder<EntityType<?>> builder = ImmutableSet.builder();
-			builder.addAll(hideEntities);
-			createIgnoreListConfig(
-					"hide-entities",
-					Registries.ENTITY_TYPE,
-					List.of("area_effect_cloud", "firework_rocket", "interaction", "text_display", "lightning_bolt")).get().reload(
-					BuiltInRegistries.ENTITY_TYPE,
-					builder::add);
-			hideEntitiesReloadable = builder.build();
-		}
-		{
-			ImmutableSet.Builder<Block> builder = ImmutableSet.builder();
-			builder.addAll(hideBlocks);
-			createIgnoreListConfig(
-					"hide-blocks",
-					Registries.BLOCK,
-					List.of("barrier")).get().reload(
-					BuiltInRegistries.BLOCK,
-					builder::add);
-			hideBlocksReloadable = builder.build();
-		}
 	}
 
 	@Override
@@ -623,6 +525,14 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	@Override
 	public void addVariantType(DataComponentType<?> type, boolean isVariant) {
 		EntityVariantHelper.addVariantType(type, isVariant);
+	}
+
+	@Override
+	public void reloadIgnoreLists() {
+		ClientPacketListener connection = Minecraft.getInstance().getConnection();
+		if (connection != null) {
+			WailaCommonRegistration.instance().reloadOperations(connection.registryAccess());
+		}
 	}
 
 	@Override

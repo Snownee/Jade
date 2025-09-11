@@ -66,7 +66,7 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 			}
 
 			List<IServerDataProvider<BlockAccessor>> providers = WailaCommonRegistration.instance()
-					.getBlockNBTProviders(accessor.getBlock(), accessor.getBlockEntity());
+					.blockDataProvidersOf(accessor.getBlockState(), accessor.getBlockEntity());
 			CompoundTag tag = accessor.getServerData();
 			for (IServerDataProvider<BlockAccessor> provider : providers) {
 				if (!message.dataProviders().contains(provider)) {

@@ -100,6 +100,7 @@ public class Jade {
 		}
 		WailaCommonRegistration.instance().priorities.sort(extraKeys);
 		WailaCommonRegistration.instance().loadComplete();
+		CommonProxy.registerTagsUpdatedListener((provider, bl) -> WailaCommonRegistration.instance().reloadOperations(provider));
 		if (CommonProxy.isPhysicallyClient()) {
 			WailaClientRegistration.instance().loadComplete();
 

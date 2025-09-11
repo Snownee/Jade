@@ -44,7 +44,7 @@ public class EntityAccessorClientHandler implements AccessorClientHandler<Entity
 	@Override
 	public List<IServerDataProvider<EntityAccessor>> shouldRequestData(EntityAccessor accessor) {
 		List<IServerDataProvider<EntityAccessor>> providers = WailaCommonRegistration.instance()
-				.getEntityNBTProviders(accessor.getEntity());
+				.entityDataProvidersOf(accessor.getEntity());
 		if (providers.isEmpty()) {
 			return List.of();
 		}

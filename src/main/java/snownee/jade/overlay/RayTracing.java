@@ -26,7 +26,7 @@ import net.minecraft.world.phys.HitResult.Type;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import snownee.jade.api.config.IWailaConfig;
-import snownee.jade.impl.WailaClientRegistration;
+import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.util.CommonProxy;
 
 public class RayTracing {
@@ -48,7 +48,7 @@ public class RayTracing {
 		BlockState blockState = level.getBlockState(hit.getBlockPos());
 		FluidState fluidState = blockState.getFluidState();
 		if (!fluidState.isEmpty()) {
-			if (blockState.is(Blocks.BARRIER) && WailaClientRegistration.instance().shouldHide(blockState)) {
+			if (blockState.is(Blocks.BARRIER) && WailaCommonRegistration.instance().blockOperations().shouldHide(blockState)) {
 				return fluidState.createLegacyBlock();
 			}
 			if (blockState.getShape(level, hit.getBlockPos(), context).isEmpty()) {
@@ -194,7 +194,7 @@ public class RayTracing {
 		}
 		if (blockResult.getType() == Type.BLOCK) {
 			BlockState state = wrapBlock(world, blockResult, collisionContext);
-			if (WailaClientRegistration.instance().shouldHide(state)) {
+			if (state.isAir() || WailaCommonRegistration.instance().blockOperations().shouldHide(state)) {
 				blockResult = null;
 			}
 		} else {
@@ -205,7 +205,7 @@ public class RayTracing {
 			blockResult = world.clip(context);
 			hitLocation = blockResult.getLocation();
 			BlockState state = wrapBlock(world, blockResult, collisionContext);
-			if (WailaClientRegistration.instance().shouldHide(state)) {
+			if (state.isAir() || WailaCommonRegistration.instance().blockOperations().shouldHide(state)) {
 				blockResult = null;
 			}
 		}
@@ -242,7 +242,7 @@ public class RayTracing {
 				return false;
 			}
 		}
-		return !WailaClientRegistration.instance().shouldHide(target) && entityFilter.test(target);
+		return !WailaCommonRegistration.instance().entityTypeOperations().shouldHide(target) && entityFilter.test(target);
 	}
 
 }

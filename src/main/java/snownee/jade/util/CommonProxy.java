@@ -5,14 +5,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.cache.Cache;
-import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.datafixers.util.Either;
 
@@ -50,7 +48,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.TriState;
 import net.minecraft.world.Container;
@@ -112,15 +109,6 @@ import snownee.jade.network.ShowOverlayPacket;
 public final class CommonProxy implements ModInitializer {
 
 	public static boolean hasTechRebornEnergy = isModLoaded("team_reborn_energy");
-
-	@Nullable
-	public static String lookupUsername(@Nullable UUID uuid, MinecraftServer server) {
-		if (uuid == null) {
-			return null;
-		}
-		GameProfile profile = server.services().profileResolver().fetchById(uuid).orElse(null);
-		return profile == null ? null : profile.name();
-	}
 
 	public static File getConfigDirectory() {
 		return FabricLoader.getInstance().getConfigDir().toFile();

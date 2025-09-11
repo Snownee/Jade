@@ -18,11 +18,9 @@ import it.unimi.dsi.fastutil.floats.FloatArrayList;
 import it.unimi.dsi.fastutil.floats.FloatList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-import net.minecraft.core.Registry;
 import net.minecraft.locale.Language;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.ExtraCodecs;
 import snownee.jade.api.config.IgnoreList;
 
@@ -134,7 +132,7 @@ public class JadeCodecs {
 		}
 	};
 
-	public static <T> Codec<IgnoreList<T>> ignoreList(ResourceKey<? extends Registry<T>> registryKey) {
+	public static Codec<IgnoreList> ignoreList() {
 		return RecordCodecBuilder.create(i -> i.group(
 				Codec.STRING.optionalFieldOf("__comment", "").forGetter($ -> {
 					return Language.getInstance().getOrDefault(
@@ -143,56 +141,59 @@ public class JadeCodecs {
 				}),
 				Codec.STRING.listOf().fieldOf("values").forGetter($ -> $.values),
 				ExtraCodecs.POSITIVE_INT.optionalFieldOf("version", 1).forGetter($ -> $.version)
-		).apply(i, (comment, values, version) -> {
-			IgnoreList<T> ignoreList = new IgnoreList<>();
-			ignoreList.values = values;
-			ignoreList.version = version;
-			return ignoreList;
-		}));
+		).apply(
+				i, (comment, values, version) -> {
+					IgnoreList ignoreList = new IgnoreList();
+					ignoreList.values = values;
+					ignoreList.version = version;
+					return ignoreList;
+				}));
 	}
 
 	public static Codec<int[]> intArrayCodec(int size, Codec<Integer> codec) {
-		return Codec.list(codec).flatXmap($ -> {
-			if (size != 0 && size != $.size()) {
-				return DataResult.error(() -> "Expected array of length " + size + ", got " + $.size());
-			}
-			int[] array = new int[size == 0 ? $.size() : size];
-			for (int i = 0; i < array.length; i++) {
-				array[i] = $.get(i);
-			}
-			return DataResult.success(array);
-		}, $ -> {
-			if (size != 0 && size != $.length) {
-				return DataResult.error(() -> "Expected array of length " + size + ", got " + $.length);
-			}
-			IntList list = new IntArrayList($.length);
-			for (int i : $) {
-				list.add(i);
-			}
-			return DataResult.success(list);
-		});
+		return Codec.list(codec).flatXmap(
+				$ -> {
+					if (size != 0 && size != $.size()) {
+						return DataResult.error(() -> "Expected array of length " + size + ", got " + $.size());
+					}
+					int[] array = new int[size == 0 ? $.size() : size];
+					for (int i = 0; i < array.length; i++) {
+						array[i] = $.get(i);
+					}
+					return DataResult.success(array);
+				}, $ -> {
+					if (size != 0 && size != $.length) {
+						return DataResult.error(() -> "Expected array of length " + size + ", got " + $.length);
+					}
+					IntList list = new IntArrayList($.length);
+					for (int i : $) {
+						list.add(i);
+					}
+					return DataResult.success(list);
+				});
 	}
 
 	public static Codec<float[]> floatArrayCodec(int size, Codec<Float> codec) {
-		return Codec.list(codec).flatXmap($ -> {
-			if (size != 0 && size != $.size()) {
-				return DataResult.error(() -> "Expected array of length " + size + ", got " + $.size());
-			}
-			float[] array = new float[size == 0 ? $.size() : size];
-			for (int i = 0; i < array.length; i++) {
-				array[i] = $.get(i);
-			}
-			return DataResult.success(array);
-		}, $ -> {
-			if (size != 0 && size != $.length) {
-				return DataResult.error(() -> "Expected array of length " + size + ", got " + $.length);
-			}
-			FloatList list = new FloatArrayList($.length);
-			for (float f : $) {
-				list.add(f);
-			}
-			return DataResult.success(list);
-		});
+		return Codec.list(codec).flatXmap(
+				$ -> {
+					if (size != 0 && size != $.size()) {
+						return DataResult.error(() -> "Expected array of length " + size + ", got " + $.size());
+					}
+					float[] array = new float[size == 0 ? $.size() : size];
+					for (int i = 0; i < array.length; i++) {
+						array[i] = $.get(i);
+					}
+					return DataResult.success(array);
+				}, $ -> {
+					if (size != 0 && size != $.length) {
+						return DataResult.error(() -> "Expected array of length " + size + ", got " + $.length);
+					}
+					FloatList list = new FloatArrayList($.length);
+					for (float f : $) {
+						list.add(f);
+					}
+					return DataResult.success(list);
+				});
 	}
 
 	public static Optional<int[]> nullableClone(int[] array) {

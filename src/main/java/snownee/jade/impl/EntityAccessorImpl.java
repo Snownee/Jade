@@ -52,7 +52,7 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 			if (entity == null || player.distanceToSqr(entity) > maxDistance) {
 				return;
 			}
-			List<IServerDataProvider<EntityAccessor>> providers = WailaCommonRegistration.instance().getEntityNBTProviders(entity);
+			List<IServerDataProvider<EntityAccessor>> providers = WailaCommonRegistration.instance().entityDataProvidersOf(entity);
 			CompoundTag tag = accessor.getServerData();
 			for (IServerDataProvider<EntityAccessor> provider : providers) {
 				if (!message.dataProviders().contains(provider)) {
