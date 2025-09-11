@@ -24,7 +24,7 @@ public class BelowOrAboveListEntryTooltipPositioner implements ClientTooltipPosi
 			vector2i.y = mouseY + 3;
 			return vector2i;
 		}
-		vector2i.x = entry.getTextX(list.getRowWidth());
+		vector2i.x = entry.getTextX();
 		vector2i.y = list.getRowBottom(index) + 1;
 		if (vector2i.y + n > j) {
 			vector2i.y = list.getRowTop(index) - n - 1;

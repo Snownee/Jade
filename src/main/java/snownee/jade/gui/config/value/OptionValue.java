@@ -27,7 +27,6 @@ public abstract class OptionValue<T> extends OptionsList.Entry {
 	public boolean serverFeature;
 	protected T value;
 	protected int indent;
-	private int x;
 
 	public OptionValue(String optionName, Supplier<T> getter, Consumer<T> setter) {
 		this.title = makeTitle(optionName);
@@ -72,8 +71,8 @@ public abstract class OptionValue<T> extends OptionsList.Entry {
 	}
 
 	@Override
-	public int getTextX(int width) {
-		return getX() + indent + 10;
+	public int getTextX() {
+		return getContentX() + indent + 10;
 	}
 
 	@Override

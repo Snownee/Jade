@@ -524,7 +524,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 			return List.of();
 		}
 
-		public int getTextX(int width) {
+		public int getTextX() {
 			return 0;
 		}
 
@@ -573,7 +573,6 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 
 		public Component narration;
 		private final MutableComponent title;
-		private int x;
 
 		public Title(String key) {
 			title = makeTitle(key);
@@ -598,18 +597,17 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 
 		@Override
 		public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovered, float deltaTime) {
-			x = getContentX();
 			guiGraphics.drawString(
 					client.font,
 					title,
-					getTextX(getContentWidth()),
+					getTextX(),
 					getContentY() + getContentHeight() - client.font.lineHeight,
 					0xFFFFFFFF);
 		}
 
 		@Override
-		public int getTextX(int width) {
-			return x + (width - getTextWidth()) / 2;
+		public int getTextX() {
+			return getContentXMiddle() - getTextWidth() / 2;
 		}
 
 		@Override

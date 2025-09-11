@@ -120,7 +120,7 @@ public abstract class BaseOptionsScreen extends Screen {
 
 		OptionsList.Entry entry = options.isMouseOver(mouseX, mouseY) ? options.getEntryAt(mouseX, mouseY) : null;
 		if (entry != null) {
-			int valueX = entry.getTextX(options.getRowWidth());
+			int valueX = entry.getTextX();
 			if (mouseX >= valueX && mouseX < valueX + entry.getTextWidth()) {
 				List<Component> descs = Lists.newArrayListWithExpectedSize(3);
 				descs.addAll(entry.getDescription());
@@ -133,8 +133,8 @@ public abstract class BaseOptionsScreen extends Screen {
 				}
 			}
 			if (entry instanceof OptionValue<?> optionValue && optionValue.serverFeature) {
-				int x = entry.getTextX(options.getRowWidth()) + entry.getTextWidth() + 1;
-				int y = options.getRowTop(options.children().indexOf(entry)) + 7;
+				int x = entry.getTextX() + entry.getTextWidth() + 1;
+				int y = entry.getContentY() + 6;
 				if (mouseX >= x && mouseX < x + 4 && mouseY >= y && mouseY < y + 4) {
 					setTooltipForNextFrame(guiGraphics, List.of(Component.translatable("gui.jade.server_feature")), mouseX, mouseY, entry);
 				}
