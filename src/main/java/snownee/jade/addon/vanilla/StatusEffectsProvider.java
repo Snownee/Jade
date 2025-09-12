@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -33,15 +34,6 @@ public class StatusEffectsProvider implements StreamServerDataProvider<EntityAcc
 
 	private static final StreamCodec<RegistryFriendlyByteBuf, List<Effect>> STREAM_CODEC = ByteBufCodecs.<RegistryFriendlyByteBuf, Effect>list()
 			.apply(Effect.STREAM_CODEC);
-
-	public static MutableComponent getEffectName(MobEffectInstance mobEffectInstance) {
-		MutableComponent mutableComponent = mobEffectInstance.getEffect().value().getDisplayName().copy();
-		if (mobEffectInstance.getAmplifier() >= 1 && mobEffectInstance.getAmplifier() <= 9) {
-			mutableComponent.append(CommonComponents.SPACE).append(Component.translatable(
-					"enchantment.level." + (mobEffectInstance.getAmplifier() + 1)));
-		}
-		return mutableComponent;
-	}
 
 	@Override
 	public boolean shouldRequestData(EntityAccessor accessor) {
@@ -73,6 +65,18 @@ public class StatusEffectsProvider implements StreamServerDataProvider<EntityAcc
 	public static class Client implements IEntityComponentProvider {
 		public static final Client INSTANCE = new Client();
 		public static final Component INFINITE = Component.translatable("effect.duration.infinite");
+
+		public static MutableComponent getEffectName(MobEffectInstance mobEffectInstance) {
+			MutableComponent mutableComponent = mobEffectInstance.getEffect().value().getDisplayName().copy();
+			if (mobEffectInstance.getAmplifier() >= 1) {
+				MutableComponent level = Component.translatable("enchantment.level." + (mobEffectInstance.getAmplifier() + 1));
+				if (!ComponentUtils.isTranslationResolvable(level)) {
+					level = Component.literal(Integer.toString(mobEffectInstance.getAmplifier() + 1));
+				}
+				mutableComponent.append(CommonComponents.SPACE).append(level);
+			}
+			return mutableComponent;
+		}
 
 		@Override
 		public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
