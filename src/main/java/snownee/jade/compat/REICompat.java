@@ -1,34 +1,58 @@
-/*package snownee.jade.compat;
+package snownee.jade.compat;
 
-import me.shedaniel.rei.api.client.plugins.REIClientPlugin;
+import java.util.List;
+
+import org.jetbrains.annotations.Nullable;
+
 import me.shedaniel.rei.api.client.view.ViewSearchBuilder;
 import me.shedaniel.rei.api.common.entry.EntryStack;
 import me.shedaniel.rei.api.common.entry.type.VanillaEntryTypes;
+import me.shedaniel.rei.impl.display.DisplaySpec;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import snownee.jade.JadeClient;
-import snownee.jade.api.Accessor;
-import snownee.jade.impl.ObjectDataCenter;
 
-public class REICompat implements REIClientPlugin {
-
-	public static void onKeyPressed(int action) {
-		if (JadeClient.showRecipes == null || JadeClient.showUses == null)
-			return;
-		if (action != 1)
-			return;
-		if (!JadeClient.showRecipes.consumeClick() && !JadeClient.showUses.consumeClick())
-			return;
-		Accessor<?> accessor = ObjectDataCenter.get();
-		if (accessor == null)
-			return;
-		ItemStack stack = accessor.getPickedResult();
-		if (stack.isEmpty())
-			return;
-
-		if (JadeClient.showUses.consumeClick()) {
-			ViewSearchBuilder.builder().addUsagesFor(EntryStack.of(VanillaEntryTypes.ITEM, stack)).open();
+public class REICompat implements RecipeLookupPlugin {
+	@SuppressWarnings("UnstableApiUsage")
+	@Override
+	public RecipeLookupResult lookup(ItemStack itemStack, @Nullable ResourceLocation specialId, boolean uses) {
+		ViewSearchBuilder builder = ViewSearchBuilder.builder();
+		if (uses) {
+			builder.addUsagesFor(EntryStack.of(VanillaEntryTypes.ITEM, itemStack));
 		} else {
-			ViewSearchBuilder.builder().addRecipesFor(EntryStack.of(VanillaEntryTypes.ITEM, stack)).open();
+			builder.addRecipesFor(EntryStack.of(VanillaEntryTypes.ITEM, itemStack));
+		}
+		List<DisplaySpec> list = builder.streamDisplays().toList();
+		if (list.isEmpty()) {
+			return RecipeLookupResult.FAIL;
+		}
+		return new RecipeLookupResult(
+				1f, screen -> {
+			if (screen == null) {
+				// https://github.com/shedaniel/RoughlyEnoughItems/issues/516
+				Minecraft.getInstance().setScreen(new DummyScreen());
+				Minecraft.getInstance().setScreen(null);
+			}
+			builder.open();
+		});
+	}
+
+	public static class DummyScreen extends Screen {
+		protected DummyScreen() {
+			super(CommonComponents.EMPTY);
+		}
+
+		@Override
+		protected void renderBlurredBackground(GuiGraphics guiGraphics) {
+			// NO-OP
+		}
+
+		@Override
+		public void tick() {
+			onClose();
 		}
 	}
-}*/
+}

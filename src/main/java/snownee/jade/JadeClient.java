@@ -57,7 +57,10 @@ import snownee.jade.api.ui.BoxElement;
 import snownee.jade.api.ui.ColorPalette;
 import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.ui.TooltipAnimation;
+import snownee.jade.compat.RecipeLookupPlugin;
+import snownee.jade.compat.RecipeLookupResult;
 import snownee.jade.gui.HomeConfigScreen;
+import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.theme.ThemeHelper;
 import snownee.jade.key_extension.KeyExManager;
@@ -73,6 +76,7 @@ public final class JadeClient {
 
 	public static final SystemToast.SystemToastId JADE_PLEASE_WAIT = new SystemToast.SystemToastId(2000L);
 	public static final KeyMapping[] profiles = new KeyMapping[4];
+	public static final List<RecipeLookupPlugin> rlPlugins = Lists.newArrayList();
 	private static final WailaTickHandler tickHandler = new WailaTickHandler();
 	public static KeyMapping openConfig;
 	public static KeyMapping showOverlay;
@@ -174,6 +178,46 @@ public final class JadeClient {
 					}
 				}
 			}
+		}
+
+		while (showUses != null && showUses.consumeClick()) {
+			lookupRecipes(true);
+		}
+
+		while (showRecipes != null && showRecipes.consumeClick()) {
+			lookupRecipes(false);
+		}
+	}
+
+	public static void lookupRecipes(boolean uses) {
+		if (rlPlugins.isEmpty()) {
+			return;
+		}
+		Accessor<?> accessor = ObjectDataCenter.get();
+		if (accessor == null) {
+			return;
+		}
+		ItemStack itemStack = accessor.getPickedResult();
+		if (itemStack.isEmpty()) {
+			return;
+		}
+		ResourceLocation specialId = ModIdentification.getSpecialId(itemStack).orElse(null);
+		RecipeLookupResult selected = null;
+		for (RecipeLookupPlugin plugin : rlPlugins) {
+			try {
+				RecipeLookupResult result = plugin.lookup(itemStack, specialId, uses);
+				if (result.isFail()) {
+					continue;
+				}
+				if (selected == null || result.score() > selected.score()) {
+					selected = result;
+				}
+			} catch (Throwable e) {
+				WailaExceptionHandler.handleErr(e, null, null);
+			}
+		}
+		if (selected != null) {
+			selected.action().accept(Minecraft.getInstance().screen);
 		}
 	}
 

@@ -1,5 +1,7 @@
 package snownee.jade.compat;
 
+import org.jetbrains.annotations.Nullable;
+
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.VanillaTypes;
@@ -11,15 +13,12 @@ import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.api.runtime.IRecipesGui;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import snownee.jade.Jade;
-import snownee.jade.JadeClient;
-import snownee.jade.api.Accessor;
-import snownee.jade.impl.ObjectDataCenter;
+import snownee.jade.api.JadeIds;
 
 @JeiPlugin
-public class JEICompat implements IModPlugin {
+public class JEICompat implements IModPlugin, RecipeLookupPlugin {
 
-	public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(Jade.ID, "main");
+	public static final ResourceLocation ID = JadeIds.JADE("main");
 	private static IJeiRuntime runtime;
 	private static IJeiHelpers helpers;
 
@@ -38,30 +37,19 @@ public class JEICompat implements IModPlugin {
 		JEICompat.runtime = runtime;
 	}
 
-	public static void onKeyPressed(int action) {
-		if (runtime == null || JadeClient.showRecipes == null || JadeClient.showUses == null) {
-			return;
-		}
-		if (action != 1) {
-			return;
-		}
-		boolean showRecipes = JadeClient.showRecipes.consumeClick();
-		boolean showUses = JadeClient.showUses.consumeClick();
-		if (!showRecipes && !showUses) {
-			return;
-		}
-		Accessor<?> accessor = ObjectDataCenter.get();
-		if (accessor == null) {
-			return;
-		}
-		ItemStack stack = accessor.getPickedResult();
-		if (stack.isEmpty()) {
-			return;
-		}
-
-		IRecipesGui gui = runtime.getRecipesGui();
-		IFocusFactory factory = helpers.getFocusFactory();
-
-		gui.show(factory.createFocus(showUses ? RecipeIngredientRole.INPUT : RecipeIngredientRole.OUTPUT, VanillaTypes.ITEM_STACK, stack));
+	@Override
+	public RecipeLookupResult lookup(ItemStack itemStack, @Nullable ResourceLocation specialId, boolean uses) {
+		return new RecipeLookupResult(
+				0.9f, screen -> {
+			if (runtime == null || helpers == null) {
+				return;
+			}
+			IRecipesGui gui = runtime.getRecipesGui();
+			IFocusFactory factory = helpers.getFocusFactory();
+			gui.show(factory.createFocus(
+					uses ? RecipeIngredientRole.INPUT : RecipeIngredientRole.OUTPUT,
+					VanillaTypes.ITEM_STACK,
+					itemStack));
+		});
 	}
 }
