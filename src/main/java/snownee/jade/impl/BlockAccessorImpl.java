@@ -82,7 +82,7 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 			tag.putInt("x", pos.getX());
 			tag.putInt("y", pos.getY());
 			tag.putInt("z", pos.getZ());
-			tag.putString("BlockId", CommonProxy.getId(accessor.getBlock()).toString());
+			tag.putString("BlockId", CommonProxy.getId(message.data().blockState.getBlock()).toString());
 			responseSender.accept(tag);
 		});
 	}
@@ -253,7 +253,7 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 				StreamCodec.of(FriendlyByteBuf::writeBlockHitResult, FriendlyByteBuf::readBlockHitResult),
 				SyncData::hit,
 				ByteBufCodecs.idMapper(Block.BLOCK_STATE_REGISTRY),
-				SyncData::blockState,
+				SyncData::blockState, //TODO(1.21.9) remove this member
 				ItemStack.OPTIONAL_STREAM_CODEC,
 				SyncData::fakeBlock,
 				SyncData::new
@@ -265,6 +265,7 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 
 		public BlockAccessor unpack(ServerPlayer player) {
 			Supplier<BlockEntity> blockEntity = null;
+			BlockState blockState = player.level().getBlockState(hit.getBlockPos());
 			if (blockState.hasBlockEntity()) {
 				blockEntity = Suppliers.memoize(() -> player.level().getBlockEntity(hit.getBlockPos()));
 			}

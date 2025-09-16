@@ -21,7 +21,6 @@ import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import snownee.jade.api.config.IWailaConfig;
-import snownee.jade.util.CommonProxy;
 import snownee.jade.util.ModIdentification;
 
 @Mixin(CreativeModeInventoryScreen.class)
@@ -68,7 +67,7 @@ public class CreativeModeInventoryScreenMixin {
 		List<Component> tooltip = original.call(itemStack);
 		int i = index.get();
 		if (IWailaConfig.get().general().showItemModNameTooltip() && i > 0 && i < tooltip.size()) {
-			String modName = CommonProxy.getModIdFromItem(itemStack);
+			String modName = ModIdentification.getModId(itemStack);
 			modName = ModIdentification.getModFullName(modName).orElse(modName);
 			if (tabNames.get() != null) {
 				String modNameLower = modName.toLowerCase(Locale.ENGLISH);

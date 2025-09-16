@@ -55,6 +55,9 @@ public class WrappedHierarchyLookup<T extends IJadeProvider> extends HierarchyLo
 	}
 
 	public boolean hitsAny(Accessor<?> accessor, BiPredicate<T, Accessor<?>> predicate) {
+		if (accessor instanceof BlockAccessor blockAccessor && blockAccessor.isFakeBlock()) {
+			return true;
+		}
 		for (T provider : wrappedGet(accessor)) {
 			if (predicate.test(provider, accessor)) {
 				return true;

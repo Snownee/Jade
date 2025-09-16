@@ -209,9 +209,9 @@ public class VanillaPlugin implements IWailaPlugin {
 
 		registration.registerItemStorageClient(CampfireProvider.INSTANCE);
 
+		registration.addRayTraceCallback(-10010, DatapackBlockManager::override);
 		registration.addRayTraceCallback(-1000, JadeClient::limitMobEffectFog);
 		registration.addRayTraceCallback(-10, JadeClient::builtInOverrides);
-		registration.addRayTraceCallback(5000, DatapackBlockManager::override);
 		registration.addAfterRenderCallback(100, JadeClient::drawBreakingProgress);
 
 		registration.markAsClientFeature(JadeIds.MC_EFFECTIVE_TOOL);

@@ -1,49 +1,88 @@
 package snownee.jade.overlay;
 
 import java.util.List;
-import java.util.Set;
+import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
-import com.google.common.collect.Sets;
-
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.ints.IntSets;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
+import snownee.jade.Jade;
 import snownee.jade.api.Accessor;
 import snownee.jade.impl.BlockAccessorImpl;
 
 public class DatapackBlockManager {
-	private static final Set<BlockPos> itemFrames = Sets.newConcurrentHashSet();
+	public static final Logger LOGGER = Jade.LOGGER;
+	private static final IntSet displays = IntSets.synchronize(IntOpenHashSet.of());
 
 	public static void onEntityJoin(Entity entity) {
-		if (entity.getType() == EntityType.ITEM_FRAME || entity.getType() == EntityType.GLOW_ITEM_FRAME) {
-			itemFrames.add(entity.blockPosition());
+		if (isAcceptableEntity(entity)) {
+			displays.add(entity.getId());
 		}
 	}
 
 	public static void onEntityLeave(Entity entity) {
-		if (entity.getType() == EntityType.ITEM_FRAME || entity.getType() == EntityType.GLOW_ITEM_FRAME) {
-			BlockPos pos = entity.blockPosition();
-			getFakeBlock(entity.level(), pos);
+		if (isAcceptableEntity(entity)) {
+			displays.remove(entity.getId());
 		}
 	}
 
 	public static ItemStack getFakeBlock(LevelAccessor level, BlockPos pos) {
-		if (itemFrames.contains(pos)) {
-			List<ItemFrame> entities = level.getEntitiesOfClass(ItemFrame.class, new AABB(pos), $ -> {
-				return $.isInvisible() && $.isAlive();
-			});
-			if (entities.isEmpty()) {
-				itemFrames.remove(pos);
-			} else {
-				return entities.getFirst().getItem();
+		if (displays.isEmpty()) {
+			return ItemStack.EMPTY;
+		}
+		List<Display> entities = level.getEntitiesOfClass(Display.class, new AABB(pos), DatapackBlockManager::isAcceptableEntity);
+		if (!entities.isEmpty()) {
+			ItemStack selected = ItemStack.EMPTY;
+			float selectedScore = 0f;
+			for (Display display : entities) {
+				if (!displays.contains(display.getId())) {
+					continue;
+				}
+				ItemStack itemStack = ItemStack.EMPTY;
+				if (display instanceof Display.BlockDisplay blockDisplay) {
+					itemStack = blockDisplay.getBlockState().getCloneItemStack(level, pos, false);
+				} else if (display instanceof Display.ItemDisplay itemDisplay) {
+					itemStack = itemDisplay.getItemStack();
+				}
+				if (itemStack.isEmpty()) {
+					continue;
+				}
+				float score = 0f;
+				DataComponentPatch componentsPatch = itemStack.getComponentsPatch();
+				Optional<? extends CustomData> customData = componentsPatch.get(DataComponents.CUSTOM_DATA);
+				if (customData != null && customData.isPresent()) {
+					CustomData data = customData.get();
+					if (data.contains("$jade:stack")) {
+						score += 10f;
+					} else if (data.contains("$polymer:stack")) {
+						score += 2f;
+					}
+				}
+				Optional<? extends ResourceLocation> itemModel = componentsPatch.get(DataComponents.ITEM_MODEL);
+				if (itemModel != null && itemModel.isPresent()) {
+					score += 1f;
+				}
+				if (score > selectedScore) {
+					selected = itemStack;
+					selectedScore = score;
+				}
 			}
+			return selected;
 		}
 		return ItemStack.EMPTY;
 	}
@@ -54,6 +93,10 @@ public class DatapackBlockManager {
 			target.setFakeBlock(getFakeBlock(target.getLevel(), target.getPosition()));
 		}
 		return accessor;
+	}
+
+	public static boolean isAcceptableEntity(Entity entity) {
+		return entity.getType() == EntityType.BLOCK_DISPLAY || entity.getType() == EntityType.ITEM_DISPLAY;
 	}
 
 }

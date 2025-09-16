@@ -67,7 +67,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionContents;
-import net.minecraft.world.item.component.CustomModelData;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
@@ -136,16 +135,6 @@ public final class CommonProxy implements ModInitializer {
 	}
 
 	public static String getModIdFromItem(ItemStack stack) {
-		if (isPhysicallyClient()) {
-			CustomModelData modelData = stack.getOrDefault(DataComponents.CUSTOM_MODEL_DATA, CustomModelData.EMPTY);
-			if (!CustomModelData.EMPTY.equals(modelData)) {
-				for (String string : modelData.strings()) {
-					if (string.startsWith("namespace:")) {
-						return string.substring(10);
-					}
-				}
-			}
-		}
 		String modid;
 		try {
 			modid = stack.getItem().getCreatorNamespace(stack);
