@@ -30,7 +30,7 @@ public class REICompat implements RecipeLookupPlugin {
 			return RecipeLookupResult.FAIL;
 		}
 		return new RecipeLookupResult(
-				1f, screen -> {
+				"roughlyenoughitems", 1f, (screen, results) -> {
 			if (screen == null) {
 				// https://github.com/shedaniel/RoughlyEnoughItems/issues/516
 				Minecraft.getInstance().setScreen(new DummyScreen());

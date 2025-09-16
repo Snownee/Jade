@@ -24,7 +24,8 @@ public class PolydexCompat implements RecipeLookupPlugin {
 		}
 		ResourceLocation id = specialId != null ? specialId : itemStack.getItemHolder().unwrapKey().orElseThrow().location();
 		return new RecipeLookupResult(
+				"polydex",
 				specialId != null ? 10f : 0.1f,
-				screen -> connection.sendCommand("polydex %s %s".formatted(uses ? "entry_usage" : "entry_result", id)));
+				(s, results) -> connection.sendCommand("polydex %s %s".formatted(uses ? "entry_usage" : "entry_result", id)));
 	}
 }
