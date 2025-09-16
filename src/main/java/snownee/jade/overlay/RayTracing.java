@@ -12,12 +12,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
@@ -39,23 +36,6 @@ public class RayTracing {
 	private Vec3 hitLocation = Vec3.ZERO;
 
 	public RayTracing() {
-	}
-
-	public static BlockState wrapBlock(BlockGetter level, BlockHitResult hit, CollisionContext context) {
-		if (hit.getType() != HitResult.Type.BLOCK) {
-			return Blocks.AIR.defaultBlockState();
-		}
-		BlockState blockState = level.getBlockState(hit.getBlockPos());
-		FluidState fluidState = blockState.getFluidState();
-		if (!fluidState.isEmpty()) {
-			if (blockState.is(Blocks.BARRIER) && WailaCommonRegistration.instance().blockOperations().shouldHide(blockState)) {
-				return fluidState.createLegacyBlock();
-			}
-			if (blockState.getShape(level, hit.getBlockPos(), context).isEmpty()) {
-				return fluidState.createLegacyBlock();
-			}
-		}
-		return blockState;
 	}
 
 	// from ProjectileUtil
@@ -192,22 +172,13 @@ public class RayTracing {
 			// weird, we didn't hit a block in our way. try the vanilla result
 			blockResult = hit;
 		}
-		if (blockResult.getType() == Type.BLOCK) {
-			BlockState state = wrapBlock(world, blockResult, collisionContext);
-			if (state.isAir() || WailaCommonRegistration.instance().blockOperations().shouldHide(state)) {
-				blockResult = null;
-			}
-		} else {
+		if (blockResult.getType() != Type.BLOCK) {
 			blockResult = null;
 		}
 		if (blockResult == null && fluidMode == IWailaConfig.FluidMode.FALLBACK) {
 			context = new ClipContext(traceStart, traceEnd, ClipContext.Block.OUTLINE, ClipContext.Fluid.ANY, collisionContext);
 			blockResult = world.clip(context);
 			hitLocation = blockResult.getLocation();
-			BlockState state = wrapBlock(world, blockResult, collisionContext);
-			if (state.isAir() || WailaCommonRegistration.instance().blockOperations().shouldHide(state)) {
-				blockResult = null;
-			}
 		}
 
 		target = blockResult;

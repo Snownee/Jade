@@ -9,9 +9,11 @@ import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import com.mojang.serialization.MapCodec;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -21,6 +23,7 @@ import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.block.Block;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.TraceableException;
@@ -37,6 +40,10 @@ public class ModIdentification implements KeyedResourceManagerReloadListener {
 	private static final Map<String, Optional<String>> CUT_NAMES = Maps.newConcurrentMap();
 	@Nullable
 	private static WordCutter wordCutter;
+	public static final String JADE_STACK = "$jade:stack";
+	public static final MapCodec<ResourceLocation> JADE_STACK_ID_CODEC = ResourceLocation.CODEC.fieldOf("id").fieldOf(JADE_STACK);
+	public static final String POLYMER_STACK = "$polymer:stack";
+	public static final MapCodec<ResourceLocation> POLYMER_STACK_ID_CODEC = ResourceLocation.CODEC.fieldOf("id").fieldOf(POLYMER_STACK);
 
 	public static WordCutter wordCutter() {
 		WordCutter cutter = wordCutter;
@@ -141,6 +148,10 @@ public class ModIdentification implements KeyedResourceManagerReloadListener {
 					if (I18n.exists(key)) {
 						return Optional.of(I18n.get(key));
 					}
+					key = "itemGroup." + $;
+					if (I18n.exists(key)) {
+						return Optional.of(I18n.get(key));
+					}
 					return ClientProxy.getModName($).map(ChatFormatting::stripFormatting);
 				});
 	}
@@ -159,6 +170,26 @@ public class ModIdentification implements KeyedResourceManagerReloadListener {
 		return getModName(id);
 	}
 
+	public static Optional<ResourceLocation> getSpecialId(ItemStack stack) {
+		CustomData data = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+		if (!CustomData.EMPTY.equals(data)) {
+			if (data.contains(JADE_STACK)) {
+				return data.read(JADE_STACK_ID_CODEC).result();
+			} else if (data.contains(POLYMER_STACK)) {
+				return data.read(POLYMER_STACK_ID_CODEC).result();
+			}
+		}
+		return Optional.empty();
+	}
+
+	public static String getModId(ItemStack stack) {
+		Optional<ResourceLocation> specialId = getSpecialId(stack);
+		if (specialId.isPresent()) {
+			return specialId.orElseThrow().getNamespace();
+		}
+		return CommonProxy.getModIdFromItem(stack);
+	}
+
 	public static String getModName(ItemStack stack) {
 		String id;
 		try {
@@ -168,7 +199,7 @@ public class ModIdentification implements KeyedResourceManagerReloadListener {
 					return s;
 				}
 			}
-			id = CommonProxy.getModIdFromItem(stack);
+			id = getModId(stack);
 		} catch (Throwable e) {
 			throw TraceableException.create(e, BuiltInRegistries.ITEM.getKey(stack.getItem()).getNamespace());
 		}

@@ -246,14 +246,12 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 		}
 	}
 
-	public record SyncData(boolean showDetails, BlockHitResult hit, BlockState blockState, ItemStack fakeBlock, CompoundTag data) {
+	public record SyncData(boolean showDetails, BlockHitResult hit, ItemStack fakeBlock, CompoundTag data) {
 		public static final StreamCodec<RegistryFriendlyByteBuf, SyncData> STREAM_CODEC = StreamCodec.composite(
 				ByteBufCodecs.BOOL,
 				SyncData::showDetails,
 				StreamCodec.of(FriendlyByteBuf::writeBlockHitResult, FriendlyByteBuf::readBlockHitResult),
 				SyncData::hit,
-				ByteBufCodecs.idMapper(Block.BLOCK_STATE_REGISTRY),
-				SyncData::blockState,
 				ItemStack.OPTIONAL_STREAM_CODEC,
 				SyncData::fakeBlock,
 				ByteBufCodecs.COMPOUND_TAG,
@@ -265,13 +263,13 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 			this(
 					accessor.showDetails(),
 					accessor.getHitResult(),
-					accessor.getBlockState(),
 					accessor.getFakeBlock(),
 					accessor.getServerData());
 		}
 
 		public BlockAccessor unpack(ServerPlayer player) {
 			Supplier<BlockEntity> blockEntity = null;
+			BlockState blockState = player.level().getBlockState(hit.getBlockPos());
 			if (blockState.hasBlockEntity()) {
 				blockEntity = Suppliers.memoize(() -> player.level().getBlockEntity(hit.getBlockPos()));
 			}

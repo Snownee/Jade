@@ -24,7 +24,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.phys.shapes.CollisionContext;
 import snownee.jade.Jade;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.AccessorClientHandler;
@@ -138,8 +137,13 @@ public class WailaTickHandler {
 
 		Accessor<?> accessor;
 		boolean useRayTraceCallback = true;
+		outer:
 		if (target instanceof BlockHitResult blockTarget && blockTarget.getType() != HitResult.Type.MISS) {
-			BlockState state = RayTracing.wrapBlock(level, blockTarget, CollisionContext.of(entity));
+			BlockState state = level.getBlockState(blockTarget.getBlockPos());
+			if (state.isAir()) {
+				accessor = createEmpty(target);
+				break outer;
+			}
 			BlockEntity tileEntity = level.getBlockEntity(blockTarget.getBlockPos());
 			/* off */
 			accessor = WailaClientRegistration.instance().blockAccessor()

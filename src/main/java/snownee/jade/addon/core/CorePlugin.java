@@ -1,8 +1,16 @@
 package snownee.jade.addon.core;
 
+import org.jetbrains.annotations.Nullable;
+
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import snownee.jade.api.Accessor;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EmptyAccessor;
 import snownee.jade.api.EntityAccessor;
@@ -11,9 +19,12 @@ import snownee.jade.api.IWailaCommonRegistration;
 import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.WailaPlugin;
+import snownee.jade.api.config.TargetOperationRepository;
 import snownee.jade.impl.BlockAccessorClientHandler;
 import snownee.jade.impl.EmptyAccessorClientHandler;
 import snownee.jade.impl.EntityAccessorClientHandler;
+import snownee.jade.impl.WailaClientRegistration;
+import snownee.jade.impl.WailaCommonRegistration;
 
 @WailaPlugin
 public class CorePlugin implements IWailaPlugin {
@@ -49,5 +60,29 @@ public class CorePlugin implements IWailaPlugin {
 		registration.markAsClientFeature(JadeIds.CORE_REL_COORDINATES);
 		registration.markAsClientFeature(JadeIds.CORE_MOD_NAME);
 		registration.markAsClientFeature(JadeIds.CORE_BLOCK_FACE);
+
+		registration.addRayTraceCallback(-10000, this::hideBlocks);
+	}
+
+	private @Nullable Accessor<?> hideBlocks(HitResult hit, @Nullable Accessor<?> accessor, @Nullable Accessor<?> original) {
+		if (accessor instanceof BlockAccessor blockAccessor && !blockAccessor.isFakeBlock()) {
+			TargetOperationRepository<Block, BlockState> operations = WailaCommonRegistration.instance().blockOperations();
+			if (operations.shouldHide(blockAccessor.getBlockState())) {
+				BlockState blockState = blockAccessor.getBlockState();
+				FluidState fluidState = blockState.getFluidState();
+				if (!fluidState.isEmpty()) {
+					if (blockState.getShape(accessor.getLevel(), blockAccessor.getPosition(), CollisionContext.of(accessor.getPlayer()))
+							.isEmpty() || blockState.is(Blocks.BARRIER) && operations.shouldHide(blockState)) {
+						return WailaClientRegistration.instance()
+								.blockAccessor()
+								.from(blockAccessor)
+								.blockState(fluidState.createLegacyBlock())
+								.build();
+					}
+				}
+				return null;
+			}
+		}
+		return accessor;
 	}
 }
