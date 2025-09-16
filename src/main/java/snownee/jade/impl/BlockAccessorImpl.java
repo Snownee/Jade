@@ -114,6 +114,9 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 
 	@Override
 	public ItemStack getPickedResult() {
+		if (isFakeBlock()) {
+			return getFakeBlock();
+		}
 		return CommonProxy.getBlockPickedResult(blockState, getPlayer(), getHitResult());
 	}
 

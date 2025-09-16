@@ -83,6 +83,8 @@ import snownee.jade.api.view.IClientExtensionProvider;
 import snownee.jade.api.view.ViewGroup;
 import snownee.jade.command.JadeClientCommand;
 import snownee.jade.compat.JEICompat;
+import snownee.jade.compat.PolydexCompat;
+import snownee.jade.compat.REICompat;
 import snownee.jade.gui.PreviewOptionsScreen;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.WailaClientRegistration;
@@ -97,8 +99,6 @@ import snownee.jade.overlay.OverlayRenderer;
 
 public final class ClientProxy implements ClientModInitializer {
 
-	public static boolean hasJEI = CommonProxy.isModLoaded("jei");
-	public static boolean hasREI = false; //isModLoaded("roughlyenoughitems");
 	public static boolean hasFastScroll = CommonProxy.isModLoaded("fastscroll");
 	public static boolean hasAccessibilityMod = CommonProxy.isModLoaded("minecraft_access");
 	private static boolean bossbarShown;
@@ -156,12 +156,6 @@ public final class ClientProxy implements ClientModInitializer {
 
 	private static void onKeyPressed(Minecraft mc) {
 		JadeClient.onKeyPressed(1);
-		if (JadeClient.showUses != null) {
-			//REICompat.onKeyPressed(1);
-			if (hasJEI) {
-				JEICompat.onKeyPressed(1);
-			}
-		}
 	}
 
 	private static void onGui(Screen screen) {
@@ -175,7 +169,7 @@ public final class ClientProxy implements ClientModInitializer {
 	}
 
 	public static boolean shouldRegisterRecipeViewerKeys() {
-		return hasJEI || hasREI;
+		return true;
 	}
 
 	public static Element elementFromLiquid(BlockState blockState) {
@@ -345,5 +339,13 @@ public final class ClientProxy implements ClientModInitializer {
 		CommonLifecycleEvents.TAGS_LOADED.register((registryAccess, client) -> {
 			HarvestToolProvider.INSTANCE.invalidateCache();
 		});
+
+		JadeClient.rlPlugins.add(new PolydexCompat());
+		if (CommonProxy.isModLoaded("roughlyenoughitems")) {
+			JadeClient.rlPlugins.add(new REICompat());
+		}
+		if (CommonProxy.isModLoaded("jei")) {
+			JadeClient.rlPlugins.add(new JEICompat());
+		}
 	}
 }

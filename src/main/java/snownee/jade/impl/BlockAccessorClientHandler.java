@@ -62,13 +62,9 @@ public class BlockAccessorClientHandler implements AccessorClientHandler<BlockAc
 		}
 		Element icon = null;
 
-		if (accessor.isFakeBlock()) {
-			icon = JadeUI.item(accessor.getFakeBlock());
-		} else {
-			ItemStack pick = accessor.getPickedResult();
-			if (!pick.isEmpty()) {
-				icon = JadeUI.item(pick);
-			}
+		ItemStack pick = accessor.getPickedResult();
+		if (!pick.isEmpty()) {
+			icon = JadeUI.item(pick);
 		}
 
 		if (JadeUI.isEmptyElement(icon) && block.asItem() != Items.AIR) {

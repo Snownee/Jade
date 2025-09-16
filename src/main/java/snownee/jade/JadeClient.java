@@ -57,6 +57,8 @@ import snownee.jade.api.ui.BoxElement;
 import snownee.jade.api.ui.ColorPalette;
 import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.ui.TooltipAnimation;
+import snownee.jade.compat.RecipeLookupPlugin;
+import snownee.jade.compat.RecipeLookupResult;
 import snownee.jade.gui.HomeConfigScreen;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.theme.ThemeHelper;
@@ -73,6 +75,7 @@ public final class JadeClient {
 	public static final SystemToast.SystemToastId JADE_PLEASE_WAIT = new SystemToast.SystemToastId(2000L);
 	public static final KeyMapping[] profiles = new KeyMapping[4];
 	public static final KeyMapping.Category keyMappingCategory = KeyMapping.Category.register(JadeIds.JADE("main"));
+	public static final List<RecipeLookupPlugin> rlPlugins = Lists.newArrayList();
 	private static final WailaTickHandler tickHandler = new WailaTickHandler();
 	public static KeyMapping openConfig;
 	public static KeyMapping showOverlay;
@@ -126,12 +129,11 @@ public final class JadeClient {
 			if (mode == DisplayMode.TOGGLE) {
 				general.setDisplayTooltip(!general.shouldDisplayTooltip());
 				if (!general.shouldDisplayTooltip() && Jade.history().hintOverlayToggle) {
+					mc.getChatListener().handleSystemMessage(Component.translatable("toast.jade.toggle_hint.1"), false);
 					mc.getChatListener().handleSystemMessage(
-							Component.translatable("toast.jade.toggle_hint.1"),
-							false);
-					mc.getChatListener().handleSystemMessage(
-							Component.translatable("toast.jade.toggle_hint.2", showOverlay.getTranslatedKeyMessage()),
-							false);
+							Component.translatable(
+									"toast.jade.toggle_hint.2",
+									showOverlay.getTranslatedKeyMessage()), false);
 					Jade.history().hintOverlayToggle = false;
 				}
 				narrateKey("show_overlay", general.shouldDisplayTooltip());
@@ -151,12 +153,11 @@ public final class JadeClient {
 			if (accessibility.getTTSMode() == TTSMode.TOGGLE) {
 				accessibility.toggleTTS();
 				if (accessibility.shouldEnableTextToSpeech() && Jade.history().hintNarratorToggle) {
+					mc.getChatListener().handleSystemMessage(Component.translatable("toast.jade.tts_hint.1"), false);
 					mc.getChatListener().handleSystemMessage(
-							Component.translatable("toast.jade.tts_hint.1"),
-							false);
-					mc.getChatListener().handleSystemMessage(
-							Component.translatable("toast.jade.tts_hint.2", narrate.getTranslatedKeyMessage()),
-							false);
+							Component.translatable(
+									"toast.jade.tts_hint.2",
+									narrate.getTranslatedKeyMessage()), false);
 					Jade.history().hintNarratorToggle = false;
 				}
 				IWailaConfig.get().save();
@@ -174,6 +175,46 @@ public final class JadeClient {
 					}
 				}
 			}
+		}
+
+		while (showUses != null && showUses.consumeClick()) {
+			lookupRecipes(true);
+		}
+
+		while (showRecipes != null && showRecipes.consumeClick()) {
+			lookupRecipes(false);
+		}
+	}
+
+	public static void lookupRecipes(boolean uses) {
+		if (rlPlugins.isEmpty() || tickHandler.state == null) {
+			return;
+		}
+		Accessor<?> accessor = tickHandler.state.accessor();
+		if (accessor == null) {
+			return;
+		}
+		ItemStack itemStack = accessor.getPickedResult();
+		if (itemStack.isEmpty()) {
+			return;
+		}
+		ResourceLocation specialId = ModIdentification.getSpecialId(itemStack).orElse(null);
+		RecipeLookupResult selected = null;
+		for (RecipeLookupPlugin plugin : rlPlugins) {
+			try {
+				RecipeLookupResult result = plugin.lookup(itemStack, specialId, uses);
+				if (result.isFail()) {
+					continue;
+				}
+				if (selected == null || result.score() > selected.score()) {
+					selected = result;
+				}
+			} catch (Throwable e) {
+				WailaExceptionHandler.handleErr(e, null, null);
+			}
+		}
+		if (selected != null) {
+			selected.action().accept(Minecraft.getInstance().screen);
 		}
 	}
 
