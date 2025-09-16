@@ -40,7 +40,7 @@ public class JEICompat implements IModPlugin, RecipeLookupPlugin {
 	@Override
 	public RecipeLookupResult lookup(ItemStack itemStack, @Nullable ResourceLocation specialId, boolean uses) {
 		return new RecipeLookupResult(
-				0.9f, screen -> {
+				"jei", 0.9f, (s, results) -> {
 			if (runtime == null || helpers == null) {
 				return;
 			}

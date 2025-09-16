@@ -203,12 +203,14 @@ public final class JadeClient {
 		}
 		ResourceLocation specialId = ModIdentification.getSpecialId(itemStack).orElse(null);
 		RecipeLookupResult selected = null;
+		List<RecipeLookupResult> results = Lists.newArrayList();
 		for (RecipeLookupPlugin plugin : rlPlugins) {
 			try {
 				RecipeLookupResult result = plugin.lookup(itemStack, specialId, uses);
 				if (result.isFail()) {
 					continue;
 				}
+				results.add(result);
 				if (selected == null || result.score() > selected.score()) {
 					selected = result;
 				}
@@ -217,7 +219,7 @@ public final class JadeClient {
 			}
 		}
 		if (selected != null) {
-			selected.action().accept(Minecraft.getInstance().screen);
+			selected.action().accept(Minecraft.getInstance().screen, results);
 		}
 	}
 
