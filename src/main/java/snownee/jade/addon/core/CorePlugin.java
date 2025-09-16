@@ -1,7 +1,5 @@
 package snownee.jade.addon.core;
 
-import org.jetbrains.annotations.Nullable;
-
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -64,8 +62,8 @@ public class CorePlugin implements IWailaPlugin {
 		registration.addRayTraceCallback(-10000, this::hideBlocks);
 	}
 
-	private @Nullable Accessor<?> hideBlocks(HitResult hit, @Nullable Accessor<?> accessor, @Nullable Accessor<?> original) {
-		if (accessor instanceof BlockAccessor blockAccessor && !blockAccessor.isFakeBlock()) {
+	private Accessor<?> hideBlocks(HitResult hit, Accessor<?> accessor, Accessor<?> original) {
+		if (!accessor.isServersideContent() && accessor instanceof BlockAccessor blockAccessor) {
 			TargetOperationRepository<Block, BlockState> operations = WailaCommonRegistration.instance().blockOperations();
 			if (operations.shouldHide(blockAccessor.getBlockState())) {
 				BlockState blockState = blockAccessor.getBlockState();

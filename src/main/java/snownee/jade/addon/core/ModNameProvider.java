@@ -29,8 +29,8 @@ public abstract class ModNameProvider implements IToggleableProvider {
 				return;
 			}
 			String modName = null;
-			if (accessor.isFakeBlock()) {
-				modName = ModIdentification.getModName(accessor.getFakeBlock());
+			if (accessor.isServersideContent()) {
+				modName = ModIdentification.getModName(accessor.getServersideRep());
 			}
 			if (modName == null && WailaCommonRegistration.instance().blockOperations().shouldPick(accessor.getBlockState())) {
 				ItemStack pick = accessor.getPickedResult();
@@ -56,7 +56,16 @@ public abstract class ModNameProvider implements IToggleableProvider {
 			if (Objects.equal(config.getEnum(JadeIds.CORE_MOD_NAME), Mode.OFF)) {
 				return;
 			}
-			tooltip.add(IThemeHelper.get().modName(ModIdentification.getModName(accessor.getEntity())));
+			String modName = null;
+			if (accessor.isServersideContent()) {
+				modName = ModIdentification.getModName(accessor.getServersideRep());
+			}
+			if (modName == null) {
+				modName = ModIdentification.getModName(accessor.getEntity());
+			}
+			if (!Strings.isNullOrEmpty(modName)) {
+				tooltip.add(IThemeHelper.get().modName(ModIdentification.getModName(accessor.getEntity())));
+			}
 		}
 	}
 

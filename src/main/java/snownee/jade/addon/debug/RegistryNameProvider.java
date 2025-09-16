@@ -40,8 +40,8 @@ public abstract class RegistryNameProvider implements IToggleableProvider {
 		@Override
 		public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 			ResourceLocation id = CommonProxy.getId(accessor.getBlock());
-			if (accessor.isFakeBlock()) {
-				id = ModIdentification.getSpecialId(accessor.getFakeBlock()).orElse(id);
+			if (accessor.isServersideContent()) {
+				id = ModIdentification.getSpecialId(accessor.getServersideRep()).orElse(id);
 			}
 			if (append(tooltip, id, config) && config.get(JadeIds.DEBUG_SPECIAL_REGISTRY_NAME)) {
 				if (accessor.getBlockEntity() != null) {
@@ -70,10 +70,13 @@ public abstract class RegistryNameProvider implements IToggleableProvider {
 
 		@Override
 		public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
-			if (append(tooltip, CommonProxy.getId(accessor.getEntity().getType()), config) &&
-					config.get(JadeIds.DEBUG_SPECIAL_REGISTRY_NAME)) {
+			ResourceLocation id = CommonProxy.getId(accessor.getEntity().getType());
+			if (accessor.isServersideContent()) {
+				id = ModIdentification.getSpecialId(accessor.getServersideRep()).orElse(id);
+			}
+			if (append(tooltip, id, config) && config.get(JadeIds.DEBUG_SPECIAL_REGISTRY_NAME)) {
 				if (accessor.getEntity() instanceof Painting painting) {
-					ResourceLocation id = painting.getVariant().unwrapKey().orElseThrow().location();
+					id = painting.getVariant().unwrapKey().orElseThrow().location();
 					String s = I18n.get("config.jade.plugin_jade.registry_name.special.painting", id);
 					tooltip.add(IWailaConfig.get().formatting().registryName(s), JadeIds.DEBUG_SPECIAL_REGISTRY_NAME);
 				}

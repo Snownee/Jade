@@ -114,7 +114,7 @@ public class HarvestToolProvider implements IBlockComponentProvider, KeyedResour
 			// player-sensitive method, used by Waystones
 			float destroyProgress = state.getDestroyProgress(player, level, pos);
 			if (destroySpeed < 0 || destroyProgress <= 0) {
-				if (!accessor.isFakeBlock() && config.get(JadeIds.MC_SHOW_UNBREAKABLE)) {
+				if (!accessor.isServersideContent() && config.get(JadeIds.MC_SHOW_UNBREAKABLE)) {
 					Component text = IThemeHelper.get().failure(Component.translatable("jade.harvest_tool.unbreakable"));
 					tooltip.add(JadeUI.text(text).narration(""));
 				}

@@ -42,13 +42,13 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 	private final BlockState blockState;
 	@Nullable
 	private final Supplier<BlockEntity> blockEntity;
-	private ItemStack fakeBlock;
+	private ItemStack serversideRep;
 
 	private BlockAccessorImpl(Builder builder) {
 		super(builder.level, builder.player, builder.serverData, Suppliers.ofInstance(builder.hit), builder.connected, builder.showDetails);
 		blockState = builder.blockState;
 		blockEntity = builder.blockEntity;
-		fakeBlock = builder.fakeBlock;
+		serversideRep = builder.serversideRep;
 	}
 
 	public static void handleRequest(RequestBlockPacket message, ServerPayloadContext context, Consumer<CompoundTag> responseSender) {
@@ -114,8 +114,8 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 
 	@Override
 	public ItemStack getPickedResult() {
-		if (isFakeBlock()) {
-			return getFakeBlock();
+		if (isServersideContent()) {
+			return getServersideRep();
 		}
 		return CommonProxy.getBlockPickedResult(blockState, getPlayer(), getHitResult());
 	}
@@ -127,17 +127,12 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 	}
 
 	@Override
-	public boolean isFakeBlock() {
-		return !fakeBlock.isEmpty();
+	public ItemStack getServersideRep() {
+		return serversideRep;
 	}
 
-	@Override
-	public ItemStack getFakeBlock() {
-		return fakeBlock;
-	}
-
-	public void setFakeBlock(ItemStack fakeBlock) {
-		this.fakeBlock = fakeBlock;
+	public void setServersideRep(ItemStack serversideRep) {
+		this.serversideRep = serversideRep;
 	}
 
 	@Override
@@ -162,7 +157,7 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 		private BlockHitResult hit;
 		private BlockState blockState = Blocks.AIR.defaultBlockState();
 		private Supplier<BlockEntity> blockEntity;
-		private ItemStack fakeBlock = ItemStack.EMPTY;
+		private ItemStack serversideRep = ItemStack.EMPTY;
 		private boolean verify;
 
 		@Override
@@ -214,8 +209,8 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 		}
 
 		@Override
-		public Builder fakeBlock(ItemStack stack) {
-			fakeBlock = stack;
+		public Builder serversideRep(ItemStack stack) {
+			serversideRep = stack;
 			return this;
 		}
 
@@ -229,7 +224,7 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 			hit = accessor.getHitResult();
 			blockEntity = accessor::getBlockEntity;
 			blockState = accessor.getBlockState();
-			fakeBlock = accessor.getFakeBlock();
+			serversideRep = accessor.getServersideRep();
 			return this;
 		}
 
@@ -249,14 +244,14 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 		}
 	}
 
-	public record SyncData(boolean showDetails, BlockHitResult hit, ItemStack fakeBlock, CompoundTag data) {
+	public record SyncData(boolean showDetails, BlockHitResult hit, ItemStack serversideRep, CompoundTag data) {
 		public static final StreamCodec<RegistryFriendlyByteBuf, SyncData> STREAM_CODEC = StreamCodec.composite(
 				ByteBufCodecs.BOOL,
 				SyncData::showDetails,
 				StreamCodec.of(FriendlyByteBuf::writeBlockHitResult, FriendlyByteBuf::readBlockHitResult),
 				SyncData::hit,
 				ItemStack.OPTIONAL_STREAM_CODEC,
-				SyncData::fakeBlock,
+				SyncData::serversideRep,
 				ByteBufCodecs.COMPOUND_TAG,
 				SyncData::data,
 				SyncData::new
@@ -266,7 +261,7 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 			this(
 					accessor.showDetails(),
 					accessor.getHitResult(),
-					accessor.getFakeBlock(),
+					accessor.getServersideRep(),
 					accessor.getServerData());
 		}
 
@@ -283,7 +278,7 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 					.hit(hit)
 					.blockState(blockState)
 					.blockEntity(blockEntity)
-					.fakeBlock(fakeBlock)
+					.serversideRep(serversideRep)
 					.serverData(data)
 					.build();
 		}

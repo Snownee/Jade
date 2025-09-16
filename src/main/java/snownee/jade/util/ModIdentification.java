@@ -173,10 +173,10 @@ public class ModIdentification implements KeyedResourceManagerReloadListener {
 	public static Optional<ResourceLocation> getSpecialId(ItemStack stack) {
 		CustomData data = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
 		if (!CustomData.EMPTY.equals(data)) {
-			if (data.contains(JADE_STACK)) {
-				return data.read(JADE_STACK_ID_CODEC).result();
-			} else if (data.contains(POLYMER_STACK)) {
-				return data.read(POLYMER_STACK_ID_CODEC).result();
+			if (data.tag.contains(JADE_STACK)) {
+				return data.tag.read(JADE_STACK_ID_CODEC);
+			} else if (data.tag.contains(POLYMER_STACK)) {
+				return data.tag.read(POLYMER_STACK_ID_CODEC);
 			}
 		}
 		return Optional.empty();

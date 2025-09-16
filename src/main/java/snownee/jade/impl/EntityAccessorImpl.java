@@ -82,6 +82,9 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 
 	@Override
 	public ItemStack getPickedResult() {
+		if (isServersideContent()) {
+			return getServersideRep();
+		}
 		return CommonProxy.getEntityPickedResult(entity.get(), getPlayer(), getHitResult());
 	}
 

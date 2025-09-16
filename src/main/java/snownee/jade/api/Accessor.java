@@ -55,4 +55,15 @@ public interface Accessor<T extends HitResult> {
 	boolean verifyData(CompoundTag data);
 
 	float tickRate();
+
+	/**
+	 * The targeting block is a custom block created by data pack
+	 */
+	default boolean isServersideContent() {
+		return !getServersideRep().isEmpty();
+	}
+
+	default ItemStack getServersideRep() {
+		return ItemStack.EMPTY;
+	}
 }

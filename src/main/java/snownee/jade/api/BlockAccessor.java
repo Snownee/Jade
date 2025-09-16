@@ -30,13 +30,6 @@ public interface BlockAccessor extends Accessor<BlockHitResult> {
 
 	Direction getSide();
 
-	/**
-	 * The targeting block is a custom block created by data pack
-	 */
-	boolean isFakeBlock();
-
-	ItemStack getFakeBlock();
-
 	@Override
 	default Class<? extends Accessor<?>> getAccessorType() {
 		return BlockAccessor.class;
@@ -64,7 +57,7 @@ public interface BlockAccessor extends Accessor<BlockHitResult> {
 
 		Builder blockEntity(Supplier<BlockEntity> blockEntity);
 
-		Builder fakeBlock(ItemStack stack);
+		Builder serversideRep(ItemStack stack);
 
 		Builder from(BlockAccessor accessor);
 

@@ -24,6 +24,7 @@ import net.minecraft.world.phys.HitResult;
 import snownee.jade.Jade;
 import snownee.jade.api.Accessor;
 import snownee.jade.impl.BlockAccessorImpl;
+import snownee.jade.util.ModIdentification;
 
 public class DatapackBlockManager {
 	public static final Logger LOGGER = Jade.LOGGER;
@@ -67,9 +68,9 @@ public class DatapackBlockManager {
 				Optional<? extends CustomData> customData = componentsPatch.get(DataComponents.CUSTOM_DATA);
 				if (customData != null && customData.isPresent()) {
 					CustomData data = customData.get();
-					if (data.contains("$jade:stack")) {
+					if (data.tag.contains(ModIdentification.JADE_STACK)) {
 						score += 10f;
-					} else if (data.contains("$polymer:stack")) {
+					} else if (data.tag.contains(ModIdentification.POLYMER_STACK)) {
 						score += 2f;
 					}
 				}
@@ -89,8 +90,8 @@ public class DatapackBlockManager {
 
 	@Nullable
 	public static Accessor<?> override(HitResult hitResult, @Nullable Accessor<?> accessor, @Nullable Accessor<?> originalAccessor) {
-		if (accessor instanceof BlockAccessorImpl target && target.getFakeBlock().isEmpty()) {
-			target.setFakeBlock(getFakeBlock(target.getLevel(), target.getPosition()));
+		if (accessor instanceof BlockAccessorImpl target && target.getServersideRep().isEmpty()) {
+			target.setServersideRep(getFakeBlock(target.getLevel(), target.getPosition()));
 		}
 		return accessor;
 	}

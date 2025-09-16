@@ -7,15 +7,19 @@ import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Preconditions;
+import com.mojang.serialization.MapCodec;
 
 import net.minecraft.client.GameNarrator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.StringUtil;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -50,6 +54,9 @@ import snownee.jade.track.ProgressTracker;
 import snownee.jade.util.ClientProxy;
 
 public class WailaTickHandler {
+	public static final String REMOVE_ELEMENTS = "$jade:remove";
+	public static final MapCodec<List<ResourceLocation>> REMOVE_ELEMENTS_CODEC = ResourceLocation.CODEC.listOf().fieldOf(REMOVE_ELEMENTS);
+
 	private String lastNarration = "";
 	private long lastNarrationTime = 0;
 	public ProgressTracker progressTracker = new ProgressTracker();
@@ -250,6 +257,16 @@ public class WailaTickHandler {
 			}
 		} else {
 			handler.gatherComponents(accessor, $ -> tooltip);
+		}
+
+		if (accessor.isServersideContent()) {
+			CustomData data = accessor.getServersideRep().getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+			if (data.tag.contains(REMOVE_ELEMENTS)) {
+				List<ResourceLocation> list = data.tag.read(REMOVE_ELEMENTS_CODEC).orElse(List.of());
+				for (ResourceLocation tag : list) {
+					tooltip.remove(tag);
+				}
+			}
 		}
 
 		tooltip.setIcon(themes.theme().modifyIcon(tooltip.getIcon()));
