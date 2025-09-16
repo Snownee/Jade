@@ -24,6 +24,7 @@ import net.minecraft.world.phys.HitResult;
 import snownee.jade.Jade;
 import snownee.jade.api.Accessor;
 import snownee.jade.impl.BlockAccessorImpl;
+import snownee.jade.util.ModIdentification;
 
 public class DatapackBlockManager {
 	public static final Logger LOGGER = Jade.LOGGER;
@@ -67,9 +68,9 @@ public class DatapackBlockManager {
 				Optional<? extends CustomData> customData = componentsPatch.get(DataComponents.CUSTOM_DATA);
 				if (customData != null && customData.isPresent()) {
 					CustomData data = customData.get();
-					if (data.contains("$jade:stack")) {
+					if (data.contains(ModIdentification.JADE_STACK)) {
 						score += 10f;
-					} else if (data.contains("$polymer:stack")) {
+					} else if (data.contains(ModIdentification.POLYMER_STACK)) {
 						score += 2f;
 					}
 				}

@@ -6,13 +6,17 @@ import java.util.concurrent.CompletableFuture;
 import org.apache.commons.lang3.mutable.MutableObject;
 
 import com.google.common.base.Preconditions;
+import com.mojang.serialization.MapCodec;
 
 import net.minecraft.client.GameNarrator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.StringUtil;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -22,6 +26,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import snownee.jade.Jade;
 import snownee.jade.api.Accessor;
+import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.callback.JadeBeforeTooltipCollectCallback;
@@ -44,6 +49,9 @@ import snownee.jade.track.ProgressTracker;
 import snownee.jade.util.ClientProxy;
 
 public class WailaTickHandler {
+	public static final String REMOVE_ELEMENTS = "$jade:remove";
+	public static final MapCodec<List<ResourceLocation>> REMOVE_ELEMENTS_CODEC = ResourceLocation.CODEC.listOf().fieldOf(REMOVE_ELEMENTS);
+
 	private String lastNarration = "";
 	private long lastNarrationTime = 0;
 	public BoxElementImpl rootElement;
@@ -224,6 +232,16 @@ public class WailaTickHandler {
 			}
 		} else {
 			handler.gatherComponents(accessor, $ -> tooltip);
+		}
+
+		if (accessor instanceof BlockAccessor blockAccessor && blockAccessor.isFakeBlock()) {
+			CustomData data = blockAccessor.getFakeBlock().getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+			if (data.contains(REMOVE_ELEMENTS)) {
+				List<ResourceLocation> list = data.read(REMOVE_ELEMENTS_CODEC).result().orElse(List.of());
+				for (ResourceLocation tag : list) {
+					tooltip.remove(tag);
+				}
+			}
 		}
 
 		tooltip.setIcon(themes.theme().modifyIcon(tooltip.getIcon()));
