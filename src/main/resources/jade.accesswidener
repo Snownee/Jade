@@ -105,3 +105,6 @@ accessible field net/minecraft/world/entity/animal/coppergolem/CopperGolem nextW
 accessible field net/minecraft/world/level/block/entity/SkullBlockEntity customName Lnet/minecraft/network/chat/Component;
 
 accessible field net/minecraft/world/item/component/CustomData tag Lnet/minecraft/nbt/CompoundTag;
+
+accessible method net/minecraft/world/entity/decoration/Mannequin getDescription ()Lnet/minecraft/network/chat/Component;
+accessible field net/minecraft/world/entity/decoration/Mannequin DEFAULT_DESCRIPTION Lnet/minecraft/network/chat/Component;

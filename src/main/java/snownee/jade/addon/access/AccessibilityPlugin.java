@@ -5,8 +5,10 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.decoration.Mannequin;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SignBlock;
+import snownee.jade.Jade;
 import snownee.jade.JadeClient;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.IWailaClientRegistration;
@@ -33,6 +35,9 @@ public class AccessibilityPlugin implements IWailaPlugin {
 		registration.registerEntityComponent(new EntityDetailsProvider(), Entity.class);
 		registration.registerEntityComponent(new EntityDetailsBodyProvider(), Entity.class);
 		registration.markAsClientFeature(JadeIds.ACCESS_ENTITY_DETAILS);
+
+		registration.registerEntityComponent(new NpcDescriptionProvider(), Mannequin.class);
+		registration.markAsClientFeature(JadeIds.ACCESS_NPC_DESCRIPTION);
 
 		registration.registerEntityComponent(new EntityVariantProvider(), LivingEntity.class);
 		registration.markAsClientFeature(JadeIds.ACCESS_ENTITY_VARIANT);

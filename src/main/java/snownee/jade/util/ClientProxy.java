@@ -82,9 +82,7 @@ import snownee.jade.api.view.ClientViewGroup;
 import snownee.jade.api.view.IClientExtensionProvider;
 import snownee.jade.api.view.ViewGroup;
 import snownee.jade.command.JadeClientCommand;
-import snownee.jade.compat.JEICompat;
 import snownee.jade.compat.PolydexCompat;
-import snownee.jade.compat.REICompat;
 import snownee.jade.gui.PreviewOptionsScreen;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.WailaClientRegistration;
@@ -342,10 +340,10 @@ public final class ClientProxy implements ClientModInitializer {
 
 		JadeClient.rlPlugins.add(new PolydexCompat());
 		if (CommonProxy.isModLoaded("roughlyenoughitems")) {
-			JadeClient.rlPlugins.add(new REICompat());
+			JadeClient.addRLPlugin("snownee.jade.compat.REICompat");
 		}
 		if (CommonProxy.isModLoaded("jei")) {
-			JadeClient.rlPlugins.add(new JEICompat());
+			JadeClient.addRLPlugin("snownee.jade.compat.JEICompat");
 		}
 	}
 }

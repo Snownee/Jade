@@ -99,6 +99,7 @@ public interface JadeIds {
 	ResourceLocation ACCESS_ENTITY_DETAILS_BODY = ACCESS("entity_body");
 	ResourceLocation ACCESS_ENTITY_VARIANT = ACCESS("entity_variant");
 	ResourceLocation ACCESS_HELD_ITEM = ACCESS("held_item");
+	ResourceLocation ACCESS_NPC_DESCRIPTION = ACCESS("npc_description");
 
 	static ResourceLocation JADE(String path) {
 		return ResourceLocation.fromNamespaceAndPath("jade", path);

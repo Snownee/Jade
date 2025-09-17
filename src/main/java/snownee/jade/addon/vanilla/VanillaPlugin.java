@@ -284,7 +284,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.setConfigCategoryOverride(JadeIds.MC_TNT_STABILITY, block);
 		registration.setConfigCategoryOverride(JadeIds.MC_TOTAL_ENCHANTMENT_POWER, block);
 		registration.setConfigCategoryOverride(JadeIds.MC_VILLAGER_PROFESSION, entity);
-		registration.setConfigCategoryOverride(JadeIds.MC_WAXED, block);
+		registration.setConfigCategoryOverride(JadeIds.MC_WAXED, both);
 		registration.setConfigCategoryOverride(JadeIds.MC_ZOMBIE_VILLAGER, entity);
 
 		WailaCommonRegistration.instance().priorities.putUnsafe(JadeIds.MC_ENTITY_ARMOR, -4499);

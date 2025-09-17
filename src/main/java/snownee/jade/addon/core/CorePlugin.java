@@ -78,7 +78,7 @@ public class CorePlugin implements IWailaPlugin {
 								.build();
 					}
 				}
-				return null;
+				return WailaClientRegistration.instance().emptyAccessor().hit(blockAccessor.getHitResult()).build();
 			}
 		}
 		return accessor;

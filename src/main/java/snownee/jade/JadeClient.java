@@ -419,4 +419,14 @@ public final class JadeClient {
 			KeyMappingEx.setActive(keyMapping, active);
 		}
 	}
+
+	public static void addRLPlugin(String clazz) {
+		try {
+			rlPlugins.add((RecipeLookupPlugin) Class.forName(clazz).getDeclaredConstructor().newInstance());
+		} catch (Throwable e) {
+			if (CommonProxy.isDevEnv()) {
+				Jade.LOGGER.warn("Failed to load recipe lookup plugin: {}", clazz, e);
+			}
+		}
+	}
 }
