@@ -1,10 +1,19 @@
 package snownee.jade.gui;
 
+import java.util.Objects;
+
+import com.mojang.blaze3d.platform.Window;
+
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
 import snownee.jade.JadeClient;
+import snownee.jade.api.ui.CopyBehavior;
 import snownee.jade.impl.ui.BoxElementImpl;
 import snownee.jade.overlay.OverlayRenderer;
 
@@ -74,5 +83,28 @@ public class PinScreen extends Screen {
 		} else {
 			super.mouseMoved(x, y);
 		}
+	}
+
+	@Override
+	public boolean keyPressed(KeyEvent keyEvent) {
+		BoxElementImpl root = JadeClient.tickHandler().rootElement;
+		if (root != null && keyEvent.isCopy()) {
+			Minecraft mc = Minecraft.getInstance();
+			Window window = mc.getWindow();
+			double mouseX = mc.mouseHandler.getScaledXPos(window);
+			double mouseY = mc.mouseHandler.getScaledYPos(window);
+			if (OverlayRenderer.animation.mapMousePosition(
+					mouseX, mouseY, (x, y) -> {
+						if (root.getChildAt(x, y).orElse(root) instanceof CopyBehavior behavior) {
+							return behavior.copyToClipboard(mc.keyboardHandler);
+						}
+						return false;
+					})) {
+				Objects.requireNonNull(minecraft).getSoundManager().play(SimpleSoundInstance.forUI(
+						SoundEvents.EXPERIENCE_ORB_PICKUP,
+						1.0F));
+			}
+		}
+		return super.keyPressed(keyEvent);
 	}
 }

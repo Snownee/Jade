@@ -9,10 +9,13 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3x2fStack;
 
 import com.google.common.base.Preconditions;
+import com.mojang.brigadier.Message;
 
+import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.client.gui.layouts.LayoutSettings;
 import net.minecraft.client.gui.narration.NarratedElementType;
@@ -27,7 +30,7 @@ import snownee.jade.gui.JadeLinearLayout;
 import snownee.jade.impl.ui.JadeUIInternal;
 import snownee.jade.overlay.DisplayHelper;
 
-public abstract class Element implements Renderable, LayoutElement, NarrationSupplier {
+public abstract class Element implements Renderable, LayoutElement, NarrationSupplier, GuiEventListener, CopyBehavior {
 
 	protected ResourceLocation tag;
 	protected int width;
@@ -180,6 +183,33 @@ public abstract class Element implements Renderable, LayoutElement, NarrationSup
 		}
 	}
 
+	@Override
+	public boolean isMouseOver(double mouseX, double mouseY) {
+		return mouseX >= getX() && mouseX < getX() + getWidth() && mouseY >= getY() && mouseY < getY() + getHeight();
+	}
+
+	@Override
+	public void setFocused(boolean bl) {}
+
+	@Override
+	public boolean isFocused() {
+		return false;
+	}
+
+	@Override
+	public boolean copyToClipboard(KeyboardHandler keyboardHandler) {
+		if (this instanceof Message message) {
+			keyboardHandler.setClipboard(message.getString());
+			return true;
+		}
+		Component component = cachedNarration();
+		if (component != null) {
+			keyboardHandler.setClipboard(component.getString());
+			return true;
+		}
+		return false;
+	}
+
 	public void renderDebug(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks, RenderDebugContext context) {
 		JadeInternals.getDisplayHelper().drawBorder(graphics, getRectangle(), 1, 0x88FF0000, true);
 		if (JadeUI.hasAltDown() && getTag() != null) {
@@ -206,10 +236,12 @@ public abstract class Element implements Renderable, LayoutElement, NarrationSup
 	public static class RenderDebugContext {
 		public final LayoutElement root;
 		public final Rect2f rootRect;
+		public final boolean renderChildren;
 
-		public RenderDebugContext(LayoutElement root, Rect2f rootRect) {
+		public RenderDebugContext(LayoutElement root, Rect2f rootRect, boolean renderChildren) {
 			this.root = root;
 			this.rootRect = rootRect;
+			this.renderChildren = renderChildren;
 		}
 	}
 }

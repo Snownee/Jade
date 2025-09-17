@@ -4,7 +4,6 @@ import org.joml.Matrix3x2fStack;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
@@ -18,7 +17,7 @@ import snownee.jade.api.ui.TextElement;
 import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.util.JadeLanguages;
 
-public class TextElementImpl extends TextElement implements GuiEventListener {
+public class TextElementImpl extends TextElement {
 
 	protected final FormattedText text;
 	protected float scale = 1;
@@ -100,16 +99,8 @@ public class TextElementImpl extends TextElement implements GuiEventListener {
 	}
 
 	@Override
-	public void setFocused(boolean bl) {}
-
-	@Override
-	public boolean isFocused() {
-		return false;
-	}
-
-	@Override
-	public boolean isMouseOver(double x, double y) {
-		return x >= textLeft() && x < textLeft() + textWidth && y >= getY() && y < getY() + height;
+	public boolean isMouseOver(double mouseX, double mouseY) {
+		return mouseX >= textLeft() && mouseX < textLeft() + textWidth && mouseY >= getY() && mouseY < getY() + height;
 	}
 
 	private int textLeft() {

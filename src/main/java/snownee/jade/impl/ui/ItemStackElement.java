@@ -2,8 +2,11 @@ package snownee.jade.impl.ui;
 
 import org.jetbrains.annotations.Nullable;
 
+import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.commands.arguments.item.ItemInput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
@@ -56,5 +59,16 @@ public class ItemStackElement extends Element {
 
 	public ItemStack getItem() {
 		return item;
+	}
+
+	@Override
+	public boolean copyToClipboard(KeyboardHandler keyboardHandler) {
+		ClientPacketListener connection = Minecraft.getInstance().getConnection();
+		if (item.isEmpty() || connection == null) {
+			return false;
+		}
+		ItemInput itemInput = new ItemInput(item.getItemHolder(), item.getComponentsPatch());
+		keyboardHandler.setClipboard(itemInput.serialize(connection.registryAccess()));
+		return true;
 	}
 }

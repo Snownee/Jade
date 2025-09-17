@@ -194,6 +194,9 @@ public class BoxElementImpl extends BoxElement implements ContainerEventHandler 
 	@Override
 	public void renderDebug(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks, RenderDebugContext context) {
 		super.renderDebug(graphics, mouseX, mouseY, partialTicks, context);
+		if (!context.renderChildren) {
+			return;
+		}
 		JadeUI.visitChildrenRecursive(
 				layout, layoutElement -> {
 					if (layoutElement instanceof Element element) {

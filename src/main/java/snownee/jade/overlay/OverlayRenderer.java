@@ -223,7 +223,11 @@ public class OverlayRenderer {
 		graphics.renderDeferredElements();
 		((JadeGuiGraphics) graphics).jade$setIgnoreScissorTest(false);
 		if (renderDebug) {
-			root.renderDebug(graphics, mouse.x, mouse.y, partialTicks, new Element.RenderDebugContext(root, rect));
+			root.renderDebug(graphics, mouse.x, mouse.y, partialTicks, new Element.RenderDebugContext(root, rect, true));
+		} else if (JadeUI.isPinned() && JadeUI.hasControlDown()) {
+			if (root.getChildAt(mouse.x, mouse.y).orElse(root) instanceof Element element) {
+				element.renderDebug(graphics, mouse.x, mouse.y, partialTicks, new Element.RenderDebugContext(root, rect, false));
+			}
 		}
 
 		if (tickHandler.state != null) {
