@@ -13,7 +13,7 @@ import snownee.jade.util.JadeCodecs;
 import snownee.jade.util.JsonConfig;
 
 public class ServerPluginConfig implements IPluginConfig {
-	public static final String FILE = Jade.ID + "/server-plugin-overrides.json";
+	public static final String FILE = Jade.ID + "/server-plugin-overrides";
 
 	public static final Codec<Map<ResourceLocation, Object>> DATA_CODEC = Codec.unboundedMap(
 			Codec.STRING,

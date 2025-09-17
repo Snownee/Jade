@@ -41,7 +41,7 @@ public class CampfireProvider implements IServerExtensionProvider<ItemStack>, IC
 					if (customData.isEmpty()) {
 						return null;
 					}
-					Optional<Integer> result = customData.copyTag().read(COOKING_TIME_CODEC);
+					Optional<Integer> result = customData.tag.read(COOKING_TIME_CODEC);
 					if (result.isEmpty()) {
 						return null;
 					}

@@ -15,6 +15,7 @@ import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ExtraCodecs;
 import snownee.jade.addon.core.ModNameProvider;
 import snownee.jade.addon.harvest.LootTableMineableCollector;
 import snownee.jade.api.IWailaPlugin;
@@ -32,6 +33,7 @@ public class Jade {
 	public static final String ID = "jade";
 	public static final String PROTOCOL_VERSION = "9";
 	public static final Logger LOGGER = LogUtils.getLogger();
+	public static final Set<String> DISABLED_PLUGINS = Sets.newHashSet();
 	private static final Supplier<JsonConfig<WailaConfig.Root>> rootConfig = Suppliers.memoize(() -> new JsonConfig<>(
 			ID + "/" + ID,
 			WailaConfig.Root.CODEC,
@@ -170,16 +172,30 @@ public class Jade {
 
 	public static void loadPlugins() {
 		List<CommonProxy.Entrypoint> entrypoints = CommonProxy.loadEntrypoints();
+		Set<String> disabledClasses = DISABLED_PLUGINS;
+		JsonConfig<List<String>> config = new JsonConfig<>(
+				ID + "/disabled_plugins",
+				ExtraCodecs.NON_EMPTY_STRING.listOf().optionalFieldOf("values", List.of()).codec(),
+				null,
+				List::of);
+		if (config.getFile().exists() && !config.get().isEmpty()) {
+			disabledClasses = Sets.newHashSet(disabledClasses);
+			disabledClasses.addAll(config.get());
+		}
 		Set<String> erroneousClasses = Sets.newHashSet();
-		loadPlugins(entrypoints, erroneousClasses, Set.of());
+		loadPlugins(entrypoints, disabledClasses, erroneousClasses, Set.of());
 		if (!erroneousClasses.isEmpty()) {
 			LOGGER.info("Trying to load plugins again without erroneous plugins");
-			loadPlugins(entrypoints, erroneousClasses, erroneousClasses);
+			loadPlugins(entrypoints, disabledClasses, erroneousClasses, erroneousClasses);
 		}
 		loadComplete();
 	}
 
-	private static void loadPlugins(List<CommonProxy.Entrypoint> entrypoints, Set<String> erroneousClasses, Set<String> excludedClasses) {
+	private static void loadPlugins(
+			List<CommonProxy.Entrypoint> entrypoints,
+			Set<String> disabledClasses,
+			Set<String> erroneousClasses,
+			Set<String> excludedClasses) {
 		WailaCommonRegistration.reset();
 		if (CommonProxy.isPhysicallyClient()) {
 			WailaClientRegistration.reset();
@@ -192,6 +208,10 @@ public class Jade {
 		for (CommonProxy.Entrypoint entrypoint : entrypoints) {
 			String className = entrypoint.className();
 			try {
+				if (disabledClasses.contains(className)) {
+					LOGGER.info("Skipping disabled plugin: %s".formatted(className));
+					continue;
+				}
 				if (excludedClasses.contains(className)) {
 					continue;
 				}

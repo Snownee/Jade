@@ -137,8 +137,11 @@ public class WailaCommonRegistration implements IWailaCommonRegistration {
 	}
 
 	/* PROVIDER GETTERS */
-	public List<IServerDataProvider<BlockAccessor>> blockDataProvidersOf(BlockState blockState, @Nullable BlockEntity blockEntity) {
-		if (blockOperations().shouldHide(blockState)) {
+	public List<IServerDataProvider<BlockAccessor>> blockDataProvidersOf(
+			BlockState blockState,
+			@Nullable BlockEntity blockEntity,
+			boolean checkIsHidden) {
+		if (checkIsHidden && blockOperations().shouldHide(blockState)) {
 			return List.of();
 		}
 		if (blockEntity == null) {

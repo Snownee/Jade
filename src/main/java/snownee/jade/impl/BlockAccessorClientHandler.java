@@ -34,7 +34,8 @@ public class BlockAccessorClientHandler implements AccessorClientHandler<BlockAc
 	public List<IServerDataProvider<BlockAccessor>> shouldRequestData(BlockAccessor accessor) {
 		List<IServerDataProvider<BlockAccessor>> providers = WailaCommonRegistration.instance().blockDataProvidersOf(
 				accessor.getBlockState(),
-				accessor.getBlockEntity());
+				accessor.getBlockEntity(),
+				!accessor.isServersideContent());
 		if (providers.isEmpty()) {
 			return List.of();
 		}
