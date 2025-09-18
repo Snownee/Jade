@@ -5,6 +5,7 @@ import java.util.Objects;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -18,19 +19,19 @@ import snownee.jade.util.CommonProxy;
 
 public class JadeFluidObject {
 	public static final Codec<JadeFluidObject> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-					BuiltInRegistries.FLUID.byNameCodec().fieldOf("type").forGetter(JadeFluidObject::getType),
+					BuiltInRegistries.FLUID.holderByNameCodec().fieldOf("type").forGetter(JadeFluidObject::getType),
 					Codec.LONG.fieldOf("amount").forGetter(JadeFluidObject::getAmount),
 					DataComponentPatch.CODEC.optionalFieldOf("components", DataComponentPatch.EMPTY).forGetter(JadeFluidObject::getComponents))
-			.apply(instance, JadeFluidObject::of));
+			.apply(instance, JadeFluidObject::new));
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, JadeFluidObject> STREAM_CODEC = StreamCodec.composite(
-			ByteBufCodecs.registry(Registries.FLUID),
+			ByteBufCodecs.holderRegistry(Registries.FLUID),
 			JadeFluidObject::getType,
 			ByteBufCodecs.LONG,
 			JadeFluidObject::getAmount,
 			DataComponentPatch.STREAM_CODEC,
 			JadeFluidObject::getComponents,
-			JadeFluidObject::of);
+			JadeFluidObject::new);
 
 	public static long bucketVolume() {
 		return CommonProxy.bucketVolume();
@@ -52,15 +53,16 @@ public class JadeFluidObject {
 		return of(fluid, amount, DataComponentPatch.EMPTY);
 	}
 
+	@SuppressWarnings("deprecation")
 	public static JadeFluidObject of(Fluid fluid, long amount, DataComponentPatch components) {
-		return new JadeFluidObject(fluid, amount, components);
+		return new JadeFluidObject(fluid.builtInRegistryHolder(), amount, components);
 	}
 
-	private final Fluid type;
+	private final Holder<Fluid> type;
 	private final long amount;
 	private final DataComponentPatch components;
 
-	private JadeFluidObject(Fluid type, long amount, DataComponentPatch components) {
+	private JadeFluidObject(Holder<Fluid> type, long amount, DataComponentPatch components) {
 		this.type = type;
 		this.amount = amount;
 		this.components = components;
@@ -68,7 +70,7 @@ public class JadeFluidObject {
 		Objects.requireNonNull(components);
 	}
 
-	public Fluid getType() {
+	public Holder<Fluid> getType() {
 		return type;
 	}
 

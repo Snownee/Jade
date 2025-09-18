@@ -4,10 +4,14 @@ import java.util.Objects;
 
 import org.jetbrains.annotations.Nullable;
 
+import net.minecraft.client.KeyboardHandler;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.chat.Component;
 import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.overlay.DisplayHelper;
+import snownee.jade.util.FluidInput;
 
 public class FluidStackElement extends ProgressOverlayElement {
 
@@ -37,5 +41,15 @@ public class FluidStackElement extends ProgressOverlayElement {
 	@Override
 	public @Nullable Component getNarration() {
 		return null;
+	}
+
+	@Override
+	public boolean copyToClipboard(KeyboardHandler keyboardHandler) {
+		ClientPacketListener connection = Minecraft.getInstance().getConnection();
+		if (connection == null) {
+			return false;
+		}
+		keyboardHandler.setClipboard(new FluidInput(fluid).serialize(connection.registryAccess()));
+		return true;
 	}
 }

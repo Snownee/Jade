@@ -4,12 +4,14 @@ import java.util.function.Predicate;
 
 import org.jetbrains.annotations.Nullable;
 
+import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import snownee.jade.JadeInternals;
+import snownee.jade.api.ui.CopyBehavior;
 import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.ResizeableElement;
 
@@ -113,5 +115,13 @@ public class SpacerElement extends ResizeableElement {
 			return ((Predicate<LayoutElement>) onClick).test(wrapped);
 		}
 		return false;
+	}
+
+	@Override
+	public boolean copyToClipboard(KeyboardHandler keyboardHandler) {
+		if (wrapped instanceof CopyBehavior behavior && behavior.copyToClipboard(keyboardHandler)) {
+			return true;
+		}
+		return super.copyToClipboard(keyboardHandler);
 	}
 }
