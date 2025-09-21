@@ -338,12 +338,12 @@ public final class ClientProxy implements ClientModInitializer {
 			HarvestToolProvider.INSTANCE.invalidateCache();
 		});
 
-		JadeClient.rlPlugins.add(new PolydexCompat());
+		JadeClient.recipeLookupPlugins.add(new PolydexCompat());
 		if (CommonProxy.isModLoaded("roughlyenoughitems")) {
-			JadeClient.addRLPlugin("snownee.jade.compat.REICompat");
+			JadeClient.addRecipeLookupPlugin("snownee.jade.compat.REICompat");
 		}
 		if (CommonProxy.isModLoaded("jei")) {
-			JadeClient.addRLPlugin("snownee.jade.compat.JEICompat");
+			JadeClient.addRecipeLookupPlugin("snownee.jade.compat.JEICompat");
 		}
 	}
 }

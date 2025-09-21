@@ -75,7 +75,7 @@ public final class JadeClient {
 	public static final SystemToast.SystemToastId JADE_PLEASE_WAIT = new SystemToast.SystemToastId(2000L);
 	public static final KeyMapping[] profiles = new KeyMapping[4];
 	public static final KeyMapping.Category keyMappingCategory = KeyMapping.Category.register(JadeIds.JADE("main"));
-	public static final List<RecipeLookupPlugin> rlPlugins = Lists.newArrayList();
+	public static final List<RecipeLookupPlugin> recipeLookupPlugins = Lists.newArrayList();
 	private static final WailaTickHandler tickHandler = new WailaTickHandler();
 	public static KeyMapping openConfig;
 	public static KeyMapping showOverlay;
@@ -187,7 +187,7 @@ public final class JadeClient {
 	}
 
 	public static void lookupRecipes(boolean uses) {
-		if (rlPlugins.isEmpty() || tickHandler.state == null) {
+		if (recipeLookupPlugins.isEmpty() || tickHandler.state == null) {
 			return;
 		}
 		Accessor<?> accessor = tickHandler.state.accessor();
@@ -201,7 +201,7 @@ public final class JadeClient {
 		ResourceLocation specialId = ModIdentification.getSpecialId(itemStack).orElse(null);
 		RecipeLookupResult selected = null;
 		List<RecipeLookupResult> results = Lists.newArrayList();
-		for (RecipeLookupPlugin plugin : rlPlugins) {
+		for (RecipeLookupPlugin plugin : recipeLookupPlugins) {
 			try {
 				RecipeLookupResult result = plugin.lookup(itemStack, specialId, uses);
 				if (result.isFail()) {
@@ -296,10 +296,17 @@ public final class JadeClient {
 				return builder.blockState(block.defaultBlockState()).build();
 			} else if (target.getBlock() instanceof BrushableBlock brushable) {
 				Block block = brushable.getTurnsInto();
-				return builder.blockState(block.defaultBlockState()).build();
+				BlockState blockState = block.defaultBlockState();
+				if (!blockState.isAir() && isCamouflageBrushableBlock(blockState)) {
+					return builder.blockState(blockState).build();
+				}
 			}
 		}
 		return accessor;
+	}
+
+	private static boolean isCamouflageBrushableBlock(BlockState blockState) {
+		return blockState.getBlockHolder().unwrapKey().orElseThrow().location().getPath().startsWith("suspicious_");
 	}
 
 	@Nullable
@@ -420,9 +427,9 @@ public final class JadeClient {
 		}
 	}
 
-	public static void addRLPlugin(String clazz) {
+	public static void addRecipeLookupPlugin(String clazz) {
 		try {
-			rlPlugins.add((RecipeLookupPlugin) Class.forName(clazz).getDeclaredConstructor().newInstance());
+			recipeLookupPlugins.add((RecipeLookupPlugin) Class.forName(clazz).getDeclaredConstructor().newInstance());
 		} catch (Throwable e) {
 			if (CommonProxy.isDevEnv()) {
 				Jade.LOGGER.warn("Failed to load recipe lookup plugin: {}", clazz, e);
