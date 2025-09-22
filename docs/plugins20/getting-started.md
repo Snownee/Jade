@@ -74,7 +74,7 @@
 
         Then re-run `genIntellijRuns`/`genEclipseRuns` and refresh gradle project. ([Source](https://github.com/SpongePowered/Mixin/issues/462#issuecomment-791370319))
 
-Visit [CurseMaven](https://www.cursemaven.com/) to find more information about how to set up your workspace.
+Visit [Modrinth Maven](https://support.modrinth.com/en/articles/8801191-modrinth-maven/) to find more information about how to set up your workspace.
 
 ## Registering
 
@@ -140,7 +140,7 @@ public enum ExampleComponentProvider implements IBlockComponentProvider {
     BlockAccessor accessor,
     IPluginConfig config
   ) {
-    tooltip.append(Component.translatable("mymod.fuel"));
+    tooltip.add(Component.translatable("mymod.fuel"));
   }
 
   @Override
@@ -211,7 +211,7 @@ public enum ExampleComponentProvider implements
     IPluginConfig config
   ) {
     if (accessor.getServerData().contains("Fuel")) {
-      tooltip.append(
+      tooltip.add(
         Component.translatable(
           "mymod.fuel",
           accessor.getServerData().getInt("Fuel")
@@ -233,7 +233,7 @@ public enum ExampleComponentProvider implements
 }
 ```
 
-Here we used [Access Transformer](https://forge.gemwire.uk/wiki/Access_Transformers) or [Access Wideners](https://fabricmc.net/wiki/tutorial:accesswideners) to get access to the protected field.
+Here we used Access Transformers ([NeoForge](https://docs.neoforged.net/docs/advanced/accesstransformers) / [Forge](https://forge.gemwire.uk/wiki/Access_Transformers)) or [Access Wideners](https://fabricmc.net/wiki/tutorial:accesswideners) to get access to the protected field.
 
 Register `IServerDataProvider`:
 

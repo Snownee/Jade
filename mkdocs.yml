@@ -8,25 +8,30 @@ nav:
   - 'Preface': README.md
   - '1.21.6+':
       - 'Getting Started': plugins22/getting-started.md
-  - '1.20+':
+      - 'Hiding Target': plugins22/hiding-target.md
+      - 'Overrides': plugins22/overrides.md
+      - 'Plugin Configuration': plugins22/plugin-config.md
+  - '1.20-1.21.5':
       - 'Getting Started': plugins20/getting-started.md
-      - 'Overrides': plugins20/overrides.md
       - 'Hiding Target': plugins20/hiding-target.md
+      - 'Overrides': plugins20/overrides.md
       - 'Plugin Configuration': plugins20/plugin-config.md
   - '1.19 and Fabric 1.17-1.18':
       - 'Getting Started': plugins19/getting-started.md
-      - 'Overrides': plugins19/overrides.md
       - 'Hiding Target': plugins19/hiding-target.md
+      - 'Overrides': plugins19/overrides.md
       - 'Plugin Configuration': plugins19/plugin-config.md
   - 'Forge 1.17-1.18':
       - 'Getting Started': plugins17/getting-started.md
-      - 'Overrides': plugins17/overrides.md
       - 'Hiding Target': plugins17/hiding-target.md
+      - 'Overrides': plugins17/overrides.md
   - 'Custom Theme':
-      - '1.20.2+': themes/v3.md
+      - '1.21.6+': themes/v4.md
+      - '1.20.2-1.21.5': themes/v3.md
       - '1.20.1': themes/v2.md
   - 'Datapack Support':
-      - '1.20.5+': datapacks/block21.md
+      - '1.21.6+': datapacks/block22.md
+      - '1.20.5-1.21.5': datapacks/block21.md
       - '1.18-1.20.4': datapacks/block.md
   - 'Upgrading Guides':
       - '1.20 -> 1.21': changes/121.md

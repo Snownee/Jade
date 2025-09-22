@@ -1,6 +1,6 @@
 # Displaying a Block Created by Datapack
 
-Here is a page for datapack developers about how to display the correct information of a custom block.
+Here is a page for datapack developers about how to display the correct information of a server-side block.
 
 ## Block Name and Icon
 

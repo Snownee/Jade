@@ -134,7 +134,7 @@ public enum ExampleComponentProvider implements IBlockComponentProvider {
     BlockAccessor accessor,
     IPluginConfig config
   ) {
-    tooltip.append(Component.translatable("mymod.fuel"));
+    tooltip.add(Component.translatable("mymod.fuel"));
   }
 
   @Override
@@ -205,7 +205,7 @@ public enum ExampleComponentProvider implements
     IPluginConfig config
   ) {
     if (accessor.getServerData().contains("Fuel")) {
-      tooltip.append(
+      tooltip.add(
         Component.translatable(
           "mymod.fuel",
           accessor.getServerData().getInt("Fuel")
