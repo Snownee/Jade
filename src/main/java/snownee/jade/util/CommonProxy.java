@@ -1,6 +1,7 @@
 package snownee.jade.util;
 
 import java.io.File;
+import java.lang.annotation.ElementType;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -10,38 +11,17 @@ import java.util.function.Function;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.cache.Cache;
-import com.mojang.brigadier.CommandDispatcher;
+import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Either;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.fabricmc.fabric.api.event.lifecycle.v1.CommonLifecycleEvents;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.fabricmc.fabric.api.tag.convention.v2.ConventionalEntityTypeTags;
-import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
-import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
-import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
-import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
-import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
-import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
-import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.ModContainer;
-import net.fabricmc.loader.api.Version;
-import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
-import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.minecraft.advancements.critereon.ItemPredicate;
-import net.minecraft.commands.CommandBuildContext;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -59,8 +39,6 @@ import net.minecraft.world.entity.Shearable;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.MushroomCow;
 import net.minecraft.world.entity.animal.sheep.Sheep;
-import net.minecraft.world.entity.boss.EnderDragonPart;
-import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -80,12 +58,41 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.MatchTool;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
+import net.neoforged.fml.i18n.MavenVersionTranslator;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.capabilities.BlockCapability;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.EntityCapability;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.TranslatableEnum;
+import net.neoforged.neoforge.entity.PartEntity;
+import net.neoforged.neoforge.event.EventHooks;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.TagsUpdatedEvent;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.energy.EnergyHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforgespi.language.IModFileInfo;
+import net.neoforged.neoforgespi.language.ModFileScanData;
 import snownee.jade.Jade;
 import snownee.jade.addon.universal.ItemCollector;
 import snownee.jade.addon.universal.ItemIterator;
 import snownee.jade.addon.universal.ItemStorageProvider;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.BlockAccessor;
+import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.TraceableException;
 import snownee.jade.api.WailaPlugin;
@@ -95,7 +102,6 @@ import snownee.jade.api.view.FluidView;
 import snownee.jade.api.view.IServerExtensionProvider;
 import snownee.jade.api.view.ViewGroup;
 import snownee.jade.command.JadeServerCommand;
-import snownee.jade.compat.TechRebornEnergyCompat;
 import snownee.jade.impl.lookup.WrappedHierarchyLookup;
 import snownee.jade.mixin.AbstractHorseAccess;
 import snownee.jade.network.ClientHandshakePacket;
@@ -105,20 +111,23 @@ import snownee.jade.network.RequestEntityPacket;
 import snownee.jade.network.ServerHandshakePacket;
 import snownee.jade.network.ShowOverlayPacket;
 
-public final class CommonProxy implements ModInitializer {
-
-	public static boolean hasTechRebornEnergy = isModLoaded("team_reborn_energy");
+@Mod(Jade.ID)
+public final class CommonProxy {
 
 	public static File getConfigDirectory() {
-		return FabricLoader.getInstance().getConfigDir().toFile();
+		return FMLPaths.CONFIGDIR.get().toFile();
 	}
 
 	public static boolean isCorrectToolForDrops(BlockState state, Player player, Level level, BlockPos pos) {
-		return player.hasCorrectToolForDrops(state);
+		return EventHooks.doPlayerHarvestCheck(player, state, level, pos);
 	}
 
 	public static String getModIdFromItem(ItemStack stack) {
-		String modid = stack.getItem().getCreatorNamespace(stack);
+		HolderLookup.Provider registries = RegistryAccess.EMPTY;
+		if (isPhysicallyClient() && Minecraft.getInstance().level != null) {
+			registries = Minecraft.getInstance().level.registryAccess();
+		}
+		String modid = stack.getItem().getCreatorModId(registries, stack);
 		if (!ResourceLocation.DEFAULT_NAMESPACE.equals(modid)) {
 			return modid;
 		}
@@ -173,7 +182,7 @@ public final class CommonProxy implements ModInitializer {
 	}
 
 	public static boolean isPhysicallyClient() {
-		return FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT;
+		return FMLEnvironment.getDist().isClient();
 	}
 
 	public static ItemCollector<?> createItemCollector(Accessor<?> accessor, Cache<Object, ItemCollector<?>> containerCache) {
@@ -194,7 +203,7 @@ public final class CommonProxy implements ModInitializer {
 			try {
 				var storage = findItemHandler(accessor);
 				if (storage != null) {
-					return containerCache.get(storage, () -> new ItemCollector<>(JadeFabricUtils.fromItemStorage(storage, 0)));
+					return containerCache.get(storage, () -> new ItemCollector<>(JadeForgeUtils.fromItemHandler(storage, 0)));
 				}
 			} catch (Throwable e) {
 				WailaExceptionHandler.handleErr(e, null, null);
@@ -261,10 +270,10 @@ public final class CommonProxy implements ModInitializer {
 			//noinspection unchecked
 			return ItemStorageProvider.containerCache.get(
 					storage,
-					() -> new ItemCollector<>(JadeFabricUtils.fromItemStorage(
-							(Storage<ItemVariant>) storage,
+					() -> new ItemCollector<>(JadeForgeUtils.fromItemHandler(
+							(ResourceHandler<ItemResource>) storage,
 							0,
-							(Function<Accessor<?>, @Nullable Storage<ItemVariant>>) (Object) storageFinder))).update(
+							(Function<Accessor<?>, @Nullable ResourceHandler<ItemResource>>) (Object) storageFinder))).update(
 					accessor
 			);
 		} catch (Exception e) {
@@ -273,14 +282,16 @@ public final class CommonProxy implements ModInitializer {
 	}
 
 	@Nullable
-	public static Storage<ItemVariant> findItemHandler(Accessor<?> accessor) {
+	public static ResourceHandler<ItemResource> findItemHandler(Accessor<?> accessor) {
 		if (accessor instanceof BlockAccessor blockAccessor) {
-			return ItemStorage.SIDED.find(
-					blockAccessor.getLevel(),
+			return accessor.getLevel().getCapability(
+					Capabilities.Item.BLOCK,
 					blockAccessor.getPosition(),
 					blockAccessor.getBlockState(),
 					blockAccessor.getBlockEntity(),
 					null);
+		} else if (accessor instanceof EntityAccessor entityAccessor) {
+			return entityAccessor.getEntity().getCapability(Capabilities.Item.ENTITY);
 		}
 		return null;
 	}
@@ -297,48 +308,28 @@ public final class CommonProxy implements ModInitializer {
 		return null;
 	}
 
+	@Nullable
 	public static List<ViewGroup<FluidView.Data>> wrapFluidStorage(Accessor<?> accessor) {
-		if (accessor instanceof BlockAccessor blockAccessor) {
-			try {
-				var storage = FluidStorage.SIDED.find(
-						accessor.getLevel(),
-						blockAccessor.getPosition(),
-						blockAccessor.getBlockState(),
-						blockAccessor.getBlockEntity(),
-						null);
-				if (storage != null) {
-					return JadeFabricUtils.fromFluidStorage(storage);
-				}
-			} catch (Throwable e) {
-				WailaExceptionHandler.handleErr(e, null, null);
-			}
+		ResourceHandler<FluidResource> fluidHandler = getDefaultStorage(accessor, Capabilities.Fluid.BLOCK, Capabilities.Fluid.ENTITY);
+		if (fluidHandler != null) {
+			return JadeForgeUtils.fromFluidHandler(fluidHandler);
 		}
 		return null;
 	}
 
+	@Nullable
 	public static List<ViewGroup<EnergyView.Data>> wrapEnergyStorage(Accessor<?> accessor) {
-		if (hasTechRebornEnergy && accessor instanceof BlockAccessor blockAccessor) {
-			try {
-				var storage = TechRebornEnergyCompat.getSided().find(
-						accessor.getLevel(),
-						blockAccessor.getPosition(),
-						blockAccessor.getBlockState(),
-						blockAccessor.getBlockEntity(),
-						null);
-				if (storage != null && storage.getCapacity() > 0) {
-					var group = new ViewGroup<>(List.of(new EnergyView.Data(storage.getAmount(), storage.getCapacity())));
-					group.getExtraData().putString("Unit", "E");
-					return List.of(group);
-				}
-			} catch (Throwable e) {
-				WailaExceptionHandler.handleErr(e, null, null);
-			}
+		EnergyHandler energyStorage = getDefaultStorage(accessor, Capabilities.Energy.BLOCK, Capabilities.Energy.ENTITY);
+		if (energyStorage != null) {
+			var group = new ViewGroup<>(List.of(new EnergyView.Data(energyStorage.getAmountAsLong(), energyStorage.getCapacityAsLong())));
+			group.getExtraData().putString("Unit", "FE");
+			return List.of(group);
 		}
 		return null;
 	}
 
 	public static boolean isDevEnv() {
-		return FabricLoader.getInstance().isDevelopmentEnvironment();
+		return !FMLEnvironment.isProduction();
 	}
 
 	public static ResourceLocation getId(Block block) {
@@ -354,17 +345,16 @@ public final class CommonProxy implements ModInitializer {
 	}
 
 	public static String getPlatformIdentifier() {
-		return "fabric";
+		return "neoforge";
 	}
 
-	private static void registerServerCommand(
-			CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext registryAccess, Commands.CommandSelection environment) {
-		JadeServerCommand.register(dispatcher);
+	private static void registerServerCommand(RegisterCommandsEvent event) {
+		JadeServerCommand.register(event.getDispatcher());
 	}
 
 	public static boolean isBoss(Entity entity) {
 		EntityType<?> entityType = entity.getType();
-		return entityType.is(ConventionalEntityTypeTags.BOSSES) || entityType == EntityType.ENDER_DRAGON || entityType == EntityType.WITHER;
+		return entityType.is(Tags.EntityTypes.BOSSES) || entityType == EntityType.ENDER_DRAGON || entityType == EntityType.WITHER;
 	}
 
 	public static ItemStack getBlockPickedResult(BlockState state, Player player, BlockHitResult hitResult) {
@@ -372,20 +362,24 @@ public final class CommonProxy implements ModInitializer {
 	}
 
 	public static ItemStack getEntityPickedResult(Entity entity, Player player, EntityHitResult hitResult) {
-		ItemStack stack = entity.getPickResult();
-		return stack == null ? ItemStack.EMPTY : stack;
+		return MoreObjects.firstNonNull(entity.getPickResult(), ItemStack.EMPTY);
 	}
 
 	public static boolean isModLoaded(String modid) {
-		return FabricLoader.getInstance().isModLoaded(modid);
+		try {
+			ModList modList = ModList.get();
+			if (modList == null) {
+				return FMLLoader.getCurrent().getLoadingModList().getModFileById(modid) != null;
+			}
+			return modList.isLoaded(modid);
+		} catch (Throwable e) {
+			return false;
+		}
 	}
 
 	public static Optional<String> getModVersion(String modid) {
-		return FabricLoader.getInstance()
-				.getModContainer(modid)
-				.map(ModContainer::getMetadata)
-				.map(ModMetadata::getVersion)
-				.map(Version::getFriendlyString);
+		return ModList.get().getModContainerById(modid).map($ -> MavenVersionTranslator.artifactVersionToString($.getModInfo()
+				.getVersion()));
 	}
 
 	public static void loadComplete() {
@@ -393,34 +387,60 @@ public final class CommonProxy implements ModInitializer {
 	}
 
 	public static List<Entrypoint> loadEntrypoints() {
-		return FabricLoader.getInstance().getEntrypointContainers(Jade.ID, IWailaPlugin.class).stream().map(Entrypoint::new).toList();
+		List<Entrypoint> entrypoints = Lists.newArrayList();
+		for (ModContainer container : ModList.get().getSortedMods()) {
+			IModFileInfo owningFile = container.getModInfo().getOwningFile();
+			if (owningFile == null) {
+				continue;
+			}
+			owningFile.getFile()
+					.getScanResult()
+					.getAnnotatedBy(WailaPlugin.class, ElementType.TYPE)
+					.map($ -> new Entrypoint(container, $))
+					.forEach(entrypoints::add);
+		}
+		return entrypoints;
 	}
 
-	public static Component getFluidName(JadeFluidObject fluidObject) {
-		Fluid fluid = fluidObject.getType().value();
-		DataComponentPatch components = fluidObject.getComponents();
-		return FluidVariantAttributes.getName(FluidVariant.of(fluid, components));
+	public static Component getFluidName(JadeFluidObject fluid) {
+		return toFluidStack(fluid).getHoverName();
+	}
+
+	public static FluidStack toFluidStack(JadeFluidObject fluid) {
+		int id = BuiltInRegistries.FLUID.getId(fluid.getType().unwrapKey().orElseThrow());
+		Optional<Holder.Reference<Fluid>> holder = BuiltInRegistries.FLUID.get(id);
+		if (holder.isEmpty()) {
+			return FluidStack.EMPTY;
+		} else {
+			long amount = fluid.getAmount();
+			if (amount > Integer.MAX_VALUE) {
+				amount = Integer.MAX_VALUE;
+			}
+			return new FluidStack(holder.get(), (int) amount, fluid.getComponents());
+		}
 	}
 
 	public static boolean isMultipartEntity(Entity target) {
-		return target instanceof EnderDragon;
+		return target.isMultipartEntity();
 	}
 
 	public static Entity wrapPartEntityParent(Entity target) {
-		if (target instanceof EnderDragonPart part) {
-			return part.parentMob;
+		if (target instanceof PartEntity<?> part) {
+			return part.getParent();
 		}
 		return target;
 	}
 
 	public static int getPartEntityIndex(Entity entity) {
-		if (!(entity instanceof EnderDragonPart part)) {
+		if (!(entity instanceof PartEntity<?> part)) {
 			return -1;
 		}
-		if (!(wrapPartEntityParent(entity) instanceof EnderDragon parent)) {
+		Entity parent = wrapPartEntityParent(entity);
+		PartEntity<?>[] parts = parent.getParts();
+		//noinspection ConstantValue
+		if (parts == null) {
 			return -1;
 		}
-		EnderDragonPart[] parts = parent.getSubEntities();
 		return List.of(parts).indexOf(part);
 	}
 
@@ -431,64 +451,68 @@ public final class CommonProxy implements ModInitializer {
 		if (index < 0) {
 			return parent;
 		}
-		if (parent instanceof EnderDragon dragon) {
-			EnderDragonPart[] parts = dragon.getSubEntities();
-			if (index < parts.length) {
-				return parts[index];
-			}
+		PartEntity<?>[] parts = parent.getParts();
+		if (parts == null || index >= parts.length) {
+			return parent;
 		}
-		return parent;
+		return parts[index];
+	}
+
+	public static <T> T getDefaultStorage(
+			Accessor<?> accessor,
+			BlockCapability<T, ?> blockCapability,
+			EntityCapability<T, ?> entityCapability) {
+		if (accessor instanceof BlockAccessor blockAccessor) {
+			return accessor.getLevel().getCapability(
+					blockCapability,
+					blockAccessor.getPosition(),
+					blockAccessor.getBlockState(),
+					blockAccessor.getBlockEntity(),
+					null);
+		} else if (accessor instanceof EntityAccessor entityAccessor) {
+			return entityAccessor.getEntity().getCapability(entityCapability, null);
+		}
+		return null;
+	}
+
+	public static <T> boolean hasDefaultStorage(
+			Accessor<?> accessor,
+			BlockCapability<T, ?> blockCapability,
+			EntityCapability<T, ?> entityCapability) {
+		if (accessor instanceof BlockAccessor || accessor instanceof EntityAccessor) {
+			return getDefaultStorage(accessor, blockCapability, entityCapability) != null;
+		}
+		return true;
 	}
 
 	public static boolean hasDefaultItemStorage(Accessor<?> accessor) {
-		if (accessor instanceof BlockAccessor blockAccessor) {
-			if (blockAccessor.getBlockEntity() == null) {
-				return blockAccessor.getBlock() instanceof WorldlyContainerHolder;
-			}
-			return ItemStorage.SIDED.find(
-					accessor.getLevel(),
-					blockAccessor.getPosition(),
-					blockAccessor.getBlockState(),
-					blockAccessor.getBlockEntity(),
-					null) != null;
+		if (accessor.getTarget() == null && accessor instanceof BlockAccessor blockAccessor &&
+				blockAccessor.getBlock() instanceof WorldlyContainerHolder) {
+			return true;
 		}
-		return true;
+		return hasDefaultStorage(accessor, Capabilities.Item.BLOCK, Capabilities.Item.ENTITY);
 	}
 
 	public static boolean hasDefaultFluidStorage(Accessor<?> accessor) {
-		if (accessor instanceof BlockAccessor blockAccessor) {
-			return FluidStorage.SIDED.find(
-					accessor.getLevel(),
-					blockAccessor.getPosition(),
-					blockAccessor.getBlockState(),
-					blockAccessor.getBlockEntity(),
-					null) != null;
-		}
-		return true;
+		return hasDefaultStorage(accessor, Capabilities.Fluid.BLOCK, Capabilities.Fluid.ENTITY);
 	}
 
 	public static boolean hasDefaultEnergyStorage(Accessor<?> accessor) {
-		if (hasTechRebornEnergy && accessor instanceof BlockAccessor blockAccessor) {
-			return TechRebornEnergyCompat.getSided().find(
-					accessor.getLevel(),
-					blockAccessor.getPosition(),
-					blockAccessor.getBlockState(),
-					blockAccessor.getBlockEntity(),
-					null) != null;
-		}
-		return true;
+		return hasDefaultStorage(accessor, Capabilities.Energy.BLOCK, Capabilities.Energy.ENTITY);
 	}
 
 	public static long bucketVolume() {
-		return FluidConstants.BUCKET;
+		return FluidType.BUCKET_VOLUME;
 	}
 
 	public static long blockVolume() {
-		return FluidConstants.BLOCK;
+		return FluidType.BUCKET_VOLUME;
 	}
 
 	public static void registerTagsUpdatedListener(BiConsumer<HolderLookup.Provider, Boolean> listener) {
-		CommonLifecycleEvents.TAGS_LOADED.register(listener::accept);
+		NeoForge.EVENT_BUS.addListener((TagsUpdatedEvent event) -> listener.accept(
+				event.getLookupProvider(),
+				event.getUpdateCause() == TagsUpdatedEvent.UpdateCause.CLIENT_PACKET_RECEIVED));
 	}
 
 	public static boolean isCorrectConditions(List<LootItemCondition> conditions, ItemStack toolItem) {
@@ -496,8 +520,8 @@ public final class CommonProxy implements ModInitializer {
 			return false;
 		}
 		LootItemCondition condition = conditions.getFirst();
-		if (condition instanceof MatchTool matchTool) {
-			ItemPredicate itemPredicate = matchTool.predicate().orElse(null);
+		if (condition instanceof MatchTool(Optional<ItemPredicate> predicate)) {
+			ItemPredicate itemPredicate = predicate.orElse(null);
 			return itemPredicate != null && itemPredicate.test(toolItem);
 		} else if (condition instanceof AnyOfCondition anyOfCondition) {
 			for (LootItemCondition child : anyOfCondition.terms) {
@@ -527,14 +551,53 @@ public final class CommonProxy implements ModInitializer {
 		return null;
 	}
 
+	public CommonProxy(IEventBus modBus) {
+		modBus.addListener(FMLLoadCompleteEvent.class, event -> event.enqueueWork(CommonProxy::loadComplete));
+		modBus.addListener(
+				RegisterPayloadHandlersEvent.class, event -> {
+					event.registrar(Jade.ID)
+							.versioned(Jade.PROTOCOL_VERSION)
+							.optional()
+							.playToClient(
+									ReceiveDataPacket.TYPE,
+									ReceiveDataPacket.CODEC,
+									(payload, context) -> ReceiveDataPacket.handle(payload, context::enqueueWork))
+							.playToServer(
+									RequestEntityPacket.TYPE,
+									RequestEntityPacket.CODEC,
+									(payload, context) -> RequestEntityPacket.handle(payload, () -> (ServerPlayer) context.player()))
+							.playToServer(
+									RequestBlockPacket.TYPE,
+									RequestBlockPacket.CODEC,
+									(payload, context) -> RequestBlockPacket.handle(payload, () -> (ServerPlayer) context.player()))
+							.playToServer(
+									ClientHandshakePacket.TYPE,
+									ClientHandshakePacket.CODEC,
+									(payload, context) -> ClientHandshakePacket.handle(payload, () -> (ServerPlayer) context.player()))
+							.playToClient(
+									ServerHandshakePacket.TYPE,
+									ServerHandshakePacket.CODEC,
+									(payload, context) -> ServerHandshakePacket.handle(payload, context::enqueueWork))
+							.playToClient(
+									ShowOverlayPacket.TYPE,
+									ShowOverlayPacket.CODEC,
+									(payload, context) -> ShowOverlayPacket.handle(payload, context::enqueueWork));
+				});
+		NeoForge.EVENT_BUS.addListener(CommonProxy::registerServerCommand);
+		if (isPhysicallyClient()) {
+			ClientProxy.init(modBus);
+		}
+	}
+
 	public static String defaultEnergyUnit() {
 		return "E";
 	}
 
 	public static void sendPacket(ServerPlayer player, CustomPacketPayload payload) {
-		ServerPlayNetworking.send(player, payload);
+		player.connection.send(payload);
 	}
 
+	@SuppressWarnings("deprecation")
 	public static TriState isShearable(Entity entity) {
 		if (entity instanceof Shearable shearable) {
 			if (entity instanceof Sheep || entity instanceof MushroomCow) {
@@ -549,64 +612,32 @@ public final class CommonProxy implements ModInitializer {
 
 	@Nullable
 	public static Either<String, Component> getTranslatableName(Object object) {
+		if (object instanceof TranslatableEnum translatableEnum) {
+			return Either.right(translatableEnum.getTranslatedName());
+		}
 		return null;
 	}
 
-	@Override
-	public void onInitialize() {
-		PayloadTypeRegistry.playS2C().register(ReceiveDataPacket.TYPE, ReceiveDataPacket.CODEC);
-		PayloadTypeRegistry.playC2S().register(RequestBlockPacket.TYPE, RequestBlockPacket.CODEC);
-		PayloadTypeRegistry.playC2S().register(RequestEntityPacket.TYPE, RequestEntityPacket.CODEC);
-		PayloadTypeRegistry.playC2S().register(ClientHandshakePacket.TYPE, ClientHandshakePacket.CODEC);
-		PayloadTypeRegistry.playS2C().register(ServerHandshakePacket.TYPE, ServerHandshakePacket.CODEC);
-		PayloadTypeRegistry.playS2C().register(ShowOverlayPacket.TYPE, ShowOverlayPacket.CODEC);
-		ServerPlayNetworking.registerGlobalReceiver(
-				RequestEntityPacket.TYPE, (payload, context) -> {
-					RequestEntityPacket.handle(payload, context::player);
-				});
-		ServerPlayNetworking.registerGlobalReceiver(
-				RequestBlockPacket.TYPE, (payload, context) -> {
-					RequestBlockPacket.handle(payload, context::player);
-				});
-		ServerPlayNetworking.registerGlobalReceiver(
-				ClientHandshakePacket.TYPE, (payload, context) -> {
-					ClientHandshakePacket.handle(payload, context::player);
-				});
-
-		CommandRegistrationCallback.EVENT.register(CommonProxy::registerServerCommand);
-		ServerLifecycleEvents.SERVER_STARTED.register(server -> {
-			if (server.isDedicatedServer()) {
-				loadComplete();
-			}
-		});
-	}
-
-	public record Entrypoint(EntrypointContainer<IWailaPlugin> container) {
+	public record Entrypoint(ModContainer container, ModFileScanData.AnnotationData annotationData) {
 		public String className() {
-			return container.getDefinition();
+			return annotationData.memberName();
 		}
 
 		public String modId() {
-			return container.getProvider().getMetadata().getId();
+			return container.getModId();
 		}
 
 		public String modName() {
-			return container.getProvider().getMetadata().getName();
+			return container.getModInfo().getDisplayName();
 		}
 
 		public String requiredMod() {
-			try {
-				Class<?> clazz = Class.forName(className());
-				WailaPlugin a = clazz.getDeclaredAnnotation(WailaPlugin.class);
-				return a == null ? "" : a.value();
-			} catch (ClassNotFoundException e) {
-				return "";
-			}
+			return annotationData.annotationData().getOrDefault("value", "").toString();
 		}
 
 		public IWailaPlugin newInstance() {
 			try {
-				return container.getEntrypoint();
+				return (IWailaPlugin) Class.forName(className()).getDeclaredConstructor().newInstance();
 			} catch (Throwable e) {
 				throwError("Failed to instantiate plugin class");
 				throw new AssertionError();
