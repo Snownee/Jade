@@ -451,6 +451,8 @@
 	"jade.access.entity.is_leashing": "прив'язаний: %s",
 	"jade.access.held_item.main": "Основна рука: %s",
 	"jade.access.held_item.off": "Другорядна рука: %s",
+	"config.jade.plugin_jade_access.npc_description": "Опис NPC",
+	"jade.access.npc_description": "%s (%s)",
 	"toast.jade.toggle_hint.1": "Jade зараз закрито",
 	"toast.jade.toggle_hint.2": "Натисніть %s щоб знову відкрити",
 	"toast.jade.tts_hint.1": "Диктор Jade тепер відкритий",
