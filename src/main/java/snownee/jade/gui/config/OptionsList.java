@@ -443,6 +443,14 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		return super.mouseClicked(event, bl);
 	}
 
+	@Override
+	public void setSelected(@Nullable OptionsList.Entry entry) {
+		selected = entry;
+		if (entry != null && minecraft.getLastInputType().isKeyboard()) {
+			scrollToEntry(entry);
+		}
+	}
+
 	public record EntryWidget(AbstractWidget widget, int offsetX, int offsetY, boolean floatRight) {}
 
 	public static class Entry extends ContainerObjectSelectionList.Entry<Entry> {
