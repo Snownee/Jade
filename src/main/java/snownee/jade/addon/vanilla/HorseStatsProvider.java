@@ -48,13 +48,13 @@ public enum HorseStatsProvider implements IEntityComponentProvider {
 			return;
 		}
 		if (horse.getAttributes().hasAttribute(Attributes.JUMP_STRENGTH)) {
-			double jumpStrength = horse.getAttributeBaseValue(Attributes.JUMP_STRENGTH);
+			double jumpStrength = horse.getAttributeValue(Attributes.JUMP_STRENGTH);
 			double jumpHeight = getJumpHeight(jumpStrength);
 			tooltip.add(switchText("jade.horseStat.jump", showMax, jumpHeight, MAX_JUMP_HEIGHT));
 		}
 		if (horse.getAttributes().hasAttribute(Attributes.MOVEMENT_SPEED)) {
 			// https://minecraft.fandom.com/wiki/Horse?so=search#Movement_speed
-			double speed = horse.getAttributeBaseValue(Attributes.MOVEMENT_SPEED) * 42.16;
+			double speed = horse.getAttributeValue(Attributes.MOVEMENT_SPEED) * 42.16;
 			tooltip.add(switchText("jade.horseStat.speed", showMax, speed, MAX_MOVEMENT_SPEED));
 		}
 	}
