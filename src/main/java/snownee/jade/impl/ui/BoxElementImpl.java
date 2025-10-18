@@ -54,7 +54,7 @@ public class BoxElementImpl extends BoxElement implements ContainerEventHandler 
 	private final List<Renderable> renderables;
 	private @Nullable List<AbstractWidget> widgets;
 	private @Nullable List<GuiEventListener> eventListeners;
-	private Element icon;
+	private @Nullable Element icon;
 	private float boxProgress;
 	private MessageType boxProgressType;
 	private ProgressTrackInfo track;
@@ -99,7 +99,10 @@ public class BoxElementImpl extends BoxElement implements ContainerEventHandler 
 
 		if (icon != null) {
 			JadeLinearLayout iconLayout = JadeLinearLayout.horizontal().alignItems(JadeLinearLayout.Align.START).spacing(3);
-			if (IWailaConfig.get().overlay().getIconMode() == IWailaConfig.IconMode.CENTERED) {
+			IWailaConfig.IconMode iconMode = IWailaConfig.get().overlay().getIconMode();
+			if (iconMode == IWailaConfig.IconMode.CENTERED) {
+				iconLayout.alignItems(JadeLinearLayout.Align.CENTER);
+			} else if (iconMode == IWailaConfig.IconMode.TOP && icon.getHeight() > linearLayout.getHeight()) {
 				iconLayout.alignItems(JadeLinearLayout.Align.CENTER);
 			}
 			iconLayout.addChild(icon);

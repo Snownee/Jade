@@ -27,6 +27,7 @@ public class JadeLinearLayout extends AbstractLayout implements ResizeableLayout
 	private int minWidth;
 	private int minHeight;
 	private int flexGrow;
+	private boolean arranged;
 
 	public JadeLinearLayout(Orientation orientation) {
 		super(0, 0, 0, 0);
@@ -35,16 +36,19 @@ public class JadeLinearLayout extends AbstractLayout implements ResizeableLayout
 
 	public JadeLinearLayout orientation(Orientation orientation) {
 		this.orientation = orientation;
+		arranged = false;
 		return this;
 	}
 
 	public JadeLinearLayout alignItems(Align align) {
 		this.alignItems = align;
+		arranged = false;
 		return this;
 	}
 
 	public JadeLinearLayout spacing(int i) {
 		defaultHeadMargin = defaultTailMargin = i;
+		arranged = false;
 		return this;
 	}
 
@@ -54,11 +58,13 @@ public class JadeLinearLayout extends AbstractLayout implements ResizeableLayout
 
 	public JadeLinearLayout setMinHeight(int minHeight) {
 		this.minHeight = minHeight;
+		arranged = false;
 		return this;
 	}
 
 	public JadeLinearLayout setMinWidth(int minWidth) {
 		this.minWidth = minWidth;
+		arranged = false;
 		return this;
 	}
 
@@ -90,6 +96,7 @@ public class JadeLinearLayout extends AbstractLayout implements ResizeableLayout
 			consumer.accept(container);
 		}
 		children.add(container);
+		arranged = false;
 		return element;
 	}
 
@@ -100,9 +107,13 @@ public class JadeLinearLayout extends AbstractLayout implements ResizeableLayout
 
 	@Override
 	public void arrangeElements() {
+		if (arranged) {
+			return;
+		}
 		int size = children.size();
 		if (size == 0) {
 			width = height = 0;
+			arranged = true;
 			return;
 		}
 		super.arrangeElements();
@@ -132,6 +143,7 @@ public class JadeLinearLayout extends AbstractLayout implements ResizeableLayout
 
 				lastChild = child;
 			}
+			arranged = true;
 		}
 
 		int minAxis = orientation == Orientation.HORIZONTAL ? minWidth : minHeight;
@@ -243,6 +255,7 @@ public class JadeLinearLayout extends AbstractLayout implements ResizeableLayout
 		int oldMinHeight = minHeight;
 		minWidth = Math.max(minWidth, width);
 		minHeight = Math.max(minHeight, height);
+		arranged = false;
 		arrangeElements();
 		minWidth = oldMinWidth;
 		minHeight = oldMinHeight;
@@ -252,6 +265,7 @@ public class JadeLinearLayout extends AbstractLayout implements ResizeableLayout
 	public void setFlexGrow(int flexGrow) {
 		Preconditions.checkArgument(flexGrow >= 0, "flexGrow must be non-negative");
 		this.flexGrow = flexGrow;
+		arranged = false;
 	}
 
 	@Override
@@ -265,6 +279,22 @@ public class JadeLinearLayout extends AbstractLayout implements ResizeableLayout
 			settings = element.getSettings().apply(settings);
 		}
 		return settings;
+	}
+
+	@Override
+	public int getHeight() {
+		if (!arranged) {
+			arrangeElements();
+		}
+		return super.getHeight();
+	}
+
+	@Override
+	public int getWidth() {
+		if (!arranged) {
+			arrangeElements();
+		}
+		return super.getWidth();
 	}
 
 	public static class ChildContainer extends AbstractLayout.AbstractChildWrapper {
