@@ -183,11 +183,11 @@ public class ProgressElement extends ResizeableElement implements StyledElement 
 
 	@Override
 	public void updateSize() {
-		if (getTag() != null && view.parts.size() < 2) {
+		if (getTag() != null) {
 			track = JadeClient.tickHandler().progressTracker.getOrCreate(
-					getTag(), ProgressTrackInfo.class, () -> {
-						return new ProgressTrackInfo(view.parts, view.style.canDecrease(), width);
-					});
+					getTag(),
+					ProgressTrackInfo.class,
+					() -> new ProgressTrackInfo(view.parts, view.style.canDecrease(), width));
 			track.setExpectedWidth(width);
 			width = track.getWidth();
 		} else {
