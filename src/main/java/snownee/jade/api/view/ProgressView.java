@@ -57,7 +57,7 @@ public class ProgressView {
 				Data::new);
 
 		public Data(float progress) {
-			this(progress, MessageType.NORMAL);
+			this(progress, MessageType.INFO);
 		}
 	}
 
@@ -76,7 +76,7 @@ public class ProgressView {
 		}
 
 		public static Part of(int id, float progress) {
-			return of(id, progress, MessageType.NORMAL);
+			return of(id, progress, MessageType.INFO);
 		}
 
 		public static Part of(float progress, MessageType messageType) {
