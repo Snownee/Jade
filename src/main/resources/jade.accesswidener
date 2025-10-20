@@ -109,3 +109,5 @@ accessible field net/minecraft/world/item/component/CustomData tag Lnet/minecraf
 
 accessible method net/minecraft/world/entity/decoration/Mannequin getDescription ()Lnet/minecraft/network/chat/Component;
 accessible field net/minecraft/world/entity/decoration/Mannequin DEFAULT_DESCRIPTION Lnet/minecraft/network/chat/Component;
+
+accessible class net/minecraft/client/gui/Gui$HeartType

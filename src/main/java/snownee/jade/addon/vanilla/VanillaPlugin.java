@@ -143,6 +143,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerEntityDataProvider(ZombieVillagerProvider.INSTANCE, ZombieVillager.class);
 		registration.registerEntityDataProvider(PetArmorProvider.INSTANCE, Mob.class);
 		registration.registerEntityDataProvider(WaxedProvider.EntityData.INSTANCE, CopperGolem.class);
+		registration.registerEntityDataProvider(EntityHealthAndArmorProvider.INSTANCE, LivingEntity.class);
 
 		registration.registerItemStorage(CampfireProvider.INSTANCE, CampfireBlockEntity.class);
 	}
@@ -193,7 +194,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerBlockComponent(FurnaceProvider.Client.INSTANCE, AbstractFurnaceBlock.class);
 		registration.registerEntityComponent(AnimalOwnerProvider.Client.INSTANCE, Entity.class);
 		registration.registerEntityIcon(FallingBlockProvider.INSTANCE, FallingBlockEntity.class);
-		registration.registerEntityComponent(EntityHealthAndArmorProvider.INSTANCE, LivingEntity.class);
+		registration.registerEntityComponent(EntityHealthAndArmorProvider.Client.INSTANCE, LivingEntity.class);
 		registration.registerBlockComponent(RedstoneProvider.Client.INSTANCE, Block.class);
 		registration.registerBlockComponent(HopperLockProvider.Client.INSTANCE, HopperBlock.class);
 		registration.registerBlockComponent(CropProgressProvider.INSTANCE, Block.class);
@@ -244,7 +245,6 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.markAsClientFeature(JadeIds.MC_PLAYER_HEAD);
 		registration.markAsClientFeature(JadeIds.MC_VILLAGER_PROFESSION);
 		registration.markAsClientFeature(JadeIds.MC_ITEM_TOOLTIP);
-		registration.markAsClientFeature(JadeIds.MC_ENTITY_HEALTH);
 		registration.markAsClientFeature(JadeIds.MC_ENTITY_ARMOR);
 		registration.markAsClientFeature(JadeIds.MC_CROP_PROGRESS);
 		registration.markAsClientFeature(JadeIds.MC_MOB_SPAWNER);
