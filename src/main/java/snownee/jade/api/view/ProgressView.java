@@ -2,6 +2,8 @@ package snownee.jade.api.view;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -30,6 +32,11 @@ public class ProgressView {
 		this.boxStyle = Objects.requireNonNull(boxStyle);
 	}
 
+	public <T> ProgressView(ProgressStyle style, BoxStyle boxStyle, Stream<T> items, Function<T, Part> mapper) {
+		this(style, boxStyle);
+		this.parts = items.map(mapper).toList();
+	}
+
 	public ProgressView(ProgressView.Part progress, @Nullable Component text, ProgressStyle style, BoxStyle boxStyle) {
 		this(List.of(progress), text, style, boxStyle);
 	}
@@ -48,10 +55,14 @@ public class ProgressView {
 		return view;
 	}
 
-	public record Data(float progress, MessageType messageType) {
+	public record Data(float progress, float speed, float target, MessageType messageType) {
 		public static final StreamCodec<ByteBuf, Data> STREAM_CODEC = StreamCodec.composite(
 				ByteBufCodecs.FLOAT,
 				Data::progress,
+				ByteBufCodecs.FLOAT,
+				Data::speed,
+				ByteBufCodecs.FLOAT,
+				Data::target,
 				MessageType.STREAM_CODEC,
 				Data::messageType,
 				Data::new);
@@ -59,16 +70,44 @@ public class ProgressView {
 		public Data(float progress) {
 			this(progress, MessageType.INFO);
 		}
+
+		public Data(float progress, float speed, float target) {
+			this(progress, speed, target, MessageType.INFO);
+		}
+
+		public Data(float progress, MessageType messageType) {
+			this(progress, Float.NaN, Float.NaN, messageType);
+		}
 	}
 
-	public record Part(int id, float progress, @Nullable Element overlay, @Nullable MessageType messageType, int color) {
-		public Part(int id, float progress, @Nullable Element overlay, @Nullable MessageType messageType, int color) {
+	public record Part(
+			int id,
+			float progress,
+			float speed,
+			float target,
+			@Nullable Element overlay,
+			@Nullable MessageType messageType,
+			int color) {
+		public Part(
+				int id,
+				float progress,
+				float speed,
+				float target,
+				@Nullable Element overlay,
+				@Nullable MessageType messageType,
+				int color) {
 			this.id = id;
 			this.progress = progress;
+			this.speed = speed;
+			this.target = target;
 			this.overlay = overlay;
 			this.messageType = messageType;
 			this.color = color;
 			Preconditions.checkArgument(progress >= 0 && progress <= 1, "Progress must be between 0 and 1, got: %s", progress);
+		}
+
+		public Part(int id, float progress, @Nullable Element overlay, @Nullable MessageType messageType, int color) {
+			this(id, progress, Float.NaN, Float.NaN, overlay, messageType, color);
 		}
 
 		public static Part of(float progress) {
@@ -103,6 +142,55 @@ public class ProgressView {
 				return IThemeHelper.get().theme().progressColors.get(messageType);
 			}
 			return -1;
+		}
+	}
+
+	public static class PartBuilder {
+		int id;
+		float progress;
+		float speed;
+		float target;
+		@Nullable Element overlay;
+		@Nullable MessageType messageType;
+		int color = -1;
+
+		public PartBuilder id(int id) {
+			this.id = id;
+			return this;
+		}
+
+		public PartBuilder progress(float progress) {
+			this.progress = progress;
+			return this;
+		}
+
+		public PartBuilder speed(float speed) {
+			this.speed = speed;
+			return this;
+		}
+
+		public PartBuilder target(float target) {
+			this.target = target;
+			return this;
+		}
+
+		public PartBuilder overlay(Element overlay) {
+			this.overlay = overlay;
+			return this;
+		}
+
+		public PartBuilder messageType(MessageType messageType) {
+			this.messageType = messageType;
+			return this;
+		}
+
+		public PartBuilder color(int color) {
+			this.color = color;
+			return this;
+		}
+
+		public Part build() {
+			return new Part(id, progress, speed, target, overlay, messageType, color);
 		}
 	}
 }
