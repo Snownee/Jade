@@ -130,6 +130,11 @@ public abstract class AccessorImpl<T extends HitResult> implements Accessor<T> {
 	}
 
 	@Override
+	public boolean shouldVerifyData() {
+		return verify;
+	}
+
+	@Override
 	public float tickRate() {
 		return getLevel().tickRateManager().tickrate();
 	}

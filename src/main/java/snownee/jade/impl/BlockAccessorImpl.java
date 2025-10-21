@@ -225,12 +225,13 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 			blockEntity = accessor::getBlockEntity;
 			blockState = accessor.getBlockState();
 			serversideRep = accessor.getServersideRep();
+			verify = accessor.shouldVerifyData();
 			return this;
 		}
 
 		@Override
-		public BlockAccessor.Builder requireVerification() {
-			verify = true;
+		public BlockAccessor.Builder requireVerification(boolean verify) {
+			this.verify = verify;
 			return this;
 		}
 
