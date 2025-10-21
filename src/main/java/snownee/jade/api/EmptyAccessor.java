@@ -30,7 +30,11 @@ public interface EmptyAccessor extends Accessor<BlockHitResult> {
 
 		Builder from(EmptyAccessor accessor);
 
-		Builder requireVerification();
+		default Builder requireVerification() {
+			return requireVerification(true);
+		}
+
+		Builder requireVerification(boolean verify);
 
 		EmptyAccessor build();
 	}

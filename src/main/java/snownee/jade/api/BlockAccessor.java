@@ -61,7 +61,11 @@ public interface BlockAccessor extends Accessor<BlockHitResult> {
 
 		Builder from(BlockAccessor accessor);
 
-		Builder requireVerification();
+		default Builder requireVerification() {
+			return requireVerification(true);
+		}
+
+		Builder requireVerification(boolean verify);
 
 		BlockAccessor build();
 	}

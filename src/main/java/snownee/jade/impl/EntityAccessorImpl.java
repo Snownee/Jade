@@ -164,12 +164,13 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 			showDetails = accessor.showDetails();
 			hit = accessor::getHitResult;
 			entity = accessor::getEntity;
+			verify = accessor.shouldVerifyData();
 			return this;
 		}
 
 		@Override
-		public EntityAccessor.Builder requireVerification() {
-			verify = true;
+		public EntityAccessor.Builder requireVerification(boolean verify) {
+			this.verify = verify;
 			return this;
 		}
 

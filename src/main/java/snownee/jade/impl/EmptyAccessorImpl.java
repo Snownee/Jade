@@ -93,12 +93,13 @@ public class EmptyAccessorImpl extends AccessorImpl<BlockHitResult> implements E
 			connected = accessor.isServerConnected();
 			showDetails = accessor.showDetails();
 			hit = accessor.getHitResult();
+			verify = accessor.shouldVerifyData();
 			return this;
 		}
 
 		@Override
-		public EmptyAccessor.Builder requireVerification() {
-			verify = true;
+		public Builder requireVerification(boolean verify) {
+			this.verify = verify;
 			return this;
 		}
 
