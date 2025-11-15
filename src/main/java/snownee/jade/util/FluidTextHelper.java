@@ -38,7 +38,8 @@ import snownee.jade.overlay.DisplayHelper;
  * A few helpers to display fluids.
  */
 public class FluidTextHelper {
-	public static final long BUCKET = 81000;
+	private static final boolean FABRIC = "fabric".equals(CommonProxy.getPlatformIdentifier());
+	public static final long BUCKET = FABRIC ? 81000 : 1000;
 
 	/**
 	 * Return a unicode string representing a fraction, like ¹⁄₈₁.
@@ -89,10 +90,13 @@ public class FluidTextHelper {
 		return JadeClient.formatString("narration.jade.N/N", numerator, denominator);
 	}
 
-	public static NarratableComponent getMillibuckets(long droplets, boolean simplify) {
-		long mb = droplets / 81;
-		long leftover = droplets % BUCKET;
-		if (leftover == 0 || droplets >= BUCKET * 100) {
+	public static NarratableComponent getMillibuckets(long integer, boolean simplify) {
+		if (!FABRIC) {
+			return makeString(integer, 0, 0, "mB");
+		}
+		long mb = integer / 81;
+		long leftover = integer % BUCKET;
+		if (leftover == 0 || integer >= BUCKET * 100) {
 			String s = DisplayHelper.INSTANCE.humanReadableNumber(mb, "B", true);
 			if (s.endsWith("mB")) {
 				return makeString(s.substring(0, s.length() - 2), mb, 0, 0, "mB");
@@ -100,7 +104,7 @@ public class FluidTextHelper {
 				return makeString(s.substring(0, s.length() - 1), mb / 1000L, 0, 0, "B");
 			}
 		}
-		if (droplets % 81 == 0) {
+		if (integer % 81 == 0) {
 			return makeString(mb, 0, 0, "mB");
 		}
 		if (simplify) {
@@ -109,7 +113,7 @@ public class FluidTextHelper {
 				return makeString(mb / 1000, leftover / g, BUCKET / g, "B");
 			}
 		}
-		return makeString(mb, droplets % 81, 81, "mB");
+		return makeString(mb, integer % 81, 81, "mB");
 	}
 
 	private static NarratableComponent makeString(long integer, long numerator, long denominator, String unit) {
