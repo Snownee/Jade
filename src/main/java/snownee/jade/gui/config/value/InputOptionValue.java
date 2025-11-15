@@ -24,9 +24,9 @@ public class InputOptionValue<T> extends OptionValue<T> {
 		textField.setResponder(s -> {
 			if (this.validator.test(s)) {
 				setValue(s);
-				textField.setTextColor(Objects.requireNonNull(ChatFormatting.WHITE.getColor()));
+				textField.setTextColor(Objects.requireNonNull(ChatFormatting.WHITE.getColor()) | 0xFF000000);
 			} else {
-				textField.setTextColor(Objects.requireNonNull(ChatFormatting.RED.getColor()));
+				textField.setTextColor(Objects.requireNonNull(ChatFormatting.RED.getColor()) | 0xFF000000);
 			}
 			responder.run();
 		});

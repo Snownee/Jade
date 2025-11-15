@@ -7,17 +7,21 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.Lists;
+import com.mojang.blaze3d.platform.InputConstants;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.WidgetSprites;
+import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.gui.navigation.ScreenAxis;
 import net.minecraft.client.gui.navigation.ScreenDirection;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -223,5 +227,30 @@ public abstract class BaseOptionsScreen extends Screen {
 
 	public OptionsNav getOptionsNav() {
 		return optionsNav;
+	}
+
+	@Override
+	public boolean keyPressed(KeyEvent keyEvent) {
+		int key = keyEvent.key();
+		if (keyEvent.modifiers() == 0 && !(deepGetFocused(getCurrentFocusPath()) instanceof EditBox) && (
+				(key >= InputConstants.KEY_0 && key <= InputConstants.KEY_Z) ||
+						(key >= InputConstants.KEY_NUMPAD0 && key <= InputConstants.KEY_NUMPAD9))) {
+			setFocused(searchBox);
+		} else if (key == InputConstants.KEY_F && keyEvent.hasControlDownWithQuirk() && !keyEvent.hasShiftDown() &&
+				!keyEvent.hasAltDown()) {
+			setFocused(searchBox);
+			return true;
+		}
+		return super.keyPressed(keyEvent);
+	}
+
+	public static @Nullable GuiEventListener deepGetFocused(@Nullable ComponentPath path) {
+		if (path == null) {
+			return null;
+		} else if (path instanceof ComponentPath.Path node) {
+			return deepGetFocused(node.childPath());
+		} else {
+			return path.component();
+		}
 	}
 }

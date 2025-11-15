@@ -60,8 +60,8 @@ import snownee.jade.util.SmoothChasingValue;
 
 public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry> {
 
-	public static final Component OPTION_ON = CommonComponents.OPTION_ON.copy().withStyle(style -> style.withColor(0xFFB9F6CA));
-	public static final Component OPTION_OFF = CommonComponents.OPTION_OFF.copy().withStyle(style -> style.withColor(0xFFFF8A80));
+	public static final Component OPTION_ON = CommonComponents.OPTION_ON.copy().withColor(0xFFB9F6CA);
+	public static final Component OPTION_OFF = CommonComponents.OPTION_OFF.copy().withColor(0xFFFF8A80);
 	public final Set<OptionsList.Entry> forcePreview = Sets.newIdentityHashSet();
 	protected final List<Entry> entries = Lists.newArrayList();
 	private final Runnable diskWriter;
@@ -441,6 +441,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 			selectedKey.setKey(InputConstants.Type.MOUSE.getOrCreate(event.button()));
 			this.selectedKey = null;
 			resetMappingAndUpdateButtons();
+			return false;
 		}
 		return super.mouseClicked(event, bl);
 	}
