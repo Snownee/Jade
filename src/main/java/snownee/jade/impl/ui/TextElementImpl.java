@@ -58,6 +58,7 @@ public class TextElementImpl extends TextElement {
 			DisplayHelper.INSTANCE.drawText(graphics, text, x, getY(), normalColor);
 		}
 		if (mouseX != -1 && getRectangle().containsPoint(mouseX, mouseY)) {
+//			int highlightColor = IThemeHelper.get().theme().text.colors().info();
 			ActiveTextCollector collector = graphics.textRenderer(GuiGraphics.HoveredTextEffects.TOOLTIP_AND_CURSOR);
 			textCollector(collector);
 		}
@@ -107,9 +108,7 @@ public class TextElementImpl extends TextElement {
 		if (scale != 1) {
 			x = y = 0;
 		}
-		if (alpha != 1) {
-			collector.defaultParameters(collector.defaultParameters().withOpacity(alpha));
-		}
+		collector.defaultParameters(collector.defaultParameters().withOpacity(0));
 		collector.accept(x, y, text);
 	}
 
