@@ -25,7 +25,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Inventory;
@@ -198,7 +198,7 @@ public final class JadeClient {
 		if (itemStack.isEmpty()) {
 			return;
 		}
-		ResourceLocation specialId = ModIdentification.getSpecialId(itemStack).orElse(null);
+		Identifier specialId = ModIdentification.getSpecialId(itemStack).orElse(null);
 		RecipeLookupResult selected = null;
 		List<RecipeLookupResult> results = Lists.newArrayList();
 		for (RecipeLookupPlugin plugin : recipeLookupPlugins) {
@@ -231,7 +231,7 @@ public final class JadeClient {
 		if (!translationChecked && screen instanceof TitleScreen && CommonProxy.isDevEnv()) {
 			translationChecked = true;
 			List<String> keys = Lists.newArrayList();
-			for (ResourceLocation id : WailaClientRegistration.instance().getConfigKeys()) {
+			for (Identifier id : WailaClientRegistration.instance().getConfigKeys()) {
 				String key = "config.jade.plugin_%s.%s".formatted(id.getNamespace(), id.getPath());
 				if (!I18n.exists(key)) {
 					keys.add(key);
@@ -306,7 +306,7 @@ public final class JadeClient {
 	}
 
 	private static boolean isCamouflageBrushableBlock(BlockState blockState) {
-		return blockState.getBlockHolder().unwrapKey().orElseThrow().location().getPath().startsWith("suspicious_");
+		return blockState.getBlockHolder().unwrapKey().orElseThrow().identifier().getPath().startsWith("suspicious_");
 	}
 
 	@Nullable

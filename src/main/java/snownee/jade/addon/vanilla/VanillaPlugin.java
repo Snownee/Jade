@@ -8,7 +8,7 @@ import com.google.common.cache.CacheBuilder;
 
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.Display.BlockDisplay;
 import net.minecraft.world.entity.Display.ItemDisplay;
@@ -85,13 +85,13 @@ public class VanillaPlugin implements IWailaPlugin {
 		try {
 			return CHEST_CACHE.get(
 					state, () -> {
-						ResourceLocation trappedName = CommonProxy.getId(state.getBlock());
+						Identifier trappedName = CommonProxy.getId(state.getBlock());
 						Block block = Blocks.AIR;
 						if (trappedName.getPath().startsWith("trapped_")) {
-							ResourceLocation chestName = trappedName.withPath(trappedName.getPath().substring(8));
+							Identifier chestName = trappedName.withPath(trappedName.getPath().substring(8));
 							block = BuiltInRegistries.BLOCK.getValue(chestName);
 						} else if (trappedName.getPath().endsWith("_trapped_chest")) {
-							ResourceLocation chestName = trappedName.withPath(
+							Identifier chestName = trappedName.withPath(
 									trappedName.getPath().substring(0, trappedName.getPath().length() - 14) + "_chest");
 							block = BuiltInRegistries.BLOCK.getValue(chestName);
 						}

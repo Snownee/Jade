@@ -14,7 +14,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
@@ -42,23 +42,23 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 	 * @param key          the namespaced key
 	 * @param defaultValue the default value
 	 */
-	void addConfig(ResourceLocation key, boolean defaultValue);
+	void addConfig(Identifier key, boolean defaultValue);
 
-	<T extends Enum<T>> void addConfig(ResourceLocation key, T defaultValue);
+	<T extends Enum<T>> void addConfig(Identifier key, T defaultValue);
 
-	void addConfig(ResourceLocation key, String defaultValue, Predicate<String> validator);
+	void addConfig(Identifier key, String defaultValue, Predicate<String> validator);
 
-	void addConfig(ResourceLocation key, int defaultValue, int min, int max, boolean slider);
+	void addConfig(Identifier key, int defaultValue, int min, int max, boolean slider);
 
-	void addConfig(ResourceLocation key, float defaultValue, float min, float max, boolean slider);
+	void addConfig(Identifier key, float defaultValue, float min, float max, boolean slider);
 
-	void addConfigListener(ResourceLocation key, Consumer<ResourceLocation> listener);
-
-	@ApiStatus.Experimental
-	void setConfigCategoryOverride(ResourceLocation key, Component override);
+	void addConfigListener(Identifier key, Consumer<Identifier> listener);
 
 	@ApiStatus.Experimental
-	void setConfigCategoryOverride(ResourceLocation key, List<Component> override);
+	void setConfigCategoryOverride(Identifier key, Component override);
+
+	@ApiStatus.Experimental
+	void setConfigCategoryOverride(Identifier key, List<Component> override);
 
 	/**
 	 * Register an {@link IJadeProvider} instance to allow overriding the icon for a block via the
@@ -106,11 +106,11 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 		addAfterRenderCallback(0, callback);
 	}
 
-	Set<ResourceLocation> getConfigKeys(String namespace);
+	Set<Identifier> getConfigKeys(String namespace);
 
-	Set<ResourceLocation> getConfigKeys();
+	Set<Identifier> getConfigKeys();
 
-	boolean hasConfig(ResourceLocation key);
+	boolean hasConfig(Identifier key);
 
 	void addAfterRenderCallback(int priority, JadeAfterRenderCallback callback);
 
@@ -166,11 +166,11 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 
 	ItemStack getBlockCamouflage(LevelAccessor level, BlockPos pos);
 
-	void markAsClientFeature(ResourceLocation uid);
+	void markAsClientFeature(Identifier uid);
 
-	void markAsServerFeature(ResourceLocation uid);
+	void markAsServerFeature(Identifier uid);
 
-	boolean isClientFeature(ResourceLocation uid);
+	boolean isClientFeature(Identifier uid);
 
 	<T extends Accessor<?>> void registerAccessorHandler(Class<T> clazz, AccessorClientHandler<T> handler);
 

@@ -32,7 +32,7 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
@@ -94,16 +94,16 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	public final CallbackContainer<JadeItemModNameCallback> itemModNameCallback = new CallbackContainer<>();
 	public final CallbackContainer<JadeBeforeTooltipCollectCallback> beforeTooltipCollectCallback = new CallbackContainer<>();
 
-	public final Map<ResourceLocation, ConfigEntry<?>> configEntries = Maps.newHashMap();
-	public final Multimap<ResourceLocation, Component> configCategoryOverrides = ArrayListMultimap.create();
+	public final Map<Identifier, ConfigEntry<?>> configEntries = Maps.newHashMap();
+	public final Multimap<Identifier, Component> configCategoryOverrides = ArrayListMultimap.create();
 
 	public final Map<Block, CustomEnchantPower> customEnchantPowers = Maps.newHashMap();
-	public final Map<ResourceLocation, IClientExtensionProvider<ItemStack, ItemView>> itemStorageProviders = Maps.newHashMap();
-	public final Map<ResourceLocation, IClientExtensionProvider<FluidView.Data, FluidView>> fluidStorageProviders = Maps.newHashMap();
-	public final Map<ResourceLocation, IClientExtensionProvider<EnergyView.Data, EnergyView>> energyStorageProviders = Maps.newHashMap();
-	public final Map<ResourceLocation, IClientExtensionProvider<ProgressView.Data, ProgressView>> progressProviders = Maps.newHashMap();
+	public final Map<Identifier, IClientExtensionProvider<ItemStack, ItemView>> itemStorageProviders = Maps.newHashMap();
+	public final Map<Identifier, IClientExtensionProvider<FluidView.Data, FluidView>> fluidStorageProviders = Maps.newHashMap();
+	public final Map<Identifier, IClientExtensionProvider<EnergyView.Data, EnergyView>> energyStorageProviders = Maps.newHashMap();
+	public final Map<Identifier, IClientExtensionProvider<ProgressView.Data, ProgressView>> progressProviders = Maps.newHashMap();
 
-	public final Set<ResourceLocation> clientFeatures = Sets.newHashSet();
+	public final Set<Identifier> clientFeatures = Sets.newHashSet();
 
 	public final Map<Class<Accessor<?>>, AccessorClientHandler<Accessor<?>>> accessorHandlers = Maps.newIdentityHashMap();
 
@@ -191,42 +191,42 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	}
 
 	@Override
-	public void addConfig(ResourceLocation key, boolean defaultValue) {
+	public void addConfig(Identifier key, boolean defaultValue) {
 		addConfig(new BooleanConfigEntry(key, defaultValue));
 	}
 
 	@Override
-	public <T extends Enum<T>> void addConfig(ResourceLocation key, T defaultValue) {
+	public <T extends Enum<T>> void addConfig(Identifier key, T defaultValue) {
 		Objects.requireNonNull(defaultValue);
 		addConfig(new EnumConfigEntry<>(key, defaultValue));
 	}
 
 	@Override
-	public void addConfig(ResourceLocation key, String defaultValue, Predicate<String> validator) {
+	public void addConfig(Identifier key, String defaultValue, Predicate<String> validator) {
 		Objects.requireNonNull(defaultValue);
 		Objects.requireNonNull(validator);
 		addConfig(new StringConfigEntry(key, defaultValue, validator));
 	}
 
 	@Override
-	public void addConfig(ResourceLocation key, int defaultValue, int min, int max, boolean slider) {
+	public void addConfig(Identifier key, int defaultValue, int min, int max, boolean slider) {
 		addConfig(new IntConfigEntry(key, defaultValue, min, max, slider));
 	}
 
 	@Override
-	public void addConfig(ResourceLocation key, float defaultValue, float min, float max, boolean slider) {
+	public void addConfig(Identifier key, float defaultValue, float min, float max, boolean slider) {
 		addConfig(new FloatConfigEntry(key, defaultValue, min, max, slider));
 	}
 
 	@Override
-	public void addConfigListener(ResourceLocation key, Consumer<ResourceLocation> listener) {
+	public void addConfigListener(Identifier key, Consumer<Identifier> listener) {
 		Objects.requireNonNull(listener);
 		Preconditions.checkArgument(hasConfig(key), "Unknown config key: %s", key);
 		Objects.requireNonNull(getConfigEntry(key)).addListener(listener);
 	}
 
 	@Override
-	public void setConfigCategoryOverride(ResourceLocation key, Component override) {
+	public void setConfigCategoryOverride(Identifier key, Component override) {
 		Preconditions.checkArgument(!JadeIds.isAccess(key), "Cannot override option from access category");
 		Preconditions.checkArgument(IPluginConfig.isPrimaryKey(key), "Only primary config key can be overridden");
 		Preconditions.checkArgument(hasConfig(key), "Unknown config key: %s", key);
@@ -234,7 +234,7 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	}
 
 	@Override
-	public void setConfigCategoryOverride(ResourceLocation key, List<Component> overrides) {
+	public void setConfigCategoryOverride(Identifier key, List<Component> overrides) {
 		for (Component override : overrides) {
 			setConfigCategoryOverride(key, override);
 		}
@@ -247,22 +247,22 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	}
 
 	@Override
-	public Set<ResourceLocation> getConfigKeys(String namespace) {
+	public Set<Identifier> getConfigKeys(String namespace) {
 		return getConfigKeys().stream().filter(id -> id.getNamespace().equals(namespace)).collect(Collectors.toSet());
 	}
 
 	@Override
-	public Set<ResourceLocation> getConfigKeys() {
+	public Set<Identifier> getConfigKeys() {
 		return configEntries.keySet();
 	}
 
 	@Override
-	public boolean hasConfig(ResourceLocation key) {
+	public boolean hasConfig(Identifier key) {
 		return getConfigKeys().contains(key);
 	}
 
 	@Nullable
-	public ConfigEntry<?> getConfigEntry(ResourceLocation key) {
+	public ConfigEntry<?> getConfigEntry(Identifier key) {
 		return configEntries.get(key);
 	}
 
@@ -279,7 +279,7 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 				return;
 			}
 			if (!IPluginConfig.isPrimaryKey(key)) {
-				ResourceLocation primaryKey = IPluginConfig.getPrimaryKey(key);
+				Identifier primaryKey = IPluginConfig.getPrimaryKey(key);
 				Collection<Component> components = configCategoryOverrides.get(primaryKey);
 				if (!components.isEmpty()) {
 					for (Component component : components) {
@@ -324,7 +324,7 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 		};
 	}
 
-	public void setServerConfig(Map<ResourceLocation, Object> config) {
+	public void setServerConfig(Map<Identifier, Object> config) {
 		for (ConfigEntry<?> entry : configEntries.values()) {
 			entry.setSyncedValue(null);
 		}
@@ -492,17 +492,17 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	}
 
 	@Override
-	public void markAsClientFeature(ResourceLocation uid) {
+	public void markAsClientFeature(Identifier uid) {
 		clientFeatures.add(uid);
 	}
 
 	@Override
-	public void markAsServerFeature(ResourceLocation uid) {
+	public void markAsServerFeature(Identifier uid) {
 		clientFeatures.remove(uid);
 	}
 
 	@Override
-	public boolean isClientFeature(ResourceLocation uid) {
+	public boolean isClientFeature(Identifier uid) {
 		return clientFeatures.contains(uid);
 	}
 

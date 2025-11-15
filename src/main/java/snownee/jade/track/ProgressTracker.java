@@ -6,13 +6,13 @@ import java.util.function.Supplier;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class ProgressTracker {
 
-	private final ListMultimap<ResourceLocation, TrackInfo> map = ArrayListMultimap.create();
+	private final ListMultimap<Identifier, TrackInfo> map = ArrayListMultimap.create();
 
-	public <T extends TrackInfo> T getOrCreate(ResourceLocation tag, Class<T> type, Supplier<T> supplier) {
+	public <T extends TrackInfo> T getOrCreate(Identifier tag, Class<T> type, Supplier<T> supplier) {
 		List<TrackInfo> infos = map.get(tag);
 		T info = null;
 		for (TrackInfo o : infos) {

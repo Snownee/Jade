@@ -4,7 +4,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.IServerDataProvider;
 
@@ -12,16 +12,16 @@ import snownee.jade.api.IServerDataProvider;
  * A template implementation for script languages like KubeJS
  */
 public class TemplateServerDataProvider<T extends Accessor<?>> implements IServerDataProvider<T> {
-	private final ResourceLocation uid;
+	private final Identifier uid;
 	private BiConsumer<CompoundTag, T> dataFunction = (data, accessor) -> {};
 	private Predicate<T> shouldRequestData = accessor -> true;
 
-	protected TemplateServerDataProvider(ResourceLocation uid) {
+	protected TemplateServerDataProvider(Identifier uid) {
 		this.uid = uid;
 	}
 
 	@Override
-	public ResourceLocation getUid() {
+	public Identifier getUid() {
 		return uid;
 	}
 

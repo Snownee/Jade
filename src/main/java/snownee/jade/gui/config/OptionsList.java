@@ -19,7 +19,6 @@ import com.mojang.blaze3d.platform.InputConstants;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import it.unimi.dsi.fastutil.floats.FloatUnaryOperator;
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
 import net.minecraft.client.InputType;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -43,9 +42,10 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.util.StringUtil;
+import net.minecraft.util.Util;
 import snownee.jade.Jade;
 import snownee.jade.api.ui.JadeUI;
 import snownee.jade.gui.BaseOptionsScreen;
@@ -168,8 +168,8 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 
 	@Override
 	protected void renderListSeparators(GuiGraphics guiGraphics) {
-		ResourceLocation resourceLocation2 = this.minecraft.level == null ? Screen.FOOTER_SEPARATOR : Screen.INWORLD_FOOTER_SEPARATOR;
-		guiGraphics.blit(RenderPipelines.GUI_TEXTURED, resourceLocation2, 0, this.getBottom(), 0.0F, 0.0F, owner.width, 2, 32, 2);
+		Identifier Identifier2 = this.minecraft.level == null ? Screen.FOOTER_SEPARATOR : Screen.INWORLD_FOOTER_SEPARATOR;
+		guiGraphics.blit(RenderPipelines.GUI_TEXTURED, Identifier2, 0, this.getBottom(), 0.0F, 0.0F, owner.width, 2, 32, 2);
 	}
 
 	@Override
@@ -280,7 +280,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 			Supplier<Boolean> getter,
 			BooleanConsumer setter,
 			@Nullable Consumer<CycleButton.Builder<Boolean>> builderConsumer) {
-		CycleButton.Builder<Boolean> builder = CycleButton.booleanBuilder(OPTION_ON, OPTION_OFF);
+		CycleButton.Builder<Boolean> builder = CycleButton.booleanBuilder(OPTION_ON, OPTION_OFF, getter.get());
 		if (builderConsumer != null) {
 			builderConsumer.accept(builder);
 		}
@@ -297,14 +297,16 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 			Consumer<T> setter,
 			@Nullable Consumer<CycleButton.Builder<T>> builderConsumer) {
 		List<T> values = Arrays.asList(getter.get().getDeclaringClass().getEnumConstants());
-		CycleButton.Builder<T> builder = CycleButton.<T>builder(v -> {
-			String name = v.name().toLowerCase(Locale.ENGLISH);
-			return switch (name) {
-				case "on" -> OPTION_ON;
-				case "off" -> OPTION_OFF;
-				default -> Entry.makeTitle(optionName + "_" + name);
-			};
-		}).withValues(values);
+		CycleButton.Builder<T> builder = CycleButton.builder(
+				v -> {
+					String name = v.name().toLowerCase(Locale.ENGLISH);
+					return switch (name) {
+						case "on" -> OPTION_ON;
+						case "off" -> OPTION_OFF;
+						default -> Entry.makeTitle(optionName + "_" + name);
+					};
+				},
+				getter.get()).withValues(values);
 		builder.withTooltip(v -> {
 			String key = OptionsList.Entry.makeKey(optionName + "_" + v.name().toLowerCase(Locale.ENGLISH) + "_desc");
 			if (!I18n.exists(key)) {
@@ -324,7 +326,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 			List<T> values,
 			Consumer<T> setter,
 			Function<T, Component> nameProvider) {
-		return add(new CycleOptionValue<>(optionName, CycleButton.builder(nameProvider).withValues(values), getter, setter));
+		return add(new CycleOptionValue<>(optionName, CycleButton.builder(nameProvider, getter.get()).withValues(values), getter, setter));
 	}
 
 	public void keybind(KeyMapping keybind) {
@@ -395,7 +397,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		}
 	}
 
-	public void updateOptionValue(@Nullable ResourceLocation key) {
+	public void updateOptionValue(@Nullable Identifier key) {
 		for (Entry entry : entries) {
 			if (entry instanceof OptionValue<?> value && (key == null || key.equals(value.getId()))) {
 				value.updateValue();
@@ -472,7 +474,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		}
 
 		public static String makeKey(String key) {
-			return Util.makeDescriptionId("config", ResourceLocation.fromNamespaceAndPath(Jade.ID, key));
+			return Util.makeDescriptionId("config", Identifier.fromNamespaceAndPath(Jade.ID, key));
 		}
 
 		public AbstractWidget getFirstWidget() {

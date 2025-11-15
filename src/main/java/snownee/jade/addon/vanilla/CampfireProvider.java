@@ -10,7 +10,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.block.entity.CampfireBlockEntity;
@@ -29,7 +29,7 @@ public class CampfireProvider implements IServerExtensionProvider<ItemStack>, IC
 	private static final MapCodec<Integer> COOKING_TIME_CODEC = Codec.INT.fieldOf("jade:cooking");
 
 	@Override
-	public ResourceLocation getUid() {
+	public Identifier getUid() {
 		return JadeIds.MC_CAMPFIRE;
 	}
 

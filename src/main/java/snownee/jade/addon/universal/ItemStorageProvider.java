@@ -19,7 +19,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.Container;
 import net.minecraft.world.LockCode;
 import net.minecraft.world.RandomizableContainer;
@@ -64,7 +64,7 @@ public class ItemStorageProvider<T extends Accessor<?>> implements IServerDataPr
 	public static final Cache<Object, ItemCollector<?>> containerCache = CacheBuilder.newBuilder().weakKeys().expireAfterAccess(
 			120,
 			TimeUnit.SECONDS).build();
-	private static final StreamCodec<RegistryFriendlyByteBuf, Map.Entry<ResourceLocation, List<ViewGroup<ItemStack>>>> STREAM_CODEC = ViewGroup.listCodec(
+	private static final StreamCodec<RegistryFriendlyByteBuf, Map.Entry<Identifier, List<ViewGroup<ItemStack>>>> STREAM_CODEC = ViewGroup.listCodec(
 			ItemStack.OPTIONAL_STREAM_CODEC);
 
 	public static final ItemStorageProvider<BlockAccessor> BLOCK = new ItemStorageProvider<>();
@@ -201,7 +201,7 @@ public class ItemStorageProvider<T extends Accessor<?>> implements IServerDataPr
 		CompoundTag tag = accessor.getServerData();
 		Object target = accessor.getTarget();
 		Player player = accessor.getPlayer();
-		Map.Entry<ResourceLocation, List<ViewGroup<ItemStack>>> entry = CommonProxy.getServerExtensionData(
+		Map.Entry<Identifier, List<ViewGroup<ItemStack>>> entry = CommonProxy.getServerExtensionData(
 				accessor,
 				WailaCommonRegistration.instance().itemStorageProviders);
 		if (entry != null) {
@@ -254,7 +254,7 @@ public class ItemStorageProvider<T extends Accessor<?>> implements IServerDataPr
 	}
 
 	@Override
-	public ResourceLocation getUid() {
+	public Identifier getUid() {
 		return JadeIds.UNIVERSAL_ITEM_STORAGE;
 	}
 
@@ -267,7 +267,7 @@ public class ItemStorageProvider<T extends Accessor<?>> implements IServerDataPr
 		public static final Extension INSTANCE = new Extension();
 
 		@Override
-		public ResourceLocation getUid() {
+		public Identifier getUid() {
 			return JadeIds.UNIVERSAL_ITEM_STORAGE_DEFAULT;
 		}
 

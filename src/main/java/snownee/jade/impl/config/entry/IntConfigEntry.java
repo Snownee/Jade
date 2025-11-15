@@ -2,7 +2,7 @@ package snownee.jade.impl.config.entry;
 
 import java.util.function.BiConsumer;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.gui.config.OptionsList;
@@ -15,7 +15,7 @@ public class IntConfigEntry extends ConfigEntry<Integer> {
 	private int min;
 	private int max;
 
-	public IntConfigEntry(ResourceLocation id, int defaultValue, int min, int max, boolean slider) {
+	public IntConfigEntry(Identifier id, int defaultValue, int min, int max, boolean slider) {
 		super(id, defaultValue);
 		this.slider = slider;
 		this.min = min;
@@ -37,7 +37,7 @@ public class IntConfigEntry extends ConfigEntry<Integer> {
 			OptionsList options,
 			String optionName,
 			IPluginConfig config,
-			BiConsumer<ResourceLocation, Object> setter) {
+			BiConsumer<Identifier, Object> setter) {
 		if (slider) {
 			return options.slider(
 					optionName,

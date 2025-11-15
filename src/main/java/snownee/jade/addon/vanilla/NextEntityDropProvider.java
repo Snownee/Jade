@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.animal.Chicken;
@@ -50,7 +50,7 @@ public class NextEntityDropProvider implements IServerDataProvider<EntityAccesso
 	}
 
 	@Override
-	public ResourceLocation getUid() {
+	public Identifier getUid() {
 		return JadeIds.MC_NEXT_ENTITY_DROP;
 	}
 
@@ -65,7 +65,7 @@ public class NextEntityDropProvider implements IServerDataProvider<EntityAccesso
 		}
 
 		@Override
-		public ResourceLocation getUid() {
+		public Identifier getUid() {
 			return JadeIds.MC_NEXT_ENTITY_DROP;
 		}
 

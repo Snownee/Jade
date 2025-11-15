@@ -16,7 +16,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.StringUtil;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.component.CustomData;
@@ -55,7 +55,7 @@ import snownee.jade.util.ClientProxy;
 
 public class WailaTickHandler {
 	public static final String REMOVE_ELEMENTS = "$jade:remove";
-	public static final MapCodec<List<ResourceLocation>> REMOVE_ELEMENTS_CODEC = ResourceLocation.CODEC.listOf().fieldOf(REMOVE_ELEMENTS);
+	public static final MapCodec<List<Identifier>> REMOVE_ELEMENTS_CODEC = Identifier.CODEC.listOf().fieldOf(REMOVE_ELEMENTS);
 
 	private String lastNarration = "";
 	private long lastNarrationTime = 0;
@@ -262,8 +262,8 @@ public class WailaTickHandler {
 		if (accessor.isServersideContent()) {
 			CustomData data = accessor.getServersideRep().getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
 			if (data.tag.contains(REMOVE_ELEMENTS)) {
-				List<ResourceLocation> list = data.tag.read(REMOVE_ELEMENTS_CODEC).orElse(List.of());
-				for (ResourceLocation tag : list) {
+				List<Identifier> list = data.tag.read(REMOVE_ELEMENTS_CODEC).orElse(List.of());
+				for (Identifier tag : list) {
 					tooltip.remove(tag);
 				}
 			}

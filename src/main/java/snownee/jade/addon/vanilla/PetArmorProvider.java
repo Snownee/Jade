@@ -4,7 +4,7 @@ import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.animal.HappyGhast;
@@ -44,7 +44,7 @@ public class PetArmorProvider implements StreamServerDataProvider<EntityAccessor
 	}
 
 	@Override
-	public ResourceLocation getUid() {
+	public Identifier getUid() {
 		return JadeIds.MC_PET_ARMOR;
 	}
 
@@ -85,7 +85,7 @@ public class PetArmorProvider implements StreamServerDataProvider<EntityAccessor
 		}
 
 		@Override
-		public ResourceLocation getUid() {
+		public Identifier getUid() {
 			return JadeIds.MC_PET_ARMOR;
 		}
 	}

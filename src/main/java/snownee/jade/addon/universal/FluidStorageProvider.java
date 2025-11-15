@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import snownee.jade.JadeClient;
@@ -38,9 +38,9 @@ import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
 
-public class FluidStorageProvider<T extends Accessor<?>> implements StreamServerDataProvider<T, Map.Entry<ResourceLocation, List<ViewGroup<FluidView.Data>>>> {
+public class FluidStorageProvider<T extends Accessor<?>> implements StreamServerDataProvider<T, Map.Entry<Identifier, List<ViewGroup<FluidView.Data>>>> {
 
-	private static final StreamCodec<RegistryFriendlyByteBuf, Map.Entry<ResourceLocation, List<ViewGroup<FluidView.Data>>>> STREAM_CODEC = ViewGroup.listCodec(
+	private static final StreamCodec<RegistryFriendlyByteBuf, Map.Entry<Identifier, List<ViewGroup<FluidView.Data>>>> STREAM_CODEC = ViewGroup.listCodec(
 			FluidView.Data.STREAM_CODEC);
 
 	public static final FluidStorageProvider<BlockAccessor> BLOCK = new FluidStorageProvider<>();
@@ -127,7 +127,7 @@ public class FluidStorageProvider<T extends Accessor<?>> implements StreamServer
 	}
 
 	@Override
-	public ResourceLocation getUid() {
+	public Identifier getUid() {
 		return JadeIds.UNIVERSAL_FLUID_STORAGE;
 	}
 
@@ -137,12 +137,12 @@ public class FluidStorageProvider<T extends Accessor<?>> implements StreamServer
 	}
 
 	@Override
-	public @Nullable Map.Entry<ResourceLocation, List<ViewGroup<FluidView.Data>>> streamData(T accessor) {
+	public @Nullable Map.Entry<Identifier, List<ViewGroup<FluidView.Data>>> streamData(T accessor) {
 		return CommonProxy.getServerExtensionData(accessor, WailaCommonRegistration.instance().fluidStorageProviders);
 	}
 
 	@Override
-	public StreamCodec<RegistryFriendlyByteBuf, Map.Entry<ResourceLocation, List<ViewGroup<FluidView.Data>>>> streamCodec() {
+	public StreamCodec<RegistryFriendlyByteBuf, Map.Entry<Identifier, List<ViewGroup<FluidView.Data>>>> streamCodec() {
 		return STREAM_CODEC;
 	}
 
@@ -158,7 +158,7 @@ public class FluidStorageProvider<T extends Accessor<?>> implements StreamServer
 		public static final Extension INSTANCE = new Extension();
 
 		@Override
-		public ResourceLocation getUid() {
+		public Identifier getUid() {
 			return JadeIds.UNIVERSAL_FLUID_STORAGE_DEFAULT;
 		}
 

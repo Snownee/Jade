@@ -24,7 +24,9 @@ import net.minecraft.client.gui.narration.NarrationSupplier;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.resources.Identifier;
 import snownee.jade.JadeInternals;
 import snownee.jade.gui.JadeLinearLayout;
 import snownee.jade.impl.ui.JadeUIInternal;
@@ -32,7 +34,7 @@ import snownee.jade.overlay.DisplayHelper;
 
 public abstract class Element implements Renderable, LayoutElement, NarrationSupplier, GuiEventListener, CopyBehavior {
 
-	protected ResourceLocation tag;
+	protected Identifier tag;
 	protected int width;
 	protected int height;
 	private int x;
@@ -95,12 +97,12 @@ public abstract class Element implements Renderable, LayoutElement, NarrationSup
 	}
 
 	@Contract("_ -> this")
-	public Element tag(@Nullable ResourceLocation tag) {
+	public Element tag(@Nullable Identifier tag) {
 		this.tag = tag;
 		return this;
 	}
 
-	public @Nullable ResourceLocation getTag() {
+	public @Nullable Identifier getTag() {
 		return tag;
 	}
 
@@ -231,6 +233,14 @@ public abstract class Element implements Renderable, LayoutElement, NarrationSup
 			graphics.drawString(DisplayHelper.font(), s, 2, 2, 0xFFFFFFFF, false);
 			pose.popMatrix();
 		}
+	}
+
+	public static void setHoverEffect(GuiGraphics graphics, Component component) {
+		setHoverEffect(graphics, new HoverEvent.ShowText(component));
+	}
+
+	public static void setHoverEffect(GuiGraphics graphics, HoverEvent event) {
+		graphics.hoveredTextStyle = Style.EMPTY.withHoverEvent(event);
 	}
 
 	public static class RenderDebugContext {

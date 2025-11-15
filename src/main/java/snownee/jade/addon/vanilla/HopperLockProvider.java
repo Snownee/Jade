@@ -3,7 +3,7 @@ package snownee.jade.addon.vanilla;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import snownee.jade.addon.access.AccessibilityPlugin;
 import snownee.jade.addon.core.ObjectNameProvider;
@@ -29,7 +29,7 @@ public class HopperLockProvider implements StreamServerDataProvider<BlockAccesso
 	}
 
 	@Override
-	public ResourceLocation getUid() {
+	public Identifier getUid() {
 		return JadeIds.MC_HOPPER_LOCK;
 	}
 
@@ -59,7 +59,7 @@ public class HopperLockProvider implements StreamServerDataProvider<BlockAccesso
 		}
 
 		@Override
-		public ResourceLocation getUid() {
+		public Identifier getUid() {
 			return JadeIds.MC_HOPPER_LOCK;
 		}
 	}

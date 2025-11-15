@@ -15,7 +15,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.decoration.Painting;
@@ -33,7 +33,7 @@ import snownee.jade.overlay.DisplayHelper;
 
 public class ModIdentification implements KeyedResourceManagerReloadListener {
 
-	public static final ResourceLocation ID = JadeIds.JADE("mod_id");
+	public static final Identifier ID = JadeIds.JADE("mod_id");
 	public static final ModIdentification INSTANCE = new ModIdentification();
 	public static int NAME_MAX_WIDTH = 160;
 	private static final Map<String, Optional<String>> NAMES = Maps.newConcurrentMap();
@@ -41,9 +41,9 @@ public class ModIdentification implements KeyedResourceManagerReloadListener {
 	@Nullable
 	private static WordCutter wordCutter;
 	public static final String JADE_STACK = "$jade:stack";
-	public static final MapCodec<ResourceLocation> JADE_STACK_ID_CODEC = ResourceLocation.CODEC.fieldOf("id").fieldOf(JADE_STACK);
+	public static final MapCodec<Identifier> JADE_STACK_ID_CODEC = Identifier.CODEC.fieldOf("id").fieldOf(JADE_STACK);
 	public static final String POLYMER_STACK = "$polymer:stack";
-	public static final MapCodec<ResourceLocation> POLYMER_STACK_ID_CODEC = ResourceLocation.CODEC.fieldOf("id").fieldOf(POLYMER_STACK);
+	public static final MapCodec<Identifier> POLYMER_STACK_ID_CODEC = Identifier.CODEC.fieldOf("id").fieldOf(POLYMER_STACK);
 
 	public static WordCutter wordCutter() {
 		WordCutter cutter = wordCutter;
@@ -156,12 +156,12 @@ public class ModIdentification implements KeyedResourceManagerReloadListener {
 				});
 	}
 
-	public static String getModName(ResourceLocation id) {
+	public static String getModName(Identifier id) {
 		return getModName(id.getNamespace()).orElse(id.getNamespace());
 	}
 
 	public static String getModName(Block block) {
-		ResourceLocation id;
+		Identifier id;
 		try {
 			id = CommonProxy.getId(block);
 		} catch (Throwable e) {
@@ -170,7 +170,7 @@ public class ModIdentification implements KeyedResourceManagerReloadListener {
 		return getModName(id);
 	}
 
-	public static Optional<ResourceLocation> getSpecialId(ItemStack stack) {
+	public static Optional<Identifier> getSpecialId(ItemStack stack) {
 		CustomData data = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
 		if (!CustomData.EMPTY.equals(data)) {
 			if (data.tag.contains(JADE_STACK)) {
@@ -183,7 +183,7 @@ public class ModIdentification implements KeyedResourceManagerReloadListener {
 	}
 
 	public static String getModId(ItemStack stack) {
-		Optional<ResourceLocation> specialId = getSpecialId(stack);
+		Optional<Identifier> specialId = getSpecialId(stack);
 		if (specialId.isPresent()) {
 			return specialId.orElseThrow().getNamespace();
 		}
@@ -208,7 +208,7 @@ public class ModIdentification implements KeyedResourceManagerReloadListener {
 
 	public static String getModName(Entity entity) {
 		if (entity instanceof Painting painting) {
-			return getModName(painting.getVariant().unwrapKey().orElseThrow().location());
+			return getModName(painting.getVariant().unwrapKey().orElseThrow().identifier());
 		}
 		if (entity instanceof ItemEntity itemEntity) {
 			return getModName(itemEntity.getItem());
@@ -217,9 +217,9 @@ public class ModIdentification implements KeyedResourceManagerReloadListener {
 			return getModName(fallingBlock.getBlockState().getBlock());
 		}
 		if (entity instanceof Villager villager) {
-			return getModName(villager.getVillagerData().profession().unwrapKey().orElseThrow().location());
+			return getModName(villager.getVillagerData().profession().unwrapKey().orElseThrow().identifier());
 		}
-		ResourceLocation id;
+		Identifier id;
 		try {
 			id = CommonProxy.getId(entity.getType());
 		} catch (Throwable e) {
@@ -234,7 +234,7 @@ public class ModIdentification implements KeyedResourceManagerReloadListener {
 	}
 
 	@Override
-	public ResourceLocation getUid() {
+	public Identifier getUid() {
 		return ID;
 	}
 }

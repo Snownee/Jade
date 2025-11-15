@@ -6,7 +6,6 @@ import java.util.Objects;
 
 import it.unimi.dsi.fastutil.floats.FloatUnaryOperator;
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
@@ -17,9 +16,10 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
+import net.minecraft.util.Util;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
 import snownee.jade.api.config.IWailaConfig;
@@ -37,7 +37,7 @@ import snownee.jade.util.CommonProxy;
 
 public class WailaConfigScreen extends PreviewOptionsScreen {
 
-	private CycleOptionValue<ResourceLocation> styleEntry;
+	private CycleOptionValue<Identifier> styleEntry;
 	private OptionValue<Float> opacityEntry;
 
 	public WailaConfigScreen(Screen parent) {
@@ -114,15 +114,15 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 				adjust, w -> {
 					startAdjustingPosition();
 				}).size(100, 20)));
-		CycleButton.ValueListSupplier<ResourceLocation> valuesSupplier = new CycleButton.ValueListSupplier<>() {
+		CycleButton.ValueListSupplier<Identifier> valuesSupplier = new CycleButton.ValueListSupplier<>() {
 			@Override
-			public List<ResourceLocation> getSelectedList() {
+			public List<Identifier> getSelectedList() {
 				return getDefaultList();
 			}
 
 			@Override
-			public List<ResourceLocation> getDefaultList() {
-				ResourceLocation mainId = overlay.getTheme().mainId();
+			public List<Identifier> getDefaultList() {
+				Identifier mainId = overlay.getTheme().mainId();
 				return ThemeHelper.INSTANCE.getThemes().stream()
 						.filter($ -> $.mainId().equals(mainId))
 						.map($ -> $.id)
@@ -131,7 +131,9 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 		};
 		var themeEntry = options.add(new CycleOptionValue<>(
 				"overlay_theme",
-				CycleButton.<ResourceLocation>builder(id -> Component.translatable(Util.makeDescriptionId("jade.theme", id)))
+				CycleButton.builder(
+								id -> Component.translatable(Util.makeDescriptionId("jade.theme", id)),
+								overlay.getTheme().mainId())
 						.withValues(IThemeHelper.get()
 								.getThemes()
 								.stream()
@@ -155,7 +157,7 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 				}));
 		styleEntry = options.add(new CycleOptionValue<>(
 				"theme_style",
-				CycleButton.<ResourceLocation>builder(id -> Component.translatable(ThemeHelper.INSTANCE.getTheme(id).styleName))
+				CycleButton.builder(id -> Component.translatable(ThemeHelper.INSTANCE.getTheme(id).styleName), overlay.getTheme().id)
 						.withValues(valuesSupplier),
 				() -> overlay.getTheme().id,
 				overlay::applyTheme) {

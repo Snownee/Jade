@@ -11,7 +11,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.metadata.gui.GuiMetadataSection;
 import net.minecraft.client.resources.metadata.gui.GuiSpriteScaling;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.IDisplayHelper;
@@ -22,19 +22,19 @@ import snownee.jade.overlay.DisplayHelper;
 public class SpriteElement extends ProgressOverlayElement {
 
 	private final RenderPipeline renderPipeline;
-	private final ResourceLocation sprite;
+	private final Identifier sprite;
 	public @Nullable Orientation tiledOrientation;
 	private final int oWidth;
 	private final int oHeight;
 	private int color = -1;
 	private int generation;
-	private @Nullable ResourceLocation mappedSprite;
+	private @Nullable Identifier mappedSprite;
 
-	public SpriteElement(ResourceLocation sprite, int width, int height) {
+	public SpriteElement(Identifier sprite, int width, int height) {
 		this(RenderPipelines.GUI_TEXTURED, sprite, width, height);
 	}
 
-	public SpriteElement(RenderPipeline renderPipeline, ResourceLocation sprite, int width, int height) {
+	public SpriteElement(RenderPipeline renderPipeline, Identifier sprite, int width, int height) {
 		this.renderPipeline = renderPipeline;
 		this.sprite = sprite;
 		oWidth = this.width = width;
@@ -133,7 +133,7 @@ public class SpriteElement extends ProgressOverlayElement {
 		}
 	}
 
-	private ResourceLocation mappedSprite() {
+	private Identifier mappedSprite() {
 		if (mappedSprite == null || generation != IThemeHelper.get().generation()) {
 			generation = IThemeHelper.get().generation();
 			mappedSprite = IThemeHelper.get().theme().mapSprite(sprite);

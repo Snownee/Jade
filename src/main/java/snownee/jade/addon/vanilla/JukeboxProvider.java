@@ -4,7 +4,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.JukeboxPlayable;
 import net.minecraft.world.level.block.JukeboxBlock;
@@ -36,7 +36,7 @@ public class JukeboxProvider implements StreamServerDataProvider<BlockAccessor, 
 	}
 
 	@Override
-	public ResourceLocation getUid() {
+	public Identifier getUid() {
 		return JadeIds.MC_JUKEBOX;
 	}
 
@@ -64,7 +64,7 @@ public class JukeboxProvider implements StreamServerDataProvider<BlockAccessor, 
 		}
 
 		@Override
-		public ResourceLocation getUid() {
+		public Identifier getUid() {
 			return JadeIds.MC_JUKEBOX;
 		}
 	}

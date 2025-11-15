@@ -5,7 +5,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
@@ -33,7 +33,7 @@ public class BrewingStandProvider implements StreamServerDataProvider<BlockAcces
 	}
 
 	@Override
-	public ResourceLocation getUid() {
+	public Identifier getUid() {
 		return JadeIds.MC_BREWING_STAND;
 	}
 
@@ -66,7 +66,7 @@ public class BrewingStandProvider implements StreamServerDataProvider<BlockAcces
 		}
 
 		@Override
-		public ResourceLocation getUid() {
+		public Identifier getUid() {
 			return JadeIds.MC_BREWING_STAND;
 		}
 	}

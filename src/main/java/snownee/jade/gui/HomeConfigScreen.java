@@ -248,13 +248,12 @@ public class HomeConfigScreen extends Screen {
 			}
 		}
 		super.render(graphics, mouseX, mouseY, partialTicks);
-		boolean smallUI = minecraft.getWindow().getGuiScale() < 3;
 		int left = width / 2 - 105;
 		int top = height / 4 - 20;
 		graphics.pose().pushMatrix();
 		graphics.pose().translate(left, top);
 
-		float scale = smallUI ? 2F : 1.5F;
+		float scale = 2F;
 		graphics.pose().scale(scale);
 		graphics.drawString(font, ModIdentification.getModFullName(Jade.ID).orElse("Jade"), 0, 0, 0xFFFFFFFF);
 

@@ -10,7 +10,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.Block;
 import snownee.jade.Jade;
@@ -38,13 +38,13 @@ public record ClientHandshakePacket(String protocolVersion) implements CustomPac
 				return;
 			}
 			((JadeServerPlayer) player).jade$setConnected(true);
-			Map<ResourceLocation, Object> configs = ServerPluginConfig.instance().values();
+			Map<Identifier, Object> configs = ServerPluginConfig.instance().values();
 			List<Block> shearableBlocks = LootTableMineableCollector.getShearableBlocks();
 			if (!configs.isEmpty()) {
 				Jade.LOGGER.debug("Syncing config to {} ({})", player.getGameProfile().name(), player.getGameProfile().id());
 			}
-			List<ResourceLocation> blockProviderIds = WailaCommonRegistration.instance().blockDataProviders.mappedIds();
-			List<ResourceLocation> entityProviderIds = WailaCommonRegistration.instance().entityDataProviders.mappedIds();
+			List<Identifier> blockProviderIds = WailaCommonRegistration.instance().blockDataProviders.mappedIds();
+			List<Identifier> entityProviderIds = WailaCommonRegistration.instance().entityDataProviders.mappedIds();
 			CommonProxy.sendPacket(player, new ServerHandshakePacket(configs, shearableBlocks, blockProviderIds, entityProviderIds));
 		});
 	}

@@ -13,7 +13,7 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 
 public class NotUglyEditBox extends EditBox {
@@ -70,10 +70,10 @@ public class NotUglyEditBox extends EditBox {
 				bgAlpha = backgroundMode == BackgroundMode.VISIBLE ? 1.0F : 0.0F;
 			}
 			if (bgAlpha > 0F) {
-				ResourceLocation resourceLocation = background.get(this.isActive(), this.isFocused());
+				Identifier Identifier = background.get(this.isActive(), this.isFocused());
 				guiGraphics.blitSprite(
 						RenderPipelines.GUI_TEXTURED,
-						resourceLocation,
+						Identifier,
 						this.getX(),
 						this.getY(),
 						this.getWidth(),

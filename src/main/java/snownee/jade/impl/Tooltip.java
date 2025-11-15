@@ -19,7 +19,7 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.narration.NarrationSupplier;
 import net.minecraft.client.gui.narration.NarrationThunk;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.JadeUI;
@@ -28,7 +28,7 @@ import snownee.jade.api.ui.TextElement;
 import snownee.jade.impl.ui.JadeUIInternal;
 
 public class Tooltip implements ITooltip {
-	private static ResourceLocation getTag(LayoutElement element) {
+	private static Identifier getTag(LayoutElement element) {
 		if (element instanceof Element taggable) {
 			return taggable.getTag();
 		}
@@ -69,7 +69,7 @@ public class Tooltip implements ITooltip {
 	}
 
 	@Override
-	public List<LayoutElement> get(ResourceLocation tag) {
+	public List<LayoutElement> get(Identifier tag) {
 		List<LayoutElement> elements = Lists.newArrayList();
 		for (Line line : lines) {
 			line.elements().stream().filter(e -> Objects.equal(tag, getTag(e))).forEach(elements::add);
@@ -78,11 +78,11 @@ public class Tooltip implements ITooltip {
 	}
 
 	@Override
-	public boolean remove(ResourceLocation tag) {
+	public boolean remove(Identifier tag) {
 		return removeInternal(tag, true, null);
 	}
 
-	private boolean removeInternal(ResourceLocation tag, boolean removeFirstLineIfEmpty, @Nullable List<List<LayoutElement>> collector) {
+	private boolean removeInternal(Identifier tag, boolean removeFirstLineIfEmpty, @Nullable List<List<LayoutElement>> collector) {
 		boolean removed = false;
 		List<LayoutElement> collected = collector == null ? null : Lists.newArrayList();
 		for (Iterator<Line> iterator = lines.iterator(); iterator.hasNext(); ) {
@@ -110,12 +110,12 @@ public class Tooltip implements ITooltip {
 	}
 
 	@Override
-	public boolean replace(ResourceLocation tag, Component component) {
+	public boolean replace(Identifier tag, Component component) {
 		return replace(tag, $ -> List.of(List.of(JadeUI.text(component))));
 	}
 
 	@Override
-	public boolean replace(ResourceLocation tag, UnaryOperator<List<List<LayoutElement>>> operator) {
+	public boolean replace(Identifier tag, UnaryOperator<List<List<LayoutElement>>> operator) {
 		int firstX = -1, firstY = -1;
 		for (int y = 0; y < lines.size(); y++) {
 			Line line = lines.get(y);
@@ -221,7 +221,7 @@ public class Tooltip implements ITooltip {
 	}
 
 	@Override
-	public String getString(ResourceLocation tag) {
+	public String getString(Identifier tag) {
 		return get(tag).stream().filter($ -> $ instanceof TextElement).map($ -> ((TextElement) $).getString()).findFirst().orElse("");
 	}
 

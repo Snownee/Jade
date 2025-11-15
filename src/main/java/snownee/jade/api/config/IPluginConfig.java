@@ -4,7 +4,7 @@ import java.util.Map;
 
 import org.jetbrains.annotations.ApiStatus.NonExtendable;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import snownee.jade.api.IToggleableProvider;
 
 /**
@@ -16,11 +16,11 @@ import snownee.jade.api.IToggleableProvider;
 @NonExtendable
 public interface IPluginConfig {
 
-	static boolean isPrimaryKey(ResourceLocation key) {
+	static boolean isPrimaryKey(Identifier key) {
 		return !key.getPath().contains(".");
 	}
 
-	static ResourceLocation getPrimaryKey(ResourceLocation key) {
+	static Identifier getPrimaryKey(Identifier key) {
 		return key.withPath(key.getPath().substring(0, key.getPath().indexOf('.')));
 	}
 
@@ -31,17 +31,17 @@ public interface IPluginConfig {
 		return get(provider.getUid());
 	}
 
-	boolean get(ResourceLocation key);
+	boolean get(Identifier key);
 
-	<T extends Enum<T>> T getEnum(ResourceLocation key);
+	<T extends Enum<T>> T getEnum(Identifier key);
 
-	int getInt(ResourceLocation key);
+	int getInt(Identifier key);
 
-	float getFloat(ResourceLocation key);
+	float getFloat(Identifier key);
 
-	String getString(ResourceLocation key);
+	String getString(Identifier key);
 
-	boolean set(ResourceLocation key, Object value);
+	boolean set(Identifier key, Object value);
 
-	Map<ResourceLocation, Object> values();
+	Map<Identifier, Object> values();
 }

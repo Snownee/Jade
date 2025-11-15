@@ -13,13 +13,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 
 public class REICompat implements RecipeLookupPlugin {
 	@SuppressWarnings("UnstableApiUsage")
 	@Override
-	public RecipeLookupResult lookup(ItemStack itemStack, @Nullable ResourceLocation specialId, boolean uses) {
+	public RecipeLookupResult lookup(ItemStack itemStack, @Nullable Identifier specialId, boolean uses) {
 		ViewSearchBuilder builder = ViewSearchBuilder.builder();
 		if (uses) {
 			builder.addUsagesFor(EntryStack.of(VanillaEntryTypes.ITEM, itemStack));

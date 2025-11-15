@@ -6,7 +6,7 @@ import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.ITooltip;
@@ -28,7 +28,7 @@ public class BlockFaceProvider implements IBlockComponentProvider {
 	}
 
 	@Override
-	public ResourceLocation getUid() {
+	public Identifier getUid() {
 		return JadeIds.CORE_BLOCK_FACE;
 	}
 

@@ -24,7 +24,6 @@ public class FogRendererMixin {
 	private void jade$setupFog(
 			Camera camera,
 			int i,
-			boolean bl,
 			DeltaTracker deltaTracker,
 			float f,
 			ClientLevel clientLevel,

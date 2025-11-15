@@ -7,14 +7,14 @@ import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public abstract class ProgressStyle {
 
 	protected boolean fitContentX = true;
 	protected boolean fitContentY = true;
 	protected ScreenDirection direction = ScreenDirection.RIGHT;
-	protected @Nullable ResourceLocation foreground;
+	protected @Nullable Identifier foreground;
 	protected boolean canDecrease;
 
 	@Contract("_ -> this")
@@ -48,12 +48,12 @@ public abstract class ProgressStyle {
 	}
 
 	@Contract("_ -> this")
-	public ProgressStyle foreground(@Nullable ResourceLocation foreground) {
+	public ProgressStyle foreground(@Nullable Identifier foreground) {
 		this.foreground = foreground;
 		return this;
 	}
 
-	public @Nullable ResourceLocation foreground() {
+	public @Nullable Identifier foreground() {
 		return foreground;
 	}
 

@@ -35,9 +35,6 @@
 		],
 		"modmenu": [
 			"snownee.jade.compat.ModMenuCompat"
-		],
-		"jei_mod_plugin": [
-			"snownee.jade.compat.JEICompat"
 		]
 	},
 	"mixins": [
@@ -46,7 +43,7 @@
 	"accessWidener": "jade.accesswidener",
 	"depends": {
 		"fabric-api": ">=0.133.5",
-		"minecraft": ">=1.21.9-"
+		"minecraft": ">=1.21.11-"
 	},
 	"custom": {
 		"modmenu": {

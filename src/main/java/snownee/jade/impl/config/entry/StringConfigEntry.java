@@ -3,7 +3,7 @@ package snownee.jade.impl.config.entry;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.gui.config.OptionsList;
 import snownee.jade.gui.config.value.OptionValue;
@@ -12,7 +12,7 @@ public class StringConfigEntry extends ConfigEntry<String> {
 
 	private Predicate<String> validator;
 
-	public StringConfigEntry(ResourceLocation id, String defaultValue, Predicate<String> validator) {
+	public StringConfigEntry(Identifier id, String defaultValue, Predicate<String> validator) {
 		super(id, defaultValue);
 		this.validator = validator;
 	}
@@ -27,7 +27,7 @@ public class StringConfigEntry extends ConfigEntry<String> {
 			OptionsList options,
 			String optionName,
 			IPluginConfig config,
-			BiConsumer<ResourceLocation, Object> setter) {
+			BiConsumer<Identifier, Object> setter) {
 		return options.input(optionName, () -> config.getString(id), s -> setter.accept(id, s), validator);
 	}
 

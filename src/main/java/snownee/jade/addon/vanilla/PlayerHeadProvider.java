@@ -3,7 +3,7 @@ package snownee.jade.addon.vanilla;
 import org.apache.commons.lang3.StringUtils;
 
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.level.block.entity.SkullBlockEntity;
@@ -44,7 +44,7 @@ public class PlayerHeadProvider implements IBlockComponentProvider {
 	}
 
 	@Override
-	public ResourceLocation getUid() {
+	public Identifier getUid() {
 		return JadeIds.MC_PLAYER_HEAD;
 	}
 

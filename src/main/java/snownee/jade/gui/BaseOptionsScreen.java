@@ -21,7 +21,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
 import snownee.jade.JadeClient;
 import snownee.jade.api.JadeIds;
@@ -81,7 +81,7 @@ public abstract class BaseOptionsScreen extends Screen {
 		searchBox.fixedTextX = 12;
 		searchBox.fixedTextY = 6;
 		searchBox.fixedInnerWidth = searchBox.getWidth() - 12 - 18;
-		ResourceLocation searchBoxBackground = JadeIds.JADE("search_box_background");
+		Identifier searchBoxBackground = JadeIds.JADE("search_box_background");
 		searchBox.background = new WidgetSprites(searchBoxBackground, searchBoxBackground);
 		searchBox.alwaysRenderCross = true;
 		searchBox.updateTextPosition();

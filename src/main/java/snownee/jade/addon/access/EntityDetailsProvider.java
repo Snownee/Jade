@@ -3,7 +3,7 @@ package snownee.jade.addon.access;
 import com.mojang.datafixers.util.Either;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.TriState;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -82,7 +82,7 @@ public class EntityDetailsProvider implements IEntityComponentProvider {
 	}
 
 	@Override
-	public ResourceLocation getUid() {
+	public Identifier getUid() {
 		return JadeIds.ACCESS_ENTITY_DETAILS;
 	}
 

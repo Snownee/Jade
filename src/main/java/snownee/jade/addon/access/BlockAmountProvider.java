@@ -1,6 +1,6 @@
 package snownee.jade.addon.access;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import snownee.jade.JadeClient;
@@ -40,7 +40,7 @@ public class BlockAmountProvider implements IBlockComponentProvider {
 	}
 
 	@Override
-	public ResourceLocation getUid() {
+	public Identifier getUid() {
 		return JadeIds.ACCESS_BLOCK_AMOUNT;
 	}
 

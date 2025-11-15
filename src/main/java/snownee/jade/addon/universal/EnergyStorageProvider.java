@@ -11,7 +11,7 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
@@ -36,9 +36,9 @@ import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
 
-public class EnergyStorageProvider<T extends Accessor<?>> implements StreamServerDataProvider<T, Map.Entry<ResourceLocation, List<ViewGroup<EnergyView.Data>>>> {
+public class EnergyStorageProvider<T extends Accessor<?>> implements StreamServerDataProvider<T, Map.Entry<Identifier, List<ViewGroup<EnergyView.Data>>>> {
 
-	private static final StreamCodec<RegistryFriendlyByteBuf, Map.Entry<ResourceLocation, List<ViewGroup<EnergyView.Data>>>> STREAM_CODEC = ViewGroup.listCodec(
+	private static final StreamCodec<RegistryFriendlyByteBuf, Map.Entry<Identifier, List<ViewGroup<EnergyView.Data>>>> STREAM_CODEC = ViewGroup.listCodec(
 			EnergyView.Data.STREAM_CODEC).cast();
 
 	public static final EnergyStorageProvider<BlockAccessor> BLOCK = new EnergyStorageProvider<>();
@@ -111,17 +111,17 @@ public class EnergyStorageProvider<T extends Accessor<?>> implements StreamServe
 	}
 
 	@Override
-	public @Nullable Map.Entry<ResourceLocation, List<ViewGroup<EnergyView.Data>>> streamData(T accessor) {
+	public @Nullable Map.Entry<Identifier, List<ViewGroup<EnergyView.Data>>> streamData(T accessor) {
 		return CommonProxy.getServerExtensionData(accessor, WailaCommonRegistration.instance().energyStorageProviders);
 	}
 
 	@Override
-	public StreamCodec<RegistryFriendlyByteBuf, Map.Entry<ResourceLocation, List<ViewGroup<EnergyView.Data>>>> streamCodec() {
+	public StreamCodec<RegistryFriendlyByteBuf, Map.Entry<Identifier, List<ViewGroup<EnergyView.Data>>>> streamCodec() {
 		return STREAM_CODEC;
 	}
 
 	@Override
-	public ResourceLocation getUid() {
+	public Identifier getUid() {
 		return JadeIds.UNIVERSAL_ENERGY_STORAGE;
 	}
 
@@ -142,7 +142,7 @@ public class EnergyStorageProvider<T extends Accessor<?>> implements StreamServe
 		public static final Extension INSTANCE = new Extension();
 
 		@Override
-		public ResourceLocation getUid() {
+		public Identifier getUid() {
 			return JadeIds.UNIVERSAL_ENERGY_STORAGE_DEFAULT;
 		}
 

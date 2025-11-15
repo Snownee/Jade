@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
@@ -28,9 +28,9 @@ import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
 
-public class ProgressProvider<T extends Accessor<?>> implements StreamServerDataProvider<T, Map.Entry<ResourceLocation, List<ViewGroup<ProgressView.Data>>>> {
+public class ProgressProvider<T extends Accessor<?>> implements StreamServerDataProvider<T, Map.Entry<Identifier, List<ViewGroup<ProgressView.Data>>>> {
 
-	private static final StreamCodec<RegistryFriendlyByteBuf, Map.Entry<ResourceLocation, List<ViewGroup<ProgressView.Data>>>> STREAM_CODEC = ViewGroup.listCodec(
+	private static final StreamCodec<RegistryFriendlyByteBuf, Map.Entry<Identifier, List<ViewGroup<ProgressView.Data>>>> STREAM_CODEC = ViewGroup.listCodec(
 			ProgressView.Data.STREAM_CODEC).cast();
 
 	public static final ProgressProvider<BlockAccessor> BLOCK = new ProgressProvider<>();
@@ -76,12 +76,12 @@ public class ProgressProvider<T extends Accessor<?>> implements StreamServerData
 	}
 
 	@Override
-	public @Nullable Map.Entry<ResourceLocation, List<ViewGroup<ProgressView.Data>>> streamData(T accessor) {
+	public @Nullable Map.Entry<Identifier, List<ViewGroup<ProgressView.Data>>> streamData(T accessor) {
 		return CommonProxy.getServerExtensionData(accessor, WailaCommonRegistration.instance().progressProviders);
 	}
 
 	@Override
-	public StreamCodec<RegistryFriendlyByteBuf, Map.Entry<ResourceLocation, List<ViewGroup<ProgressView.Data>>>> streamCodec() {
+	public StreamCodec<RegistryFriendlyByteBuf, Map.Entry<Identifier, List<ViewGroup<ProgressView.Data>>>> streamCodec() {
 		return STREAM_CODEC;
 	}
 
@@ -91,7 +91,7 @@ public class ProgressProvider<T extends Accessor<?>> implements StreamServerData
 	}
 
 	@Override
-	public ResourceLocation getUid() {
+	public Identifier getUid() {
 		return JadeIds.UNIVERSAL_PROGRESS;
 	}
 

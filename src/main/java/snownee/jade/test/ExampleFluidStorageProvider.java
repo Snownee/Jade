@@ -3,7 +3,7 @@ package snownee.jade.test;
 import java.util.List;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.material.Fluids;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.fluid.JadeFluidObject;
@@ -18,7 +18,7 @@ public enum ExampleFluidStorageProvider implements IServerExtensionProvider<Flui
 	INSTANCE;
 
 	@Override
-	public ResourceLocation getUid() {
+	public Identifier getUid() {
 		return ExamplePlugin.UID_TEST_FLUIDS;
 	}
 

@@ -17,7 +17,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 
 import net.minecraft.core.IdMapper;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import snownee.jade.Jade;
 import snownee.jade.api.IJadeProvider;
 import snownee.jade.impl.PriorityStore;
@@ -29,7 +29,7 @@ public class PairHierarchyLookup<T extends IJadeProvider> implements IHierarchyL
 	protected boolean idMapped;
 	@Nullable
 	protected IdMapper<T> idMapper;
-	protected Map<ResourceLocation, T> byKey;
+	protected Map<Identifier, T> byKey;
 
 	public PairHierarchyLookup(IHierarchyLookup<T> first, IHierarchyLookup<T> second) {
 		this.first = first;
@@ -122,7 +122,7 @@ public class PairHierarchyLookup<T extends IJadeProvider> implements IHierarchyL
 	}
 
 	@Override
-	public void loadComplete(PriorityStore<ResourceLocation, IJadeProvider> priorityStore) {
+	public void loadComplete(PriorityStore<Identifier, IJadeProvider> priorityStore) {
 		first.loadComplete(priorityStore);
 		second.loadComplete(priorityStore);
 		if (idMapped) {
@@ -136,7 +136,7 @@ public class PairHierarchyLookup<T extends IJadeProvider> implements IHierarchyL
 	}
 
 	@Override
-	public T byKey(ResourceLocation key) {
+	public T byKey(Identifier key) {
 		return byKey.get(key);
 	}
 }

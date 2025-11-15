@@ -1,7 +1,7 @@
 package snownee.jade.test;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.ITooltip;
@@ -16,7 +16,7 @@ public class ExampleComponentProvider2 implements IBlockComponentProvider {
 	}
 
 	@Override
-	public ResourceLocation getUid() {
+	public Identifier getUid() {
 		return ExamplePlugin.UID_TEST_FUEL;
 	}
 }

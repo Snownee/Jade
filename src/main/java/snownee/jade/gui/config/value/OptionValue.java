@@ -14,7 +14,7 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.narration.NarrationThunk;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import snownee.jade.gui.config.OptionsList;
 
 public abstract class OptionValue<T> extends OptionsList.Entry {
@@ -23,7 +23,7 @@ public abstract class OptionValue<T> extends OptionsList.Entry {
 	protected final Supplier<T> getter;
 	protected final Consumer<T> setter;
 	private final Component title;
-	protected ResourceLocation id;
+	protected Identifier id;
 	public boolean serverFeature;
 	protected T value;
 	protected int indent;
@@ -105,11 +105,11 @@ public abstract class OptionValue<T> extends OptionsList.Entry {
 
 	public abstract void updateValue();
 
-	public void setId(ResourceLocation id) {
+	public void setId(Identifier id) {
 		this.id = id;
 	}
 
-	public ResourceLocation getId() {
+	public Identifier getId() {
 		return id;
 	}
 

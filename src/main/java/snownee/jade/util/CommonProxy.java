@@ -34,7 +34,7 @@ import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.Version;
 import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
 import net.fabricmc.loader.api.metadata.ModMetadata;
-import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.advancements.criterion.ItemPredicate;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -47,7 +47,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.TriState;
 import net.minecraft.world.Container;
@@ -119,14 +119,14 @@ public final class CommonProxy implements ModInitializer {
 
 	public static String getModIdFromItem(ItemStack stack) {
 		String modid = stack.getItem().getCreatorNamespace(stack);
-		if (!ResourceLocation.DEFAULT_NAMESPACE.equals(modid)) {
+		if (!Identifier.DEFAULT_NAMESPACE.equals(modid)) {
 			return modid;
 		}
 		if (stack.has(DataComponents.STORED_ENCHANTMENTS)) {
 			ItemEnchantments enchantments = stack.getOrDefault(DataComponents.STORED_ENCHANTMENTS, ItemEnchantments.EMPTY);
 			modid = null;
 			for (Holder<Enchantment> enchantmentHolder : enchantments.keySet()) {
-				ResourceLocation id = enchantmentHolder.unwrapKey().map(ResourceKey::location).orElse(null);
+				Identifier id = enchantmentHolder.unwrapKey().map(ResourceKey::identifier).orElse(null);
 				if (id != null) {
 					String namespace = id.getNamespace();
 					if (modid == null) {
@@ -145,7 +145,7 @@ public final class CommonProxy implements ModInitializer {
 		if (potionContents.hasEffects()) {
 			modid = null;
 			for (MobEffectInstance effect : potionContents.getAllEffects()) {
-				ResourceLocation id = effect.getEffect().unwrapKey().map(ResourceKey::location).orElse(null);
+				Identifier id = effect.getEffect().unwrapKey().map(ResourceKey::identifier).orElse(null);
 				if (id != null) {
 					String namespace = id.getNamespace();
 					if (modid == null) {
@@ -164,12 +164,12 @@ public final class CommonProxy implements ModInitializer {
 			Holder<PaintingVariant> holder = stack.get(DataComponents.PAINTING_VARIANT);
 			if (holder != null) {
 				return holder.unwrapKey()
-						.map(ResourceKey::location)
-						.map(ResourceLocation::getNamespace)
-						.orElse(ResourceLocation.DEFAULT_NAMESPACE);
+						.map(ResourceKey::identifier)
+						.map(Identifier::getNamespace)
+						.orElse(Identifier.DEFAULT_NAMESPACE);
 			}
 		}
-		return ResourceLocation.DEFAULT_NAMESPACE;
+		return Identifier.DEFAULT_NAMESPACE;
 	}
 
 	public static boolean isPhysicallyClient() {
@@ -341,15 +341,15 @@ public final class CommonProxy implements ModInitializer {
 		return FabricLoader.getInstance().isDevelopmentEnvironment();
 	}
 
-	public static ResourceLocation getId(Block block) {
+	public static Identifier getId(Block block) {
 		return BuiltInRegistries.BLOCK.getKey(block);
 	}
 
-	public static ResourceLocation getId(EntityType<?> entityType) {
+	public static Identifier getId(EntityType<?> entityType) {
 		return BuiltInRegistries.ENTITY_TYPE.getKey(entityType);
 	}
 
-	public static ResourceLocation getId(BlockEntityType<?> blockEntityType) {
+	public static Identifier getId(BlockEntityType<?> blockEntityType) {
 		return BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(blockEntityType);
 	}
 
@@ -509,7 +509,7 @@ public final class CommonProxy implements ModInitializer {
 		return false;
 	}
 
-	public static <T> Map.Entry<ResourceLocation, List<ViewGroup<T>>> getServerExtensionData(
+	public static <T> Map.Entry<Identifier, List<ViewGroup<T>>> getServerExtensionData(
 			Accessor<?> accessor,
 			WrappedHierarchyLookup<IServerExtensionProvider<T>> lookup) {
 		for (var provider : lookup.wrappedGet(accessor)) {

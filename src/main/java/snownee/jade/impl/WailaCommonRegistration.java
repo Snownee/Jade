@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
@@ -44,7 +44,7 @@ public class WailaCommonRegistration implements IWailaCommonRegistration {
 
 	public final PairHierarchyLookup<IServerDataProvider<BlockAccessor>> blockDataProviders;
 	public final HierarchyLookup<IServerDataProvider<EntityAccessor>> entityDataProviders;
-	public final PriorityStore<ResourceLocation, IJadeProvider> priorities;
+	public final PriorityStore<Identifier, IJadeProvider> priorities;
 
 	public final WrappedHierarchyLookup<IServerExtensionProvider<ItemStack>> itemStorageProviders;
 	public final WrappedHierarchyLookup<IServerExtensionProvider<FluidView.Data>> fluidStorageProviders;
@@ -62,7 +62,7 @@ public class WailaCommonRegistration implements IWailaCommonRegistration {
 		entityDataProviders.idMapped();
 		priorities = new PriorityStore<>(IJadeProvider::getDefaultPriority, IJadeProvider::getUid);
 		priorities.setSortingFunction((store, allKeys) -> {
-			List<ResourceLocation> keys = allKeys.stream()
+			List<Identifier> keys = allKeys.stream()
 					.filter(IPluginConfig::isPrimaryKey)
 					.sorted(Comparator.comparingInt(store::byKey))
 					.collect(Collectors.toCollection(ArrayList::new));
@@ -72,7 +72,7 @@ public class WailaCommonRegistration implements IWailaCommonRegistration {
 			});
 			return keys;
 		});
-		priorities.configurable(Jade.ID + "/sort-order", ResourceLocation.CODEC);
+		priorities.configurable(Jade.ID + "/sort-order", Identifier.CODEC);
 
 		itemStorageProviders = WrappedHierarchyLookup.forAccessor();
 		fluidStorageProviders = WrappedHierarchyLookup.forAccessor();

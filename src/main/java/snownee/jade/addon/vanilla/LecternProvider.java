@@ -3,7 +3,7 @@ package snownee.jade.addon.vanilla;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.LecternBlock;
 import net.minecraft.world.level.block.entity.LecternBlockEntity;
@@ -35,7 +35,7 @@ public class LecternProvider implements StreamServerDataProvider<BlockAccessor, 
 	}
 
 	@Override
-	public ResourceLocation getUid() {
+	public Identifier getUid() {
 		return JadeIds.MC_LECTERN;
 	}
 
@@ -54,7 +54,7 @@ public class LecternProvider implements StreamServerDataProvider<BlockAccessor, 
 		}
 
 		@Override
-		public ResourceLocation getUid() {
+		public Identifier getUid() {
 			return JadeIds.MC_LECTERN;
 		}
 	}

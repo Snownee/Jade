@@ -2,7 +2,7 @@ package snownee.jade.addon.vanilla;
 
 import org.jetbrains.annotations.Nullable;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Display.ItemDisplay;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
@@ -25,7 +25,7 @@ public class ItemDisplayProvider implements IEntityComponentProvider {
 	}
 
 	@Override
-	public ResourceLocation getUid() {
+	public Identifier getUid() {
 		return JadeIds.MC_ITEM_DISPLAY;
 	}
 

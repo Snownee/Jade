@@ -5,7 +5,7 @@ import java.util.List;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Leashable;
 import net.minecraft.world.entity.Pose;
@@ -90,7 +90,7 @@ public class EntityDetailsBodyProvider implements IEntityComponentProvider {
 	}
 
 	@Override
-	public ResourceLocation getUid() {
+	public Identifier getUid() {
 		return JadeIds.ACCESS_ENTITY_DETAILS_BODY;
 	}
 

@@ -3,14 +3,14 @@ package snownee.jade.impl.config.entry;
 import java.util.Locale;
 import java.util.function.BiConsumer;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.gui.config.OptionsList;
 import snownee.jade.gui.config.value.OptionValue;
 
 public class EnumConfigEntry<E extends Enum<E>> extends ConfigEntry<E> {
 
-	public EnumConfigEntry(ResourceLocation id, E defaultValue) {
+	public EnumConfigEntry(Identifier id, E defaultValue) {
 		super(id, defaultValue);
 	}
 
@@ -35,7 +35,7 @@ public class EnumConfigEntry<E extends Enum<E>> extends ConfigEntry<E> {
 			OptionsList options,
 			String optionName,
 			IPluginConfig config,
-			BiConsumer<ResourceLocation, Object> setter) {
+			BiConsumer<Identifier, Object> setter) {
 		//noinspection unchecked
 		return options.choices(optionName, () -> (E) config.getEnum(id), e -> setter.accept(id, e));
 	}

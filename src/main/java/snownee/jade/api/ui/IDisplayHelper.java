@@ -11,7 +11,7 @@ import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
 import snownee.jade.JadeInternals;
@@ -42,12 +42,12 @@ public interface IDisplayHelper {
 
 	MutableComponent stripColor(Component component);
 
-	void blitSprite(GuiGraphics graphics, RenderPipeline renderPipeline, ResourceLocation resourceLocation, int i, int j, int k, int l);
+	void blitSprite(GuiGraphics graphics, RenderPipeline renderPipeline, Identifier Identifier, int i, int j, int k, int l);
 
 	void blitSprite(
 			GuiGraphics graphics,
 			RenderPipeline renderPipeline,
-			ResourceLocation resourceLocation,
+			Identifier Identifier,
 			int i,
 			int j,
 			int k,
@@ -57,7 +57,7 @@ public interface IDisplayHelper {
 	void blitSprite(
 			GuiGraphics graphics,
 			RenderPipeline renderPipeline,
-			ResourceLocation resourceLocation,
+			Identifier Identifier,
 			int spriteWidth,
 			int spriteHeight,
 			int uStart,
@@ -70,7 +70,7 @@ public interface IDisplayHelper {
 	void blitSprite(
 			GuiGraphics graphics,
 			RenderPipeline renderPipeline,
-			ResourceLocation resourceLocation,
+			Identifier Identifier,
 			int spriteWidth,
 			int spriteHeight,
 			int uStart,

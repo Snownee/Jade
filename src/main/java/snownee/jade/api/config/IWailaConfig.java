@@ -4,7 +4,7 @@ import org.jetbrains.annotations.ApiStatus.NonExtendable;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.level.ClipContext;
 import snownee.jade.JadeInternals;
@@ -181,7 +181,7 @@ public interface IWailaConfig {
 
 		Theme getTheme();
 
-		void applyTheme(ResourceLocation id);
+		void applyTheme(Identifier id);
 
 		boolean shouldShowIcon();
 

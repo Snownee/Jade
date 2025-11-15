@@ -2,7 +2,7 @@ package snownee.jade.api.view;
 
 import java.util.List;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.JadeIds;
 
@@ -20,7 +20,7 @@ public class HideThingsExtensionProvider<IN, OUT> implements IServerExtensionPro
 	}
 
 	@Override
-	public ResourceLocation getUid() {
+	public Identifier getUid() {
 		return JadeIds.UNIVERSAL_HIDE_THINGS;
 	}
 

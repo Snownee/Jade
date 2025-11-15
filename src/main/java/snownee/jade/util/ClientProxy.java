@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Strings;
+import com.google.common.base.Suppliers;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.brigadier.CommandDispatcher;
 
@@ -55,10 +56,9 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.util.LazyLoadedValue;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
@@ -243,15 +243,15 @@ public final class ClientProxy implements ClientModInitializer {
 	@Nullable
 	public static <IN, OUT> List<ClientViewGroup<OUT>> mapToClientGroups(
 			Accessor<?> accessor,
-			ResourceLocation key,
-			StreamCodec<RegistryFriendlyByteBuf, Map.Entry<ResourceLocation, List<ViewGroup<IN>>>> codec,
-			Function<ResourceLocation, IClientExtensionProvider<IN, OUT>> mapper,
+			Identifier key,
+			StreamCodec<RegistryFriendlyByteBuf, Map.Entry<Identifier, List<ViewGroup<IN>>>> codec,
+			Function<Identifier, IClientExtensionProvider<IN, OUT>> mapper,
 			ITooltip tooltip) {
 		Tag tag = accessor.getServerData().get(key.toString());
 		if (tag == null) {
 			return null;
 		}
-		Map.Entry<ResourceLocation, List<ViewGroup<IN>>> entry = accessor.decodeFromNbt(codec, tag).orElse(null);
+		Map.Entry<Identifier, List<ViewGroup<IN>>> entry = accessor.decodeFromNbt(codec, tag).orElse(null);
 		if (entry == null) {
 			return null;
 		}
@@ -328,8 +328,7 @@ public final class ClientProxy implements ClientModInitializer {
 
 		for (int i = InputConstants.KEY_NUMPAD0; i <= InputConstants.KEY_NUMPAD9; i++) {
 			InputConstants.Key key = InputConstants.Type.KEYSYM.getOrCreate(i);
-			//noinspection deprecation
-			((KeyAccess) (Object) key).setDisplayName(new LazyLoadedValue<>(() -> Component.translatable(key.getName())));
+			((KeyAccess) (Object) key).setDisplayName(Suppliers.memoize(() -> Component.translatable(key.getName())));
 		}
 		JadeClient.init();
 		ResourceManagerHelper.get(PackType.SERVER_DATA)

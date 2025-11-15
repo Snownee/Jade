@@ -5,7 +5,7 @@ import java.util.Objects;
 import java.util.stream.IntStream;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
 import snownee.jade.api.Accessor;
@@ -20,7 +20,7 @@ public enum ExampleItemStorageProvider implements IServerExtensionProvider<ItemS
 	INSTANCE;
 
 	@Override
-	public ResourceLocation getUid() {
+	public Identifier getUid() {
 		return ExamplePlugin.UID_TEST_BREWING;
 	}
 

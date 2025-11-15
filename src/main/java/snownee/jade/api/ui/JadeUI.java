@@ -7,11 +7,11 @@ import org.jetbrains.annotations.Nullable;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.platform.InputConstants;
 
-import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.world.item.ItemStack;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.fluid.JadeFluidObject;
@@ -67,8 +67,8 @@ public final class JadeUI {
 
 	public static ResizeableElement progress(
 			float progress,
-			ResourceLocation baseSprite,
-			ResourceLocation progressSprite,
+			Identifier baseSprite,
+			Identifier progressSprite,
 			int width,
 			int height,
 			@Nullable Component text,
@@ -98,23 +98,23 @@ public final class JadeUI {
 		return JadeUIInternal.progressStyle();
 	}
 
-	public static ResizeableElement sprite(RenderPipeline renderPipeline, ResourceLocation sprite, int width, int height) {
+	public static ResizeableElement sprite(RenderPipeline renderPipeline, Identifier sprite, int width, int height) {
 		return JadeUIInternal.sprite(renderPipeline, sprite, width, height);
 	}
 
-	public static ResizeableElement sprite(ResourceLocation sprite, int width, int height) {
+	public static ResizeableElement sprite(Identifier sprite, int width, int height) {
 		return JadeUIInternal.sprite(sprite, width, height);
 	}
 
 	public static ResizeableElement horizontalTiledSprite(
 			RenderPipeline renderPipeline,
-			ResourceLocation sprite,
+			Identifier sprite,
 			int width,
 			int height) {
 		return JadeUIInternal.horizontalTiledSprite(renderPipeline, sprite, width, height);
 	}
 
-	public static ResizeableElement verticalTiledSprite(RenderPipeline renderPipeline, ResourceLocation sprite, int width, int height) {
+	public static ResizeableElement verticalTiledSprite(RenderPipeline renderPipeline, Identifier sprite, int width, int height) {
 		return JadeUIInternal.verticalTiledSprite(renderPipeline, sprite, width, height);
 	}
 

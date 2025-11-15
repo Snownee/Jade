@@ -6,7 +6,7 @@ import java.util.Objects;
 import com.google.common.collect.Maps;
 import com.mojang.serialization.Codec;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import snownee.jade.Jade;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.util.JadeCodecs;
@@ -15,13 +15,13 @@ import snownee.jade.util.JsonConfig;
 public class ServerPluginConfig implements IPluginConfig {
 	public static final String FILE = Jade.ID + "/server-plugin-overrides";
 
-	public static final Codec<Map<ResourceLocation, Object>> DATA_CODEC = Codec.unboundedMap(
+	public static final Codec<Map<Identifier, Object>> DATA_CODEC = Codec.unboundedMap(
 			Codec.STRING,
 			Codec.unboundedMap(Codec.STRING, JadeCodecs.PRIMITIVE)).xmap($ -> {
-		Map<ResourceLocation, Object> map = Maps.newHashMap();
+		Map<Identifier, Object> map = Maps.newHashMap();
 		$.forEach((namespace, subMap) -> subMap.forEach((path, value) -> {
 			try {
-				ResourceLocation key = ResourceLocation.fromNamespaceAndPath(namespace, path);
+				Identifier key = Identifier.fromNamespaceAndPath(namespace, path);
 				map.put(key, value);
 			} catch (Exception ignored) {
 			}
@@ -49,44 +49,44 @@ public class ServerPluginConfig implements IPluginConfig {
 		return INSTANCE.get();
 	}
 
-	private final Map<ResourceLocation, Object> values;
+	private final Map<Identifier, Object> values;
 
-	private ServerPluginConfig(Map<ResourceLocation, Object> values) {
+	private ServerPluginConfig(Map<Identifier, Object> values) {
 		this.values = values;
 	}
 
 	@Override
-	public boolean get(ResourceLocation key) {
+	public boolean get(Identifier key) {
 		return (Boolean) Objects.requireNonNull(values.get(key));
 	}
 
 	@Override
-	public <T extends Enum<T>> T getEnum(ResourceLocation key) {
+	public <T extends Enum<T>> T getEnum(Identifier key) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public int getInt(ResourceLocation key) {
+	public int getInt(Identifier key) {
 		return ((Number) values.get(key)).intValue();
 	}
 
 	@Override
-	public float getFloat(ResourceLocation key) {
+	public float getFloat(Identifier key) {
 		return ((Number) values.get(key)).floatValue();
 	}
 
 	@Override
-	public String getString(ResourceLocation key) {
+	public String getString(Identifier key) {
 		return (String) Objects.requireNonNull(values.get(key));
 	}
 
 	@Override
-	public boolean set(ResourceLocation key, Object value) {
+	public boolean set(Identifier key, Object value) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Map<ResourceLocation, Object> values() {
+	public Map<Identifier, Object> values() {
 		return values;
 	}
 }

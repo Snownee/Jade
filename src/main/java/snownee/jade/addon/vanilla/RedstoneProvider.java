@@ -3,7 +3,7 @@ package snownee.jade.addon.vanilla;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CalibratedSculkSensorBlock;
@@ -38,7 +38,7 @@ public class RedstoneProvider implements IServerDataProvider<BlockAccessor> {
 	}
 
 	@Override
-	public ResourceLocation getUid() {
+	public Identifier getUid() {
 		return JadeIds.MC_REDSTONE;
 	}
 
@@ -88,7 +88,7 @@ public class RedstoneProvider implements IServerDataProvider<BlockAccessor> {
 		}
 
 		@Override
-		public ResourceLocation getUid() {
+		public Identifier getUid() {
 			return JadeIds.MC_REDSTONE;
 		}
 	}

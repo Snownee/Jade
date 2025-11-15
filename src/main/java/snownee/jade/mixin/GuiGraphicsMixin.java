@@ -23,7 +23,7 @@ import net.minecraft.client.gui.screens.inventory.tooltip.ClientTextTooltip;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import snownee.jade.JadeClient;
 import snownee.jade.util.JadeGuiGraphics;
@@ -32,7 +32,7 @@ import snownee.jade.util.JadeGuiGraphics;
 public class GuiGraphicsMixin implements JadeGuiGraphics {
 	@Shadow
 	@Final
-	private Minecraft minecraft;
+	Minecraft minecraft;
 	@Unique
 	private boolean jade$ignoreScissorTest;
 	@Unique
@@ -69,7 +69,7 @@ public class GuiGraphicsMixin implements JadeGuiGraphics {
 			int i,
 			int j,
 			ClientTooltipPositioner clientTooltipPositioner,
-			@Nullable ResourceLocation resourceLocation,
+			@Nullable Identifier Identifier,
 			boolean bl,
 			CallbackInfo ci) {
 		ItemStack itemStack = jade$itemTooltipContext;

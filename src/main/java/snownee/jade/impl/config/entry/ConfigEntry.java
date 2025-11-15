@@ -8,25 +8,25 @@ import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.Lists;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.gui.config.OptionsList;
 import snownee.jade.gui.config.value.OptionValue;
 
 public abstract class ConfigEntry<T> {
 
-	protected final ResourceLocation id;
+	protected final Identifier id;
 	private final T defaultValue;
 	@Nullable
 	private T syncedValue;
-	private List<Consumer<ResourceLocation>> listeners = List.of();
+	private List<Consumer<Identifier>> listeners = List.of();
 
-	public ConfigEntry(ResourceLocation id, T defaultValue) {
+	public ConfigEntry(Identifier id, T defaultValue) {
 		this.id = id;
 		this.defaultValue = defaultValue;
 	}
 
-	public ResourceLocation id() {
+	public Identifier id() {
 		return id;
 	}
 
@@ -58,9 +58,9 @@ public abstract class ConfigEntry<T> {
 			OptionsList options,
 			String optionName,
 			IPluginConfig config,
-			BiConsumer<ResourceLocation, Object> setter);
+			BiConsumer<Identifier, Object> setter);
 
-	public void addListener(Consumer<ResourceLocation> listener) {
+	public void addListener(Consumer<Identifier> listener) {
 		if (listeners.isEmpty()) {
 			listeners = Lists.newArrayList();
 		}
@@ -68,7 +68,7 @@ public abstract class ConfigEntry<T> {
 	}
 
 	public void notifyChange() {
-		for (Consumer<ResourceLocation> listener : listeners) {
+		for (Consumer<Identifier> listener : listeners) {
 			listener.accept(id);
 		}
 	}

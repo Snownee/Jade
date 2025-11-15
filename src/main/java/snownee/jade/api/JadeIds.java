@@ -1,119 +1,119 @@
 package snownee.jade.api;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public interface JadeIds {
 
-	ResourceLocation ROOT = MC("root");
-	ResourceLocation DEFAULT_THEME = JADE("dark");
-	ResourceLocation UI_MAIN = JADE("main");
-	ResourceLocation PACKET_RECEIVE_DATA = JADE("receive_data");
-	ResourceLocation PACKET_SERVER_HANDSHAKE = JADE("server_handshake");
-	ResourceLocation PACKET_CLIENT_HANDSHAKE = JADE("client_handshake");
-	ResourceLocation PACKET_REQUEST_ENTITY = JADE("request_entity");
-	ResourceLocation PACKET_REQUEST_BLOCK = JADE("request_block");
-	ResourceLocation PACKET_SHOW_OVERLAY = JADE("show_overlay");
-	ResourceLocation CORE_ROOT_ICON = JADE("root_icon");
-	ResourceLocation CORE_OBJECT_NAME = JADE("object_name");
-	ResourceLocation CORE_MOD_NAME = JADE("mod_name");
-	ResourceLocation CORE_DISTANCE = JADE("distance");
-	ResourceLocation CORE_COORDINATES = JADE("coordinates");
-	ResourceLocation CORE_REL_COORDINATES = JADE("coordinates.rel");
-	ResourceLocation CORE_BLOCK_FACE = JADE("block_face");
-	ResourceLocation DEBUG_REGISTRY_NAME = JADE("registry_name");
-	ResourceLocation DEBUG_SPECIAL_REGISTRY_NAME = JADE("registry_name.special");
-	ResourceLocation DEBUG_BLOCK_PROPERTIES = JADE("block_properties");
-	ResourceLocation DEBUG_BLOCK_STATES = JADE("block_states");
-	ResourceLocation DEBUG_ENTITY_ATTRIBUTES = JADE("entity_attributes");
-	ResourceLocation UNIVERSAL_ITEM_STORAGE = MC("item_storage");
-	ResourceLocation UNIVERSAL_ITEM_STORAGE_DEFAULT = MC("item_storage.default");
-	ResourceLocation UNIVERSAL_ITEM_STORAGE_DETAILED_AMOUNT = MC("item_storage.detailed_amount");
-	ResourceLocation UNIVERSAL_ITEM_STORAGE_NORMAL_AMOUNT = MC("item_storage.normal_amount");
-	ResourceLocation UNIVERSAL_ITEM_STORAGE_SHOW_NAME_AMOUNT = MC("item_storage.show_name_amount");
-	ResourceLocation UNIVERSAL_ITEM_STORAGE_ITEMS_PER_LINE = MC("item_storage.items_per_line");
-	ResourceLocation UNIVERSAL_ITEM_STORAGE_SORT = MC("item_storage.sort");
-	ResourceLocation UNIVERSAL_FLUID_STORAGE = MC("fluid_storage");
-	ResourceLocation UNIVERSAL_FLUID_STORAGE_DEFAULT = MC("fluid_storage.default");
-	ResourceLocation UNIVERSAL_FLUID_STORAGE_DETAILED = MC("fluid_storage.detailed");
-	ResourceLocation UNIVERSAL_FLUID_STORAGE_STYLE = MC("fluid_storage.style");
-	ResourceLocation UNIVERSAL_ENERGY_STORAGE = MC("energy_storage");
-	ResourceLocation UNIVERSAL_ENERGY_STORAGE_DEFAULT = MC("energy_storage.default");
-	ResourceLocation UNIVERSAL_ENERGY_STORAGE_DETAILED = MC("energy_storage.detailed");
-	ResourceLocation UNIVERSAL_ENERGY_STORAGE_STYLE = MC("energy_storage.style");
-	ResourceLocation UNIVERSAL_PROGRESS = MC("progress");
-	ResourceLocation UNIVERSAL_HIDE_THINGS = JADE("hide_things");
-	ResourceLocation MC_ANIMAL_OWNER = MC("animal_owner");
-	ResourceLocation MC_ARMOR_STAND = MC("armor_stand");
-	ResourceLocation MC_BEEHIVE = MC("beehive");
-	ResourceLocation MC_BLOCK_DISPLAY = MC("block_display");
-	ResourceLocation MC_BREAKING_PROGRESS = MC("breaking_progress");
-	ResourceLocation MC_BREWING_STAND = MC("brewing_stand");
-	ResourceLocation MC_CAMPFIRE = MC("campfire");
-	ResourceLocation MC_COMMAND_BLOCK = MC("command_block");
-	ResourceLocation MC_CROP_PROGRESS = MC("crop_progress");
-	ResourceLocation MC_ENCHANTMENT_POWER = MC("enchantment_power");
-	ResourceLocation MC_ENTITY_ARMOR = MC("entity_armor");
-	ResourceLocation MC_ENTITY_ARMOR_MAX_FOR_RENDER = MC("entity_armor.max_for_render");
-	ResourceLocation MC_ENTITY_HEALTH = MC("entity_health");
-	ResourceLocation MC_ENTITY_HEALTH_MAX_FOR_RENDER = MC("entity_health.max_for_render");
-	ResourceLocation MC_ENTITY_HEALTH_ICONS_PER_LINE = MC("entity_health.icons_per_line");
-	ResourceLocation MC_ENTITY_HEALTH_SHOW_FRACTIONS = MC("entity_health.show_fractions");
-	ResourceLocation MC_FALLING_BLOCK = MC("falling_block");
-	ResourceLocation MC_FURNACE = MC("furnace");
-	ResourceLocation MC_HARVEST_TOOL = MC("harvest_tool");
-	ResourceLocation MC_HARVEST_TOOL_NEW_LINE = MC("harvest_tool.new_line");
-	ResourceLocation MC_EFFECTIVE_TOOL = MC("harvest_tool.effective_tool");
-	ResourceLocation MC_SHOW_UNBREAKABLE = MC("harvest_tool.show_unbreakable");
-	ResourceLocation MC_HARVEST_TOOL_CREATIVE = MC("harvest_tool.creative");
-	ResourceLocation MC_HOPPER_LOCK = MC("hopper_lock");
-	ResourceLocation MC_HORSE_STATS = MC("horse_stats");
-	ResourceLocation MC_ITEM_BER = MC("item_ber");
-	ResourceLocation MC_ITEM_DISPLAY = MC("item_display");
-	ResourceLocation MC_ITEM_FRAME = MC("item_frame");
-	ResourceLocation MC_ITEM_TOOLTIP = MC("item_tooltip");
-	ResourceLocation MC_JUKEBOX = MC("jukebox");
-	ResourceLocation MC_LECTERN = MC("lectern");
-	ResourceLocation MC_MOB_BREEDING = MC("mob_breeding");
-	ResourceLocation MC_MOB_GROWTH = MC("mob_growth");
-	ResourceLocation MC_MOB_SPAWNER = MC("mob_spawner");
-	ResourceLocation MC_MOB_SPAWNER_COOLDOWN = MC("mob_spawner.cooldown");
-	ResourceLocation MC_NEXT_ENTITY_DROP = MC("next_entity_drop");
-	ResourceLocation MC_NOTE_BLOCK = MC("note_block");
-	ResourceLocation MC_PAINTING = MC("painting");
-	ResourceLocation MC_PET_ARMOR = MC("pet_armor");
-	ResourceLocation MC_PLAYER_HEAD = MC("player_head");
-	ResourceLocation MC_POTION_EFFECTS = MC("potion_effects");
-	ResourceLocation MC_POTION_EFFECTS_LIMIT = MC("potion_effects.limit");
-	ResourceLocation MC_REDSTONE = MC("redstone");
-	ResourceLocation MC_SHELF = MC("shelf");
-	ResourceLocation MC_TNT_STABILITY = MC("tnt_stability");
-	ResourceLocation MC_TOTAL_ENCHANTMENT_POWER = MC("total_enchantment_power");
-	ResourceLocation MC_VILLAGER_PROFESSION = MC("villager_profession");
-	ResourceLocation MC_WAXED = MC("waxed");
-	ResourceLocation MC_ZOMBIE_VILLAGER = MC("zombie_villager");
-	ResourceLocation ACCESS_SIGN = ACCESS("sign");
-	ResourceLocation ACCESS_BLOCK_DETAILS = ACCESS("block");
-	ResourceLocation ACCESS_BLOCK_DETAILS_BODY = ACCESS("block_body");
-	ResourceLocation ACCESS_BLOCK_AMOUNT = ACCESS("block_amount");
-	ResourceLocation ACCESS_ENTITY_DETAILS = ACCESS("entity");
-	ResourceLocation ACCESS_ENTITY_DETAILS_BODY = ACCESS("entity_body");
-	ResourceLocation ACCESS_ENTITY_VARIANT = ACCESS("entity_variant");
-	ResourceLocation ACCESS_HELD_ITEM = ACCESS("held_item");
-	ResourceLocation ACCESS_NPC_DESCRIPTION = ACCESS("npc_description");
+	Identifier ROOT = MC("root");
+	Identifier DEFAULT_THEME = JADE("dark");
+	Identifier UI_MAIN = JADE("main");
+	Identifier PACKET_RECEIVE_DATA = JADE("receive_data");
+	Identifier PACKET_SERVER_HANDSHAKE = JADE("server_handshake");
+	Identifier PACKET_CLIENT_HANDSHAKE = JADE("client_handshake");
+	Identifier PACKET_REQUEST_ENTITY = JADE("request_entity");
+	Identifier PACKET_REQUEST_BLOCK = JADE("request_block");
+	Identifier PACKET_SHOW_OVERLAY = JADE("show_overlay");
+	Identifier CORE_ROOT_ICON = JADE("root_icon");
+	Identifier CORE_OBJECT_NAME = JADE("object_name");
+	Identifier CORE_MOD_NAME = JADE("mod_name");
+	Identifier CORE_DISTANCE = JADE("distance");
+	Identifier CORE_COORDINATES = JADE("coordinates");
+	Identifier CORE_REL_COORDINATES = JADE("coordinates.rel");
+	Identifier CORE_BLOCK_FACE = JADE("block_face");
+	Identifier DEBUG_REGISTRY_NAME = JADE("registry_name");
+	Identifier DEBUG_SPECIAL_REGISTRY_NAME = JADE("registry_name.special");
+	Identifier DEBUG_BLOCK_PROPERTIES = JADE("block_properties");
+	Identifier DEBUG_BLOCK_STATES = JADE("block_states");
+	Identifier DEBUG_ENTITY_ATTRIBUTES = JADE("entity_attributes");
+	Identifier UNIVERSAL_ITEM_STORAGE = MC("item_storage");
+	Identifier UNIVERSAL_ITEM_STORAGE_DEFAULT = MC("item_storage.default");
+	Identifier UNIVERSAL_ITEM_STORAGE_DETAILED_AMOUNT = MC("item_storage.detailed_amount");
+	Identifier UNIVERSAL_ITEM_STORAGE_NORMAL_AMOUNT = MC("item_storage.normal_amount");
+	Identifier UNIVERSAL_ITEM_STORAGE_SHOW_NAME_AMOUNT = MC("item_storage.show_name_amount");
+	Identifier UNIVERSAL_ITEM_STORAGE_ITEMS_PER_LINE = MC("item_storage.items_per_line");
+	Identifier UNIVERSAL_ITEM_STORAGE_SORT = MC("item_storage.sort");
+	Identifier UNIVERSAL_FLUID_STORAGE = MC("fluid_storage");
+	Identifier UNIVERSAL_FLUID_STORAGE_DEFAULT = MC("fluid_storage.default");
+	Identifier UNIVERSAL_FLUID_STORAGE_DETAILED = MC("fluid_storage.detailed");
+	Identifier UNIVERSAL_FLUID_STORAGE_STYLE = MC("fluid_storage.style");
+	Identifier UNIVERSAL_ENERGY_STORAGE = MC("energy_storage");
+	Identifier UNIVERSAL_ENERGY_STORAGE_DEFAULT = MC("energy_storage.default");
+	Identifier UNIVERSAL_ENERGY_STORAGE_DETAILED = MC("energy_storage.detailed");
+	Identifier UNIVERSAL_ENERGY_STORAGE_STYLE = MC("energy_storage.style");
+	Identifier UNIVERSAL_PROGRESS = MC("progress");
+	Identifier UNIVERSAL_HIDE_THINGS = JADE("hide_things");
+	Identifier MC_ANIMAL_OWNER = MC("animal_owner");
+	Identifier MC_ARMOR_STAND = MC("armor_stand");
+	Identifier MC_BEEHIVE = MC("beehive");
+	Identifier MC_BLOCK_DISPLAY = MC("block_display");
+	Identifier MC_BREAKING_PROGRESS = MC("breaking_progress");
+	Identifier MC_BREWING_STAND = MC("brewing_stand");
+	Identifier MC_CAMPFIRE = MC("campfire");
+	Identifier MC_COMMAND_BLOCK = MC("command_block");
+	Identifier MC_CROP_PROGRESS = MC("crop_progress");
+	Identifier MC_ENCHANTMENT_POWER = MC("enchantment_power");
+	Identifier MC_ENTITY_ARMOR = MC("entity_armor");
+	Identifier MC_ENTITY_ARMOR_MAX_FOR_RENDER = MC("entity_armor.max_for_render");
+	Identifier MC_ENTITY_HEALTH = MC("entity_health");
+	Identifier MC_ENTITY_HEALTH_MAX_FOR_RENDER = MC("entity_health.max_for_render");
+	Identifier MC_ENTITY_HEALTH_ICONS_PER_LINE = MC("entity_health.icons_per_line");
+	Identifier MC_ENTITY_HEALTH_SHOW_FRACTIONS = MC("entity_health.show_fractions");
+	Identifier MC_FALLING_BLOCK = MC("falling_block");
+	Identifier MC_FURNACE = MC("furnace");
+	Identifier MC_HARVEST_TOOL = MC("harvest_tool");
+	Identifier MC_HARVEST_TOOL_NEW_LINE = MC("harvest_tool.new_line");
+	Identifier MC_EFFECTIVE_TOOL = MC("harvest_tool.effective_tool");
+	Identifier MC_SHOW_UNBREAKABLE = MC("harvest_tool.show_unbreakable");
+	Identifier MC_HARVEST_TOOL_CREATIVE = MC("harvest_tool.creative");
+	Identifier MC_HOPPER_LOCK = MC("hopper_lock");
+	Identifier MC_HORSE_STATS = MC("horse_stats");
+	Identifier MC_ITEM_BER = MC("item_ber");
+	Identifier MC_ITEM_DISPLAY = MC("item_display");
+	Identifier MC_ITEM_FRAME = MC("item_frame");
+	Identifier MC_ITEM_TOOLTIP = MC("item_tooltip");
+	Identifier MC_JUKEBOX = MC("jukebox");
+	Identifier MC_LECTERN = MC("lectern");
+	Identifier MC_MOB_BREEDING = MC("mob_breeding");
+	Identifier MC_MOB_GROWTH = MC("mob_growth");
+	Identifier MC_MOB_SPAWNER = MC("mob_spawner");
+	Identifier MC_MOB_SPAWNER_COOLDOWN = MC("mob_spawner.cooldown");
+	Identifier MC_NEXT_ENTITY_DROP = MC("next_entity_drop");
+	Identifier MC_NOTE_BLOCK = MC("note_block");
+	Identifier MC_PAINTING = MC("painting");
+	Identifier MC_PET_ARMOR = MC("pet_armor");
+	Identifier MC_PLAYER_HEAD = MC("player_head");
+	Identifier MC_POTION_EFFECTS = MC("potion_effects");
+	Identifier MC_POTION_EFFECTS_LIMIT = MC("potion_effects.limit");
+	Identifier MC_REDSTONE = MC("redstone");
+	Identifier MC_SHELF = MC("shelf");
+	Identifier MC_TNT_STABILITY = MC("tnt_stability");
+	Identifier MC_TOTAL_ENCHANTMENT_POWER = MC("total_enchantment_power");
+	Identifier MC_VILLAGER_PROFESSION = MC("villager_profession");
+	Identifier MC_WAXED = MC("waxed");
+	Identifier MC_ZOMBIE_VILLAGER = MC("zombie_villager");
+	Identifier ACCESS_SIGN = ACCESS("sign");
+	Identifier ACCESS_BLOCK_DETAILS = ACCESS("block");
+	Identifier ACCESS_BLOCK_DETAILS_BODY = ACCESS("block_body");
+	Identifier ACCESS_BLOCK_AMOUNT = ACCESS("block_amount");
+	Identifier ACCESS_ENTITY_DETAILS = ACCESS("entity");
+	Identifier ACCESS_ENTITY_DETAILS_BODY = ACCESS("entity_body");
+	Identifier ACCESS_ENTITY_VARIANT = ACCESS("entity_variant");
+	Identifier ACCESS_HELD_ITEM = ACCESS("held_item");
+	Identifier ACCESS_NPC_DESCRIPTION = ACCESS("npc_description");
 
-	static ResourceLocation JADE(String path) {
-		return ResourceLocation.fromNamespaceAndPath("jade", path);
+	static Identifier JADE(String path) {
+		return Identifier.fromNamespaceAndPath("jade", path);
 	}
 
-	static ResourceLocation ACCESS(String path) {
-		return ResourceLocation.fromNamespaceAndPath("jade_access", path);
+	static Identifier ACCESS(String path) {
+		return Identifier.fromNamespaceAndPath("jade_access", path);
 	}
 
-	static boolean isAccess(ResourceLocation id) {
+	static boolean isAccess(Identifier id) {
 		return id.getNamespace().equals("jade_access");
 	}
 
-	private static ResourceLocation MC(String path) {
-		return ResourceLocation.withDefaultNamespace(path);
+	private static Identifier MC(String path) {
+		return Identifier.withDefaultNamespace(path);
 	}
 }

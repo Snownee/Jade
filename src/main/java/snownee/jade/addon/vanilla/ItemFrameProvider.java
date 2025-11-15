@@ -1,6 +1,6 @@
 package snownee.jade.addon.vanilla;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.item.ItemStack;
 import snownee.jade.api.EntityAccessor;
@@ -23,7 +23,7 @@ public class ItemFrameProvider implements IEntityComponentProvider {
 	}
 
 	@Override
-	public ResourceLocation getUid() {
+	public Identifier getUid() {
 		return JadeIds.MC_ITEM_FRAME;
 	}
 }

@@ -7,7 +7,7 @@ import com.google.common.collect.Lists;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.Tool;
@@ -19,21 +19,21 @@ public class SimpleToolHandler implements ToolHandler {
 
 	protected final List<ItemStack> tools = Lists.newArrayList();
 	protected final List<Block> extraBlocks = Lists.newArrayListWithExpectedSize(0);
-	private final ResourceLocation uid;
+	private final Identifier uid;
 	private final boolean skipInstaBreakingBlock;
 
-	protected SimpleToolHandler(ResourceLocation uid, List<ItemStack> tools, boolean skipInstaBreakingBlock) {
+	protected SimpleToolHandler(Identifier uid, List<ItemStack> tools, boolean skipInstaBreakingBlock) {
 		this.uid = uid;
 		Preconditions.checkArgument(!tools.isEmpty(), "tools cannot be empty");
 		this.tools.addAll(tools);
 		this.skipInstaBreakingBlock = skipInstaBreakingBlock;
 	}
 
-	public static SimpleToolHandler create(ResourceLocation uid, List<Item> tools) {
+	public static SimpleToolHandler create(Identifier uid, List<Item> tools) {
 		return create(uid, tools, true);
 	}
 
-	public static SimpleToolHandler create(ResourceLocation uid, List<Item> tools, boolean skipInstaBreakingBlock) {
+	public static SimpleToolHandler create(Identifier uid, List<Item> tools, boolean skipInstaBreakingBlock) {
 		return new SimpleToolHandler(uid, Lists.transform(tools, Item::getDefaultInstance), skipInstaBreakingBlock);
 	}
 
@@ -78,7 +78,7 @@ public class SimpleToolHandler implements ToolHandler {
 	}
 
 	@Override
-	public ResourceLocation getUid() {
+	public Identifier getUid() {
 		return uid;
 	}
 

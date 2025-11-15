@@ -6,7 +6,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.ExtraCodecs;
 import snownee.jade.api.JadeIds;
@@ -30,7 +30,7 @@ public interface SneakyDetails {
 	String type();
 
 	record Simple(
-			ResourceLocation sprite,
+			Identifier sprite,
 			int width,
 			int height,
 			float offsetX,
@@ -39,7 +39,7 @@ public interface SneakyDetails {
 			float animationDistance,
 			float animationPeriod) implements SneakyDetails {
 		public static final MapCodec<Simple> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
-				ResourceLocation.CODEC.fieldOf("sprite").forGetter(Simple::sprite),
+				Identifier.CODEC.fieldOf("sprite").forGetter(Simple::sprite),
 				Codec.INT.fieldOf("width").forGetter(Simple::width),
 				Codec.INT.fieldOf("height").forGetter(Simple::height),
 				Codec.FLOAT.optionalFieldOf("offsetX", 0F).forGetter(Simple::offsetX),

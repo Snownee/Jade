@@ -17,7 +17,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.StringRepresentable;
@@ -25,7 +25,7 @@ import snownee.jade.Jade;
 import snownee.jade.api.JadeIds;
 
 public class JadeLanguages implements KeyedResourceManagerReloadListener, WordCutter.TokenClassifier {
-	public static final ResourceLocation ID = JadeIds.JADE("languages");
+	public static final Identifier ID = JadeIds.JADE("languages");
 	public static final JadeLanguages INSTANCE = new JadeLanguages();
 	private final EnumMap<WordCutter.TokenType, Pattern> tokens = new EnumMap<>(WordCutter.TokenType.class);
 	private final Cache<String, WordCutter.TokenType> tokenCache = CacheBuilder.newBuilder().maximumSize(100).build();
@@ -87,7 +87,7 @@ public class JadeLanguages implements KeyedResourceManagerReloadListener, WordCu
 	}
 
 	@Override
-	public ResourceLocation getUid() {
+	public Identifier getUid() {
 		return ID;
 	}
 

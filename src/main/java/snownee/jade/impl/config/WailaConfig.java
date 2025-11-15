@@ -11,7 +11,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.HumanoidArm;
@@ -456,7 +456,7 @@ public class WailaConfig implements IWailaConfig {
 	public static class Overlay implements IWailaConfig.Overlay {
 
 		public static final Codec<Overlay> CODEC = RecordCodecBuilder.create(i -> i.group(
-						ResourceLocation.CODEC.fieldOf("activeTheme").orElse(JadeIds.DEFAULT_THEME).forGetter($ -> $.activeTheme),
+						Identifier.CODEC.fieldOf("activeTheme").orElse(JadeIds.DEFAULT_THEME).forGetter($ -> $.activeTheme),
 						Codec.FLOAT.fieldOf("overlayPosX").orElse(0.5F).forGetter(Overlay::getOverlayPosX),
 						Codec.FLOAT.fieldOf("overlayPosY").orElse(1.0F).forGetter(Overlay::getOverlayPosY),
 						Codec.floatRange(0.2F, 2F).fieldOf("overlayScale").orElse(1.0F).forGetter(Overlay::getOverlayScale),
@@ -469,7 +469,7 @@ public class WailaConfig implements IWailaConfig {
 						Codec.floatRange(0, Float.MAX_VALUE).fieldOf("disappearingDelay").orElse(0F).forGetter(Overlay::getDisappearingDelay))
 				.apply(i, Overlay::new));
 
-		public ResourceLocation activeTheme;
+		public Identifier activeTheme;
 		private float overlayPosX;
 		private float overlayPosY;
 		private float overlayScale;
@@ -483,7 +483,7 @@ public class WailaConfig implements IWailaConfig {
 		private float disappearingDelay;
 
 		public Overlay(
-				ResourceLocation activeTheme,
+				Identifier activeTheme,
 				float overlayPosX,
 				float overlayPosY,
 				float overlayScale,
@@ -581,7 +581,7 @@ public class WailaConfig implements IWailaConfig {
 		}
 
 		@Override
-		public void applyTheme(ResourceLocation id) {
+		public void applyTheme(Identifier id) {
 			try {
 				activeThemeInstance = IThemeHelper.get().getTheme(id);
 			} catch (Exception e) {

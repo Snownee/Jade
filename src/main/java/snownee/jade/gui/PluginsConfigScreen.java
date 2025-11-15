@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.gui.config.OptionsList;
@@ -41,7 +41,7 @@ public class PluginsConfigScreen extends PreviewOptionsScreen {
 	public OptionsList createOptions(OptionsList options) {
 		boolean noteServerFeature = Objects.requireNonNull(minecraft).level == null || IWailaConfig.get().general().isDebug() ||
 				!WailaClientRegistration.instance().isServerConnected();
-		BiConsumer<ResourceLocation, Object> setter = (key, value) -> {
+		BiConsumer<Identifier, Object> setter = (key, value) -> {
 			IWailaConfig.get().plugin().set(key, value);
 			options.updateOptionValue(key);
 		};

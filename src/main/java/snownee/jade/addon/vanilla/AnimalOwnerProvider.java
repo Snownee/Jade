@@ -11,7 +11,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.Services;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.players.NameAndId;
@@ -79,7 +79,7 @@ public class AnimalOwnerProvider implements StreamServerDataProvider<EntityAcces
 	}
 
 	@Override
-	public ResourceLocation getUid() {
+	public Identifier getUid() {
 		return JadeIds.MC_ANIMAL_OWNER;
 	}
 
@@ -100,7 +100,7 @@ public class AnimalOwnerProvider implements StreamServerDataProvider<EntityAcces
 		}
 
 		@Override
-		public ResourceLocation getUid() {
+		public Identifier getUid() {
 			return JadeIds.MC_ANIMAL_OWNER;
 		}
 	}

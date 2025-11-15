@@ -2,7 +2,7 @@ package snownee.jade.addon.vanilla;
 
 import org.jetbrains.annotations.Nullable;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.item.ItemStack;
 import snownee.jade.api.EntityAccessor;
@@ -32,7 +32,7 @@ public class FallingBlockProvider implements IEntityComponentProvider {
 	}
 
 	@Override
-	public ResourceLocation getUid() {
+	public Identifier getUid() {
 		return JadeIds.MC_FALLING_BLOCK;
 	}
 

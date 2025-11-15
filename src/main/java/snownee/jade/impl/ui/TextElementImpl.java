@@ -3,13 +3,12 @@ package snownee.jade.impl.ui;
 import org.joml.Matrix3x2fStack;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.ActiveTextCollector;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.Style;
-import net.minecraft.util.Mth;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.NarratableComponent;
@@ -19,16 +18,12 @@ import snownee.jade.util.JadeLanguages;
 
 public class TextElementImpl extends TextElement {
 
-	protected final FormattedText text;
+	protected final Component text;
 	protected float scale = 1;
 	protected float alpha = 1;
 	private int textWidth;
 
-	public TextElementImpl(Component component) {
-		this((FormattedText) component);
-	}
-
-	public TextElementImpl(FormattedText text) {
+	public TextElementImpl(Component text) {
 		this.text = text;
 		width = textWidth = Math.max(DisplayHelper.font().width(text), 0);
 		height = DisplayHelper.font().lineHeight - 1;
@@ -52,20 +47,22 @@ public class TextElementImpl extends TextElement {
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
 		int x = textLeft();
 		int normalColor = IWailaConfig.Overlay.applyAlpha(IThemeHelper.get().getNormalColor(), alpha);
-		if (scale == 1) {
-			DisplayHelper.INSTANCE.drawText(graphics, text, x, getY(), normalColor);
-		} else {
-			Matrix3x2fStack matrixStack = graphics.pose();
+		boolean scaled = scale != 1;
+		Matrix3x2fStack matrixStack = graphics.pose();
+		if (scaled) {
 			matrixStack.pushMatrix();
 			matrixStack.translate(x, getY() + scale);
 			matrixStack.scale(scale);
 			DisplayHelper.INSTANCE.drawText(graphics, text, 0, 0, normalColor);
-			matrixStack.popMatrix();
+		} else {
+			DisplayHelper.INSTANCE.drawText(graphics, text, x, getY(), normalColor);
 		}
 		if (mouseX != -1 && getRectangle().containsPoint(mouseX, mouseY)) {
-			//TODO scale
-			Style style = DisplayHelper.font().getSplitter().componentStyleAtWidth(text, Mth.floor(mouseX - x));
-			graphics.renderComponentHoverEffect(DisplayHelper.font(), style, mouseX, mouseY);
+			ActiveTextCollector collector = graphics.textRenderer(GuiGraphics.HoveredTextEffects.TOOLTIP_AND_CURSOR);
+			textCollector(collector);
+		}
+		if (scaled) {
+			matrixStack.popMatrix();
 		}
 	}
 
@@ -87,15 +84,33 @@ public class TextElementImpl extends TextElement {
 
 	@Override
 	public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-		Screen screen = Minecraft.getInstance().screen;
+		Minecraft mc = Minecraft.getInstance();
+		Screen screen = mc.screen;
 		if (screen != null) {
-			//TODO scale
-			Style style = DisplayHelper.font().getSplitter().componentStyleAtWidth(text, Mth.floor(event.x() - textLeft()));
-			if (style != null) {
-				return screen.handleComponentClicked(style);
+			ActiveTextCollector.ClickableStyleFinder collector = new ActiveTextCollector.ClickableStyleFinder(
+					mc.font,
+					(int) event.x(),
+					(int) event.y());
+			textCollector(collector);
+			Style style = collector.result();
+			if (style != null && style.getClickEvent() != null) {
+				Screen.defaultHandleGameClickEvent(style.getClickEvent(), mc, screen);
+				return true;
 			}
 		}
 		return false;
+	}
+
+	private void textCollector(ActiveTextCollector collector) {
+		int x = textLeft();
+		int y = getY();
+		if (scale != 1) {
+			x = y = 0;
+		}
+		if (alpha != 1) {
+			collector.defaultParameters(collector.defaultParameters().withOpacity(alpha));
+		}
+		collector.accept(x, y, text);
 	}
 
 	@Override

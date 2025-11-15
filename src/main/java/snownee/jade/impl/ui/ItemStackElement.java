@@ -8,6 +8,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.commands.arguments.item.ItemInput;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import snownee.jade.api.ui.Element;
@@ -44,7 +45,7 @@ public class ItemStackElement extends Element {
 			return;
 		}
 		if (mouseX != -1 && getRectangle().containsPoint(mouseX, mouseY)) {
-			graphics.setTooltipForNextFrame(Minecraft.getInstance().font, item, mouseX, mouseY);
+			setHoverEffect(graphics, new HoverEvent.ShowItem(item));
 		}
 		DisplayHelper.INSTANCE.drawItem(graphics, getX() + 1, getY() + 1, item, scale, text);
 	}

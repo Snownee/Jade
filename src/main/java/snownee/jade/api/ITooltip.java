@@ -10,7 +10,7 @@ import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.client.gui.layouts.LayoutSettings;
 import net.minecraft.client.gui.narration.NarrationSupplier;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.JadeUI;
 import snownee.jade.api.ui.ScreenDirection;
@@ -44,7 +44,7 @@ public interface ITooltip extends NarrationSupplier {
 	/**
 	 * Add a tagged text to a new line
 	 */
-	default void add(Component component, ResourceLocation tag) {
+	default void add(Component component, Identifier tag) {
 		add(size(), component, tag);
 	}
 
@@ -52,7 +52,7 @@ public interface ITooltip extends NarrationSupplier {
 		add(index, component, null);
 	}
 
-	default void add(int index, Component component, ResourceLocation tag) {
+	default void add(int index, Component component, Identifier tag) {
 		add(index, JadeUI.text(component).tag(tag));
 	}
 
@@ -99,7 +99,7 @@ public interface ITooltip extends NarrationSupplier {
 	 * <p>
 	 * IMPORTANT: DO NOT use this to concat texts
 	 */
-	default void append(Component component, ResourceLocation tag) {
+	default void append(Component component, Identifier tag) {
 		append(JadeUI.text(component).tag(tag));
 	}
 
@@ -126,21 +126,21 @@ public interface ITooltip extends NarrationSupplier {
 	 *
 	 * @return true if any element is removed
 	 */
-	boolean remove(ResourceLocation tag);
+	boolean remove(Identifier tag);
 
 	/**
 	 * Replace all elements that are tagged with this tag at the position of the first found element
 	 *
 	 * @return true if any element is replaced
 	 */
-	boolean replace(ResourceLocation tag, UnaryOperator<List<List<LayoutElement>>> elements);
+	boolean replace(Identifier tag, UnaryOperator<List<List<LayoutElement>>> elements);
 
-	boolean replace(ResourceLocation tag, Component component);
+	boolean replace(Identifier tag, Component component);
 
 	/**
 	 * Get all elements that are tagged with this tag
 	 */
-	List<LayoutElement> get(ResourceLocation tag);
+	List<LayoutElement> get(Identifier tag);
 
 	void setLineMargin(int index, ScreenDirection side, int margin);
 
@@ -148,7 +148,7 @@ public interface ITooltip extends NarrationSupplier {
 
 	String getNarration();
 
-	String getString(ResourceLocation tag);
+	String getString(Identifier tag);
 
 	@Nullable Element getIcon();
 }

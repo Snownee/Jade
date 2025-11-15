@@ -21,7 +21,7 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -42,7 +42,7 @@ public final class EntityVariantHelper {
 	}
 
 	public static synchronized void addVariantType(DataComponentType<?> type, boolean isVariant) {
-		ResourceLocation key = BuiltInRegistries.DATA_COMPONENT_TYPE.getKey(type);
+		Identifier key = BuiltInRegistries.DATA_COMPONENT_TYPE.getKey(type);
 		if (key == null) {
 			isVariant = false;
 		}
@@ -83,16 +83,16 @@ public final class EntityVariantHelper {
 		if (variant == null) {
 			return null;
 		} else if (variant instanceof Holder<?> holder) {
-			ResourceLocation id = holder.unwrapKey().map(ResourceKey::location).orElse(null);
+			Identifier id = holder.unwrapKey().map(ResourceKey::identifier).orElse(null);
 			variant = id != null ? id : holder.value();
 		} else if (variant instanceof EitherHolder<?> holder) {
-			variant = holder.key().map(ResourceKey::location).orElse(null);
+			variant = holder.key().map(ResourceKey::identifier).orElse(null);
 		}
 		String name = null;
 		Either<String, Component> result = CommonProxy.getTranslatableName(variant);
 		if (result != null) {
 			return result;
-		} else if (variant instanceof ResourceLocation id) {
+		} else if (variant instanceof Identifier id) {
 			name = id.toShortLanguageKey();
 		} else if (variant instanceof String) {
 			name = variant.toString();
@@ -108,7 +108,7 @@ public final class EntityVariantHelper {
 		if (isVariantType.containsKey(type)) {
 			return isVariantType.getBoolean(type);
 		}
-		ResourceLocation key = BuiltInRegistries.DATA_COMPONENT_TYPE.getKey(type);
+		Identifier key = BuiltInRegistries.DATA_COMPONENT_TYPE.getKey(type);
 		if (key == null) {
 			addVariantType(type, false);
 			return false;

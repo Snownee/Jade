@@ -110,7 +110,7 @@ public class RayTracing {
 		float partialTick = mc.getDeltaTracker().getGameTimeDeltaPartialTick(true);
 		Vec3 eyePosition = entity.getEyePosition(partialTick);
 		boolean startFromEye = IWailaConfig.get().general().getPerspectiveMode() == IWailaConfig.PerspectiveMode.EYE;
-		Vec3 traceStart = startFromEye ? eyePosition : camera.getPosition();
+		Vec3 traceStart = startFromEye ? eyePosition : camera.position();
 		double distance = startFromEye ? 0 : eyePosition.distanceToSqr(traceStart);
 		if (distance > 1e-5) {
 			distance = Math.sqrt(distance);
@@ -121,7 +121,7 @@ public class RayTracing {
 		Vec3 traceEnd;
 		Vec3 lookVector;
 		if (mc.hitResult == null) {
-			lookVector = startFromEye ? entity.getViewVector(partialTick) : new Vec3(camera.getLookVector());
+			lookVector = startFromEye ? entity.getViewVector(partialTick) : new Vec3(camera.forwardVector());
 			traceEnd = traceStart.add(lookVector.scale(entityReach));
 		} else {
 			traceEnd = mc.hitResult.getLocation().subtract(traceStart);

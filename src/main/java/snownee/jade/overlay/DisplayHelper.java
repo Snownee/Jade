@@ -14,6 +14,7 @@ import org.joml.Matrix3x2f;
 
 import com.google.common.base.Suppliers;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.blaze3d.textures.GpuSampler;
 import com.mojang.blaze3d.textures.GpuTextureView;
 
 import net.minecraft.client.Minecraft;
@@ -21,6 +22,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.render.TextureSetup;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
@@ -28,7 +30,7 @@ import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
@@ -317,7 +319,7 @@ public class DisplayHelper implements IDisplayHelper {
 	public void blitSprite(
 			GuiGraphics graphics,
 			RenderPipeline renderPipeline,
-			ResourceLocation sprite,
+			Identifier sprite,
 			int i,
 			int j,
 			int k,
@@ -330,7 +332,7 @@ public class DisplayHelper implements IDisplayHelper {
 	public void blitSprite(
 			GuiGraphics graphics,
 			RenderPipeline renderPipeline,
-			ResourceLocation sprite,
+			Identifier sprite,
 			int i,
 			int j,
 			int k,
@@ -345,7 +347,7 @@ public class DisplayHelper implements IDisplayHelper {
 	public void blitSprite(
 			GuiGraphics graphics,
 			RenderPipeline renderPipeline,
-			ResourceLocation sprite,
+			Identifier sprite,
 			int spriteWidth,
 			int spriteHeight,
 			int uStart,
@@ -362,7 +364,7 @@ public class DisplayHelper implements IDisplayHelper {
 	public void blitSprite(
 			GuiGraphics graphics,
 			RenderPipeline renderPipeline,
-			ResourceLocation sprite,
+			Identifier sprite,
 			int spriteWidth,
 			int spriteHeight,
 			int uStart,
@@ -426,7 +428,7 @@ public class DisplayHelper implements IDisplayHelper {
 	public void blit(
 			GuiGraphics graphics,
 			RenderPipeline renderPipeline,
-			ResourceLocation resourceLocation,
+			Identifier Identifier,
 			int i,
 			int j,
 			float f,
@@ -436,13 +438,13 @@ public class DisplayHelper implements IDisplayHelper {
 			int m,
 			int n,
 			int o) {
-		this.blit(graphics, renderPipeline, resourceLocation, i, j, f, g, k, l, k, l, m, n, o);
+		this.blit(graphics, renderPipeline, Identifier, i, j, f, g, k, l, k, l, m, n, o);
 	}
 
 	public void blit(
 			GuiGraphics graphics,
 			RenderPipeline renderPipeline,
-			ResourceLocation resourceLocation,
+			Identifier Identifier,
 			int i,
 			int j,
 			float f,
@@ -451,13 +453,13 @@ public class DisplayHelper implements IDisplayHelper {
 			int l,
 			int m,
 			int n) {
-		this.blit(graphics, renderPipeline, resourceLocation, i, j, f, g, k, l, k, l, m, n);
+		this.blit(graphics, renderPipeline, Identifier, i, j, f, g, k, l, k, l, m, n);
 	}
 
 	public void blit(
 			GuiGraphics graphics,
 			RenderPipeline renderPipeline,
-			ResourceLocation resourceLocation,
+			Identifier Identifier,
 			int i,
 			int j,
 			float f,
@@ -468,13 +470,13 @@ public class DisplayHelper implements IDisplayHelper {
 			int n,
 			int o,
 			int p) {
-		this.blit(graphics, renderPipeline, resourceLocation, i, j, f, g, k, l, m, n, o, p, -1);
+		this.blit(graphics, renderPipeline, Identifier, i, j, f, g, k, l, m, n, o, p, -1);
 	}
 
 	public void blit(
 			GuiGraphics graphics,
 			RenderPipeline renderPipeline,
-			ResourceLocation resourceLocation,
+			Identifier Identifier,
 			int i,
 			int j,
 			float f,
@@ -490,7 +492,7 @@ public class DisplayHelper implements IDisplayHelper {
 		this.innerBlit(
 				graphics,
 				renderPipeline,
-				resourceLocation,
+				Identifier,
 				i,
 				i + k,
 				j,
@@ -504,7 +506,7 @@ public class DisplayHelper implements IDisplayHelper {
 
 	public void blit(
 			GuiGraphics graphics,
-			ResourceLocation resourceLocation,
+			Identifier Identifier,
 			int i,
 			int j,
 			int k,
@@ -513,13 +515,13 @@ public class DisplayHelper implements IDisplayHelper {
 			float g,
 			float h,
 			float m) {
-		this.innerBlit(graphics, RenderPipelines.GUI_TEXTURED, resourceLocation, i, k, j, l, f, g, h, m, -1);
+		this.innerBlit(graphics, RenderPipelines.GUI_TEXTURED, Identifier, i, k, j, l, f, g, h, m, -1);
 	}
 
 	private void innerBlit(
 			GuiGraphics graphics,
 			RenderPipeline renderPipeline,
-			ResourceLocation sprite,
+			Identifier sprite,
 			float x0,
 			float x1,
 			float y0,
@@ -529,15 +531,15 @@ public class DisplayHelper implements IDisplayHelper {
 			float u1,
 			float v1,
 			int color) {
-		GpuTextureView gpuTextureView = Minecraft.getInstance().getTextureManager().getTexture(sprite).getTextureView();
-		this.submitBlit(graphics, renderPipeline, gpuTextureView, x0, y0, x1, y1, u0, v0, u1, v1, color);
+		AbstractTexture texture = Minecraft.getInstance().getTextureManager().getTexture(sprite);
+		this.submitBlit(graphics, renderPipeline, texture.getTextureView(), texture.getSampler(), x0, y0, x1, y1, u0, v0, u1, v1, color);
 	}
 
 	private void submitBlit(
 			GuiGraphics graphics,
 			RenderPipeline renderPipeline,
 			GpuTextureView gpuTextureView,
-			float x0,
+			GpuSampler sampler, float x0,
 			float y0,
 			float x1,
 			float y1,
@@ -550,7 +552,7 @@ public class DisplayHelper implements IDisplayHelper {
 				.submitGuiElement(
 						new FloatBlitRenderState(
 								renderPipeline,
-								TextureSetup.singleTexture(gpuTextureView),
+								TextureSetup.singleTexture(gpuTextureView, sampler),
 								new Matrix3x2f(graphics.pose()),
 								x0,
 								y0,
@@ -583,7 +585,7 @@ public class DisplayHelper implements IDisplayHelper {
 	public void blitSprite(
 			GuiGraphics graphics,
 			RenderPipeline renderPipeline,
-			ResourceLocation sprite,
+			Identifier sprite,
 			int spriteWidth,
 			int spriteHeight,
 			int u0,

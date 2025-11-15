@@ -14,7 +14,7 @@ import com.google.common.collect.Maps;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -41,7 +41,7 @@ import snownee.jade.util.KeyedResourceManagerReloadListener;
 public class HarvestToolProvider implements IBlockComponentProvider, KeyedResourceManagerReloadListener {
 	public static final HarvestToolProvider INSTANCE;
 
-	public static final Map<ResourceLocation, ToolHandler> TOOL_HANDLERS = Maps.newLinkedHashMap();
+	public static final Map<Identifier, ToolHandler> TOOL_HANDLERS = Maps.newLinkedHashMap();
 	private static final Component CHECK = Component.literal("✔");
 	private static final Component X = Component.literal("✕");
 	private final Cache<BlockState, ImmutableList<ItemStack>> resultCache = CacheBuilder.newBuilder().expireAfterAccess(
@@ -194,7 +194,7 @@ public class HarvestToolProvider implements IBlockComponentProvider, KeyedResour
 	}
 
 	@Override
-	public ResourceLocation getUid() {
+	public Identifier getUid() {
 		return JadeIds.MC_HARVEST_TOOL;
 	}
 

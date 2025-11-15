@@ -11,7 +11,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.TooltipRenderUtil;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.theme.IThemeHelper;
@@ -28,8 +28,8 @@ public class BoxStyle implements Cloneable {
 					ColorPalette.CODEC.optionalFieldOf("boxProgressColors", ColorPalette.DEFAULT).forGetter($ -> $.boxProgressColors),
 					JadeCodecs.intArrayCodec(4, Codec.INT).optionalFieldOf("padding").forGetter($ -> Optional.ofNullable($.padding)),
 					Codec.INT.optionalFieldOf("borderWidth", 1).forGetter($ -> $.borderWidth),
-					ResourceLocation.CODEC.optionalFieldOf("sprite").forGetter($ -> Optional.ofNullable($.sprite)),
-					ResourceLocation.CODEC.optionalFieldOf("withIconSprite").forGetter($ -> Optional.ofNullable($.withIconSprite)),
+					Identifier.CODEC.optionalFieldOf("sprite").forGetter($ -> Optional.ofNullable($.sprite)),
+					Identifier.CODEC.optionalFieldOf("withIconSprite").forGetter($ -> Optional.ofNullable($.withIconSprite)),
 					Codec.BOOL.optionalFieldOf("tooltip", false).forGetter($ -> $.tooltip))
 			.apply(i, BoxStyle::new));
 	private static final BoxStyle TRANSPARENT = sprite(null, null, 0);
@@ -40,9 +40,9 @@ public class BoxStyle implements Cloneable {
 	public int borderWidth;
 	public ColorPalette boxProgressColors;
 	@Nullable
-	public ResourceLocation sprite;
+	public Identifier sprite;
 	@Nullable
-	public ResourceLocation withIconSprite;
+	public Identifier withIconSprite;
 	public boolean tooltip;
 
 	public BoxStyle(
@@ -50,8 +50,8 @@ public class BoxStyle implements Cloneable {
 			ColorPalette boxProgressColors,
 			Optional<int[]> padding,
 			int borderWidth,
-			Optional<ResourceLocation> sprite,
-			Optional<ResourceLocation> withIconSprite,
+			Optional<Identifier> sprite,
+			Optional<Identifier> withIconSprite,
 			boolean tooltip) {
 		this.boxProgressOffset = boxProgressOffset.orElse(null);
 		this.boxProgressColors = boxProgressColors;
@@ -74,7 +74,7 @@ public class BoxStyle implements Cloneable {
 		return BoxStyle.TRANSPARENT;
 	}
 
-	public static BoxStyle simple(@Nullable ResourceLocation sprite, @Nullable int[] padding) {
+	public static BoxStyle simple(@Nullable Identifier sprite, @Nullable int[] padding) {
 		return new BoxStyle(
 				Optional.empty(),
 				ColorPalette.DEFAULT,
@@ -85,11 +85,11 @@ public class BoxStyle implements Cloneable {
 				false);
 	}
 
-	public static BoxStyle tooltip(@Nullable ResourceLocation sprite, @Nullable int[] padding) {
+	public static BoxStyle tooltip(@Nullable Identifier sprite, @Nullable int[] padding) {
 		return tooltip(sprite, padding, 1);
 	}
 
-	public static BoxStyle tooltip(@Nullable ResourceLocation sprite, @Nullable int[] padding, int borderWidth) {
+	public static BoxStyle tooltip(@Nullable Identifier sprite, @Nullable int[] padding, int borderWidth) {
 		return new BoxStyle(
 				Optional.empty(),
 				ColorPalette.DEFAULT,
@@ -100,11 +100,11 @@ public class BoxStyle implements Cloneable {
 				true);
 	}
 
-	public static BoxStyle sprite(@Nullable ResourceLocation sprite, @Nullable int[] padding) {
+	public static BoxStyle sprite(@Nullable Identifier sprite, @Nullable int[] padding) {
 		return sprite(sprite, padding, 1);
 	}
 
-	public static BoxStyle sprite(@Nullable ResourceLocation sprite, @Nullable int[] padding, int borderWidth) {
+	public static BoxStyle sprite(@Nullable Identifier sprite, @Nullable int[] padding, int borderWidth) {
 		return new BoxStyle(
 				Optional.empty(),
 				ColorPalette.DEFAULT,
@@ -124,7 +124,7 @@ public class BoxStyle implements Cloneable {
 	}
 
 	public void render(GuiGraphics guiGraphics, StyledElement element, float x, float y, float w, float h, float alpha) {
-		ResourceLocation texture = sprite;
+		Identifier texture = sprite;
 		if (withIconSprite != null && element.getIcon() != null) {
 			texture = withIconSprite;
 		}

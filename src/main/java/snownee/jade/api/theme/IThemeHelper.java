@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import snownee.jade.JadeInternals;
 import snownee.jade.api.ui.TextElement;
 
@@ -24,9 +24,9 @@ public interface IThemeHelper {
 	Collection<Theme> getThemes();
 
 	@NotNull
-	Theme getTheme(ResourceLocation id);
+	Theme getTheme(Identifier id);
 
-	boolean hasTheme(ResourceLocation id);
+	boolean hasTheme(Identifier id);
 
 	MutableComponent info(Object componentOrString);
 

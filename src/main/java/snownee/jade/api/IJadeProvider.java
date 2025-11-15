@@ -1,13 +1,13 @@
 package snownee.jade.api;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public interface IJadeProvider {
 
 	/**
 	 * The unique id of this provider. Providers from different registries can have the same id.
 	 */
-	ResourceLocation getUid();
+	Identifier getUid();
 
 	/**
 	 * Affects the display order showing in the tooltip.

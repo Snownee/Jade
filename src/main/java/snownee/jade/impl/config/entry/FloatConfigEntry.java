@@ -3,7 +3,7 @@ package snownee.jade.impl.config.entry;
 import java.util.function.BiConsumer;
 
 import it.unimi.dsi.fastutil.floats.FloatUnaryOperator;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.gui.config.OptionsList;
@@ -16,7 +16,7 @@ public class FloatConfigEntry extends ConfigEntry<Float> {
 	private float min;
 	private float max;
 
-	public FloatConfigEntry(ResourceLocation id, float defaultValue, float min, float max, boolean slider) {
+	public FloatConfigEntry(Identifier id, float defaultValue, float min, float max, boolean slider) {
 		super(id, defaultValue);
 		this.slider = slider;
 		this.min = min;
@@ -38,7 +38,7 @@ public class FloatConfigEntry extends ConfigEntry<Float> {
 			OptionsList options,
 			String optionName,
 			IPluginConfig config,
-			BiConsumer<ResourceLocation, Object> setter) {
+			BiConsumer<Identifier, Object> setter) {
 		if (slider) {
 			return options.slider(
 					optionName,

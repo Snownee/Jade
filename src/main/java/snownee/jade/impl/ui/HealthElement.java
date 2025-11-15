@@ -5,7 +5,7 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import snownee.jade.JadeClient;
 import snownee.jade.api.JadeIds;
@@ -85,7 +85,7 @@ public class HealthElement extends Element {
 		IDisplayHelper helper = IDisplayHelper.get();
 		int xOffset = (iconCount - 1) % iconsPerLine * 8;
 		int yOffset = lineCount * 4 - 4;
-		ResourceLocation containerSprite = Gui.HeartType.CONTAINER.getSprite(false, false, blink);
+		Identifier containerSprite = Gui.HeartType.CONTAINER.getSprite(false, false, blink);
 		//MC-265342 - Blinking absorption heart textures do not appear to actually be used in-game
 		for (int i = iconCount; i > 0; --i) {
 			int xPos = getX() + xOffset;

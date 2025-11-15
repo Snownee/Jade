@@ -12,7 +12,7 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -74,7 +74,7 @@ public class DatapackBlockManager {
 						score += 2f;
 					}
 				}
-				Optional<? extends ResourceLocation> itemModel = componentsPatch.get(DataComponents.ITEM_MODEL);
+				Optional<? extends Identifier> itemModel = componentsPatch.get(DataComponents.ITEM_MODEL);
 				if (itemModel != null && itemModel.isPresent()) {
 					score += 1f;
 				}

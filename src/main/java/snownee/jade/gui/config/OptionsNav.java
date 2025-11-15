@@ -18,12 +18,12 @@ import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import snownee.jade.api.JadeIds;
 
 public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
-	private static final ResourceLocation NAVBAR_BACKGROUND = JadeIds.JADE("navbar_background");
-	private static final ResourceLocation INWORLD_NAVBAR_BACKGROUND = JadeIds.JADE("inworld_navbar_background");
+	private static final Identifier NAVBAR_BACKGROUND = JadeIds.JADE("navbar_background");
+	private static final Identifier INWORLD_NAVBAR_BACKGROUND = JadeIds.JADE("inworld_navbar_background");
 	private final OptionsList options;
 	private int current;
 
@@ -52,8 +52,8 @@ public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
 
 	@Override
 	protected void renderListBackground(GuiGraphics guiGraphics) {
-		ResourceLocation resourceLocation = minecraft.level == null ? NAVBAR_BACKGROUND : INWORLD_NAVBAR_BACKGROUND;
-		guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, resourceLocation, getX(), getY(), getWidth(), getHeight());
+		Identifier Identifier = minecraft.level == null ? NAVBAR_BACKGROUND : INWORLD_NAVBAR_BACKGROUND;
+		guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, Identifier, getX(), getY(), getWidth(), getHeight());
 	}
 
 	@Override

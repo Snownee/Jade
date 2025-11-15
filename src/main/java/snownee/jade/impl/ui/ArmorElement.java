@@ -3,7 +3,7 @@ package snownee.jade.impl.ui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
@@ -15,9 +15,9 @@ import snownee.jade.overlay.DisplayHelper;
 
 public class ArmorElement extends Element {
 
-	public static final ResourceLocation ARMOR = ResourceLocation.withDefaultNamespace("hud/armor_full");
-	public static final ResourceLocation HALF_ARMOR = ResourceLocation.withDefaultNamespace("hud/armor_half");
-	public static final ResourceLocation EMPTY_ARMOR = ResourceLocation.withDefaultNamespace("hud/armor_empty");
+	public static final Identifier ARMOR = Identifier.withDefaultNamespace("hud/armor_full");
+	public static final Identifier HALF_ARMOR = Identifier.withDefaultNamespace("hud/armor_half");
+	public static final Identifier EMPTY_ARMOR = Identifier.withDefaultNamespace("hud/armor_empty");
 
 	private final float armor;
 	private String text;

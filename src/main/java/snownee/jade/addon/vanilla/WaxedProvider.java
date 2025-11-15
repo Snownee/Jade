@@ -6,7 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Unit;
 import net.minecraft.world.entity.animal.coppergolem.CopperGolem;
 import net.minecraft.world.item.HoneycombItem;
@@ -34,7 +34,7 @@ import snownee.jade.impl.ui.CompoundElement;
 
 public class WaxedProvider implements IJadeProvider {
 	@Override
-	public ResourceLocation getUid() {
+	public Identifier getUid() {
 		return JadeIds.MC_WAXED;
 	}
 

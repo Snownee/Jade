@@ -14,7 +14,7 @@ import com.google.common.collect.Sets;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ExtraCodecs;
 import snownee.jade.addon.core.ModNameProvider;
 import snownee.jade.addon.harvest.LootTableMineableCollector;
@@ -94,7 +94,7 @@ public class Jade {
 			}
 		}
 
-		Set<ResourceLocation> extraKeys;
+		Set<Identifier> extraKeys;
 		if (CommonProxy.isPhysicallyClient()) {
 			extraKeys = WailaClientRegistration.instance().getConfigKeys();
 		} else {

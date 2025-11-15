@@ -10,10 +10,10 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
-import net.minecraft.Util;
 import net.minecraft.client.gui.layouts.AbstractLayout;
 import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.client.gui.layouts.LayoutSettings;
+import net.minecraft.util.Util;
 import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.Orientation;
 

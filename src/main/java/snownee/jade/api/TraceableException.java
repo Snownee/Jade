@@ -4,7 +4,7 @@ import java.io.Serial;
 
 import org.jetbrains.annotations.Nullable;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class TraceableException extends RuntimeException {
 	@Serial
@@ -17,7 +17,7 @@ public class TraceableException extends RuntimeException {
 	}
 
 	public static RuntimeException create(Throwable cause, @Nullable String namespace) {
-		if (namespace == null || ResourceLocation.DEFAULT_NAMESPACE.equals(namespace)) {
+		if (namespace == null || Identifier.DEFAULT_NAMESPACE.equals(namespace)) {
 			if (cause instanceof RuntimeException runtimeException) {
 				return runtimeException;
 			} else {

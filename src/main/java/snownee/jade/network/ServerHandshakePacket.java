@@ -13,7 +13,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Block;
 import snownee.jade.Jade;
 import snownee.jade.addon.harvest.HarvestToolProvider;
@@ -24,19 +24,19 @@ import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.util.JadeCodecs;
 
 public record ServerHandshakePacket(
-		Map<ResourceLocation, Object> serverConfig,
+		Map<Identifier, Object> serverConfig,
 		List<Block> shearableBlocks,
-		List<ResourceLocation> blockProviderIds,
-		List<ResourceLocation> entityProviderIds) implements CustomPacketPayload {
+		List<Identifier> blockProviderIds,
+		List<Identifier> entityProviderIds) implements CustomPacketPayload {
 	public static final Type<ServerHandshakePacket> TYPE = new Type<>(JadeIds.PACKET_SERVER_HANDSHAKE);
 	public static final StreamCodec<RegistryFriendlyByteBuf, ServerHandshakePacket> CODEC = StreamCodec.composite(
-			ByteBufCodecs.map(Maps::newHashMapWithExpectedSize, ResourceLocation.STREAM_CODEC, JadeCodecs.PRIMITIVE_STREAM_CODEC),
+			ByteBufCodecs.map(Maps::newHashMapWithExpectedSize, Identifier.STREAM_CODEC, JadeCodecs.PRIMITIVE_STREAM_CODEC),
 			ServerHandshakePacket::serverConfig,
 			ByteBufCodecs.registry(Registries.BLOCK).apply(ByteBufCodecs.list()),
 			ServerHandshakePacket::shearableBlocks,
-			ByteBufCodecs.<ByteBuf, ResourceLocation>list().apply(ResourceLocation.STREAM_CODEC),
+			ByteBufCodecs.<ByteBuf, Identifier>list().apply(Identifier.STREAM_CODEC),
 			ServerHandshakePacket::blockProviderIds,
-			ByteBufCodecs.<ByteBuf, ResourceLocation>list().apply(ResourceLocation.STREAM_CODEC),
+			ByteBufCodecs.<ByteBuf, Identifier>list().apply(Identifier.STREAM_CODEC),
 			ServerHandshakePacket::entityProviderIds,
 			ServerHandshakePacket::new);
 

@@ -19,12 +19,12 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.CrashReport;
 import net.minecraft.ReportedException;
-import net.minecraft.advancements.critereon.MinMaxBounds;
+import net.minecraft.advancements.criterion.MinMaxBounds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.FileToIdConverter;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.ExtraCodecs;
@@ -46,9 +46,9 @@ import snownee.jade.util.KeyedReloadListener;
 
 public class ThemeHelper extends SimpleJsonResourceReloadListener<JadeClientCodecs.ThemeHolder> implements IThemeHelper, KeyedReloadListener {
 	public static final ThemeHelper INSTANCE = new ThemeHelper();
-	public static final ResourceLocation ID = JadeIds.JADE("themes");
+	public static final Identifier ID = JadeIds.JADE("themes");
 	private static final Int2ObjectMap<Style> styleCache = new Int2ObjectOpenHashMap<>(6);
-	private final Map<ResourceLocation, Theme> themes = Maps.newTreeMap();
+	private final Map<Identifier, Theme> themes = Maps.newTreeMap();
 	private final MinMaxBounds.Ints allowedVersions = MinMaxBounds.Ints.between(200, 299);
 	private final Style[] modNameStyleCache = new Style[3];
 	private Theme theme;
@@ -81,12 +81,12 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener<JadeClientCode
 
 	@Override
 	@NotNull
-	public Theme getTheme(ResourceLocation id) {
+	public Theme getTheme(Identifier id) {
 		return Preconditions.checkNotNull(themes.getOrDefault(id, fallback), "Theme not found: %s", id);
 	}
 
 	@Override
-	public boolean hasTheme(ResourceLocation id) {
+	public boolean hasTheme(Identifier id) {
 		return themes.containsKey(id);
 	}
 
@@ -225,10 +225,10 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener<JadeClientCode
 
 	@Override
 	protected void apply(
-			Map<ResourceLocation, JadeClientCodecs.ThemeHolder> map,
+			Map<Identifier, JadeClientCodecs.ThemeHolder> map,
 			ResourceManager resourceManager,
 			ProfilerFiller profilerFiller) {
-		Set<ResourceLocation> existingKeys = Set.copyOf(themes.keySet());
+		Set<Identifier> existingKeys = Set.copyOf(themes.keySet());
 		MutableObject<Theme> enable = new MutableObject<>();
 		WailaConfig.Overlay config = Jade.config().overlay();
 		WailaConfig.History history = Jade.history();
@@ -251,7 +251,7 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener<JadeClientCode
 			throw new ReportedException(crashreport);
 		}
 		int hash = 0;
-		for (ResourceLocation id : themes.keySet()) {
+		for (Identifier id : themes.keySet()) {
 			hash = 31 * hash + id.hashCode();
 		}
 		if (hash != history.themesHash) {
@@ -270,7 +270,7 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener<JadeClientCode
 	}
 
 	@Override
-	public ResourceLocation getUid() {
+	public Identifier getUid() {
 		return ID;
 	}
 }

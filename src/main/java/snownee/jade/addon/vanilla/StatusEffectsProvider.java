@@ -12,7 +12,7 @@ import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.StringUtil;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
@@ -58,7 +58,7 @@ public class StatusEffectsProvider implements StreamServerDataProvider<EntityAcc
 	}
 
 	@Override
-	public ResourceLocation getUid() {
+	public Identifier getUid() {
 		return JadeIds.MC_POTION_EFFECTS;
 	}
 
@@ -122,7 +122,7 @@ public class StatusEffectsProvider implements StreamServerDataProvider<EntityAcc
 		}
 
 		@Override
-		public ResourceLocation getUid() {
+		public Identifier getUid() {
 			return JadeIds.MC_POTION_EFFECTS;
 		}
 	}

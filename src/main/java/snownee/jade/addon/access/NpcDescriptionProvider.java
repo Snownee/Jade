@@ -3,7 +3,7 @@ package snownee.jade.addon.access;
 import com.google.common.base.Strings;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.decoration.Mannequin;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
@@ -29,7 +29,7 @@ public class NpcDescriptionProvider implements IEntityComponentProvider {
 	}
 
 	@Override
-	public ResourceLocation getUid() {
+	public Identifier getUid() {
 		return JadeIds.ACCESS_NPC_DESCRIPTION;
 	}
 }

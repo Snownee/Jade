@@ -17,7 +17,7 @@ public class JadeServerCommand {
 
 	public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
 		dispatcher.register(Commands.literal(Jade.ID)
-				.requires(source -> source.hasPermission(2))
+				.requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
 				.then(Commands.literal("show")
 						.then(Commands.argument("targets", EntityArgument.players())
 								.executes(context -> showOrHideFromServer(EntityArgument.getPlayers(context, "targets"), true))))

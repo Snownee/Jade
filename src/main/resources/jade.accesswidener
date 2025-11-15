@@ -94,9 +94,10 @@ accessible method net/minecraft/client/gui/GuiGraphics$ScissorStack peek ()Lnet/
 accessible method net/minecraft/client/gui/GuiGraphics blitSprite (Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/client/renderer/texture/TextureAtlasSprite;IIIIIIIII)V
 accessible field net/minecraft/client/gui/GuiGraphics deferredTooltip Ljava/lang/Runnable;
 accessible field net/minecraft/client/gui/GuiGraphics guiSprites Lnet/minecraft/client/renderer/texture/TextureAtlas;
+accessible field net/minecraft/client/gui/GuiGraphics hoveredTextStyle Lnet/minecraft/network/chat/Style;
 
-accessible method net/minecraft/client/gui/screens/inventory/tooltip/TooltipRenderUtil getBackgroundSprite (Lnet/minecraft/resources/ResourceLocation;)Lnet/minecraft/resources/ResourceLocation;
-accessible method net/minecraft/client/gui/screens/inventory/tooltip/TooltipRenderUtil getFrameSprite (Lnet/minecraft/resources/ResourceLocation;)Lnet/minecraft/resources/ResourceLocation;
+accessible method net/minecraft/client/gui/screens/inventory/tooltip/TooltipRenderUtil getBackgroundSprite (Lnet/minecraft/resources/Identifier;)Lnet/minecraft/resources/Identifier;
+accessible method net/minecraft/client/gui/screens/inventory/tooltip/TooltipRenderUtil getFrameSprite (Lnet/minecraft/resources/Identifier;)Lnet/minecraft/resources/Identifier;
 
 accessible field net/minecraft/client/KeyMapping clickCount I
 
@@ -111,3 +112,5 @@ accessible method net/minecraft/world/entity/decoration/Mannequin getDescription
 accessible field net/minecraft/world/entity/decoration/Mannequin DEFAULT_DESCRIPTION Lnet/minecraft/network/chat/Component;
 
 accessible class net/minecraft/client/gui/Gui$HeartType
+
+accessible method net/minecraft/client/gui/screens/Screen defaultHandleGameClickEvent (Lnet/minecraft/network/chat/ClickEvent;Lnet/minecraft/client/Minecraft;Lnet/minecraft/client/gui/screens/Screen;)V

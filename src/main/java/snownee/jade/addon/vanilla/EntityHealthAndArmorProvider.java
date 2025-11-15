@@ -10,7 +10,7 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.monster.creaking.Creaking;
@@ -45,7 +45,7 @@ public class EntityHealthAndArmorProvider implements StreamServerDataProvider<En
 	}
 
 	@Override
-	public ResourceLocation getUid() {
+	public Identifier getUid() {
 		return JadeIds.MC_ENTITY_HEALTH;
 	}
 

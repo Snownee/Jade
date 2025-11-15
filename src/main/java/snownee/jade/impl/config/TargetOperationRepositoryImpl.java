@@ -11,12 +11,12 @@ import java.util.regex.Pattern;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import net.minecraft.Util;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Util;
 import snownee.jade.Jade;
 import snownee.jade.api.config.IgnoreList;
 import snownee.jade.api.config.TargetOperationRepository;
@@ -60,7 +60,7 @@ public class TargetOperationRepositoryImpl<T, U> implements TargetOperationRepos
 				if (value.startsWith("/") && value.endsWith("/") && value.length() > 1) {
 					patterns.add(Pattern.compile(value.substring(1, value.length() - 1)));
 				} else {
-					ResourceKey<T> key = ResourceKey.create(registry, ResourceLocation.parse(value));
+					ResourceKey<T> key = ResourceKey.create(registry, Identifier.parse(value));
 					Optional<Holder.Reference<T>> optional = lookup.get(key);
 					if (optional.isPresent()) {
 						operations.put(optional.get().key(), TargetOperation.HIDE);
@@ -74,7 +74,7 @@ public class TargetOperationRepositoryImpl<T, U> implements TargetOperationRepos
 		}
 		if (!patterns.isEmpty()) {
 			for (ResourceKey<T> key : lookup.listElementIds().toList()) {
-				String s = key.location().toString();
+				String s = key.identifier().toString();
 				for (Pattern pattern : patterns) {
 					if (pattern.matcher(s).find()) {
 						operations.put(key, TargetOperation.HIDE);

@@ -5,7 +5,7 @@ import java.util.List;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import snownee.jade.api.BlockAccessor;
@@ -34,7 +34,7 @@ public class FurnaceProvider implements StreamServerDataProvider<BlockAccessor, 
 	}
 
 	@Override
-	public ResourceLocation getUid() {
+	public Identifier getUid() {
 		return JadeIds.MC_FURNACE;
 	}
 
@@ -67,7 +67,7 @@ public class FurnaceProvider implements StreamServerDataProvider<BlockAccessor, 
 		}
 
 		@Override
-		public ResourceLocation getUid() {
+		public Identifier getUid() {
 			return JadeIds.MC_FURNACE;
 		}
 	}

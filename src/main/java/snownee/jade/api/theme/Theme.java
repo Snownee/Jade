@@ -11,7 +11,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.metadata.gui.GuiMetadataSection;
 import net.minecraft.client.resources.metadata.gui.GuiSpriteScaling;
 import net.minecraft.data.AtlasIds;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IWailaConfig;
@@ -24,7 +24,7 @@ import snownee.jade.impl.ui.BoxElementImpl;
 
 public class Theme {
 
-	public ResourceLocation id;
+	public Identifier id;
 	public String styleName;
 	public BoxStyle tooltipStyle;
 	public BoxStyle nestedBoxStyle;
@@ -32,12 +32,12 @@ public class Theme {
 	public TextSetting text;
 	public float changeOpacity;
 	public boolean lightColorScheme;
-	public ResourceLocation iconSlotSprite;
+	public Identifier iconSlotSprite;
 	public int iconSlotInflation;
 	public BoxElement iconSlotSpriteCache;
 	public SneakyDetails sneakyDetails;
 	public ColorPalette progressColors;
-	public Map<ResourceLocation, ResourceLocation> spriteMapping;
+	public Map<Identifier, Identifier> spriteMapping;
 
 	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 	public Theme(
@@ -48,11 +48,11 @@ public class Theme {
 			TextSetting text,
 			float changeOpacity,
 			boolean lightColorScheme,
-			Optional<ResourceLocation> iconSlotSprite,
+			Optional<Identifier> iconSlotSprite,
 			int iconSlotInflation,
 			SneakyDetails sneakyDetails,
 			ColorPalette progressColors,
-			Map<ResourceLocation, ResourceLocation> spriteMapping) {
+			Map<Identifier, Identifier> spriteMapping) {
 		this.styleName = styleName;
 		this.tooltipStyle = tooltipStyle;
 		this.nestedBoxStyle = nestedBoxStyle;
@@ -67,7 +67,7 @@ public class Theme {
 		this.spriteMapping = spriteMapping;
 	}
 
-	public ResourceLocation mainId() {
+	public Identifier mainId() {
 		if (id.getPath().contains("/")) {
 			return id.withPath(id.getPath().substring(0, id.getPath().indexOf('/')));
 		} else {
@@ -83,7 +83,7 @@ public class Theme {
 		}
 	}
 
-	public ResourceLocation mapSprite(ResourceLocation sprite) {
+	public Identifier mapSprite(Identifier sprite) {
 		return spriteMapping.getOrDefault(sprite, sprite);
 	}
 

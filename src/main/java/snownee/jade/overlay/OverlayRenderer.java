@@ -220,7 +220,6 @@ public class OverlayRenderer {
 		((JadeGuiGraphics) graphics).jade$setIgnoreScissorTest(true);
 		graphics.deferredTooltip = null;
 		root.render(graphics, mouse.x, mouse.y, partialTicks);
-		graphics.renderDeferredElements();
 		((JadeGuiGraphics) graphics).jade$setIgnoreScissorTest(false);
 		if (renderDebug) {
 			root.renderDebug(graphics, mouse.x, mouse.y, partialTicks, new Element.RenderDebugContext(root, rect, true));
@@ -237,6 +236,7 @@ public class OverlayRenderer {
 		}
 
 		matrixStack.popMatrix();
+		graphics.renderDeferredElements();
 
 		if (IWailaConfig.get().accessibility().shouldEnableTextToSpeech()) {
 			tickHandler.narrate(root, true);

@@ -1,7 +1,7 @@
 package snownee.jade.addon.vanilla;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.decoration.Painting;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
@@ -16,13 +16,13 @@ public class PaintingProvider implements IEntityComponentProvider {
 	@Override
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		Painting painting = (Painting) accessor.getEntity();
-		ResourceLocation id = painting.getVariant().unwrapKey().orElseThrow().location();
+		Identifier id = painting.getVariant().unwrapKey().orElseThrow().identifier();
 		tooltip.add(IThemeHelper.get().warning(Component.translatable(id.toLanguageKey("painting", "title"))));
 		tooltip.add(Component.translatable(id.toLanguageKey("painting", "author")));
 	}
 
 	@Override
-	public ResourceLocation getUid() {
+	public Identifier getUid() {
 		return JadeIds.MC_PAINTING;
 	}
 }

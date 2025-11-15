@@ -9,7 +9,7 @@ import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import snownee.jade.Jade;
@@ -57,7 +57,12 @@ public class ExampleComponentProvider implements IBlockComponentProvider {
 	}
 
 	@Override
-	public ResourceLocation getUid() {
+	public Identifier getUid() {
 		return ExamplePlugin.UID_TEST_FUEL;
+	}
+
+	@Override
+	public int getDefaultPriority() {
+		return 999999;
 	}
 }

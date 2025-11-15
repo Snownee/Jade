@@ -13,7 +13,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.layouts.Layout;
 import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
@@ -31,9 +31,9 @@ import snownee.jade.impl.Tooltip;
 import snownee.jade.overlay.DisplayHelper;
 
 public class JadeUIInternal {
-	public static final ResourceLocation DEFAULT_PROGRESS = JadeIds.JADE("progress");
-	public static final ResourceLocation DEFAULT_PROGRESS_BASE = JadeIds.JADE("progress_base");
-	private static ResourceLocation contextUid;
+	public static final Identifier DEFAULT_PROGRESS = JadeIds.JADE("progress");
+	public static final Identifier DEFAULT_PROGRESS_BASE = JadeIds.JADE("progress_base");
+	private static Identifier contextUid;
 
 	public static boolean isEmptyElement(Element element) {
 		return element == null;
@@ -74,8 +74,8 @@ public class JadeUIInternal {
 
 	public static ResizeableElement progress(
 			float progress,
-			ResourceLocation baseSprite,
-			ResourceLocation progressSprite,
+			Identifier baseSprite,
+			Identifier progressSprite,
 			int width,
 			int height,
 			@Nullable Component text,
@@ -106,11 +106,11 @@ public class JadeUIInternal {
 		return new SimpleProgressStyle();
 	}
 
-	public static ResizeableElement sprite(RenderPipeline renderPipeline, ResourceLocation sprite, int width, int height) {
+	public static ResizeableElement sprite(RenderPipeline renderPipeline, Identifier sprite, int width, int height) {
 		return new SpriteElement(renderPipeline, sprite, width, height);
 	}
 
-	public static ResizeableElement sprite(ResourceLocation sprite, int width, int height) {
+	public static ResizeableElement sprite(Identifier sprite, int width, int height) {
 		return new SpriteElement(sprite, width, height);
 	}
 
@@ -126,11 +126,11 @@ public class JadeUIInternal {
 		return offset(element, 0, 0).onClick(onClick);
 	}
 
-	public static @Nullable ResourceLocation contextUid() {
+	public static @Nullable Identifier contextUid() {
 		return contextUid;
 	}
 
-	public static void setContextUid(@Nullable ResourceLocation uid) {
+	public static void setContextUid(@Nullable Identifier uid) {
 		JadeUIInternal.contextUid = uid;
 	}
 
@@ -157,7 +157,7 @@ public class JadeUIInternal {
 
 	public static ResizeableElement horizontalTiledSprite(
 			RenderPipeline renderPipeline,
-			ResourceLocation sprite,
+			Identifier sprite,
 			int width,
 			int height) {
 		SpriteElement element = (SpriteElement) sprite(renderPipeline, sprite, width, height);
@@ -165,7 +165,7 @@ public class JadeUIInternal {
 		return element;
 	}
 
-	public static ResizeableElement verticalTiledSprite(RenderPipeline renderPipeline, ResourceLocation sprite, int width, int height) {
+	public static ResizeableElement verticalTiledSprite(RenderPipeline renderPipeline, Identifier sprite, int width, int height) {
 		SpriteElement element = (SpriteElement) sprite(renderPipeline, sprite, width, height);
 		element.tiledOrientation = Orientation.VERTICAL;
 		return element;

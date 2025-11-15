@@ -72,7 +72,10 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 		Objects.requireNonNull(minecraft);
 		super.init();
 		if (minecraft.level != null) {
-			CycleButton<Boolean> previewButton = CycleButton.booleanBuilder(OptionsList.OPTION_ON, OptionsList.OPTION_OFF).create(
+			CycleButton<Boolean> previewButton = CycleButton.booleanBuilder(
+					OptionsList.OPTION_ON,
+					OptionsList.OPTION_OFF,
+					Jade.history().previewOverlay).create(
 					10,
 					saveButton.getY(),
 					85,
@@ -82,7 +85,6 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 						Jade.history().previewOverlay = value;
 						saver.run();
 					});
-			previewButton.setValue(Jade.history().previewOverlay);
 			addRenderableWidget(previewButton);
 		}
 	}
