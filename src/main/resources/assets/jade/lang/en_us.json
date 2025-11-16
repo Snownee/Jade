@@ -194,6 +194,7 @@
 	"config.jade.plugin_jade.mod_name": "Mod Name",
 	"config.jade.plugin_jade.mod_name_smaller": "Smaller",
 	"config.jade.plugin_jade.mod_name_extra_msg": "namespace,modid",
+	"config.jade.plugin_jade.mod_name.translated": "Translate Mod Name",
 	"config.jade.plugin_jade.distance": "Distance",
 	"config.jade.plugin_jade.distance_desc": "Show the distance between the player and the target.",
 	"config.jade.plugin_jade.coordinates": "Coordinates",

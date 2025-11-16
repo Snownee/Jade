@@ -102,10 +102,12 @@ public final class ClientProxy implements ClientModInitializer {
 	private static boolean bossbarShown;
 	private static int bossbarHeight;
 
-	public static Optional<String> getModName(String namespace) {
-		String modMenuKey = "modmenu.nameTranslation.%s".formatted(namespace);
-		if (I18n.exists(modMenuKey)) {
-			return Optional.of(I18n.get(modMenuKey));
+	public static Optional<String> getModName(String namespace, boolean translate) {
+		if (translate) {
+			String modMenuKey = "modmenu.nameTranslation.%s".formatted(namespace);
+			if (I18n.exists(modMenuKey)) {
+				return Optional.of(I18n.get(modMenuKey));
+			}
 		}
 		return FabricLoader.getInstance().getModContainer(namespace)
 				.map(ModContainer::getMetadata)

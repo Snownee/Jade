@@ -16,6 +16,7 @@ public interface JadeIds {
 	Identifier CORE_ROOT_ICON = JADE("root_icon");
 	Identifier CORE_OBJECT_NAME = JADE("object_name");
 	Identifier CORE_MOD_NAME = JADE("mod_name");
+	Identifier CORE_TRANSLATE_MOD_NAME = JADE("mod_name.translated");
 	Identifier CORE_DISTANCE = JADE("distance");
 	Identifier CORE_COORDINATES = JADE("coordinates");
 	Identifier CORE_REL_COORDINATES = JADE("coordinates.rel");

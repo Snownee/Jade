@@ -40,6 +40,7 @@ public class ModIdentification implements KeyedResourceManagerReloadListener {
 	private static final Map<String, Optional<String>> CUT_NAMES = Maps.newConcurrentMap();
 	@Nullable
 	private static WordCutter wordCutter;
+	private static boolean translated;
 	public static final String JADE_STACK = "$jade:stack";
 	public static final MapCodec<Identifier> JADE_STACK_ID_CODEC = Identifier.CODEC.fieldOf("id").fieldOf(JADE_STACK);
 	public static final String POLYMER_STACK = "$polymer:stack";
@@ -144,15 +145,21 @@ public class ModIdentification implements KeyedResourceManagerReloadListener {
 	public static Optional<String> getModFullName(String namespace) {
 		return NAMES.computeIfAbsent(
 				namespace, $ -> {
+					Optional<String> fromTranslation = Optional.empty();
 					String key = "jade.modName." + $;
 					if (I18n.exists(key)) {
-						return Optional.of(I18n.get(key));
+						fromTranslation = Optional.of(I18n.get(key));
+					} else {
+						key = "itemGroup." + $;
+						if (I18n.exists(key)) {
+							fromTranslation = Optional.of(I18n.get(key));
+						}
 					}
-					key = "itemGroup." + $;
-					if (I18n.exists(key)) {
-						return Optional.of(I18n.get(key));
+					Optional<String> fromLoader = ClientProxy.getModName($, translated).map(ChatFormatting::stripFormatting);
+					if (!translated && fromLoader.isPresent()) {
+						return fromLoader;
 					}
-					return ClientProxy.getModName($).map(ChatFormatting::stripFormatting);
+					return fromTranslation.isPresent() ? fromTranslation : fromLoader;
 				});
 	}
 
@@ -236,5 +243,13 @@ public class ModIdentification implements KeyedResourceManagerReloadListener {
 	@Override
 	public Identifier getUid() {
 		return ID;
+	}
+
+	public static void setTranslated(boolean translated) {
+		if (ModIdentification.translated == translated) {
+			return;
+		}
+		ModIdentification.translated = translated;
+		invalidateCache();
 	}
 }

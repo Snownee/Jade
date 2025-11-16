@@ -17,12 +17,14 @@ import snownee.jade.api.IWailaCommonRegistration;
 import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.WailaPlugin;
+import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.TargetOperationRepository;
 import snownee.jade.impl.BlockAccessorClientHandler;
 import snownee.jade.impl.EmptyAccessorClientHandler;
 import snownee.jade.impl.EntityAccessorClientHandler;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.WailaCommonRegistration;
+import snownee.jade.util.ModIdentification;
 
 @WailaPlugin
 public class CorePlugin implements IWailaPlugin {
@@ -42,6 +44,10 @@ public class CorePlugin implements IWailaPlugin {
 		registration.addConfig(JadeIds.CORE_COORDINATES, false);
 		registration.addConfig(JadeIds.CORE_REL_COORDINATES, false);
 		registration.addConfig(JadeIds.CORE_MOD_NAME, ModNameProvider.Mode.ON);
+		registration.addConfig(JadeIds.CORE_TRANSLATE_MOD_NAME, true);
+		registration.addConfigListener(
+				JadeIds.CORE_TRANSLATE_MOD_NAME,
+				$ -> ModIdentification.setTranslated(IWailaConfig.get().plugin().get($)));
 
 		registration.registerBlockComponent(ObjectNameProvider.ForBlock.INSTANCE, Block.class);
 		registration.registerBlockComponent(ModNameProvider.ForBlock.INSTANCE, Block.class);
