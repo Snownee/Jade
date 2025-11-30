@@ -27,11 +27,6 @@ accessible method net/minecraft/world/level/block/SelectableSlotContainer getHit
 
 accessible method net/minecraft/world/entity/Display$BlockDisplay getBlockState ()Lnet/minecraft/world/level/block/state/BlockState;
 
-accessible field net/minecraft/world/entity/monster/ZombieVillager villagerConversionTime I
-
-accessible field net/minecraft/world/entity/animal/horse/AbstractHorse MAX_MOVEMENT_SPEED F
-accessible field net/minecraft/world/entity/animal/horse/AbstractHorse MAX_JUMP_STRENGTH F
-
 accessible field net/minecraft/client/gui/Font provider Lnet/minecraft/client/gui/Font$Provider;
 accessible method net/minecraft/client/gui/Font getGlyphSource (Lnet/minecraft/network/chat/FontDescription;)Lnet/minecraft/client/gui/GlyphSource;
 accessible field net/minecraft/client/gui/Font splitter Lnet/minecraft/client/StringSplitter;
@@ -101,9 +96,6 @@ accessible method net/minecraft/client/gui/screens/inventory/tooltip/TooltipRend
 
 accessible field net/minecraft/client/KeyMapping clickCount I
 
-accessible field net/minecraft/world/entity/animal/coppergolem/CopperGolem IGNORE_WEATHERING_TICK J
-accessible field net/minecraft/world/entity/animal/coppergolem/CopperGolem nextWeatheringTick J
-
 accessible field net/minecraft/world/level/block/entity/SkullBlockEntity customName Lnet/minecraft/network/chat/Component;
 
 accessible field net/minecraft/world/item/component/CustomData tag Lnet/minecraft/nbt/CompoundTag;
@@ -114,3 +106,9 @@ accessible field net/minecraft/world/entity/decoration/Mannequin DEFAULT_DESCRIP
 accessible class net/minecraft/client/gui/Gui$HeartType
 
 accessible method net/minecraft/client/gui/screens/Screen defaultHandleGameClickEvent (Lnet/minecraft/network/chat/ClickEvent;Lnet/minecraft/client/Minecraft;Lnet/minecraft/client/gui/screens/Screen;)V
+
+accessible field net/minecraft/world/entity/animal/equine/AbstractHorse MAX_JUMP_STRENGTH F
+accessible field net/minecraft/world/entity/animal/equine/AbstractHorse MAX_MOVEMENT_SPEED F
+accessible field net/minecraft/world/entity/animal/golem/CopperGolem nextWeatheringTick J
+accessible field net/minecraft/world/entity/animal/golem/CopperGolem IGNORE_WEATHERING_TICK J
+accessible field net/minecraft/world/entity/monster/zombie/ZombieVillager villagerConversionTime I
