@@ -27,7 +27,7 @@ public class JukeboxProvider implements StreamServerDataProvider<BlockAccessor, 
 
 	@Override
 	public ItemStack streamData(BlockAccessor accessor) {
-		return ((JukeboxBlockEntity) accessor.getBlockEntity()).getTheItem();
+		return accessor.<JukeboxBlockEntity>typedBlockEntity().getTheItem();
 	}
 
 	@Override

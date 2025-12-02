@@ -49,18 +49,15 @@ public class InputOptionValue<T> extends OptionValue<T> {
 			value = (T) text;
 		}
 		try {
-			if (value instanceof Integer) {
-				value = (T) Integer.valueOf(text);
-			} else if (value instanceof Short) {
-				value = (T) Short.valueOf(text);
-			} else if (value instanceof Byte) {
-				value = (T) Byte.valueOf(text);
-			} else if (value instanceof Long) {
-				value = (T) Long.valueOf(text);
-			} else if (value instanceof Double) {
-				value = (T) Double.valueOf(text);
-			} else if (value instanceof Float) {
-				value = (T) Float.valueOf(text);
+			switch (value) {
+				case Integer ignored -> value = (T) Integer.valueOf(text);
+				case Short ignored -> value = (T) Short.valueOf(text);
+				case Byte ignored -> value = (T) Byte.valueOf(text);
+				case Long ignored -> value = (T) Long.valueOf(text);
+				case Double ignored -> value = (T) Double.valueOf(text);
+				case Float ignored -> value = (T) Float.valueOf(text);
+				default -> {
+				}
 			}
 		} catch (NumberFormatException ignored) {
 		}

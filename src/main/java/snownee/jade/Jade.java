@@ -111,33 +111,7 @@ public class Jade {
 			list.add(rootConfig.get());
 			Supplier<WailaConfig> defaultFactory = () -> JadeCodecs.createFromEmptyMap(codec);
 			for (int i = 1; i < 4; ++i) {
-				Supplier<WailaConfig> factory = defaultFactory;
-				if (i == 1) {
-					factory = () -> {
-						WailaConfig config = defaultFactory.get();
-						config.setName("@jade.profile_preset.accessibility");
-						config.accessibility().setEnableAccessibilityPlugin(true);
-						config.overlay().setAnimation(false);
-						config.overlay().setAlpha(1);
-						config.plugin().set(JadeIds.CORE_BLOCK_FACE, true);
-						config.plugin().set(JadeIds.CORE_MOD_NAME, ModNameProvider.Mode.OFF);
-						return config;
-					};
-				} else if (i == 2) {
-					factory = () -> {
-						WailaConfig config = defaultFactory.get();
-						config.setName("@jade.profile_preset.minimalism");
-						config.general().setDisplayMode(IWailaConfig.DisplayMode.LITE);
-						config.general().setBossBarOverlapMode(IWailaConfig.BossBarOverlapMode.HIDE_TOOLTIP);
-						config.overlay().setAlpha(0);
-						config.overlay().activeTheme = JadeIds.JADE("dark/slim");
-						config.overlay().setIconMode(IWailaConfig.IconMode.INLINE);
-						config.plugin().set(JadeIds.MC_BREAKING_PROGRESS, false);
-						config.plugin().set(JadeIds.MC_HARVEST_TOOL, false);
-						config.plugin().set(JadeIds.MC_ITEM_TOOLTIP, false);
-						return config;
-					};
-				}
+				Supplier<WailaConfig> factory = getProfilePreset(defaultFactory, i);
 				list.add(new JsonConfig<>("%s/profiles/%s/%s".formatted(ID, i, ID), codec, WailaConfig::fixData, factory));
 			}
 			configs = list.build();
@@ -151,6 +125,37 @@ public class Jade {
 		} else {
 			CommonProxy.registerTagsUpdatedListener(LootTableMineableCollector::onTagsUpdated);
 		}
+	}
+
+	private static Supplier<WailaConfig> getProfilePreset(Supplier<WailaConfig> defaultFactory, int i) {
+		Supplier<WailaConfig> factory = defaultFactory;
+		if (i == 1) {
+			factory = () -> {
+				WailaConfig config = defaultFactory.get();
+				config.setName("@jade.profile_preset.accessibility");
+				config.accessibility().setEnableAccessibilityPlugin(true);
+				config.overlay().setAnimation(false);
+				config.overlay().setAlpha(1);
+				config.plugin().set(JadeIds.CORE_BLOCK_FACE, true);
+				config.plugin().set(JadeIds.CORE_MOD_NAME, ModNameProvider.Mode.OFF);
+				return config;
+			};
+		} else if (i == 2) {
+			factory = () -> {
+				WailaConfig config = defaultFactory.get();
+				config.setName("@jade.profile_preset.minimalism");
+				config.general().setDisplayMode(IWailaConfig.DisplayMode.LITE);
+				config.general().setBossBarOverlapMode(IWailaConfig.BossBarOverlapMode.HIDE_TOOLTIP);
+				config.overlay().setAlpha(0);
+				config.overlay().activeTheme = JadeIds.JADE("dark/slim");
+				config.overlay().setIconMode(IWailaConfig.IconMode.INLINE);
+				config.plugin().set(JadeIds.MC_BREAKING_PROGRESS, false);
+				config.plugin().set(JadeIds.MC_HARVEST_TOOL, false);
+				config.plugin().set(JadeIds.MC_ITEM_TOOLTIP, false);
+				return config;
+			};
+		}
+		return factory;
 	}
 
 	public static List<JsonConfig<? extends WailaConfig>> configs() {

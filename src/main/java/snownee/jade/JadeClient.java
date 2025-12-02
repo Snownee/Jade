@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import org.apache.commons.lang3.mutable.MutableObject;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -46,6 +46,7 @@ import snownee.jade.api.Accessor;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IWailaClientRegistration;
 import snownee.jade.api.JadeIds;
+import snownee.jade.api.JadeKeys;
 import snownee.jade.api.TraceableException;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.IWailaConfig.DisplayMode;
@@ -77,13 +78,13 @@ public final class JadeClient {
 	public static final KeyMapping.Category keyMappingCategory = KeyMapping.Category.register(JadeIds.JADE("main"));
 	public static final List<RecipeLookupPlugin> recipeLookupPlugins = Lists.newArrayList();
 	private static final WailaTickHandler tickHandler = new WailaTickHandler();
-	public static KeyMapping openConfig;
-	public static KeyMapping showOverlay;
-	public static KeyMapping toggleLiquid;
-	public static KeyMapping showDetails;
-	public static KeyMapping narrate;
-	public static KeyMapping showRecipes;
-	public static KeyMapping showUses;
+	public static @Nullable KeyMapping openConfig;
+	public static @Nullable KeyMapping showOverlay;
+	public static @Nullable KeyMapping toggleLiquid;
+	public static @Nullable KeyMapping showDetails;
+	public static @Nullable KeyMapping narrate;
+	public static @Nullable KeyMapping showRecipes;
+	public static @Nullable KeyMapping showUses;
 	public static float renderDistanceStart;
 	public static float renderDistanceEnd;
 	private static boolean translationChecked;
@@ -95,7 +96,7 @@ public final class JadeClient {
 		openConfig = ClientProxy.registerKeyBinding("config", InputConstants.KEY_NUMPAD0);
 		showOverlay = ClientProxy.registerKeyBinding("show_overlay", InputConstants.KEY_NUMPAD1);
 		toggleLiquid = ClientProxy.registerKeyBinding("toggle_liquid", InputConstants.KEY_NUMPAD2);
-		if (ClientProxy.shouldRegisterRecipeViewerKeys()) {
+		if (JadeKeys.hasRecipeViewerKeys()) {
 			showRecipes = ClientProxy.registerKeyBinding("show_recipes", InputConstants.KEY_NUMPAD3);
 			showUses = ClientProxy.registerKeyBinding("show_uses", InputConstants.KEY_NUMPAD4);
 		}
@@ -116,14 +117,14 @@ public final class JadeClient {
 
 	public static void onKeyPressed(int action) {
 		Minecraft mc = Minecraft.getInstance();
-		while (openConfig.consumeClick()) {
+		while (JadeKeys.openConfig().consumeClick()) {
 			Jade.invalidateConfig();
 			ItemStorageProvider.targetCache.invalidateAll();
 			ItemStorageProvider.containerCache.invalidateAll();
 			mc.setScreen(new HomeConfigScreen(null));
 		}
 
-		while (showOverlay.consumeClick()) {
+		while (JadeKeys.showOverlay().consumeClick()) {
 			IWailaConfig.General general = IWailaConfig.get().general();
 			DisplayMode mode = general.getDisplayMode();
 			if (mode == DisplayMode.TOGGLE) {
@@ -133,7 +134,7 @@ public final class JadeClient {
 					mc.getChatListener().handleSystemMessage(
 							Component.translatable(
 									"toast.jade.toggle_hint.2",
-									showOverlay.getTranslatedKeyMessage()), false);
+									JadeKeys.showOverlay().getTranslatedKeyMessage()), false);
 					Jade.history().hintOverlayToggle = false;
 				}
 				narrateKey("show_overlay", general.shouldDisplayTooltip());
@@ -141,14 +142,14 @@ public final class JadeClient {
 			}
 		}
 
-		while (toggleLiquid.consumeClick()) {
+		while (JadeKeys.toggleLiquid().consumeClick()) {
 			IWailaConfig.General general = IWailaConfig.get().general();
 			general.setDisplayFluids(!general.shouldDisplayFluids());
 			narrateKey("toggle_liquid", general.shouldDisplayFluids());
 			IWailaConfig.get().save();
 		}
 
-		while (narrate.consumeClick()) {
+		while (JadeKeys.narrate().consumeClick()) {
 			IWailaConfig.Accessibility accessibility = IWailaConfig.get().accessibility();
 			if (accessibility.getTTSMode() == TTSMode.TOGGLE) {
 				accessibility.toggleTTS();
@@ -157,7 +158,7 @@ public final class JadeClient {
 					mc.getChatListener().handleSystemMessage(
 							Component.translatable(
 									"toast.jade.tts_hint.2",
-									narrate.getTranslatedKeyMessage()), false);
+									JadeKeys.narrate().getTranslatedKeyMessage()), false);
 					Jade.history().hintNarratorToggle = false;
 				}
 				IWailaConfig.get().save();
@@ -177,12 +178,14 @@ public final class JadeClient {
 			}
 		}
 
-		while (showUses != null && showUses.consumeClick()) {
-			lookupRecipes(true);
-		}
+		if (JadeKeys.hasRecipeViewerKeys()) {
+			while (JadeKeys.showUses().consumeClick()) {
+				lookupRecipes(true);
+			}
 
-		while (showRecipes != null && showRecipes.consumeClick()) {
-			lookupRecipes(false);
+			while (JadeKeys.showRecipes().consumeClick()) {
+				lookupRecipes(false);
+			}
 		}
 	}
 
@@ -266,7 +269,7 @@ public final class JadeClient {
 					TraceableException.create(e, BuiltInRegistries.ITEM.getKey(itemStack.getItem()).getNamespace()),
 					null,
 					holder::setValue);
-			return holder.getValue();
+			return holder.get();
 		}
 		return Component.literal(name).withStyle(IWailaConfig.get().formatting().getItemModNameStyle());
 	}

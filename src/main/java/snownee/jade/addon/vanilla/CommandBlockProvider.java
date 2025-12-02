@@ -1,6 +1,6 @@
 package snownee.jade.addon.vanilla;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -24,7 +24,7 @@ public class CommandBlockProvider implements StreamServerDataProvider<BlockAcces
 		if (!accessor.getPlayer().canUseGameMasterBlocks()) {
 			return null;
 		}
-		String command = ((CommandBlockEntity) accessor.getBlockEntity()).getCommandBlock().getCommand();
+		String command = accessor.<CommandBlockEntity>typedBlockEntity().getCommandBlock().getCommand();
 		if (command.length() > 40) {
 			command = command.substring(0, 37) + "...";
 		}

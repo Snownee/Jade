@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ArrayListMultimap;
@@ -79,7 +79,7 @@ import snownee.jade.util.ModIdentification;
 
 public class WailaClientRegistration implements IWailaClientRegistration {
 
-	private static volatile WailaClientRegistration INSTANCE;
+	private static WailaClientRegistration INSTANCE = new WailaClientRegistration();
 
 	public final HierarchyLookup<IComponentProvider<BlockAccessor>> blockIconProviders;
 	public final HierarchyLookup<IComponentProvider<BlockAccessor>> blockComponentProviders;
@@ -116,21 +116,11 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	}
 
 	public static WailaClientRegistration instance() {
-		if (INSTANCE == null) {
-			Jade.LOGGER.error("WailaClientRegistration is not initialized yet.");
-			synchronized (WailaClientRegistration.class) {
-				if (INSTANCE == null) {
-					INSTANCE = new WailaClientRegistration();
-				}
-			}
-		}
 		return INSTANCE;
 	}
 
 	public static void reset() {
-		synchronized (WailaClientRegistration.class) {
-			INSTANCE = new WailaClientRegistration();
-		}
+		INSTANCE = new WailaClientRegistration();
 	}
 
 	@Override
@@ -269,7 +259,7 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	public List<Category> getConfigListView(boolean enableAccessibilityPlugins) {
 		Multimap<String, ConfigEntry<?>> categoryMap = ArrayListMultimap.create();
 		configCategoryOverrides.forEach((key, component) -> {
-			categoryMap.put(component.getString(), getConfigEntry(key));
+			categoryMap.put(component.getString(), Objects.requireNonNull(getConfigEntry(key)));
 		});
 		configEntries.forEach((key, entry) -> {
 			if (configCategoryOverrides.containsKey(key)) {
@@ -402,22 +392,34 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	@Override
 	public EmptyAccessor.Builder emptyAccessor() {
 		Minecraft mc = Minecraft.getInstance();
-		return new EmptyAccessorImpl.Builder().level(mc.level).player(mc.player).serverConnected(isServerConnected()).serverData(
-				getServerData()).showDetails(isShowDetailsPressed());
+		return new EmptyAccessorImpl.Builder()
+				.level(Objects.requireNonNull(mc.level))
+				.player(Objects.requireNonNull(mc.player))
+				.serverConnected(isServerConnected())
+				.serverData(getServerData())
+				.showDetails(isShowDetailsPressed());
 	}
 
 	@Override
 	public BlockAccessor.Builder blockAccessor() {
 		Minecraft mc = Minecraft.getInstance();
-		return new BlockAccessorImpl.Builder().level(mc.level).player(mc.player).serverConnected(isServerConnected()).serverData(
-				getServerData()).showDetails(isShowDetailsPressed());
+		return new BlockAccessorImpl.Builder()
+				.level(Objects.requireNonNull(mc.level))
+				.player(Objects.requireNonNull(mc.player))
+				.serverConnected(isServerConnected())
+				.serverData(getServerData())
+				.showDetails(isShowDetailsPressed());
 	}
 
 	@Override
 	public EntityAccessor.Builder entityAccessor() {
 		Minecraft mc = Minecraft.getInstance();
-		return new EntityAccessorImpl.Builder().level(mc.level).player(mc.player).serverConnected(isServerConnected()).serverData(
-				getServerData()).showDetails(isShowDetailsPressed());
+		return new EntityAccessorImpl.Builder()
+				.level(Objects.requireNonNull(mc.level))
+				.player(Objects.requireNonNull(mc.player))
+				.serverConnected(isServerConnected())
+				.serverData(getServerData())
+				.showDetails(isShowDetailsPressed());
 	}
 
 	@Override
@@ -427,7 +429,7 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 
 	@Override
 	public Screen createPluginConfigScreen(@Nullable Screen parent, @Nullable Component jumpToCategory) {
-		Function<OptionsList, OptionsList.Entry> jumpTo = null;
+		Function<OptionsList, OptionsList.@Nullable Entry> jumpTo = null;
 		if (jumpToCategory != null) {
 			String title = jumpToCategory.getString();
 			jumpTo = options -> {
@@ -507,7 +509,7 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "NullableProblems"})
 	public <T extends Accessor<?>> void registerAccessorHandler(Class<T> clazz, AccessorClientHandler<T> handler) {
 		accessorHandlers.put((Class<Accessor<?>>) clazz, (AccessorClientHandler<Accessor<?>>) handler);
 	}

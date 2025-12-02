@@ -4,7 +4,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import com.google.common.collect.Sets;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
@@ -33,9 +33,9 @@ import snownee.jade.overlay.DisplayHelper;
 public class JadeUIInternal {
 	public static final Identifier DEFAULT_PROGRESS = JadeIds.JADE("progress");
 	public static final Identifier DEFAULT_PROGRESS_BASE = JadeIds.JADE("progress_base");
-	private static Identifier contextUid;
+	private static @Nullable Identifier contextUid;
 
-	public static boolean isEmptyElement(Element element) {
+	public static boolean isEmptyElement(@Nullable Element element) {
 		return element == null;
 	}
 
@@ -139,7 +139,7 @@ public class JadeUIInternal {
 	}
 
 	private static void visitChildrenRecursiveInternal(
-			LayoutElement layoutElement,
+			@Nullable LayoutElement layoutElement,
 			Consumer<LayoutElement> consumer,
 			Set<LayoutElement> set) {
 		if (layoutElement == null || !set.add(layoutElement)) {
@@ -148,7 +148,8 @@ public class JadeUIInternal {
 		consumer.accept(layoutElement);
 		if (layoutElement instanceof BoxElement) {
 			return;
-		} else if (layoutElement instanceof Layout layout) {
+		}
+		if (layoutElement instanceof Layout layout) {
 			layout.visitChildren(element -> visitChildrenRecursiveInternal(element, consumer, set));
 		} else {
 			layoutElement.visitWidgets(widget -> visitChildrenRecursiveInternal(widget, consumer, set));

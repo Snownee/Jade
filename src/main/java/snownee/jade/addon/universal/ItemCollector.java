@@ -1,11 +1,12 @@
 package snownee.jade.addon.universal;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -39,25 +40,23 @@ public class ItemCollector<T> {
 		}
 		if (stack.hasNonDefault(DataComponents.CUSTOM_MODEL_DATA) || stack.hasNonDefault(DataComponents.ITEM_MODEL)) {
 			CustomData customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
-			if (customData.matchedBy(IGNORED_TAG)) {
-				return false;
-			}
+			return !customData.matchedBy(IGNORED_TAG);
 		}
 		return true;
 	};
 	private final Items items = new Items();
-	private final ItemIterator<T> iterator;
+	private final @Nullable ItemIterator<T> iterator;
 	public long version;
 	public long lastTimeFinished;
 	public boolean lastTimeIsEmpty;
 	public @Nullable List<ViewGroup<ItemStack>> mergedResult;
 	public @Nullable List<ViewGroup<ItemStack>> sortedMergedResult;
 
-	public ItemCollector(ItemIterator<T> iterator) {
+	public ItemCollector(@Nullable ItemIterator<T> iterator) {
 		this.iterator = iterator;
 	}
 
-	public List<ViewGroup<ItemStack>> update(Accessor<?> accessor) {
+	public @Nullable List<ViewGroup<ItemStack>> update(Accessor<?> accessor) {
 		if (iterator == null) {
 			return null;
 		}
@@ -113,7 +112,7 @@ public class ItemCollector<T> {
 		if (lastTimeIsEmpty && group.views.isEmpty()) {
 			return group;
 		}
-		float progress = iterator.getCollectingProgress();
+		float progress = Objects.requireNonNull(iterator).getCollectingProgress();
 		CompoundTag data = group.getExtraData();
 		if (Float.isNaN(progress) || progress >= 1) {
 			data.remove("Collecting");

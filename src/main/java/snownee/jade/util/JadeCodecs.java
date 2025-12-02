@@ -3,7 +3,7 @@ package snownee.jade.util;
 import java.util.Optional;
 import java.util.OptionalInt;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.Nullable;
 
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
@@ -71,19 +71,17 @@ public class JadeCodecs {
 
 		@Override
 		public <T> T write(DynamicOps<T> ops, Object value) {
-			if (value instanceof Boolean) {
-				return ops.createBoolean((Boolean) value);
-			} else if (value instanceof Number) {
-				return ops.createNumeric((Number) value);
-			} else if (value instanceof String) {
-				return ops.createString((String) value);
-			}
-			throw new IllegalArgumentException("Not a primitive value: " + value);
+			return switch (value) {
+				case Boolean b -> ops.createBoolean(b);
+				case Number number -> ops.createNumeric(number);
+				case String s -> ops.createString(s);
+				case null, default -> throw new IllegalArgumentException("Not a primitive value: " + value);
+			};
 		}
 	};
 	public static final StreamCodec<ByteBuf, Object> PRIMITIVE_STREAM_CODEC = new StreamCodec<>() {
 		@Override
-		public @NotNull Object decode(ByteBuf buf) {
+		public Object decode(ByteBuf buf) {
 			byte b = buf.readByte();
 			if (b == 0) {
 				return false;
@@ -196,14 +194,14 @@ public class JadeCodecs {
 				});
 	}
 
-	public static Optional<int[]> nullableClone(int[] array) {
+	public static Optional<int[]> nullableClone(int @Nullable [] array) {
 		if (array == null) {
 			return Optional.empty();
 		}
 		return Optional.of(array.clone());
 	}
 
-	public static Optional<float[]> nullableClone(float[] array) {
+	public static Optional<float[]> nullableClone(float @Nullable [] array) {
 		if (array == null) {
 			return Optional.empty();
 		}

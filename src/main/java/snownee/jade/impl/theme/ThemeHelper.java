@@ -6,8 +6,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.lang3.mutable.MutableObject;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
@@ -50,9 +49,9 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener<JadeClientCode
 	private static final Int2ObjectMap<Style> styleCache = new Int2ObjectOpenHashMap<>(6);
 	private final Map<Identifier, Theme> themes = Maps.newTreeMap();
 	private final MinMaxBounds.Ints allowedVersions = MinMaxBounds.Ints.between(200, 299);
-	private final Style[] modNameStyleCache = new Style[3];
-	private Theme theme;
-	private Theme fallback;
+	private final Style[] modNameStyleCache = new Style[]{Style.EMPTY, Style.EMPTY, Style.EMPTY};
+	private @Nullable Theme theme;
+	private @Nullable Theme fallback;
 	private int generation;
 	private @Nullable Theme themeOverride;
 
@@ -71,7 +70,7 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener<JadeClientCode
 
 	@Override
 	public Theme theme() {
-		return themeOverride != null ? themeOverride : theme;
+		return themeOverride != null ? themeOverride : Objects.requireNonNull(theme);
 	}
 
 	@Override
@@ -80,9 +79,8 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener<JadeClientCode
 	}
 
 	@Override
-	@NotNull
 	public Theme getTheme(Identifier id) {
-		return Preconditions.checkNotNull(themes.getOrDefault(id, fallback), "Theme not found: %s", id);
+		return Preconditions.checkNotNull(themes.getOrDefault(id, Objects.requireNonNull(fallback)), "Theme not found: %s", id);
 	}
 
 	@Override
@@ -137,10 +135,7 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener<JadeClientCode
 		Style itemStyle = IWailaConfig.get().formatting().getItemModNameStyle();
 		Style themeStyle = theme().text.modNameStyle();
 		if (modNameStyleCache[0] != itemStyle || modNameStyleCache[1] != themeStyle) {
-			Style style = itemStyle;
-			if (themeStyle != null) {
-				style = themeStyle.applyTo(style);
-			}
+			Style style = themeStyle.applyTo(itemStyle);
 			modNameStyleCache[0] = itemStyle;
 			modNameStyleCache[1] = themeStyle;
 			modNameStyleCache[2] = style;
@@ -229,7 +224,7 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener<JadeClientCode
 			ResourceManager resourceManager,
 			ProfilerFiller profilerFiller) {
 		Set<Identifier> existingKeys = Set.copyOf(themes.keySet());
-		MutableObject<Theme> enable = new MutableObject<>();
+		MutableObject<@Nullable Theme> enable = new MutableObject<>();
 		WailaConfig.Overlay config = Jade.config().overlay();
 		WailaConfig.History history = Jade.history();
 		themes.clear();
@@ -241,7 +236,7 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener<JadeClientCode
 			Theme theme = holder.theme();
 			theme.id = id;
 			themes.put(id, theme);
-			if (enable.getValue() == null && holder.autoEnable() && !existingKeys.contains(id)) {
+			if (enable.get() == null && holder.autoEnable() && !existingKeys.contains(id)) {
 				enable.setValue(theme);
 			}
 		});
@@ -255,10 +250,10 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener<JadeClientCode
 			hash = 31 * hash + id.hashCode();
 		}
 		if (hash != history.themesHash) {
-			if (hash != 0 && enable.getValue() != null) {
-				Theme theme = enable.getValue();
-				config.activeTheme = theme.id;
-				Jade.LOGGER.info("Auto enabled theme {}", theme.id);
+			Theme theme = enable.get();
+			if (hash != 0 && theme != null) {
+				config.activeTheme = theme.fullId();
+				Jade.LOGGER.info("Auto enabled theme {}", theme.fullId());
 				if (theme.changeOpacity != 0) {
 					config.setAlpha(theme.changeOpacity);
 				}

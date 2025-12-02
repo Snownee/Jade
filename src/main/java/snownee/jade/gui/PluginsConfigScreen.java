@@ -5,7 +5,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import org.apache.commons.lang3.mutable.MutableObject;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
@@ -20,9 +20,9 @@ import snownee.jade.impl.WailaClientRegistration;
 public class PluginsConfigScreen extends PreviewOptionsScreen {
 
 	@Nullable
-	private Function<OptionsList, OptionsList.Entry> jumpTo;
+	private Function<OptionsList, OptionsList.@Nullable Entry> jumpTo;
 
-	public PluginsConfigScreen(Screen parent) {
+	public PluginsConfigScreen(@Nullable Screen parent) {
 		super(parent, Component.translatable("gui.jade.plugin_settings"));
 		saver = IWailaConfig.get()::save;
 		canceller = IWailaConfig.get()::invalidate;
@@ -48,7 +48,7 @@ public class PluginsConfigScreen extends PreviewOptionsScreen {
 		WailaClientRegistration.instance().getConfigListView(IWailaConfig.get().accessibility().getEnableAccessibilityPlugin()).forEach(
 				category -> {
 					options.add(new OptionsList.Title(category.title()));
-					MutableObject<OptionValue<?>> lastPrimary = new MutableObject<>();
+					MutableObject<@Nullable OptionValue<?>> lastPrimary = new MutableObject<>();
 					category.entries().forEach(entry -> {
 						OptionValue<?> option = entry.createUI(
 								options,
@@ -64,8 +64,8 @@ public class PluginsConfigScreen extends PreviewOptionsScreen {
 							option.serverFeature = true;
 						}
 						if (!IPluginConfig.isPrimaryKey(entry.id())) {
-							if (lastPrimary.getValue() != null) {
-								option.parent(lastPrimary.getValue());
+							if (lastPrimary.get() != null) {
+								option.parent(Objects.requireNonNull(lastPrimary.get()));
 							}
 						} else {
 							lastPrimary.setValue(option);
@@ -79,9 +79,9 @@ public class PluginsConfigScreen extends PreviewOptionsScreen {
 	protected void init() {
 		super.init();
 		if (jumpTo != null) {
-			OptionsList.Entry entry = jumpTo.apply(options);
+			OptionsList.Entry entry = jumpTo.apply(options());
 			if (entry != null) {
-				options.showOnTop(entry);
+				options().showOnTop(entry);
 			}
 			jumpTo = null;
 		}

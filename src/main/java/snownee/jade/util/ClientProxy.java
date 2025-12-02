@@ -8,8 +8,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import com.google.common.base.Strings;
 import com.google.common.base.Suppliers;
@@ -29,7 +28,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.CommonLifecycleEvents;
-import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
 import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRenderHandler;
 import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
@@ -73,6 +72,7 @@ import snownee.jade.addon.vanilla.AnimalOwnerProvider;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
+import snownee.jade.api.JadeKeys;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.ui.Element;
@@ -178,7 +178,7 @@ public final class ClientProxy implements ClientModInitializer {
 	}
 
 	public static void registerReloadListener(KeyedReloadListener listener) {
-		ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(listener);
+		ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloader(listener.getUid(), listener);
 	}
 
 	public static void drawBossBarPost(LerpingBossEvent bossEvent, int bottom) {
@@ -200,18 +200,18 @@ public final class ClientProxy implements ClientModInitializer {
 	}
 
 	public static boolean isShowDetailsPressed() {
-		return JadeClient.showDetails.isDown();
+		return JadeKeys.showDetails().isDown();
 	}
 
 	public static boolean shouldShowWithGui(Minecraft mc, @Nullable Screen screen) {
 		return screen == null || shouldShowBeforeGui(mc, screen) || shouldShowAfterGui(mc, screen);
 	}
 
-	public static boolean shouldShowAfterGui(Minecraft mc, @NotNull Screen screen) {
+	public static boolean shouldShowAfterGui(Minecraft mc, Screen screen) {
 		return screen instanceof PreviewOptionsScreen || JadeUI.isPinned();
 	}
 
-	public static boolean shouldShowBeforeGui(Minecraft mc, @NotNull Screen screen) {
+	public static boolean shouldShowBeforeGui(Minecraft mc, Screen screen) {
 		if (mc.level == null || mc.screen instanceof GenericMessageScreen || mc.screen instanceof ProgressScreen) {
 			return false;
 		}
@@ -223,13 +223,20 @@ public final class ClientProxy implements ClientModInitializer {
 		Fluid type = fluid.getType().value();
 		FluidVariant variant = FluidVariant.of(type, fluid.getComponents());
 		FluidVariantRenderHandler handler = FluidVariantRendering.getHandlerOrDefault(type);
-		TextureAtlasSprite[] sprites = handler.getSprites(variant);
+		@Nullable TextureAtlasSprite[] sprites = handler.getSprites(variant);
+		//noinspection ConstantValue
 		TextureAtlasSprite fluidStillSprite = sprites == null ? null : sprites[0];
 		int fluidColor = handler.getColor(variant, Minecraft.getInstance().level, null);
 		consumer.accept(fluidStillSprite, fluidColor);
 	}
 
-	public static void renderItemDecorationsExtra(GuiGraphics guiGraphics, Font font, ItemStack stack, int x, int y, String text) {
+	public static void renderItemDecorationsExtra(
+			GuiGraphics guiGraphics,
+			Font font,
+			ItemStack stack,
+			int x,
+			int y,
+			@Nullable String text) {
 		// NO-OP
 	}
 
@@ -247,7 +254,7 @@ public final class ClientProxy implements ClientModInitializer {
 			Accessor<?> accessor,
 			Identifier key,
 			StreamCodec<RegistryFriendlyByteBuf, Map.Entry<Identifier, List<ViewGroup<IN>>>> codec,
-			Function<Identifier, IClientExtensionProvider<IN, OUT>> mapper,
+			Function<Identifier, @Nullable IClientExtensionProvider<IN, OUT>> mapper,
 			ITooltip tooltip) {
 		Tag tag = accessor.getServerData().get(key.toString());
 		if (tag == null) {
@@ -280,6 +287,7 @@ public final class ClientProxy implements ClientModInitializer {
 		ClientPlayNetworking.send(payload);
 	}
 
+	@Nullable
 	public static String lookupPlayerName(UUID uuid) {
 		return AnimalOwnerProvider.lookupPlayerName(uuid, Minecraft.getInstance().services());
 	}
@@ -328,13 +336,13 @@ public final class ClientProxy implements ClientModInitializer {
 					ShowOverlayPacket.handle(payload, context.client()::execute);
 				});
 
+		//noinspection ConstantValue
 		for (int i = InputConstants.KEY_NUMPAD0; i <= InputConstants.KEY_NUMPAD9; i++) {
 			InputConstants.Key key = InputConstants.Type.KEYSYM.getOrCreate(i);
 			((KeyAccess) (Object) key).setDisplayName(Suppliers.memoize(() -> Component.translatable(key.getName())));
 		}
 		JadeClient.init();
-		ResourceManagerHelper.get(PackType.SERVER_DATA)
-				.registerReloadListener(HarvestToolProvider.INSTANCE);
+		ResourceLoader.get(PackType.SERVER_DATA).registerReloader(HarvestToolProvider.INSTANCE.getUid(), HarvestToolProvider.INSTANCE);
 		CommonLifecycleEvents.TAGS_LOADED.register((registryAccess, client) -> {
 			HarvestToolProvider.INSTANCE.invalidateCache();
 		});

@@ -2,7 +2,7 @@ package snownee.jade.impl;
 
 import java.util.Objects;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import snownee.jade.JadeClient;
 import snownee.jade.api.Accessor;

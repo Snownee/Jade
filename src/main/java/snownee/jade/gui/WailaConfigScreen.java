@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.List;
 import java.util.Objects;
 
+import org.jspecify.annotations.Nullable;
+
 import it.unimi.dsi.fastutil.floats.FloatUnaryOperator;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
@@ -22,6 +24,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.Util;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
+import snownee.jade.api.JadeKeys;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
@@ -32,15 +35,14 @@ import snownee.jade.gui.config.value.OptionValue;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.config.WailaConfig.General;
 import snownee.jade.impl.theme.ThemeHelper;
-import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
 
 public class WailaConfigScreen extends PreviewOptionsScreen {
 
-	private CycleOptionValue<Identifier> styleEntry;
-	private OptionValue<Float> opacityEntry;
+	private @Nullable CycleOptionValue<Identifier> styleEntry;
+	private @Nullable OptionValue<Float> opacityEntry;
 
-	public WailaConfigScreen(Screen parent) {
+	public WailaConfigScreen(@Nullable Screen parent) {
 		super(parent, Component.translatable("gui.jade.jade_settings"));
 		saver = () -> {
 			IWailaConfig.get().save();
@@ -48,15 +50,16 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 			KeyMapping.resetMapping();
 			Minecraft.getInstance().options.save();
 		};
-		Runnable runnable = JadeClient.recoverKeysAction($ -> JadeClient.openConfig.getCategory().equals($.getCategory()));
+		Runnable runnable = JadeClient.recoverKeysAction($ -> JadeKeys.openConfig().getCategory().equals($.getCategory()));
 		canceller = () -> {
 			IWailaConfig.get().invalidate();
 			runnable.run();
 		};
 	}
 
+	@SuppressWarnings("UnusedReturnValue")
 	public static OptionsList.Entry editIgnoreList(OptionsList.Entry entry, String fileName, Runnable defaultFactory) {
-		entry.getFirstWidget().setWidth(79);
+		Objects.requireNonNull(entry.getFirstWidget()).setWidth(79);
 		MutableComponent tooltip = Component.translatable("config.jade.edit_ignore_list");
 		entry.addWidget(
 				Button.builder(
@@ -97,7 +100,7 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 			value.setDisabled(true);
 			value.appendDescription(Component.translatable("gui.jade.disabled_by_mods"));
 			General.itemModNameTooltipDisabledByModsNames.stream().map(Component::literal).forEach(value::appendDescription);
-			if (value.getFirstWidget() != null && value.getDescription() != null) {
+			if (value.getFirstWidget() != null) {
 				value.getFirstWidget().setTooltip(MultilineTooltip.create(value.getDescription()));
 			}
 		}
@@ -110,10 +113,8 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 		options.title("overlay");
 		Component adjust = Component.translatable(OptionsList.Entry.makeKey("overlay_pos.adjust"));
 		options.add(new OptionButton(
-				Component.translatable(OptionsList.Entry.makeKey("overlay_pos")), Button.builder(
-				adjust, w -> {
-					startAdjustingPosition();
-				}).size(100, 20)));
+				Component.translatable(OptionsList.Entry.makeKey("overlay_pos")),
+				Button.builder(adjust, w -> startAdjustingPosition()).size(100, 20)));
 		CycleButton.ValueListSupplier<Identifier> valuesSupplier = new CycleButton.ValueListSupplier<>() {
 			@Override
 			public List<Identifier> getSelectedList() {
@@ -123,9 +124,9 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 			@Override
 			public List<Identifier> getDefaultList() {
 				Identifier mainId = overlay.getTheme().mainId();
-				return ThemeHelper.INSTANCE.getThemes().stream()
+				return IThemeHelper.get().getThemes().stream()
 						.filter($ -> $.mainId().equals(mainId))
-						.map($ -> $.id)
+						.map(Theme::fullId)
 						.toList();
 			}
 		};
@@ -134,11 +135,9 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 				CycleButton.builder(
 								id -> Component.translatable(Util.makeDescriptionId("jade.theme", id)),
 								overlay.getTheme().mainId())
-						.withValues(IThemeHelper.get()
-								.getThemes()
-								.stream()
+						.withValues(IThemeHelper.get().getThemes().stream()
 								.filter($ -> $.styleId().isEmpty())
-								.map($ -> $.id)
+								.map(Theme::fullId)
 								.toList()),
 				() -> overlay.getTheme().mainId(),
 				id -> {
@@ -151,13 +150,13 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 					overlay.applyTheme(id);
 					Theme theme = overlay.getTheme();
 					if (theme.changeOpacity != 0) {
-						opacityEntry.setValue(theme.changeOpacity);
+						Objects.requireNonNull(opacityEntry).setValue(theme.changeOpacity);
 					}
-					styleEntry.updateValue();
+					Objects.requireNonNull(styleEntry).updateValue();
 				}));
 		styleEntry = options.add(new CycleOptionValue<>(
 				"theme_style",
-				CycleButton.builder(id -> Component.translatable(ThemeHelper.INSTANCE.getTheme(id).styleName), overlay.getTheme().id)
+				CycleButton.builder(id -> Component.translatable(ThemeHelper.INSTANCE.getTheme(id).styleName), overlay.getTheme().fullId())
 						.withValues(valuesSupplier),
 				() -> overlay.getTheme().id,
 				overlay::applyTheme) {
@@ -186,15 +185,15 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 		options.choices("animation", overlay::getAnimation, overlay::setAnimation);
 
 		options.title("key_binds");
-		options.keybind(JadeClient.openConfig);
-		options.keybind(JadeClient.showOverlay);
-		options.keybind(JadeClient.toggleLiquid);
-		if (ClientProxy.shouldRegisterRecipeViewerKeys()) {
-			options.keybind(JadeClient.showRecipes);
-			options.keybind(JadeClient.showUses);
+		options.keybind(JadeKeys.openConfig());
+		options.keybind(JadeKeys.showOverlay());
+		options.keybind(JadeKeys.toggleLiquid());
+		if (JadeKeys.hasRecipeViewerKeys()) {
+			options.keybind(JadeKeys.showRecipes());
+			options.keybind(JadeKeys.showUses());
 		}
-		options.keybind(JadeClient.narrate);
-		options.keybind(JadeClient.showDetails);
+		options.keybind(JadeKeys.narrate());
+		options.keybind(JadeKeys.showDetails());
 
 		IWailaConfig.Accessibility accessibility = IWailaConfig.get().accessibility();
 		options.title("accessibility");
@@ -222,7 +221,7 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 							bl -> {
 								if (bl) {
 									for (KeyMapping keyMapping : minecraft.options.keyMappings) {
-										if (JadeClient.openConfig.getCategory().equals(keyMapping.getCategory())) {
+										if (JadeKeys.openConfig().getCategory().equals(keyMapping.getCategory())) {
 											keyMapping.setKey(keyMapping.getDefaultKey());
 										}
 									}
@@ -235,7 +234,7 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 									}
 								}
 								minecraft.setScreen(this);
-								this.options.setScrollAmount(this.options.maxScrollAmount());
+								options().setScrollAmount(options().maxScrollAmount());
 							},
 							title,
 							Component.translatable(OptionsList.Entry.makeKey("reset_settings.confirm")),

@@ -5,8 +5,8 @@ import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3x2fStack;
+import org.jspecify.annotations.Nullable;
 
 import com.google.common.base.Preconditions;
 import com.mojang.brigadier.Message;
@@ -34,14 +34,14 @@ import snownee.jade.overlay.DisplayHelper;
 
 public abstract class Element implements Renderable, LayoutElement, NarrationSupplier, GuiEventListener, CopyBehavior {
 
-	protected Identifier tag;
+	protected @Nullable Identifier tag;
 	protected int width;
 	protected int height;
 	private int x;
 	private int y;
 	private @Nullable Component narration = CommonComponents.EMPTY;
 	private @Nullable UnaryOperator<LayoutSettings> settings;
-	private @Nullable JadeLinearLayout.Align alignSelf;
+	private JadeLinearLayout.@Nullable Align alignSelf;
 
 	@Contract("_, _ -> new")
 	public ResizeableElement offset(int x, int y) {
@@ -92,7 +92,7 @@ public abstract class Element implements Renderable, LayoutElement, NarrationSup
 		return this;
 	}
 
-	public @Nullable JadeLinearLayout.Align getAlignSelf() {
+	public JadeLinearLayout.@Nullable Align getAlignSelf() {
 		return alignSelf;
 	}
 

@@ -1,7 +1,7 @@
 package snownee.jade.gui.config;
 
-import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
+import org.jspecify.annotations.Nullable;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;

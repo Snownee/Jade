@@ -21,7 +21,7 @@ public class FurnaceProvider implements StreamServerDataProvider<BlockAccessor, 
 
 	@Override
 	public Data streamData(BlockAccessor accessor) {
-		AbstractFurnaceBlockEntity furnace = (AbstractFurnaceBlockEntity) accessor.getBlockEntity();
+		AbstractFurnaceBlockEntity furnace = accessor.typedBlockEntity();
 		return new Data(
 				furnace.cookingTimer,
 				furnace.cookingTotalTime,

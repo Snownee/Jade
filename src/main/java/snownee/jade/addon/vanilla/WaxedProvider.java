@@ -2,7 +2,7 @@ package snownee.jade.addon.vanilla;
 
 import java.util.Map;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -55,7 +55,7 @@ public class WaxedProvider implements IJadeProvider {
 		}
 
 		@Override
-		public @Nullable Element getIcon(BlockAccessor accessor, IPluginConfig config, Element currentIcon) {
+		public @Nullable Element getIcon(BlockAccessor accessor, IPluginConfig config, @Nullable Element currentIcon) {
 			ItemStack pickedResult = accessor.getPickedResult();
 			if (!pickedResult.isEmpty() && accessor.getBlockEntity() instanceof SignBlockEntity sign) {
 				return waxedIcon(JadeUI.item(pickedResult), sign.isWaxed());
@@ -85,7 +85,7 @@ public class WaxedProvider implements IJadeProvider {
 		);
 
 		@Override
-		public Element getIcon(EntityAccessor accessor, IPluginConfig config, Element currentIcon) {
+		public Element getIcon(EntityAccessor accessor, IPluginConfig config, @Nullable Element currentIcon) {
 			CopperGolem golem = (CopperGolem) accessor.getEntity();
 			WeatheringCopper.WeatherState state = golem.getWeatherState();
 			Block statueBlock = COPPER_GOLEM_STATUES.get(state);

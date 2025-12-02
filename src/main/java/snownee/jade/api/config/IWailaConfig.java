@@ -69,7 +69,7 @@ public interface IWailaConfig {
 	}
 
 	enum HandlerDisplayStyle implements SimpleStringRepresentable {
-		PROGRESS_BAR, ICON, PLAIN_TEXT;
+		PROGRESS_BAR, ICON, PLAIN_TEXT
 	}
 
 	@NonExtendable

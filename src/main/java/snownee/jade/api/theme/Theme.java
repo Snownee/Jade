@@ -2,9 +2,10 @@ package snownee.jade.api.theme;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -24,7 +25,7 @@ import snownee.jade.impl.ui.BoxElementImpl;
 
 public class Theme {
 
-	public Identifier id;
+	public @Nullable Identifier id;
 	public String styleName;
 	public BoxStyle tooltipStyle;
 	public BoxStyle nestedBoxStyle;
@@ -32,9 +33,9 @@ public class Theme {
 	public TextSetting text;
 	public float changeOpacity;
 	public boolean lightColorScheme;
-	public Identifier iconSlotSprite;
+	public @Nullable Identifier iconSlotSprite;
 	public int iconSlotInflation;
-	public BoxElement iconSlotSpriteCache;
+	public @Nullable BoxElement iconSlotSpriteCache;
 	public SneakyDetails sneakyDetails;
 	public ColorPalette progressColors;
 	public Map<Identifier, Identifier> spriteMapping;
@@ -67,8 +68,12 @@ public class Theme {
 		this.spriteMapping = spriteMapping;
 	}
 
+	public Identifier fullId() {
+		return Objects.requireNonNull(id);
+	}
+
 	public Identifier mainId() {
-		if (id.getPath().contains("/")) {
+		if (Objects.requireNonNull(id).getPath().contains("/")) {
 			return id.withPath(id.getPath().substring(0, id.getPath().indexOf('/')));
 		} else {
 			return id;
@@ -76,7 +81,7 @@ public class Theme {
 	}
 
 	public String styleId() {
-		if (id.getPath().contains("/")) {
+		if (Objects.requireNonNull(id).getPath().contains("/")) {
 			return id.getPath().substring(id.getPath().indexOf('/') + 1);
 		} else {
 			return "";

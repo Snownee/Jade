@@ -1,6 +1,6 @@
 package snownee.jade.addon.vanilla;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -23,7 +23,7 @@ public class MobSpawnerCooldownProvider implements StreamServerDataProvider<Bloc
 
 	@Override
 	public @Nullable Integer streamData(BlockAccessor accessor) {
-		TrialSpawnerBlockEntity spawner = (TrialSpawnerBlockEntity) accessor.getBlockEntity();
+		TrialSpawnerBlockEntity spawner = accessor.typedBlockEntity();
 		TrialSpawnerStateData spawnerData = spawner.getTrialSpawner().getStateData();
 		ServerLevel level = ((ServerLevel) accessor.getLevel());
 		if (spawner.getTrialSpawner().canSpawnInLevel(level) && level.getGameTime() < spawnerData.cooldownEndsAt) {

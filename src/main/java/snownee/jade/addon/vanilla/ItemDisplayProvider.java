@@ -1,6 +1,6 @@
 package snownee.jade.addon.vanilla;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Display.ItemDisplay;
@@ -16,12 +16,12 @@ public class ItemDisplayProvider implements IEntityComponentProvider {
 	public static final ItemDisplayProvider INSTANCE = new ItemDisplayProvider();
 
 	@Override
-	public @Nullable Element getIcon(EntityAccessor accessor, IPluginConfig config, Element currentIcon) {
+	public @Nullable Element getIcon(EntityAccessor accessor, IPluginConfig config, @Nullable Element currentIcon) {
 		ItemDisplay itemDisplay = (ItemDisplay) accessor.getEntity();
-		if (itemDisplay.getSlot(0).get().isEmpty()) {
+		if (itemDisplay.getItemStack().isEmpty()) {
 			return null;
 		}
-		return JadeUI.item(itemDisplay.getSlot(0).get());
+		return JadeUI.item(itemDisplay.getItemStack());
 	}
 
 	@Override

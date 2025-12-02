@@ -3,8 +3,6 @@ package snownee.jade.network;
 import java.util.List;
 import java.util.Map;
 
-import org.jetbrains.annotations.NotNull;
-
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -50,7 +48,7 @@ public record ClientHandshakePacket(String protocolVersion) implements CustomPac
 	}
 
 	@Override
-	public @NotNull Type<ClientHandshakePacket> type() {
+	public Type<ClientHandshakePacket> type() {
 		return TYPE;
 	}
 }

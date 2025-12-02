@@ -3,7 +3,7 @@ package snownee.jade.addon.universal;
 import java.util.List;
 import java.util.Map;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -76,7 +76,7 @@ public class ProgressProvider<T extends Accessor<?>> implements StreamServerData
 	}
 
 	@Override
-	public @Nullable Map.Entry<Identifier, List<ViewGroup<ProgressView.Data>>> streamData(T accessor) {
+	public Map.@Nullable Entry<Identifier, List<ViewGroup<ProgressView.Data>>> streamData(T accessor) {
 		return CommonProxy.getServerExtensionData(accessor, WailaCommonRegistration.instance().progressProviders);
 	}
 

@@ -3,13 +3,14 @@ package snownee.jade.gui.config;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import com.google.common.base.Predicates;
 import com.google.common.collect.Lists;
@@ -64,13 +65,13 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 	public static final Component OPTION_OFF = CommonComponents.OPTION_OFF.copy().withColor(0xFFFF8A80);
 	public final Set<OptionsList.Entry> forcePreview = Sets.newIdentityHashSet();
 	protected final List<Entry> entries = Lists.newArrayList();
-	private final Runnable diskWriter;
-	public Title currentTitle;
-	public OptionValue<?> invalidEntry;
-	public KeyMapping selectedKey;
-	private BaseOptionsScreen owner;
+	private final @Nullable Runnable diskWriter;
+	public @Nullable Title currentTitle;
+	public @Nullable OptionValue<?> invalidEntry;
+	public @Nullable KeyMapping selectedKey;
+	private final BaseOptionsScreen owner;
 	private final SmoothChasingValue smoothScroll;
-	private Entry defaultParent;
+	private @Nullable Entry defaultParent;
 
 	public OptionsList(
 			BaseOptionsScreen owner,
@@ -80,7 +81,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 			int width,
 			int height,
 			int entryHeight,
-			Runnable diskWriter) {
+			@Nullable Runnable diskWriter) {
 		super(client, width, height, y, entryHeight);
 		setX(x);
 		this.owner = owner;
@@ -140,7 +141,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 	@Nullable
 	@Override
 	public ComponentPath nextFocusPath(FocusNavigationEvent event) {
-		OptionsNav.Entry navEntry = owner.getOptionsNav().getFocused();
+		OptionsNav.Entry navEntry = owner.optionsNav().getFocused();
 		if (navEntry != null && event instanceof FocusNavigationEvent.ArrowNavigation(ScreenDirection direction) &&
 				direction == ScreenDirection.RIGHT) {
 			Title title = navEntry.getTitle();
@@ -342,7 +343,6 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 			}
 		}
 		clearEntries();
-		owner = null;
 	}
 
 	public void updateSearch(String search) {
@@ -367,7 +367,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 			if (bingo == keywords.length) {
 				walkChildren(entry, matches::add);
 				while (entry.parent() != null) {
-					entry = entry.parent();
+					entry = Objects.requireNonNull(entry.parent());
 					matches.add(entry);
 				}
 			}
@@ -391,9 +391,9 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 			}
 		}
 		if (invalidEntry == null) {
-			owner.saveButton.setTooltip(null);
+			Objects.requireNonNull(owner.saveButton).setTooltip(null);
 		} else {
-			owner.saveButton.setTooltip(Tooltip.create(Component.translatable("gui.jade.invalid_value_cant_save")));
+			Objects.requireNonNull(owner.saveButton).setTooltip(Tooltip.create(Component.translatable("gui.jade.invalid_value_cant_save")));
 		}
 	}
 
@@ -447,7 +447,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 	}
 
 	@Override
-	public void setSelected(@Nullable OptionsList.Entry entry) {
+	public void setSelected(OptionsList.@Nullable Entry entry) {
 		selected = entry;
 		if (entry != null && minecraft.getLastInputType().isKeyboard()) {
 			scrollToEntry(entry);
@@ -463,7 +463,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		private final List<AbstractWidget> rawWidgets = Lists.newArrayList();
 		protected final List<EntryWidget> widgets = Lists.newArrayList();
 		protected List<Component> description = List.of();
-		private Entry parent;
+		private @Nullable Entry parent;
 		private List<Entry> children = List.of();
 
 		public Entry() {
@@ -478,7 +478,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 			return Util.makeDescriptionId("config", Identifier.fromNamespaceAndPath(Jade.ID, key));
 		}
 
-		public AbstractWidget getFirstWidget() {
+		public @Nullable AbstractWidget getFirstWidget() {
 			return rawWidgets.isEmpty() ? null : rawWidgets.getFirst();
 		}
 
@@ -500,7 +500,6 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		public List<? extends NarratableEntry> narratables() {
 			return children();
 		}
-
 
 		@Override
 		public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovered, float deltaTime) {
@@ -552,14 +551,14 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 			return this;
 		}
 
-		public Entry parent() {
+		public @Nullable Entry parent() {
 			return parent;
 		}
 
 		public Entry root() {
 			Entry entry = this;
 			while (entry.parent() != null) {
-				entry = entry.parent();
+				entry = Objects.requireNonNull(entry.parent());
 			}
 			return entry;
 		}

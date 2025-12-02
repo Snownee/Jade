@@ -2,8 +2,7 @@ package snownee.jade.api.theme;
 
 import java.util.Collection;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
@@ -23,7 +22,6 @@ public interface IThemeHelper {
 
 	Collection<Theme> getThemes();
 
-	@NotNull
 	Theme getTheme(Identifier id);
 
 	boolean hasTheme(Identifier id);

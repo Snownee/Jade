@@ -3,7 +3,7 @@ package snownee.jade.api.view;
 import java.util.List;
 import java.util.Objects;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -29,9 +29,10 @@ public class FluidView {
 	@Nullable
 	public Component overrideText;
 
-	public FluidView(Element overlay) {
-		this.overlay = overlay;
-		Objects.requireNonNull(overlay);
+	public FluidView(Element overlay, Component current, Component max) {
+		this.overlay = Objects.requireNonNull(overlay);
+		this.current = Objects.requireNonNull(current);
+		this.max = Objects.requireNonNull(max);
 	}
 
 	@Nullable
@@ -41,10 +42,10 @@ public class FluidView {
 		}
 		JadeFluidObject fluidObject = data.fluids.isEmpty() ? JadeFluidObject.empty() : data.fluids.getFirst();
 		long amount = fluidObject.getAmount();
-		FluidView view = new FluidView(JadeUI.fluid(fluidObject));
+		Component current = FluidTextHelper.getMillibuckets(amount, true);
+		Component max = FluidTextHelper.getMillibuckets(data.capacity, true);
+		FluidView view = new FluidView(JadeUI.fluid(fluidObject), current, max);
 		view.fluidName = fluidObject.getDisplayName();
-		view.current = FluidTextHelper.getMillibuckets(amount, true);
-		view.max = FluidTextHelper.getMillibuckets(data.capacity, true);
 		view.ratio = (float) ((double) amount / data.capacity);
 		if (fluidObject.getType().value().isSame(Fluids.EMPTY)) {
 			view.overrideText = NarratableComponent.translatable(

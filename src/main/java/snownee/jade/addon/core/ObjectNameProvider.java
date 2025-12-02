@@ -2,7 +2,7 @@ package snownee.jade.addon.core;
 
 import java.util.Objects;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.component.DataComponents;
@@ -68,7 +68,7 @@ public abstract class ObjectNameProvider implements IToggleableProvider {
 					yield entity.getType().getDescription();
 				}
 				case ItemEntity itemEntity -> itemEntity.getItem().getHoverName();
-				case ItemDisplay itemDisplay when !itemDisplay.getSlot(0).get().isEmpty() -> itemDisplay.getSlot(0).get().getHoverName();
+				case ItemDisplay itemDisplay when !itemDisplay.getItemStack().isEmpty() -> itemDisplay.getItemStack().getHoverName();
 				case BlockDisplay blockDisplay when !blockDisplay.getBlockState().isAir() ->
 						blockDisplay.getBlockState().getBlock().getName();
 				default -> entity.getName();
@@ -104,7 +104,7 @@ public abstract class ObjectNameProvider implements IToggleableProvider {
 			}
 			if (name == null && WailaCommonRegistration.instance().blockOperations().shouldPick(accessor.getBlockState())) {
 				ItemStack pick = accessor.getPickedResult();
-				if (pick != null && !pick.isEmpty()) {
+				if (!pick.isEmpty()) {
 					name = pick.getHoverName();
 				}
 			}
@@ -114,7 +114,7 @@ public abstract class ObjectNameProvider implements IToggleableProvider {
 					name = accessor.getBlock().getName();
 				} else {
 					ItemStack pick = accessor.getPickedResult();
-					if (pick != null && !pick.isEmpty()) {
+					if (!pick.isEmpty()) {
 						name = pick.getHoverName();
 					} else {
 						name = Component.literal(key);
@@ -152,11 +152,13 @@ public abstract class ObjectNameProvider implements IToggleableProvider {
 
 		@Override
 		public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
-			Component name = getEntityName(
-					accessor.getEntity(),
-					IWailaConfig.get().accessibility().getEnableAccessibilityPlugin() && config.get(JadeIds.ACCESS_ENTITY_DETAILS));
-			if (name == null && accessor.isServersideContent()) {
+			Component name;
+			if (accessor.isServersideContent()) {
 				name = accessor.getServersideRep().getHoverName();
+			} else {
+				name = getEntityName(
+						accessor.getEntity(),
+						IWailaConfig.get().accessibility().getEnableAccessibilityPlugin() && config.get(JadeIds.ACCESS_ENTITY_DETAILS));
 			}
 			addName(tooltip, name);
 		}
@@ -184,7 +186,7 @@ public abstract class ObjectNameProvider implements IToggleableProvider {
 			} else if (nameable.hasCustomName()) {
 				return nameable.getDisplayName();
 			}
-			return accessor.getBlockEntity().components().get(DataComponents.ITEM_NAME);
+			return accessor.typedBlockEntity().components().get(DataComponents.ITEM_NAME);
 		}
 
 		@Override

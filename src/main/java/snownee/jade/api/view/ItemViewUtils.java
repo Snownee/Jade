@@ -3,16 +3,20 @@ package snownee.jade.api.view;
 import java.util.List;
 import java.util.function.Function;
 
+import org.jspecify.annotations.Nullable;
+
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import snownee.jade.api.Accessor;
 import snownee.jade.util.CommonProxy;
 
 public interface ItemViewUtils {
+	@Nullable
 	static List<ViewGroup<ItemStack>> groupOf(Container container, Accessor<?> accessor) {
 		return CommonProxy.containerGroup(container, accessor);
 	}
 
+	@Nullable
 	static List<ViewGroup<ItemStack>> groupOf(Container container, Accessor<?> accessor, Function<Accessor<?>, Container> containerFinder) {
 		return CommonProxy.containerGroup(container, accessor, containerFinder);
 	}
@@ -20,6 +24,7 @@ public interface ItemViewUtils {
 	/**
 	 * @param storage On Fabric, it accepts {@code Storage<ItemVariant>}. On NeoForge, it accepts {@code IItemHandler}.
 	 */
+	@Nullable
 	static List<ViewGroup<ItemStack>> groupOf(Object storage, Accessor<?> accessor) {
 		return CommonProxy.storageGroup(storage, accessor);
 	}
@@ -27,6 +32,7 @@ public interface ItemViewUtils {
 	/**
 	 * @param storage On Fabric, it accepts {@code Storage<ItemVariant>}. On NeoForge, it accepts {@code IItemHandler}.
 	 */
+	@Nullable
 	static List<ViewGroup<ItemStack>> groupOf(Object storage, Accessor<?> accessor, Function<Accessor<?>, Object> storageFinder) {
 		return CommonProxy.storageGroup(storage, accessor, storageFinder);
 	}

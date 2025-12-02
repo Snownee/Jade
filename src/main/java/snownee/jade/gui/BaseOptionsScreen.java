@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.InputConstants;
@@ -27,8 +27,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
-import snownee.jade.JadeClient;
 import snownee.jade.api.JadeIds;
+import snownee.jade.api.JadeKeys;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.ui.JadeUI;
 import snownee.jade.gui.config.BelowOrAboveListEntryTooltipPositioner;
@@ -40,15 +40,15 @@ import snownee.jade.overlay.DisplayHelper;
 
 public abstract class BaseOptionsScreen extends Screen {
 
-	protected final Screen parent;
-	public Button saveButton;
-	protected Runnable saver;
-	protected Runnable canceller;
-	protected OptionsList options;
-	protected OptionsNav optionsNav;
-	private NotUglyEditBox searchBox;
+	protected final @Nullable Screen parent;
+	public @Nullable Button saveButton;
+	protected @Nullable Runnable saver;
+	protected @Nullable Runnable canceller;
+	protected @Nullable OptionsList options;
+	protected @Nullable OptionsNav optionsNav;
+	private @Nullable NotUglyEditBox searchBox;
 
-	public BaseOptionsScreen(Screen parent, Component title) {
+	public BaseOptionsScreen(@Nullable Screen parent, Component title) {
 		super(title);
 		this.parent = parent;
 	}
@@ -56,6 +56,7 @@ public abstract class BaseOptionsScreen extends Screen {
 	@Override
 	protected void init() {
 		Objects.requireNonNull(minecraft);
+		Objects.requireNonNull(saver);
 		double scroll = options == null ? 0 : options.scrollAmount();
 		super.init();
 		if (options != null) {
@@ -99,30 +100,42 @@ public abstract class BaseOptionsScreen extends Screen {
 
 		saveButton = addRenderableWidget(Button.builder(
 				Component.translatable("gui.jade.save_and_quit").withStyle(style -> style.withColor(0xFFB9F6CA)), w -> {
-					if (options.invalidEntry == null) {
-						options.save();
+					OptionValue<?> invalidEntry = options().invalidEntry;
+					if (invalidEntry == null) {
+						options().save();
 						saver.run();
 						minecraft.setScreen(parent);
 					} else {
-						changeFocus(ComponentPath.path(options.invalidEntry.getFirstWidget(), options.invalidEntry, options, this));
-						options.scrollToEntry(options.invalidEntry);
+						changeFocus(ComponentPath.path(
+								Objects.requireNonNull(invalidEntry.getFirstWidget()),
+								invalidEntry,
+								options(),
+								this));
+						options().scrollToEntry(invalidEntry);
 					}
 				}).bounds(width - 100, height - 25, 90, 20).build());
 		if (canceller != null) {
-			addRenderableWidget(Button.builder(
-					CommonComponents.GUI_CANCEL, w -> {
-						onClose();
-					}).bounds(saveButton.getX() - 95, height - 25, 90, 20).build());
+			addRenderableWidget(Button.builder(CommonComponents.GUI_CANCEL, w -> onClose())
+					.bounds(saveButton.getX() - 95, height - 25, 90, 20)
+					.build());
 		}
 
 		options.updateSaveState();
+	}
+
+	public OptionsList options() {
+		return Objects.requireNonNull(options);
+	}
+
+	public OptionsNav optionsNav() {
+		return Objects.requireNonNull(optionsNav);
 	}
 
 	@Override
 	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		super.render(guiGraphics, mouseX, mouseY, partialTicks);
 
-		OptionsList.Entry entry = options.isMouseOver(mouseX, mouseY) ? options.getEntryAt(mouseX, mouseY) : null;
+		OptionsList.Entry entry = options().isMouseOver(mouseX, mouseY) ? options().getEntryAt(mouseX, mouseY) : null;
 		if (entry != null) {
 			int valueX = entry.getTextX();
 			if (mouseX >= valueX && mouseX < valueX + entry.getTextWidth()) {
@@ -149,24 +162,24 @@ public abstract class BaseOptionsScreen extends Screen {
 	public void setTooltipForNextFrame(GuiGraphics guiGraphics, List<Component> descs, int mouseX, int mouseY, OptionsList.Entry entry) {
 		Font font = DisplayHelper.font();
 		List<FormattedCharSequence> list = descs.stream().flatMap($ -> font.split($, 255).stream()).toList();
-		guiGraphics.setTooltipForNextFrame(font, list, new BelowOrAboveListEntryTooltipPositioner(options, entry), mouseX, mouseY, false);
+		guiGraphics.setTooltipForNextFrame(font, list, new BelowOrAboveListEntryTooltipPositioner(options(), entry), mouseX, mouseY, false);
 	}
 
 	public static Component processBuiltInVariables(Component component) {
 		if (component.getString().contains("${SHOW_DETAILS}")) {
 			List<Component> objects = Lists.newArrayListWithExpectedSize(3);
 			objects.add(Component.translatable("key.jade.show_details"));
-			if (!JadeClient.showDetails.isUnbound()) {
-				objects.add(JadeClient.showDetails.getTranslatedKeyMessage().copy().withStyle(ChatFormatting.AQUA));
+			if (!JadeKeys.showDetails().isUnbound()) {
+				objects.add(JadeKeys.showDetails().getTranslatedKeyMessage().copy().withStyle(ChatFormatting.AQUA));
 			}
 			Component keyName = Component.translatable("config.jade.key_name_n_bind_" + (objects.size() - 1), objects.toArray());
 			component = replaceVariables(component, "${SHOW_DETAILS}", keyName);
 		}
 		if (component.getString().contains("${SHOW_OVERLAY}")) {
 			List<Component> objects = Lists.newArrayListWithExpectedSize(3);
-			objects.add(Component.translatable(JadeClient.showOverlay.getName()));
-			if (!JadeClient.showOverlay.isUnbound()) {
-				objects.add(JadeClient.showOverlay.getTranslatedKeyMessage().copy().withStyle(ChatFormatting.AQUA));
+			objects.add(Component.translatable(JadeKeys.showOverlay().getName()));
+			if (!JadeKeys.showOverlay().isUnbound()) {
+				objects.add(JadeKeys.showOverlay().getTranslatedKeyMessage().copy().withStyle(ChatFormatting.AQUA));
 			}
 			Component keyName = Component.translatable("config.jade.key_name_n_bind_" + (objects.size() - 1), objects.toArray());
 			component = replaceVariables(component, "${SHOW_OVERLAY}", keyName);
@@ -201,10 +214,10 @@ public abstract class BaseOptionsScreen extends Screen {
 
 	@Override
 	public boolean mouseScrolled(double mouseX, double mouseY, double deltaX, double deltaY) {
-		if (optionsNav.isMouseOver(mouseX, mouseY)) {
-			return optionsNav.mouseScrolled(mouseX, mouseY, deltaX, deltaY);
+		if (optionsNav().isMouseOver(mouseX, mouseY)) {
+			return optionsNav().mouseScrolled(mouseX, mouseY, deltaX, deltaY);
 		}
-		return options.mouseScrolled(mouseX, mouseY, deltaX, deltaY);
+		return options().mouseScrolled(mouseX, mouseY, deltaX, deltaY);
 	}
 
 	@Override
@@ -217,16 +230,12 @@ public abstract class BaseOptionsScreen extends Screen {
 
 	@Override
 	public void removed() {
-		options.removed();
+		options().removed();
 	}
 
 	@Override
 	public boolean shouldCloseOnEsc() {
-		return options.selectedKey == null;
-	}
-
-	public OptionsNav getOptionsNav() {
-		return optionsNav;
+		return options().selectedKey == null;
 	}
 
 	@Override

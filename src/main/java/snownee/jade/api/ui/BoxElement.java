@@ -1,6 +1,6 @@
 package snownee.jade.api.ui;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import snownee.jade.impl.Tooltip;
 import snownee.jade.impl.ui.StyledElement;

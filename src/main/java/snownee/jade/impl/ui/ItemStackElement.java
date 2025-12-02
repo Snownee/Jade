@@ -1,6 +1,6 @@
 package snownee.jade.impl.ui;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.Minecraft;
@@ -18,7 +18,7 @@ public class ItemStackElement extends Element {
 
 	private final ItemStack item;
 	private final float scale;
-	private final String text;
+	private final @Nullable String text;
 
 	private ItemStackElement(ItemStack item, float scale, @Nullable String text) {
 		this.item = item;

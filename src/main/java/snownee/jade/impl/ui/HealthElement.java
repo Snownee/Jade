@@ -1,5 +1,9 @@
 package snownee.jade.impl.ui;
 
+import java.util.Objects;
+
+import org.jspecify.annotations.Nullable;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
@@ -23,11 +27,11 @@ public class HealthElement extends Element {
 	private final float maxHealth;
 	private final float health;
 	private final float absorption;
-	private String text;
+	private @Nullable String text;
 	private int iconsPerLine = 1;
 	private int lineCount = 1;
 	private int iconCount = 1;
-	private HealthTrackInfo track;
+	private @Nullable HealthTrackInfo track;
 
 	public HealthElement(Gui.HeartType heartType, float maxHealth, float health, float absorption) {
 		this.heartType = heartType;
@@ -124,7 +128,7 @@ public class HealthElement extends Element {
 		}
 
 		if (showText()) {
-			helper.drawText(graphics, text, getX() + 10, getY() + 1, IThemeHelper.get().getNormalColor());
+			helper.drawText(graphics, Objects.requireNonNull(text), getX() + 10, getY() + 1, IThemeHelper.get().getNormalColor());
 		}
 	}
 

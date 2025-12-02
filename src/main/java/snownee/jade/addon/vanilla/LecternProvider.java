@@ -26,7 +26,7 @@ public class LecternProvider implements StreamServerDataProvider<BlockAccessor, 
 
 	@Override
 	public ItemStack streamData(BlockAccessor accessor) {
-		return ((LecternBlockEntity) accessor.getBlockEntity()).getBook();
+		return accessor.<LecternBlockEntity>typedBlockEntity().getBook();
 	}
 
 	@Override

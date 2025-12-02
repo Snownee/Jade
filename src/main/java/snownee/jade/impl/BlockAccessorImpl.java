@@ -1,10 +1,11 @@
 package snownee.jade.impl;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import com.google.common.base.Suppliers;
 
@@ -45,7 +46,13 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 	private ItemStack serversideRep;
 
 	private BlockAccessorImpl(Builder builder) {
-		super(builder.level, builder.player, builder.serverData, Suppliers.ofInstance(builder.hit), builder.connected, builder.showDetails);
+		super(
+				Objects.requireNonNull(builder.level),
+				Objects.requireNonNull(builder.player),
+				builder.serverData,
+				Suppliers.ofInstance(Objects.requireNonNull(builder.hit)),
+				builder.connected,
+				builder.showDetails);
 		blockState = builder.blockState;
 		blockEntity = builder.blockEntity;
 		serversideRep = builder.serversideRep;
@@ -98,7 +105,7 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 	}
 
 	@Override
-	public BlockEntity getBlockEntity() {
+	public @Nullable BlockEntity getBlockEntity() {
 		return blockEntity == null ? null : blockEntity.get();
 	}
 
@@ -149,14 +156,14 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 
 	public static class Builder implements BlockAccessor.Builder {
 
-		private Level level;
-		private Player player;
-		private CompoundTag serverData;
+		private @Nullable Level level;
+		private @Nullable Player player;
+		private @Nullable CompoundTag serverData;
 		private boolean connected;
 		private boolean showDetails;
-		private BlockHitResult hit;
+		private @Nullable BlockHitResult hit;
 		private BlockState blockState = Blocks.AIR.defaultBlockState();
-		private Supplier<BlockEntity> blockEntity;
+		private @Nullable Supplier<@Nullable BlockEntity> blockEntity;
 		private ItemStack serversideRep = ItemStack.EMPTY;
 		private boolean verify;
 
@@ -173,7 +180,7 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 		}
 
 		@Override
-		public Builder serverData(CompoundTag serverData) {
+		public Builder serverData(@Nullable CompoundTag serverData) {
 			this.serverData = serverData;
 			return this;
 		}
@@ -203,7 +210,7 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 		}
 
 		@Override
-		public Builder blockEntity(Supplier<BlockEntity> blockEntity) {
+		public Builder blockEntity(@Nullable Supplier<BlockEntity> blockEntity) {
 			this.blockEntity = blockEntity;
 			return this;
 		}

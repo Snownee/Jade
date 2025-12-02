@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import com.google.common.collect.Streams;
 
@@ -27,11 +27,10 @@ public interface IHierarchyLookup<T extends IJadeProvider> {
 
 	void idMapped();
 
-	@Nullable
 	IdMapper<T> idMapper();
 
 	default List<Identifier> mappedIds() {
-		return Streams.stream(Objects.requireNonNull(idMapper()))
+		return Streams.stream(idMapper())
 				.map(IJadeProvider::getUid)
 				.toList();
 	}
@@ -40,7 +39,7 @@ public interface IHierarchyLookup<T extends IJadeProvider> {
 
 	boolean isClassAcceptable(Class<?> clazz);
 
-	default List<T> get(Object obj) {
+	default List<T> get(@Nullable Object obj) {
 		if (obj == null) {
 			return List.of();
 		}
@@ -51,7 +50,7 @@ public interface IHierarchyLookup<T extends IJadeProvider> {
 
 	void keyed();
 
-	T byKey(Identifier key);
+	@Nullable T byKey(Identifier key);
 
 	boolean isEmpty();
 
@@ -63,10 +62,7 @@ public interface IHierarchyLookup<T extends IJadeProvider> {
 
 	default IdMapper<T> createIdMapper() {
 		List<T> list = entries().flatMap(entry -> entry.getValue().stream()).toList();
-		IdMapper<T> idMapper = idMapper();
-		if (idMapper == null) {
-			idMapper = new IdMapper<>(list.size());
-		}
+		IdMapper<T> idMapper = new IdMapper<>(list.size());
 		for (T provider : list) {
 			if (idMapper.getId(provider) == IdMap.DEFAULT) {
 				idMapper.add(provider);

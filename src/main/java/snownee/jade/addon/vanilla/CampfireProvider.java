@@ -3,7 +3,7 @@ package snownee.jade.addon.vanilla;
 import java.util.List;
 import java.util.Optional;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
@@ -61,9 +61,8 @@ public class CampfireProvider implements IServerExtensionProvider<ItemStack>, IC
 				}
 				stack = stack.copy();
 				int time = campfire.cookingTime[i] - campfire.cookingProgress[i];
-				CustomData customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).update(tag -> {
-					tag.putInt("jade:cooking", time);
-				});
+				CustomData customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
+						.update(tag -> tag.putInt("jade:cooking", time));
 				stack.set(DataComponents.CUSTOM_DATA, customData);
 				list.add(stack);
 			}

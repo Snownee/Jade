@@ -1,6 +1,6 @@
 package snownee.jade.gui.config;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
 
@@ -17,7 +17,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 
 public class NotUglyEditBox extends EditBox {
-	public Integer fixedTextX, fixedTextY, fixedInnerWidth;
+	public @Nullable Integer fixedTextX, fixedTextY, fixedInnerWidth;
 	public WidgetSprites background = EditBox.SPRITES;
 	public BackgroundMode backgroundMode = BackgroundMode.VISIBLE;
 	public boolean alwaysRenderCross;

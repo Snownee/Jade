@@ -2,7 +2,7 @@ package snownee.jade.api.ui;
 
 import java.util.Optional;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import com.google.common.base.MoreObjects;
 import com.mojang.serialization.Codec;
@@ -19,7 +19,7 @@ import snownee.jade.impl.ui.StyledElement;
 import snownee.jade.util.JadeCodecs;
 
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-public class BoxStyle implements Cloneable {
+public class BoxStyle {
 	private static final int[] DEFAULT_PADDING = new int[]{3, 3, 3, 3};
 	public static final Codec<BoxStyle> CODEC = RecordCodecBuilder.create(i -> i.group(
 					JadeCodecs.floatArrayCodec(4, Codec.FLOAT)
@@ -35,8 +35,8 @@ public class BoxStyle implements Cloneable {
 	private static final BoxStyle TRANSPARENT = sprite(null, null, 0);
 	public static final BoxStyle DEFAULT_NESTED_BOX = sprite(JadeIds.JADE("nested_box"), null);
 	public static final BoxStyle DEFAULT_VIEW_GROUP = sprite(JadeIds.JADE("view_group"), new int[]{2, 2, 2, 2}, 0);
-	public final float[] boxProgressOffset;
-	public final int[] padding;
+	public final float @Nullable [] boxProgressOffset;
+	public final int @Nullable [] padding;
 	public int borderWidth;
 	public ColorPalette boxProgressColors;
 	@Nullable
@@ -74,7 +74,7 @@ public class BoxStyle implements Cloneable {
 		return BoxStyle.TRANSPARENT;
 	}
 
-	public static BoxStyle simple(@Nullable Identifier sprite, @Nullable int[] padding) {
+	public static BoxStyle simple(@Nullable Identifier sprite, int @Nullable [] padding) {
 		return new BoxStyle(
 				Optional.empty(),
 				ColorPalette.DEFAULT,
@@ -85,11 +85,11 @@ public class BoxStyle implements Cloneable {
 				false);
 	}
 
-	public static BoxStyle tooltip(@Nullable Identifier sprite, @Nullable int[] padding) {
+	public static BoxStyle tooltip(@Nullable Identifier sprite, int @Nullable [] padding) {
 		return tooltip(sprite, padding, 1);
 	}
 
-	public static BoxStyle tooltip(@Nullable Identifier sprite, @Nullable int[] padding, int borderWidth) {
+	public static BoxStyle tooltip(@Nullable Identifier sprite, int @Nullable [] padding, int borderWidth) {
 		return new BoxStyle(
 				Optional.empty(),
 				ColorPalette.DEFAULT,
@@ -100,11 +100,11 @@ public class BoxStyle implements Cloneable {
 				true);
 	}
 
-	public static BoxStyle sprite(@Nullable Identifier sprite, @Nullable int[] padding) {
+	public static BoxStyle sprite(@Nullable Identifier sprite, int @Nullable [] padding) {
 		return sprite(sprite, padding, 1);
 	}
 
-	public static BoxStyle sprite(@Nullable Identifier sprite, @Nullable int[] padding, int borderWidth) {
+	public static BoxStyle sprite(@Nullable Identifier sprite, int @Nullable [] padding, int borderWidth) {
 		return new BoxStyle(
 				Optional.empty(),
 				ColorPalette.DEFAULT,
@@ -173,8 +173,7 @@ public class BoxStyle implements Cloneable {
 		return borderWidth;
 	}
 
-	@Override
-	public BoxStyle clone() {
+	public BoxStyle copy() {
 		return new BoxStyle(
 				JadeCodecs.nullableClone(boxProgressOffset),
 				boxProgressColors,

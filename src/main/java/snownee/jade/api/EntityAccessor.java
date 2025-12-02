@@ -3,6 +3,7 @@ package snownee.jade.api;
 import java.util.function.Supplier;
 
 import org.jetbrains.annotations.ApiStatus.NonExtendable;
+import org.jspecify.annotations.Nullable;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
@@ -33,7 +34,7 @@ public interface EntityAccessor extends Accessor<EntityHitResult> {
 
 		Builder player(Player player);
 
-		Builder serverData(CompoundTag serverData);
+		Builder serverData(@Nullable CompoundTag serverData);
 
 		Builder serverConnected(boolean connected);
 

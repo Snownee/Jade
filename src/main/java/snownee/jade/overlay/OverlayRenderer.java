@@ -2,6 +2,7 @@ package snownee.jade.overlay;
 
 import org.joml.Matrix3x2fStack;
 import org.joml.Vector2i;
+import org.jspecify.annotations.Nullable;
 
 import com.mojang.blaze3d.platform.Window;
 
@@ -15,6 +16,7 @@ import snownee.jade.Jade;
 import snownee.jade.JadeClient;
 import snownee.jade.JadeInternals;
 import snownee.jade.api.JadeIds;
+import snownee.jade.api.JadeKeys;
 import snownee.jade.api.callback.JadeBeforeRenderCallback;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.IWailaConfig.BossBarOverlapMode;
@@ -39,7 +41,7 @@ public class OverlayRenderer {
 	public static final TooltipAnimation animation = new TooltipAnimation();
 	public static float ticks;
 	public static boolean shown;
-	private static BoxElementImpl lingerTooltip;
+	private static @Nullable BoxElementImpl lingerTooltip;
 	private static float disappearTicks;
 
 	public static boolean shouldShow() {
@@ -52,7 +54,7 @@ public class OverlayRenderer {
 			return false;
 		}
 
-		if (general.getDisplayMode() == IWailaConfig.DisplayMode.HOLD_KEY && !JadeClient.showOverlay.isDown()) {
+		if (general.getDisplayMode() == IWailaConfig.DisplayMode.HOLD_KEY && !JadeKeys.showOverlay().isDown()) {
 			return false;
 		}
 

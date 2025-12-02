@@ -1,10 +1,11 @@
 package snownee.jade.impl;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.Nullable;
 
 import com.google.common.base.Suppliers;
 
@@ -36,8 +37,14 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 	private final Supplier<Entity> entity;
 
 	public EntityAccessorImpl(Builder builder) {
-		super(builder.level, builder.player, builder.serverData, builder.hit, builder.connected, builder.showDetails);
-		entity = builder.entity;
+		super(
+				Objects.requireNonNull(builder.level),
+				Objects.requireNonNull(builder.player),
+				builder.serverData,
+				Objects.requireNonNull(builder.hit),
+				builder.connected,
+				builder.showDetails);
+		entity = Objects.requireNonNull(builder.entity);
 	}
 
 	public static void handleRequest(RequestEntityPacket message, ServerPayloadContext context, Consumer<CompoundTag> responseSender) {
@@ -49,7 +56,7 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 			}
 			Entity entity = accessor.getEntity();
 			double maxDistance = Mth.square(player.entityInteractionRange() + 21);
-			if (entity == null || player.distanceToSqr(entity) > maxDistance) {
+			if (player.distanceToSqr(entity) > maxDistance) {
 				return;
 			}
 			List<IServerDataProvider<EntityAccessor>> providers = WailaCommonRegistration.instance().entityDataProvidersOf(entity);
@@ -88,7 +95,6 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 		return CommonProxy.getEntityPickedResult(entity.get(), getPlayer(), getHitResult());
 	}
 
-	@NotNull
 	@Override
 	public Object getTarget() {
 		return getEntity();
@@ -105,12 +111,12 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 	public static class Builder implements EntityAccessor.Builder {
 
 		public boolean showDetails;
-		private Level level;
-		private Player player;
-		private CompoundTag serverData;
+		private @Nullable Level level;
+		private @Nullable Player player;
+		private @Nullable CompoundTag serverData;
 		private boolean connected;
-		private Supplier<EntityHitResult> hit;
-		private Supplier<Entity> entity;
+		private @Nullable Supplier<EntityHitResult> hit;
+		private @Nullable Supplier<Entity> entity;
 		private boolean verify;
 
 		@Override
@@ -126,7 +132,7 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 		}
 
 		@Override
-		public Builder serverData(CompoundTag serverData) {
+		public Builder serverData(@Nullable CompoundTag serverData) {
 			this.serverData = serverData;
 			return this;
 		}
@@ -208,14 +214,18 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 					accessor.getServerData());
 		}
 
+		@Nullable
 		public EntityAccessor unpack(ServerPlayer player) {
-			Supplier<Entity> entity = Suppliers.memoize(() -> CommonProxy.getPartEntity(player.level().getEntity(id), partIndex));
+			Entity entity = CommonProxy.getPartEntity(player.level().getEntity(id), partIndex);
+			if (entity == null) {
+				return null;
+			}
 			return new EntityAccessorImpl.Builder()
 					.level(player.level())
 					.player(player)
 					.showDetails(showDetails)
-					.entity(entity)
-					.hit(Suppliers.memoize(() -> new EntityHitResult(entity.get(), hitVec)))
+					.entity(() -> entity)
+					.hit(Suppliers.memoize(() -> new EntityHitResult(entity, hitVec)))
 					.serverData(data)
 					.build();
 		}

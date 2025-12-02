@@ -12,7 +12,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
@@ -90,7 +90,7 @@ public class PriorityStore<K, V> {
 			}
 			new Thread(() -> {
 				boolean changed = false;
-				TreeMap<K, OptionalInt> newMap = Maps.newTreeMap(Comparator.comparing(Object::toString));
+				TreeMap<K, OptionalInt> newMap = Maps.newTreeMap(Comparator.comparing(Objects::toString));
 				for (K id : priorities.keySet()) {
 					if (!map.containsKey(id)) {
 						newMap.put(id, OptionalInt.empty());

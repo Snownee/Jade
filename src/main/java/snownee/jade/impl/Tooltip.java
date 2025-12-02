@@ -6,8 +6,7 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
@@ -28,7 +27,7 @@ import snownee.jade.api.ui.TextElement;
 import snownee.jade.impl.ui.JadeUIInternal;
 
 public class Tooltip implements ITooltip {
-	private static Identifier getTag(LayoutElement element) {
+	private static @Nullable Identifier getTag(LayoutElement element) {
 		if (element instanceof Element taggable) {
 			return taggable.getTag();
 		}
@@ -192,7 +191,7 @@ public class Tooltip implements ITooltip {
 			}
 
 			@Override
-			public @NotNull NarrationElementOutput nest() {
+			public NarrationElementOutput nest() {
 				return this;
 			}
 		};

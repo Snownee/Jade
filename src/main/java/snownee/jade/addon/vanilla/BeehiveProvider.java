@@ -22,7 +22,7 @@ public class BeehiveProvider implements StreamServerDataProvider<BlockAccessor, 
 
 	@Override
 	public Byte streamData(BlockAccessor accessor) {
-		BeehiveBlockEntity beehive = (BeehiveBlockEntity) accessor.getBlockEntity();
+		BeehiveBlockEntity beehive = accessor.typedBlockEntity();
 		int bees = beehive.getOccupantCount();
 		return (byte) (beehive.isFull() ? bees : -bees);
 	}

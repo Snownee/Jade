@@ -22,7 +22,7 @@ public interface SneakyDetails {
 		if ("simple".equals(s)) {
 			return Simple.CODEC;
 		}
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	void render(GuiGraphics graphics, float partialTicks, BoxElement element);

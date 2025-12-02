@@ -8,7 +8,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -34,7 +34,7 @@ public class JsonConfig<T> {
 	private final Codec<T> codec;
 	private final CachedSupplier<T> configGetter;
 
-	public JsonConfig(String fileName, Codec<T> codec, @Nullable Consumer<T> onUpdate, Supplier<T> defaultFactory) {
+	public JsonConfig(String fileName, Codec<@Nullable T> codec, @Nullable Consumer<T> onUpdate, Supplier<T> defaultFactory) {
 		this.file = new File(CommonProxy.getConfigDirectory(), fileName + (fileName.endsWith(".json") ? "" : ".json"));
 		this.codec = codec;
 		this.configGetter = new CachedSupplier<>(() -> {
@@ -118,8 +118,8 @@ public class JsonConfig<T> {
 	static class CachedSupplier<T> {
 
 		private final Supplier<T> supplier;
-		private T value;
-		private Consumer<T> onUpdate;
+		private @Nullable T value;
+		private @Nullable Consumer<T> onUpdate;
 
 		public CachedSupplier(Supplier<T> supplier) {
 			this.supplier = supplier;

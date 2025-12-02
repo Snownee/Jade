@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import com.google.common.base.Preconditions;
 import com.google.common.cache.Cache;
@@ -34,10 +34,9 @@ public class HierarchyLookup<T extends IJadeProvider> implements IHierarchyLooku
 	private final Cache<Class<?>, List<T>> resultCache = CacheBuilder.newBuilder().build();
 	private final boolean singleton;
 	protected boolean idMapped;
-	@Nullable
-	protected IdMapper<T> idMapper;
+	protected @Nullable IdMapper<T> idMapper;
 	private ListMultimap<Class<?>, T> objects = ArrayListMultimap.create();
-	protected Map<Identifier, T> byKey;
+	protected @Nullable Map<Identifier, T> byKey;
 
 	public HierarchyLookup(Class<?> baseClass) {
 		this(baseClass, false);
@@ -55,9 +54,8 @@ public class HierarchyLookup<T extends IJadeProvider> implements IHierarchyLooku
 	}
 
 	@Override
-	@Nullable
 	public IdMapper<T> idMapper() {
-		return idMapper;
+		return Objects.requireNonNull(idMapper);
 	}
 
 	@Override
@@ -108,8 +106,8 @@ public class HierarchyLookup<T extends IJadeProvider> implements IHierarchyLooku
 	}
 
 	@Override
-	public T byKey(Identifier key) {
-		return byKey.get(key);
+	public @Nullable T byKey(Identifier key) {
+		return Objects.requireNonNull(byKey).get(key);
 	}
 
 	private void getInternal(Class<?> clazz, List<T> list) {

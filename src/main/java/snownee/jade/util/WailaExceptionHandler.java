@@ -9,7 +9,7 @@ import java.util.function.Consumer;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import com.google.common.collect.Sets;
 
@@ -56,7 +56,7 @@ public class WailaExceptionHandler {
 		}
 	}
 
-	private static void writeLog(Throwable e, IJadeProvider provider) {
+	private static void writeLog(Throwable e, @Nullable IJadeProvider provider) {
 		Jade.LOGGER.error("Caught unhandled exception : [{}] {}", provider, e);
 		Jade.LOGGER.error("See JadeErrorOutput.txt for more information");
 		Jade.LOGGER.error("", e);

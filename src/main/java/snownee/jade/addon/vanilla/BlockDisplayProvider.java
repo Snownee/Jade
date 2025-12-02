@@ -1,6 +1,6 @@
 package snownee.jade.addon.vanilla;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Display.BlockDisplay;
@@ -21,7 +21,7 @@ public class BlockDisplayProvider implements IEntityComponentProvider {
 	public static final BlockDisplayProvider INSTANCE = new BlockDisplayProvider();
 
 	@Override
-	public @Nullable Element getIcon(EntityAccessor accessor, IPluginConfig config, Element currentIcon) {
+	public @Nullable Element getIcon(EntityAccessor accessor, IPluginConfig config, @Nullable Element currentIcon) {
 		BlockDisplay itemDisplay = (BlockDisplay) accessor.getEntity();
 		Block block = itemDisplay.getBlockState().getBlock();
 		if (block.asItem() == Items.AIR) {

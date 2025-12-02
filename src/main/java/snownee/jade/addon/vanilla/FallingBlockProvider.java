@@ -1,6 +1,6 @@
 package snownee.jade.addon.vanilla;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.item.FallingBlockEntity;
@@ -22,7 +22,7 @@ public class FallingBlockProvider implements IEntityComponentProvider {
 	}
 
 	@Override
-	public @Nullable Element getIcon(EntityAccessor accessor, IPluginConfig config, Element currentIcon) {
+	public @Nullable Element getIcon(EntityAccessor accessor, IPluginConfig config, @Nullable Element currentIcon) {
 		FallingBlockEntity entity = (FallingBlockEntity) accessor.getEntity();
 		ItemStack stack = new ItemStack(entity.getBlockState().getBlock());
 		if (stack.isEmpty()) {

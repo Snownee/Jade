@@ -1,10 +1,11 @@
 package snownee.jade.impl.config.entry;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import com.google.common.collect.Lists;
 
@@ -17,8 +18,7 @@ public abstract class ConfigEntry<T> {
 
 	protected final Identifier id;
 	private final T defaultValue;
-	@Nullable
-	private T syncedValue;
+	private @Nullable T syncedValue;
 	private List<Consumer<Identifier>> listeners = List.of();
 
 	public ConfigEntry(Identifier id, T defaultValue) {
@@ -34,9 +34,8 @@ public abstract class ConfigEntry<T> {
 		return defaultValue;
 	}
 
-	@Nullable
 	public T syncedValue() {
-		return syncedValue;
+		return Objects.requireNonNull(syncedValue);
 	}
 
 	public boolean isSynced() {

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.apache.commons.lang3.mutable.MutableInt;
+import org.jspecify.annotations.Nullable;
 
 import com.google.common.collect.Lists;
 
@@ -40,7 +41,7 @@ import snownee.jade.util.SmoothChasingValue;
 public class HomeConfigScreen extends Screen {
 
 	private final RandomSource random = RandomSource.create(42);
-	private final Screen parent;
+	private final @Nullable Screen parent;
 	private final SmoothChasingValue titleY;
 	private final List<TextParticle> particles = Lists.newArrayList();
 	private final List<TextParticle> pendingParticles = Lists.newArrayList();
@@ -52,7 +53,7 @@ public class HomeConfigScreen extends Screen {
 	private int lastMouseX;
 	private int lastMouseY;
 
-	public HomeConfigScreen(Screen parent) {
+	public HomeConfigScreen(@Nullable Screen parent) {
 		super(Component.translatable("gui.jade.configuration"));
 		this.parent = parent;
 		titleY = new SmoothChasingValue().start(8).target(32).withSpeed(0.1F);
@@ -369,7 +370,7 @@ public class HomeConfigScreen extends Screen {
 				text, Style.EMPTY, (index, style, codePoint) -> {
 					String s = Character.toString(codePoint);
 					int width = font.width(s);
-					int curXVal = curX.getValue();
+					int curXVal = curX.intValue();
 					curX.add(width);
 					curXVal += width / 2;
 					float dist = Math.abs(curXVal - glint1);

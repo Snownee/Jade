@@ -2,6 +2,8 @@ package snownee.jade.impl.config;
 
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -477,7 +479,7 @@ public class WailaConfig implements IWailaConfig {
 		private float overlayAnchorY;
 		private float autoScaleThreshold;
 		private float alpha;
-		private transient Theme activeThemeInstance;
+		private transient @Nullable Theme activeThemeInstance;
 		private IconMode iconMode;
 		private boolean animation;
 		private float disappearingDelay;
@@ -588,7 +590,7 @@ public class WailaConfig implements IWailaConfig {
 				Jade.LOGGER.error("Failed to apply theme", e);
 				activeThemeInstance = IThemeHelper.get().getTheme(JadeIds.DEFAULT_THEME);
 			}
-			activeTheme = activeThemeInstance.id;
+			activeTheme = activeThemeInstance.fullId();
 			((ThemeHelper) IThemeHelper.get()).setTheme(activeThemeInstance);
 		}
 

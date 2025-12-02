@@ -2,7 +2,7 @@ package snownee.jade.impl.ui;
 
 import java.util.Objects;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.Minecraft;

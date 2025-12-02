@@ -1,6 +1,8 @@
 package snownee.jade.api.view;
 
-import org.jetbrains.annotations.Nullable;
+import java.util.Objects;
+
+import org.jspecify.annotations.Nullable;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.chat.Component;
@@ -13,17 +15,21 @@ public class EnergyView {
 	public String current;
 	public String max;
 	public float ratio;
-	@Nullable
-	public Component overrideText;
+	public @Nullable Component overrideText;
+
+	public EnergyView(String current, String max) {
+		this.current = Objects.requireNonNull(current);
+		this.max = Objects.requireNonNull(max);
+	}
 
 	@Nullable
 	public static EnergyView read(Data data, String unit) {
 		if (data.capacity <= 0) {
 			return null;
 		}
-		EnergyView energyView = new EnergyView();
-		energyView.current = IDisplayHelper.get().humanReadableNumber(data.current, unit, false);
-		energyView.max = IDisplayHelper.get().humanReadableNumber(data.capacity, unit, false);
+		String current = IDisplayHelper.get().humanReadableNumber(data.current, unit, false);
+		String max = IDisplayHelper.get().humanReadableNumber(data.capacity, unit, false);
+		EnergyView energyView = new EnergyView(current, max);
 		energyView.ratio = (float) data.current / data.capacity;
 		return energyView;
 	}

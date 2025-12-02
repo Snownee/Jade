@@ -5,7 +5,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import io.netty.buffer.Unpooled;
 import net.minecraft.nbt.ByteArrayTag;
@@ -31,7 +31,7 @@ public abstract class AccessorImpl<T extends HitResult> implements Accessor<T> {
 	private final boolean showDetails;
 	private CompoundTag serverData;
 	protected boolean verify;
-	private RegistryFriendlyByteBuf buffer;
+	private @Nullable RegistryFriendlyByteBuf buffer;
 
 	public AccessorImpl(
 			Level level,
@@ -91,7 +91,9 @@ public abstract class AccessorImpl<T extends HitResult> implements Accessor<T> {
 		} catch (Exception e) {
 			return Optional.empty();
 		} finally {
-			buffer.clear();
+			if (buffer != null) {
+				buffer.clear();
+			}
 		}
 	}
 

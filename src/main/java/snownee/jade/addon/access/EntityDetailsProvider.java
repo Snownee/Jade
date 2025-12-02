@@ -31,29 +31,40 @@ public class EntityDetailsProvider implements IEntityComponentProvider {
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		Entity entity = accessor.getEntity();
 		String objectName = tooltip.getString(JadeIds.CORE_OBJECT_NAME);
-		if (entity instanceof Creeper creeper && creeper.isPowered()) {
-			AccessibilityPlugin.replaceTitle(tooltip, objectName, "creeper.powered");
-		} else if (entity instanceof WitherBoss witherBoss && witherBoss.isPowered()) {
-			AccessibilityPlugin.replaceTitle(tooltip, objectName, "wither.powered");
-		} else if (entity instanceof ZombieVillager zombieVillager && zombieVillager.isConverting()) {
-			AccessibilityPlugin.replaceTitle(tooltip, objectName, "zombie_villager.curing");
-		} else if (entity instanceof Goat goat && !goat.hasLeftHorn() && !goat.hasRightHorn()) {
-			AccessibilityPlugin.replaceTitle(tooltip, objectName, "goat.hornless");
-		} else if (entity instanceof Bee bee) {
-			if (bee.hasNectar()) {
-				AccessibilityPlugin.replaceTitle(tooltip, objectName, "bee.nectar");
+		switch (entity) {
+			case Creeper creeper when creeper.isPowered() -> AccessibilityPlugin.replaceTitle(tooltip, objectName, "creeper.powered");
+			case WitherBoss witherBoss when witherBoss.isPowered() -> AccessibilityPlugin.replaceTitle(
+					tooltip,
+					objectName,
+					"wither.powered");
+			case ZombieVillager zombieVillager when zombieVillager.isConverting() -> AccessibilityPlugin.replaceTitle(
+					tooltip,
+					objectName,
+					"zombie_villager.curing");
+			case Goat goat when !goat.hasLeftHorn() && !goat.hasRightHorn() -> AccessibilityPlugin.replaceTitle(
+					tooltip,
+					objectName,
+					"goat.hornless");
+			case Bee bee -> {
+				if (bee.hasNectar()) {
+					AccessibilityPlugin.replaceTitle(tooltip, objectName, "bee.nectar");
+				}
+				if (bee.isAngry()) {
+					AccessibilityPlugin.replaceTitle(tooltip, objectName, "entity.angry");
+				}
 			}
-			if (bee.isAngry()) {
-				AccessibilityPlugin.replaceTitle(tooltip, objectName, "entity.angry");
+			case Slime slime -> {
+				String message = tooltip.getString(JadeIds.CORE_OBJECT_NAME);
+				Component title = IThemeHelper.get().title(JadeClient.format("jade.access.slime.size", message, slime.getSize()));
+				tooltip.replace(JadeIds.CORE_OBJECT_NAME, title);
 			}
-		} else if (entity instanceof Slime slime) {
-			String message = tooltip.getString(JadeIds.CORE_OBJECT_NAME);
-			Component title = IThemeHelper.get().title(JadeClient.format("jade.access.slime.size", message, slime.getSize()));
-			tooltip.replace(JadeIds.CORE_OBJECT_NAME, title);
-		} else if (entity instanceof CopperGolem golem) {
-			WeatheringCopper.WeatherState state = golem.getWeatherState();
-			if (state != WeatheringCopper.WeatherState.UNAFFECTED) {
-				AccessibilityPlugin.replaceTitle(tooltip, objectName, "entity." + state.getSerializedName());
+			case CopperGolem golem -> {
+				WeatheringCopper.WeatherState state = golem.getWeatherState();
+				if (state != WeatheringCopper.WeatherState.UNAFFECTED) {
+					AccessibilityPlugin.replaceTitle(tooltip, objectName, "entity." + state.getSerializedName());
+				}
+			}
+			default -> {
 			}
 		}
 		if (entity instanceof LivingEntity livingEntity && livingEntity.isBaby()) {

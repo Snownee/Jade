@@ -72,7 +72,7 @@ public class PinScreen extends Screen {
 	public void mouseMoved(double x, double y) {
 		BoxElementImpl root = JadeClient.tickHandler().rootElement;
 		if (root != null) {
-			OverlayRenderer.animation.mapMousePosition(
+			OverlayRenderer.animation.<Void>mapMousePosition(
 					x, y, (x0, y0) -> {
 						root.mouseMoved(x0, y0);
 						return null;

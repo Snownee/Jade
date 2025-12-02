@@ -3,7 +3,7 @@ package snownee.jade.impl.template;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import net.minecraft.resources.Identifier;
 import snownee.jade.api.Accessor;
@@ -20,7 +20,7 @@ public abstract class TemplateComponentProvider<T extends Accessor<?>> implement
 	private final boolean required;
 	private final boolean enabledByDefault;
 	private final int defaultPriority;
-	private BiFunction<T, Element, Element> iconFunction = (accessor, currentIcon) -> null;
+	private BiFunction<T, @Nullable Element, @Nullable Element> iconFunction = (accessor, currentIcon) -> null;
 	private BiConsumer<ITooltip, T> tooltipFunction = (tooltip, accessor) -> {};
 
 	protected TemplateComponentProvider(Identifier uid, boolean required, boolean enabledByDefault, int defaultPriority) {
@@ -51,7 +51,7 @@ public abstract class TemplateComponentProvider<T extends Accessor<?>> implement
 	}
 
 	@Override
-	public @Nullable Element getIcon(T accessor, IPluginConfig config, Element currentIcon) {
+	public @Nullable Element getIcon(T accessor, IPluginConfig config, @Nullable Element currentIcon) {
 		return iconFunction.apply(accessor, currentIcon);
 	}
 
@@ -60,7 +60,7 @@ public abstract class TemplateComponentProvider<T extends Accessor<?>> implement
 		tooltipFunction.accept(tooltip, accessor);
 	}
 
-	public void setIconFunction(BiFunction<T, Element, Element> iconFunction) {
+	public void setIconFunction(BiFunction<T, @Nullable Element, @Nullable Element> iconFunction) {
 		this.iconFunction = iconFunction;
 	}
 

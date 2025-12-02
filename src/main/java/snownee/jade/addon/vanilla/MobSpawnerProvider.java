@@ -1,6 +1,6 @@
 package snownee.jade.addon.vanilla;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -9,6 +9,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.vehicle.minecart.MinecartSpawner;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
 import net.minecraft.world.level.block.entity.TrialSpawnerBlockEntity;
 import net.minecraft.world.level.block.entity.trialspawner.TrialSpawnerStateData;
@@ -33,9 +34,10 @@ public abstract class MobSpawnerProvider implements IToggleableProvider {
 			MutableComponent name = accessor.getBlock().getName();
 			Level level = accessor.getLevel();
 			BlockPos pos = accessor.getPosition();
-			if (accessor.getBlockEntity() instanceof SpawnerBlockEntity spawner) {
+			BlockEntity blockEntity = accessor.getBlockEntity();
+			if (blockEntity instanceof SpawnerBlockEntity spawner) {
 				appendTooltip(tooltip, spawner.getSpawner().getOrCreateDisplayEntity(level, pos), name);
-			} else if (accessor.getBlockEntity() instanceof TrialSpawnerBlockEntity spawner) {
+			} else if (blockEntity instanceof TrialSpawnerBlockEntity spawner) {
 				TrialSpawnerStateData data = spawner.getTrialSpawner().getStateData();
 				appendTooltip(tooltip, data.getOrCreateDisplayEntity(spawner.getTrialSpawner(), level, spawner.getState()), name);
 			}

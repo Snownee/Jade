@@ -1,6 +1,7 @@
 package snownee.jade.api;
 
 import org.jetbrains.annotations.ApiStatus.NonExtendable;
+import org.jspecify.annotations.Nullable;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
@@ -20,7 +21,7 @@ public interface EmptyAccessor extends Accessor<BlockHitResult> {
 
 		Builder player(Player player);
 
-		Builder serverData(CompoundTag serverData);
+		Builder serverData(@Nullable CompoundTag serverData);
 
 		Builder serverConnected(boolean connected);
 

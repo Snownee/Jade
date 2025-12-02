@@ -5,7 +5,7 @@ import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -32,7 +32,7 @@ public class ClientViewGroup<T> {
 
 	public static <IN, OUT> List<ClientViewGroup<OUT>> map(
 			List<ViewGroup<IN>> groups,
-			Function<IN, OUT> itemFactory,
+			Function<IN, @Nullable OUT> itemFactory,
 			@Nullable BiConsumer<ViewGroup<IN>, ClientViewGroup<OUT>> clientGroupDecorator) {
 		return groups.stream().map($ -> {
 			var group = new ClientViewGroup<>($.views.stream().map(itemFactory).filter(Objects::nonNull).toList());
@@ -58,7 +58,7 @@ public class ClientViewGroup<T> {
 			ITooltip theTooltip = renderGroup ? JadeUI.tooltip() : tooltip;
 			consumer.accept(theTooltip, group);
 			if (renderGroup) {
-				BoxStyle boxStyle = BoxStyle.viewGroup().clone();
+				BoxStyle boxStyle = BoxStyle.viewGroup().copy();
 				BoxElement box = JadeUI.box(theTooltip, boxStyle);
 //				box.setBoxProgress(group.messageType, group.boxProgress); //TODO
 //				if (group.title != null) {

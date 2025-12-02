@@ -3,7 +3,7 @@ package snownee.jade.api;
 import java.util.List;
 import java.util.function.Function;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.ui.Element;

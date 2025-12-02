@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
@@ -40,7 +40,7 @@ import snownee.jade.util.CommonProxy;
 
 public class WailaCommonRegistration implements IWailaCommonRegistration {
 
-	private static volatile WailaCommonRegistration INSTANCE = new WailaCommonRegistration();
+	private static WailaCommonRegistration INSTANCE = new WailaCommonRegistration();
 
 	public final PairHierarchyLookup<IServerDataProvider<BlockAccessor>> blockDataProviders;
 	public final HierarchyLookup<IServerDataProvider<EntityAccessor>> entityDataProviders;
@@ -100,21 +100,11 @@ public class WailaCommonRegistration implements IWailaCommonRegistration {
 	}
 
 	public static WailaCommonRegistration instance() {
-		if (INSTANCE == null) {
-			Jade.LOGGER.error("WailaCommonRegistration is not initialized yet.");
-			synchronized (WailaCommonRegistration.class) {
-				if (INSTANCE == null) {
-					INSTANCE = new WailaCommonRegistration();
-				}
-			}
-		}
 		return INSTANCE;
 	}
 
 	public static void reset() {
-		synchronized (WailaCommonRegistration.class) {
-			INSTANCE = new WailaCommonRegistration();
-		}
+		INSTANCE = new WailaCommonRegistration();
 	}
 
 	@Override

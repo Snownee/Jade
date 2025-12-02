@@ -1,6 +1,6 @@
 package snownee.jade.api;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import net.minecraft.nbt.CompoundTag;
 import snownee.jade.api.config.IPluginConfig;
@@ -30,7 +30,7 @@ public interface IComponentProvider<T extends Accessor<?>> extends IToggleablePr
 	 * @param currentIcon Current icon to show
 	 * @return {@code null} if override is not required, an {@link Element} otherwise.
 	 */
-	default @Nullable Element getIcon(T accessor, IPluginConfig config, Element currentIcon) {
+	default @Nullable Element getIcon(T accessor, IPluginConfig config, @Nullable Element currentIcon) {
 		return null;
 	}
 

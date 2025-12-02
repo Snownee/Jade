@@ -3,7 +3,7 @@ package snownee.jade.api.ui;
 import java.util.List;
 import java.util.function.Supplier;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.Nullable;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentContents;
@@ -14,40 +14,39 @@ import net.minecraft.util.FormattedCharSequence;
 
 public class NarratableComponent implements Component {
 	private final Component component;
-	private final Supplier<String> narration;
+	private final @Nullable Supplier<String> narration;
 
 	public NarratableComponent(Component component) {
-		this.component = component;
-		this.narration = null;
+		this(component, null);
 	}
 
-	public NarratableComponent(Component component, Supplier<String> narration) {
+	public NarratableComponent(Component component, @Nullable Supplier<String> narration) {
 		this.component = component;
 		this.narration = narration;
 	}
 
 	@Override
-	public @NotNull Style getStyle() {
+	public Style getStyle() {
 		return component.getStyle();
 	}
 
 	@Override
-	public @NotNull ComponentContents getContents() {
+	public ComponentContents getContents() {
 		return component.getContents();
 	}
 
 	@Override
-	public @NotNull List<Component> getSiblings() {
+	public List<Component> getSiblings() {
 		return component.getSiblings();
 	}
 
 	@Override
-	public @NotNull FormattedCharSequence getVisualOrderText() {
+	public FormattedCharSequence getVisualOrderText() {
 		return component.getVisualOrderText();
 	}
 
 	@Override
-	public @NotNull String toString() {
+	public String toString() {
 		return component.getString();
 	}
 

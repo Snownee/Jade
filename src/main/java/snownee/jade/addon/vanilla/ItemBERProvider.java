@@ -1,6 +1,6 @@
 package snownee.jade.addon.vanilla;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ProblemReporter;
@@ -20,7 +20,7 @@ public class ItemBERProvider implements IBlockComponentProvider {
 	public static final ItemBERProvider INSTANCE = new ItemBERProvider();
 
 	@Override
-	public @Nullable Element getIcon(BlockAccessor accessor, IPluginConfig config, Element currentIcon) {
+	public @Nullable Element getIcon(BlockAccessor accessor, IPluginConfig config, @Nullable Element currentIcon) {
 		BlockEntity blockEntity = accessor.getBlockEntity();
 		if (blockEntity != null) {
 			ItemStack itemStack = accessor.getPickedResult();

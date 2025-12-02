@@ -1,6 +1,6 @@
 package snownee.jade.compat;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;

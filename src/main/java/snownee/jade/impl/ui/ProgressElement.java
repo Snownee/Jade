@@ -1,6 +1,8 @@
 package snownee.jade.impl.ui;
 
-import org.jetbrains.annotations.Nullable;
+import java.util.Objects;
+
+import org.jspecify.annotations.Nullable;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -25,7 +27,7 @@ import snownee.jade.track.ProgressTrackInfo;
 public class ProgressElement extends ResizeableElement implements StyledElement {
 	private static final SpriteElement DEFAULT_OVERLAY = new SpriteElement(JadeIds.JADE("progressbar"), 16, 16);
 	private final ProgressView view;
-	private ProgressTrackInfo track;
+	private @Nullable ProgressTrackInfo track;
 
 	public ProgressElement(ProgressView view) {
 		this.view = view;
@@ -103,7 +105,7 @@ public class ProgressElement extends ResizeableElement implements StyledElement 
 			DisplayHelper.INSTANCE.blitSprite(
 					graphics,
 					RenderPipelines.GUI_TEXTURED,
-					view.style.foreground(),
+					Objects.requireNonNull(view.style.foreground()),
 					freeX,
 					freeY,
 					(int) (freeWidth - start),
@@ -166,7 +168,7 @@ public class ProgressElement extends ResizeableElement implements StyledElement 
 	}
 
 	@Override
-	public Element getIcon() {
+	public @Nullable Element getIcon() {
 		return null;
 	}
 

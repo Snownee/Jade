@@ -9,8 +9,8 @@ import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.mutable.MutableFloat;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3x2f;
+import org.jspecify.annotations.Nullable;
 
 import com.google.common.base.Suppliers;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
@@ -49,7 +49,7 @@ public class DisplayHelper implements IDisplayHelper {
 	public static final DisplayHelper INSTANCE = new DisplayHelper();
 	//https://github.com/mezz/JustEnoughItems/blob/1.16/src/main/java/mezz/jei/plugins/vanilla/ingredients/fluid/FluidStackRenderer.java
 	private static final int MIN_FLUID_HEIGHT = 1; // ensure tiny amounts of fluid are still visible
-	private static final Pattern STRIP_COLOR = Pattern.compile("(?i)\u00a7[0-9A-F]");
+	private static final Pattern STRIP_COLOR = Pattern.compile("(?i)§[0-9A-F]");
 	public static DecimalFormat dfCommas = new DecimalFormat("0.##");
 	public static final DecimalFormat[] dfCommasArray = new DecimalFormat[]{dfCommas, new DecimalFormat("0.#"), new DecimalFormat("0")};
 	private static final Supplier<JadeFont> FONT = Suppliers.memoize(() -> new JadeFont(Minecraft.getInstance().font));

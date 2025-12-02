@@ -2,7 +2,7 @@ package snownee.jade.impl.ui;
 
 import java.util.function.Predicate;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.gui.GuiGraphics;
@@ -16,7 +16,7 @@ import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.ResizeableElement;
 
 public class SpacerElement extends ResizeableElement {
-	private LayoutElement wrapped;
+	private @Nullable LayoutElement wrapped;
 	private int wrappedOffsetX;
 	private int wrappedOffsetY;
 	private @Nullable Predicate<? extends LayoutElement> onClick;
@@ -29,8 +29,9 @@ public class SpacerElement extends ResizeableElement {
 	public SpacerElement wrapped(LayoutElement wrapped) {
 		this.wrapped = wrapped;
 		if (wrapped instanceof Element element) {
-			if (element.cachedNarration() != null) {
-				narration(element.cachedNarration());
+			Component narration = element.cachedNarration();
+			if (narration != null) {
+				narration(narration);
 			} else {
 				narration("");
 			}

@@ -3,9 +3,6 @@ package snownee.jade.network;
 import java.util.List;
 import java.util.Objects;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -19,16 +16,15 @@ import snownee.jade.impl.WailaCommonRegistration;
 
 public record RequestEntityPacket(
 		EntityAccessorImpl.SyncData data,
-		List<@Nullable IServerDataProvider<EntityAccessor>> dataProviders) implements CustomPacketPayload {
+		List<IServerDataProvider<EntityAccessor>> dataProviders) implements CustomPacketPayload {
 	public static final Type<RequestEntityPacket> TYPE = new Type<>(JadeIds.PACKET_REQUEST_ENTITY);
 	public static final StreamCodec<RegistryFriendlyByteBuf, RequestEntityPacket> CODEC = StreamCodec.composite(
 			EntityAccessorImpl.SyncData.STREAM_CODEC,
 			RequestEntityPacket::data,
 			ByteBufCodecs.<ByteBuf, IServerDataProvider<EntityAccessor>>list()
 					.apply(ByteBufCodecs.idMapper(
-							$ -> Objects.requireNonNull(WailaCommonRegistration.instance().entityDataProviders.idMapper()).byId($),
-							$ -> Objects.requireNonNull(WailaCommonRegistration.instance().entityDataProviders.idMapper())
-									.getIdOrThrow($))),
+							$ -> Objects.requireNonNull(WailaCommonRegistration.instance().entityDataProviders.idMapper().byId($)),
+							$ -> WailaCommonRegistration.instance().entityDataProviders.idMapper().getIdOrThrow($))),
 			RequestEntityPacket::dataProviders,
 			RequestEntityPacket::new);
 
@@ -37,7 +33,7 @@ public record RequestEntityPacket(
 	}
 
 	@Override
-	public @NotNull Type<? extends CustomPacketPayload> type() {
+	public Type<? extends CustomPacketPayload> type() {
 		return TYPE;
 	}
 }

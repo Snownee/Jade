@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -111,7 +111,7 @@ public class EnergyStorageProvider<T extends Accessor<?>> implements StreamServe
 	}
 
 	@Override
-	public @Nullable Map.Entry<Identifier, List<ViewGroup<EnergyView.Data>>> streamData(T accessor) {
+	public Map.@Nullable Entry<Identifier, List<ViewGroup<EnergyView.Data>>> streamData(T accessor) {
 		return CommonProxy.getServerExtensionData(accessor, WailaCommonRegistration.instance().energyStorageProviders);
 	}
 

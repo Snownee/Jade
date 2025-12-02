@@ -3,7 +3,7 @@ package snownee.jade.addon.universal;
 import java.util.List;
 import java.util.Map;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -137,7 +137,7 @@ public class FluidStorageProvider<T extends Accessor<?>> implements StreamServer
 	}
 
 	@Override
-	public @Nullable Map.Entry<Identifier, List<ViewGroup<FluidView.Data>>> streamData(T accessor) {
+	public Map.@Nullable Entry<Identifier, List<ViewGroup<FluidView.Data>>> streamData(T accessor) {
 		return CommonProxy.getServerExtensionData(accessor, WailaCommonRegistration.instance().fluidStorageProviders);
 	}
 

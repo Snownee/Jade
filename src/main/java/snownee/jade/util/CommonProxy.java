@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import com.google.common.cache.Cache;
 import com.mojang.brigadier.CommandDispatcher;
@@ -46,8 +46,8 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.TriState;
 import net.minecraft.world.Container;
@@ -236,7 +236,7 @@ public final class CommonProxy implements ModInitializer {
 	public static List<ViewGroup<ItemStack>> containerGroup(
 			Container container,
 			Accessor<?> accessor,
-			Function<Accessor<?>, Container> containerFinder) {
+			Function<Accessor<?>, @Nullable Container> containerFinder) {
 		try {
 			return ItemStorageProvider.containerCache.get(
 							container,
@@ -252,11 +252,12 @@ public final class CommonProxy implements ModInitializer {
 		return storageGroup(storage, accessor, CommonProxy::findItemHandler);
 	}
 
+	@SuppressWarnings("NullableProblems")
 	@Nullable
 	public static List<ViewGroup<ItemStack>> storageGroup(
 			Object storage,
 			Accessor<?> accessor,
-			Function<Accessor<?>, Object> storageFinder) {
+			Function<Accessor<?>, @Nullable Object> storageFinder) {
 		try {
 			//noinspection unchecked
 			return ItemStorageProvider.containerCache.get(
@@ -275,6 +276,7 @@ public final class CommonProxy implements ModInitializer {
 	@Nullable
 	public static Storage<ItemVariant> findItemHandler(Accessor<?> accessor) {
 		if (accessor instanceof BlockAccessor blockAccessor) {
+			//noinspection DataFlowIssue
 			return ItemStorage.SIDED.find(
 					blockAccessor.getLevel(),
 					blockAccessor.getPosition(),
@@ -297,9 +299,11 @@ public final class CommonProxy implements ModInitializer {
 		return null;
 	}
 
+	@Nullable
 	public static List<ViewGroup<FluidView.Data>> wrapFluidStorage(Accessor<?> accessor) {
 		if (accessor instanceof BlockAccessor blockAccessor) {
 			try {
+				//noinspection DataFlowIssue
 				var storage = FluidStorage.SIDED.find(
 						accessor.getLevel(),
 						blockAccessor.getPosition(),
@@ -316,9 +320,11 @@ public final class CommonProxy implements ModInitializer {
 		return null;
 	}
 
+	@Nullable
 	public static List<ViewGroup<EnergyView.Data>> wrapEnergyStorage(Accessor<?> accessor) {
 		if (hasTechRebornEnergy && accessor instanceof BlockAccessor blockAccessor) {
 			try {
+				//noinspection DataFlowIssue
 				var storage = TechRebornEnergyCompat.getSided().find(
 						accessor.getLevel(),
 						blockAccessor.getPosition(),
@@ -350,7 +356,7 @@ public final class CommonProxy implements ModInitializer {
 	}
 
 	public static Identifier getId(BlockEntityType<?> blockEntityType) {
-		return BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(blockEntityType);
+		return Objects.requireNonNull(BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(blockEntityType));
 	}
 
 	public static String getPlatformIdentifier() {
@@ -424,7 +430,8 @@ public final class CommonProxy implements ModInitializer {
 		return List.of(parts).indexOf(part);
 	}
 
-	public static Entity getPartEntity(Entity parent, int index) {
+	@Nullable
+	public static Entity getPartEntity(@Nullable Entity parent, int index) {
 		if (parent == null) {
 			return null;
 		}
@@ -445,6 +452,7 @@ public final class CommonProxy implements ModInitializer {
 			if (blockAccessor.getBlockEntity() == null) {
 				return blockAccessor.getBlock() instanceof WorldlyContainerHolder;
 			}
+			//noinspection DataFlowIssue
 			return ItemStorage.SIDED.find(
 					accessor.getLevel(),
 					blockAccessor.getPosition(),
@@ -457,6 +465,7 @@ public final class CommonProxy implements ModInitializer {
 
 	public static boolean hasDefaultFluidStorage(Accessor<?> accessor) {
 		if (accessor instanceof BlockAccessor blockAccessor) {
+			//noinspection DataFlowIssue
 			return FluidStorage.SIDED.find(
 					accessor.getLevel(),
 					blockAccessor.getPosition(),
@@ -469,6 +478,7 @@ public final class CommonProxy implements ModInitializer {
 
 	public static boolean hasDefaultEnergyStorage(Accessor<?> accessor) {
 		if (hasTechRebornEnergy && accessor instanceof BlockAccessor blockAccessor) {
+			//noinspection DataFlowIssue
 			return TechRebornEnergyCompat.getSided().find(
 					accessor.getLevel(),
 					blockAccessor.getPosition(),
@@ -509,7 +519,7 @@ public final class CommonProxy implements ModInitializer {
 		return false;
 	}
 
-	public static <T> Map.Entry<Identifier, List<ViewGroup<T>>> getServerExtensionData(
+	public static <T> Map.@Nullable Entry<Identifier, List<ViewGroup<T>>> getServerExtensionData(
 			Accessor<?> accessor,
 			WrappedHierarchyLookup<IServerExtensionProvider<T>> lookup) {
 		for (var provider : lookup.wrappedGet(accessor)) {
@@ -548,7 +558,7 @@ public final class CommonProxy implements ModInitializer {
 	}
 
 	@Nullable
-	public static Either<String, Component> getTranslatableName(Object object) {
+	public static Either<String, Component> getTranslatableName(@Nullable Object object) {
 		return null;
 	}
 

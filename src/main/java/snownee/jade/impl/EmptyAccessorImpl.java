@@ -1,6 +1,8 @@
 package snownee.jade.impl;
 
-import org.jetbrains.annotations.Nullable;
+import java.util.Objects;
+
+import org.jspecify.annotations.Nullable;
 
 import com.google.common.base.Suppliers;
 
@@ -20,7 +22,13 @@ import snownee.jade.api.EmptyAccessor;
 public class EmptyAccessorImpl extends AccessorImpl<BlockHitResult> implements EmptyAccessor {
 
 	private EmptyAccessorImpl(Builder builder) {
-		super(builder.level, builder.player, builder.serverData, Suppliers.ofInstance(builder.hit), builder.connected, builder.showDetails);
+		super(
+				Objects.requireNonNull(builder.level),
+				Objects.requireNonNull(builder.player),
+				builder.serverData,
+				Suppliers.ofInstance(Objects.requireNonNull(builder.hit)),
+				builder.connected,
+				builder.showDetails);
 	}
 
 	@Nullable
@@ -41,12 +49,12 @@ public class EmptyAccessorImpl extends AccessorImpl<BlockHitResult> implements E
 
 	public static class Builder implements EmptyAccessor.Builder {
 
-		private Level level;
-		private Player player;
-		private CompoundTag serverData;
+		private @Nullable Level level;
+		private @Nullable Player player;
+		private @Nullable CompoundTag serverData;
 		private boolean connected;
 		private boolean showDetails;
-		private BlockHitResult hit;
+		private @Nullable BlockHitResult hit;
 		private boolean verify;
 
 		@Override
@@ -62,7 +70,7 @@ public class EmptyAccessorImpl extends AccessorImpl<BlockHitResult> implements E
 		}
 
 		@Override
-		public Builder serverData(CompoundTag serverData) {
+		public Builder serverData(@Nullable CompoundTag serverData) {
 			this.serverData = serverData;
 			return this;
 		}

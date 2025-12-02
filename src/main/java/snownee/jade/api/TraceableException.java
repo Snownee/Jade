@@ -2,7 +2,7 @@ package snownee.jade.api;
 
 import java.io.Serial;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import net.minecraft.resources.Identifier;
 

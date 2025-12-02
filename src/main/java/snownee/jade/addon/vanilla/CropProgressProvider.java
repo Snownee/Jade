@@ -1,6 +1,6 @@
 package snownee.jade.addon.vanilla;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -29,7 +29,7 @@ public class CropProgressProvider implements IBlockComponentProvider {
 	public static final CropProgressProvider INSTANCE = new CropProgressProvider();
 
 	@Override
-	public @Nullable Element getIcon(BlockAccessor accessor, IPluginConfig config, Element currentIcon) {
+	public @Nullable Element getIcon(BlockAccessor accessor, IPluginConfig config, @Nullable Element currentIcon) {
 		if (accessor.getBlock() == Blocks.WHEAT) {
 			return JadeUI.item(new ItemStack(Items.WHEAT));
 		}

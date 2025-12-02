@@ -8,7 +8,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.decoration.Mannequin;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SignBlock;
-import snownee.jade.Jade;
 import snownee.jade.JadeClient;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.IWailaClientRegistration;

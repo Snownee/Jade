@@ -1,9 +1,9 @@
 package snownee.jade.addon.harvest;
 
 import java.util.List;
-import java.util.function.Function;
+import java.util.Optional;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
@@ -47,7 +47,7 @@ public class LootTableMineableCollector {
 			if (!ShearsToolHandler.getInstance().test(block.defaultBlockState()).isEmpty()) {
 				continue;
 			}
-			@Nullable LootTable lootTable = lootRegistry.get(block.getLootTable().get()).map(Holder::value).orElse(null);
+			LootTable lootTable = lootRegistry.get(block.getLootTable().get()).map(Holder::value).orElse(null);
 			if (collector.doLootTable(lootTable)) {
 				list.add(block);
 //				Jade.LOGGER.info("block: {}", BuiltInRegistries.BLOCK.getKey(block));
@@ -88,10 +88,10 @@ public class LootTableMineableCollector {
 				}
 			}
 		} else if (entry instanceof NestedLootTable nestedLootTable) {
-			LootTable lootTable = nestedLootTable.contents.map(
-					$ -> lootRegistry.get($).map(Holder::value).orElse(null),
-					Function.identity());
-			return doLootTable(lootTable);
+			Optional<LootTable> lootTable = nestedLootTable.contents.map(
+					$ -> lootRegistry.get($).map(Holder::value),
+					Optional::of);
+			return doLootTable(lootTable.orElse(null));
 		} else {
 			return CommonProxy.isCorrectConditions(entry.conditions, toolItem);
 		}

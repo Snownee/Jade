@@ -21,7 +21,7 @@ public class JadeClientCodecs {
 	public static final Codec<TextSetting> TEXT_SETTING = RecordCodecBuilder.create(i -> i.group(
 			ColorPalette.CODEC.optionalFieldOf("colors", ColorPalette.DEFAULT).forGetter(TextSetting::colors),
 			Codec.BOOL.optionalFieldOf("shadow", true).forGetter(TextSetting::shadow),
-			Style.Serializer.CODEC.optionalFieldOf("modNameStyle").forGetter($ -> Optional.ofNullable($.modNameStyle())),
+			Style.Serializer.CODEC.optionalFieldOf("modNameStyle").forGetter($ -> Optional.of($.modNameStyle())),
 			Color.CODEC.optionalFieldOf("itemAmountColor", 0xFFFFFFFF).forGetter(TextSetting::itemAmountColor)
 	).apply(i, TextSetting::new));
 

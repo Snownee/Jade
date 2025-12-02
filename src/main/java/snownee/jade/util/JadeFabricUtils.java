@@ -5,7 +5,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Streams;
@@ -93,7 +93,7 @@ public final class JadeFabricUtils {
 	}
 
 	public static class FluidCollectingResult {
-		public Stream<Tuple<JadeFluidObject, Long>> stream;
+		public Stream<Tuple<JadeFluidObject, Long>> stream = Stream.empty();
 		public long emptyCapacity;
 		public int tanks;
 		public int emptyTanks;
@@ -113,6 +113,7 @@ public final class JadeFabricUtils {
 						if (containerFinder.apply(accessor) instanceof SlottedStorage<ItemVariant> slotted) {
 							return slotted;
 						}
+						//noinspection DataFlowIssue
 						return null;
 					}, fromIndex) {
 				@Override

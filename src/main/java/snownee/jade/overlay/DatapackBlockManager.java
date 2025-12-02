@@ -3,7 +3,7 @@ package snownee.jade.overlay;
 import java.util.List;
 import java.util.Optional;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;

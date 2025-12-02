@@ -26,7 +26,6 @@ public class ExamplePlugin implements IWailaPlugin {
 	public static final Identifier UID_TEST_PROGRESS = Identifier.parse("debug:progress");
 	public static final Identifier UID_TEST_STR_CFG = Identifier.parse("debug:furnace_fuel.str_cfg");
 	public static final Identifier UID_TEST_FLOAT_CFG = Identifier.parse("debug:furnace_fuel.float_cfg");
-	private static IWailaClientRegistration client;
 
 	@Override
 	public void register(IWailaCommonRegistration registration) {
@@ -40,7 +39,6 @@ public class ExamplePlugin implements IWailaPlugin {
 
 	@Override
 	public void registerClient(IWailaClientRegistration registration) {
-		ExamplePlugin.client = registration;
 		registration.registerBlockComponent(ExampleComponentProvider.INSTANCE, AbstractFurnaceBlock.class);
 		registration.addConfig(UID_TEST_STR_CFG, "", $ -> Identifier.tryParse($) != null);
 		registration.addConfigListener(UID_TEST_STR_CFG, $ -> Jade.LOGGER.info("Changed: $: " + IWailaConfig.get().plugin().getString($)));
@@ -49,7 +47,7 @@ public class ExamplePlugin implements IWailaPlugin {
 		registration.addRayTraceCallback((hitResult, accessor, originalAccessor) -> {
 			if (IWailaConfig.get().general().isDebug() && accessor instanceof BlockAccessor blockAccessor) {
 				if (blockAccessor.getBlock() == Blocks.GRASS_BLOCK) {
-					return client.blockAccessor().from(blockAccessor).blockState(Blocks.TNT.defaultBlockState()).build();
+					return registration.blockAccessor().from(blockAccessor).blockState(Blocks.TNT.defaultBlockState()).build();
 				}
 			}
 			return accessor;
@@ -60,13 +58,12 @@ public class ExamplePlugin implements IWailaPlugin {
 					if (accessor instanceof BlockAccessor blockAccessor) {
 						if (blockAccessor.getBlock().equals(Blocks.FURNACE)) {
 							BlockPos newPos = blockAccessor.getPosition().below();
-							var t = registration.blockAccessor()
+							return registration.blockAccessor()
 									.from(blockAccessor)
 									.hit(blockAccessor.getHitResult().withPosition(newPos))
 									.blockState(blockAccessor.getLevel().getBlockState(newPos))
 									.blockEntity(blockAccessor.getLevel().getBlockEntity(newPos))
 									.build();
-							return t;
 						}
 					}
 					return accessor;

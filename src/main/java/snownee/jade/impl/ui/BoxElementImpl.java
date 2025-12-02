@@ -5,8 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -56,8 +55,8 @@ public class BoxElementImpl extends BoxElement implements ContainerEventHandler 
 	private @Nullable List<GuiEventListener> eventListeners;
 	private @Nullable Element icon;
 	private float boxProgress;
-	private MessageType boxProgressType;
-	private ProgressTrackInfo track;
+	private @Nullable MessageType boxProgressType;
+	private @Nullable ProgressTrackInfo track;
 
 	public BoxElementImpl(Tooltip tooltip, BoxStyle style) {
 		this.tooltip = Objects.requireNonNull(tooltip);
@@ -342,8 +341,7 @@ public class BoxElementImpl extends BoxElement implements ContainerEventHandler 
 	}
 
 	@Override
-	@Nullable
-	public Element getIcon() {
+	public @Nullable Element getIcon() {
 		return icon;
 	}
 
@@ -458,7 +456,7 @@ public class BoxElementImpl extends BoxElement implements ContainerEventHandler 
 	}
 
 	@Override
-	public @NotNull List<? extends GuiEventListener> children() {
+	public List<? extends GuiEventListener> children() {
 		if (eventListeners == null) {
 			ImmutableList.Builder<GuiEventListener> builder = ImmutableList.builder();
 			for (Renderable renderable : renderables) {

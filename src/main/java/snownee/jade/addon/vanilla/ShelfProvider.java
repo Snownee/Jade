@@ -3,7 +3,7 @@ package snownee.jade.addon.vanilla;
 import java.util.List;
 import java.util.OptionalInt;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import com.google.common.collect.Lists;
 
@@ -54,12 +54,13 @@ public class ShelfProvider implements StreamServerDataProvider<BlockAccessor, It
 	}
 
 	@Override
+	@Nullable
 	public ItemStack streamData(BlockAccessor accessor) {
 		int slot = ((SelectableSlotContainer) accessor.getBlock()).getHitSlot(accessor.getHitResult(), accessor.getSide()).orElse(-1);
 		if (slot == -1) {
 			return null;
 		}
-		return ((ListBackedContainer) accessor.getBlockEntity()).getItem(slot);
+		return ((ListBackedContainer) accessor.typedBlockEntity()).getItem(slot);
 	}
 
 	@Override
@@ -83,7 +84,7 @@ public class ShelfProvider implements StreamServerDataProvider<BlockAccessor, It
 		}
 
 		@Override
-		public @Nullable Element getIcon(BlockAccessor accessor, IPluginConfig config, Element currentIcon) {
+		public @Nullable Element getIcon(BlockAccessor accessor, IPluginConfig config, @Nullable Element currentIcon) {
 			ItemStack item = getHitBook(accessor);
 			return item.isEmpty() ? null : JadeUI.item(item);
 		}

@@ -152,28 +152,28 @@ public class FluidTextHelper {
 	}
 
 	private static final char[] SUPERSCRIPT = new char[]{
-			'\u2070',
-			'\u00b9',
-			'\u00b2',
-			'\u00b3',
-			'\u2074',
-			'\u2075',
-			'\u2076',
-			'\u2077',
-			'\u2078',
-			'\u2079'};
-	private static final char FRACTION_BAR = '\u2044';
+			'⁰',
+			'¹',
+			'²',
+			'³',
+			'⁴',
+			'⁵',
+			'⁶',
+			'⁷',
+			'⁸',
+			'⁹'};
+	private static final char FRACTION_BAR = '⁄';
 	private static final char[] SUBSCRIPT = new char[]{
-			'\u2080',
-			'\u2081',
-			'\u2082',
-			'\u2083',
-			'\u2084',
-			'\u2085',
-			'\u2086',
-			'\u2087',
-			'\u2088',
-			'\u2089'};
+			'₀',
+			'₁',
+			'₂',
+			'₃',
+			'₄',
+			'₅',
+			'₆',
+			'₇',
+			'₈',
+			'₉'};
 
 	private FluidTextHelper() {
 	}

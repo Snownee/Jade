@@ -26,10 +26,11 @@ public enum ExampleItemStorageProvider implements IServerExtensionProvider<ItemS
 
 	@Override
 	public List<ClientViewGroup<ItemView>> getClientGroups(Accessor<?> accessor, List<ViewGroup<ItemStack>> groups) {
-		return ClientViewGroup.map(groups, ItemView::new, (group, clientGroup) -> {
-			clientGroup.title = Component.literal(group.id);
-			clientGroup.messageType = MessageType.WARNING;
-		});
+		return ClientViewGroup.map(
+				groups, ItemView::new, (group, clientGroup) -> {
+					clientGroup.title = Component.literal(Objects.requireNonNull(group.id));
+					clientGroup.messageType = MessageType.WARNING;
+				});
 	}
 
 	@Override

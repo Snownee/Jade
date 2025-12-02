@@ -5,8 +5,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -20,8 +19,8 @@ import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -80,13 +79,17 @@ public final class EntityVariantHelper {
 	@Nullable
 	public static synchronized Either<String, Component> getVariantName(Entity entity, boolean isColor) {
 		Object variant = getVariant(entity, isColor);
-		if (variant == null) {
-			return null;
-		} else if (variant instanceof Holder<?> holder) {
-			Identifier id = holder.unwrapKey().map(ResourceKey::identifier).orElse(null);
-			variant = id != null ? id : holder.value();
-		} else if (variant instanceof EitherHolder<?> holder) {
-			variant = holder.key().map(ResourceKey::identifier).orElse(null);
+		switch (variant) {
+			case null -> {
+				return null;
+			}
+			case Holder<?> holder -> {
+				Identifier id = holder.unwrapKey().map(ResourceKey::identifier).orElse(null);
+				variant = id != null ? id : holder.value();
+			}
+			case EitherHolder<?> holder -> variant = holder.key().map(ResourceKey::identifier).orElse(null);
+			default -> {
+			}
 		}
 		String name = null;
 		Either<String, Component> result = CommonProxy.getTranslatableName(variant);
@@ -123,7 +126,7 @@ public final class EntityVariantHelper {
 		List<DataComponentType<?>> types = Lists.newArrayList();
 		((EntityAccess) entity).callApplyImplicitComponents(new DataComponentGetter() {
 			@Override
-			public @Nullable <T> T get(@NotNull DataComponentType<? extends T> dataComponentType) {
+			public @Nullable <T> T get(DataComponentType<? extends T> dataComponentType) {
 				types.add(dataComponentType);
 				return null;
 			}

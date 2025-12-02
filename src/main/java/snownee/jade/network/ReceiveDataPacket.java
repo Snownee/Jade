@@ -2,8 +2,6 @@ package snownee.jade.network;
 
 import java.util.Objects;
 
-import org.jetbrains.annotations.NotNull;
-
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -31,7 +29,7 @@ public record ReceiveDataPacket(CompoundTag tag) implements CustomPacketPayload 
 	}
 
 	@Override
-	public @NotNull Type<? extends CustomPacketPayload> type() {
+	public Type<? extends CustomPacketPayload> type() {
 		return TYPE;
 	}
 

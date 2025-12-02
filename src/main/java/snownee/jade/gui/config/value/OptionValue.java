@@ -1,8 +1,11 @@
 package snownee.jade.gui.config.value;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+
+import org.jspecify.annotations.Nullable;
 
 import com.google.common.collect.Lists;
 
@@ -23,7 +26,7 @@ public abstract class OptionValue<T> extends OptionsList.Entry {
 	protected final Supplier<T> getter;
 	protected final Consumer<T> setter;
 	private final Component title;
-	protected Identifier id;
+	protected @Nullable Identifier id;
 	public boolean serverFeature;
 	protected T value;
 	protected int indent;
@@ -42,7 +45,7 @@ public abstract class OptionValue<T> extends OptionsList.Entry {
 
 	@Override
 	public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovered, float deltaTime) {
-		AbstractWidget widget = getFirstWidget();
+		AbstractWidget widget = Objects.requireNonNull(getFirstWidget());
 		Component title0 = widget.active ? title : title.copy().withStyle(ChatFormatting.STRIKETHROUGH, ChatFormatting.GRAY);
 		int left = getContentX() + indent + 10;
 		int top = getContentY() + (getContentHeight() / 2) - (client.font.lineHeight / 2);
@@ -109,7 +112,7 @@ public abstract class OptionValue<T> extends OptionsList.Entry {
 		this.id = id;
 	}
 
-	public Identifier getId() {
+	public @Nullable Identifier getId() {
 		return id;
 	}
 

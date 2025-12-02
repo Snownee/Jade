@@ -3,7 +3,7 @@ package snownee.jade.compat;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import net.minecraft.client.gui.screens.Screen;
 

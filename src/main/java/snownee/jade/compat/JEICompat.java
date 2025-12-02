@@ -1,7 +1,7 @@
 /*
 package snownee.jade.compat;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;

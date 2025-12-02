@@ -2,7 +2,7 @@ package snownee.jade.api.ui;
 
 import java.text.Format;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 

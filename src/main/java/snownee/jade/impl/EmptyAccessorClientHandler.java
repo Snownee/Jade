@@ -3,7 +3,7 @@ package snownee.jade.impl;
 import java.util.List;
 import java.util.function.Function;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import snownee.jade.api.AccessorClientHandler;
 import snownee.jade.api.EmptyAccessor;

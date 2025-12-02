@@ -5,7 +5,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
@@ -214,17 +214,21 @@ public class ModIdentification implements KeyedResourceManagerReloadListener {
 	}
 
 	public static String getModName(Entity entity) {
-		if (entity instanceof Painting painting) {
-			return getModName(painting.getVariant().unwrapKey().orElseThrow().identifier());
-		}
-		if (entity instanceof ItemEntity itemEntity) {
-			return getModName(itemEntity.getItem());
-		}
-		if (entity instanceof FallingBlockEntity fallingBlock) {
-			return getModName(fallingBlock.getBlockState().getBlock());
-		}
-		if (entity instanceof Villager villager) {
-			return getModName(villager.getVillagerData().profession().unwrapKey().orElseThrow().identifier());
+		switch (entity) {
+			case Painting painting -> {
+				return getModName(painting.getVariant().unwrapKey().orElseThrow().identifier());
+			}
+			case ItemEntity itemEntity -> {
+				return getModName(itemEntity.getItem());
+			}
+			case FallingBlockEntity fallingBlock -> {
+				return getModName(fallingBlock.getBlockState().getBlock());
+			}
+			case Villager villager -> {
+				return getModName(villager.getVillagerData().profession().unwrapKey().orElseThrow().identifier());
+			}
+			default -> {
+			}
 		}
 		Identifier id;
 		try {

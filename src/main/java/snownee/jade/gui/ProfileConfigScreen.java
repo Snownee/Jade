@@ -1,5 +1,7 @@
 package snownee.jade.gui;
 
+import org.jspecify.annotations.Nullable;
+
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -10,6 +12,7 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
+import snownee.jade.api.JadeKeys;
 import snownee.jade.api.ui.JadeUI;
 import snownee.jade.gui.config.NotUglyEditBox;
 import snownee.jade.gui.config.OptionButton;
@@ -20,12 +23,12 @@ import snownee.jade.util.JsonConfig;
 
 public class ProfileConfigScreen extends BaseOptionsScreen {
 
-	private OptionValue<Boolean> enabledEntry;
+	private @Nullable OptionValue<Boolean> enabledEntry;
 
 	public ProfileConfigScreen(Screen parent) {
 		super(parent, Component.translatable("gui.jade.profile_settings"));
 		saver = () -> {
-			for (OptionsList.Entry entry : options.children()) {
+			for (OptionsList.Entry entry : options().children()) {
 				if (entry instanceof ProfileEntry profileEntry) {
 					profileEntry.save();
 				}
@@ -35,7 +38,7 @@ public class ProfileConfigScreen extends BaseOptionsScreen {
 		};
 		boolean enabled = Jade.rootConfig().isEnableProfiles();
 		int index = Jade.rootConfig().profileIndex;
-		Runnable runnable = JadeClient.recoverKeysAction($ -> JadeClient.openConfig.getCategory().equals($.getCategory()));
+		Runnable runnable = JadeClient.recoverKeysAction($ -> JadeKeys.openConfig().getCategory().equals($.getCategory()));
 		canceller = () -> {
 			if (enabled) {
 				Jade.useProfile(index);
@@ -75,7 +78,7 @@ public class ProfileConfigScreen extends BaseOptionsScreen {
 
 	public void refresh() {
 		boolean enabled = Jade.rootConfig().isEnableProfiles();
-		for (OptionsList.Entry entry : options.children()) {
+		for (OptionsList.Entry entry : options().children()) {
 			if (entry != enabledEntry) {
 				entry.setDisabled(!enabled);
 				if (entry instanceof ProfileEntry profileEntry) {
@@ -91,7 +94,7 @@ public class ProfileConfigScreen extends BaseOptionsScreen {
 		private final int index;
 		private final Component normalTitle;
 		private final NotUglyEditBox editBox;
-		private final String originalName;
+		private final @Nullable String originalName;
 
 		public ProfileEntry(int index) {
 			super(Component.translatable("config.jade.profile." + index), (Button) null);

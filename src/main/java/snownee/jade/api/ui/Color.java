@@ -9,13 +9,14 @@ import com.mojang.serialization.DataResult;
 // Modified from: https://github.com/silentsoft/csscolor4j/blob/main/src/main/java/org/silentsoft/csscolor4j/Color.java
 public class Color {
 
-	public static final Codec<Integer> CODEC = Codec.STRING.comapFlatMap($ -> {
-		try {
-			return DataResult.success(Color.valueOf($).toInt());
-		} catch (IllegalArgumentException e) {
-			return DataResult.error(() -> "Invalid color: " + $);
-		}
-	}, $ -> Color.rgb($).getHex());
+	public static final Codec<Integer> CODEC = Codec.STRING.comapFlatMap(
+			$ -> {
+				try {
+					return DataResult.success(Color.valueOf($).toInt());
+				} catch (IllegalArgumentException e) {
+					return DataResult.error(() -> "Invalid color: " + $);
+				}
+			}, $ -> Color.rgb($).getHex());
 
 	private int red;
 	private int green;
@@ -35,7 +36,7 @@ public class Color {
 	private String hex;
 
 	private Color() {
-
+		hex = "#000000";
 	}
 
 	/**

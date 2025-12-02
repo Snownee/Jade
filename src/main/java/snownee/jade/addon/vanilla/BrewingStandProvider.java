@@ -23,7 +23,7 @@ public class BrewingStandProvider implements StreamServerDataProvider<BlockAcces
 
 	@Override
 	public Data streamData(BlockAccessor accessor) {
-		BrewingStandBlockEntity brewingStand = (BrewingStandBlockEntity) accessor.getBlockEntity();
+		BrewingStandBlockEntity brewingStand = accessor.typedBlockEntity();
 		return new Data(brewingStand.fuel, brewingStand.brewTime);
 	}
 

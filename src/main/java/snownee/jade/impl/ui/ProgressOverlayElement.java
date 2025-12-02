@@ -1,6 +1,6 @@
 package snownee.jade.impl.ui;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import net.minecraft.client.gui.GuiGraphics;
 import snownee.jade.api.ui.Rect2f;

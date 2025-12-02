@@ -1,6 +1,6 @@
 package snownee.jade.api.callback;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import net.minecraft.world.phys.HitResult;
 import snownee.jade.api.Accessor;

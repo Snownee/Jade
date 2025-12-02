@@ -3,8 +3,6 @@ package snownee.jade.network;
 import java.util.List;
 import java.util.Map;
 
-import org.jetbrains.annotations.NotNull;
-
 import com.google.common.collect.Maps;
 
 import io.netty.buffer.ByteBuf;
@@ -52,7 +50,7 @@ public record ServerHandshakePacket(
 	}
 
 	@Override
-	public @NotNull Type<? extends CustomPacketPayload> type() {
+	public Type<? extends CustomPacketPayload> type() {
 		return TYPE;
 	}
 }

@@ -114,6 +114,7 @@ jar {
     exclude '/com' // com.terraformersmc.modmenu
     exclude '/dummy' // dummy.com.terraformersmc.modmenu
     exclude '**/*.bat'
+    exclude '**/*.py'
     from("LICENSE") {
         rename { "${it}_${project.archivesBaseName}" }
     }

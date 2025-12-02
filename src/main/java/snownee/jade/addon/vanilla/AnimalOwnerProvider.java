@@ -3,7 +3,7 @@ package snownee.jade.addon.vanilla;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import com.mojang.authlib.GameProfile;
 
@@ -36,7 +36,7 @@ public class AnimalOwnerProvider implements StreamServerDataProvider<EntityAcces
 	public Component streamData(EntityAccessor accessor) {
 		ServerLevel level = (ServerLevel) accessor.getLevel();
 		UUID uuid = getOwnerUUID(accessor.getEntity());
-		Entity entity = level.getEntity(uuid);
+		Entity entity = uuid == null ? null : level.getEntity(uuid);
 		if (entity != null) {
 			return ObjectNameProvider.getEntityName(entity, false);
 		}
@@ -49,6 +49,7 @@ public class AnimalOwnerProvider implements StreamServerDataProvider<EntityAcces
 		return ComponentSerialization.STREAM_CODEC;
 	}
 
+	@Nullable
 	public static UUID getOwnerUUID(Entity entity) {
 		if (entity instanceof OwnableEntity ownableEntity) {
 			EntityReference<LivingEntity> reference = ownableEntity.getOwnerReference();

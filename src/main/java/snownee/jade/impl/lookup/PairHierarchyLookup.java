@@ -8,7 +8,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -27,9 +27,8 @@ public class PairHierarchyLookup<T extends IJadeProvider> implements IHierarchyL
 	public final IHierarchyLookup<T> second;
 	private final Cache<Pair<Class<?>, Class<?>>, List<T>> mergedCache = CacheBuilder.newBuilder().build();
 	protected boolean idMapped;
-	@Nullable
-	protected IdMapper<T> idMapper;
-	protected Map<Identifier, T> byKey;
+	protected @Nullable IdMapper<T> idMapper;
+	protected @Nullable Map<Identifier, T> byKey;
 
 	public PairHierarchyLookup(IHierarchyLookup<T> first, IHierarchyLookup<T> second) {
 		this.first = first;
@@ -65,8 +64,8 @@ public class PairHierarchyLookup<T extends IJadeProvider> implements IHierarchyL
 	}
 
 	@Override
-	public @Nullable IdMapper<T> idMapper() {
-		return idMapper;
+	public IdMapper<T> idMapper() {
+		return Objects.requireNonNull(idMapper);
 	}
 
 	@Override
@@ -136,7 +135,7 @@ public class PairHierarchyLookup<T extends IJadeProvider> implements IHierarchyL
 	}
 
 	@Override
-	public T byKey(Identifier key) {
-		return byKey.get(key);
+	public @Nullable T byKey(Identifier key) {
+		return Objects.requireNonNull(byKey).get(key);
 	}
 }

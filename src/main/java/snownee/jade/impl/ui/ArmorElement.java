@@ -1,5 +1,9 @@
 package snownee.jade.impl.ui;
 
+import java.util.Objects;
+
+import org.jspecify.annotations.Nullable;
+
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
@@ -20,7 +24,7 @@ public class ArmorElement extends Element {
 	public static final Identifier EMPTY_ARMOR = Identifier.withDefaultNamespace("hud/armor_empty");
 
 	private final float armor;
-	private String text;
+	private @Nullable String text;
 	private int iconsPerLine = 1;
 	private int lineCount = 1;
 	private int iconCount = 1;
@@ -75,7 +79,7 @@ public class ArmorElement extends Element {
 		}
 
 		if (showText()) {
-			helper.drawText(graphics, text, x + 10, y + 1, IThemeHelper.get().getNormalColor());
+			helper.drawText(graphics, Objects.requireNonNull(text), x + 10, y + 1, IThemeHelper.get().getNormalColor());
 		}
 	}
 

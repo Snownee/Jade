@@ -1,9 +1,10 @@
 package snownee.jade.overlay;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -205,7 +206,7 @@ public class RayTracing {
 			if (target.isInvisibleTo(player)) {
 				return false;
 			}
-			if (mc.gameMode.isDestroying() && target.getType() == EntityType.ITEM) {
+			if (Objects.requireNonNull(mc.gameMode).isDestroying() && target.getType() == EntityType.ITEM) {
 				return false;
 			}
 		} else {

@@ -10,6 +10,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
 import net.minecraft.world.entity.ai.village.poi.PoiTypes;
 import net.minecraft.world.entity.decoration.painting.Painting;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.material.FluidState;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
@@ -44,8 +45,9 @@ public abstract class RegistryNameProvider implements IToggleableProvider {
 				id = ModIdentification.getSpecialId(accessor.getServersideRep()).orElse(id);
 			}
 			if (append(tooltip, id, config) && config.get(JadeIds.DEBUG_SPECIAL_REGISTRY_NAME)) {
-				if (accessor.getBlockEntity() != null) {
-					id = CommonProxy.getId(accessor.getBlockEntity().getType());
+				BlockEntity blockEntity = accessor.getBlockEntity();
+				if (blockEntity != null) {
+					id = CommonProxy.getId(blockEntity.getType());
 					String s = I18n.get("config.jade.plugin_jade.registry_name.special.block_entity_type", id);
 					tooltip.add(IWailaConfig.get().formatting().registryName(s), JadeIds.DEBUG_SPECIAL_REGISTRY_NAME);
 				}

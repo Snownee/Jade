@@ -1,8 +1,10 @@
 package snownee.jade.api;
 
+import java.util.Objects;
 import java.util.function.Supplier;
 
 import org.jetbrains.annotations.ApiStatus.NonExtendable;
+import org.jspecify.annotations.Nullable;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -24,7 +26,14 @@ public interface BlockAccessor extends Accessor<BlockHitResult> {
 
 	BlockState getBlockState();
 
+	@Nullable
 	BlockEntity getBlockEntity();
+
+	default <T extends BlockEntity> T typedBlockEntity() {
+		@SuppressWarnings("unchecked")
+		T blockEntity = (T) getBlockEntity();
+		return Objects.requireNonNull(blockEntity);
+	}
 
 	BlockPos getPosition();
 
@@ -41,7 +50,7 @@ public interface BlockAccessor extends Accessor<BlockHitResult> {
 
 		Builder player(Player player);
 
-		Builder serverData(CompoundTag serverData);
+		Builder serverData(@Nullable CompoundTag serverData);
 
 		Builder serverConnected(boolean connected);
 
@@ -51,11 +60,11 @@ public interface BlockAccessor extends Accessor<BlockHitResult> {
 
 		Builder blockState(BlockState state);
 
-		default Builder blockEntity(BlockEntity blockEntity) {
+		default Builder blockEntity(@Nullable BlockEntity blockEntity) {
 			return blockEntity(() -> blockEntity);
 		}
 
-		Builder blockEntity(Supplier<BlockEntity> blockEntity);
+		Builder blockEntity(Supplier<@Nullable BlockEntity> blockEntity);
 
 		Builder serversideRep(ItemStack stack);
 

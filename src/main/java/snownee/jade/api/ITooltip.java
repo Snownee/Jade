@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.function.UnaryOperator;
 
 import org.jetbrains.annotations.ApiStatus.NonExtendable;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.client.gui.layouts.LayoutSettings;
@@ -44,7 +44,7 @@ public interface ITooltip extends NarrationSupplier {
 	/**
 	 * Add a tagged text to a new line
 	 */
-	default void add(Component component, Identifier tag) {
+	default void add(Component component, @Nullable Identifier tag) {
 		add(size(), component, tag);
 	}
 
@@ -52,7 +52,7 @@ public interface ITooltip extends NarrationSupplier {
 		add(index, component, null);
 	}
 
-	default void add(int index, Component component, Identifier tag) {
+	default void add(int index, Component component, @Nullable Identifier tag) {
 		add(index, JadeUI.text(component).tag(tag));
 	}
 
@@ -99,7 +99,7 @@ public interface ITooltip extends NarrationSupplier {
 	 * <p>
 	 * IMPORTANT: DO NOT use this to concat texts
 	 */
-	default void append(Component component, Identifier tag) {
+	default void append(Component component, @Nullable Identifier tag) {
 		append(JadeUI.text(component).tag(tag));
 	}
 

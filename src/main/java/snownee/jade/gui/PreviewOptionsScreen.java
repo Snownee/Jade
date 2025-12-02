@@ -2,6 +2,8 @@ package snownee.jade.gui;
 
 import java.util.Objects;
 
+import org.jspecify.annotations.Nullable;
+
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
 
 import net.minecraft.client.Minecraft;
@@ -33,7 +35,7 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 	private double dragOffsetX;
 	private double dragOffsetY;
 
-	public PreviewOptionsScreen(Screen parent, Component title) {
+	public PreviewOptionsScreen(@Nullable Screen parent, Component title) {
 		super(parent, title);
 	}
 
@@ -77,13 +79,13 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 					OptionsList.OPTION_OFF,
 					Jade.history().previewOverlay).create(
 					10,
-					saveButton.getY(),
+					Objects.requireNonNull(saveButton).getY(),
 					85,
 					20,
 					Component.translatable("gui.jade.preview"),
 					(button, value) -> {
 						Jade.history().previewOverlay = value;
-						saver.run();
+						Objects.requireNonNull(saver).run();
 					});
 			addRenderableWidget(previewButton);
 		}

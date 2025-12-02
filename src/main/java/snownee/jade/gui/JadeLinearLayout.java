@@ -4,7 +4,7 @@ import java.util.BitSet;
 import java.util.List;
 import java.util.function.Consumer;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
@@ -318,16 +318,9 @@ public class JadeLinearLayout extends AbstractLayout implements ResizeableLayout
 				case START -> {
 					// do nothing
 				}
-				case CENTER -> {
-					crossAxisPos += (crossAxisFreeSpace - crossAxisLength) / 2;
-				}
-				case END -> {
-					crossAxisPos += crossAxisFreeSpace - crossAxisLength;
-				}
-				case STRETCH -> {
-					// stretch to fill the cross axis
-					orientation.setFreeSpace(child, axisLength, crossAxisFreeSpace);
-				}
+				case CENTER -> crossAxisPos += (crossAxisFreeSpace - crossAxisLength) / 2;
+				case END -> crossAxisPos += crossAxisFreeSpace - crossAxisLength;
+				case STRETCH -> orientation.setFreeSpace(child, axisLength, crossAxisFreeSpace); // stretch to fill the cross axis
 			}
 			orientation.setPosition(child, axisPos, crossAxisPos);
 		}

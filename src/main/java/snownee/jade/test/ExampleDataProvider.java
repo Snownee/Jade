@@ -1,6 +1,6 @@
 package snownee.jade.test;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -15,7 +15,7 @@ public class ExampleDataProvider implements StreamServerDataProvider<BlockAccess
 
 	@Override
 	public @Nullable Integer streamData(BlockAccessor accessor) {
-		return ((AbstractFurnaceBlockEntity) accessor.getBlockEntity()).litTimeRemaining;
+		return accessor.<AbstractFurnaceBlockEntity>typedBlockEntity().litTimeRemaining;
 	}
 
 	@Override
