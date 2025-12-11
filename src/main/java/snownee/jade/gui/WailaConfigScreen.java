@@ -33,9 +33,10 @@ import snownee.jade.gui.config.OptionsList;
 import snownee.jade.gui.config.value.CycleOptionValue;
 import snownee.jade.gui.config.value.OptionValue;
 import snownee.jade.impl.WailaClientRegistration;
-import snownee.jade.impl.config.WailaConfig.General;
 import snownee.jade.impl.theme.ThemeHelper;
+import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
+import snownee.jade.util.ModIdentification;
 
 public class WailaConfigScreen extends PreviewOptionsScreen {
 
@@ -96,14 +97,18 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 		options.choices("display_fluids", general::getDisplayFluids, general::setDisplayFluids).parent(entry);
 		options.choices("display_mode", general::getDisplayMode, general::setDisplayMode);
 		OptionValue<?> value = options.choices("item_mod_name", general::showItemModNameTooltip, general::setItemModNameTooltip);
-		if (!General.itemModNameTooltipDisabledByModsNames.isEmpty()) {
+		List<String> modNames = ClientProxy.metadata.disableItemModNameTooltip().stream()
+				.map($ -> ModIdentification.getModFullName($).orElse($))
+				.toList();
+		if (!modNames.isEmpty()) {
 			value.setDisabled(true);
 			value.appendDescription(Component.translatable("gui.jade.disabled_by_mods"));
-			General.itemModNameTooltipDisabledByModsNames.stream().map(Component::literal).forEach(value::appendDescription);
+			modNames.stream().map(Component::literal).forEach(value::appendDescription);
 			if (value.getFirstWidget() != null) {
 				value.getFirstWidget().setTooltip(MultilineTooltip.create(value.getDescription()));
 			}
 		}
+
 		options.choices("hide_from_guis", general::shouldHideFromGUIs, general::setHideFromGUIs);
 		options.choices("boss_bar_overlap", general::getBossBarOverlapMode, general::setBossBarOverlapMode);
 		options.slider("reach_distance", general::getExtendedReach, general::setExtendedReach, 0, 20, f -> Mth.floor(f * 2) / 2F);

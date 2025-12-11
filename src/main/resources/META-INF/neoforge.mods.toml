@@ -17,4 +17,7 @@ config = "jade.mixins.json"
 
 [[dependencies.jade]]
 modId = "neoforge"
-versionRange = "[21.9.1-beta, )"
+versionRange = "[21.11.0-beta, )"
+
+[modproperties.jade.jade]
+smoothScroll = true

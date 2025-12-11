@@ -113,7 +113,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 
 	@Override
 	public void setScrollAmount(double scroll) {
-		if (ClientProxy.hasSmoothScroll) {
+		if (ClientProxy.metadata.hasSmoothScroll()) {
 			super.setScrollAmount(scroll);
 		} else {
 			smoothScroll.target(Mth.clamp((float) scroll, 0, maxScrollAmount()));
@@ -127,7 +127,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 
 	@Override
 	protected double scrollRate() {
-		return defaultEntryHeight * (!ClientProxy.hasFastScroll && JadeUI.hasControlDown() ? 4.5 : 1.5);
+		return defaultEntryHeight * (!ClientProxy.metadata.hasFastScroll() && JadeUI.hasControlDown() ? 4.5 : 1.5);
 	}
 
 	@Override
@@ -186,7 +186,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 	public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		float deltaTicks = Minecraft.getInstance().getDeltaTracker().getRealtimeDeltaTicks();
 		smoothScroll.tick(deltaTicks);
-		if (!ClientProxy.hasSmoothScroll) {
+		if (!ClientProxy.metadata.hasSmoothScroll()) {
 			super.setScrollAmount(Math.round(smoothScroll.value));
 		}
 		hovered = null;

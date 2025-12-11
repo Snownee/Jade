@@ -98,11 +98,9 @@ import snownee.jade.overlay.OverlayRenderer;
 
 public final class ClientProxy {
 
+	public static JadeMetadata metadata = new ForgeJadeMetadata();
 	private static final List<KeyMapping> keys = Lists.newArrayList();
 	private static final List<KeyedReloadListener> listeners = Lists.newArrayList();
-	public static boolean hasFastScroll = CommonProxy.isModLoaded("fastscroll");
-	public static boolean hasSmoothScroll = CommonProxy.isModLoaded("smoothscroll");
-	public static boolean hasAccessibilityMod = CommonProxy.isModLoaded("minecraft_access");
 	private static boolean bossbarShown;
 	private static int bossbarHeight;
 
@@ -274,10 +272,6 @@ public final class ClientProxy {
 	public static GameType getGameMode() {
 		MultiPlayerGameMode gameMode = Minecraft.getInstance().gameMode;
 		return gameMode == null ? GameType.SURVIVAL : gameMode.getPlayerMode();
-	}
-
-	public static boolean hasAccessibilityMod() {
-		return hasAccessibilityMod;
 	}
 
 	@Nullable
