@@ -101,6 +101,7 @@ public final class ClientProxy {
 	private static final List<KeyMapping> keys = Lists.newArrayList();
 	private static final List<KeyedReloadListener> listeners = Lists.newArrayList();
 	public static boolean hasFastScroll = CommonProxy.isModLoaded("fastscroll");
+	public static boolean hasSmoothScroll = CommonProxy.isModLoaded("smoothscroll");
 	public static boolean hasAccessibilityMod = CommonProxy.isModLoaded("minecraft_access");
 	private static boolean bossbarShown;
 	private static int bossbarHeight;

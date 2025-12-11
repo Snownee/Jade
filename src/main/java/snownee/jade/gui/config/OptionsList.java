@@ -113,7 +113,11 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 
 	@Override
 	public void setScrollAmount(double scroll) {
-		smoothScroll.target(Mth.clamp((float) scroll, 0, maxScrollAmount()));
+		if (ClientProxy.hasSmoothScroll) {
+			super.setScrollAmount(scroll);
+		} else {
+			smoothScroll.target(Mth.clamp((float) scroll, 0, maxScrollAmount()));
+		}
 	}
 
 	public void forceSetScrollAmount(double scroll) {
@@ -182,7 +186,9 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 	public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		float deltaTicks = Minecraft.getInstance().getDeltaTracker().getRealtimeDeltaTicks();
 		smoothScroll.tick(deltaTicks);
-		super.setScrollAmount(Math.round(smoothScroll.value));
+		if (!ClientProxy.hasSmoothScroll) {
+			super.setScrollAmount(Math.round(smoothScroll.value));
+		}
 		hovered = null;
 		if (!PreviewOptionsScreen.isAdjustingPosition()) {
 			InputType lastInputType = minecraft.getLastInputType();
