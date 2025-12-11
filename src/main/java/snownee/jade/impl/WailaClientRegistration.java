@@ -539,6 +539,6 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 
 	@Override
 	public boolean maybeLowVisionUser() {
-		return ClientProxy.hasAccessibilityMod() || IWailaConfig.get().accessibility().shouldEnableTextToSpeech();
+		return ClientProxy.metadata.hasAccessibilityMod() || IWailaConfig.get().accessibility().shouldEnableTextToSpeech();
 	}
 }

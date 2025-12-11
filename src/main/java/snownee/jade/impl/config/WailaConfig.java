@@ -1,10 +1,7 @@
 package snownee.jade.impl.config;
 
-import java.util.List;
-
 import org.jspecify.annotations.Nullable;
 
-import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -30,7 +27,6 @@ import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
 import snownee.jade.util.JadeCodecs;
 import snownee.jade.util.JsonConfig;
-import snownee.jade.util.ModIdentification;
 
 /**
  * Get this instance from {@link IWailaConfig#get()}
@@ -129,13 +125,7 @@ public class WailaConfig implements IWailaConfig {
 	}
 
 	public static void init() {
-		General.itemModNameTooltipDisabledByModsNames.clear();
-		General.itemModNameTooltipDisabledByMods.stream()
-				.filter(CommonProxy::isModLoaded)
-				.map($ -> ModIdentification.getModFullName($).orElse($))
-				.forEach(General.itemModNameTooltipDisabledByModsNames::add);
-
-		boolean hasAccessibilityMod = ClientProxy.hasAccessibilityMod();
+		boolean hasAccessibilityMod = ClientProxy.metadata.hasAccessibilityMod();
 		if (Jade.history().accessibilityModMemory != hasAccessibilityMod) {
 			Jade.history().accessibilityModMemory = hasAccessibilityMod;
 			for (JsonConfig<? extends WailaConfig> config : Jade.configs()) {
@@ -227,8 +217,6 @@ public class WailaConfig implements IWailaConfig {
 				ExtraOptions.CODEC.orElseGet(() -> JadeCodecs.createFromEmptyMap(ExtraOptions.CODEC.codec()))
 						.forGetter($ -> $.extraOptions)).apply(i, General::new));
 
-		public static final List<String> itemModNameTooltipDisabledByMods = Lists.newArrayList();
-		public static final List<String> itemModNameTooltipDisabledByModsNames = Lists.newArrayList();
 		private boolean displayTooltip;
 		private boolean displayBlocks;
 		private boolean displayEntities;
@@ -391,7 +379,7 @@ public class WailaConfig implements IWailaConfig {
 
 		@Override
 		public boolean showItemModNameTooltip() {
-			return itemModNameTooltip && itemModNameTooltipDisabledByModsNames.isEmpty();
+			return itemModNameTooltip && ClientProxy.metadata.disableItemModNameTooltip().isEmpty();
 		}
 
 		@Override
