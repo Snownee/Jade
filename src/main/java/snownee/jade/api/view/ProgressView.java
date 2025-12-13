@@ -49,9 +49,11 @@ public class ProgressView {
 
 	public static ProgressView read(Data data) {
 		ProgressView view = new ProgressView(JadeUI.progressStyle(), BoxStyle.nestedBox());
-		if (data.progress > 0) {
-			view.parts = List.of(Part.of(data.progress, data.messageType));
-		}
+		view.parts = List.of(new PartBuilder()
+				.progress(data.progress)
+				.target(data.speed, data.target)
+				.messageType(data.messageType)
+				.build());
 		return view;
 	}
 
@@ -143,6 +145,10 @@ public class ProgressView {
 			}
 			return -1;
 		}
+
+		public boolean targetDefined() {
+			return !Float.isNaN(target) && !Float.isNaN(speed);
+		}
 	}
 
 	public static class PartBuilder {
@@ -164,12 +170,20 @@ public class ProgressView {
 			return this;
 		}
 
+		@Deprecated
 		public PartBuilder speed(float speed) {
 			this.speed = speed;
 			return this;
 		}
 
+		@Deprecated
 		public PartBuilder target(float target) {
+			this.target = target;
+			return this;
+		}
+
+		public PartBuilder target(float speed, float target) {
+			this.speed = speed;
 			this.target = target;
 			return this;
 		}

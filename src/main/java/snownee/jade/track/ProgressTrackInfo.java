@@ -46,6 +46,7 @@ public class ProgressTrackInfo extends TrackInfo {
 		Set<Child> set = Sets.newHashSet();
 		for (ProgressView.Part part : parts) {
 			Child child = children.get(part.id());
+			//noinspection ConstantValue
 			if (child == null) {
 				child = new Child(part, canDecrease);
 				children.put(part.id(), child);
@@ -65,6 +66,7 @@ public class ProgressTrackInfo extends TrackInfo {
 
 	public float getSmoothProgress(ProgressView.Part part) {
 		Child child = children.get(part.id());
+		//noinspection ConstantValue
 		if (child == null) {
 			return part.progress();
 		}
@@ -119,7 +121,7 @@ public class ProgressTrackInfo extends TrackInfo {
 			}
 			if (!canDecrease && progress < smoothProgress.getTarget()) {
 				// start of a new loop
-				if (smoothProgress.isMoving()) {
+				if (smoothProgress.isMoving() && !part.targetDefined()) {
 					smoothProgress.withSpeed(Math.max(0.5F, smoothProgress.getSpeed()));
 					if (smoothProgress.getTarget() > 0.9F) {
 						smoothProgress.target(1);
@@ -130,7 +132,15 @@ public class ProgressTrackInfo extends TrackInfo {
 			} else {
 				smoothProgress.target(progress);
 			}
-			smoothProgress.tick(pTicks);
+			if (part.targetDefined()) {
+				float value = smoothProgress.value + pTicks * part.speed();
+				if ((part.speed() > 0 && value >= part.target()) || (part.speed() < 0 && value <= part.target())) {
+					value = part.target();
+				}
+				smoothProgress.set(value);
+			} else {
+				smoothProgress.tick(pTicks);
+			}
 		}
 	}
 }
