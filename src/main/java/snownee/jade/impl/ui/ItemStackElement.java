@@ -68,7 +68,7 @@ public class ItemStackElement extends Element {
 		if (item.isEmpty() || connection == null) {
 			return false;
 		}
-		ItemInput itemInput = new ItemInput(item.getItemHolder(), item.getComponentsPatch());
+		ItemInput itemInput = new ItemInput(item.typeHolder(), item.getComponentsPatch());
 		keyboardHandler.setClipboard(itemInput.serialize(connection.registryAccess()));
 		return true;
 	}

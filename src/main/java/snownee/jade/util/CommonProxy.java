@@ -331,11 +331,11 @@ public final class CommonProxy implements ModInitializer {
 						blockAccessor.getBlockState(),
 						blockAccessor.getBlockEntity(),
 						null);
-				if (storage != null && storage.getCapacity() > 0) {
-					var group = new ViewGroup<>(List.of(new EnergyView.Data(storage.getAmount(), storage.getCapacity())));
-					group.getExtraData().putString("Unit", "E");
-					return List.of(group);
-				}
+//				if (storage != null && storage.getCapacity() > 0) {
+//					var group = new ViewGroup<>(List.of(new EnergyView.Data(storage.getAmount(), storage.getCapacity())));
+//					group.getExtraData().putString("Unit", "E");
+//					return List.of(group);
+//				}
 			} catch (Throwable e) {
 				WailaExceptionHandler.handleErr(e, null, null);
 			}
@@ -370,7 +370,7 @@ public final class CommonProxy implements ModInitializer {
 
 	public static boolean isBoss(Entity entity) {
 		EntityType<?> entityType = entity.getType();
-		return entityType.is(ConventionalEntityTypeTags.BOSSES) || entityType == EntityType.ENDER_DRAGON || entityType == EntityType.WITHER;
+		return entity.is(ConventionalEntityTypeTags.BOSSES) || entityType == EntityType.ENDER_DRAGON || entityType == EntityType.WITHER;
 	}
 
 	public static ItemStack getBlockPickedResult(BlockState state, Player player, BlockHitResult hitResult) {

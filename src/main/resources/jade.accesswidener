@@ -1,4 +1,4 @@
-accessWidener   v1  named
+accessWidener   v1  official
 accessible field net/minecraft/world/level/block/entity/BrewingStandBlockEntity brewTime I
 accessible field net/minecraft/world/level/block/entity/BrewingStandBlockEntity fuel I
 
@@ -56,8 +56,6 @@ accessible field net/minecraft/world/level/block/entity/CampfireBlockEntity cook
 
 accessible field net/minecraft/world/level/block/entity/trialspawner/TrialSpawnerStateData cooldownEndsAt J
 
-accessible method net/minecraft/client/renderer/LightTexture calculateDarknessScale (Lnet/minecraft/world/entity/LivingEntity;FF)F
-
 accessible field net/minecraft/world/entity/animal/armadillo/Armadillo scuteTime I
 
 accessible field net/minecraft/world/level/block/state/BlockBehaviour$Properties explosionResistance F
@@ -112,3 +110,5 @@ accessible field net/minecraft/world/entity/animal/equine/AbstractHorse MAX_MOVE
 accessible field net/minecraft/world/entity/animal/golem/CopperGolem nextWeatheringTick J
 accessible field net/minecraft/world/entity/animal/golem/CopperGolem IGNORE_WEATHERING_TICK J
 accessible field net/minecraft/world/entity/monster/zombie/ZombieVillager villagerConversionTime I
+
+accessible field net/minecraft/client/renderer/GameRenderer lightmapRenderState Lnet/minecraft/client/renderer/state/LightmapRenderState;

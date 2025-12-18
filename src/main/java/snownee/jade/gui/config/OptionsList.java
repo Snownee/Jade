@@ -35,6 +35,7 @@ import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.gui.navigation.ScreenDirection;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -146,7 +147,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 	@Override
 	public ComponentPath nextFocusPath(FocusNavigationEvent event) {
 		OptionsNav.Entry navEntry = owner.optionsNav().getFocused();
-		if (navEntry != null && event instanceof FocusNavigationEvent.ArrowNavigation(ScreenDirection direction) &&
+		if (navEntry != null && event instanceof FocusNavigationEvent.ArrowNavigation(ScreenDirection direction, ScreenRectangle _) &&
 				direction == ScreenDirection.RIGHT) {
 			Title title = navEntry.getTitle();
 			setFocused(title);

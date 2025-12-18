@@ -81,7 +81,7 @@ public class WailaCommonRegistration implements IWailaCommonRegistration {
 
 		blockOperations = new TargetOperationRepositoryImpl<>(
 				Registries.BLOCK,
-				$ -> $.getBlockHolder().unwrapKey().orElseThrow(),
+				$ -> $.typeHolder().unwrapKey().orElseThrow(),
 				"hide-blocks",
 				() -> CommonProxy.isPhysicallyClient() ? List.of("barrier") : List.of());
 		//noinspection deprecation

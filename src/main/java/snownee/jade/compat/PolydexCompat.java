@@ -22,7 +22,7 @@ public class PolydexCompat implements RecipeLookupPlugin {
 		if (!(commands.getRoot().getChild("polydex") instanceof LiteralCommandNode)) {
 			return RecipeLookupResult.FAIL;
 		}
-		Identifier id = specialId != null ? specialId : itemStack.getItemHolder().unwrapKey().orElseThrow().identifier();
+		Identifier id = specialId != null ? specialId : itemStack.typeHolder().unwrapKey().orElseThrow().identifier();
 		return new RecipeLookupResult(
 				"polydex",
 				specialId != null ? 10f : 0.1f,

@@ -19,7 +19,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -27,7 +26,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
@@ -194,9 +192,6 @@ public final class JadeClient {
 			return;
 		}
 		Accessor<?> accessor = tickHandler.state.accessor();
-		if (accessor == null) {
-			return;
-		}
 		ItemStack itemStack = accessor.getPickedResult();
 		if (itemStack.isEmpty()) {
 			return;
@@ -309,7 +304,7 @@ public final class JadeClient {
 	}
 
 	private static boolean isCamouflageBrushableBlock(BlockState blockState) {
-		return blockState.getBlockHolder().unwrapKey().orElseThrow().identifier().getPath().startsWith("suspicious_");
+		return blockState.typeHolder().unwrapKey().orElseThrow().identifier().getPath().startsWith("suspicious_");
 	}
 
 	@Nullable
@@ -319,11 +314,8 @@ public final class JadeClient {
 		}
 		Player player = accessor.getPlayer();
 		Minecraft mc = Minecraft.getInstance();
-		LightTexture lightTexture = mc.gameRenderer.lightTexture();
-		float darknessEffectScale = mc.options.darknessEffectScale().get().floatValue();
-		float gamma = player.getEffectBlendFactor(MobEffects.DARKNESS, 1) * darknessEffectScale;
-		gamma = lightTexture.calculateDarknessScale(player, gamma, 1);
-		if (gamma > 0.15f && accessor.getLevel().getMaxLocalRawBrightness(BlockPos.containing(accessor.getHitResult().getLocation())) < 7) {
+		if (mc.gameRenderer.lightmapRenderState.darknessEffectScale > 0.15f &&
+				accessor.getLevel().getMaxLocalRawBrightness(BlockPos.containing(accessor.getHitResult().getLocation())) < 7) {
 			return null;
 		}
 		if (renderDistanceStart == 0f && renderDistanceEnd == 0f) {

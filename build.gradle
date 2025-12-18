@@ -1,10 +1,10 @@
 plugins {
-    id 'fabric-loom' version "${loom_version}"
+    id 'net.fabricmc.fabric-loom' version "${loom_version}"
     id 'maven-publish'
     id "me.modmuss50.mod-publish-plugin" version "1.1.0"
 }
 
-version = project.archive_minecraft_version + "-Fabric-" + project.mod_version
+version = "mc${archive_minecraft_version}-Fabric-${mod_version}"
 group = project.maven_group
 var realVersion = project.mod_version + '+fabric'
 
@@ -39,30 +39,18 @@ sourceSets {
 dependencies {
     // To change the versions see the gradle.properties file
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings loom.officialMojangMappings()
-    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    implementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
     // Fabric API. This is technically optional, but you probably want it anyway.
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    // PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
-    // You may need to force-disable transitiveness on them.
-
-    //modApi("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}") {
-    //    exclude(group: "net.fabricmc.fabric-api")
-    //}
-//    modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
-
-//    modCompileOnly "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
-    //modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
-
-    modCompileOnlyApi "mezz.jei:jei-1.21.8-common-api:${jei_version}"
+//    modCompileOnlyApi "mezz.jei:jei-1.21.8-common-api:${jei_version}"
 //    modCompileOnlyApi "mezz.jei:jei-1.21.8-fabric-api:${jei_version}"
     //modRuntimeOnly "mezz.jei:jei-1.20.1-fabric:${jei_version}"
 
-    modApi("teamreborn:energy:${project.tr_energy_version}") {
-        exclude(group: "net.fabricmc.fabric-api")
-    }
+//    modApi("teamreborn:energy:${project.tr_energy_version}") {
+//        exclude(group: "net.fabricmc.fabric-api")
+//    }
 }
 
 loom {
@@ -83,7 +71,7 @@ tasks.withType(JavaCompile).configureEach {
     // see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
     // If Javadoc is generated, this must be specified in that task too.
     it.options.encoding = "UTF-8"
-    it.options.release = 21
+    it.options.release = 25
 }
 
 task apiJar(type: Jar) {
@@ -116,31 +104,8 @@ jar {
     }
 }
 
-// configure the maven publication
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            // add all the jars that should be included when publishing to maven
-            artifact(remapJar) {
-                builtBy remapJar
-            }
-            //artifact(sourcesJar) {
-            //  builtBy remapSourcesJar
-            //}
-        }
-    }
-
-    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
-    repositories {
-        // Add repositories to publish to here.
-        // Notice: This block does NOT have the same function as the block in the top level.
-        // The repositories here will be used for publishing your artifact, not for
-        // retrieving dependencies.
-    }
-}
-
 publishMods {
-    file = remapJar.archiveFile
+    file = jar.archiveFile
     additionalFiles.from(sourcesJar.archiveFile)
     changelog = file('CHANGELOG.md').exists() ? file('CHANGELOG.md').text : ''
     type = switch (release_type) {

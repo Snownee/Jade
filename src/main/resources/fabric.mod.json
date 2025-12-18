@@ -43,7 +43,7 @@
 	"accessWidener": "jade.accesswidener",
 	"depends": {
 		"fabric-api": ">=0.139",
-		"minecraft": ">=1.21.11"
+		"minecraft": ">=26.1-"
 	},
 	"custom": {
 		"modmenu": {

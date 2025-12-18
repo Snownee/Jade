@@ -20,6 +20,7 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.gui.navigation.ScreenAxis;
 import net.minecraft.client.gui.navigation.ScreenDirection;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.CommonComponents;
@@ -68,7 +69,7 @@ public abstract class BaseOptionsScreen extends Screen {
 		searchBox = new NotUglyEditBox(font, 0, 0, 120, 18, searchBox, Component.translatable("gui.jade.search")) {
 			@Override
 			public @Nullable ComponentPath nextFocusPath(FocusNavigationEvent event) {
-				if (event instanceof FocusNavigationEvent.ArrowNavigation(ScreenDirection direction) &&
+				if (event instanceof FocusNavigationEvent.ArrowNavigation(ScreenDirection direction, ScreenRectangle _) &&
 						direction.getAxis() == ScreenAxis.HORIZONTAL) {
 					return null;
 				}
