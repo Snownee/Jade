@@ -184,11 +184,11 @@ public final class CommonProxy implements ModInitializer {
 		if (target instanceof AbstractHorseAccess) {
 			return new ItemCollector<>(new ItemIterator.ContainerItemIterator(
 					o -> {
-						if (o instanceof AbstractHorseAccess horse) {
+						if (o.getTarget() instanceof AbstractHorseAccess horse) {
 							return horse.getInventory();
 						}
 						return null;
-					}, 2));
+					}, 0));
 		}
 		if (!(target instanceof ChestBlockEntity)) {
 			try {
