@@ -31,8 +31,7 @@ public class HorseStatsProvider implements IEntityComponentProvider {
 	}
 
 	private static double getJumpHeight(double jumpStrength) {
-		return -0.1817584952 * jumpStrength * jumpStrength * jumpStrength + 3.689713992 * jumpStrength * jumpStrength +
-				2.128599134 * jumpStrength - 0.343930367;
+		return 4.53680079 * jumpStrength * jumpStrength + 1.61431730 * jumpStrength - -0.22656224;
 	}
 
 	@Override
