@@ -62,8 +62,8 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 		return 0.5F;
 	}
 
-	private static float maybeSnap(float value) {
-		if (!JadeUI.hasControlDown() && value > 0.475f && value < 0.525f) {
+	private static float maybeSnap(float value, boolean snap) {
+		if (snap && value > 0.475f && value < 0.525f) {
 			return 0.5f;
 		}
 		return value;
@@ -78,12 +78,7 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 					OptionsList.OPTION_ON,
 					OptionsList.OPTION_OFF,
 					Jade.history().previewOverlay).create(
-					10,
-					Objects.requireNonNull(saveButton).getY(),
-					85,
-					20,
-					Component.translatable("gui.jade.preview"),
-					(button, value) -> {
+					10, Objects.requireNonNull(saveButton).getY(), 85, 20, Component.translatable("gui.jade.preview"), (button, value) -> {
 						Jade.history().previewOverlay = value;
 						Objects.requireNonNull(saver).run();
 					});
@@ -160,6 +155,15 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 	@Override
 	public boolean keyPressed(KeyEvent keyEvent) {
 		if (adjustingPosition) {
+			if (keyEvent.isUp()) {
+				moveOverlayRelatively(0, -1);
+			} else if (keyEvent.isDown()) {
+				moveOverlayRelatively(0, 1);
+			} else if (keyEvent.isLeft()) {
+				moveOverlayRelatively(-1, 0);
+			} else if (keyEvent.isRight()) {
+				moveOverlayRelatively(1, 0);
+			}
 			return true;
 		}
 		return super.keyPressed(keyEvent);
@@ -179,24 +183,38 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 		return super.keyReleased(keyEvent);
 	}
 
+	private void moveOverlayRelatively(float x, float y) {
+		Rect2f rect = OverlayRenderer.animation.expectedRect;
+		float centerX = rect.getX() + rect.getWidth() / 2F;
+		float centerY = rect.getY() + rect.getHeight() / 2F;
+		float step = JadeUI.hasShiftDown() ? 20 : 2;
+		centerX += x * step;
+		centerY += y * step;
+		moveOverlay(centerX, centerY, false);
+	}
+
+	public void moveOverlay(float centerX, float centerY, boolean snap) {
+		Rect2f rect = OverlayRenderer.animation.expectedRect;
+		float rectWidth = rect.getWidth();
+		float rectHeight = rect.getHeight();
+		float anchorX = calculateAnchor(centerX, width, rectWidth);
+		float anchorY = calculateAnchor(centerY, height, rectHeight);
+		float posX = (centerX + rectWidth * (anchorX - 0.5F)) / width;
+		float posY = 1 - (centerY + rectHeight * (anchorY - 0.5F)) / height;
+		IWailaConfig.Overlay overlay = IWailaConfig.get().overlay();
+		IWailaConfig.Accessibility accessibility = IWailaConfig.get().accessibility();
+		overlay.setOverlayPosX(accessibility.tryFlip(maybeSnap(posX, snap)));
+		overlay.setOverlayPosY(maybeSnap(posY, snap));
+		overlay.setAnchorX(accessibility.tryFlip(anchorX));
+		overlay.setAnchorY(anchorY);
+	}
+
 	@Override
 	public boolean mouseDragged(MouseButtonEvent event, double d, double e) {
 		if (adjustingPosition && adjustDragging) {
 			float centerX = (float) event.x() - (float) dragOffsetX;
 			float centerY = (float) event.y() - (float) dragOffsetY;
-			Rect2f rect = OverlayRenderer.animation.expectedRect;
-			float rectWidth = rect.getWidth();
-			float rectHeight = rect.getHeight();
-			float anchorX = calculateAnchor(centerX, width, rectWidth);
-			float anchorY = calculateAnchor(centerY, height, rectHeight);
-			float posX = (centerX + rectWidth * (anchorX - 0.5F)) / width;
-			float posY = 1 - (centerY + rectHeight * (anchorY - 0.5F)) / height;
-			IWailaConfig.Overlay overlay = IWailaConfig.get().overlay();
-			IWailaConfig.Accessibility accessibility = IWailaConfig.get().accessibility();
-			overlay.setOverlayPosX(accessibility.tryFlip(maybeSnap(posX)));
-			overlay.setOverlayPosY(maybeSnap(posY));
-			overlay.setAnchorX(accessibility.tryFlip(anchorX));
-			overlay.setAnchorY(anchorY);
+			moveOverlay(centerX, centerY, !JadeUI.hasControlDown());
 			return true;
 		}
 		return super.mouseDragged(event, d, e);
