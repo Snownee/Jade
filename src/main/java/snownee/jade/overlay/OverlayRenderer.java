@@ -1,6 +1,7 @@
 package snownee.jade.overlay;
 
 import org.joml.Matrix3x2fStack;
+import org.joml.Vector2fc;
 import org.joml.Vector2i;
 import org.jspecify.annotations.Nullable;
 
@@ -20,6 +21,7 @@ import snownee.jade.api.JadeKeys;
 import snownee.jade.api.callback.JadeBeforeRenderCallback;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.IWailaConfig.BossBarOverlapMode;
+import snownee.jade.api.gaze.GazePoint;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
 import snownee.jade.api.ui.Element;
@@ -200,6 +202,24 @@ public class OverlayRenderer {
 			Rect2f bossBarRect = ClientProxy.getBossBarRect();
 			if (bossBarRect != null) {
 				JadeInternals.getDisplayHelper().drawBorder(graphics, bossBarRect, 2, 0x88FF00FF, true);
+			}
+		}
+
+		GazePoint gazePoint = WailaClientRegistration.instance().gazePoint;
+		if (gazePoint.canUse()) {
+			Vector2fc gazePos = gazePoint.pos();
+			if (gazePos != null) {
+//				JadeInternals.getDisplayHelper().drawBorder(
+//						graphics,
+//						new Rect2f(gazePos.x() - 10, gazePos.y() - 10, 20, 20),
+//						2,
+//						0x88FF0000,
+//						true);
+
+				Rect2f inflated = animation.rect.copy().inflate(50);
+				if (!inflated.contains(gazePos.x(), gazePos.y())) {
+					return;
+				}
 			}
 		}
 

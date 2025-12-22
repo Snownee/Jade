@@ -124,4 +124,12 @@ public class Rect2f {
 	public float getBottom() {
 		return yPos + height;
 	}
+
+	public Rect2f inflate(float amount) {
+		this.xPos -= amount;
+		this.yPos -= amount;
+		this.width += amount * 2;
+		this.height += amount * 2;
+		return this;
+	}
 }

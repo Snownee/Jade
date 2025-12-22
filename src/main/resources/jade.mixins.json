@@ -18,7 +18,8 @@
 		"LanguageManagerMixin",
 		"PreparedTextBuilderMixin",
 		"key_extension.KeyBindsListMixin",
-		"key_extension.KeyMappingMixin"
+		"key_extension.KeyMappingMixin",
+		"cleanui.GuiMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

@@ -58,6 +58,7 @@ import snownee.jade.api.callback.JadeRayTraceCallback;
 import snownee.jade.api.callback.JadeTooltipCollectedCallback;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
+import snownee.jade.api.gaze.GazePoint;
 import snownee.jade.api.platform.CustomEnchantPower;
 import snownee.jade.api.view.EnergyView;
 import snownee.jade.api.view.FluidView;
@@ -72,6 +73,7 @@ import snownee.jade.impl.config.entry.EnumConfigEntry;
 import snownee.jade.impl.config.entry.FloatConfigEntry;
 import snownee.jade.impl.config.entry.IntConfigEntry;
 import snownee.jade.impl.config.entry.StringConfigEntry;
+import snownee.jade.impl.gaze.StubGazePoint;
 import snownee.jade.impl.lookup.HierarchyLookup;
 import snownee.jade.overlay.DatapackBlockManager;
 import snownee.jade.util.ClientProxy;
@@ -106,6 +108,8 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	public final Set<Identifier> clientFeatures = Sets.newHashSet();
 
 	public final Map<Class<Accessor<?>>, AccessorClientHandler<Accessor<?>>> accessorHandlers = Maps.newIdentityHashMap();
+
+	public GazePoint gazePoint = new StubGazePoint();
 
 	WailaClientRegistration() {
 		blockIconProviders = new HierarchyLookup<>(Block.class);

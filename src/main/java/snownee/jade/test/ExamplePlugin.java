@@ -16,6 +16,8 @@ import snownee.jade.api.IWailaCommonRegistration;
 import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.view.HideThingsExtensionProvider;
+import snownee.jade.impl.WailaClientRegistration;
+import tobii.TobiiGazePoint;
 
 public class ExamplePlugin implements IWailaPlugin {
 
@@ -39,6 +41,7 @@ public class ExamplePlugin implements IWailaPlugin {
 
 	@Override
 	public void registerClient(IWailaClientRegistration registration) {
+		WailaClientRegistration.instance().gazePoint = new TobiiGazePoint();
 		registration.registerBlockComponent(ExampleComponentProvider.INSTANCE, AbstractFurnaceBlock.class);
 		registration.addConfig(UID_TEST_STR_CFG, "", $ -> Identifier.tryParse($) != null);
 		registration.addConfigListener(UID_TEST_STR_CFG, $ -> Jade.LOGGER.info("Changed: $: " + IWailaConfig.get().plugin().getString($)));

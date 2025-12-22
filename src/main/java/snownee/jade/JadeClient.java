@@ -54,6 +54,7 @@ import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
 import snownee.jade.api.ui.BoxElement;
 import snownee.jade.api.ui.ColorPalette;
+import snownee.jade.api.ui.Rect2f;
 import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.ui.TooltipAnimation;
 import snownee.jade.compat.RecipeLookupPlugin;
@@ -430,5 +431,16 @@ public final class JadeClient {
 				Jade.LOGGER.warn("Failed to load recipe lookup plugin: {}", clazz, e);
 			}
 		}
+	}
+
+	public static Rect2f hotbarArea(GuiGraphics graphics) {
+		int screenCenter = graphics.guiWidth() / 2;
+//		int hotbarWidth = 182;
+		int halfHotbar = 91 + 50;
+		return new Rect2f(
+				screenCenter - halfHotbar,
+				graphics.guiHeight() - 100,
+				screenCenter + halfHotbar,
+				graphics.guiHeight() + 100);
 	}
 }
