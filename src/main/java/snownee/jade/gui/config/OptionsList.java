@@ -165,10 +165,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 
 	@Override
 	protected boolean entriesCanBeSelected() {
-		if (PreviewOptionsScreen.isAdjustingPosition()) {
-			return false;
-		}
-		return super.entriesCanBeSelected();
+		return !PreviewOptionsScreen.isAdjustingPosition();
 	}
 
 	@Override
@@ -179,7 +176,11 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 
 	@Override
 	protected void renderSelection(GuiGraphics guiGraphics, Entry entry, int i) {
-		guiGraphics.fill(getX(), i - 2, getRight(), i + entry.getContentHeight() + 2, 0x33FFFFFF);
+		int outlineX0 = getX();
+		int outlineY0 = entry.getY();
+		int outlineX1 = outlineX0 + getWidth();
+		int outlineY1 = outlineY0 + entry.getHeight();
+		guiGraphics.fill(outlineX0, outlineY0, outlineX1, outlineY1, 0x33FFFFFF);
 	}
 
 	@Override
