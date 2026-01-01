@@ -10,6 +10,7 @@ import it.unimi.dsi.fastutil.floats.FloatUnaryOperator;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.Tooltip;
@@ -60,7 +61,7 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 
 	@SuppressWarnings("UnusedReturnValue")
 	public static OptionsList.Entry editIgnoreList(OptionsList.Entry entry, String fileName, Runnable defaultFactory) {
-		Objects.requireNonNull(entry.getFirstWidget()).setWidth(79);
+		Objects.requireNonNull(entry.mainWidget()).setWidth(79);
 		MutableComponent tooltip = Component.translatable("config.jade.edit_ignore_list");
 		entry.addWidget(
 				Button.builder(
@@ -104,8 +105,9 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 			value.setDisabled(true);
 			value.appendDescription(Component.translatable("gui.jade.disabled_by_mods"));
 			modNames.stream().map(Component::literal).forEach(value::appendDescription);
-			if (value.getFirstWidget() != null) {
-				value.getFirstWidget().setTooltip(MultilineTooltip.create(value.getDescription()));
+			AbstractWidget mainWidget = value.mainWidget();
+			if (mainWidget != null) {
+				mainWidget.setTooltip(MultilineTooltip.create(value.getDescription()));
 			}
 		}
 
@@ -163,7 +165,7 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 				"theme_style",
 				CycleButton.builder(id -> Component.translatable(ThemeHelper.INSTANCE.getTheme(id).styleName), overlay.getTheme().fullId())
 						.withValues(valuesSupplier),
-				() -> overlay.getTheme().id,
+				() -> Objects.requireNonNull(overlay.getTheme().id),
 				overlay::applyTheme) {
 			@Override
 			public void updateValue() {
@@ -208,7 +210,8 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 		options.slider("text_background_opacity", accessibility::getTextBackgroundOpacity, accessibility::setTextBackgroundOpacity);
 		options.choices("flip_main_hand", accessibility::getFlipMainHand, accessibility::setFlipMainHand);
 
-		options.title("danger_zone").withStyle(ChatFormatting.RED);
+		OptionsList.Title dangerZone = options.title("danger_zone");
+		dangerZone.setTitle(dangerZone.title().copy().withStyle(ChatFormatting.RED));
 		options.add(new OptionButton(
 				"reload_plugins", Button.builder(
 				OptionsList.Entry.makeTitle("reload_plugins.button"), w -> {

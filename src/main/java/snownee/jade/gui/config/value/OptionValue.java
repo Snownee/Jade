@@ -1,7 +1,6 @@
 package snownee.jade.gui.config.value;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -10,32 +9,32 @@ import org.jspecify.annotations.Nullable;
 import com.google.common.collect.Lists;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.narration.NarrationThunk;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
 import snownee.jade.gui.config.OptionsList;
 
 public abstract class OptionValue<T> extends OptionsList.Entry {
 
-	private static final Component SERVER_FEATURE = Component.literal("*").withStyle(ChatFormatting.GRAY);
+	private static final Component SERVER_FEATURE = Component.literal("* ").withStyle(Style.EMPTY.withColor(ChatFormatting.GRAY)
+			.withHoverEvent(new HoverEvent.ShowText(Component.translatable("gui.jade.server_feature"))));
 	protected final Supplier<T> getter;
 	protected final Consumer<T> setter;
-	private final Component title;
 	protected @Nullable Identifier id;
-	public boolean serverFeature;
 	protected T value;
 	protected int indent;
+	private Component rawTitle;
 
 	public OptionValue(String optionName, Supplier<T> getter, Consumer<T> setter) {
-		this.title = makeTitle(optionName);
+		super(makeTitle(optionName));
 		this.getter = getter;
 		this.setter = setter;
-		addMessage(title.getString());
+		rawTitle = title();
 		addMessageKey(optionName);
 		String key = makeKey(optionName + "_desc");
 		if (I18n.exists(key)) {
@@ -44,24 +43,17 @@ public abstract class OptionValue<T> extends OptionsList.Entry {
 	}
 
 	@Override
-	public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovered, float deltaTime) {
-		AbstractWidget widget = Objects.requireNonNull(getFirstWidget());
-		Component title0 = widget.active ? title : title.copy().withStyle(ChatFormatting.STRIKETHROUGH, ChatFormatting.GRAY);
-		int left = getContentX() + indent + 10;
-		int top = getContentY() + (getContentHeight() / 2) - (client.font.lineHeight / 2);
-		guiGraphics.drawString(client.font, title0, left, top, 0xFFFFFFFF);
-		if (serverFeature) {
-			guiGraphics.drawString(client.font, SERVER_FEATURE, left + getTextWidth() + 1, top, 0xFFFFFFFF);
+	public void setDisabled(boolean disabled) {
+		super.setDisabled(disabled);
+		if (disabled) {
+			setTitle(rawTitle.copy().withStyle(ChatFormatting.GRAY));
+		} else {
+			setTitle(rawTitle);
 		}
-		super.renderContent(guiGraphics, mouseX, mouseY, hovered, deltaTime);
 	}
 
 	public void save() {
 		setter.accept(value);
-	}
-
-	public Component getTitle() {
-		return title;
 	}
 
 	public void appendDescription(Component description) {
@@ -75,12 +67,7 @@ public abstract class OptionValue<T> extends OptionsList.Entry {
 
 	@Override
 	public int getTextX() {
-		return getContentX() + indent + 10;
-	}
-
-	@Override
-	public int getTextWidth() {
-		return client.font.width(getTitle());
+		return indent + 10;
 	}
 
 	@Override
@@ -122,5 +109,9 @@ public abstract class OptionValue<T> extends OptionsList.Entry {
 			return List.of();
 		}
 		return List.of(Component.literal(id.toString()).withStyle(ChatFormatting.GRAY));
+	}
+
+	public void setServerFeature() {
+		setTitle(title().copy().append(SERVER_FEATURE));
 	}
 }

@@ -434,7 +434,7 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 			String title = jumpToCategory.getString();
 			jumpTo = options -> {
 				for (OptionsList.Entry entry : options.children()) {
-					if (entry instanceof OptionsList.Title e && e.getTitle().getString().equals(title)) {
+					if (entry instanceof OptionsList.Title e && e.title().getString().equals(title)) {
 						return entry;
 					}
 				}
