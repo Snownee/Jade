@@ -564,12 +564,12 @@ public final class CommonProxy implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		PayloadTypeRegistry.playS2C().register(ReceiveDataPacket.TYPE, ReceiveDataPacket.CODEC);
-		PayloadTypeRegistry.playC2S().register(RequestBlockPacket.TYPE, RequestBlockPacket.CODEC);
-		PayloadTypeRegistry.playC2S().register(RequestEntityPacket.TYPE, RequestEntityPacket.CODEC);
-		PayloadTypeRegistry.playC2S().register(ClientHandshakePacket.TYPE, ClientHandshakePacket.CODEC);
-		PayloadTypeRegistry.playS2C().register(ServerHandshakePacket.TYPE, ServerHandshakePacket.CODEC);
-		PayloadTypeRegistry.playS2C().register(ShowOverlayPacket.TYPE, ShowOverlayPacket.CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(ReceiveDataPacket.TYPE, ReceiveDataPacket.CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(RequestBlockPacket.TYPE, RequestBlockPacket.CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(RequestEntityPacket.TYPE, RequestEntityPacket.CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(ClientHandshakePacket.TYPE, ClientHandshakePacket.CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(ServerHandshakePacket.TYPE, ServerHandshakePacket.CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(ShowOverlayPacket.TYPE, ShowOverlayPacket.CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(
 				RequestEntityPacket.TYPE, (payload, context) -> {
 					RequestEntityPacket.handle(payload, context::player);

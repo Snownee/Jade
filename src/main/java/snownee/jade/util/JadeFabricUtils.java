@@ -85,7 +85,7 @@ public final class JadeFabricUtils {
 					return null;
 				}
 				return new Tuple<>(
-						JadeFluidObject.of($.getResource().getFluid(), $.getAmount(), $.getResource().getComponents()),
+						JadeFluidObject.of($.getResource().getFluid(), $.getAmount(), $.getResource().getComponentsPatch()),
 						capacity);
 			}).filter(Objects::nonNull);
 		}

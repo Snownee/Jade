@@ -16,13 +16,13 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.brigadier.CommandDispatcher;
 
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
@@ -116,8 +116,8 @@ public final class ClientProxy implements ClientModInitializer {
 
 	public static void registerClientCommand(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandBuildContext registryAccess) {
 		dispatcher.register(JadeClientCommand.create(
-				ClientCommandManager::literal,
-				ClientCommandManager::argument,
+				ClientCommands::literal,
+				ClientCommands::argument,
 				FabricClientCommandSource::sendFeedback,
 				FabricClientCommandSource::sendError));
 	}
@@ -163,7 +163,7 @@ public final class ClientProxy implements ClientModInitializer {
 
 	public static KeyMapping registerKeyBinding(String desc, int defaultKey) {
 		KeyMapping key = new KeyMapping("key.jade." + desc, InputConstants.Type.KEYSYM, defaultKey, JadeClient.keyMappingCategory);
-		KeyBindingHelper.registerKeyBinding(key);
+		KeyMappingHelper.registerKeyMapping(key);
 		return key;
 	}
 
@@ -177,7 +177,7 @@ public final class ClientProxy implements ClientModInitializer {
 	}
 
 	public static void registerReloadListener(KeyedReloadListener listener) {
-		ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloader(listener.getUid(), listener);
+		ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloadListener(listener.getUid(), listener);
 	}
 
 	public static void drawBossBarPost(LerpingBossEvent bossEvent, int bottom) {
@@ -337,7 +337,9 @@ public final class ClientProxy implements ClientModInitializer {
 			((KeyAccess) (Object) key).setDisplayName(Suppliers.memoize(() -> Component.translatable(key.getName())));
 		}
 		JadeClient.init();
-		ResourceLoader.get(PackType.SERVER_DATA).registerReloader(HarvestToolProvider.INSTANCE.getUid(), HarvestToolProvider.INSTANCE);
+		ResourceLoader.get(PackType.SERVER_DATA).registerReloadListener(
+				HarvestToolProvider.INSTANCE.getUid(),
+				HarvestToolProvider.INSTANCE);
 		CommonLifecycleEvents.TAGS_LOADED.register((registryAccess, client) -> {
 			HarvestToolProvider.INSTANCE.invalidateCache();
 		});
