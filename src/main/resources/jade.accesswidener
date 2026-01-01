@@ -112,3 +112,5 @@ accessible field net/minecraft/world/entity/animal/equine/AbstractHorse MAX_MOVE
 accessible field net/minecraft/world/entity/animal/golem/CopperGolem nextWeatheringTick J
 accessible field net/minecraft/world/entity/animal/golem/CopperGolem IGNORE_WEATHERING_TICK J
 accessible field net/minecraft/world/entity/monster/zombie/ZombieVillager villagerConversionTime I
+
+accessible method net/minecraft/client/gui/components/AbstractStringWidget getFont ()Lnet/minecraft/client/gui/Font;

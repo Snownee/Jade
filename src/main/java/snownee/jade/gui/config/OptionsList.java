@@ -24,11 +24,14 @@ import net.minecraft.client.InputType;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractStringWidget;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.narration.NarratedElementType;
@@ -63,7 +66,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 
 	public static final Component OPTION_ON = CommonComponents.OPTION_ON.copy().withColor(0xFFB9F6CA);
 	public static final Component OPTION_OFF = CommonComponents.OPTION_OFF.copy().withColor(0xFFFF8A80);
-	public final Set<OptionsList.Entry> forcePreview = Sets.newIdentityHashSet();
+	public final Set<Entry> forcePreview = Sets.newIdentityHashSet();
 	protected final List<Entry> entries = Lists.newArrayList();
 	private final @Nullable Runnable diskWriter;
 	public @Nullable Title currentTitle;
@@ -137,24 +140,19 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		return super.mouseDragged(mouseButtonEvent, d, e);
 	}
 
-	@Override
-	public boolean isFocused() {
-		return owner.getFocused() == this;
-	}
-
 	@Nullable
 	@Override
 	public ComponentPath nextFocusPath(FocusNavigationEvent event) {
-		OptionsNav.Entry navEntry = owner.optionsNav().getFocused();
-		if (navEntry != null && event instanceof FocusNavigationEvent.ArrowNavigation(ScreenDirection direction) &&
-				direction == ScreenDirection.RIGHT) {
-			Title title = navEntry.getTitle();
-			setFocused(title);
-			ComponentPath path = super.nextFocusPath(new FocusNavigationEvent.ArrowNavigation(ScreenDirection.DOWN));
-			setFocused(null);
-			return path;
+		ComponentPath componentPath = super.nextFocusPath(event);
+		OptionsNav.Entry navEntry = owner.optionsNav().getCurrentEntry();
+		if (componentPath != null) {
+			return componentPath;
 		}
-		return super.nextFocusPath(event);
+		if (navEntry != null && event instanceof FocusNavigationEvent.ArrowNavigation(ScreenDirection direction) &&
+				direction == ScreenDirection.LEFT) {
+			return ComponentPath.path(navEntry, owner.optionsNav());
+		}
+		return null;
 	}
 
 	// public-access it
@@ -187,7 +185,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 	public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		float deltaTicks = Minecraft.getInstance().getDeltaTracker().getRealtimeDeltaTicks();
 		smoothScroll.tick(deltaTicks);
-		if (!ClientProxy.metadata.hasSmoothScroll()) {
+		if (!ClientProxy.metadata.hasSmoothScroll() && smoothScroll.isMoving()) {
 			super.setScrollAmount(Math.round(smoothScroll.value));
 		}
 		hovered = null;
@@ -253,8 +251,8 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		this.defaultParent = defaultParent;
 	}
 
-	public MutableComponent title(String string) {
-		return add(new Title(string)).getTitle();
+	public Title title(String string) {
+		return add(new Title(string));
 	}
 
 	public OptionValue<Float> slider(String optionName, Supplier<Float> getter, Consumer<Float> setter) {
@@ -313,10 +311,9 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 						case "off" -> OPTION_OFF;
 						default -> Entry.makeTitle(optionName + "_" + name);
 					};
-				},
-				getter.get()).withValues(values);
+				}, getter.get()).withValues(values);
 		builder.withTooltip(v -> {
-			String key = OptionsList.Entry.makeKey(optionName + "_" + v.name().toLowerCase(Locale.ENGLISH) + "_desc");
+			String key = Entry.makeKey(optionName + "_" + v.name().toLowerCase(Locale.ENGLISH) + "_desc");
 			if (!I18n.exists(key)) {
 				return null;
 			}
@@ -454,27 +451,57 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 	}
 
 	@Override
-	public void setSelected(OptionsList.@Nullable Entry entry) {
+	public void setSelected(@Nullable Entry entry) {
 		selected = entry;
 		if (entry != null && minecraft.getLastInputType().isKeyboard()) {
 			scrollToEntry(entry);
 		}
 	}
 
-	public record EntryWidget(AbstractWidget widget, int offsetX, int offsetY, boolean floatRight) {}
+	public static class EntryWidget {
+		public final AbstractWidget widget;
+		public int offsetX;
+
+		public EntryWidget(AbstractWidget widget) {
+			this.widget = widget;
+		}
+
+		public EntryWidget(AbstractWidget widget, int offsetX, int offsetY, boolean floatRight) {
+			this(widget);
+			this.offsetX = offsetX;
+			this.offsetY = offsetY;
+			this.floatRight = floatRight;
+		}
+
+		public int offsetY;
+		public boolean floatRight;
+	}
 
 	public static class Entry extends ContainerObjectSelectionList.Entry<Entry> {
 
-		protected final Minecraft client;
 		protected final List<String> messages = Lists.newArrayList();
 		private final List<AbstractWidget> rawWidgets = Lists.newArrayList();
 		protected final List<EntryWidget> widgets = Lists.newArrayList();
 		protected List<Component> description = List.of();
 		private @Nullable Entry parent;
 		private List<Entry> children = List.of();
+		protected AbstractStringWidget title;
+		protected Font font;
+		private @Nullable AbstractWidget mainWidget;
+		private final List<Consumer<Entry>> resizeListeners = Lists.newArrayList();
 
-		public Entry() {
-			client = Minecraft.getInstance();
+		public Entry(AbstractStringWidget title) {
+			this.title = title;
+			font = title.getFont();
+			addWidget(new EntryWidget(title, getTextX(), getTextY(), false));
+			addMessage(title.getMessage().getString());
+		}
+
+		public Entry(Component component) {
+			this(new StringWidget(component, Minecraft.getInstance().font));
+			addResizeListener($ -> {
+				((StringWidget) $.title).setMaxWidth($.getContentWidth() - $.getTextX() - 110, StringWidget.TextOverflow.SCROLLING);
+			});
 		}
 
 		public static MutableComponent makeTitle(String key) {
@@ -485,17 +512,50 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 			return Util.makeDescriptionId("config", Identifier.fromNamespaceAndPath(Jade.ID, key));
 		}
 
-		public @Nullable AbstractWidget getFirstWidget() {
-			return rawWidgets.isEmpty() ? null : rawWidgets.getFirst();
+		@Override
+		public void setWidth(int width) {
+			super.setWidth(width);
+			notifyResizeListeners();
 		}
 
-		public void addWidget(AbstractWidget widget, int offsetX) {
-			addWidget(new EntryWidget(widget, offsetX, -widget.getHeight() / 2, true));
+		@Override
+		public void setHeight(int height) {
+			super.setHeight(height);
+			notifyResizeListeners();
 		}
 
-		public void addWidget(EntryWidget widget) {
+		public void addResizeListener(Consumer<Entry> listener) {
+			resizeListeners.add(listener);
+		}
+
+		public void notifyResizeListeners() {
+			for (EntryWidget widget : widgets) {
+				if (widget.widget == title) {
+					widget.offsetX = getTextX();
+					widget.offsetY = getTextY();
+					break;
+				}
+			}
+			for (Consumer<Entry> listener : resizeListeners) {
+				listener.accept(this);
+			}
+		}
+
+		public @Nullable AbstractWidget mainWidget() {
+			return mainWidget;
+		}
+
+		public EntryWidget addWidget(AbstractWidget widget, int offsetX) {
+			return addWidget(new EntryWidget(widget, offsetX, -widget.getHeight() / 2, true));
+		}
+
+		public EntryWidget addWidget(EntryWidget widget) {
 			widgets.add(widget);
-			rawWidgets.add(widget.widget());
+			rawWidgets.add(widget.widget);
+			if (mainWidget == null && !(widget.widget instanceof AbstractStringWidget)) {
+				mainWidget = widget.widget;
+			}
+			return widget;
 		}
 
 		@Override
@@ -511,21 +571,24 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		@Override
 		public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovered, float deltaTime) {
 			for (EntryWidget widget : widgets) {
-				AbstractWidget rawWidget = widget.widget();
+				AbstractWidget rawWidget = widget.widget;
 				int x;
-				if (widget.floatRight()) {
-					x = getContentWidth() - 110 + widget.offsetX();
+				if (widget.floatRight) {
+					x = getContentWidth() - 110 + widget.offsetX;
 				} else {
-					x = 10 + widget.offsetX();
+					x = widget.offsetX;
 				}
 				rawWidget.setX(getContentX() + x);
-				rawWidget.setY(getContentY() + getContentHeight() / 2 + widget.offsetY());
+				rawWidget.setY(getContentY() + getContentHeight() / 2 + widget.offsetY);
 				rawWidget.render(guiGraphics, mouseX, mouseY, deltaTime);
 			}
 		}
 
 		public void setDisabled(boolean disabled) {
 			for (AbstractWidget widget : rawWidgets) {
+				if (widget instanceof AbstractStringWidget) {
+					continue;
+				}
 				widget.active = !disabled;
 				if (widget instanceof EditBox editBox) {
 					editBox.setEditable(!disabled);
@@ -542,11 +605,15 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		}
 
 		public int getTextX() {
-			return 0;
+			return 10;
+		}
+
+		public int getTextY() {
+			return -3;
 		}
 
 		public int getTextWidth() {
-			return 0;
+			return title.getWidth();
 		}
 
 		public Entry parent(Entry parent) {
@@ -584,17 +651,46 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 				addMessage(I18n.get(key));
 			}
 		}
+
+		public Component title() {
+			return title.getMessage();
+		}
+
+		public void setTitle(Component title) {
+			this.title.setMessage(title);
+		}
+
+		@Override
+		public @Nullable ComponentPath focusPathAtIndex(FocusNavigationEvent navigationEvent, int currentIndex) {
+			if (children().isEmpty()) {
+				return null;
+			}
+			Set<AbstractWidget> widgets = Sets.newLinkedHashSet();
+			widgets.add(children().get(Math.min(currentIndex, children().size() - 1)));
+			if (mainWidget != null) {
+				widgets.add(mainWidget);
+			}
+			widgets.addAll(children());
+			for (AbstractWidget widget : widgets) {
+				if (!widget.isActive() || widget == title) {
+					continue;
+				}
+				ComponentPath componentPath = widget.nextFocusPath(navigationEvent);
+				if (componentPath != null) {
+					return ComponentPath.path(this, componentPath);
+				}
+			}
+			return null;
+		}
 	}
 
 	public static class Title extends Entry {
 
 		public Component narration;
-		private final MutableComponent title;
 
 		public Title(String key) {
-			title = makeTitle(key);
+			this(makeTitle(key));
 			addMessageKey(key);
-			addMessage(title.getString());
 			key = makeKey(key + "_desc");
 			if (I18n.exists(key)) {
 				description = List.of(Component.translatable(key));
@@ -603,33 +699,19 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 			narration = Component.translatable("narration.jade.category", title);
 		}
 
-		public Title(MutableComponent title) {
-			this.title = title;
+		public Title(Component title) {
+			super(new StringWidget(title, Minecraft.getInstance().font));
 			narration = title;
-		}
-
-		public MutableComponent getTitle() {
-			return title;
-		}
-
-		@Override
-		public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovered, float deltaTime) {
-			guiGraphics.drawString(
-					client.font,
-					title,
-					getTextX(),
-					getContentY() + getContentHeight() - client.font.lineHeight,
-					0xFFFFFFFF);
 		}
 
 		@Override
 		public int getTextX() {
-			return getContentXMiddle() - getTextWidth() / 2;
+			return (getContentWidth() - getTextWidth()) / 2 - 10;
 		}
 
 		@Override
-		public int getTextWidth() {
-			return client.font.width(title);
+		public int getTextY() {
+			return 0;
 		}
 
 		@Override
@@ -637,8 +719,8 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 			return List.of(new NarratableEntry() {
 
 				@Override
-				public NarratableEntry.NarrationPriority narrationPriority() {
-					return NarratableEntry.NarrationPriority.HOVERED;
+				public NarrationPriority narrationPriority() {
+					return NarrationPriority.HOVERED;
 				}
 
 				@Override

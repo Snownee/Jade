@@ -61,7 +61,7 @@ public class PluginsConfigScreen extends PreviewOptionsScreen {
 							option.appendDescription(Component.translatable("gui.jade.forced_plugin_config")
 									.withStyle(ChatFormatting.DARK_RED));
 						} else if (noteServerFeature && !WailaClientRegistration.instance().isClientFeature(entry.id())) {
-							option.serverFeature = true;
+							option.setServerFeature();
 						}
 						if (!IPluginConfig.isPrimaryKey(entry.id())) {
 							if (lastPrimary.get() != null) {

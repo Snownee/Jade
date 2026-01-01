@@ -30,7 +30,7 @@ public class KeybindOptionButton extends OptionButton {
 	}
 
 	public void refresh(@Nullable KeyMapping selectedKey) {
-		var button = Objects.requireNonNull(getFirstWidget());
+		var button = Objects.requireNonNull(mainWidget());
 		if (selectedKey == keybind) {
 			button.setMessage(Component.literal("> ").append(button.getMessage()
 					.copy()

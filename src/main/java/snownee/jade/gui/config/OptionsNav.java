@@ -58,6 +58,7 @@ public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
 
 	@Override
 	protected void renderListSeparators(GuiGraphics guiGraphics) {
+		// NO-OP
 	}
 
 	@Override
@@ -95,10 +96,13 @@ public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
 	@Nullable
 	@Override
 	public ComponentPath nextFocusPath(FocusNavigationEvent event) {
-		if (!isFocused() && event instanceof FocusNavigationEvent.ArrowNavigation nav && nav.direction() == ScreenDirection.LEFT) {
+		if (event instanceof FocusNavigationEvent.ArrowNavigation nav && nav.direction() == ScreenDirection.RIGHT) {
 			for (Entry entry : children()) {
 				if (entry.title == options.currentTitle) {
-					return ComponentPath.path(entry, this);
+					options.setFocused(options.currentTitle);
+					ComponentPath path = options.nextFocusPath(new FocusNavigationEvent.ArrowNavigation(ScreenDirection.DOWN));
+					options.setFocused(null);
+					return path;
 				}
 			}
 		}
@@ -111,6 +115,13 @@ public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
 		if (minecraft.getLastInputType().isKeyboard() && getFocused() instanceof Entry entry) {
 			options.showOnTop(entry.title);
 		}
+	}
+
+	public @Nullable Entry getCurrentEntry() {
+		if (current >= 0 && current < children().size()) {
+			return children().get(current);
+		}
+		return null;
 	}
 
 	public static class Entry extends ObjectSelectionList.Entry<Entry> {
@@ -133,10 +144,10 @@ public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
 					public ClientTooltipPositioner createTooltipPositioner(ScreenRectangle screenRectangle, boolean bl, boolean bl2) {
 						return new FixedTooltipPositioner(new Vector2i(
 								screenRectangle.left() + 10,
-								screenRectangle.top() + (screenRectangle.height() / 2) - (title.client.font.lineHeight / 2)));
+								screenRectangle.top() + (screenRectangle.height() / 2) - (title.font.lineHeight / 2)));
 					}
 				};
-				tooltip.set(Tooltip.create(title.getTitle()));
+				tooltip.set(Tooltip.create(title.title()));
 			} else {
 				tooltip = null;
 			}
@@ -145,10 +156,10 @@ public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
 		@Override
 		public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovered, float deltaTime) {
 			guiGraphics.drawString(
-					title.client.font,
-					title.getTitle().getString(),
+					title.font,
+					title.title().getString(),
 					getContentX() + 10,
-					getContentYMiddle() - (title.client.font.lineHeight / 2),
+					getContentYMiddle() - (title.font.lineHeight / 2),
 					0xFFFFFFFF);
 			if (isFocused() && parent.minecraft.getLastInputType().isKeyboard()) {
 				int color = 0xFFAAAAAA;
