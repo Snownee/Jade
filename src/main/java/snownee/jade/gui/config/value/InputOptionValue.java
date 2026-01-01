@@ -19,7 +19,7 @@ public class InputOptionValue<T> extends OptionValue<T> {
 	public InputOptionValue(Runnable responder, String optionName, Supplier<T> getter, Consumer<T> setter, Predicate<String> validator) {
 		super(optionName, getter, setter);
 		this.validator = validator;
-		textField = new EditBox(client.font, 0, 0, 98, 18, getTitle());
+		textField = new EditBox(font, 0, 0, 98, 18, title());
 		updateValue();
 		textField.setResponder(s -> {
 			if (this.validator.test(s)) {

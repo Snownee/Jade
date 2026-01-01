@@ -31,7 +31,7 @@ public class SliderOptionValue extends OptionValue<Float> {
 		this.min = min;
 		this.max = max;
 		this.aligner = aligner;
-		slider = new Slider(this, 0, 0, 100, 20, getTitle());
+		slider = new Slider(this, 0, 0, 100, 20, title());
 		updateValue();
 		addWidget(slider, 0);
 	}
@@ -96,7 +96,7 @@ public class SliderOptionValue extends OptionValue<Float> {
 
 		@Override
 		protected MutableComponent createNarrationMessage() {
-			return CommonComponents.joinForNarration(parent.getTitle(), super.createNarrationMessage());
+			return CommonComponents.joinForNarration(parent.title(), super.createNarrationMessage());
 		}
 	}
 }

@@ -112,3 +112,5 @@ accessible field net/minecraft/world/entity/animal/golem/CopperGolem IGNORE_WEAT
 accessible field net/minecraft/world/entity/monster/zombie/ZombieVillager villagerConversionTime I
 
 accessible field net/minecraft/client/renderer/GameRenderer lightmapRenderState Lnet/minecraft/client/renderer/state/LightmapRenderState;
+
+accessible method net/minecraft/client/gui/components/AbstractStringWidget getFont ()Lnet/minecraft/client/gui/Font;

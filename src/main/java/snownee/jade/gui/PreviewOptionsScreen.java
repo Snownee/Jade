@@ -95,7 +95,7 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 			return false;
 		}
 		OptionsList.Entry entry = options.getSelected();
-		if (entry == null || entry.getFirstWidget() == null) {
+		if (entry == null || entry.mainWidget() == null) {
 			return false;
 		}
 		return options.forcePreview.contains(entry);
