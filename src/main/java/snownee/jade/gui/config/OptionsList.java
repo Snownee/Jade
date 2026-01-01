@@ -130,7 +130,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 
 	@Override
 	protected double scrollRate() {
-		return defaultEntryHeight * (!ClientProxy.metadata.hasFastScroll() && JadeUI.hasControlDown() ? 4.5 : 1.5);
+		return defaultEntryHeight * (!ClientProxy.metadata.hasFastScroll() && JadeUI.hasControlDown() ? 9 : 3);
 	}
 
 	@Override
@@ -451,7 +451,10 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 	}
 
 	@Override
-	public void setSelected(@Nullable Entry entry) {
+	public void setSelected(OptionsList.@Nullable Entry entry) {
+		if (selected == entry) {
+			return;
+		}
 		selected = entry;
 		if (entry != null && minecraft.getLastInputType().isKeyboard()) {
 			scrollToEntry(entry);
@@ -545,6 +548,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 			return mainWidget;
 		}
 
+		@SuppressWarnings("UnusedReturnValue")
 		public EntryWidget addWidget(AbstractWidget widget, int offsetX) {
 			return addWidget(new EntryWidget(widget, offsetX, -widget.getHeight() / 2, true));
 		}
