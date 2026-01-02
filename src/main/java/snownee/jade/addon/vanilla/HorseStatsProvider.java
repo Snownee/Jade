@@ -51,8 +51,8 @@ public class HorseStatsProvider implements IEntityComponentProvider {
 			tooltip.add(switchText("jade.horseStat.jump", showMax, jumpHeight, MAX_JUMP_HEIGHT));
 		}
 		if (horse.getAttributes().hasAttribute(Attributes.MOVEMENT_SPEED)) {
-			// https://minecraft.fandom.com/wiki/Horse?so=search#Movement_speed
-			double speed = horse.getAttributeBaseValue(Attributes.MOVEMENT_SPEED) * 42.16;
+			// https://minecraft.wiki/w/Horse#Movement_speed
+			double speed = horse.getAttributeBaseValue(Attributes.MOVEMENT_SPEED) * 43.17;
 			tooltip.add(switchText("jade.horseStat.speed", showMax, speed, MAX_MOVEMENT_SPEED));
 		}
 	}
