@@ -48,9 +48,9 @@ dependencies {
 //    modCompileOnlyApi "mezz.jei:jei-1.21.8-fabric-api:${jei_version}"
     //modRuntimeOnly "mezz.jei:jei-1.20.1-fabric:${jei_version}"
 
-//    modApi("teamreborn:energy:${project.tr_energy_version}") {
-//        exclude(group: "net.fabricmc.fabric-api")
-//    }
+    api("teamreborn:energy:${project.tr_energy_version}") {
+        exclude(group: "net.fabricmc.fabric-api")
+    }
 }
 
 loom {
@@ -88,8 +88,8 @@ artifacts {
 java {
     withSourcesJar()
 
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
 }
 
 jar {
