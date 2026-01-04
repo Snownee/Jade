@@ -2,10 +2,9 @@ package snownee.jade.addon.vanilla;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 import org.jspecify.annotations.Nullable;
-
-import com.mojang.authlib.GameProfile;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -15,6 +14,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.Services;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.players.NameAndId;
+import net.minecraft.util.Util;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityReference;
 import net.minecraft.world.entity.LivingEntity;
@@ -69,8 +69,8 @@ public class AnimalOwnerProvider implements StreamServerDataProvider<EntityAcces
 		if (name != null) {
 			return name;
 		}
-		GameProfile profile = services.profileResolver().fetchById(uuid).orElse(null);
-		return profile == null ? null : profile.name();
+		CompletableFuture.supplyAsync(() -> services.profileResolver().fetchById(uuid), Util.backgroundExecutor());
+		return null;
 	}
 
 	@Override
