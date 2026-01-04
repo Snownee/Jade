@@ -68,7 +68,6 @@ import net.minecraft.world.level.material.FluidState;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
 import snownee.jade.addon.harvest.HarvestToolProvider;
-import snownee.jade.addon.vanilla.AnimalOwnerProvider;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
@@ -283,8 +282,8 @@ public final class ClientProxy implements ClientModInitializer {
 	}
 
 	@Nullable
-	public static String lookupPlayerName(UUID uuid) {
-		return AnimalOwnerProvider.lookupPlayerName(uuid, Minecraft.getInstance().services());
+	public static String lookupPlayerName(@Nullable UUID uuid) {
+		return PlayerNameLookup.get(uuid, Minecraft.getInstance().services());
 	}
 
 	@Override

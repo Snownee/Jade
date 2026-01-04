@@ -1,8 +1,6 @@
 package snownee.jade.addon.vanilla;
 
-import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 import org.jspecify.annotations.Nullable;
 
@@ -11,10 +9,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.Services;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.players.NameAndId;
-import net.minecraft.util.Util;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityReference;
 import net.minecraft.world.entity.LivingEntity;
@@ -27,6 +22,7 @@ import snownee.jade.api.JadeIds;
 import snownee.jade.api.StreamServerDataProvider;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.util.ClientProxy;
+import snownee.jade.util.PlayerNameLookup;
 
 public class AnimalOwnerProvider implements StreamServerDataProvider<EntityAccessor, Component> {
 	public static final AnimalOwnerProvider INSTANCE = new AnimalOwnerProvider();
@@ -40,7 +36,7 @@ public class AnimalOwnerProvider implements StreamServerDataProvider<EntityAcces
 		if (entity != null) {
 			return ObjectNameProvider.getEntityName(entity, false);
 		}
-		String name = lookupPlayerName(uuid, level.getServer().services());
+		String name = PlayerNameLookup.get(uuid, level.getServer().services());
 		return name == null ? null : Component.literal(name);
 	}
 
@@ -57,19 +53,6 @@ public class AnimalOwnerProvider implements StreamServerDataProvider<EntityAcces
 				return reference.getUUID();
 			}
 		}
-		return null;
-	}
-
-	@Nullable
-	public static String lookupPlayerName(@Nullable UUID uuid, Services services) {
-		if (uuid == null) {
-			return null;
-		}
-		String name = services.nameToIdCache().get(uuid).map(NameAndId::name).orElse(null);
-		if (name != null) {
-			return name;
-		}
-		CompletableFuture.supplyAsync(() -> services.profileResolver().fetchById(uuid), Util.backgroundExecutor());
 		return null;
 	}
 
@@ -92,10 +75,11 @@ public class AnimalOwnerProvider implements StreamServerDataProvider<EntityAcces
 			Component name = AnimalOwnerProvider.INSTANCE.decodeFromData(accessor).orElse(null);
 			if (name == null) {
 				UUID uuid = getOwnerUUID(accessor.getEntity());
-				if (uuid == null) {
+				String playerName = ClientProxy.lookupPlayerName(uuid);
+				if (playerName == null) {
 					return;
 				}
-				name = Component.literal(Optional.ofNullable(ClientProxy.lookupPlayerName(uuid)).orElse("???"));
+				name = Component.literal(playerName);
 			}
 			tooltip.add(Component.translatable("jade.owner", name));
 		}
