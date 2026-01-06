@@ -59,7 +59,7 @@ public class AnimalOwnerProvider implements StreamServerDataProvider<EntityAcces
 	@Override
 	public boolean shouldRequestData(EntityAccessor accessor) {
 		Entity entity = accessor.getEntity();
-		return entity instanceof OwnableEntity && getOwnerUUID(entity) == null;
+		return entity instanceof OwnableEntity && getOwnerUUID(entity) != null;
 	}
 
 	@Override
