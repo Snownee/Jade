@@ -15,6 +15,14 @@ public class PlayerNameLookup {
 	private static final Set<UUID> FETCHING = ConcurrentHashMap.newKeySet();
 	private static final Set<UUID> FETCHED = ConcurrentHashMap.newKeySet();
 
+	public static boolean isFetching(UUID uuid) {
+		return FETCHING.contains(uuid);
+	}
+
+	public static boolean isFetched(UUID uuid) {
+		return FETCHED.contains(uuid);
+	}
+
 	@Nullable
 	public static String get(@Nullable UUID uuid, Services services) {
 		if (uuid == null) {
