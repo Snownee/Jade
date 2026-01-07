@@ -1,5 +1,7 @@
 package snownee.jade.addon.vanilla;
 
+import java.util.Optional;
+
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -23,7 +25,11 @@ public enum JukeboxProvider implements IBlockComponentProvider, StreamServerData
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		ItemStack stack = decodeFromData(accessor).orElse(ItemStack.EMPTY);
+		Optional<ItemStack> result = JukeboxProvider.INSTANCE.decodeFromData(accessor);
+		if (result.isEmpty()) {
+			return;
+		}
+		ItemStack stack = result.get();
 		if (stack.isEmpty()) {
 			tooltip.add(Component.translatable("tooltip.jade.empty"));
 			return;
