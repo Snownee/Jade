@@ -72,7 +72,6 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforgespi.language.IModInfo;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
-import snownee.jade.addon.vanilla.AnimalOwnerProvider;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeKeys;
@@ -374,7 +373,7 @@ public final class ClientProxy {
 	}
 
 	@Nullable
-	public static String lookupPlayerName(UUID uuid) {
-		return AnimalOwnerProvider.lookupPlayerName(uuid, Minecraft.getInstance().services());
+	public static String lookupPlayerName(@Nullable UUID uuid) {
+		return PlayerNameLookup.get(uuid, Minecraft.getInstance().services());
 	}
 }
