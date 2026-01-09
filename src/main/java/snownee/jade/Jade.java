@@ -1,8 +1,10 @@
 package snownee.jade;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 import com.google.common.base.Preconditions;
@@ -15,7 +17,11 @@ import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.ExtraCodecs;
+import net.minecraft.world.level.gamerules.GameRule;
+import net.minecraft.world.level.gamerules.GameRuleCategory;
+import net.minecraft.world.level.gamerules.GameRules;
 import snownee.jade.addon.core.ModNameProvider;
 import snownee.jade.addon.harvest.LootTableMineableCollector;
 import snownee.jade.api.IWailaPlugin;
@@ -34,6 +40,7 @@ public class Jade {
 	public static final String PROTOCOL_VERSION = "9";
 	public static final Logger LOGGER = LogUtils.getLogger();
 	public static final Set<String> DISABLED_PLUGINS = Sets.newHashSet();
+	private static @Nullable GameRule<Integer> MAX_POSITION_DEVIATION;
 	private static final Supplier<JsonConfig<WailaConfig.Root>> rootConfig = Suppliers.memoize(() -> new JsonConfig<>(
 			ID + "/" + ID,
 			WailaConfig.Root.CODEC,
@@ -252,5 +259,13 @@ public class Jade {
 				erroneousClasses.add(className);
 			}
 		}
+	}
+
+	public static void registerGameRules() {
+		MAX_POSITION_DEVIATION = GameRules.registerInteger("jade:max_position_deviation", GameRuleCategory.MISC, 21, 0, 1000);
+	}
+
+	public static int maxPositionDeviation(ServerPlayer player) {
+		return player.level().getGameRules().get(Objects.requireNonNull(MAX_POSITION_DEVIATION));
 	}
 }

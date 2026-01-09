@@ -114,3 +114,5 @@ accessible field net/minecraft/world/entity/monster/zombie/ZombieVillager villag
 accessible field net/minecraft/client/renderer/GameRenderer lightmapRenderState Lnet/minecraft/client/renderer/state/LightmapRenderState;
 
 accessible method net/minecraft/client/gui/components/AbstractStringWidget getFont ()Lnet/minecraft/client/gui/Font;
+
+accessible method net/minecraft/world/level/gamerules/GameRules registerInteger (Ljava/lang/String;Lnet/minecraft/world/level/gamerules/GameRuleCategory;III)Lnet/minecraft/world/level/gamerules/GameRule;

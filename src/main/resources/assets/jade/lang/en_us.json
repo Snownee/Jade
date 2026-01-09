@@ -477,6 +477,8 @@
 	"jade.metadata": "{lang:[en_us],nameClasses:{}}",
 	"jade.profile_preset.accessibility": "Accessibility Mode",
 	"jade.profile_preset.minimalism": "Minimalism",
+	"gamerule.jade.max_position_deviation": "Jade max position deviation",
+	"gamerule.jade.max_position_deviation.description": "The maximum deviation in blocks for requesting server-side data for Jade. Set it higher to allow using with freecam. Set to 0 to disallow extended reach.",
 	"__comment": "Only for testing:",
 	"jade.modName.cpp": "Crafting++",
 	"mymod.fuel": "Fuel: %d ticks",

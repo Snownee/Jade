@@ -21,6 +21,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
+import snownee.jade.Jade;
 import snownee.jade.api.AccessorImpl;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IServerDataProvider;
@@ -54,13 +55,17 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 			if (accessor == null) {
 				return;
 			}
+
 			Entity entity = accessor.getEntity();
-			double maxDistance = Mth.square(player.entityInteractionRange() + 21);
+			CompoundTag tag = accessor.getServerData();
+			tag.putInt("EntityId", entity.getId());
+
+			double maxDistance = Mth.square(player.entityInteractionRange() + Jade.maxPositionDeviation(player));
 			if (player.distanceToSqr(entity) > maxDistance) {
+				responseSender.accept(tag);
 				return;
 			}
 			List<IServerDataProvider<EntityAccessor>> providers = WailaCommonRegistration.instance().entityDataProvidersOf(entity);
-			CompoundTag tag = accessor.getServerData();
 			for (IServerDataProvider<EntityAccessor> provider : providers) {
 				if (!message.dataProviders().contains(provider)) {
 					continue;
@@ -72,7 +77,6 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 				}
 			}
 
-			tag.putInt("EntityId", entity.getId());
 			responseSender.accept(tag);
 		});
 	}

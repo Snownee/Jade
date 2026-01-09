@@ -589,6 +589,8 @@ public final class CommonProxy implements ModInitializer {
 				loadComplete();
 			}
 		});
+
+		Jade.registerGameRules();
 	}
 
 	public record Entrypoint(EntrypointContainer<IWailaPlugin> container) {

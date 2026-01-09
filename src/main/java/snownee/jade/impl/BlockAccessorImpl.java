@@ -27,6 +27,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
+import snownee.jade.Jade;
 import snownee.jade.api.AccessorImpl;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IServerDataProvider;
@@ -65,16 +66,23 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 			if (accessor == null) {
 				return;
 			}
+
 			BlockPos pos = accessor.getPosition();
+			CompoundTag tag = accessor.getServerData();
+			tag.putInt("x", pos.getX());
+			tag.putInt("y", pos.getY());
+			tag.putInt("z", pos.getZ());
+			tag.putString("BlockId", CommonProxy.getId(accessor.getBlock()).toString());
+
 			ServerLevel world = player.level();
-			double maxDistance = Mth.square(player.blockInteractionRange() + 21);
+			double maxDistance = Mth.square(player.blockInteractionRange() + Jade.maxPositionDeviation(player));
 			if (pos.distSqr(player.blockPosition()) > maxDistance || !world.isLoaded(pos)) {
+				responseSender.accept(tag);
 				return;
 			}
 
 			List<IServerDataProvider<BlockAccessor>> providers = WailaCommonRegistration.instance()
 					.blockDataProvidersOf(accessor.getBlockState(), accessor.getBlockEntity(), true);
-			CompoundTag tag = accessor.getServerData();
 			for (IServerDataProvider<BlockAccessor> provider : providers) {
 				if (!message.dataProviders().contains(provider)) {
 					continue;
@@ -86,10 +94,6 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 				}
 			}
 
-			tag.putInt("x", pos.getX());
-			tag.putInt("y", pos.getY());
-			tag.putInt("z", pos.getZ());
-			tag.putString("BlockId", CommonProxy.getId(accessor.getBlock()).toString());
 			responseSender.accept(tag);
 		});
 	}
@@ -273,7 +277,8 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 					accessor.getServerData());
 		}
 
-		public BlockAccessor unpack(ServerPlayer player) {
+		@SuppressWarnings("DataFlowIssue")
+		public @Nullable BlockAccessor unpack(ServerPlayer player) {
 			Supplier<BlockEntity> blockEntity = null;
 			BlockState blockState = player.level().getBlockState(hit.getBlockPos());
 			if (blockState.hasBlockEntity()) {
