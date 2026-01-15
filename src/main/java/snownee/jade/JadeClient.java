@@ -89,6 +89,7 @@ public final class JadeClient {
 	private static float savedProgress;
 	private static float progressAlpha;
 	private static boolean canHarvest;
+	private static long inPowderSnowTime;
 
 	public static void init() {
 		openConfig = ClientProxy.registerKeyBinding("config", InputConstants.KEY_NUMPAD0);
@@ -273,8 +274,11 @@ public final class JadeClient {
 		if (WailaClientRegistration.instance().maybeLowVisionUser() || !IWailaConfig.get().general().getBuiltinCamouflage()) {
 			return accessor;
 		}
+		Player player = accessor.getPlayer();
+		if (player.isInPowderSnow) {
+			inPowderSnowTime = System.currentTimeMillis();
+		}
 		if (accessor instanceof BlockAccessor target) {
-			Player player = accessor.getPlayer();
 			if (player.isCreative() || player.isSpectator()) {
 				return accessor;
 			}
@@ -289,7 +293,7 @@ public final class JadeClient {
 			if (target.getBlock() instanceof InfestedBlock) {
 				Block block = ((InfestedBlock) target.getBlock()).getHostBlock();
 				return builder.blockState(block.defaultBlockState()).build();
-			} else if (target.getBlock() == Blocks.POWDER_SNOW) {
+			} else if (target.getBlock() == Blocks.POWDER_SNOW && System.currentTimeMillis() - inPowderSnowTime > 8000L) {
 				Block block = Blocks.SNOW_BLOCK;
 				return builder.blockState(block.defaultBlockState()).build();
 			} else if (target.getBlock() instanceof BrushableBlock brushable) {
