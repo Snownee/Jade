@@ -59,10 +59,7 @@ public class JukeboxProvider implements StreamServerDataProvider<BlockAccessor, 
 			Component name;
 			JukeboxPlayable playable = stack.get(DataComponents.JUKEBOX_PLAYABLE);
 			if (playable != null) {
-				name = playable.song()
-						.unwrap(accessor.getLevel().registryAccess())
-						.map($ -> $.value().description())
-						.orElse(stack.getHoverName());
+				name = playable.song().value().description();
 			} else {
 				name = stack.getHoverName();
 			}

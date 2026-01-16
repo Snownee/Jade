@@ -11,6 +11,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import snownee.jade.api.ui.Element;
 import snownee.jade.overlay.DisplayHelper;
 
@@ -45,7 +46,7 @@ public class ItemStackElement extends Element {
 			return;
 		}
 		if (mouseX != -1 && getRectangle().containsPoint(mouseX, mouseY)) {
-			setHoverEffect(graphics, new HoverEvent.ShowItem(item));
+			setHoverEffect(graphics, new HoverEvent.ShowItem(ItemStackTemplate.fromNonEmptyStack(item)));
 		}
 		DisplayHelper.INSTANCE.drawItem(graphics, getX() + 1, getY() + 1, item, scale, text);
 	}

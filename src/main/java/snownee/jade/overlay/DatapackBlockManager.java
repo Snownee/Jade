@@ -1,7 +1,6 @@
 package snownee.jade.overlay;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
@@ -10,9 +9,7 @@ import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -64,18 +61,15 @@ public class DatapackBlockManager {
 					continue;
 				}
 				float score = 0f;
-				DataComponentPatch componentsPatch = itemStack.getComponentsPatch();
-				Optional<? extends CustomData> customData = componentsPatch.get(DataComponents.CUSTOM_DATA);
-				if (customData != null && customData.isPresent()) {
-					CustomData data = customData.get();
-					if (data.tag.contains(ModIdentification.JADE_STACK)) {
+				if (itemStack.hasNonDefault(DataComponents.CUSTOM_DATA)) {
+					CustomData data = itemStack.get(DataComponents.CUSTOM_DATA);
+					if (data != null && data.tag.contains(ModIdentification.JADE_STACK)) {
 						score += 10f;
-					} else if (data.tag.contains(ModIdentification.POLYMER_STACK)) {
+					} else if (data != null && data.tag.contains(ModIdentification.POLYMER_STACK)) {
 						score += 2f;
 					}
 				}
-				Optional<? extends Identifier> itemModel = componentsPatch.get(DataComponents.ITEM_MODEL);
-				if (itemModel != null && itemModel.isPresent()) {
+				if (itemStack.hasNonDefault(DataComponents.ITEM_MODEL)) {
 					score += 1f;
 				}
 				if (score > selectedScore) {

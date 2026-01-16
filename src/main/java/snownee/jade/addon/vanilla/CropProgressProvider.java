@@ -12,7 +12,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.world.level.block.CropBlock;
-import net.minecraft.world.level.block.FarmBlock;
+import net.minecraft.world.level.block.FarmlandBlock;
 import net.minecraft.world.level.block.NetherWartBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -63,7 +63,7 @@ public class CropProgressProvider implements IBlockComponentProvider {
 				addMaturityTooltip(tooltip, state.getValue(BlockStateProperties.AGE_15) / 15F);
 			} else if (state.is(BlockTags.MAINTAINS_FARMLAND) && accessor.getLevel()
 					.getBlockState(accessor.getPosition().below())
-					.getBlock() instanceof FarmBlock) {
+					.getBlock() instanceof FarmlandBlock) {
 				addMaturityTooltip(tooltip, 1);
 			}
 		}

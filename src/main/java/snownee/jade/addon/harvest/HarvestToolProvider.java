@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -18,11 +19,9 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import snownee.jade.Jade;
 import snownee.jade.api.BlockAccessor;
@@ -39,9 +38,10 @@ import snownee.jade.util.CommonProxy;
 import snownee.jade.util.KeyedResourceManagerReloadListener;
 
 public class HarvestToolProvider implements IBlockComponentProvider, KeyedResourceManagerReloadListener {
-	public static final HarvestToolProvider INSTANCE;
+	public static final HarvestToolProvider INSTANCE = new HarvestToolProvider();
 
 	public static final Map<Identifier, ToolHandler> TOOL_HANDLERS = Maps.newLinkedHashMap();
+	private static final List<Supplier<ToolHandler>> PENDING_TOOL_HANDLERS = Lists.newArrayList();
 	private static final Component CHECK = Component.literal("✔");
 	private static final Component X = Component.literal("✕");
 	private final Cache<BlockState, ImmutableList<ItemStack>> resultCache = CacheBuilder.newBuilder().expireAfterAccess(
@@ -49,36 +49,7 @@ public class HarvestToolProvider implements IBlockComponentProvider, KeyedResour
 			TimeUnit.MINUTES).build();
 
 	static {
-		INSTANCE = new HarvestToolProvider();
-		CommonProxy.registerTagsUpdatedListener((lookupProvider, client) -> INSTANCE.resultCache.invalidateAll());
-		registerHandler(SimpleToolHandler.create(
-				JadeIds.JADE("pickaxe"),
-				List.of(
-						Items.WOODEN_PICKAXE,
-						Items.GOLDEN_PICKAXE,
-						Items.STONE_PICKAXE,
-						Items.IRON_PICKAXE,
-						Items.DIAMOND_PICKAXE,
-						Items.NETHERITE_PICKAXE)));
-		registerHandler(SimpleToolHandler.create(
-				JadeIds.JADE("axe"),
-				List.of(Items.WOODEN_AXE, Items.GOLDEN_AXE, Items.STONE_AXE, Items.IRON_AXE, Items.DIAMOND_AXE, Items.NETHERITE_AXE)));
-		registerHandler(SimpleToolHandler.create(
-				JadeIds.JADE("shovel"),
-				List.of(
-						Items.WOODEN_SHOVEL,
-						Items.GOLDEN_SHOVEL,
-						Items.STONE_SHOVEL,
-						Items.IRON_SHOVEL,
-						Items.DIAMOND_SHOVEL,
-						Items.NETHERITE_SHOVEL)));
-		registerHandler(SimpleToolHandler.create(
-				JadeIds.JADE("hoe"),
-				List.of(Items.WOODEN_HOE, Items.GOLDEN_HOE, Items.STONE_HOE, Items.IRON_HOE, Items.DIAMOND_HOE, Items.NETHERITE_HOE)));
-		registerHandler(SimpleToolHandler.create(JadeIds.JADE("sword"), List.of(Items.WOODEN_SWORD))
-				.addExtraBlock(Blocks.BAMBOO)
-				.addExtraBlock(Blocks.BAMBOO_SAPLING));
-		registerHandler(ShearsToolHandler.getInstance());
+		CommonProxy.registerTagsUpdatedListener((_, _) -> apply());
 	}
 
 	public static ImmutableList<ItemStack> getTool(BlockState state, Level world, BlockPos pos) {
@@ -92,8 +63,17 @@ public class HarvestToolProvider implements IBlockComponentProvider, KeyedResour
 		return tools.build();
 	}
 
-	public static synchronized void registerHandler(ToolHandler handler) {
-		TOOL_HANDLERS.put(handler.getUid(), handler);
+	public static synchronized void registerHandler(Supplier<ToolHandler> handler) {
+		PENDING_TOOL_HANDLERS.add(handler);
+	}
+
+	private static void apply() {
+		TOOL_HANDLERS.clear();
+		for (Supplier<ToolHandler> supplier : PENDING_TOOL_HANDLERS) {
+			ToolHandler handler = supplier.get();
+			TOOL_HANDLERS.put(handler.getUid(), handler);
+		}
+		INSTANCE.resultCache.invalidateAll();
 	}
 
 	@Override

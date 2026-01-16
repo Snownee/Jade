@@ -24,7 +24,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.item.EitherHolder;
 import snownee.jade.mixin.EntityAccess;
 import snownee.jade.util.CommonProxy;
 
@@ -87,7 +86,6 @@ public final class EntityVariantHelper {
 				Identifier id = holder.unwrapKey().map(ResourceKey::identifier).orElse(null);
 				variant = id != null ? id : holder.value();
 			}
-			case EitherHolder<?> holder -> variant = holder.key().map(ResourceKey::identifier).orElse(null);
 			default -> {
 			}
 		}
