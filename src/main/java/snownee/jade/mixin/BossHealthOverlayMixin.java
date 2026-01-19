@@ -19,7 +19,7 @@ import snownee.jade.util.ClientProxy;
 public class BossHealthOverlayMixin {
 
 	@Inject(at = @At("HEAD"), method = "render", cancellable = true)
-	private void jade$render(GuiGraphics guiGraphics, CallbackInfo ci) {
+	private void jade$render(GuiGraphics graphics, CallbackInfo ci) {
 		BossBarOverlapMode mode = IWailaConfig.get().general().getBossBarOverlapMode();
 		if (mode == BossBarOverlapMode.HIDE_BOSS_BAR && OverlayRenderer.shown) {
 			ci.cancel();
@@ -28,11 +28,11 @@ public class BossHealthOverlayMixin {
 
 	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;guiHeight()I"), method = "render")
 	private void jade$captureHeight(
-			GuiGraphics guiGraphics,
+			GuiGraphics graphics,
 			CallbackInfo ci,
-			@Local LerpingBossEvent bossEvent,
-			@Local(ordinal = 1) int j) {
-		ClientProxy.drawBossBarPost(bossEvent, j);
+			@Local(name = "event") LerpingBossEvent event,
+			@Local(name = "yOffset") int yOffset) {
+		ClientProxy.drawBossBarPost(event, yOffset);
 	}
 
 }

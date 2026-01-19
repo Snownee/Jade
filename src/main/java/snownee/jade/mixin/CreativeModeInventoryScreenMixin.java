@@ -3,6 +3,7 @@ package snownee.jade.mixin;
 import java.util.List;
 import java.util.Locale;
 
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -32,7 +33,7 @@ public class CreativeModeInventoryScreenMixin {
 	private void jade$initTabNames(
 			ItemStack itemStack,
 			CallbackInfoReturnable<List<Component>> cir,
-			@Local int i,
+			@Local(name = "i") int i,
 			@Share("index") LocalIntRef index) {
 		index.set(i);
 	}
@@ -44,17 +45,18 @@ public class CreativeModeInventoryScreenMixin {
 			Object e,
 			Operation<Void> original,
 			@Share("index") LocalIntRef index,
-			@Share("names") LocalRef<List<String>> tabNames) {
+			@Share("names") LocalRef<@Nullable List<String>> tabNames) {
 		original.call(instance, i, e);
 		if (!IWailaConfig.get().general().showItemModNameTooltip()) {
 			return;
 		}
 		index.set(i + 1);
 		String tabName = ((Component) e).getString().toLowerCase(Locale.ENGLISH);
-		if (tabNames.get() == null) {
+		List<String> tabNamesValue = tabNames.get();
+		if (tabNamesValue == null) {
 			tabNames.set(Lists.newArrayList(tabName));
 		} else {
-			tabNames.get().add(tabName);
+			tabNamesValue.add(tabName);
 		}
 	}
 
@@ -63,15 +65,16 @@ public class CreativeModeInventoryScreenMixin {
 			ItemStack itemStack,
 			Operation<List<Component>> original,
 			@Share("index") LocalIntRef index,
-			@Share("names") LocalRef<List<String>> tabNames) {
+			@Share("names") LocalRef<@Nullable List<String>> tabNames) {
 		List<Component> tooltip = original.call(itemStack);
 		int i = index.get();
 		if (IWailaConfig.get().general().showItemModNameTooltip() && i > 0 && i < tooltip.size()) {
 			String modName = ModIdentification.getModId(itemStack);
 			modName = ModIdentification.getModFullName(modName).orElse(modName);
-			if (tabNames.get() != null) {
+			List<String> tabNamesValue = tabNames.get();
+			if (tabNamesValue != null) {
 				String modNameLower = modName.toLowerCase(Locale.ENGLISH);
-				for (String tabName : tabNames.get()) {
+				for (String tabName : tabNamesValue) {
 					if (tabName.startsWith(modNameLower)) {
 						return tooltip;
 					}

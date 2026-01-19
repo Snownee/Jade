@@ -23,13 +23,13 @@ public class FogRendererMixin {
 			target = "Lcom/mojang/blaze3d/systems/RenderSystem;getDevice()Lcom/mojang/blaze3d/systems/GpuDevice;"))
 	private void jade$setupFog(
 			Camera camera,
-			int i,
+			int renderDistanceInChunks,
 			DeltaTracker deltaTracker,
-			float f,
-			ClientLevel clientLevel,
+			float darkenWorldAmount,
+			ClientLevel level,
 			CallbackInfoReturnable<Vector4f> cir,
-			@Local FogData fogData) {
-		JadeClient.renderDistanceStart = fogData.renderDistanceStart;
-		JadeClient.renderDistanceEnd = fogData.renderDistanceEnd;
+			@Local(name = "fog") FogData fog) {
+		JadeClient.renderDistanceStart = fog.renderDistanceStart;
+		JadeClient.renderDistanceEnd = fog.renderDistanceEnd;
 	}
 }

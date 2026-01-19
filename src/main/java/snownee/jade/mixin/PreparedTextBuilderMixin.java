@@ -1,5 +1,6 @@
 package snownee.jade.mixin;
 
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -18,15 +19,16 @@ import snownee.jade.util.JadeFont;
 
 @Mixin(value = Font.PreparedTextBuilder.class, priority = 500)
 public class PreparedTextBuilderMixin {
-	@Shadow(aliases = {"field_24240", "b"}, remap = false)
-	private Font this$0;
+	@Final
+	@Shadow
+	Font this$0;
 
 	@WrapOperation(method = "getShadowColor", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/ARGB;scaleRGB(IF)I"))
-	private int jade$getShadowColor(int i, float f, Operation<Integer> original) {
+	private int jade$getShadowColor(int color, float scale, Operation<Integer> original) {
 		if (this$0.getClass() == JadeFont.class && IThemeHelper.get().isLightColorScheme()) {
-			return IWailaConfig.Overlay.applyAlpha(i, 0.15F);
+			return IWailaConfig.Overlay.applyAlpha(color, 0.15F);
 		}
-		return original.call(i, f);
+		return original.call(color, scale);
 	}
 
 	@Inject(
@@ -35,8 +37,8 @@ public class PreparedTextBuilderMixin {
 					value = "INVOKE",
 					target = "Lnet/minecraft/network/chat/Style;isBold()Z"),
 			cancellable = true)
-	private void jade$accept(int i, Style style, BakedGlyph bakedGlyph, CallbackInfoReturnable<Boolean> cir) {
-		if (this$0.getClass() == JadeFont.class && JadeFont.isFilteredGlyph(bakedGlyph, this$0.lineHeight)) {
+	private void jade$accept(int position, Style style, BakedGlyph glyph, CallbackInfoReturnable<Boolean> cir) {
+		if (this$0.getClass() == JadeFont.class && JadeFont.isFilteredGlyph(glyph, this$0.lineHeight)) {
 			cir.setReturnValue(false);
 		}
 	}

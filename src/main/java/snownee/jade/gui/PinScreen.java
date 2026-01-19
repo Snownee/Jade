@@ -36,7 +36,7 @@ public class PinScreen extends Screen {
 	public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
 		BoxElementImpl root = JadeClient.tickHandler().rootElement;
 		if (root != null) {
-			return OverlayRenderer.animation.mapMousePosition(event, $ -> root.mouseClicked($, doubleClick));
+			return Objects.requireNonNull(OverlayRenderer.animation.mapMousePosition(event, $ -> root.mouseClicked($, doubleClick)));
 		}
 		return super.mouseClicked(event, doubleClick);
 	}
@@ -45,7 +45,7 @@ public class PinScreen extends Screen {
 	public boolean mouseReleased(MouseButtonEvent event) {
 		BoxElementImpl root = JadeClient.tickHandler().rootElement;
 		if (root != null) {
-			return OverlayRenderer.animation.mapMousePosition(event, root::mouseReleased);
+			return Objects.requireNonNull(OverlayRenderer.animation.mapMousePosition(event, root::mouseReleased));
 		}
 		return super.mouseReleased(event);
 	}
@@ -54,7 +54,10 @@ public class PinScreen extends Screen {
 	public boolean mouseScrolled(double x, double y, double deltaX, double deltaY) {
 		BoxElementImpl root = JadeClient.tickHandler().rootElement;
 		if (root != null) {
-			return OverlayRenderer.animation.mapMousePosition(x, y, (x0, y0) -> root.mouseScrolled(x0, y0, deltaX, deltaY));
+			return Objects.requireNonNull(OverlayRenderer.animation.mapMousePosition(
+					x,
+					y,
+					(x0, y0) -> root.mouseScrolled(x0, y0, deltaX, deltaY)));
 		}
 		return super.mouseScrolled(x, y, deltaX, deltaY);
 	}
@@ -63,7 +66,7 @@ public class PinScreen extends Screen {
 	public boolean mouseDragged(MouseButtonEvent event, double deltaX, double deltaY) {
 		BoxElementImpl root = JadeClient.tickHandler().rootElement;
 		if (root != null) {
-			return OverlayRenderer.animation.mapMousePosition(event, $ -> root.mouseDragged($, deltaX, deltaY));
+			return Objects.requireNonNull(OverlayRenderer.animation.mapMousePosition(event, $ -> root.mouseDragged($, deltaX, deltaY)));
 		}
 		return super.mouseDragged(event, deltaX, deltaY);
 	}
@@ -90,13 +93,13 @@ public class PinScreen extends Screen {
 			Window window = mc.getWindow();
 			double mouseX = mc.mouseHandler.getScaledXPos(window);
 			double mouseY = mc.mouseHandler.getScaledYPos(window);
-			if (OverlayRenderer.animation.mapMousePosition(
+			if (Objects.requireNonNull(OverlayRenderer.animation.mapMousePosition(
 					mouseX, mouseY, (x, y) -> {
 						if (root.getChildAt(x, y).orElse(root) instanceof CopyBehavior behavior) {
 							return behavior.copyToClipboard(mc.keyboardHandler);
 						}
 						return false;
-					})) {
+					}))) {
 				Objects.requireNonNull(minecraft).getSoundManager().play(SimpleSoundInstance.forUI(
 						SoundEvents.EXPERIENCE_ORB_PICKUP,
 						1.0F));

@@ -19,9 +19,9 @@ public abstract class LivingEntityMixin extends Entity {
 	}
 
 	@Inject(method = "addEffect(Lnet/minecraft/world/effect/MobEffectInstance;Lnet/minecraft/world/entity/Entity;)Z", at = @At("HEAD"))
-	private void jade$addEffect(MobEffectInstance effect, Entity entity, CallbackInfoReturnable<Boolean> cir) {
+	private void jade$addEffect(MobEffectInstance newEffect, Entity source, CallbackInfoReturnable<Boolean> cir) {
 		if (!level().isClientSide()) {
-			((JadeMobEffectInstance) effect).jade$setUpdateTime(System.currentTimeMillis());
+			((JadeMobEffectInstance) newEffect).jade$setUpdateTime(System.currentTimeMillis());
 		}
 	}
 }

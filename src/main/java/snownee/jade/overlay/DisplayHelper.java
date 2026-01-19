@@ -50,7 +50,7 @@ public class DisplayHelper implements IDisplayHelper {
 	//https://github.com/mezz/JustEnoughItems/blob/1.16/src/main/java/mezz/jei/plugins/vanilla/ingredients/fluid/FluidStackRenderer.java
 	private static final int MIN_FLUID_HEIGHT = 1; // ensure tiny amounts of fluid are still visible
 	private static final Pattern STRIP_COLOR = Pattern.compile("(?i)§[0-9A-F]");
-	public static DecimalFormat dfCommas = new DecimalFormat("0.##");
+	public static final DecimalFormat dfCommas = new DecimalFormat("0.##");
 	public static final DecimalFormat[] dfCommasArray = new DecimalFormat[]{dfCommas, new DecimalFormat("0.#"), new DecimalFormat("0")};
 	private static final Supplier<JadeFont> FONT = Suppliers.memoize(() -> new JadeFont(Minecraft.getInstance().font));
 

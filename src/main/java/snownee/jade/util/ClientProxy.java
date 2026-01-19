@@ -201,8 +201,8 @@ public final class ClientProxy implements ClientModInitializer {
 		return JadeKeys.showDetails().isDown();
 	}
 
-	public static boolean shouldShowWithGui(Minecraft mc, @Nullable Screen screen) {
-		return screen == null || shouldShowBeforeGui(mc, screen) || shouldShowAfterGui(mc, screen);
+	public static boolean shouldHideWithGui(Minecraft mc, @Nullable Screen screen) {
+		return screen != null && !shouldShowBeforeGui(mc, screen) && !shouldShowAfterGui(mc, screen);
 	}
 
 	public static boolean shouldShowAfterGui(Minecraft mc, Screen screen) {

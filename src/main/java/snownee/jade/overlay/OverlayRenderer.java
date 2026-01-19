@@ -74,7 +74,7 @@ public class OverlayRenderer {
 
 		Minecraft mc = Minecraft.getInstance();
 
-		if (!ClientProxy.shouldShowWithGui(mc, mc.screen)) {
+		if (ClientProxy.shouldHideWithGui(mc, mc.screen)) {
 			return false;
 		}
 

@@ -32,7 +32,7 @@ import snownee.jade.util.JadeGuiGraphics;
 public class GuiGraphicsMixin implements JadeGuiGraphics {
 	@Shadow
 	@Final
-	Minecraft minecraft;
+	private Minecraft minecraft;
 	@Unique
 	private boolean jade$ignoreScissorTest;
 	@Unique
@@ -56,21 +56,21 @@ public class GuiGraphicsMixin implements JadeGuiGraphics {
 	}
 
 	@WrapMethod(method = "setTooltipForNextFrame(Lnet/minecraft/client/gui/Font;Lnet/minecraft/world/item/ItemStack;II)V")
-	private void jade$captureItemContext(Font font, ItemStack itemStack, int i, int j, Operation<Void> original) {
+	private void jade$captureItemContext(Font font, ItemStack itemStack, int xo, int yo, Operation<Void> original) {
 		jade$itemTooltipContext = itemStack;
-		original.call(font, itemStack, i, j);
+		original.call(font, itemStack, xo, yo);
 		jade$itemTooltipContext = ItemStack.EMPTY;
 	}
 
 	@Inject(method = "setTooltipForNextFrameInternal", at = @At("HEAD"))
 	private void jade$appendModName(
 			Font font,
-			List<ClientTooltipComponent> list,
-			int i,
-			int j,
-			ClientTooltipPositioner clientTooltipPositioner,
-			@Nullable Identifier Identifier,
-			boolean bl,
+			List<ClientTooltipComponent> lines,
+			int xo,
+			int yo,
+			ClientTooltipPositioner positioner,
+			@Nullable Identifier style,
+			boolean replaceExisting,
 			CallbackInfo ci) {
 		ItemStack itemStack = jade$itemTooltipContext;
 		if (itemStack.isEmpty() && minecraft.screen instanceof AbstractContainerScreen<?> screen && screen.hoveredSlot != null &&
@@ -80,7 +80,7 @@ public class GuiGraphicsMixin implements JadeGuiGraphics {
 		try {
 			Component name = JadeClient.appendModName(itemStack);
 			if (name != null) {
-				list.add(new ClientTextTooltip(name.getVisualOrderText()));
+				lines.add(new ClientTextTooltip(name.getVisualOrderText()));
 			}
 		} catch (Exception ignored) {
 		}

@@ -125,7 +125,7 @@ public class WailaTickHandler {
 			return;
 		}
 
-		if (!ClientProxy.shouldShowWithGui(mc, mc.screen)) {
+		if (ClientProxy.shouldHideWithGui(mc, mc.screen)) {
 			return;
 		}
 

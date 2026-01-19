@@ -41,16 +41,16 @@ public abstract class MobEffectInstanceMixin implements JadeMobEffectInstance {
 	}
 
 	@Inject(method = "onEffectAdded", at = @At("HEAD"))
-	private void jade$onEffectAdded(LivingEntity entity, CallbackInfo ci) {
+	private void jade$onEffectAdded(LivingEntity livingEntity, CallbackInfo ci) {
 		long time = System.currentTimeMillis();
 		jade$setAddTime(time);
 		jade$setUpdateTime(time);
 	}
 
 	@WrapMethod(method = "update")
-	private boolean jade$update(MobEffectInstance that, Operation<Boolean> original) {
-		boolean bl = original.call(that);
-		long thatTime = ((JadeMobEffectInstance) that).jade$updateTime();
+	private boolean jade$update(MobEffectInstance takeOver, Operation<Boolean> original) {
+		boolean bl = original.call(takeOver);
+		long thatTime = ((JadeMobEffectInstance) takeOver).jade$updateTime();
 		if (bl && thatTime > jade$updateTime) {
 			jade$updateTime = thatTime;
 		}

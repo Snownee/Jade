@@ -83,7 +83,7 @@ public class JadeFluidObject {
 	}
 
 	public boolean isEmpty() {
-		return getType() == Fluids.EMPTY || getAmount() == 0;
+		return getType().value() == Fluids.EMPTY || getAmount() == 0;
 	}
 
 	public Component getDisplayName() {

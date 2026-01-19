@@ -107,7 +107,7 @@ import snownee.jade.network.ShowOverlayPacket;
 
 public final class CommonProxy implements ModInitializer {
 
-	public static boolean hasTechRebornEnergy = isModLoaded("team_reborn_energy");
+	public static final boolean hasTechRebornEnergy = isModLoaded("team_reborn_energy");
 
 	public static File getConfigDirectory() {
 		return FabricLoader.getInstance().getConfigDir().toFile();
@@ -506,8 +506,8 @@ public final class CommonProxy implements ModInitializer {
 			return false;
 		}
 		LootItemCondition condition = conditions.getFirst();
-		if (condition instanceof MatchTool matchTool) {
-			ItemPredicate itemPredicate = matchTool.predicate().orElse(null);
+		if (condition instanceof MatchTool(Optional<ItemPredicate> predicate)) {
+			ItemPredicate itemPredicate = predicate.orElse(null);
 			return itemPredicate != null && itemPredicate.test(toolItem);
 		} else if (condition instanceof AnyOfCondition anyOfCondition) {
 			for (LootItemCondition child : anyOfCondition.terms) {
