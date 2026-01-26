@@ -124,7 +124,7 @@ public class OverlayRenderer {
 		if (root == null && PreviewOptionsScreen.isAdjustingPosition()) {
 			Tooltip tooltip = new Tooltip();
 			tooltip.add(IThemeHelper.get().title(Blocks.GRASS_BLOCK.getName()));
-			tooltip.add(IThemeHelper.get().modName(ModIdentification.getModName(Blocks.GRASS_BLOCK)));
+			tooltip.add(IThemeHelper.get().modNameElement(ModIdentification.getModName(Blocks.GRASS_BLOCK)));
 			Theme theme = IThemeHelper.get().theme();
 			tooltip.setIcon(theme.modifyIcon(JadeUI.item(new ItemStack(Blocks.GRASS_BLOCK))));
 			root = new BoxElementImpl(tooltip, theme.tooltipStyle);

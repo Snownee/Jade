@@ -125,7 +125,7 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener<JadeClientCode
 	}
 
 	@Override
-	public TextElement modName(Object componentOrString) {
+	public MutableComponent modName(Object componentOrString) {
 		MutableComponent component;
 		if (componentOrString instanceof MutableComponent) {
 			component = (MutableComponent) componentOrString;
@@ -140,8 +140,13 @@ public class ThemeHelper extends SimpleJsonResourceReloadListener<JadeClientCode
 			modNameStyleCache[1] = themeStyle;
 			modNameStyleCache[2] = style;
 		}
+		return component.withStyle(modNameStyleCache[2]);
+	}
+
+	@Override
+	public TextElement modNameElement(Object componentOrString) {
 		return JadeUI
-				.text(component.withStyle(modNameStyleCache[2]))
+				.text(modName(componentOrString))
 				.scale(Objects.equals(IWailaConfig.get().plugin().getEnum(JadeIds.CORE_MOD_NAME), ModNameProvider.Mode.SMALLER) ?
 						0.75F :
 						1F);

@@ -43,7 +43,7 @@ public abstract class ModNameProvider implements IToggleableProvider {
 			}
 
 			if (!Strings.isNullOrEmpty(modName)) {
-				tooltip.add(IThemeHelper.get().modName(modName));
+				tooltip.add(IThemeHelper.get().modNameElement(modName));
 			}
 		}
 	}
@@ -64,7 +64,7 @@ public abstract class ModNameProvider implements IToggleableProvider {
 				modName = ModIdentification.getModName(accessor.getEntity());
 			}
 			if (!Strings.isNullOrEmpty(modName)) {
-				tooltip.add(IThemeHelper.get().modName(ModIdentification.getModName(accessor.getEntity())));
+				tooltip.add(IThemeHelper.get().modNameElement(ModIdentification.getModName(accessor.getEntity())));
 			}
 		}
 	}

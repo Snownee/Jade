@@ -38,7 +38,9 @@ public interface IThemeHelper {
 
 	MutableComponent title(Object componentOrString);
 
-	TextElement modName(Object componentOrString);
+	MutableComponent modName(Object componentOrString);
+
+	TextElement modNameElement(Object componentOrString);
 
 	default MutableComponent seconds(int ticks, float tickRate) {
 		return seconds(ticks, tickRate, false);
