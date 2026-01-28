@@ -218,6 +218,9 @@ public class OverlayRenderer {
 			WailaTickHandler.narrate(root.getTooltip(), true);
 		}
 
+		RenderSystem.disableBlend();
+		RenderSystem.disableDepthTest();
+
 		shown = true;
 	}
 
