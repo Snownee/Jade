@@ -210,16 +210,13 @@ public class OverlayRenderer {
 			callback.afterRender(root, rect, guiGraphics, ObjectDataCenter.get());
 		});
 
-		RenderSystem.enableBlend();
-		RenderSystem.enableDepthTest();
+		RenderSystem.disableBlend();
+		RenderSystem.disableDepthTest();
 		matrixStack.popPose();
 
 		if (Jade.CONFIG.get().getGeneral().shouldEnableTextToSpeech()) {
 			WailaTickHandler.narrate(root.getTooltip(), true);
 		}
-
-		RenderSystem.disableBlend();
-		RenderSystem.disableDepthTest();
 
 		shown = true;
 	}
