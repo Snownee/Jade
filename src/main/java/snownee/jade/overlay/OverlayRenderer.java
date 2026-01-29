@@ -210,8 +210,8 @@ public class OverlayRenderer {
 			callback.afterRender(root, rect, guiGraphics, ObjectDataCenter.get());
 		});
 
-		RenderSystem.enableBlend();
-		RenderSystem.enableDepthTest();
+		RenderSystem.disableBlend();
+		RenderSystem.disableDepthTest();
 		matrixStack.popPose();
 
 		if (Jade.CONFIG.get().getGeneral().shouldEnableTextToSpeech()) {
