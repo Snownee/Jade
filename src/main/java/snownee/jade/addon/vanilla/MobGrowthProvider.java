@@ -34,6 +34,17 @@ public class MobGrowthProvider implements StreamServerDataProvider<EntityAccesso
 	}
 
 	@Override
+	public boolean shouldRequestData(EntityAccessor accessor) {
+		Entity entity = accessor.getEntity();
+		if (entity instanceof AgeableMob ageable) {
+			return ageable.isBaby() && !ageable.isAgeLocked();
+		} else if (entity instanceof Tadpole tadpole) {
+			return !tadpole.isAgeLocked();
+		}
+		return false;
+	}
+
+	@Override
 	public StreamCodec<RegistryFriendlyByteBuf, Integer> streamCodec() {
 		return ByteBufCodecs.VAR_INT.cast();
 	}
@@ -48,6 +59,19 @@ public class MobGrowthProvider implements StreamServerDataProvider<EntityAccesso
 
 		@Override
 		public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
+			boolean ageLocked = false;
+			Entity entity = accessor.getEntity();
+			if (entity instanceof AgeableMob ageable) {
+				ageLocked = ageable.isBaby() && ageable.isAgeLocked();
+			} else if (entity instanceof Tadpole tadpole) {
+				ageLocked = tadpole.isAgeLocked();
+			}
+			if (ageLocked) {
+				tooltip.add(Component.translatable(
+						"jade.mobgrowth.time",
+						IThemeHelper.get().info(Component.translatable("jade.mobgrowth.paused"))));
+				return;
+			}
 			int time = MobGrowthProvider.INSTANCE.decodeFromData(accessor).orElse(0);
 			if (time > 0) {
 				tooltip.add(Component.translatable("jade.mobgrowth.time", IThemeHelper.get().seconds(time, accessor.tickRate())));

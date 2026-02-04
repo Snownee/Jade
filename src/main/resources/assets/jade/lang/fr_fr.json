@@ -172,7 +172,7 @@
 	"jade.customNameEntity": "%s (%s)",
 	"jade.typeNameEntity": "%s (%s)",
 	"config.jade.plugin_jade.debug": "Débogage",
-	"config.jade.plugin_jade.registry_name": "Identifiant,
+	"config.jade.plugin_jade.registry_name": "Identifiant",
 	"config.jade.plugin_jade.registry_name_extra_msg": "id,avancé,infobulles",
 	"config.jade.plugin_jade.registry_name_advanced_tooltips": "Infobulles avancées",
 	"config.jade.plugin_jade.registry_name_advanced_tooltips_desc": "Suivre l'option des infobulles avancées.",

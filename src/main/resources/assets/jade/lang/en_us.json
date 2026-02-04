@@ -220,6 +220,7 @@
 	"jade.llamaStrength": "Strength: %s",
 	"config.jade.plugin_minecraft.mob_growth": "Mob Growth",
 	"jade.mobgrowth.time": "Growing time: %s",
+	"jade.mobgrowth.paused": "Paused",
 	"config.jade.plugin_minecraft.mob_breeding": "Mob Breeding",
 	"config.jade.plugin_minecraft.mob_breeding_extra_msg": "cooldown,cd,allay,duplication",
 	"jade.mobbreeding.time": "Breeding CD: %s",

@@ -11,7 +11,7 @@ import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.chat.Component;
 import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.overlay.DisplayHelper;
-import snownee.jade.util.FluidInput;
+import snownee.jade.util.ComponentHolders;
 
 public class FluidStackElement extends ProgressOverlayElement {
 
@@ -49,7 +49,7 @@ public class FluidStackElement extends ProgressOverlayElement {
 		if (connection == null) {
 			return false;
 		}
-		keyboardHandler.setClipboard(new FluidInput(fluid).serialize(connection.registryAccess()));
+		keyboardHandler.setClipboard(ComponentHolders.serialize(fluid.typeHolder(), fluid.getComponents(), connection.registryAccess()));
 		return true;
 	}
 }

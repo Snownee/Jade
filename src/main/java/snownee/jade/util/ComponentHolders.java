@@ -16,29 +16,14 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.level.material.Fluid;
-import snownee.jade.api.fluid.JadeFluidObject;
 
-public class FluidInput {
-	private final Holder<Fluid> fluid;
-	private final DataComponentPatch components;
-
-	public FluidInput(JadeFluidObject fluidObject) {
-		this(fluidObject.getType(), fluidObject.getComponents());
-	}
-
-	public FluidInput(Holder<Fluid> holder, DataComponentPatch dataComponentPatch) {
-		this.fluid = holder;
-		this.components = dataComponentPatch;
-	}
-
-	public Fluid getFluid() {
-		return this.fluid.value();
-	}
-
-	public String serialize(HolderLookup.Provider provider) {
-		StringBuilder stringBuilder = new StringBuilder(this.getFluidName());
-		String string = this.serializeComponents(provider);
+public class ComponentHolders {
+	public static String serialize(Holder<?> holder, DataComponentPatch components, HolderLookup.Provider provider) {
+		StringBuilder stringBuilder = new StringBuilder(holder.unwrapKey()
+				.map(ResourceKey::identifier)
+				.orElseGet(() -> Identifier.parse("unknown[" + holder + "]"))
+				.toString());
+		String string = serializeComponents(components, provider);
 		if (!string.isEmpty()) {
 			stringBuilder.append('[');
 			stringBuilder.append(string);
@@ -48,9 +33,9 @@ public class FluidInput {
 		return stringBuilder.toString();
 	}
 
-	private String serializeComponents(HolderLookup.Provider provider) {
+	private static String serializeComponents(DataComponentPatch components, HolderLookup.Provider provider) {
 		DynamicOps<Tag> dynamicOps = provider.createSerializationContext(NbtOps.INSTANCE);
-		return this.components.entrySet().stream().flatMap((entry) -> {
+		return components.entrySet().stream().flatMap((entry) -> {
 			DataComponentType<?> dataComponentType = entry.getKey();
 			Identifier Identifier = BuiltInRegistries.DATA_COMPONENT_TYPE.getKey(dataComponentType);
 			if (Identifier == null) {
@@ -68,12 +53,5 @@ public class FluidInput {
 				}
 			}
 		}).collect(Collectors.joining(String.valueOf(',')));
-	}
-
-	private String getFluidName() {
-		return this.fluid.unwrapKey()
-				.map(ResourceKey::identifier)
-				.orElseGet(() -> Identifier.parse("unknown[" + this.fluid + "]"))
-				.toString();
 	}
 }

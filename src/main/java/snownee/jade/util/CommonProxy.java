@@ -403,7 +403,7 @@ public final class CommonProxy implements ModInitializer {
 	}
 
 	public static Component getFluidName(JadeFluidObject fluidObject) {
-		Fluid fluid = fluidObject.getType().value();
+		Fluid fluid = fluidObject.typeHolder().value();
 		DataComponentPatch components = fluidObject.getComponents();
 		return FluidVariantAttributes.getName(FluidVariant.of(fluid, components));
 	}

@@ -47,7 +47,7 @@ public class FluidView {
 		FluidView view = new FluidView(JadeUI.fluid(fluidObject), current, max);
 		view.fluidName = fluidObject.getDisplayName();
 		view.ratio = (float) ((double) amount / data.capacity);
-		if (fluidObject.getType().value().isSame(Fluids.EMPTY)) {
+		if (fluidObject.is(Fluids.EMPTY)) {
 			view.overrideText = NarratableComponent.translatable(
 					"jade.fluid",
 					EMPTY_FLUID,

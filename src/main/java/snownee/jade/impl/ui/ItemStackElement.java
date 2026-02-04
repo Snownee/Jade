@@ -6,7 +6,6 @@ import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.multiplayer.ClientPacketListener;
-import net.minecraft.commands.arguments.item.ItemInput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.util.Mth;
@@ -14,6 +13,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import snownee.jade.api.ui.Element;
 import snownee.jade.overlay.DisplayHelper;
+import snownee.jade.util.ComponentHolders;
 
 public class ItemStackElement extends Element {
 
@@ -69,8 +69,7 @@ public class ItemStackElement extends Element {
 		if (item.isEmpty() || connection == null) {
 			return false;
 		}
-		ItemInput itemInput = new ItemInput(item.typeHolder(), item.getComponentsPatch());
-		keyboardHandler.setClipboard(itemInput.serialize(connection.registryAccess()));
+		keyboardHandler.setClipboard(ComponentHolders.serialize(item.typeHolder(), item.getComponentsPatch(), connection.registryAccess()));
 		return true;
 	}
 }

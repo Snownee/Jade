@@ -6,6 +6,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.core.Holder;
+import net.minecraft.core.TypedInstance;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -17,16 +18,16 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import snownee.jade.util.CommonProxy;
 
-public class JadeFluidObject {
+public class JadeFluidObject implements TypedInstance<Fluid> {
 	public static final Codec<JadeFluidObject> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-					BuiltInRegistries.FLUID.holderByNameCodec().fieldOf("type").forGetter(JadeFluidObject::getType),
+					BuiltInRegistries.FLUID.holderByNameCodec().fieldOf("type").forGetter(JadeFluidObject::typeHolder),
 					Codec.LONG.fieldOf("amount").forGetter(JadeFluidObject::getAmount),
 					DataComponentPatch.CODEC.optionalFieldOf("components", DataComponentPatch.EMPTY).forGetter(JadeFluidObject::getComponents))
 			.apply(instance, JadeFluidObject::new));
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, JadeFluidObject> STREAM_CODEC = StreamCodec.composite(
 			ByteBufCodecs.holderRegistry(Registries.FLUID),
-			JadeFluidObject::getType,
+			JadeFluidObject::typeHolder,
 			ByteBufCodecs.LONG,
 			JadeFluidObject::getAmount,
 			DataComponentPatch.STREAM_CODEC,
@@ -70,7 +71,8 @@ public class JadeFluidObject {
 		Objects.requireNonNull(components);
 	}
 
-	public Holder<Fluid> getType() {
+	@Override
+	public Holder<Fluid> typeHolder() {
 		return type;
 	}
 
@@ -83,7 +85,7 @@ public class JadeFluidObject {
 	}
 
 	public boolean isEmpty() {
-		return getType().value() == Fluids.EMPTY || getAmount() == 0;
+		return is(Fluids.EMPTY) || getAmount() == 0;
 	}
 
 	public Component getDisplayName() {
