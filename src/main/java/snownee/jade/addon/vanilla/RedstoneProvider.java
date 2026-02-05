@@ -1,8 +1,14 @@
 package snownee.jade.addon.vanilla;
 
+import java.util.Optional;
+
+import org.jspecify.annotations.Nullable;
+
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -16,25 +22,30 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.ComparatorMode;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
-import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
+import snownee.jade.api.StreamServerDataProvider;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
 
-public class RedstoneProvider implements IServerDataProvider<BlockAccessor> {
+public class RedstoneProvider implements StreamServerDataProvider<BlockAccessor, Integer> {
 	public static final RedstoneProvider INSTANCE = new RedstoneProvider();
 
 	@Override
-	public void appendServerData(CompoundTag data, BlockAccessor accessor) {
+	public @Nullable Integer streamData(BlockAccessor accessor) {
 		BlockEntity blockEntity = accessor.getBlockEntity();
 		if (blockEntity instanceof ComparatorBlockEntity comparator) {
-			data.putInt("Signal", comparator.getOutputSignal());
+			return comparator.getOutputSignal();
 		} else if (blockEntity instanceof CalibratedSculkSensorBlockEntity) {
 			Direction direction = accessor.getBlockState().getValue(CalibratedSculkSensorBlock.FACING).getOpposite();
-			int signal = accessor.getLevel().getSignal(accessor.getPosition().relative(direction), direction);
-			data.putInt("Signal", signal);
+			return accessor.getLevel().getSignal(accessor.getPosition().relative(direction), direction);
 		}
+		return null;
+	}
+
+	@Override
+	public StreamCodec<RegistryFriendlyByteBuf, Integer> streamCodec() {
+		return ByteBufCodecs.VAR_INT.cast();
 	}
 
 	@Override
@@ -67,19 +78,18 @@ public class RedstoneProvider implements IServerDataProvider<BlockAccessor> {
 				return;
 			}
 
+			Optional<Integer> signal = RedstoneProvider.INSTANCE.decodeFromData(accessor);
 			if (block == Blocks.COMPARATOR) {
 				ComparatorMode mode = state.getValue(BlockStateProperties.MODE_COMPARATOR);
 				Component modeInfo = t.info(Component.translatable(
 						"tooltip.jade.mode_" + (mode == ComparatorMode.COMPARE ? "comparator" : "subtractor")));
 				tooltip.add(Component.translatable("tooltip.jade.mode", modeInfo));
-				if (accessor.getServerData().contains("Signal")) {
-					tooltip.add(Component.translatable("tooltip.jade.power", t.info(accessor.getServerData().getInt("Signal"))));
-				}
+				signal.ifPresent(i -> tooltip.add(Component.translatable("tooltip.jade.power", t.info(i))));
 				return;
 			}
 
-			if (block instanceof CalibratedSculkSensorBlock && accessor.getServerData().contains("Signal")) {
-				tooltip.add(Component.translatable("jade.input_signal", t.info(accessor.getServerData().getInt("Signal"))));
+			if (block instanceof CalibratedSculkSensorBlock && signal.isPresent()) {
+				tooltip.add(Component.translatable("jade.input_signal", t.info(signal.get())));
 			}
 
 			if (state.hasProperty(BlockStateProperties.POWER)) {
