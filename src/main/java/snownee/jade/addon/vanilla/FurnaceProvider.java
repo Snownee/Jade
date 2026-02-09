@@ -55,7 +55,7 @@ public class FurnaceProvider implements StreamServerDataProvider<BlockAccessor, 
 		@Override
 		public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 			Data data = FurnaceProvider.INSTANCE.decodeFromData(accessor).orElse(null);
-			if (data == null) {
+			if (data == null || data.inventory.stream().allMatch(ItemStack::isEmpty)) {
 				return;
 			}
 			tooltip.add(JadeUI.item(data.inventory.get(0)).alignSelfCenter());
