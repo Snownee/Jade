@@ -1,6 +1,7 @@
 {
 	"modmenu.nameTranslation.jade": "Jade",
 	"modmenu.descriptionTranslation.jade": "顯示有關你正在查看的東西的資訊。",
+	"fml.menu.mods.info.description.jade": "顯示有關你正在查看的東西的資訊。",
 	"tooltip.jade.crop_growth": "生長：%s",
 	"tooltip.jade.crop_mature": "成熟",
 	"tooltip.jade.empty": "空",
