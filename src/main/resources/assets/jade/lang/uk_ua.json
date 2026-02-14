@@ -1,6 +1,7 @@
 {
 	"modmenu.nameTranslation.jade": "Jade",
 	"modmenu.descriptionTranslation.jade": "Показує інформацію про те, на що ви дивитеся.",
+	"fml.menu.mods.info.description.jade": "Показує інформацію про те, на що ви дивитеся.",
 	"tooltip.jade.crop_growth": "Ріст: %s",
 	"tooltip.jade.crop_mature": "Зрілий",
 	"tooltip.jade.empty": "Порожньо",
@@ -220,6 +221,7 @@
 	"jade.llamaStrength": "Сила: %s",
 	"config.jade.plugin_minecraft.mob_growth": "Зростання моба",
 	"jade.mobgrowth.time": "Час зростання: %s",
+	"jade.mobgrowth.paused": "Призупинено",
 	"config.jade.plugin_minecraft.mob_breeding": "Розведення мобів",
 	"config.jade.plugin_minecraft.mob_breeding_extra_msg": "затримка,розмноження,моби,дитинча",
 	"jade.mobbreeding.time": "Затримка розведення: %s",
