@@ -12,13 +12,13 @@
     }
 
     dependencies {
-      // jade_version example: 15.10.0+fabric
+      // jade_version example: 26.0.0+fabric
       // Visit https://modrinth.com/mod/jade/versions?l=fabric to get the latest version
-      modImplementation "maven.modrinth:jade:${project.jade_version}"
+      implementation "maven.modrinth:jade:${project.jade_version}"
     }
     ```
 
-=== "NeoForge 1.21+"
+=== "NeoForge"
 
     In your `build.gradle`:
 
@@ -28,7 +28,7 @@
     }
 
     dependencies {
-      // jade_version example: 15.10.0+neoforge
+      // jade_version example: 26.0.0+neoforge
       // Visit https://modrinth.com/mod/jade/versions?l=neoforge to get the latest version
       implementation "maven.modrinth:jade:${project.jade_version}"
     }
@@ -36,7 +36,7 @@
 
 Visit [Modrinth Maven](https://support.modrinth.com/en/articles/8801191-modrinth-maven/) to find more information about how to set up your workspace.
 
-## Registering
+## Registering your plugin
 
 ```java
 package snownee.jade.test;
@@ -85,7 +85,7 @@ Let's create a simple block component provider that adds an extra line to all th
 package snownee.jade.test;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.ITooltip;
@@ -104,7 +104,7 @@ public class ExampleComponentProvider implements IBlockComponentProvider {
   }
 
   @Override
-  public ResourceLocation getUid() {
+  public Identifier getUid() {
     return ExamplePlugin.FURNACE_FUEL;
   }
 }
@@ -129,13 +129,13 @@ Once your component provider is registered, Jade will create a config option for
 
 !!! note
 
-    If you want to control the position your elements are inserted, you can override `getDefaultPriority` method in your component provider. Greater is lower. -5000 ~ 5000 is for normal providers and they will be folded in the Lite mode.
+    To control element insertion positions, override the `getDefaultPriority` method in the component provider. Higher values indicate lower priority. Values ranging from -5000 to 5000 are suitable for regular providers, which will be collapsed in compact mode.
 
 Now launch the game:
 
 ![](../images/component-providers.png)
 
-Congrats you have implemented your first Jade plugin!
+Congrats, you have implemented your first Jade plugin!
 
 ## Server Data Provider
 
@@ -145,17 +145,18 @@ This is a chart shows the basic lifecycle:
 
 ![](../images/life-cycle.png)
 
-Now it's time to implement our `IServerDataProvider`. Usually we will use `StreamServerDataProvider` for simplicity and allow use to use `StreamCodec` to encode/decode data:
+It's time to implement our `IServerDataProvider`. Typically, we'll use `StreamServerDataProvider` to simplify the implementation and enable data encoding/decoding with `StreamCodec`:
 
 ```java
 package snownee.jade.test;
 
+import org.jspecify.annotations.Nullable;
+
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
-import org.jetbrains.annotations.Nullable;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.StreamServerDataProvider;
 
@@ -165,7 +166,7 @@ public class ExampleDataProvider
 
   @Override
   public @Nullable Integer streamData(BlockAccessor accessor) {
-    return ((AbstractFurnaceBlockEntity) accessor.getBlockEntity()).litTimeRemaining;
+		return accessor.<AbstractFurnaceBlockEntity>typedBlockEntity().litTimeRemaining;
   }
 
   @Override
@@ -174,7 +175,7 @@ public class ExampleDataProvider
   }
 
   @Override
-  public ResourceLocation getUid() {
+  public Identifier getUid() {
     return ExamplePlugin.FURNACE_FUEL;
   }
 }
@@ -182,7 +183,7 @@ public class ExampleDataProvider
 
 Here we used [Access Transformers](https://docs.neoforged.net/docs/advanced/accesstransformers) or [Access Wideners](https://fabricmc.net/wiki/tutorial:accesswideners) to get access to the protected field.
 
-Register `IServerDataProvider`:
+Registering `IServerDataProvider`:
 
 ```java
 @Override
@@ -191,31 +192,23 @@ public void register(IWailaCommonRegistration registration) {
 }
 ```
 
-Changes are made on the client side to get the data:
+!!! note
+
+    Data providers may have the same or different identifiers as component providers.
+
+Changes are made on our `ExampleComponentProvider` to get the data from the server:
 
 ```java
 package snownee.jade.test;
 
-import java.util.List;
 import java.util.Optional;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.CommonComponents;
+
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import snownee.jade.Jade;
+import net.minecraft.resources.Identifier;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.ITooltip;
-import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
-import snownee.jade.api.ui.Element;
-import snownee.jade.api.ui.JadeUI;
-import snownee.jade.gui.LayoutWithPadding;
 
 public class ExampleComponentProvider implements IBlockComponentProvider {
   public static final ExampleComponentProvider INSTANCE = new ExampleComponentProvider();
@@ -233,13 +226,13 @@ public class ExampleComponentProvider implements IBlockComponentProvider {
   }
 
   @Override
-  public ResourceLocation getUid() {
+  public Identifier getUid() {
     return ExamplePlugin.FURNACE_FUEL;
   }
 }
 ```
 
-At the end, don't forget to add the translations:
+Lastly, don't forget to add the translations:
 
 ```json
 {
@@ -275,3 +268,7 @@ public void appendTooltip(
 Result:
 
 ![](../images/display-item-tuned.png)
+
+!!! note
+
+    See methods in `JadeUI` to check more elements that can be added to tooltips. You can also add screen widgets to tooltips.

@@ -2,7 +2,7 @@
 
 Welcome to Jade's developer wiki!
 
-This documentation uses the official mappings.
+For documentation on Minecraft 1.X, click [here](https://jademc.readthedocs.io/en/1.x/).
 
 ## Links
 
