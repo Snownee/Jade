@@ -1,21 +1,20 @@
 package snownee.jade.util;
 
-import java.util.HashMap;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.mojang.authlib.GameProfile;
-
 import org.jetbrains.annotations.Nullable;
+
+import com.mojang.authlib.GameProfile;
 
 import net.minecraft.server.Services;
 import net.minecraft.util.Util;
 
 public class PlayerNameLookup {
 	private static final Set<UUID> FETCHING = ConcurrentHashMap.newKeySet();
-	private static final HashMap<UUID, String> FETCHED = new HashMap<>();
+	private static final ConcurrentHashMap<UUID, String> FETCHED = new ConcurrentHashMap<>();
 	private static final GameProfile DUMMY_PROFILE = new GameProfile(UUID.randomUUID(), "???");
 
 	public static boolean isFetching(UUID uuid) {
