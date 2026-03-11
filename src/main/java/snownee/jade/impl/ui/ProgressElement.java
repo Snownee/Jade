@@ -5,7 +5,7 @@ import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
@@ -61,7 +61,7 @@ public class ProgressElement extends ResizeableElement implements StyledElement 
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
 		view.boxStyle.render(graphics, this, getX(), getY(), width, height, IDisplayHelper.get().opacity());
 
 		if (track != null) {
@@ -118,7 +118,7 @@ public class ProgressElement extends ResizeableElement implements StyledElement 
 	}
 
 	private float renderPart(
-			GuiGraphics graphics,
+			GuiGraphicsExtractor graphics,
 			float partialTicks,
 			ProgressView.Part part,
 			float partProgress,
@@ -142,13 +142,13 @@ public class ProgressElement extends ResizeableElement implements StyledElement 
 		if (isLast && view.style.foreground() == null && overlay instanceof ProgressOverlayElement element &&
 				element.canUseFloatingRect(graphics)) {
 			element.setFloatingRect(x + start, y, partWidth, height);
-			element.render(graphics, -1, -1, partialTicks);
+			element.extractRenderState(graphics, -1, -1, partialTicks);
 			element.setFloatingRect(null);
 //			graphics.disableScissor();
 			return start + partWidth;
 		} else {
 			resizeElement(overlay, x + (int) start, y, roundedPartWidth, height);
-			overlay.render(graphics, -1, -1, partialTicks);
+			overlay.extractRenderState(graphics, -1, -1, partialTicks);
 //			graphics.disableScissor();
 			return start + roundedPartWidth;
 		}

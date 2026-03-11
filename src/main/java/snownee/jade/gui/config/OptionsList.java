@@ -25,7 +25,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractStringWidget;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
@@ -168,13 +168,13 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 	}
 
 	@Override
-	protected void renderListSeparators(GuiGraphics guiGraphics) {
+	protected void extractListSeparators(GuiGraphicsExtractor guiGraphics) {
 		Identifier Identifier2 = this.minecraft.level == null ? Screen.FOOTER_SEPARATOR : Screen.INWORLD_FOOTER_SEPARATOR;
 		guiGraphics.blit(RenderPipelines.GUI_TEXTURED, Identifier2, 0, this.getBottom(), 0.0F, 0.0F, owner.width, 2, 32, 2);
 	}
 
 	@Override
-	protected void renderSelection(GuiGraphics guiGraphics, Entry entry, int i) {
+	protected void extractSelection(GuiGraphicsExtractor guiGraphics, Entry entry, int i) {
 		int outlineX0 = getX();
 		int outlineY0 = entry.getY();
 		int outlineX1 = outlineX0 + getWidth();
@@ -183,7 +183,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 	}
 
 	@Override
-	public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+	public void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		float deltaTicks = Minecraft.getInstance().getDeltaTracker().getRealtimeDeltaTicks();
 		smoothScroll.tick(deltaTicks);
 		if (!ClientProxy.metadata.hasSmoothScroll() && smoothScroll.isMoving()) {
@@ -210,10 +210,10 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		}
 
 		enableScissor(guiGraphics);
-		renderListItems(guiGraphics, mouseX, mouseY, partialTicks);
+		extractListItems(guiGraphics, mouseX, mouseY, partialTicks);
 		guiGraphics.disableScissor();
-		renderListSeparators(guiGraphics);
-		renderScrollbar(guiGraphics, mouseX, mouseY);
+		extractListSeparators(guiGraphics);
+		extractScrollbar(guiGraphics, mouseX, mouseY);
 	}
 
 	public void save() {
@@ -575,7 +575,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		}
 
 		@Override
-		public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovered, float deltaTime) {
+		public void extractContent(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, boolean hovered, float deltaTime) {
 			for (EntryWidget widget : widgets) {
 				AbstractWidget rawWidget = widget.widget;
 				int x;
@@ -586,7 +586,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 				}
 				rawWidget.setX(getContentX() + x);
 				rawWidget.setY(getContentY() + getContentHeight() / 2 + widget.offsetY);
-				rawWidget.render(guiGraphics, mouseX, mouseY, deltaTime);
+				rawWidget.extractRenderState(guiGraphics, mouseX, mouseY, deltaTime);
 			}
 		}
 

@@ -5,7 +5,7 @@ import org.jspecify.annotations.Nullable;
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
 
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.narration.NarratedElementType;
@@ -55,7 +55,7 @@ public class NotUglyEditBox extends EditBox {
 	}
 
 	@Override
-	public void renderWidget(GuiGraphics guiGraphics, int i, int j, float f) {
+	public void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics, int i, int j, float f) {
 		if (isVisible()) {
 			float bgAlpha;
 			if (this.backgroundMode == BackgroundMode.HOVERING) {
@@ -84,12 +84,12 @@ public class NotUglyEditBox extends EditBox {
 					if (alwaysRenderCross || isHovered) {
 						isMouseOverCross = isHovered && i > getRight() - 12;
 						int c = isMouseOverCross ? textColor : textColorUneditable;
-						guiGraphics.drawString(font, "×", getX() + width - 10, textY + 1, c);
+						guiGraphics.text(font, "×", getX() + width - 10, textY + 1, c);
 					}
 				}
 			}
 		}
-		super.renderWidget(guiGraphics, i, j, f);
+		super.extractWidgetRenderState(guiGraphics, i, j, f);
 		if (isMouseOverCross) {
 			guiGraphics.requestCursor(CursorTypes.POINTING_HAND);
 		}

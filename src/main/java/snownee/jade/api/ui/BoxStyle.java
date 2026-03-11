@@ -8,7 +8,7 @@ import com.google.common.base.MoreObjects;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.TooltipRenderUtil;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
@@ -123,7 +123,7 @@ public class BoxStyle {
 		return MoreObjects.firstNonNull(padding, DEFAULT_PADDING)[dir.ordinal()];
 	}
 
-	public void render(GuiGraphics guiGraphics, StyledElement element, float x, float y, float w, float h, float alpha) {
+	public void render(GuiGraphicsExtractor guiGraphics, StyledElement element, float x, float y, float w, float h, float alpha) {
 		Identifier texture = sprite;
 		if (withIconSprite != null && element.getIcon() != null) {
 			texture = withIconSprite;
@@ -236,7 +236,7 @@ public class BoxStyle {
 //		}
 //
 //		@Override
-//		public void render(GuiGraphics guiGraphics, StyledElement element, float x, float y, float w, float h, float alpha) {
+//		public void render(GuiGraphicsExtractor guiGraphics, StyledElement element, float x, float y, float w, float h, float alpha) {
 //			boolean roundCorner = hasRoundCorner();
 //			if (bgColor != -1) {
 //				int bg = IWailaConfig.Overlay.applyAlpha(bgColor, alpha);

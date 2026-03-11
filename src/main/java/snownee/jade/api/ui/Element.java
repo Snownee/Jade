@@ -12,7 +12,7 @@ import com.google.common.base.Preconditions;
 import com.mojang.brigadier.Message;
 
 import net.minecraft.client.KeyboardHandler;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -136,7 +136,7 @@ public abstract class Element implements Renderable, LayoutElement, NarrationSup
 	}
 
 	@Override
-	public abstract void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks);
+	public abstract void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks);
 
 	@Override
 	public void setX(int x) {
@@ -212,7 +212,7 @@ public abstract class Element implements Renderable, LayoutElement, NarrationSup
 		return false;
 	}
 
-	public void renderDebug(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks, RenderDebugContext context) {
+	public void renderDebug(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks, RenderDebugContext context) {
 		JadeInternals.getDisplayHelper().drawBorder(graphics, getRectangle(), 1, 0x88FF0000, true);
 		if (JadeUI.hasAltDown() && getTag() != null) {
 			int centerX = context.root.getX() + context.root.getWidth() / 2;
@@ -230,16 +230,16 @@ public abstract class Element implements Renderable, LayoutElement, NarrationSup
 				pose.translate(-textWidth - 4, 0);
 			}
 			graphics.fill(0, 0, textWidth + 4, DisplayHelper.font().lineHeight + 4, 0x88000000);
-			graphics.drawString(DisplayHelper.font(), s, 2, 2, 0xFFFFFFFF, false);
+			graphics.text(DisplayHelper.font(), s, 2, 2, 0xFFFFFFFF, false);
 			pose.popMatrix();
 		}
 	}
 
-	public static void setHoverEffect(GuiGraphics graphics, Component component) {
+	public static void setHoverEffect(GuiGraphicsExtractor graphics, Component component) {
 		setHoverEffect(graphics, new HoverEvent.ShowText(component));
 	}
 
-	public static void setHoverEffect(GuiGraphics graphics, HoverEvent event) {
+	public static void setHoverEffect(GuiGraphicsExtractor graphics, HoverEvent event) {
 		graphics.hoveredTextStyle = Style.EMPTY.withHoverEvent(event);
 	}
 

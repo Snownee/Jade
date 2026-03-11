@@ -6,7 +6,7 @@ import org.jspecify.annotations.Nullable;
 
 import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.chat.Component;
 import snownee.jade.api.fluid.JadeFluidObject;
@@ -23,7 +23,7 @@ public class FluidStackElement extends ProgressOverlayElement {
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
 		if (floatingRect == null) {
 			DisplayHelper.INSTANCE.drawFluid(graphics, getX(), getY(), fluid, width, height, JadeFluidObject.bucketVolume());
 		} else {

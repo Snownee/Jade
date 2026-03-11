@@ -4,7 +4,7 @@ import org.joml.Matrix3x2fStack;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ActiveTextCollector;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
@@ -44,7 +44,7 @@ public class TextElementImpl extends TextElement {
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
 		int x = textLeft();
 		int normalColor = IWailaConfig.Overlay.applyAlpha(IThemeHelper.get().getNormalColor(), alpha);
 		boolean scaled = scale != 1;
@@ -59,7 +59,7 @@ public class TextElementImpl extends TextElement {
 		}
 		if (mouseX != -1 && getRectangle().containsPoint(mouseX, mouseY)) {
 //			int highlightColor = IThemeHelper.get().theme().text.colors().info();
-			ActiveTextCollector collector = graphics.textRenderer(GuiGraphics.HoveredTextEffects.TOOLTIP_AND_CURSOR);
+			ActiveTextCollector collector = graphics.textRenderer(GuiGraphicsExtractor.HoveredTextEffects.TOOLTIP_AND_CURSOR);
 			textCollector(collector);
 		}
 		if (scaled) {

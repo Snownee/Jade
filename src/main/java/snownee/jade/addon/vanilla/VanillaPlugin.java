@@ -1,7 +1,6 @@
 package snownee.jade.addon.vanilla;
 
 import java.util.List;
-import java.util.Map;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -110,10 +109,10 @@ public class VanillaPlugin implements IWailaPlugin {
 
 	@SuppressWarnings("unchecked")
 	private static <T extends Comparable<T>> BlockState copyProperties(BlockState oldState, BlockState newState) {
-		for (Map.Entry<Property<?>, Comparable<?>> entry : oldState.getValues().entrySet()) {
-			Property<T> property = (Property<T>) entry.getKey();
+		for (Property.Value<?> value : oldState.getValues().toList()) {
+			Property<T> property = (Property<T>) value.property();
 			if (newState.hasProperty(property)) {
-				newState = newState.setValue(property, property.getValueClass().cast(entry.getValue()));
+				newState = newState.setValue(property, property.getValueClass().cast(value.value()));
 			}
 		}
 		return newState;

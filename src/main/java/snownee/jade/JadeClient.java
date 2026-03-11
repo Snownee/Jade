@@ -13,7 +13,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.toasts.SystemToast;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
@@ -318,7 +318,7 @@ public final class JadeClient {
 		}
 		Player player = accessor.getPlayer();
 		Minecraft mc = Minecraft.getInstance();
-		if (mc.gameRenderer.lightmapRenderState.darknessEffectScale > 0.15f &&
+		if (mc.gameRenderer.getGameRenderState().lightmapRenderState.darknessEffectScale > 0.15f &&
 				accessor.getLevel().getMaxLocalRawBrightness(BlockPos.containing(accessor.getHitResult().getLocation())) < 7) {
 			return null;
 		}
@@ -332,7 +332,11 @@ public final class JadeClient {
 		return accessor;
 	}
 
-	public static void drawBreakingProgress(BoxElement root, TooltipAnimation animation, GuiGraphics graphics, Accessor<?> accessor) {
+	public static void drawBreakingProgress(
+			BoxElement root,
+			TooltipAnimation animation,
+			GuiGraphicsExtractor graphics,
+			Accessor<?> accessor) {
 		if (!IWailaConfig.get().plugin().get(JadeIds.MC_BREAKING_PROGRESS)) {
 			progressAlpha = 0;
 			return;

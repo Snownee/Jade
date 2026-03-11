@@ -12,7 +12,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.WidgetSprites;
@@ -133,8 +133,8 @@ public abstract class BaseOptionsScreen extends Screen {
 	}
 
 	@Override
-	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-		super.render(guiGraphics, mouseX, mouseY, partialTicks);
+	public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+		super.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
 
 		OptionsList.Entry entry = options().isMouseOver(mouseX, mouseY) ? options().getEntryAt(mouseX, mouseY) : null;
 		if (entry != null) {
@@ -153,7 +153,12 @@ public abstract class BaseOptionsScreen extends Screen {
 		}
 	}
 
-	public void setTooltipForNextFrame(GuiGraphics guiGraphics, List<Component> descs, int mouseX, int mouseY, OptionsList.Entry entry) {
+	public void setTooltipForNextFrame(
+			GuiGraphicsExtractor guiGraphics,
+			List<Component> descs,
+			int mouseX,
+			int mouseY,
+			OptionsList.Entry entry) {
 		Font font = DisplayHelper.font();
 		List<FormattedCharSequence> list = descs.stream().flatMap($ -> font.split($, 255).stream()).toList();
 		guiGraphics.setTooltipForNextFrame(font, list, new BelowOrAboveListEntryTooltipPositioner(options(), entry), mouseX, mouseY, false);

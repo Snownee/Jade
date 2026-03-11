@@ -17,10 +17,7 @@ import snownee.jade.JadeClient;
 
 @Mixin(FogRenderer.class)
 public class FogRendererMixin {
-	@Inject(
-			method = "setupFog", at = @At(
-			value = "INVOKE",
-			target = "Lcom/mojang/blaze3d/systems/RenderSystem;getDevice()Lcom/mojang/blaze3d/systems/GpuDevice;"))
+	@Inject(method = "setupFog", at = @At("TAIL"))
 	private void jade$setupFog(
 			Camera camera,
 			int renderDistanceInChunks,

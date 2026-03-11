@@ -5,7 +5,7 @@ import org.jspecify.annotations.Nullable;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetTooltipHolder;
@@ -33,8 +33,8 @@ public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
 	}
 
 	@Override
-	protected void renderListItems(GuiGraphics guiGraphics, int i, int j, float f) {
-		super.renderListItems(guiGraphics, i, j, f);
+	protected void extractListItems(GuiGraphicsExtractor guiGraphics, int i, int j, float f) {
+		super.extractListItems(guiGraphics, i, j, f);
 		if (children().isEmpty()) {
 			return;
 		}
@@ -51,18 +51,18 @@ public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
 	}
 
 	@Override
-	protected void renderListBackground(GuiGraphics guiGraphics) {
+	protected void extractListBackground(GuiGraphicsExtractor guiGraphics) {
 		Identifier Identifier = minecraft.level == null ? NAVBAR_BACKGROUND : INWORLD_NAVBAR_BACKGROUND;
 		guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, Identifier, getX(), getY(), getWidth(), getHeight());
 	}
 
 	@Override
-	protected void renderListSeparators(GuiGraphics guiGraphics) {
+	protected void extractListSeparators(GuiGraphicsExtractor guiGraphics) {
 		// NO-OP
 	}
 
 	@Override
-	protected void renderSelection(GuiGraphics guiGraphics, Entry entry, int i) {
+	protected void extractSelection(GuiGraphicsExtractor guiGraphics, Entry entry, int i) {
 		// NO-OP
 	}
 
@@ -154,8 +154,8 @@ public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
 		}
 
 		@Override
-		public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovered, float deltaTime) {
-			guiGraphics.drawString(
+		public void extractContent(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, boolean hovered, float deltaTime) {
+			guiGraphics.text(
 					title.font,
 					title.title().getString(),
 					getContentX() + 10,

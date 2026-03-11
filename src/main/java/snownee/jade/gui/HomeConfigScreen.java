@@ -14,7 +14,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.ConfirmLinkScreen;
@@ -211,7 +211,7 @@ public class HomeConfigScreen extends Screen {
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
 		Objects.requireNonNull(minecraft);
 		float deltaTicks = Minecraft.getInstance().getDeltaTracker().getRealtimeDeltaTicks();
 		ticks += deltaTicks;
@@ -248,7 +248,7 @@ public class HomeConfigScreen extends Screen {
 				particles.add(particle);
 			}
 		}
-		super.render(graphics, mouseX, mouseY, partialTicks);
+		super.extractRenderState(graphics, mouseX, mouseY, partialTicks);
 		int left = width / 2 - 105;
 		int top = height / 4 - 20;
 		graphics.pose().pushMatrix();
@@ -256,7 +256,7 @@ public class HomeConfigScreen extends Screen {
 
 		float scale = 2F;
 		graphics.pose().scale(scale);
-		graphics.drawString(font, ModIdentification.getModFullName(Jade.ID).orElse("Jade"), 0, 0, 0xFFFFFFFF);
+		graphics.text(font, ModIdentification.getModFullName(Jade.ID).orElse("Jade"), 0, 0, 0xFFFFFFFF);
 
 		graphics.pose().scale(0.5F);
 		titleY.tick(deltaTicks);
@@ -353,7 +353,7 @@ public class HomeConfigScreen extends Screen {
 		}
 	}
 
-	private void drawFancyTitle(GuiGraphics guiGraphics, String text, float y, float expectY, float mouseX, float mouseY) {
+	private void drawFancyTitle(GuiGraphicsExtractor guiGraphics, String text, float y, float expectY, float mouseX, float mouseY) {
 		float distY = Math.abs(y - expectY);
 		if (distY >= 9) {
 			return;
@@ -385,7 +385,7 @@ public class HomeConfigScreen extends Screen {
 
 		guiGraphics.pose().pushMatrix();
 		guiGraphics.pose().translate(0, y);
-		guiGraphics.drawString(font, component, 0, 0, color);
+		guiGraphics.text(font, component, 0, 0, color);
 		guiGraphics.pose().popMatrix();
 	}
 
@@ -441,7 +441,7 @@ public class HomeConfigScreen extends Screen {
 			}
 		}
 
-		private void render(GuiGraphics graphics, Font font, int mouseX, int mouseY) {
+		private void render(GuiGraphicsExtractor graphics, Font font, int mouseX, int mouseY) {
 			if (festival == 99 && age < -4) {
 				return;
 			}
@@ -456,7 +456,7 @@ public class HomeConfigScreen extends Screen {
 			} else if (fade != 1) {
 				color = IWailaConfig.Overlay.applyAlpha(color, fade);
 			}
-			graphics.drawString(font, text, 0, 0, color);
+			graphics.text(font, text, 0, 0, color);
 			graphics.pose().popMatrix();
 		}
 	}

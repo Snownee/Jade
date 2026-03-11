@@ -5,7 +5,7 @@ import java.util.function.Predicate;
 import org.jspecify.annotations.Nullable;
 
 import net.minecraft.client.KeyboardHandler;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -48,14 +48,14 @@ public class SpacerElement extends ResizeableElement {
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
 		if (wrapped instanceof Renderable renderable) {
-			renderable.render(graphics, mouseX, mouseY, partialTicks);
+			renderable.extractRenderState(graphics, mouseX, mouseY, partialTicks);
 		}
 	}
 
 	@Override
-	public void renderDebug(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks, RenderDebugContext context) {
+	public void renderDebug(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks, RenderDebugContext context) {
 		super.renderDebug(graphics, mouseX, mouseY, partialTicks, context);
 		if (wrapped instanceof Element element) {
 			element.renderDebug(graphics, mouseX, mouseY, partialTicks, context);

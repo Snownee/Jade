@@ -38,7 +38,7 @@ import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.LerpingBossEvent;
 import net.minecraft.client.gui.screens.GenericMessageScreen;
 import net.minecraft.client.gui.screens.ProgressScreen;
@@ -129,7 +129,7 @@ public final class ClientProxy implements ClientModInitializer {
 		DatapackBlockManager.onEntityLeave(entity);
 	}
 
-	public static void onRenderTick(GuiGraphics guiGraphics, float tickDelta) {
+	public static void onRenderTick(GuiGraphicsExtractor guiGraphics, float tickDelta) {
 		try {
 			OverlayRenderer.renderOverlay478757(guiGraphics, tickDelta);
 		} catch (Throwable e) {
@@ -221,7 +221,7 @@ public final class ClientProxy implements ClientModInitializer {
 		Fluid type = fluid.typeHolder().value();
 		FluidVariant variant = FluidVariant.of(type, fluid.getComponents());
 		FluidVariantRenderHandler handler = FluidVariantRendering.getHandlerOrDefault(type);
-		@Nullable TextureAtlasSprite[] sprites = handler.getSprites(variant);
+		@Nullable TextureAtlasSprite[] sprites = null;// handler.getSprites(variant);
 		//noinspection ConstantValue
 		TextureAtlasSprite fluidStillSprite = sprites == null ? null : sprites[0];
 		int fluidColor = handler.getColor(variant, Minecraft.getInstance().level, null);
@@ -229,7 +229,7 @@ public final class ClientProxy implements ClientModInitializer {
 	}
 
 	public static void renderItemDecorationsExtra(
-			GuiGraphics guiGraphics,
+			GuiGraphicsExtractor guiGraphics,
 			Font font,
 			ItemStack stack,
 			int x,
@@ -304,11 +304,11 @@ public final class ClientProxy implements ClientModInitializer {
 				});
 		ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
 			if (shouldShowAfterGui(client, screen)) {
-				ScreenEvents.afterRender(screen).register((screen1, guiGraphics, mouseX, mouseY, tickDelta) -> {
+				ScreenEvents.afterExtract(screen).register((screen1, guiGraphics, mouseX, mouseY, tickDelta) -> {
 					onRenderTick(guiGraphics, tickDelta);
 				});
 			} else if (shouldShowBeforeGui(client, screen)) {
-				ScreenEvents.beforeRender(screen).register((screen1, guiGraphics, mouseX, mouseY, tickDelta) -> {
+				ScreenEvents.beforeExtract(screen).register((screen1, guiGraphics, mouseX, mouseY, tickDelta) -> {
 					onRenderTick(guiGraphics, tickDelta);
 				});
 			}

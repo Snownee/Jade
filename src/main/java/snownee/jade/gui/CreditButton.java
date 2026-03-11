@@ -9,7 +9,7 @@ import com.mojang.blaze3d.platform.cursor.CursorTypes;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
@@ -42,7 +42,7 @@ public class CreditButton extends Button {
 	}
 
 	@Override
-	protected void renderContents(GuiGraphics guiGraphics, int i, int j, float partialTicks) {
+	protected void extractContents(GuiGraphicsExtractor guiGraphics, int i, int j, float partialTicks) {
 		boolean hovered = isHoveredOrFocused();
 		if (!oldHovered && hovered) {
 			progress.target(1);
@@ -77,7 +77,7 @@ public class CreditButton extends Button {
 		Component credit = hovered ? hoveredTitle : getMessage();
 		Font font = Minecraft.getInstance().font;
 		guiGraphics.pose().translate(font.width(credit) * -0.5F, 0);
-		guiGraphics.drawString(font, credit, 0, 0, 0xFFFFFF | (int) alpha << 24);
+		guiGraphics.text(font, credit, 0, 0, 0xFFFFFF | (int) alpha << 24);
 		guiGraphics.pose().popMatrix();
 		oldHovered = hovered;
 		if (isHovered()) {

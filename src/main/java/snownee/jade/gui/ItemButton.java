@@ -1,6 +1,6 @@
 package snownee.jade.gui;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
@@ -30,8 +30,8 @@ public class ItemButton extends Button {
 	}
 
 	@Override
-	protected void renderContents(GuiGraphics guiGraphics, int i, int j, float f) {
-		renderDefaultSprite(guiGraphics);
-		guiGraphics.renderItem(icon, getX() + 2, getY() + 2);
+	protected void extractContents(GuiGraphicsExtractor guiGraphics, int i, int j, float f) {
+		extractDefaultSprite(guiGraphics);
+		guiGraphics.item(icon, getX() + 2, getY() + 2);
 	}
 }

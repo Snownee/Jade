@@ -4,7 +4,7 @@ import java.util.Objects;
 
 import org.jspecify.annotations.Nullable;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -54,7 +54,7 @@ public class ArmorElement extends Element {
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
 		IDisplayHelper helper = IDisplayHelper.get();
 		int x = getX();
 		int y = getY();

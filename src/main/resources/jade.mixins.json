@@ -13,7 +13,7 @@
 		"BossHealthOverlayMixin",
 		"CreativeModeInventoryScreenMixin",
 		"FogRendererMixin",
-		"GuiGraphicsMixin",
+		"GuiGraphicsExtractorMixin",
 		"KeyAccess",
 		"LanguageManagerMixin",
 		"PreparedTextBuilderMixin",

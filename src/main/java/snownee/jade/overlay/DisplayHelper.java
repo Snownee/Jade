@@ -19,7 +19,7 @@ import com.mojang.blaze3d.textures.GpuTextureView;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.render.TextureSetup;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.AbstractTexture;
@@ -60,12 +60,18 @@ public class DisplayHelper implements IDisplayHelper {
 		}
 	}
 
-	private static void renderGuiItemDecorations(GuiGraphics graphics, Font font, ItemStack stack, int i, int j, @Nullable String text) {
+	private static void renderGuiItemDecorations(
+			GuiGraphicsExtractor graphics,
+			Font font,
+			ItemStack stack,
+			int i,
+			int j,
+			@Nullable String text) {
 		if (stack.isEmpty()) {
 			return;
 		}
 		graphics.pose().pushMatrix();
-		graphics.renderItemBar(stack, i, j);
+		graphics.itemBar(stack, i, j);
 		if (stack.getCount() != 1 || text != null) {
 			String s = text == null ? INSTANCE.humanReadableNumber(stack.getCount(), "", false, null) : text;
 			boolean smaller = s.length() > 3;
@@ -75,26 +81,26 @@ public class DisplayHelper implements IDisplayHelper {
 			graphics.pose().pushMatrix();
 			graphics.pose().scale(scale);
 			int color = IThemeHelper.get().theme().text.itemAmountColor();
-			graphics.drawString(font, s, i + x - font.width(s), j + y, color, true);
+			graphics.text(font, s, i + x - font.width(s), j + y, color, true);
 			graphics.pose().popMatrix();
 		}
 		graphics.pose().popMatrix();
 		ClientProxy.renderItemDecorationsExtra(graphics, font, stack, i, j, text);
 	}
 
-	public static void fill(GuiGraphics graphics, float minX, float minY, float maxX, float maxY, int color) {
+	public static void fill(GuiGraphicsExtractor graphics, float minX, float minY, float maxX, float maxY, int color) {
 		fill(graphics, RenderPipelines.GUI, minX, minY, maxX, maxY, color);
 	}
 
 	public static void fill(
-			GuiGraphics graphics,
+			GuiGraphicsExtractor graphics,
 			RenderPipeline renderPipeline,
 			float minX,
 			float minY,
 			float maxX,
 			float maxY,
 			int color) {
-		graphics.guiRenderState.submitGuiElement(new FloatColoredRectangleRenderState(
+		graphics.guiRenderState.addGuiElement(new FloatColoredRectangleRenderState(
 				renderPipeline,
 				TextureSetup.noTexture(),
 				new Matrix3x2f(graphics.pose()),
@@ -109,20 +115,20 @@ public class DisplayHelper implements IDisplayHelper {
 	}
 
 	@Override
-	public void drawItem(GuiGraphics graphics, float x, float y, ItemStack stack, float scale, @Nullable String text) {
+	public void drawItem(GuiGraphicsExtractor graphics, float x, float y, ItemStack stack, float scale, @Nullable String text) {
 		if (opacity() < 0.5F) {
 			return;
 		}
 		graphics.pose().pushMatrix();
 		graphics.pose().translate(x, y);
 		graphics.pose().scale(scale);
-		graphics.renderFakeItem(stack, 0, 0);
+		graphics.fakeItem(stack, 0, 0);
 		renderGuiItemDecorations(graphics, font(), stack, 0, 0, text);
 		graphics.pose().popMatrix();
 	}
 
 	@Override
-	public void drawBorder(GuiGraphics graphics, Rect2f rectangle, int width, int color, boolean corner) {
+	public void drawBorder(GuiGraphicsExtractor graphics, Rect2f rectangle, int width, int color, boolean corner) {
 		float minX = rectangle.getX();
 		float minY = rectangle.getY();
 		float maxX = rectangle.getRight();
@@ -139,7 +145,7 @@ public class DisplayHelper implements IDisplayHelper {
 	}
 
 	public void drawFluid(
-			GuiGraphics graphics,
+			GuiGraphicsExtractor graphics,
 			final float xPosition,
 			final float yPosition,
 			JadeFluidObject fluid,
@@ -189,7 +195,7 @@ public class DisplayHelper implements IDisplayHelper {
 	}
 
 	public void blitSprite(
-			GuiGraphics graphics,
+			GuiGraphicsExtractor graphics,
 			RenderPipeline renderPipeline,
 			TextureAtlasSprite textureAtlasSprite,
 			float spriteWidth,
@@ -278,12 +284,12 @@ public class DisplayHelper implements IDisplayHelper {
 	}
 
 	@Override
-	public void drawText(GuiGraphics graphics, String text, float x, float y, int color) {
+	public void drawText(GuiGraphicsExtractor graphics, String text, float x, float y, int color) {
 		drawText(graphics, Component.literal(text), x, y, color);
 	}
 
 	@Override
-	public void drawText(GuiGraphics graphics, FormattedText text, float x, float y, int color) {
+	public void drawText(GuiGraphicsExtractor graphics, FormattedText text, float x, float y, int color) {
 		FormattedCharSequence sequence;
 		if (text instanceof Component component) {
 			sequence = component.getVisualOrderText();
@@ -294,10 +300,10 @@ public class DisplayHelper implements IDisplayHelper {
 	}
 
 	@Override
-	public void drawText(GuiGraphics graphics, FormattedCharSequence text, float x, float y, int color) {
+	public void drawText(GuiGraphicsExtractor graphics, FormattedCharSequence text, float x, float y, int color) {
 		boolean shadow = IWailaConfig.get().overlay().getTheme().text.shadow();
 		color = Overlay.applyAlpha(color, opacity());
-		graphics.drawString(font(), text, (int) x, (int) y, color, shadow);
+		graphics.text(font(), text, (int) x, (int) y, color, shadow);
 	}
 
 	@Override
@@ -317,7 +323,7 @@ public class DisplayHelper implements IDisplayHelper {
 
 	@Override
 	public void blitSprite(
-			GuiGraphics graphics,
+			GuiGraphicsExtractor graphics,
 			RenderPipeline renderPipeline,
 			Identifier sprite,
 			int i,
@@ -330,7 +336,7 @@ public class DisplayHelper implements IDisplayHelper {
 
 	@Override
 	public void blitSprite(
-			GuiGraphics graphics,
+			GuiGraphicsExtractor graphics,
 			RenderPipeline renderPipeline,
 			Identifier sprite,
 			int i,
@@ -345,7 +351,7 @@ public class DisplayHelper implements IDisplayHelper {
 
 	@Override
 	public void blitSprite(
-			GuiGraphics graphics,
+			GuiGraphicsExtractor graphics,
 			RenderPipeline renderPipeline,
 			Identifier sprite,
 			int spriteWidth,
@@ -362,7 +368,7 @@ public class DisplayHelper implements IDisplayHelper {
 
 	@Override
 	public void blitSprite(
-			GuiGraphics graphics,
+			GuiGraphicsExtractor graphics,
 			RenderPipeline renderPipeline,
 			Identifier sprite,
 			int spriteWidth,
@@ -380,7 +386,7 @@ public class DisplayHelper implements IDisplayHelper {
 	}
 
 	public void blitTiledSprite(
-			GuiGraphics graphics,
+			GuiGraphicsExtractor graphics,
 			RenderPipeline renderPipeline,
 			TextureAtlasSprite textureAtlasSprite,
 			float x,
@@ -426,7 +432,7 @@ public class DisplayHelper implements IDisplayHelper {
 	}
 
 	public void blit(
-			GuiGraphics graphics,
+			GuiGraphicsExtractor graphics,
 			RenderPipeline renderPipeline,
 			Identifier Identifier,
 			int i,
@@ -442,7 +448,7 @@ public class DisplayHelper implements IDisplayHelper {
 	}
 
 	public void blit(
-			GuiGraphics graphics,
+			GuiGraphicsExtractor graphics,
 			RenderPipeline renderPipeline,
 			Identifier Identifier,
 			int i,
@@ -457,7 +463,7 @@ public class DisplayHelper implements IDisplayHelper {
 	}
 
 	public void blit(
-			GuiGraphics graphics,
+			GuiGraphicsExtractor graphics,
 			RenderPipeline renderPipeline,
 			Identifier Identifier,
 			int i,
@@ -474,7 +480,7 @@ public class DisplayHelper implements IDisplayHelper {
 	}
 
 	public void blit(
-			GuiGraphics graphics,
+			GuiGraphicsExtractor graphics,
 			RenderPipeline renderPipeline,
 			Identifier Identifier,
 			int i,
@@ -505,7 +511,7 @@ public class DisplayHelper implements IDisplayHelper {
 	}
 
 	public void blit(
-			GuiGraphics graphics,
+			GuiGraphicsExtractor graphics,
 			Identifier Identifier,
 			int i,
 			int j,
@@ -519,7 +525,7 @@ public class DisplayHelper implements IDisplayHelper {
 	}
 
 	private void innerBlit(
-			GuiGraphics graphics,
+			GuiGraphicsExtractor graphics,
 			RenderPipeline renderPipeline,
 			Identifier sprite,
 			float x0,
@@ -536,7 +542,7 @@ public class DisplayHelper implements IDisplayHelper {
 	}
 
 	private void submitBlit(
-			GuiGraphics graphics,
+			GuiGraphicsExtractor graphics,
 			RenderPipeline renderPipeline,
 			GpuTextureView gpuTextureView,
 			GpuSampler sampler, float x0,
@@ -549,7 +555,7 @@ public class DisplayHelper implements IDisplayHelper {
 			float v1,
 			int color) {
 		graphics.guiRenderState
-				.submitGuiElement(
+				.addGuiElement(
 						new FloatBlitRenderState(
 								renderPipeline,
 								TextureSetup.singleTexture(gpuTextureView, sampler),
@@ -583,7 +589,7 @@ public class DisplayHelper implements IDisplayHelper {
 	}
 
 	public void blitSprite(
-			GuiGraphics graphics,
+			GuiGraphicsExtractor graphics,
 			RenderPipeline renderPipeline,
 			Identifier sprite,
 			int spriteWidth,

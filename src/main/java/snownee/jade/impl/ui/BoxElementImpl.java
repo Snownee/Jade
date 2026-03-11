@@ -13,7 +13,7 @@ import com.mojang.blaze3d.platform.Window;
 
 import it.unimi.dsi.fastutil.floats.FloatConsumer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.ContainerEventHandler;
@@ -162,7 +162,7 @@ public class BoxElementImpl extends BoxElement implements ContainerEventHandler 
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
 		if (tooltip.isEmpty()) {
 			return;
 		}
@@ -180,7 +180,7 @@ public class BoxElementImpl extends BoxElement implements ContainerEventHandler 
 		graphics.enableScissor(getX(), getY(), getX() + getWidth(), getY() + getHeight());
 		for (Renderable renderable : renderables) {
 			try {
-				renderable.render(graphics, mouseX, mouseY, partialTicks);
+				renderable.extractRenderState(graphics, mouseX, mouseY, partialTicks);
 			} catch (Exception e) {
 				WailaExceptionHandler.handleErr(e, null, null);
 				IDisplayHelper.get().drawBorder(graphics, ((LayoutElement) renderable).getRectangle(), 1, 0x88FF0000, true);
@@ -194,7 +194,7 @@ public class BoxElementImpl extends BoxElement implements ContainerEventHandler 
 	}
 
 	@Override
-	public void renderDebug(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks, RenderDebugContext context) {
+	public void renderDebug(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks, RenderDebugContext context) {
 		super.renderDebug(graphics, mouseX, mouseY, partialTicks, context);
 		if (!context.renderChildren) {
 			return;
@@ -210,7 +210,7 @@ public class BoxElementImpl extends BoxElement implements ContainerEventHandler 
 	}
 
 	//	@Override
-//	public void render(GuiGraphics guiGraphics, final float x, final float y, final float maxX, final float maxY) {
+//	public void render(GuiGraphicsExtractor guiGraphics, final float x, final float y, final float maxX, final float maxY) {
 //		if (tooltip.isEmpty()) {
 //			return;
 //		}

@@ -8,7 +8,7 @@ import com.mojang.blaze3d.platform.cursor.CursorTypes;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -221,9 +221,9 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 	}
 
 	@Override
-	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+	public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		if (adjustingPosition) {
-			super.render(guiGraphics, Integer.MAX_VALUE, Integer.MAX_VALUE, partialTicks);
+			super.extractRenderState(guiGraphics, Integer.MAX_VALUE, Integer.MAX_VALUE, partialTicks);
 			guiGraphics.fill(0, 0, width, height, 0x80808080);
 
 			MutableComponent text = Component.translatable("config.jade.overlay_pos.exit");
@@ -232,7 +232,7 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 			int x = (width - textWidth) / 2;
 			int y = height / 2 - 7;
 			guiGraphics.fill(x - 4, y - 4, x + textWidth + 4, y + font.lineHeight + 4, 0x88000000);
-			guiGraphics.drawString(font, text, x, y, 0xFFFFFFFF);
+			guiGraphics.text(font, text, x, y, 0xFFFFFFFF);
 
 			IWailaConfig.Overlay config = IWailaConfig.get().overlay();
 			Rect2f rect = OverlayRenderer.animation.expectedRect;
@@ -256,7 +256,7 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 						0xFF0000FF);
 			}
 		} else {
-			super.render(guiGraphics, mouseX, mouseY, partialTicks);
+			super.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
 		}
 	}
 

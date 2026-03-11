@@ -4,7 +4,7 @@ import org.jspecify.annotations.Nullable;
 
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -47,7 +47,7 @@ public class SpriteElement extends ProgressOverlayElement {
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
 		if (tiledOrientation != null) {
 			TextureAtlasSprite textureAtlasSprite = graphics.guiSprites.getSprite(mappedSprite());
 			Rect2f rect;
@@ -142,7 +142,7 @@ public class SpriteElement extends ProgressOverlayElement {
 	}
 
 	@Override
-	public boolean canUseFloatingRect(GuiGraphics graphics) {
+	public boolean canUseFloatingRect(GuiGraphicsExtractor graphics) {
 		TextureAtlasSprite textureAtlasSprite = graphics.guiSprites.getSprite(mappedSprite());
 		GuiSpriteScaling scaling = textureAtlasSprite.contents()
 				.getAdditionalMetadata(GuiMetadataSection.TYPE)

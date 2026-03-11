@@ -2,7 +2,7 @@ package snownee.jade.impl.ui;
 
 import org.jspecify.annotations.Nullable;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import snownee.jade.api.ui.Element;
 
@@ -24,10 +24,10 @@ public class CompoundElement extends Element {
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-		large.render(graphics, mouseX, mouseY, partialTicks);
+	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+		large.extractRenderState(graphics, mouseX, mouseY, partialTicks);
 		graphics.pose().pushMatrix();
-		small.render(graphics, mouseX, mouseY, partialTicks);
+		small.extractRenderState(graphics, mouseX, mouseY, partialTicks);
 		graphics.pose().popMatrix();
 	}
 

@@ -5,7 +5,7 @@ import java.util.Objects;
 import org.jetbrains.annotations.Contract;
 import org.jspecify.annotations.Nullable;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
@@ -67,5 +67,5 @@ public abstract class ProgressStyle {
 		return canDecrease;
 	}
 
-	public abstract void render(GuiGraphics guiGraphics, float x, float y, float w, float h, float progress, Component text);
+	public abstract void render(GuiGraphicsExtractor guiGraphics, float x, float y, float w, float h, float progress, Component text);
 }

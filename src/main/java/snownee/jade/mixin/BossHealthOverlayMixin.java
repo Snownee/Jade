@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.llamalad7.mixinextras.sugar.Local;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.BossHealthOverlay;
 import net.minecraft.client.gui.components.LerpingBossEvent;
 import snownee.jade.api.config.IWailaConfig;
@@ -18,17 +18,19 @@ import snownee.jade.util.ClientProxy;
 @Mixin(BossHealthOverlay.class)
 public class BossHealthOverlayMixin {
 
-	@Inject(at = @At("HEAD"), method = "render", cancellable = true)
-	private void jade$render(GuiGraphics graphics, CallbackInfo ci) {
+	@Inject(at = @At("HEAD"), method = "extractRenderState", cancellable = true)
+	private void jade$render(GuiGraphicsExtractor graphics, CallbackInfo ci) {
 		BossBarOverlapMode mode = IWailaConfig.get().general().getBossBarOverlapMode();
 		if (mode == BossBarOverlapMode.HIDE_BOSS_BAR && OverlayRenderer.shown) {
 			ci.cancel();
 		}
 	}
 
-	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;guiHeight()I"), method = "render")
+	@Inject(
+			at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;guiHeight()I"),
+			method = "extractRenderState")
 	private void jade$captureHeight(
-			GuiGraphics graphics,
+			GuiGraphicsExtractor graphics,
 			CallbackInfo ci,
 			@Local(name = "event") LerpingBossEvent event,
 			@Local(name = "yOffset") int yOffset) {

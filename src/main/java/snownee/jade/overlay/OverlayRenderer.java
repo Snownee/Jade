@@ -7,7 +7,7 @@ import org.jspecify.annotations.Nullable;
 import com.mojang.blaze3d.platform.Window;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.util.Mth;
 import net.minecraft.util.profiling.Profiler;
 import net.minecraft.world.item.ItemStack;
@@ -116,7 +116,7 @@ public class OverlayRenderer {
 	 * Secondly, please notice the license that Jade is using.
 	 * I don't think it is compatible with some open-source licenses.
 	 */
-	public static void renderOverlay478757(GuiGraphics graphics, float delta) {
+	public static void renderOverlay478757(GuiGraphicsExtractor graphics, float delta) {
 		ticks += delta;
 		shown = false;
 		BoxElementImpl root = JadeClient.tickHandler().rootElement;
@@ -183,7 +183,7 @@ public class OverlayRenderer {
 		Profiler.get().pop();
 	}
 
-	public static void renderOverlay(BoxElementImpl root, GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+	public static void renderOverlay(BoxElementImpl root, GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
 		root.updateRect(animation);
 
 		WailaTickHandler tickHandler = JadeClient.tickHandler();
@@ -221,7 +221,7 @@ public class OverlayRenderer {
 		root.setWidgetAlpha(animation.alpha);
 		((JadeGuiGraphics) graphics).jade$setIgnoreScissorTest(true);
 		graphics.deferredTooltip = null;
-		root.render(graphics, mouse.x, mouse.y, partialTicks);
+		root.extractRenderState(graphics, mouse.x, mouse.y, partialTicks);
 		((JadeGuiGraphics) graphics).jade$setIgnoreScissorTest(false);
 		if (renderDebug) {
 			root.renderDebug(graphics, mouse.x, mouse.y, partialTicks, new Element.RenderDebugContext(root, rect, true));
@@ -238,7 +238,7 @@ public class OverlayRenderer {
 		}
 
 		matrixStack.popMatrix();
-		graphics.renderDeferredElements();
+		graphics.extractDeferredElements(mouseX, mouseY, partialTicks);
 
 		if (IWailaConfig.get().accessibility().shouldEnableTextToSpeech()) {
 			tickHandler.narrate(root, true);

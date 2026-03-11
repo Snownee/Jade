@@ -5,7 +5,7 @@ import java.util.Objects;
 import com.mojang.blaze3d.platform.Window;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -23,7 +23,7 @@ public class PinScreen extends Screen {
 	}
 
 	@Override
-	public void renderBackground(GuiGraphics guiGraphics, int i, int j, float f) {
+	public void extractBackground(GuiGraphicsExtractor guiGraphics, int i, int j, float f) {
 		// No background rendering needed
 	}
 

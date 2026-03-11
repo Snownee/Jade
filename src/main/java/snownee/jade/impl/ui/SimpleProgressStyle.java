@@ -2,7 +2,7 @@ package snownee.jade.impl.ui;
 
 import com.google.common.base.Preconditions;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import snownee.jade.api.ui.ProgressStyle;
 import snownee.jade.api.ui.ScreenDirection;
@@ -24,7 +24,7 @@ public class SimpleProgressStyle extends ProgressStyle {
 	}
 
 	@Override
-	public void render(GuiGraphics guiGraphics, float x, float y, float width, float height, float progress, Component text) {
+	public void render(GuiGraphicsExtractor guiGraphics, float x, float y, float width, float height, float progress, Component text) {
 //		progress *= choose(true, width, height);
 //		float progressY = y;
 //		if (vertical) {

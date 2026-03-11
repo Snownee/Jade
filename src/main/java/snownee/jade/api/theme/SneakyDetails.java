@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
@@ -25,7 +25,7 @@ public interface SneakyDetails {
 		throw new UnsupportedOperationException();
 	}
 
-	void render(GuiGraphics graphics, float partialTicks, BoxElement element);
+	void render(GuiGraphicsExtractor graphics, float partialTicks, BoxElement element);
 
 	String type();
 
@@ -50,7 +50,7 @@ public interface SneakyDetails {
 		).apply(i, Simple::new));
 
 		@Override
-		public void render(GuiGraphics graphics, float partialTicks, BoxElement element) {
+		public void render(GuiGraphicsExtractor graphics, float partialTicks, BoxElement element) {
 			float x = element.getX() + element.getWidth() / 2f - width / 2f + offsetX;
 			float y = element.getY() + element.getHeight() - height / 2f + offsetY;
 			float alpha = 1f;

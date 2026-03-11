@@ -32,7 +32,7 @@ public record ClientHandshakePacket(String protocolVersion) implements CustomPac
 			ServerPlayer player = context.player();
 			if (!Jade.PROTOCOL_VERSION.equals(message.protocolVersion)) {
 				String version = CommonProxy.getModVersion(Jade.ID).orElse("UNKNOWN");
-				player.displayClientMessage(Component.translatable("jade.protocolMismatch", version), false);
+				player.sendSystemMessage(Component.translatable("jade.protocolMismatch", version), false);
 				return;
 			}
 			((JadeServerPlayer) player).jade$setConnected(true);

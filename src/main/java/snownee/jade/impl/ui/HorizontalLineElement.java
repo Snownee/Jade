@@ -2,7 +2,7 @@ package snownee.jade.impl.ui;
 
 import org.jspecify.annotations.Nullable;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
@@ -25,7 +25,7 @@ public class HorizontalLineElement extends ResizeableElement {
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
 		int x = getX();
 		int y = getY() + height / 2;
 		Theme theme = IThemeHelper.get().theme();

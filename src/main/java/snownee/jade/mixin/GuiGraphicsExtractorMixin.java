@@ -17,7 +17,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTextTooltip;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
@@ -28,8 +28,8 @@ import net.minecraft.world.item.ItemStack;
 import snownee.jade.JadeClient;
 import snownee.jade.util.JadeGuiGraphics;
 
-@Mixin(GuiGraphics.class)
-public class GuiGraphicsMixin implements JadeGuiGraphics {
+@Mixin(GuiGraphicsExtractor.class)
+public class GuiGraphicsExtractorMixin implements JadeGuiGraphics {
 	@Shadow
 	@Final
 	private Minecraft minecraft;
