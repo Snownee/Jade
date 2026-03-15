@@ -281,6 +281,11 @@ public final class ClientProxy implements ClientModInitializer {
 		ClientPlayNetworking.send(payload);
 	}
 
+	public static boolean shouldFetchFromServer(@Nullable UUID uuid) {
+		String name = lookupPlayerName(uuid);
+		return name == null || name.equals(PlayerNameLookup.DUMMY_NAME);
+	}
+
 	@Nullable
 	public static String lookupPlayerName(@Nullable UUID uuid) {
 		return PlayerNameLookup.get(uuid, Minecraft.getInstance().services());
