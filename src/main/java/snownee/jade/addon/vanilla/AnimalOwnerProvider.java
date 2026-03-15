@@ -62,8 +62,7 @@ public class AnimalOwnerProvider implements StreamServerDataProvider<EntityAcces
 		if (!(entity instanceof OwnableEntity)) return false;
 		UUID ownerUUID = getOwnerUUID(entity);
 		if (ownerUUID == null) return true;
-		if (!PlayerNameLookup.isFetched(ownerUUID)) return false;
-		return ClientProxy.lookupPlayerName(ownerUUID) == null;
+		return ClientProxy.shouldFetchFromServer(ownerUUID);
 	}
 
 	@Override
