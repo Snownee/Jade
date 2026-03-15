@@ -7,15 +7,16 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.mojang.authlib.GameProfile;
-
 import net.minecraft.server.Services;
+import net.minecraft.server.players.NameAndId;
 import net.minecraft.util.Util;
 
 public class PlayerNameLookup {
+
+	public static final String DUMMY_NAME = "???";
+
 	private static final Set<UUID> FETCHING = ConcurrentHashMap.newKeySet();
 	private static final ConcurrentHashMap<UUID, String> FETCHED = new ConcurrentHashMap<>();
-	private static final GameProfile DUMMY_PROFILE = new GameProfile(UUID.randomUUID(), "???");
 
 	public static boolean isFetching(UUID uuid) {
 		return FETCHING.contains(uuid);
@@ -33,15 +34,21 @@ public class PlayerNameLookup {
 		if (FETCHED.containsKey(uuid)) {
 			return FETCHED.get(uuid);
 		}
+		String name = services.nameToIdCache().get(uuid).map(NameAndId::name).orElse(null);
+		if (name != null) {
+			FETCHED.put(uuid, name);
+			return name;
+		}
 		if (!FETCHING.add(uuid)) {
 			return null;
 		}
 		CompletableFuture.runAsync(
-				() -> {
-					GameProfile profile = services.profileResolver().fetchById(uuid).orElse(DUMMY_PROFILE);
-					FETCHED.put(uuid, profile.name());
-					FETCHING.remove(uuid);
-				}, Util.backgroundExecutor()
+				() -> services.profileResolver().fetchById(uuid).ifPresentOrElse(
+						profile -> {
+							FETCHED.put(uuid, profile.name());
+							FETCHING.remove(uuid);
+						}, () -> FETCHED.put(uuid, DUMMY_NAME)
+				), Util.backgroundExecutor()
 		);
 		return null;
 	}
