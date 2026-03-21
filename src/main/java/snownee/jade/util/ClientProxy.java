@@ -46,6 +46,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
+import net.minecraft.client.renderer.block.FluidModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.commands.CommandBuildContext;
@@ -220,12 +221,11 @@ public final class ClientProxy implements ClientModInitializer {
 	public static void getFluidSpriteAndColor(JadeFluidObject fluid, BiConsumer<@Nullable TextureAtlasSprite, Integer> consumer) {
 		Fluid type = fluid.typeHolder().value();
 		FluidVariant variant = FluidVariant.of(type, fluid.getComponents());
+		FluidModel model = Minecraft.getInstance().getModelManager().getFluidStateModelSet().get(type.defaultFluidState());
+		TextureAtlasSprite sprite = model.stillMaterial().sprite();
 		FluidVariantRenderHandler handler = FluidVariantRendering.getHandlerOrDefault(type);
-		@Nullable TextureAtlasSprite[] sprites = null;// handler.getSprites(variant);
-		//noinspection ConstantValue
-		TextureAtlasSprite fluidStillSprite = sprites == null ? null : sprites[0];
-		int fluidColor = handler.getColor(variant, Minecraft.getInstance().level, null);
-		consumer.accept(fluidStillSprite, fluidColor);
+		int fluidColor = handler.getColor(variant, Minecraft.getInstance().level, BlockPos.ZERO);
+		consumer.accept(sprite, fluidColor);
 	}
 
 	public static void renderItemDecorationsExtra(
