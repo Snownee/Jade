@@ -702,7 +702,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 				description = List.of(Component.translatable(key));
 				addMessage(description.getFirst().getString());
 			}
-			narration = Component.translatable("narration.jade.category", title);
+			narration = Component.translatable("narration.jade.category", title.getMessage());
 		}
 
 		public Title(Component title) {
