@@ -25,6 +25,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.registries.VanillaRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -81,6 +82,7 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.registries.RegisterEvent;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.energy.EnergyHandler;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
@@ -586,6 +588,12 @@ public final class CommonProxy {
 									ShowOverlayPacket.TYPE,
 									ShowOverlayPacket.CODEC,
 									(payload, context) -> ShowOverlayPacket.handle(payload, context::enqueueWork));
+				});
+		modBus.addListener(
+				RegisterEvent.class, event -> {
+					if (event.getRegistryKey() == Registries.GAME_RULE) {
+						Jade.registerGameRules();
+					}
 				});
 		NeoForge.EVENT_BUS.addListener(CommonProxy::registerServerCommand);
 		if (isPhysicallyClient()) {
