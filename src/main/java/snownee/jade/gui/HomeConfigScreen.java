@@ -16,7 +16,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
@@ -30,9 +32,8 @@ import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringDecomposer;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import snownee.jade.Jade;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.util.ModIdentification;
@@ -124,18 +125,23 @@ public class HomeConfigScreen extends Screen {
 					visitedChildScreen();
 					minecraft.setScreen(new PluginsConfigScreen(HomeConfigScreen.this));
 				}).bounds(width / 2 + 5, height / 2 - 10, maxWidth, 20).build());
-		ItemButton profileButton = new ItemButton(
+		ImageButton profileButton = new ImageButton(
 				width / 2 + 10 + maxWidth,
 				height / 2 - 10,
 				20,
 				20,
-				new ItemStack(Items.PAPER, 2),
-				profileSettings,
-				w -> {
+				new WidgetSprites(JadeIds.JADE("profiles")),
+				_ -> {
 					visitedChildScreen();
 					minecraft.setScreen(new ProfileConfigScreen(HomeConfigScreen.this));
 				},
-				Button.DEFAULT_NARRATION);
+				profileSettings) {
+			@Override
+			public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+				extractDefaultSprite(graphics);
+				super.extractContents(graphics, mouseX, mouseY, a);
+			}
+		};
 		profileButton.setTooltip(Tooltip.create(profileSettings));
 		addRenderableWidget(profileButton);
 		addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, w -> onClose())
