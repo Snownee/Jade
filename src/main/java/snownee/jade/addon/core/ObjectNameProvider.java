@@ -17,7 +17,7 @@ import net.minecraft.world.Nameable;
 import net.minecraft.world.entity.Display.BlockDisplay;
 import net.minecraft.world.entity.Display.ItemDisplay;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.livingblock.LivingBlock;
 import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -67,7 +67,7 @@ public abstract class ObjectNameProvider implements IToggleableProvider {
 					wantTypeName = false;
 					yield entity.getType().getDescription();
 				}
-				case ItemEntity itemEntity -> itemEntity.getItem().getHoverName();
+				case LivingBlock itemEntity -> itemEntity.getItemStack().getHoverName().copy().append("*");
 				case ItemDisplay itemDisplay when !itemDisplay.getItemStack().isEmpty() -> itemDisplay.getItemStack().getHoverName();
 				case BlockDisplay blockDisplay when !blockDisplay.getBlockState().isAir() ->
 						blockDisplay.getBlockState().getBlock().getName();

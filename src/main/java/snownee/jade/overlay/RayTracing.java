@@ -206,7 +206,7 @@ public class RayTracing {
 			if (target.isInvisibleTo(player)) {
 				return false;
 			}
-			if (Objects.requireNonNull(mc.gameMode).isDestroying() && target.getType() == EntityType.ITEM) {
+			if (Objects.requireNonNull(mc.gameMode).isDestroying() && target.getType() == EntityType.LIVING_BLOCK) {
 				return false;
 			}
 		} else {

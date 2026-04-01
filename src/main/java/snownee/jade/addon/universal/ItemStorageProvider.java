@@ -2,6 +2,7 @@ package snownee.jade.addon.universal;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -23,6 +24,9 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.Container;
 import net.minecraft.world.LockCode;
 import net.minecraft.world.RandomizableContainer;
+import net.minecraft.world.entity.livingblock.LivingBlock;
+import net.minecraft.world.entity.livingblock.behavior.LivingBlockBehaviorEntry;
+import net.minecraft.world.entity.livingblock.behavior.SimpleContainerBehavior;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.ContainerEntity;
 import net.minecraft.world.inventory.PlayerEnderChestContainer;
@@ -296,6 +300,20 @@ public class ItemStorageProvider<T extends Accessor<?>> implements IServerDataPr
 						accessor
 				);
 			}
+			if (target instanceof LivingBlock livingBlock) {
+				Optional<LivingBlockBehaviorEntry<?>> behavior = livingBlock.getBehaviorOfType(SimpleContainerBehavior.class);
+				if (behavior.isPresent()) {
+					return new ItemCollector<>(new ItemIterator.ContainerItemIterator(
+							$ -> {
+								if ($ instanceof EntityAccessor $$ && $$.getEntity() instanceof LivingBlock livingBlock2) {
+									return livingBlock2.getBehaviorOfType(SimpleContainerBehavior.class)
+											.map(behavior2 -> ((SimpleContainerBehavior) behavior2.instance).getContainer())
+											.orElse(null);
+								}
+								return null;
+							}, 0)).update(accessor);
+				}
+			}
 			ItemCollector<?> itemCollector;
 			try {
 				itemCollector = targetCache.get(target, () -> CommonProxy.createItemCollector(accessor, containerCache));
@@ -314,7 +332,7 @@ public class ItemStorageProvider<T extends Accessor<?>> implements IServerDataPr
 		@Override
 		public boolean shouldRequestData(Accessor<?> accessor) {
 			Object target = accessor.getTarget();
-			if (target instanceof EnderChestBlockEntity || target instanceof Container) {
+			if (target instanceof EnderChestBlockEntity || target instanceof Container || target instanceof LivingBlock) {
 				return true;
 			}
 			return CommonProxy.hasDefaultItemStorage(accessor);

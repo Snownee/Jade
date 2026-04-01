@@ -42,7 +42,7 @@ public class SimpleToolHandler implements ToolHandler {
 		if (extraBlocks.contains(state.getBlock())) {
 			return tools.getFirst();
 		}
-		if (skipInstaBreakingBlock && !state.requiresCorrectToolForDrops() && state.getDestroySpeed(world, pos) == 0) {
+		if (skipInstaBreakingBlock && !state.requiresCorrectToolForDrops() && state.getDestroySpeed() == 0) {
 			return ItemStack.EMPTY;
 		}
 		return test(state);

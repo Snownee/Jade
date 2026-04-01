@@ -11,7 +11,8 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.livingblock.LivingBlock;
+import net.minecraft.world.entity.livingblock.behavior.SimpleContainerBehavior;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -30,7 +31,11 @@ public class ItemTooltipProvider implements IEntityComponentProvider {
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
-		ItemStack stack = ((ItemEntity) accessor.getEntity()).getItem();
+		LivingBlock block = (LivingBlock) accessor.getEntity();
+		if (block.getBehaviorOfType(SimpleContainerBehavior.class).isPresent()) {
+			return;
+		}
+		ItemStack stack = block.getItemStack();
 		Item.TooltipContext tooltipContext = Item.TooltipContext.of(accessor.getLevel());
 		List<Component> lines = Lists.newArrayList();
 		try {

@@ -7,7 +7,7 @@ import org.jspecify.annotations.Nullable;
 
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.livingblock.LivingBlock;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SpawnEggItem;
 import snownee.jade.api.AccessorClientHandler;
@@ -35,7 +35,7 @@ public class EntityAccessorClientHandler implements AccessorClientHandler<Entity
 		if (!general.getDisplayBosses() && CommonProxy.isBoss(accessor.getEntity())) {
 			return false;
 		}
-		if (accessor.getEntity() instanceof ItemEntity itemEntity && itemEntity.getItem().isEmpty()) {
+		if (accessor.getEntity() instanceof LivingBlock itemEntity && itemEntity.getItemStack().isEmpty()) {
 			return false;
 		}
 		return true;
@@ -67,8 +67,8 @@ public class EntityAccessorClientHandler implements AccessorClientHandler<Entity
 	public @Nullable Element getIcon(EntityAccessor accessor) {
 		Element icon = null;
 		Entity entity = accessor.getEntity();
-		if (entity instanceof ItemEntity) {
-			icon = JadeUI.item(((ItemEntity) entity).getItem());
+		if (entity instanceof LivingBlock) {
+			icon = JadeUI.item(((LivingBlock) entity).getItemStack());
 		} else {
 			ItemStack stack = accessor.getPickedResult();
 			if (!stack.isEmpty() && (!(stack.getItem() instanceof SpawnEggItem) || !(entity instanceof LivingEntity))) {

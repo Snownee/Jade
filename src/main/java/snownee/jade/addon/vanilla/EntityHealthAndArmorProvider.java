@@ -11,8 +11,10 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.entity.livingblock.LivingBlock;
 import net.minecraft.world.entity.monster.creaking.Creaking;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
@@ -41,7 +43,7 @@ public class EntityHealthAndArmorProvider implements StreamServerDataProvider<En
 
 	@Override
 	public boolean shouldRequestData(EntityAccessor accessor) {
-		return EntityHealthAndArmorProvider.isHealthVisible((LivingEntity) accessor.getEntity());
+		return EntityHealthAndArmorProvider.isHealthVisible(accessor.getEntity());
 	}
 
 	@Override
@@ -54,8 +56,11 @@ public class EntityHealthAndArmorProvider implements StreamServerDataProvider<En
 		return -8000;
 	}
 
-	private static boolean isHealthVisible(LivingEntity entity) {
-		return !(entity instanceof ArmorStand || entity instanceof Creaking);
+	private static boolean isHealthVisible(Entity entity) {
+		if (entity instanceof LivingEntity) {
+			return !(entity instanceof ArmorStand || entity instanceof Creaking);
+		}
+		return entity instanceof LivingBlock;
 	}
 
 	public static class Client extends EntityHealthAndArmorProvider implements IEntityComponentProvider {
@@ -66,21 +71,22 @@ public class EntityHealthAndArmorProvider implements StreamServerDataProvider<En
 			boolean healthText = false;
 			boolean armorText = false;
 			List<Element> elements = Lists.newArrayListWithExpectedSize(2);
-			LivingEntity living = (LivingEntity) accessor.getEntity();
-			if (config.get(JadeIds.MC_ENTITY_HEALTH) && isHealthVisible(living)) {
-				float health = living.getHealth();
-				float maxHealth = living.getMaxHealth();
+			ClientData data = getClientData(accessor.getEntity());
+			if (data == null) {
+				return;
+			}
+			if (config.get(JadeIds.MC_ENTITY_HEALTH) && data.maxHealth > 0) {
 				float absorption = decodeFromData(accessor).orElse(0F);
 				HealthElement healthElement = new HealthElement(
-						living.isFullyFrozen() ? Gui.HeartType.FROZEN : Gui.HeartType.NORMAL,
-						maxHealth,
-						health,
+						accessor.getEntity().isFullyFrozen() ? Gui.HeartType.FROZEN : Gui.HeartType.NORMAL,
+						data.maxHealth,
+						data.health,
 						absorption);
 				elements.add(healthElement.tag(JadeIds.MC_ENTITY_HEALTH));
 				healthText = healthElement.showText();
 			}
-			if (config.get(JadeIds.MC_ENTITY_ARMOR) && living.getArmorValue() > 0) {
-				ArmorElement armorElement = new ArmorElement(living.getArmorValue());
+			if (config.get(JadeIds.MC_ENTITY_ARMOR) && data.armor > 0) {
+				ArmorElement armorElement = new ArmorElement(data.armor);
 				elements.add(armorElement.tag(JadeIds.MC_ENTITY_ARMOR));
 				armorText = armorElement.showText();
 			}
@@ -93,9 +99,26 @@ public class EntityHealthAndArmorProvider implements StreamServerDataProvider<En
 			}
 		}
 
+		@Nullable
+		private ClientData getClientData(Entity entity) {
+			if (entity instanceof LivingEntity living) {
+				if (isHealthVisible(living)) {
+					return new ClientData(living.getHealth(), living.getMaxHealth(), living.getArmorValue());
+				} else {
+					return new ClientData(0, 0, living.getArmorValue());
+				}
+			}
+			if (entity instanceof LivingBlock livingBlock) {
+				return new ClientData(livingBlock.getHealth(), livingBlock.getMaxHealth(), 0);
+			}
+			return null;
+		}
+
 		@Override
 		public boolean isRequired() {
 			return true;
 		}
 	}
+
+	public record ClientData(float health, float maxHealth, float armor) {}
 }

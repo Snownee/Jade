@@ -20,7 +20,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.decoration.painting.Painting;
 import net.minecraft.world.entity.item.FallingBlockEntity;
-import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.livingblock.LivingBlock;
 import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
@@ -218,8 +218,8 @@ public class ModIdentification implements KeyedResourceManagerReloadListener {
 			case Painting painting -> {
 				return getModName(painting.getVariant().unwrapKey().orElseThrow().identifier());
 			}
-			case ItemEntity itemEntity -> {
-				return getModName(itemEntity.getItem());
+			case LivingBlock itemEntity -> {
+				return getModName(itemEntity.getItemStack());
 			}
 			case FallingBlockEntity fallingBlock -> {
 				return getModName(fallingBlock.getBlockState().getBlock());

@@ -119,13 +119,13 @@ publishMods {
     displayName = "[Fabric ${supported_version}] ${mod_version}"
     version = realVersion
 
-    curseforge {
-        projectId = "324717"
-        accessToken = providers.environmentVariable("CURSE_TOKEN")
-        minecraftVersions.add(minecraft_version)
-        requires("fabric-api")
-        optional("jei")
-    }
+//    curseforge {
+//        projectId = "324717"
+//        accessToken = providers.environmentVariable("CURSE_TOKEN")
+//        minecraftVersions.add(minecraft_version)
+//        requires("fabric-api")
+//        optional("jei")
+//    }
     modrinth {
         projectId = "nvQzSEkH"
         accessToken = providers.environmentVariable("MODRINTH_TOKEN")

@@ -90,7 +90,9 @@ public class WailaCommonRegistration implements IWailaCommonRegistration {
 				$ -> $.getType().builtInRegistryHolder().key(),
 				"hide-entities",
 				() -> CommonProxy.isPhysicallyClient() ?
-						List.of("area_effect_cloud", "firework_rocket", "interaction", "text_display", "lightning_bolt") :
+						List.of(
+								"crafting_grid", "living_block_command", "hovering_item",
+								"area_effect_cloud", "firework_rocket", "interaction", "text_display", "lightning_bolt") :
 						List.of());
 		mobEffectOperations = new TargetOperationRepositoryImpl<>(
 				Registries.MOB_EFFECT,
