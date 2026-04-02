@@ -18,7 +18,7 @@ public class HorseStatsProvider implements IEntityComponentProvider {
 	public static final HorseStatsProvider INSTANCE = new HorseStatsProvider();
 
 	private static final double MAX_JUMP_HEIGHT = getJumpHeight(AbstractHorse.MAX_JUMP_STRENGTH);
-	private static final double MAX_MOVEMENT_SPEED = AbstractHorse.MAX_MOVEMENT_SPEED * 42.16;
+	private static final double MAX_MOVEMENT_SPEED = getSpeed(AbstractHorse.MAX_MOVEMENT_SPEED);
 
 	private static Component switchText(String key, boolean showMax, double value, double max) {
 		IThemeHelper t = IThemeHelper.get();
@@ -34,6 +34,12 @@ public class HorseStatsProvider implements IEntityComponentProvider {
 		return 4.53680079 * jumpStrength * jumpStrength + 1.61431730 * jumpStrength - 0.22656224;
 	}
 
+	private static double getSpeed(double speed) {
+		// https://minecraft.wiki/w/Horse#Movement_speed
+		// https://github.com/sakura-ryoko/minihud/pull/179
+		return speed * 43.171815466666658 - 0.000000339999999;
+	}
+
 	@Override
 	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 		AbstractHorse horse = (AbstractHorse) accessor.getEntity();
@@ -46,13 +52,11 @@ public class HorseStatsProvider implements IEntityComponentProvider {
 			return;
 		}
 		if (horse.getAttributes().hasAttribute(Attributes.JUMP_STRENGTH)) {
-			double jumpStrength = horse.getAttributeBaseValue(Attributes.JUMP_STRENGTH);
-			double jumpHeight = getJumpHeight(jumpStrength);
+			double jumpHeight = getJumpHeight(horse.getAttributeBaseValue(Attributes.JUMP_STRENGTH));
 			tooltip.add(switchText("jade.horseStat.jump", showMax, jumpHeight, MAX_JUMP_HEIGHT));
 		}
 		if (horse.getAttributes().hasAttribute(Attributes.MOVEMENT_SPEED)) {
-			// https://minecraft.wiki/w/Horse#Movement_speed
-			double speed = horse.getAttributeBaseValue(Attributes.MOVEMENT_SPEED) * 43.17;
+			double speed = getSpeed(horse.getAttributeBaseValue(Attributes.MOVEMENT_SPEED));
 			tooltip.add(switchText("jade.horseStat.speed", showMax, speed, MAX_MOVEMENT_SPEED));
 		}
 	}
