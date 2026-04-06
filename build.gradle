@@ -25,6 +25,8 @@ repositories {
     // jei
     maven { url "https://maven.blamejared.com/" }
     maven { url "https://modmaven.dev" }
+    // rei
+    maven { url "https://maven.shedaniel.me/" }
     flatDir { dir 'libs' }
 }
 
@@ -111,7 +113,9 @@ configurations {
 }
 
 dependencies {
-    compileOnly "mezz.jei:jei-1.21.8-common-api:${jei_version}"
+    compileOnly "mezz.jei:jei-1.21.11-common-api:${jei_version}"
+
+    api "me.shedaniel:RoughlyEnoughItems-neoforge:${rei_version}"
 }
 
 tasks.withType(JavaCompile).configureEach {

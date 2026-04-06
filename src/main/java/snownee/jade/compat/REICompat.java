@@ -1,4 +1,3 @@
-/*
 package snownee.jade.compat;
 
 import java.util.List;
@@ -56,4 +55,4 @@ public class REICompat implements RecipeLookupPlugin {
 			onClose();
 		}
 	}
-}*/
+}
