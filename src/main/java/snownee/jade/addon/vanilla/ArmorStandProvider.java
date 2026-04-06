@@ -27,7 +27,7 @@ public class ArmorStandProvider implements IEntityComponentProvider {
 			}
 			tooltip.add(JadeUI.smallItem(stack));
 			tooltip.append(IDisplayHelper.get().stripColor(stack.getHoverName()));
-			tooltip.setLineMargin(-1, ScreenDirection.DOWN, -1);
+			tooltip.setLineMargin(-1, ScreenDirection.DOWN, 0);
 			empty = false;
 		}
 		if (!empty) {
