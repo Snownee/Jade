@@ -1,4 +1,3 @@
-/*
 package snownee.jade.compat;
 
 import org.jspecify.annotations.Nullable;
@@ -54,4 +53,3 @@ public class JEICompat implements IModPlugin, RecipeLookupPlugin {
 		});
 	}
 }
-*/

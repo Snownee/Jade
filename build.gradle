@@ -53,10 +53,9 @@ dependencies {
     //}
 //    modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
 
-//    modCompileOnly "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
-    //modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
+    modApi "me.shedaniel:RoughlyEnoughItems-fabric:${rei_version}"
 
-    modCompileOnlyApi "mezz.jei:jei-1.21.8-common-api:${jei_version}"
+    modCompileOnlyApi "mezz.jei:jei-1.21.11-common-api:${jei_version}"
 //    modCompileOnlyApi "mezz.jei:jei-1.21.8-fabric-api:${jei_version}"
     //modRuntimeOnly "mezz.jei:jei-1.20.1-fabric:${jei_version}"
 
