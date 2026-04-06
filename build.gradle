@@ -176,12 +176,14 @@ publishMods {
         projectId = "324717"
         accessToken = providers.environmentVariable("CURSE_TOKEN")
         minecraftVersions.add(minecraft_version)
+        minecraftVersions.add("26.1")
         optional("jei")
     }
     modrinth {
         projectId = "nvQzSEkH"
         accessToken = providers.environmentVariable("MODRINTH_TOKEN")
         minecraftVersions.add(minecraft_version)
+        minecraftVersions.add("26.1")
         optional("jei")
     }
 }
