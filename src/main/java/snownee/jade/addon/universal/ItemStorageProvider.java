@@ -23,6 +23,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.Container;
 import net.minecraft.world.LockCode;
 import net.minecraft.world.RandomizableContainer;
+import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.ContainerEntity;
 import net.minecraft.world.inventory.PlayerEnderChestContainer;
@@ -282,6 +283,9 @@ public class ItemStorageProvider<T extends Accessor<?>> implements IServerDataPr
 				return null;
 			}
 			if (target instanceof ContainerEntity containerEntity && containerEntity.getContainerLootTable() != null) {
+				return null;
+			}
+			if (target instanceof ArmorStand) {
 				return null;
 			}
 			Player player = accessor.getPlayer();
