@@ -361,7 +361,7 @@ public final class CommonProxy {
 	}
 
 	public static ItemStack getBlockPickedResult(BlockState state, Player player, BlockHitResult hitResult) {
-		return state.getCloneItemStack(player.level(), hitResult.getBlockPos(), true);
+		return state.getCloneItemStack(hitResult.getBlockPos(), player.level(), true, player);
 	}
 
 	public static ItemStack getEntityPickedResult(Entity entity, Player player, EntityHitResult hitResult) {
