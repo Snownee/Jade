@@ -120,7 +120,7 @@ public class JadeForgeUtils {
 
 			@Override
 			protected ItemStack getItemInSlot(ResourceHandler<ItemResource> container, int slot) {
-				return container.getResource(slot).toStack();
+				return container.getResource(slot).toStack(container.getAmountAsInt(slot));
 			}
 		};
 	}
