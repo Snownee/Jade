@@ -221,6 +221,7 @@
 	"jade.llamaStrength": "力量：%s",
 	"config.jade.plugin_minecraft.mob_growth": "生物生长时间",
 	"jade.mobgrowth.time": "生长时间：%s",
+	"jade.mobgrowth.paused": "已暂停",
 	"config.jade.plugin_minecraft.mob_breeding": "生物繁殖冷却",
 	"config.jade.plugin_minecraft.mob_breeding_extra_msg": "悦灵,复制",
 	"jade.mobbreeding.time": "繁殖冷却：%s",
