@@ -44,42 +44,43 @@ public class DatapackBlockManager {
 			return ItemStack.EMPTY;
 		}
 		List<Display> entities = level.getEntitiesOfClass(Display.class, new AABB(pos), DatapackBlockManager::isAcceptableEntity);
-		if (!entities.isEmpty()) {
-			ItemStack selected = ItemStack.EMPTY;
-			float selectedScore = 0f;
-			for (Display display : entities) {
-				if (!displays.contains(display.getId())) {
-					continue;
-				}
-				ItemStack itemStack = ItemStack.EMPTY;
-				if (display instanceof Display.BlockDisplay blockDisplay) {
-					itemStack = blockDisplay.getBlockState().getCloneItemStack(level, pos, false);
-				} else if (display instanceof Display.ItemDisplay itemDisplay) {
-					itemStack = itemDisplay.getItemStack();
-				}
-				if (itemStack.isEmpty()) {
-					continue;
-				}
-				float score = 0f;
-				if (itemStack.hasNonDefault(DataComponents.CUSTOM_DATA)) {
-					CustomData data = itemStack.get(DataComponents.CUSTOM_DATA);
-					if (data != null && data.tag.contains(ModIdentification.JADE_STACK)) {
-						score += 10f;
-					} else if (data != null && data.tag.contains(ModIdentification.POLYMER_STACK)) {
-						score += 2f;
-					}
-				}
-				if (itemStack.hasNonDefault(DataComponents.ITEM_MODEL)) {
-					score += 1f;
-				}
-				if (score > selectedScore) {
-					selected = itemStack;
-					selectedScore = score;
+		if (entities.isEmpty()) {
+			return ItemStack.EMPTY;
+		}
+
+		ItemStack selectedItem = ItemStack.EMPTY;
+		float selectedScore = 0f;
+		for (Display display : entities) {
+			if (!displays.contains(display.getId())) {
+				continue;
+			}
+			ItemStack itemStack = ItemStack.EMPTY;
+			if (display instanceof Display.BlockDisplay blockDisplay) {
+				itemStack = blockDisplay.getBlockState().getCloneItemStack(level, pos, false);
+			} else if (display instanceof Display.ItemDisplay itemDisplay) {
+				itemStack = itemDisplay.getItemStack();
+			}
+			float score = 0f;
+			if (itemStack.isEmpty()) {
+				continue;
+			}
+			if (itemStack.hasNonDefault(DataComponents.CUSTOM_DATA)) {
+				CustomData data = itemStack.get(DataComponents.CUSTOM_DATA);
+				if (data != null && data.tag.contains(ModIdentification.JADE_STACK)) {
+					score += 10f;
+				} else if (data != null && data.tag.contains(ModIdentification.POLYMER_STACK)) {
+					score += 2f;
 				}
 			}
-			return selected;
+			if (itemStack.hasNonDefault(DataComponents.ITEM_MODEL)) {
+				score += 1f;
+			}
+			if (score > selectedScore) {
+				selectedItem = itemStack;
+				selectedScore = score;
+			}
 		}
-		return ItemStack.EMPTY;
+		return selectedItem;
 	}
 
 	@Nullable
