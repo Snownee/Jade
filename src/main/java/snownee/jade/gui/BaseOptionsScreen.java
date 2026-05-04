@@ -137,7 +137,7 @@ public abstract class BaseOptionsScreen extends Screen {
 		super.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
 
 		OptionsList.Entry entry = options().isMouseOver(mouseX, mouseY) ? options().getEntryAt(mouseX, mouseY) : null;
-		if (entry != null) {
+		if ((guiGraphics.hoveredTextStyle == null || guiGraphics.hoveredTextStyle.getHoverEvent() == null) && entry != null) {
 			int valueX = entry.getContentX() + entry.getTextX();
 			if (mouseX >= valueX && mouseX < valueX + entry.getTextWidth()) {
 				List<Component> descs = Lists.newArrayListWithExpectedSize(3);
