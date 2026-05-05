@@ -89,6 +89,7 @@ import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.ui.FluidStackElement;
 import snownee.jade.mixin.KeyAccess;
 import snownee.jade.network.ClientHandshakePacket;
+import snownee.jade.network.ClientPayloadContext;
 import snownee.jade.network.ReceiveDataPacket;
 import snownee.jade.network.ServerHandshakePacket;
 import snownee.jade.network.ShowOverlayPacket;
@@ -324,15 +325,15 @@ public final class ClientProxy implements ClientModInitializer {
 
 		ClientPlayNetworking.registerGlobalReceiver(
 				ReceiveDataPacket.TYPE, (payload, context) -> {
-					ReceiveDataPacket.handle(payload, context.client()::execute);
+					ReceiveDataPacket.handle(payload, ClientPayloadContext.of(context.client()));
 				});
 		ClientPlayNetworking.registerGlobalReceiver(
 				ServerHandshakePacket.TYPE, (payload, context) -> {
-					ServerHandshakePacket.handle(payload, context.client()::execute);
+					ServerHandshakePacket.handle(payload, ClientPayloadContext.of(context.client()));
 				});
 		ClientPlayNetworking.registerGlobalReceiver(
 				ShowOverlayPacket.TYPE, (payload, context) -> {
-					ShowOverlayPacket.handle(payload, context.client()::execute);
+					ShowOverlayPacket.handle(payload, ClientPayloadContext.of(context.client()));
 				});
 
 		//noinspection ConstantValue
