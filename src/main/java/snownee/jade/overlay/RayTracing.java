@@ -113,7 +113,10 @@ public class RayTracing {
 		boolean startFromEye = IWailaConfig.get().general().getPerspectiveMode() == IWailaConfig.PerspectiveMode.EYE;
 		Vec3 traceStart = startFromEye ? eyePosition : camera.position();
 		double distance = startFromEye ? 0 : eyePosition.distanceToSqr(traceStart);
-		if (distance > 1e-5) {
+		boolean isInvalidHit = mc.hitResult == null;
+		if (distance > 1e8) {
+			isInvalidHit = true;
+		} else if (distance > 1e-5) {
 			distance = Math.sqrt(distance);
 			blockReach += distance;
 			entityReach += distance;
@@ -121,7 +124,7 @@ public class RayTracing {
 
 		Vec3 traceEnd;
 		Vec3 lookVector;
-		if (mc.hitResult == null) {
+		if (isInvalidHit) {
 			lookVector = startFromEye ? entity.getViewVector(partialTick) : new Vec3(camera.forwardVector());
 			traceEnd = traceStart.add(lookVector.scale(entityReach));
 		} else {
