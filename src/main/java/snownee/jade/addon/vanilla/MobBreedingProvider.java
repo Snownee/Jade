@@ -20,6 +20,7 @@ import snownee.jade.api.theme.IThemeHelper;
 
 public class MobBreedingProvider implements StreamServerDataProvider<EntityAccessor, Integer> {
 	public static final MobBreedingProvider INSTANCE = new MobBreedingProvider();
+	private static final int IN_LOVE = -1;
 
 	@Override
 	public @Nullable Integer streamData(EntityAccessor accessor) {
@@ -30,7 +31,11 @@ public class MobBreedingProvider implements StreamServerDataProvider<EntityAcces
 				time = (int) allay.duplicationCooldown;
 			}
 		} else {
-			time = ((Animal) entity).getAge();
+			Animal animal = (Animal) entity;
+			if (animal.isInLove()) {
+				return IN_LOVE;
+			}
+			time = animal.getAge();
 		}
 		return time > 0 ? time : null;
 	}
@@ -51,7 +56,9 @@ public class MobBreedingProvider implements StreamServerDataProvider<EntityAcces
 		@Override
 		public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
 			int time = MobBreedingProvider.INSTANCE.decodeFromData(accessor).orElse(0);
-			if (time > 0) {
+			if (time == IN_LOVE) {
+				tooltip.add(Component.translatable("jade.mobbreeding.fed"));
+			} else if (time > 0) {
 				tooltip.add(Component.translatable(
 						accessor.getEntity() instanceof Allay ? "jade.mobduplication.time" : "jade.mobbreeding.time",
 						IThemeHelper.get().seconds(time, accessor.tickRate())));
