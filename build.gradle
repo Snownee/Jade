@@ -123,6 +123,7 @@ publishMods {
         projectId = "324717"
         accessToken = providers.environmentVariable("CURSE_TOKEN")
         minecraftVersions.add(minecraft_version)
+        minecraftVersions.add("26.1.1")
         minecraftVersions.add("26.1")
         requires("fabric-api")
         optional("jei")
@@ -131,6 +132,7 @@ publishMods {
         projectId = "nvQzSEkH"
         accessToken = providers.environmentVariable("MODRINTH_TOKEN")
         minecraftVersions.add(minecraft_version)
+        minecraftVersions.add("26.1.1")
         minecraftVersions.add("26.1")
         requires("fabric-api")
         optional("jei")
