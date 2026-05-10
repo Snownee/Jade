@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -15,6 +16,7 @@ import org.jspecify.annotations.Nullable;
 import com.google.common.base.MoreObjects;
 import com.google.common.cache.Cache;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Either;
 
 import net.minecraft.advancements.criterion.ItemPredicate;
@@ -391,16 +393,22 @@ public final class CommonProxy {
 
 	public static List<Entrypoint> loadEntrypoints() {
 		List<Entrypoint> entrypoints = Lists.newArrayList();
+		Set<IModFileInfo> modFiles = Sets.newIdentityHashSet();
+		Set<String> classNames = Sets.newHashSet();
 		for (ModContainer container : ModList.get().getSortedMods()) {
 			IModFileInfo owningFile = container.getModInfo().getOwningFile();
-			if (owningFile == null) {
+			if (owningFile == null || !modFiles.add(owningFile)) {
 				continue;
 			}
 			owningFile.getFile()
 					.getScanResult()
 					.getAnnotatedBy(WailaPlugin.class, ElementType.TYPE)
 					.map($ -> new Entrypoint(container, $))
-					.forEach(entrypoints::add);
+					.forEach(entrypoint -> {
+						if (classNames.add(entrypoint.className())) {
+							entrypoints.add(entrypoint);
+						}
+					});
 		}
 		return entrypoints;
 	}
