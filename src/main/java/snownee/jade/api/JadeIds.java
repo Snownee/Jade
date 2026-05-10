@@ -25,6 +25,7 @@ public interface JadeIds {
 	Identifier DEBUG_SPECIAL_REGISTRY_NAME = JADE("registry_name.special");
 	Identifier DEBUG_BLOCK_PROPERTIES = JADE("block_properties");
 	Identifier DEBUG_BLOCK_STATES = JADE("block_states");
+	Identifier DEBUG_LOOT_TABLE = JADE("loot_table");
 	Identifier DEBUG_ENTITY_ATTRIBUTES = JADE("entity_attributes");
 	Identifier UNIVERSAL_ITEM_STORAGE = MC("item_storage");
 	Identifier UNIVERSAL_ITEM_STORAGE_DEFAULT = MC("item_storage.default");
