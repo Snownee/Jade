@@ -98,9 +98,11 @@ public abstract class ObjectNameProvider implements IToggleableProvider {
 
 		@Override
 		public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-			Component name = BlockData.INSTANCE.decodeFromData(accessor).orElse(null);
-			if (name == null && accessor.isServersideContent()) {
+			Component name;
+			if (accessor.isServersideContent()) {
 				name = accessor.getServersideRep().getHoverName();
+			} else {
+				name = BlockData.INSTANCE.decodeFromData(accessor).orElse(null);
 			}
 			if (name == null && WailaCommonRegistration.instance().blockOperations().shouldPick(accessor.getBlockState())) {
 				ItemStack pick = accessor.getPickedResult();

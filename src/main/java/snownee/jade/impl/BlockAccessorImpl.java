@@ -44,7 +44,6 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 	private final BlockState blockState;
 	@Nullable
 	private final Supplier<BlockEntity> blockEntity;
-	private ItemStack serversideRep;
 
 	private BlockAccessorImpl(Builder builder) {
 		super(
@@ -135,15 +134,6 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 	@Override
 	public Object getTarget() {
 		return getBlockEntity();
-	}
-
-	@Override
-	public ItemStack getServersideRep() {
-		return serversideRep;
-	}
-
-	public void setServersideRep(ItemStack serversideRep) {
-		this.serversideRep = serversideRep;
 	}
 
 	@Override
