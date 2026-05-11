@@ -29,6 +29,7 @@ public abstract class AccessorImpl<T extends HitResult> implements Accessor<T> {
 	private final Supplier<T> hit;
 	private final boolean serverConnected;
 	private final boolean showDetails;
+	protected ItemStack serversideRep = ItemStack.EMPTY;
 	private CompoundTag serverData;
 	protected boolean verify;
 	private @Nullable RegistryFriendlyByteBuf buffer;
@@ -139,5 +140,14 @@ public abstract class AccessorImpl<T extends HitResult> implements Accessor<T> {
 	@Override
 	public float tickRate() {
 		return getLevel().tickRateManager().tickrate();
+	}
+
+	@Override
+	public ItemStack getServersideRep() {
+		return serversideRep;
+	}
+
+	public void setServersideRep(ItemStack serversideRep) {
+		this.serversideRep = serversideRep;
 	}
 }

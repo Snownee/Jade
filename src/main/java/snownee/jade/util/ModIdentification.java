@@ -17,6 +17,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.decoration.painting.Painting;
 import net.minecraft.world.entity.item.FallingBlockEntity;
@@ -226,6 +227,9 @@ public class ModIdentification implements KeyedResourceManagerReloadListener {
 			}
 			case Villager villager -> {
 				return getModName(villager.getVillagerData().profession().unwrapKey().orElseThrow().identifier());
+			}
+			case Display.ItemDisplay itemDisplay -> {
+				return getModName(itemDisplay.getItemStack());
 			}
 			default -> {
 			}

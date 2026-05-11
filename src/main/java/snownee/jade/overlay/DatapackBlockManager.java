@@ -21,6 +21,7 @@ import net.minecraft.world.phys.HitResult;
 import snownee.jade.Jade;
 import snownee.jade.api.Accessor;
 import snownee.jade.impl.BlockAccessorImpl;
+import snownee.jade.impl.EntityAccessorImpl;
 import snownee.jade.util.ModIdentification;
 
 public class DatapackBlockManager {
@@ -87,6 +88,12 @@ public class DatapackBlockManager {
 	public static Accessor<?> override(HitResult hitResult, @Nullable Accessor<?> accessor, @Nullable Accessor<?> originalAccessor) {
 		if (accessor instanceof BlockAccessorImpl target && target.getServersideRep().isEmpty()) {
 			target.setServersideRep(getFakeBlock(target.getLevel(), target.getPosition()));
+		} else if (accessor instanceof EntityAccessorImpl target && target.getServersideRep().isEmpty() &&
+				target.getEntity() instanceof Display.ItemDisplay display) {
+			ItemStack itemStack = display.getItemStack();
+			if (ModIdentification.getSpecialId(itemStack).isPresent()) {
+				target.setServersideRep(itemStack);
+			}
 		}
 		return accessor;
 	}
