@@ -27,3 +27,17 @@ Then add a translation for your mod's name:
   "itemGroup.mymod": "My Mod (alternative)"
 }
 ```
+
+## Removing tooltip elements
+
+You can remove elements that are provided by a plugin in this way, in the item's custom data:
+
+```json
+{
+	"$jade:remove": ["minecraft:item_storage"]
+}
+```
+
+The built-in plugin IDs can be found in the [source code](https://github.com/Snownee/Jade/blob/26.1-fabric/src/main/java/snownee/jade/api/JadeIds.java).
+
+You can also press shift and hover on the option name in the config screen to see the plugin ID.
