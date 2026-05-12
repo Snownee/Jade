@@ -25,6 +25,7 @@ import net.minecraft.client.gui.components.LerpingBossEvent;
 import net.minecraft.client.gui.screens.GenericMessageScreen;
 import net.minecraft.client.gui.screens.ProgressScreen;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.renderer.block.FluidModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -39,7 +40,10 @@ import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.Services;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.util.StringUtil;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
@@ -380,6 +384,22 @@ public final class ClientProxy {
 
 	@Nullable
 	public static String lookupPlayerName(@Nullable UUID uuid) {
-		return PlayerNameLookup.get(uuid, Minecraft.getInstance().services());
+		if (uuid == null) {
+			return null;
+		}
+		Services services = Minecraft.getInstance().services();
+		String name = PlayerNameLookup.get(uuid, services);
+		ClientLevel level = Minecraft.getInstance().level;
+		if (level != null) {
+			Player player = level.getPlayerByUUID(uuid);
+			if (name != null && player != null && StringUtil.isValidPlayerName(player.getPlainTextName()) &&
+					!player.getPlainTextName().equals(name)) {
+				services.nameToIdCache().add(player.nameAndId());
+			}
+			if (name == null && player != null) {
+				return player.getPlainTextName();
+			}
+		}
+		return name;
 	}
 }
