@@ -228,7 +228,7 @@
 	"config.jade.plugin_minecraft.item_storage.show_name_amount_desc": "Het maximale aantal voorwerpen waarbij voorwerpnamen worden weergegeven in plaats van alleen voorwerp icoonen.",
 	"config.jade.plugin_minecraft.item_storage.items_per_line": "Voorwerpen per regel",
 	"jade.locked": "Inventaris is gesloten",
-	"jade.loot_not_generated": "Nog geen buit gegenereerd",
+	"jade.loot_not_generated": "§oWat zou erin kunnen zitten?",
 	"config.jade.plugin_minecraft.energy_storage": "Energie Opslag",
 	"config.jade.plugin_minecraft.energy_storage.detailed": "Alleen gedetailleerd",
 	"config.jade.plugin_minecraft.energy_storage.detailed_desc": "Toon alleen energie-informatie wanneer ${SHOW_DETAILS} wordt ingedrukt.",

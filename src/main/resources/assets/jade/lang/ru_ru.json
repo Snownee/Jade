@@ -263,7 +263,7 @@
 	"config.jade.plugin_minecraft.item_storage.show_name_amount_desc": "Максимальное количество предметов, для отображения названий предметов, а не только значков предметов.",
 	"config.jade.plugin_minecraft.item_storage.items_per_line": "Предметов в строке",
 	"jade.locked": "Инвентарь заблокирован",
-	"jade.loot_not_generated": "Инвентарь ещё не сгенерирован",
+	"jade.loot_not_generated": "§oЧто там может быть?",
 	"config.jade.plugin_minecraft.energy_storage": "Хранилище энергии",
 	"config.jade.plugin_minecraft.energy_storage.detailed": "Только детальная информация",
 	"config.jade.plugin_minecraft.energy_storage.detailed_desc": "Показывать информацию о жидкости только при нажатии ${SHOW_DETAILS}.",

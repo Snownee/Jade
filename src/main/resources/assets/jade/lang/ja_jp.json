@@ -263,7 +263,7 @@
 	"config.jade.plugin_minecraft.item_storage.show_name_amount_desc": "アイコンのみではなくアイテム名を表示するアイテムの最大数。",
 	"config.jade.plugin_minecraft.item_storage.items_per_line": "行ごとのアイテム",
 	"jade.locked": "インベントリはロックされています",
-	"jade.loot_not_generated": "中身のアイテムがまだ生成されていません",
+	"jade.loot_not_generated": "§o中には何が入っているのかな？",
 	"config.jade.plugin_minecraft.energy_storage": "エネルギーストレージ",
 	"config.jade.plugin_minecraft.energy_storage.detailed": "詳細のみ",
 	"config.jade.plugin_minecraft.energy_storage.detailed_desc": "${SHOW_DETAILS}を押した時にのみエネルギー情報を表示します。",

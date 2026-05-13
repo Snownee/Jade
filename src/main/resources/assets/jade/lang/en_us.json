@@ -300,7 +300,7 @@
 	"config.jade.plugin_minecraft.item_storage.items_per_line": "Items per Line",
 	"config.jade.plugin_minecraft.item_storage.sort": "Sort by Count",
 	"jade.locked": "Inventory is locked",
-	"jade.loot_not_generated": "Loot not generated yet",
+	"jade.loot_not_generated": "§oWhat could it be?",
 	"config.jade.plugin_minecraft.energy_storage": "Energy Storage",
 	"config.jade.plugin_minecraft.energy_storage.detailed": "Detailed-Only",
 	"config.jade.plugin_minecraft.energy_storage.detailed_desc": "Only show energy info when ${SHOW_DETAILS} is pressed.",

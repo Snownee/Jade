@@ -228,7 +228,7 @@
 	"config.jade.plugin_minecraft.item_storage.show_name_amount_desc": "La cantidad máxima de elementos para mostrar nombres de elementos en lugar de solo iconos de elementos.",
 	"config.jade.plugin_minecraft.item_storage.items_per_line": "Elementos por línea",
 	"jade.locked": "El inventario está bloqueado",
-	"jade.loot_not_generated": "Botín no generado aún",
+	"jade.loot_not_generated": "§oKio povus esti interne?",
 	"config.jade.plugin_minecraft.energy_storage": "Almacenamiento de energía",
 	"config.jade.plugin_minecraft.energy_storage.detailed": "Sólo detallado",
 	"config.jade.plugin_minecraft.energy_storage.detailed_desc": "Solo muestra información de energía cuando se presiona ${SHOW_DETAILS}.",

@@ -295,7 +295,7 @@
 	"config.jade.plugin_minecraft.item_storage.items_per_line": "Предметів в рядку",
 	"config.jade.plugin_minecraft.item_storage.sort": "Сортувати за кількістю",
 	"jade.locked": "Інвентар заблоковано",
-	"jade.loot_not_generated": "Здобич іще не згенерувалася",
+	"jade.loot_not_generated": "§oЩо там може бути?",
 	"config.jade.plugin_minecraft.energy_storage": "Енергосховище",
 	"config.jade.plugin_minecraft.energy_storage.detailed": "Лише детально",
 	"config.jade.plugin_minecraft.energy_storage.detailed_desc": "Показує інформацію про енергію коли натиснуто ${SHOW_DETAILS}.",
