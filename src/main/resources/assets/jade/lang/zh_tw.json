@@ -237,7 +237,7 @@
 	"config.jade.plugin_minecraft.item_storage.show_name_amount_desc": "顯示物品名稱而不只是物品圖示的最大物品數量。",
 	"config.jade.plugin_minecraft.item_storage.items_per_line": "每行物品數量",
 	"jade.locked": "物品欄已鎖住",
-	"jade.loot_not_generated": "戰利品尚未生成",
+	"jade.loot_not_generated": "§o裡面會是什麼？",
 	"config.jade.plugin_minecraft.energy_storage": "能量儲存",
 	"config.jade.plugin_minecraft.energy_storage.detailed": "僅詳細資料",
 	"config.jade.plugin_minecraft.energy_storage.detailed_desc": "只在按下${SHOW_DETAILS}時顯示能量資訊。",

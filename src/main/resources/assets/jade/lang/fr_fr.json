@@ -295,7 +295,7 @@
 	"config.jade.plugin_minecraft.item_storage.items_per_line": "Objets par ligne",
 	"config.jade.plugin_minecraft.item_storage.sort": "Trier par quantité",
 	"jade.locked": "L'inventaire est verrouillé",
-	"jade.loot_not_generated": "Butin non généré",
+	"jade.loot_not_generated": "§oQu'est-ce qu'il pourrait y avoir dedans ?",
 	"config.jade.plugin_minecraft.energy_storage": "Stockage d'énergie",
 	"config.jade.plugin_minecraft.energy_storage.detailed": "Détails uniquement",
 	"config.jade.plugin_minecraft.energy_storage.detailed_desc": "Afficher les infos d'énergie uniquement lorsque ${SHOW_DETAILS} est pressé.",

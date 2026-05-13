@@ -296,7 +296,7 @@
 	"config.jade.plugin_minecraft.item_storage.items_per_line": "每行物品数量",
 	"config.jade.plugin_minecraft.item_storage.sort": "按数量排序",
 	"jade.locked": "容器已上锁",
-	"jade.loot_not_generated": "战利品未生成",
+	"jade.loot_not_generated": "§o里面会是什么？",
 	"config.jade.plugin_minecraft.energy_storage": "能量存储",
 	"config.jade.plugin_minecraft.energy_storage.detailed": "仅在细节显示",
 	"config.jade.plugin_minecraft.energy_storage.detailed_desc": "仅在按下${SHOW_DETAILS}时显示。",

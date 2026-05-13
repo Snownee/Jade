@@ -233,7 +233,7 @@
 	"config.jade.plugin_minecraft.item_storage.show_name_amount_desc": "아이템 아이콘 대신 이름을 표시할 최대 아이템 수량.",
 	"config.jade.plugin_minecraft.item_storage.items_per_line": "한 줄당 아이템 개수",
 	"jade.locked": "저장소가 잠겨있습니다",
-	"jade.loot_not_generated": "아직 전리품이 생성되지 않았습니다",
+	"jade.loot_not_generated": "§o안에는 무엇이 들어 있을까?",
 	"config.jade.plugin_minecraft.energy_storage": "에너지 저장소",
 	"config.jade.plugin_minecraft.energy_storage.detailed": "상세-전용",
 	"config.jade.plugin_minecraft.energy_storage.detailed_desc": "${SHOW_DETAILS} 키를 눌렀을 때만 에너지 정보를 표시.",

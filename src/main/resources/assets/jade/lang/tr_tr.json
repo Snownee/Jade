@@ -290,7 +290,7 @@
 	"config.jade.plugin_minecraft.item_storage.show_name_amount_desc": "Sadece eşya simgeleri yerine eşya adlarını göstermek için maksimum eşya miktarı.",
 	"config.jade.plugin_minecraft.item_storage.items_per_line": "Satır Başına Eşya Sayısı",
 	"jade.locked": "Envanter kilitli",
-	"jade.loot_not_generated": "Ganimet henüz oluşturulmadı",
+	"jade.loot_not_generated": "§oİçinde ne olabilir?",
 	"config.jade.plugin_minecraft.energy_storage": "Enerji Depolaması",
 	"config.jade.plugin_minecraft.energy_storage.detailed": "Sadece Detaylı",
 	"config.jade.plugin_minecraft.energy_storage.detailed_desc": "Sadece ${SHOW_DETAILS} tuşuna basıldığında enerji bilgisini gösterir.",
