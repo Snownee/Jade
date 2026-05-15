@@ -1,6 +1,10 @@
 # Getting Started
 
+This is a guide for adding Jade support to another mod.
+
 ## Setup
+
+To add Jade as a dependency for your mod:
 
 === "Fabric"
 
