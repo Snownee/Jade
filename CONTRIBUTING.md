@@ -24,10 +24,7 @@ Other IDEs will work but might have more sharp edges with the build tooling.
 
 Some things to try:
 
-* run these gradle tasks:
-    * `clean` (Gradle > Jade > Tasks > build)
-    * `dependencies` (Gradle > Jade > Tasks > help)
-    * `javaToolchains` (Gradle > Jade > Tasks > help)
+* run the `clean` gradle task (`build > clean`)
 * if using IntelliJ, make sure that your project SDK is the right version of Java
     * `Project Structure > Project Settings > Project > SDK`
 * if using IntelliJ, make sure that your Gradle JVM matches your project SDK
