@@ -27,6 +27,7 @@ import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.entity.decoration.painting.Painting;
 import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.monster.cubemob.SulfurCube;
 import net.minecraft.world.entity.monster.zombie.ZombieVillager;
 import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.vehicle.minecart.MinecartSpawner;
@@ -218,6 +219,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerEntityComponent(WaxedProvider.EntityComponent.INSTANCE, CopperGolem.class);
 		registration.registerEntityIcon(WaxedProvider.EntityComponent.INSTANCE, CopperGolem.class);
 		registration.registerEntityComponent(PetArmorProvider.Client.INSTANCE, Mob.class);
+		registration.registerEntityComponent(SulfurCubeProvider.INSTANCE, SulfurCube.class);
 
 		registration.registerItemStorageClient(CampfireProvider.INSTANCE);
 
@@ -251,6 +253,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.markAsClientFeature(JadeIds.MC_CROP_PROGRESS);
 		registration.markAsClientFeature(JadeIds.MC_MOB_SPAWNER);
 		registration.markAsClientFeature(JadeIds.MC_WAXED);
+		registration.markAsClientFeature(JadeIds.MC_SULFUR_CUBE);
 
 		Component block = Component.translatable("config.jade.plugin_minecraft.block");
 		Component entity = Component.translatable("config.jade.plugin_minecraft.entity");
@@ -288,6 +291,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.setConfigCategoryOverride(JadeIds.MC_VILLAGER_PROFESSION, entity);
 		registration.setConfigCategoryOverride(JadeIds.MC_WAXED, both);
 		registration.setConfigCategoryOverride(JadeIds.MC_ZOMBIE_VILLAGER, entity);
+		registration.setConfigCategoryOverride(JadeIds.MC_SULFUR_CUBE, entity);
 
 		WailaCommonRegistration.instance().priorities.putUnsafe(JadeIds.MC_ENTITY_ARMOR, -4499);
 

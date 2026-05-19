@@ -1,9 +1,8 @@
 package snownee.jade.addon.access;
 
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.decoration.Mannequin;
 import net.minecraft.world.level.block.Block;
@@ -15,6 +14,7 @@ import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.WailaPlugin;
 import snownee.jade.api.theme.IThemeHelper;
+import snownee.jade.api.ui.JadeUI;
 import snownee.jade.util.JadeLanguages;
 
 @WailaPlugin
@@ -44,14 +44,14 @@ public class AccessibilityPlugin implements IWailaPlugin {
 		registration.registerEntityComponent(new HeldItemProvider(), LivingEntity.class);
 		registration.markAsClientFeature(JadeIds.ACCESS_HELD_ITEM);
 
-		registration.addEntityVariantMapping(EntityType.SHULKER, DataComponents.SHULKER_COLOR);
-		registration.addEntityVariantMapping(EntityType.VILLAGER, null);
+		registration.addEntityVariantMapping(EntityTypes.SHULKER, DataComponents.SHULKER_COLOR);
+		registration.addEntityVariantMapping(EntityTypes.VILLAGER, null);
 	}
 
 	public static void replaceTitle(ITooltip tooltip, String originalName, String key) {
 		String message = tooltip.getString(JadeIds.CORE_OBJECT_NAME);
 		key = "jade.access." + key;
-		if (!message.isBlank() && I18n.exists(key)) {
+		if (!message.isBlank() && JadeUI.hasTranslation(key)) {
 			var nameClass = JadeLanguages.INSTANCE.getNameClass(originalName);
 			var title = IThemeHelper.get().title(JadeClient.format(key, message, nameClass));
 			tooltip.replace(JadeIds.CORE_OBJECT_NAME, title);

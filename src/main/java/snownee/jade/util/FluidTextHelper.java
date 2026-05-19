@@ -31,6 +31,7 @@ import com.google.common.math.LongMath;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import snownee.jade.JadeClient;
+import snownee.jade.api.ui.JadeUI;
 import snownee.jade.api.ui.NarratableComponent;
 import snownee.jade.overlay.DisplayHelper;
 
@@ -84,7 +85,7 @@ public class FluidTextHelper {
 		}
 
 		String key = "narration.jade.%s/%s".formatted(numerator, denominator);
-		if (I18n.exists(key)) {
+		if (JadeUI.hasTranslation(key)) {
 			return I18n.get(key);
 		}
 		return JadeClient.formatString("narration.jade.N/N", numerator, denominator);

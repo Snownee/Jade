@@ -14,6 +14,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.RandomSource;
+import snownee.jade.api.ui.JadeUI;
 import snownee.jade.util.SmoothChasingValue;
 
 public class CreditButton extends Button {
@@ -90,7 +91,7 @@ public class CreditButton extends Button {
 			return;
 		}
 		showTranslators = true;
-		if (!I18n.exists("gui.jade.translators") || "placeholder ".equals(I18n.get("gui.jade.translated_by", ""))) {
+		if (!JadeUI.hasTranslation("gui.jade.translators") || "placeholder ".equals(I18n.get("gui.jade.translated_by", ""))) {
 			return;
 		}
 		String s = I18n.get("gui.jade.translators");

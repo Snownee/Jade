@@ -38,7 +38,7 @@ public class JadeClientCommand {
 			// execute in the next tick because when we press enter in chat, after the command is executed, any screen will be closed
 			Minecraft.getInstance().schedule(() -> {
 				IWailaConfig.get().invalidate();
-				Minecraft.getInstance().setScreen(new HomeConfigScreen(null));
+				Minecraft.getInstance().gui.setScreen(new HomeConfigScreen(null));
 			});
 			return 1;
 		})).then(literalFactory.apply("use_profile")
@@ -48,7 +48,7 @@ public class JadeClientCommand {
 					return 1;
 				}))
 		).then(literalFactory.apply("pin").executes(context -> {
-			Minecraft.getInstance().schedule(() -> Minecraft.getInstance().setScreen(new PinScreen()));
+			Minecraft.getInstance().schedule(() -> Minecraft.getInstance().gui.setScreen(new PinScreen()));
 			return 1;
 		}));
 	}

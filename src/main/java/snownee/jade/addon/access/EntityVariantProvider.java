@@ -16,6 +16,7 @@ import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.ui.JadeUI;
 
 public class EntityVariantProvider implements IEntityComponentProvider {
 	private static final Map<Markings, String> MARKINGS = Map.of(
@@ -35,7 +36,7 @@ public class EntityVariantProvider implements IEntityComponentProvider {
 		variantName.ifLeft(s -> {
 			String type = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).toShortLanguageKey();
 			String key = "jade.access.entity.%s.%s".formatted(type, s);
-			if (I18n.exists(key) || (config.get(JadeIds.DEBUG_SPECIAL_REGISTRY_NAME) && !accessor.showDetails())) {
+			if (JadeUI.hasTranslation(key) || (config.get(JadeIds.DEBUG_SPECIAL_REGISTRY_NAME) && !accessor.showDetails())) {
 				s = I18n.get(key);
 			} else {
 				s = s.replace('.', ' ').replace('_', ' ');
@@ -49,7 +50,7 @@ public class EntityVariantProvider implements IEntityComponentProvider {
 				s = markings.name();
 			}
 			String key = "jade.access.entity.horse_markings.%s".formatted(s);
-			if (I18n.exists(key) || (config.get(JadeIds.DEBUG_SPECIAL_REGISTRY_NAME) && !accessor.showDetails())) {
+			if (JadeUI.hasTranslation(key) || (config.get(JadeIds.DEBUG_SPECIAL_REGISTRY_NAME) && !accessor.showDetails())) {
 				s = I18n.get(key);
 			} else {
 				s = s.replace('_', ' ');

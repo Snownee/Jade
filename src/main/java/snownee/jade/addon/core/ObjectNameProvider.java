@@ -4,7 +4,6 @@ import java.util.Objects;
 
 import org.jspecify.annotations.Nullable;
 
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -112,7 +111,7 @@ public abstract class ObjectNameProvider implements IToggleableProvider {
 			}
 			if (name == null) {
 				String key = accessor.getBlock().getDescriptionId();
-				if (I18n.exists(key)) {
+				if (JadeUI.hasTranslation(key)) {
 					name = accessor.getBlock().getName();
 				} else {
 					ItemStack pick = accessor.getPickedResult();

@@ -7,6 +7,7 @@ import org.jspecify.annotations.Nullable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.Hud;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -23,7 +24,7 @@ import snownee.jade.track.HealthTrackInfo;
 
 public class HealthElement extends Element {
 
-	private Gui.HeartType heartType;
+	private Hud.HeartType heartType;
 	private final float maxHealth;
 	private final float health;
 	private final float absorption;
@@ -33,7 +34,7 @@ public class HealthElement extends Element {
 	private int iconCount = 1;
 	private @Nullable HealthTrackInfo track;
 
-	public HealthElement(Gui.HeartType heartType, float maxHealth, float health, float absorption) {
+	public HealthElement(Hud.HeartType heartType, float maxHealth, float health, float absorption) {
 		this.heartType = heartType;
 		this.maxHealth = maxHealth;
 		this.health = health;
@@ -47,7 +48,7 @@ public class HealthElement extends Element {
 				health = Mth.ceil(health);
 			}
 			if (absorption > 0) {
-				this.heartType = Gui.HeartType.ABSORBING;
+				this.heartType = Hud.HeartType.ABSORBING;
 			}
 			text = String.format("%s/%s", DisplayHelper.dfCommas.format(health), DisplayHelper.dfCommas.format(maxHealth));
 		} else {
@@ -89,7 +90,7 @@ public class HealthElement extends Element {
 		IDisplayHelper helper = IDisplayHelper.get();
 		int xOffset = (iconCount - 1) % iconsPerLine * 8;
 		int yOffset = lineCount * 4 - 4;
-		Identifier containerSprite = Gui.HeartType.CONTAINER.getSprite(false, false, blink);
+		Identifier containerSprite = Hud.HeartType.CONTAINER.getSprite(false, false, blink);
 		//MC-265342 - Blinking absorption heart textures do not appear to actually be used in-game
 		for (int i = iconCount; i > 0; --i) {
 			int xPos = getX() + xOffset;
@@ -97,11 +98,11 @@ public class HealthElement extends Element {
 			helper.blitSprite(graphics, RenderPipelines.GUI_TEXTURED, containerSprite, xPos, yPos, 9, 9);
 
 			boolean renderAbsorb = i > Mth.ceil(maxHealth * 0.5F);
-			Gui.HeartType curHeart = heartType;
+			Hud.HeartType curHeart = heartType;
 			float curHealth = health;
 			float curLastHealth = lastHealth;
 			if (renderAbsorb) {
-				curHeart = Gui.HeartType.ABSORBING;
+				curHeart = Hud.HeartType.ABSORBING;
 				curHealth = (Mth.ceil(maxHealth) + absorption) * 0.5F;
 				curLastHealth = (Mth.ceil(maxHealth) + lastAbsorption) * 0.5F;
 			}

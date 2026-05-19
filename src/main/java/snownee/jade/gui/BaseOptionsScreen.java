@@ -105,7 +105,7 @@ public abstract class BaseOptionsScreen extends Screen {
 					if (invalidEntry == null) {
 						options().save();
 						saver.run();
-						minecraft.setScreen(parent);
+						minecraft.gui.setScreen(parent);
 					} else {
 						changeFocus(ComponentPath.path(
 								Objects.requireNonNull(invalidEntry.mainWidget()),
@@ -224,7 +224,7 @@ public abstract class BaseOptionsScreen extends Screen {
 		if (canceller != null) {
 			canceller.run();
 		}
-		Objects.requireNonNull(minecraft).setScreen(parent);
+		Objects.requireNonNull(minecraft).gui.setScreen(parent);
 	}
 
 	@Override

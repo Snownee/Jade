@@ -86,7 +86,7 @@ public class TextElementImpl extends TextElement {
 	@Override
 	public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
 		Minecraft mc = Minecraft.getInstance();
-		Screen screen = mc.screen;
+		Screen screen = mc.gui.screen();
 		if (screen != null) {
 			ActiveTextCollector.ClickableStyleFinder collector = new ActiveTextCollector.ClickableStyleFinder(
 					mc.font,

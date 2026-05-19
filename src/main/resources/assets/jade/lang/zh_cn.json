@@ -323,6 +323,7 @@
 	"config.jade.plugin_minecraft.animal_owner": "动物主人",
 	"config.jade.plugin_minecraft.animal_owner_extra_msg": "马,宠物",
 	"jade.owner": "主人：%s",
+	"config.jade.plugin_minecraft.sulfur_cube": "硫方怪",
 	"jade.infinity": "∞",
 	"jade.seconds": "{0}秒",
 	"jade.minutes": "{0}分",

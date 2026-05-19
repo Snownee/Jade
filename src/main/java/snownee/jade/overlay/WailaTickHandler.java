@@ -125,7 +125,7 @@ public class WailaTickHandler {
 			return;
 		}
 
-		if (ClientProxy.shouldHideWithGui(mc, mc.screen)) {
+		if (ClientProxy.shouldHideWithGui(mc, mc.gui.screen())) {
 			return;
 		}
 
@@ -168,7 +168,7 @@ public class WailaTickHandler {
 					.requireVerification()
 					.build();
 			/* on */
-		} else if (mc.screen instanceof PreviewOptionsScreen) {
+		} else if (mc.gui.screen() instanceof PreviewOptionsScreen) {
 			useRayTraceCallback = false;
 			/* off */
 			accessor = WailaClientRegistration.instance().blockAccessor()

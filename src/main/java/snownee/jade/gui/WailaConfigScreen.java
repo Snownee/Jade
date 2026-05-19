@@ -225,7 +225,7 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 		options.add(new OptionButton(
 				title, Button.builder(
 				reset, w -> {
-					minecraft.setScreen(new ConfirmScreen(
+					minecraft.gui.setScreen(new ConfirmScreen(
 							bl -> {
 								if (bl) {
 									for (KeyMapping keyMapping : minecraft.options.keyMappings) {
@@ -241,7 +241,7 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 										Jade.LOGGER.error("", e);
 									}
 								}
-								minecraft.setScreen(this);
+								minecraft.gui.setScreen(this);
 								options().setScrollAmount(options().maxScrollAmount());
 							},
 							title,

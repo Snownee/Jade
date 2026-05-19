@@ -88,6 +88,7 @@ public interface JadeIds {
 	Identifier MC_POTION_EFFECTS_LIMIT = MC("potion_effects.limit");
 	Identifier MC_REDSTONE = MC("redstone");
 	Identifier MC_SHELF = MC("shelf");
+	Identifier MC_SULFUR_CUBE = MC("sulfur_cube");
 	Identifier MC_TNT_STABILITY = MC("tnt_stability");
 	Identifier MC_TOTAL_ENCHANTMENT_POWER = MC("total_enchantment_power");
 	Identifier MC_VILLAGER_PROFESSION = MC("villager_profession");

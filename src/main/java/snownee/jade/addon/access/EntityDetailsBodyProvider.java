@@ -2,7 +2,6 @@ package snownee.jade.addon.access;
 
 import java.util.List;
 
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.resources.Identifier;
@@ -36,7 +35,7 @@ public class EntityDetailsBodyProvider implements IEntityComponentProvider {
 		int poseId = getPoseId(entity);
 		if (poseId != Pose.STANDING.id()) {
 			String key = "jade.access.entity.pose.%s".formatted(poseId);
-			if (I18n.exists(key)) {
+			if (JadeUI.hasTranslation(key)) {
 				tooltip.add(Component.translatable("jade.access.entity.pose", Component.translatable(key)));
 			}
 		}

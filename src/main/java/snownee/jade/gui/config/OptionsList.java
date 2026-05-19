@@ -315,7 +315,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 				}, getter.get()).withValues(values);
 		builder.withTooltip(v -> {
 			String key = OptionsList.Entry.makeKey(optionName + "_" + v.name().toLowerCase(Locale.ENGLISH) + "_desc");
-			if (!I18n.exists(key)) {
+			if (!JadeUI.hasTranslation(key)) {
 				return null;
 			}
 			return Tooltip.create(WailaConfigScreen.processBuiltInVariables(Component.translatable(key)));
@@ -653,7 +653,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 
 		public void addMessageKey(String key) {
 			key = makeKey(key + "_extra_msg");
-			if (I18n.exists(key)) {
+			if (JadeUI.hasTranslation(key)) {
 				addMessage(I18n.get(key));
 			}
 		}
@@ -698,7 +698,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 			this(makeTitle(key));
 			addMessageKey(key);
 			key = makeKey(key + "_desc");
-			if (I18n.exists(key)) {
+			if (JadeUI.hasTranslation(key)) {
 				description = List.of(Component.translatable(key));
 				addMessage(description.getFirst().getString());
 			}

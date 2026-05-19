@@ -44,6 +44,13 @@ public class LayoutWithPadding implements Layout, ResizeableLayout {
 	}
 
 	@Override
+	public void removeChildren() {
+		if (wrapped instanceof Layout layout) {
+			layout.removeChildren();
+		}
+	}
+
+	@Override
 	public int getWidth() {
 		return wrapped.getWidth() + paddingLeft + paddingRight;
 	}

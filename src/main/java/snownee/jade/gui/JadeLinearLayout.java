@@ -174,6 +174,12 @@ public class JadeLinearLayout extends AbstractLayout implements ResizeableLayout
 		height = orientation == Orientation.HORIZONTAL ? crossAxis : axis;
 	}
 
+	@Override
+	public void removeChildren() {
+		children.clear();
+		arranged = false;
+	}
+
 	private void resolveFlexGrow(int extraAxisSpace, int crossAxis, int sumGrow) {
 		if (sumGrow == 0 || extraAxisSpace <= 0) {
 			return;

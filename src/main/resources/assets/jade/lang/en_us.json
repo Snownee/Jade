@@ -327,6 +327,7 @@
 	"config.jade.plugin_minecraft.animal_owner": "Animal Owner",
 	"config.jade.plugin_minecraft.animal_owner_extra_msg": "horse,pet",
 	"jade.owner": "Owner: %s",
+	"config.jade.plugin_minecraft.sulfur_cube": "Sulfur Cube",
 	"jade.infinity": "∞",
 	"jade.seconds": "{0}s",
 	"jade.minutes": "{0}m",

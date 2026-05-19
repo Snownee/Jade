@@ -118,12 +118,12 @@ public class HomeConfigScreen extends Screen {
 		addRenderableWidget(Button.builder(
 				modSettings, w -> {
 					visitedChildScreen();
-					minecraft.setScreen(new WailaConfigScreen(HomeConfigScreen.this));
+					minecraft.gui.setScreen(new WailaConfigScreen(HomeConfigScreen.this));
 				}).bounds(width / 2 - 5 - maxWidth, height / 2 - 10, maxWidth, 20).build());
 		addRenderableWidget(Button.builder(
 				pluginSettings, w -> {
 					visitedChildScreen();
-					minecraft.setScreen(new PluginsConfigScreen(HomeConfigScreen.this));
+					minecraft.gui.setScreen(new PluginsConfigScreen(HomeConfigScreen.this));
 				}).bounds(width / 2 + 5, height / 2 - 10, maxWidth, 20).build());
 		ImageButton profileButton = new ImageButton(
 				width / 2 + 10 + maxWidth,
@@ -133,7 +133,7 @@ public class HomeConfigScreen extends Screen {
 				new WidgetSprites(JadeIds.JADE("profiles")),
 				_ -> {
 					visitedChildScreen();
-					minecraft.setScreen(new ProfileConfigScreen(HomeConfigScreen.this));
+					minecraft.gui.setScreen(new ProfileConfigScreen(HomeConfigScreen.this));
 				},
 				profileSettings) {
 			@Override
@@ -213,7 +213,7 @@ public class HomeConfigScreen extends Screen {
 	public void onClose() {
 		IWailaConfig.get().save();
 		WailaClientRegistration.instance().reloadIgnoreLists();
-		Objects.requireNonNull(minecraft).setScreen(parent);
+		Objects.requireNonNull(minecraft).gui.setScreen(parent);
 	}
 
 	@Override

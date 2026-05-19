@@ -34,7 +34,7 @@ import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.Version;
 import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
 import net.fabricmc.loader.api.metadata.ModMetadata;
-import net.minecraft.advancements.criterion.ItemPredicate;
+import net.minecraft.advancements.predicates.ItemPredicate;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -55,6 +55,7 @@ import net.minecraft.world.WorldlyContainerHolder;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.Shearable;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.cow.MushroomCow;
@@ -370,7 +371,7 @@ public final class CommonProxy implements ModInitializer {
 
 	public static boolean isBoss(Entity entity) {
 		EntityType<?> entityType = entity.getType();
-		return entity.is(ConventionalEntityTypeTags.BOSSES) || entityType == EntityType.ENDER_DRAGON || entityType == EntityType.WITHER;
+		return entity.is(ConventionalEntityTypeTags.BOSSES) || entityType == EntityTypes.ENDER_DRAGON || entityType == EntityTypes.WITHER;
 	}
 
 	public static ItemStack getBlockPickedResult(BlockState state, Player player, BlockHitResult hitResult) {

@@ -126,7 +126,7 @@ public class ProfileConfigScreen extends BaseOptionsScreen {
 					Button.builder(
 							USE, _ -> {
 								Jade.useProfile(index);
-								if (Minecraft.getInstance().screen instanceof ProfileConfigScreen screen) {
+								if (Minecraft.getInstance().gui.screen() instanceof ProfileConfigScreen screen) {
 									screen.refresh();
 								}
 							}).size(48, 20).build(), 0);
@@ -139,13 +139,13 @@ public class ProfileConfigScreen extends BaseOptionsScreen {
 									return;
 								}
 								Minecraft mc = Minecraft.getInstance();
-								Screen screen = mc.screen;
-								mc.setScreen(new ConfirmScreen(
+								Screen screen = mc.gui.screen();
+								mc.gui.setScreen(new ConfirmScreen(
 										bl -> {
 											if (bl) {
 												Jade.saveProfile(index);
 											}
-											Minecraft.getInstance().setScreen(screen);
+											Minecraft.getInstance().gui.setScreen(screen);
 										},
 										Component.translatable("gui.jade.save_profile.title"),
 										Component.translatable("gui.jade.save_profile.message", normalTitle()),

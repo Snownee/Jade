@@ -12,7 +12,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.LevelAccessor;
@@ -99,7 +99,7 @@ public class DatapackBlockManager {
 	}
 
 	public static boolean isAcceptableEntity(Entity entity) {
-		return entity.getType() == EntityType.BLOCK_DISPLAY || entity.getType() == EntityType.ITEM_DISPLAY;
+		return entity.getType() == EntityTypes.BLOCK_DISPLAY || entity.getType() == EntityTypes.ITEM_DISPLAY;
 	}
 
 }

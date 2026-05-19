@@ -10,7 +10,7 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.ClipContext;
@@ -107,7 +107,7 @@ public class RayTracing {
 	}
 
 	public void rayTrace(Entity entity, double blockReach, double entityReach) {
-		Camera camera = mc.gameRenderer.getMainCamera();
+		Camera camera = mc.gameRenderer.mainCamera();
 		float partialTick = mc.getDeltaTracker().getGameTimeDeltaPartialTick(true);
 		Vec3 eyePosition = entity.getEyePosition(partialTick);
 		boolean startFromEye = IWailaConfig.get().general().getPerspectiveMode() == IWailaConfig.PerspectiveMode.EYE;
@@ -206,7 +206,7 @@ public class RayTracing {
 			if (target.isInvisibleTo(player)) {
 				return false;
 			}
-			if (Objects.requireNonNull(mc.gameMode).isDestroying() && target.getType() == EntityType.ITEM) {
+			if (Objects.requireNonNull(mc.gameMode).isDestroying() && target.getType() == EntityTypes.ITEM) {
 				return false;
 			}
 		} else {

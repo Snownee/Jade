@@ -5,8 +5,8 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.network.chat.TextColor;
 
 public class InputOptionValue<T> extends OptionValue<T> {
 
@@ -24,9 +24,9 @@ public class InputOptionValue<T> extends OptionValue<T> {
 		textField.setResponder(s -> {
 			if (this.validator.test(s)) {
 				setValue(s);
-				textField.setTextColor(Objects.requireNonNull(ChatFormatting.WHITE.getColor()) | 0xFF000000);
+				textField.setTextColor(TextColor.WHITE.getValue() | 0xFF000000);
 			} else {
-				textField.setTextColor(Objects.requireNonNull(ChatFormatting.RED.getColor()) | 0xFF000000);
+				textField.setTextColor(TextColor.RED.getValue() | 0xFF000000);
 			}
 			responder.run();
 		});

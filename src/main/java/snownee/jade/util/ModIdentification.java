@@ -29,6 +29,7 @@ import net.minecraft.world.level.block.Block;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.TraceableException;
 import snownee.jade.api.callback.JadeItemModNameCallback;
+import snownee.jade.api.ui.JadeUI;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.overlay.DisplayHelper;
 
@@ -148,11 +149,11 @@ public class ModIdentification implements KeyedResourceManagerReloadListener {
 				namespace, $ -> {
 					Optional<String> fromTranslation = Optional.empty();
 					String key = "jade.modName." + $;
-					if (I18n.exists(key)) {
+					if (JadeUI.hasTranslation(key)) {
 						fromTranslation = Optional.of(I18n.get(key));
 					} else {
 						key = "itemGroup." + $;
-						if (I18n.exists(key)) {
+						if (JadeUI.hasTranslation(key)) {
 							fromTranslation = Optional.of(I18n.get(key));
 						}
 					}

@@ -73,7 +73,7 @@ public class GuiGraphicsExtractorMixin implements JadeGuiGraphics {
 			boolean replaceExisting,
 			CallbackInfo ci) {
 		ItemStack itemStack = jade$itemTooltipContext;
-		if (itemStack.isEmpty() && minecraft.screen instanceof AbstractContainerScreen<?> screen && screen.hoveredSlot != null &&
+		if (itemStack.isEmpty() && minecraft.gui.screen() instanceof AbstractContainerScreen<?> screen && screen.hoveredSlot != null &&
 				screen.hoveredSlot.hasItem()) {
 			itemStack = screen.hoveredSlot.getItem();
 		}

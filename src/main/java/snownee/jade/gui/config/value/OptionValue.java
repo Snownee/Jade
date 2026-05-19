@@ -12,11 +12,11 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.narration.NarrationThunk;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
+import snownee.jade.api.ui.JadeUI;
 import snownee.jade.gui.config.OptionsList;
 
 public abstract class OptionValue<T> extends OptionsList.Entry {
@@ -37,7 +37,7 @@ public abstract class OptionValue<T> extends OptionsList.Entry {
 		rawTitle = title();
 		addMessageKey(optionName);
 		String key = makeKey(optionName + "_desc");
-		if (I18n.exists(key)) {
+		if (JadeUI.hasTranslation(key)) {
 			appendDescription(Component.translatable(key));
 		}
 	}

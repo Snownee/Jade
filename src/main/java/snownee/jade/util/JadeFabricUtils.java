@@ -10,6 +10,7 @@ import org.jspecify.annotations.Nullable;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Streams;
 import com.google.common.math.LongMath;
+import com.mojang.datafixers.util.Pair;
 
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
@@ -17,7 +18,6 @@ import net.fabricmc.fabric.api.transfer.v1.storage.SlottedStorage;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.fabricmc.fabric.api.transfer.v1.storage.base.SingleSlotStorage;
 import net.minecraft.util.Mth;
-import net.minecraft.util.Tuple;
 import net.minecraft.world.item.ItemStack;
 import snownee.jade.addon.universal.ItemIterator;
 import snownee.jade.api.Accessor;
@@ -35,14 +35,14 @@ public final class JadeFabricUtils {
 		if (result.tanks == 0) {
 			return List.of();
 		}
-		List<Tuple<JadeFluidObject, Long>> list = Lists.newArrayList();
+		List<Pair<JadeFluidObject, Long>> list = Lists.newArrayList();
 		int maxTanks = result.emptyTanks == 0 ? 5 : 4;
 		if (result.tanks - result.emptyTanks <= maxTanks) {
 			list.addAll(result.stream.toList());
 		} else {
 			result.stream.takeWhile(tag -> list.size() <= maxTanks).forEach(tuple1 -> {
-				for (Tuple<JadeFluidObject, Long> tuple2 : list) {
-					if (JadeFluidObject.isSameFluidSameComponents(tuple1.getA(), tuple2.getA())) {
+				for (Pair<JadeFluidObject, Long> tuple2 : list) {
+					if (JadeFluidObject.isSameFluidSameComponents(tuple1.getFirst(), tuple2.getFirst())) {
 						return;
 					}
 				}
@@ -51,10 +51,10 @@ public final class JadeFabricUtils {
 		}
 		int remaining = result.tanks - result.emptyTanks - list.size();
 		if (result.emptyTanks > 0) {
-			list.add(new Tuple<>(JadeFluidObject.empty(), result.emptyCapacity));
+			list.add(new Pair<>(JadeFluidObject.empty(), result.emptyCapacity));
 		}
 		ViewGroup<FluidView.Data> group = new ViewGroup<>(list.stream()
-				.map(tuple -> new FluidView.Data(tuple.getA(), tuple.getB()))
+				.map(tuple -> new FluidView.Data(tuple.getFirst(), tuple.getSecond()))
 				.toList());
 		if (remaining > 0) {
 			group.getExtraData().putInt("+", remaining);
@@ -84,7 +84,7 @@ public final class JadeFabricUtils {
 					result.emptyCapacity = LongMath.saturatedAdd(result.emptyCapacity, capacity);
 					return null;
 				}
-				return new Tuple<>(
+				return new Pair<>(
 						JadeFluidObject.of($.getResource().getFluid(), $.getAmount(), $.getResource().getComponentsPatch()),
 						capacity);
 			}).filter(Objects::nonNull);
@@ -93,7 +93,7 @@ public final class JadeFabricUtils {
 	}
 
 	public static class FluidCollectingResult {
-		public Stream<Tuple<JadeFluidObject, Long>> stream = Stream.empty();
+		public Stream<Pair<JadeFluidObject, Long>> stream = Stream.empty();
 		public long emptyCapacity;
 		public int tanks;
 		public int emptyTanks;

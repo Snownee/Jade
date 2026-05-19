@@ -13,7 +13,7 @@ import net.minecraft.world.entity.animal.goat.Goat;
 import net.minecraft.world.entity.animal.golem.CopperGolem;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.monster.Creeper;
-import net.minecraft.world.entity.monster.Slime;
+import net.minecraft.world.entity.monster.cubemob.AbstractCubeMob;
 import net.minecraft.world.entity.monster.zombie.ZombieVillager;
 import net.minecraft.world.level.block.WeatheringCopper;
 import snownee.jade.JadeClient;
@@ -53,7 +53,7 @@ public class EntityDetailsProvider implements IEntityComponentProvider {
 					AccessibilityPlugin.replaceTitle(tooltip, objectName, "entity.angry");
 				}
 			}
-			case Slime slime -> {
+			case AbstractCubeMob slime -> {
 				String message = tooltip.getString(JadeIds.CORE_OBJECT_NAME);
 				Component title = IThemeHelper.get().title(JadeClient.format("jade.access.slime.size", message, slime.getSize()));
 				tooltip.replace(JadeIds.CORE_OBJECT_NAME, title);

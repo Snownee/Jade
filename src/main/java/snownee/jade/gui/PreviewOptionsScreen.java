@@ -40,7 +40,7 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 	}
 
 	public static boolean isAdjustingPosition() {
-		return Minecraft.getInstance().screen instanceof PreviewOptionsScreen screen && screen.adjustingPosition;
+		return Minecraft.getInstance().gui.screen() instanceof PreviewOptionsScreen screen && screen.adjustingPosition;
 	}
 
 	private static float calculateAnchor(float center, float size, float rectSize) {

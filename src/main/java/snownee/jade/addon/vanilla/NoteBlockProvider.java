@@ -17,6 +17,7 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
+import snownee.jade.api.ui.JadeUI;
 
 public class NoteBlockProvider implements IBlockComponentProvider {
 	public static final NoteBlockProvider INSTANCE = new NoteBlockProvider();
@@ -31,7 +32,7 @@ public class NoteBlockProvider implements IBlockComponentProvider {
 		NoteBlockInstrument instrument = state.getValue(NoteBlock.INSTRUMENT);
 		String key = "jade.instrument." + instrument.getSerializedName();
 		String name;
-		if (I18n.exists(key)) {
+		if (JadeUI.hasTranslation(key)) {
 			name = I18n.get(key);
 		} else {
 			name = String.join(

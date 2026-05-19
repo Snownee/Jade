@@ -108,7 +108,7 @@ public final class ClientProxy implements ClientModInitializer {
 	public static Optional<String> getModName(String namespace, boolean translate) {
 		if (translate) {
 			String modMenuKey = "modmenu.nameTranslation.%s".formatted(namespace);
-			if (I18n.exists(modMenuKey)) {
+			if (JadeUI.hasTranslation(modMenuKey)) {
 				return Optional.of(I18n.get(modMenuKey));
 			}
 		}
@@ -215,7 +215,7 @@ public final class ClientProxy implements ClientModInitializer {
 	}
 
 	public static boolean shouldShowBeforeGui(Minecraft mc, Screen screen) {
-		if (mc.level == null || mc.screen instanceof GenericMessageScreen || mc.screen instanceof ProgressScreen) {
+		if (mc.level == null || mc.gui.screen() instanceof GenericMessageScreen || mc.gui.screen() instanceof ProgressScreen) {
 			return false;
 		}
 		IWailaConfig.General config = IWailaConfig.get().general();
@@ -323,7 +323,7 @@ public final class ClientProxy implements ClientModInitializer {
 		ClientCommandRegistrationCallback.EVENT.register(ClientProxy::registerClientCommand);
 		HudElementRegistry.addLast(
 				JadeIds.UI_MAIN, (guiGraphics, deltaTracker) -> {
-					if (Minecraft.getInstance().screen == null) {
+					if (Minecraft.getInstance().gui.screen() == null) {
 						onRenderTick(guiGraphics, deltaTracker.getRealtimeDeltaTicks());
 					}
 				});

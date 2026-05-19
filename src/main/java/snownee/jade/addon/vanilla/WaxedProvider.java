@@ -1,7 +1,5 @@
 package snownee.jade.addon.vanilla;
 
-import java.util.Map;
-
 import org.jspecify.annotations.Nullable;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -77,18 +75,12 @@ public class WaxedProvider implements IJadeProvider {
 
 	public static class EntityComponent extends WaxedProvider implements IEntityComponentProvider {
 		public static final EntityComponent INSTANCE = new EntityComponent();
-		private static final Map<WeatheringCopper.WeatherState, Block> COPPER_GOLEM_STATUES = Map.of(
-				WeatheringCopper.WeatherState.UNAFFECTED, Blocks.COPPER_GOLEM_STATUE,
-				WeatheringCopper.WeatherState.EXPOSED, Blocks.EXPOSED_COPPER_GOLEM_STATUE,
-				WeatheringCopper.WeatherState.WEATHERED, Blocks.WEATHERED_COPPER_GOLEM_STATUE,
-				WeatheringCopper.WeatherState.OXIDIZED, Blocks.OXIDIZED_COPPER_GOLEM_STATUE
-		);
 
 		@Override
 		public Element getIcon(EntityAccessor accessor, IPluginConfig config, @Nullable Element currentIcon) {
 			CopperGolem golem = (CopperGolem) accessor.getEntity();
 			WeatheringCopper.WeatherState state = golem.getWeatherState();
-			Block statueBlock = COPPER_GOLEM_STATUES.get(state);
+			Block statueBlock = Blocks.COPPER_GOLEM_STATUE.weathering().pick(state);
 			boolean waxed = EntityData.INSTANCE.decodeFromData(accessor).isPresent();
 			if (waxed) {
 				statueBlock = HoneycombItem.getWaxed(statueBlock.defaultBlockState()).orElse(statueBlock.defaultBlockState()).getBlock();

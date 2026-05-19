@@ -173,6 +173,6 @@ public class JadeUIInternal {
 	}
 
 	public static boolean isPinned() {
-		return Minecraft.getInstance().screen instanceof PinScreen;
+		return Minecraft.getInstance().gui.screen() instanceof PinScreen;
 	}
 }

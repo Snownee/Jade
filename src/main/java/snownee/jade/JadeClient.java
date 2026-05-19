@@ -54,6 +54,7 @@ import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
 import snownee.jade.api.ui.BoxElement;
 import snownee.jade.api.ui.ColorPalette;
+import snownee.jade.api.ui.JadeUI;
 import snownee.jade.api.ui.ScreenDirection;
 import snownee.jade.api.ui.TooltipAnimation;
 import snownee.jade.compat.RecipeLookupPlugin;
@@ -120,7 +121,7 @@ public final class JadeClient {
 			Jade.invalidateConfig();
 			ItemStorageProvider.targetCache.invalidateAll();
 			ItemStorageProvider.containerCache.invalidateAll();
-			mc.setScreen(new HomeConfigScreen(null));
+			mc.gui.setScreen(new HomeConfigScreen(null));
 		}
 
 		while (JadeKeys.showOverlay().consumeClick()) {
@@ -129,8 +130,8 @@ public final class JadeClient {
 			if (mode == DisplayMode.TOGGLE) {
 				general.setDisplayTooltip(!general.shouldDisplayTooltip());
 				if (!general.shouldDisplayTooltip() && Jade.history().hintOverlayToggle) {
-					mc.getChatListener().handleSystemMessage(Component.translatable("toast.jade.toggle_hint.1"), false);
-					mc.getChatListener().handleSystemMessage(
+					mc.gui.chatListener().handleSystemMessage(Component.translatable("toast.jade.toggle_hint.1"), false);
+					mc.gui.chatListener().handleSystemMessage(
 							Component.translatable(
 									"toast.jade.toggle_hint.2",
 									JadeKeys.showOverlay().getTranslatedKeyMessage()), false);
@@ -153,8 +154,8 @@ public final class JadeClient {
 			if (accessibility.getTTSMode() == TTSMode.TOGGLE) {
 				accessibility.toggleTTS();
 				if (accessibility.shouldEnableTextToSpeech() && Jade.history().hintNarratorToggle) {
-					mc.getChatListener().handleSystemMessage(Component.translatable("toast.jade.tts_hint.1"), false);
-					mc.getChatListener().handleSystemMessage(
+					mc.gui.chatListener().handleSystemMessage(Component.translatable("toast.jade.tts_hint.1"), false);
+					mc.gui.chatListener().handleSystemMessage(
 							Component.translatable(
 									"toast.jade.tts_hint.2",
 									JadeKeys.narrate().getTranslatedKeyMessage()), false);
@@ -215,7 +216,7 @@ public final class JadeClient {
 			}
 		}
 		if (selected != null) {
-			selected.action().accept(Minecraft.getInstance().screen, results);
+			selected.action().accept(Minecraft.getInstance().gui.screen(), results);
 		}
 	}
 
@@ -232,7 +233,7 @@ public final class JadeClient {
 			List<String> keys = Lists.newArrayList();
 			for (Identifier id : WailaClientRegistration.instance().getConfigKeys()) {
 				String key = "config.jade.plugin_%s.%s".formatted(id.getNamespace(), id.getPath());
-				if (!I18n.exists(key)) {
+				if (!JadeUI.hasTranslation(key)) {
 					keys.add(key);
 				}
 			}
@@ -250,7 +251,7 @@ public final class JadeClient {
 		if (itemStack.isEmpty()) {
 			return null;
 		}
-		if (Minecraft.getInstance().screen instanceof CreativeModeInventoryScreen screen && screen.hoveredSlot != null) {
+		if (Minecraft.getInstance().gui.screen() instanceof CreativeModeInventoryScreen screen && screen.hoveredSlot != null) {
 			if (screen.hoveredSlot.container instanceof Inventory ||
 					CreativeModeInventoryScreen.selectedTab.getType() != CreativeModeTab.Type.CATEGORY) {
 				return null;
@@ -318,7 +319,7 @@ public final class JadeClient {
 		}
 		Player player = accessor.getPlayer();
 		Minecraft mc = Minecraft.getInstance();
-		if (mc.gameRenderer.getGameRenderState().lightmapRenderState.darknessEffectScale > 0.15f &&
+		if (mc.gameRenderer.gameRenderState().lightmapRenderState.darknessEffectScale > 0.15f &&
 				accessor.getLevel().getMaxLocalRawBrightness(BlockPos.containing(accessor.getHitResult().getLocation())) < 7) {
 			return null;
 		}
@@ -406,7 +407,7 @@ public final class JadeClient {
 
 	public static void pleaseWait() {
 		SystemToast.add(
-				Minecraft.getInstance().getToastManager(),
+				Minecraft.getInstance().gui.toastManager(),
 				JADE_PLEASE_WAIT,
 				Component.translatable("toast.jade.please_wait.1"),
 				Component.translatable("toast.jade.please_wait.2"));

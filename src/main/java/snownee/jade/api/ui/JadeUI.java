@@ -9,6 +9,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.layouts.LayoutElement;
+import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Util;
@@ -143,5 +144,9 @@ public final class JadeUI {
 	public static boolean hasAltDown() {
 		return InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), 342) ||
 				InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), 346);
+	}
+
+	public static boolean hasTranslation(String key) {
+		return Language.getInstance().has(key);
 	}
 }

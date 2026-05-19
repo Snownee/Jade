@@ -6,7 +6,7 @@ import org.jspecify.annotations.Nullable;
 
 import com.google.common.collect.Lists;
 
-import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.Hud;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -72,7 +72,7 @@ public class EntityHealthAndArmorProvider implements StreamServerDataProvider<En
 				float maxHealth = living.getMaxHealth();
 				float absorption = decodeFromData(accessor).orElse(0F);
 				HealthElement healthElement = new HealthElement(
-						living.isFullyFrozen() ? Gui.HeartType.FROZEN : Gui.HeartType.NORMAL,
+						living.isFullyFrozen() ? Hud.HeartType.FROZEN : Hud.HeartType.NORMAL,
 						maxHealth,
 						health,
 						absorption);
