@@ -10,6 +10,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.allay.Allay;
+import net.minecraft.world.entity.npc.villager.Villager;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
@@ -30,6 +31,8 @@ public class MobBreedingProvider implements StreamServerDataProvider<EntityAcces
 			if (allay.duplicationCooldown > 0 && allay.duplicationCooldown < Integer.MAX_VALUE) {
 				time = (int) allay.duplicationCooldown;
 			}
+		} else if (entity instanceof Villager villager) {
+			time = villager.getAge();
 		} else {
 			Animal animal = (Animal) entity;
 			if (animal.isInLove()) {

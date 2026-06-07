@@ -139,6 +139,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerEntityDataProvider(MobGrowthProvider.INSTANCE, AgeableMob.class);
 		registration.registerEntityDataProvider(MobGrowthProvider.INSTANCE, Tadpole.class);
 		registration.registerEntityDataProvider(MobBreedingProvider.INSTANCE, Animal.class);
+		registration.registerEntityDataProvider(MobBreedingProvider.INSTANCE, Villager.class);
 		registration.registerEntityDataProvider(MobBreedingProvider.INSTANCE, Allay.class);
 		registration.registerEntityDataProvider(NextEntityDropProvider.INSTANCE, Chicken.class);
 		registration.registerEntityDataProvider(NextEntityDropProvider.INSTANCE, Armadillo.class);
@@ -175,6 +176,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerEntityComponent(MobGrowthProvider.Client.INSTANCE, AgeableMob.class);
 		registration.registerEntityComponent(MobGrowthProvider.Client.INSTANCE, Tadpole.class);
 		registration.registerEntityComponent(MobBreedingProvider.Client.INSTANCE, Animal.class);
+		registration.registerEntityComponent(MobBreedingProvider.Client.INSTANCE, Villager.class);
 		registration.registerEntityComponent(MobBreedingProvider.Client.INSTANCE, Allay.class);
 		registration.registerBlockComponent(TNTStabilityProvider.INSTANCE, TntBlock.class);
 		registration.registerBlockComponent(BeehiveProvider.Client.INSTANCE, BeehiveBlock.class);
