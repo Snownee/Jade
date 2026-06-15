@@ -24,7 +24,7 @@ public class TextElementImpl extends TextElement {
 	private int textWidth;
 
 	public TextElementImpl(Component text) {
-		this.text = text;
+		this.text = JadeLanguages.INSTANCE.toCleanTranslation(text);
 		width = textWidth = Math.max(DisplayHelper.font().width(text), 0);
 		height = DisplayHelper.font().lineHeight - 1;
 	}

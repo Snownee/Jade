@@ -308,6 +308,14 @@ public class DisplayHelper implements IDisplayHelper {
 
 	@Override
 	public MutableComponent stripColor(Component component) {
+		if (component.getSiblings().isEmpty() && component.visit(s -> {
+			if (STRIP_COLOR.matcher(s).find()) {
+				return Optional.of(s);
+			}
+			return Optional.empty();
+		}).isEmpty()) {
+			return component.copy().withStyle(component.getStyle().withColor((TextColor) null));
+		}
 		MutableComponent mutableComponent = Component.empty();
 		component.visit(
 				(style, string) -> {
