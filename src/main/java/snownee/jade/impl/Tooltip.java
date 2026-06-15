@@ -37,10 +37,12 @@ public class Tooltip implements ITooltip {
 	public final List<Line> lines = new ArrayList<>();
 	public boolean sneakyDetails;
 	public @Nullable Element icon;
+	public boolean isDirty;
 
 	@Override
 	public void clear() {
 		lines.clear();
+		isDirty = true;
 	}
 
 	@Override
@@ -59,6 +61,7 @@ public class Tooltip implements ITooltip {
 			Line line = lines.get(index);
 			line.elements.add(element);
 		}
+		isDirty = true;
 	}
 
 	@Override
@@ -105,12 +108,12 @@ public class Tooltip implements ITooltip {
 				}
 			}
 		}
-		return removed;
+		return isDirty = removed;
 	}
 
 	@Override
 	public boolean replace(Identifier tag, Component component) {
-		return replace(tag, $ -> List.of(List.of(JadeUI.text(component))));
+		return isDirty = replace(tag, $ -> List.of(List.of(JadeUI.text(component))));
 	}
 
 	@Override
@@ -161,8 +164,9 @@ public class Tooltip implements ITooltip {
 		switch (side) {
 			case UP -> line.marginTop = margin;
 			case DOWN -> line.marginBottom = margin;
-			default -> throw new IllegalArgumentException("Only TOP and BOTTOM are allowed.");
+			default -> throw new IllegalArgumentException("Only UP and DOWN are allowed.");
 		}
+		isDirty = true;
 	}
 
 	@Override
@@ -172,6 +176,7 @@ public class Tooltip implements ITooltip {
 		}
 		Line line = lines.get(index);
 		line.settings = settings;
+		isDirty = true;
 	}
 
 	@Override
@@ -239,6 +244,7 @@ public class Tooltip implements ITooltip {
 
 	public void setIcon(@Nullable Element icon) {
 		this.icon = icon;
+		isDirty = true;
 	}
 
 	public static class Line {

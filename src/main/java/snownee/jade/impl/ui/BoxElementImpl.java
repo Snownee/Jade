@@ -95,6 +95,7 @@ public class BoxElementImpl extends BoxElement implements ContainerEventHandler 
 						container.tailMargin = line.marginBottom;
 					});
 		}
+		tooltip.isDirty = false;
 
 		if (icon != null) {
 			JadeLinearLayout iconLayout = JadeLinearLayout.horizontal().alignItems(JadeLinearLayout.Align.START).spacing(3);
