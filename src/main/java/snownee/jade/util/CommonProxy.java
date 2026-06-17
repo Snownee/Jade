@@ -21,6 +21,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.CommonLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.context.PacketContext;
 import net.fabricmc.fabric.api.tag.convention.v2.ConventionalEntityTypeTags;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
@@ -104,6 +105,7 @@ import snownee.jade.network.ReceiveDataPacket;
 import snownee.jade.network.RequestBlockPacket;
 import snownee.jade.network.RequestEntityPacket;
 import snownee.jade.network.ServerHandshakePacket;
+import snownee.jade.network.ServerPayloadContext;
 import snownee.jade.network.ShowOverlayPacket;
 
 public final class CommonProxy implements ModInitializer {
@@ -561,6 +563,10 @@ public final class CommonProxy implements ModInitializer {
 	@Nullable
 	public static Either<String, Component> getTranslatableName(@Nullable Object object) {
 		return null;
+	}
+
+	public static void runWithContext(ServerPayloadContext context, Runnable runnable) {
+		context.player().level().getServer().execute(() -> PacketContext.runWithContext(context.player(), runnable));
 	}
 
 	@Override
