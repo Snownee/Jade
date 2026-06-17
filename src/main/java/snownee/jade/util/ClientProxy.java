@@ -2,6 +2,7 @@ package snownee.jade.util;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiConsumer;
@@ -12,29 +13,10 @@ import org.jspecify.annotations.Nullable;
 
 import com.google.common.base.Strings;
 import com.google.common.base.Suppliers;
+import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.datafixers.util.Either;
 
-import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
-import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
-import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
-import net.fabricmc.fabric.api.event.lifecycle.v1.CommonLifecycleEvents;
-import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
-import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRenderHandler;
-import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
-import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.ModContainer;
-import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -44,24 +26,23 @@ import net.minecraft.client.gui.screens.GenericMessageScreen;
 import net.minecraft.client.gui.screens.ProgressScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.renderer.block.FluidModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.commands.CommandBuildContext;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.Services;
-import net.minecraft.server.packs.PackType;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.StringUtil;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
@@ -69,12 +50,34 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.neoforge.client.ItemDecoratorHandler;
+import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent;
+import net.neoforged.neoforge.client.event.InputEvent;
+import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
+import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.event.RenderGuiEvent;
+import net.neoforged.neoforge.client.event.RenderTooltipEvent;
+import net.neoforged.neoforge.client.event.ScreenEvent;
+import net.neoforged.neoforge.client.fluid.FluidTintSource;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+import net.neoforged.neoforge.client.settings.KeyConflictContext;
+import net.neoforged.neoforge.client.settings.KeyModifier;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
+import net.neoforged.neoforgespi.language.IModInfo;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
-import snownee.jade.addon.harvest.HarvestToolProvider;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.ITooltip;
-import snownee.jade.api.JadeIds;
 import snownee.jade.api.JadeKeys;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.fluid.JadeFluidObject;
@@ -86,22 +89,21 @@ import snownee.jade.api.view.IClientExtensionProvider;
 import snownee.jade.api.view.ViewGroup;
 import snownee.jade.command.JadeClientCommand;
 import snownee.jade.compat.PolydexCompat;
+import snownee.jade.gui.HomeConfigScreen;
 import snownee.jade.gui.PreviewOptionsScreen;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.ui.FluidStackElement;
 import snownee.jade.mixin.KeyAccess;
 import snownee.jade.network.ClientHandshakePacket;
-import snownee.jade.network.ClientPayloadContext;
-import snownee.jade.network.ReceiveDataPacket;
-import snownee.jade.network.ServerHandshakePacket;
-import snownee.jade.network.ShowOverlayPacket;
 import snownee.jade.overlay.DatapackBlockManager;
 import snownee.jade.overlay.OverlayRenderer;
 
-public final class ClientProxy implements ClientModInitializer {
+public final class ClientProxy {
 
-	public static final JadeMetadata metadata = new FabricJadeMetadata();
+	public static JadeMetadata metadata = new ForgeJadeMetadata();
+	private static final List<KeyMapping> keys = Lists.newArrayList();
+	private static final List<KeyedReloadListener> listeners = Lists.newArrayList();
 	private static boolean bossbarShown;
 	private static int bossbarHeight;
 
@@ -112,26 +114,36 @@ public final class ClientProxy implements ClientModInitializer {
 				return Optional.of(I18n.get(modMenuKey));
 			}
 		}
-		return FabricLoader.getInstance().getModContainer(namespace)
-				.map(ModContainer::getMetadata)
-				.map(ModMetadata::getName)
+		return ModList.get().getModContainerById(namespace)
+				.map(ModContainer::getModInfo)
+				.map(IModInfo::getDisplayName)
 				.filter(Predicate.not(Strings::isNullOrEmpty));
 	}
 
-	public static void registerClientCommand(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandBuildContext registryAccess) {
-		dispatcher.register(JadeClientCommand.create(
-				ClientCommands::literal,
-				ClientCommands::argument,
-				FabricClientCommandSource::sendFeedback,
-				FabricClientCommandSource::sendError));
+	public static void registerCommands(RegisterClientCommandsEvent event) {
+		event.getDispatcher().register(JadeClientCommand.create(
+				Commands::literal,
+				Commands::argument,
+				(source, component) -> source.sendSuccess(() -> component, false),
+				CommandSourceStack::sendFailure));
 	}
 
-	private static void onEntityJoin(Entity entity, ClientLevel level) {
-		DatapackBlockManager.onEntityJoin(entity);
+	private static void onEntityJoin(EntityJoinLevelEvent event) {
+		DatapackBlockManager.onEntityJoin(event.getEntity());
 	}
 
-	private static void onEntityLeave(Entity entity, ClientLevel level) {
-		DatapackBlockManager.onEntityLeave(entity);
+	private static void onEntityLeave(EntityLeaveLevelEvent event) {
+		DatapackBlockManager.onEntityLeave(event.getEntity());
+	}
+
+	private static void onTooltip(RenderTooltipEvent.GatherComponents event) {
+		if (event.getItemStack().isEmpty()) {
+			return;
+		}
+		FormattedText name = JadeClient.appendModName(event.getItemStack());
+		if (name != null) {
+			event.getTooltipElements().add(Either.left(name));
+		}
 	}
 
 	public static void onRenderTick(GuiGraphicsExtractor guiGraphics, float tickDelta) {
@@ -144,7 +156,7 @@ public final class ClientProxy implements ClientModInitializer {
 		}
 	}
 
-	private static void onClientTick(Minecraft mc) {
+	private static void onClientTick(ClientTickEvent.Post event) {
 		try {
 			JadeClient.tickHandler().tickClient();
 		} catch (Throwable e) {
@@ -152,22 +164,34 @@ public final class ClientProxy implements ClientModInitializer {
 		}
 	}
 
-	private static void onPlayerLeave(ClientPacketListener handler, Minecraft client) {
-		ObjectDataCenter.disconnect();
+	private static void onPlayerJoin(ClientPlayerNetworkEvent.LoggingIn event) {
+		try {
+			sendPacket(new ClientHandshakePacket(Jade.PROTOCOL_VERSION));
+		} catch (Exception ignored) {
+		}
+	}
+
+	private static void onPlayerLeave(ClientPlayerNetworkEvent.LoggingOut event) {
+		ObjectDataCenter.serverConnected = false;
 		WailaClientRegistration.instance().setServerConfig(Map.of());
 	}
 
-	private static void onKeyPressed(Minecraft mc) {
-		JadeClient.onKeyPressed(1);
+	private static void onKeyPressed(InputEvent.Key event) {
+		JadeClient.onKeyPressed(event.getAction());
 	}
 
-	private static void onGui(Screen screen) {
-		JadeClient.onGui(screen);
+	private static void onGui(ScreenEvent.Init.Pre event) {
+		JadeClient.onGui(event.getScreen());
 	}
 
 	public static KeyMapping registerKeyBinding(String desc, int defaultKey) {
-		KeyMapping key = new KeyMapping("key.jade." + desc, InputConstants.Type.KEYSYM, defaultKey, JadeClient.keyMappingCategory);
-		KeyMappingHelper.registerKeyMapping(key);
+		KeyMapping key = new KeyMapping(
+				"key.jade." + desc,
+				KeyConflictContext.IN_GAME,
+				KeyModifier.NONE,
+				InputConstants.Type.KEYSYM.getOrCreate(defaultKey),
+				JadeClient.keyMappingCategory);
+		keys.add(key);
 		return key;
 	}
 
@@ -181,13 +205,24 @@ public final class ClientProxy implements ClientModInitializer {
 	}
 
 	public static void registerReloadListener(KeyedReloadListener listener) {
-		ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloadListener(listener.getUid(), listener);
+		listeners.add(listener);
+	}
+
+	private static void drawBossBarPre(CustomizeGuiOverlayEvent.BossEventProgress event) {
+		IWailaConfig.BossBarOverlapMode mode = Jade.config().general().getBossBarOverlapMode();
+		if (mode == IWailaConfig.BossBarOverlapMode.HIDE_BOSS_BAR && OverlayRenderer.shown) {
+			event.setCanceled(true);
+		}
 	}
 
 	public static void drawBossBarPost(LerpingBossEvent bossEvent, int bottom) {
+		// NO-OP
+	}
+
+	public static void drawBossBarPostInternal(CustomizeGuiOverlayEvent.BossEventProgress event) {
 		IWailaConfig.BossBarOverlapMode mode = Jade.config().general().getBossBarOverlapMode();
 		if (mode == IWailaConfig.BossBarOverlapMode.PUSH_DOWN) {
-			bossbarHeight = bottom;
+			bossbarHeight = event.getY() + event.getIncrement();
 			bossbarShown = true;
 		}
 	}
@@ -224,22 +259,18 @@ public final class ClientProxy implements ClientModInitializer {
 
 	public static void getFluidSpriteAndColor(JadeFluidObject fluid, BiConsumer<@Nullable TextureAtlasSprite, Integer> consumer) {
 		Fluid type = fluid.typeHolder().value();
-		FluidVariant variant = FluidVariant.of(type, fluid.getComponents());
 		FluidModel model = Minecraft.getInstance().getModelManager().getFluidStateModelSet().get(type.defaultFluidState());
 		TextureAtlasSprite sprite = model.stillMaterial().sprite();
-		FluidVariantRenderHandler handler = FluidVariantRendering.getHandlerOrDefault(type);
-		int fluidColor = handler.getColor(variant, Minecraft.getInstance().level, BlockPos.ZERO);
+		FluidTintSource tintSource = model.fluidTintSource();
+		int fluidColor = tintSource == null ? -1 : tintSource.colorAsTerrainParticle(
+				type.defaultFluidState().createLegacyBlock(),
+				Objects.requireNonNull(Minecraft.getInstance().level),
+				BlockPos.ZERO);
 		consumer.accept(sprite, fluidColor);
 	}
 
-	public static void renderItemDecorationsExtra(
-			GuiGraphicsExtractor guiGraphics,
-			Font font,
-			ItemStack stack,
-			int x,
-			int y,
-			@Nullable String text) {
-		// NO-OP
+	public static void renderItemDecorationsExtra(GuiGraphicsExtractor guiGraphics, Font font, ItemStack stack, int x, int y, String text) {
+		ItemDecoratorHandler.of(stack).render(guiGraphics, font, stack, x, y);
 	}
 
 	public static GameType getGameMode() {
@@ -281,8 +312,69 @@ public final class ClientProxy implements ClientModInitializer {
 		return state.is(BlockTags.ENCHANTMENT_POWER_PROVIDER) ? 1 : 0;
 	}
 
+	public static void init(IEventBus modBus) {
+		NeoForge.EVENT_BUS.addListener(ClientProxy::onEntityJoin);
+		NeoForge.EVENT_BUS.addListener(ClientProxy::onEntityLeave);
+		NeoForge.EVENT_BUS.addListener(EventPriority.LOWEST, ClientProxy::onTooltip);
+		NeoForge.EVENT_BUS.addListener(ClientProxy::onClientTick);
+		NeoForge.EVENT_BUS.addListener(ClientProxy::onPlayerJoin);
+		NeoForge.EVENT_BUS.addListener(ClientProxy::onPlayerLeave);
+		NeoForge.EVENT_BUS.addListener(ClientProxy::registerCommands);
+		NeoForge.EVENT_BUS.addListener(ClientProxy::onKeyPressed);
+		NeoForge.EVENT_BUS.addListener(ClientProxy::onGui);
+		NeoForge.EVENT_BUS.addListener(EventPriority.HIGHEST, ClientProxy::drawBossBarPre);
+		NeoForge.EVENT_BUS.addListener(EventPriority.LOWEST, true, ClientProxy::drawBossBarPostInternal);
+		NeoForge.EVENT_BUS.addListener(
+				RenderGuiEvent.Post.class, event -> {
+					if (Minecraft.getInstance().gui.screen() == null) {
+						onRenderTick(event.getGuiGraphics(), event.getPartialTick().getRealtimeDeltaTicks());
+					}
+				});
+		NeoForge.EVENT_BUS.addListener(
+				ScreenEvent.Render.Pre.class, event -> {
+					Minecraft mc = Minecraft.getInstance();
+					Screen screen = event.getScreen();
+					if (shouldShowBeforeGui(mc, screen) && !shouldShowAfterGui(mc, screen)) {
+						onRenderTick(event.getGuiGraphics(), event.getPartialTick());
+					}
+				});
+		NeoForge.EVENT_BUS.addListener(
+				ScreenEvent.Render.Post.class, event -> {
+					if (shouldShowAfterGui(Minecraft.getInstance(), event.getScreen())) {
+						onRenderTick(event.getGuiGraphics(), event.getPartialTick());
+					}
+				});
+		modBus.addListener(
+				AddClientReloadListenersEvent.class, event -> {
+					listeners.forEach($ -> event.addListener($.getUid(), $));
+					listeners.clear();
+				});
+		modBus.addListener(
+				RegisterKeyMappingsEvent.class, event -> {
+					keys.forEach(event::register);
+					keys.clear();
+				});
+		ModLoadingContext.get().registerExtensionPoint(
+				IConfigScreenFactory.class,
+				() -> (modContainer, screen) -> new HomeConfigScreen(screen));
+
+		//noinspection ConstantValue
+		for (int i = InputConstants.KEY_NUMPAD0; i <= InputConstants.KEY_NUMPAD9; i++) {
+			InputConstants.Key key = InputConstants.Type.KEYSYM.getOrCreate(i);
+			((KeyAccess) (Object) key).setDisplayName(Suppliers.memoize(() -> Component.translatable(key.getName())));
+		}
+		JadeClient.init();
+		JadeClient.recipeLookupPlugins.add(new PolydexCompat());
+		if (CommonProxy.isModLoaded("roughlyenoughitems")) {
+			JadeClient.addRecipeLookupPlugin("snownee.jade.compat.REICompat");
+		}
+		if (CommonProxy.isModLoaded("jei")) {
+			JadeClient.addRecipeLookupPlugin("snownee.jade.compat.JEICompat");
+		}
+	}
+
 	public static void sendPacket(CustomPacketPayload payload) {
-		ClientPlayNetworking.send(payload);
+		Objects.requireNonNull(Minecraft.getInstance().getConnection()).send(payload);
 	}
 
 	public static boolean shouldFetchFromServer(@Nullable UUID uuid) {
@@ -311,69 +403,7 @@ public final class ClientProxy implements ClientModInitializer {
 		return name;
 	}
 
-	@Override
-	public void onInitializeClient() {
-		ClientLifecycleEvents.CLIENT_STARTED.register(mc -> CommonProxy.loadComplete());
-		ClientEntityEvents.ENTITY_LOAD.register(ClientProxy::onEntityJoin);
-		ClientEntityEvents.ENTITY_UNLOAD.register(ClientProxy::onEntityLeave);
-		ClientPlayConnectionEvents.DISCONNECT.register(ClientProxy::onPlayerLeave);
-		ClientTickEvents.END_CLIENT_TICK.register(ClientProxy::onClientTick);
-		ClientTickEvents.END_CLIENT_TICK.register(ClientProxy::onKeyPressed);
-		ScreenEvents.AFTER_INIT.register((Minecraft client, Screen screen, int scaledWidth, int scaledHeight) -> onGui(screen));
-		ClientCommandRegistrationCallback.EVENT.register(ClientProxy::registerClientCommand);
-		HudElementRegistry.addLast(
-				JadeIds.UI_MAIN, (guiGraphics, deltaTracker) -> {
-					if (Minecraft.getInstance().gui.screen() == null) {
-						onRenderTick(guiGraphics, deltaTracker.getRealtimeDeltaTicks());
-					}
-				});
-		ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
-			if (shouldShowAfterGui(client, screen)) {
-				ScreenEvents.afterExtract(screen).register((screen1, guiGraphics, mouseX, mouseY, tickDelta) -> {
-					onRenderTick(guiGraphics, tickDelta);
-				});
-			} else if (shouldShowBeforeGui(client, screen)) {
-				ScreenEvents.beforeExtract(screen).register((screen1, guiGraphics, mouseX, mouseY, tickDelta) -> {
-					onRenderTick(guiGraphics, tickDelta);
-				});
-			}
-		});
-		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
-			ClientPlayNetworking.send(new ClientHandshakePacket(Jade.PROTOCOL_VERSION));
-		});
-
-		ClientPlayNetworking.registerGlobalReceiver(
-				ReceiveDataPacket.TYPE, (payload, context) -> {
-					ReceiveDataPacket.handle(payload, ClientPayloadContext.of(context.client()));
-				});
-		ClientPlayNetworking.registerGlobalReceiver(
-				ServerHandshakePacket.TYPE, (payload, context) -> {
-					ServerHandshakePacket.handle(payload, ClientPayloadContext.of(context.client()));
-				});
-		ClientPlayNetworking.registerGlobalReceiver(
-				ShowOverlayPacket.TYPE, (payload, context) -> {
-					ShowOverlayPacket.handle(payload, ClientPayloadContext.of(context.client()));
-				});
-
-		//noinspection ConstantValue
-		for (int i = InputConstants.KEY_NUMPAD0; i <= InputConstants.KEY_NUMPAD9; i++) {
-			InputConstants.Key key = InputConstants.Type.KEYSYM.getOrCreate(i);
-			((KeyAccess) (Object) key).setDisplayName(Suppliers.memoize(() -> Component.translatable(key.getName())));
-		}
-		JadeClient.init();
-		ResourceLoader.get(PackType.SERVER_DATA).registerReloadListener(
-				HarvestToolProvider.INSTANCE.getUid(),
-				HarvestToolProvider.INSTANCE);
-		CommonLifecycleEvents.TAGS_LOADED.register((registryAccess, client) -> {
-			HarvestToolProvider.INSTANCE.invalidateCache();
-		});
-
-		JadeClient.recipeLookupPlugins.add(new PolydexCompat());
-		if (CommonProxy.isModLoaded("roughlyenoughitems")) {
-			JadeClient.addRecipeLookupPlugin("snownee.jade.compat.REICompat");
-		}
-		if (CommonProxy.isModLoaded("jei")) {
-			JadeClient.addRecipeLookupPlugin("snownee.jade.compat.JEICompat");
-		}
+	public static void runWithContext(Minecraft client, Runnable runnable) {
+		client.execute(runnable);
 	}
 }
