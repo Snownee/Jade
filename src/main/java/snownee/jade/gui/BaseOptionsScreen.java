@@ -107,11 +107,7 @@ public abstract class BaseOptionsScreen extends Screen {
 						saver.run();
 						minecraft.setScreen(parent);
 					} else {
-						changeFocus(ComponentPath.path(
-								Objects.requireNonNull(invalidEntry.mainWidget()),
-								invalidEntry,
-								options(),
-								this));
+						changeFocus(ComponentPath.path(Objects.requireNonNull(invalidEntry.mainWidget()), invalidEntry, options(), this));
 						options().scrollToEntry(invalidEntry);
 					}
 				}).bounds(width - 100, height - 25, 90, 20).build());
@@ -239,15 +235,17 @@ public abstract class BaseOptionsScreen extends Screen {
 
 	@Override
 	public boolean keyPressed(KeyEvent keyEvent) {
-		int key = keyEvent.key();
-		if (keyEvent.modifiers() == 0 && !(deepGetFocused(getCurrentFocusPath()) instanceof EditBox) && (
-				(key >= InputConstants.KEY_0 && key <= InputConstants.KEY_Z) ||
-						(key >= InputConstants.KEY_NUMPAD0 && key <= InputConstants.KEY_NUMPAD9))) {
-			setFocused(searchBox);
-		} else if (key == InputConstants.KEY_F && keyEvent.hasControlDownWithQuirk() && !keyEvent.hasShiftDown() &&
-				!keyEvent.hasAltDown()) {
-			setFocused(searchBox);
-			return true;
+		if (options().selectedKey == null) {
+			int key = keyEvent.key();
+			if (keyEvent.modifiers() == 0 && !(deepGetFocused(getCurrentFocusPath()) instanceof EditBox) && (
+					(key >= InputConstants.KEY_0 && key <= InputConstants.KEY_Z) ||
+							(key >= InputConstants.KEY_NUMPAD0 && key <= InputConstants.KEY_NUMPAD9))) {
+				setFocused(searchBox);
+			} else if (key == InputConstants.KEY_F && keyEvent.hasControlDownWithQuirk() && !keyEvent.hasShiftDown() &&
+					!keyEvent.hasAltDown()) {
+				setFocused(searchBox);
+				return true;
+			}
 		}
 		return super.keyPressed(keyEvent);
 	}
