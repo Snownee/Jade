@@ -75,6 +75,7 @@ import snownee.jade.api.IWailaCommonRegistration;
 import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.WailaPlugin;
+import snownee.jade.api.harvest.ToolTypeRegistry;
 import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.overlay.DatapackBlockManager;
 import snownee.jade.util.CommonProxy;
@@ -297,7 +298,7 @@ public class VanillaPlugin implements IWailaPlugin {
 
 		WailaCommonRegistration.instance().priorities.putUnsafe(JadeIds.MC_ENTITY_ARMOR, -4499);
 
-		HarvestToolProvider.registerHandler(() -> SimpleToolHandler.create(
+		ToolTypeRegistry.register(SimpleToolHandler.create(
 				JadeIds.JADE("pickaxe"),
 				List.of(
 						Items.WOODEN_PICKAXE,
@@ -306,10 +307,10 @@ public class VanillaPlugin implements IWailaPlugin {
 						Items.IRON_PICKAXE,
 						Items.DIAMOND_PICKAXE,
 						Items.NETHERITE_PICKAXE)));
-		HarvestToolProvider.registerHandler(() -> SimpleToolHandler.create(
+		ToolTypeRegistry.register(SimpleToolHandler.create(
 				JadeIds.JADE("axe"),
 				List.of(Items.WOODEN_AXE, Items.GOLDEN_AXE, Items.STONE_AXE, Items.IRON_AXE, Items.DIAMOND_AXE, Items.NETHERITE_AXE)));
-		HarvestToolProvider.registerHandler(() -> SimpleToolHandler.create(
+		ToolTypeRegistry.register(SimpleToolHandler.create(
 				JadeIds.JADE("shovel"),
 				List.of(
 						Items.WOODEN_SHOVEL,
@@ -318,12 +319,12 @@ public class VanillaPlugin implements IWailaPlugin {
 						Items.IRON_SHOVEL,
 						Items.DIAMOND_SHOVEL,
 						Items.NETHERITE_SHOVEL)));
-		HarvestToolProvider.registerHandler(() -> SimpleToolHandler.create(
+		ToolTypeRegistry.register(SimpleToolHandler.create(
 				JadeIds.JADE("hoe"),
 				List.of(Items.WOODEN_HOE, Items.GOLDEN_HOE, Items.STONE_HOE, Items.IRON_HOE, Items.DIAMOND_HOE, Items.NETHERITE_HOE)));
-		HarvestToolProvider.registerHandler(() -> SimpleToolHandler.create(JadeIds.JADE("sword"), List.of(Items.WOODEN_SWORD))
+		ToolTypeRegistry.register(SimpleToolHandler.create(JadeIds.JADE("sword"), List.of(Items.WOODEN_SWORD))
 				.addExtraBlock(Blocks.BAMBOO)
 				.addExtraBlock(Blocks.BAMBOO_SAPLING));
-		HarvestToolProvider.registerHandler(ShearsToolHandler::getInstance);
+		ToolTypeRegistry.register(ShearsToolHandler.getInstance());
 	}
 }

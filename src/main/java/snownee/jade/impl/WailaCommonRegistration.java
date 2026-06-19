@@ -28,6 +28,7 @@ import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.IWailaCommonRegistration;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.TargetOperationRepository;
+import snownee.jade.api.harvest.ToolTypeRegistry;
 import snownee.jade.api.view.EnergyView;
 import snownee.jade.api.view.FluidView;
 import snownee.jade.api.view.IServerExtensionProvider;
@@ -104,6 +105,7 @@ public class WailaCommonRegistration implements IWailaCommonRegistration {
 	}
 
 	public static void reset() {
+		ToolTypeRegistry.clear();
 		INSTANCE = new WailaCommonRegistration();
 	}
 

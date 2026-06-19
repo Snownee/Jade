@@ -1,4 +1,4 @@
-package snownee.jade.addon.harvest;
+package snownee.jade.api.harvest;
 
 import java.util.List;
 
@@ -10,7 +10,7 @@ import snownee.jade.api.IJadeProvider;
 
 public interface ToolHandler extends IJadeProvider {
 
-	ItemStack test(BlockState state, Level world, BlockPos pos);
+	ItemStack test(BlockState state, Level level, BlockPos pos);
 
 	List<ItemStack> getTools();
 

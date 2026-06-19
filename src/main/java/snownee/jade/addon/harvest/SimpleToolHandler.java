@@ -14,8 +14,10 @@ import net.minecraft.world.item.component.Tool;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import snownee.jade.api.harvest.MutableToolHandler;
+import snownee.jade.api.harvest.ToolHandler;
 
-public class SimpleToolHandler implements ToolHandler {
+public class SimpleToolHandler implements ToolHandler, MutableToolHandler {
 
 	protected final List<ItemStack> tools = Lists.newArrayList();
 	protected final List<Block> extraBlocks = Lists.newArrayListWithExpectedSize(0);
@@ -75,6 +77,31 @@ public class SimpleToolHandler implements ToolHandler {
 	@Override
 	public List<ItemStack> getTools() {
 		return tools;
+	}
+
+	@Override
+	public void add(Item item) {
+		tools.add(item.getDefaultInstance());
+	}
+
+	@Override
+	public boolean insertBefore(Item target, Item item) {
+		return insert(target, item, 0);
+	}
+
+	@Override
+	public boolean insertAfter(Item target, Item item) {
+		return insert(target, item, 1);
+	}
+
+	private boolean insert(Item target, Item item, int offset) {
+		for (int i = 0; i < tools.size(); i++) {
+			if (tools.get(i).is(target)) {
+				tools.add(i + offset, item.getDefaultInstance());
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override

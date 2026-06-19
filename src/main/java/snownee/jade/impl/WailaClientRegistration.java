@@ -12,7 +12,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jspecify.annotations.Nullable;
@@ -50,6 +49,7 @@ import snownee.jade.api.IComponentProvider;
 import snownee.jade.api.IToggleableProvider;
 import snownee.jade.api.IWailaClientRegistration;
 import snownee.jade.api.JadeIds;
+import snownee.jade.api.callback.CallbackContainer;
 import snownee.jade.api.callback.JadeAfterRenderCallback;
 import snownee.jade.api.callback.JadeBeforeRenderCallback;
 import snownee.jade.api.callback.JadeBeforeTooltipCollectCallback;
@@ -344,13 +344,6 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 		blockIconProviders.loadComplete(priorities);
 		entityComponentProviders.loadComplete(priorities);
 		entityIconProviders.loadComplete(priorities);
-		Stream.of(
-				afterRenderCallback,
-				beforeRenderCallback,
-				rayTraceCallback,
-				tooltipCollectedCallback,
-				itemModNameCallback,
-				beforeTooltipCollectCallback).forEach(CallbackContainer::sort);
 	}
 
 	@Override
