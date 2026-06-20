@@ -51,6 +51,8 @@ dependencies {
     api("teamreborn:energy:${project.tr_energy_version}") {
         exclude(group: "net.fabricmc.fabric-api")
     }
+
+    implementation "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
 }
 
 loom {
