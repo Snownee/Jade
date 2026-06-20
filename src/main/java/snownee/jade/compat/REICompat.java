@@ -1,4 +1,3 @@
-/*
 package snownee.jade.compat;
 
 import java.util.List;
@@ -10,7 +9,6 @@ import me.shedaniel.rei.api.common.entry.EntryStack;
 import me.shedaniel.rei.api.common.entry.type.VanillaEntryTypes;
 import me.shedaniel.rei.impl.display.DisplaySpec;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.resources.Identifier;
@@ -35,7 +33,6 @@ public class REICompat implements RecipeLookupPlugin {
 			if (screen == null) {
 				// https://github.com/shedaniel/RoughlyEnoughItems/issues/516
 				Minecraft.getInstance().setScreen(new DummyScreen());
-				Minecraft.getInstance().setScreen(null);
 			}
 			builder.open();
 		});
@@ -47,13 +44,8 @@ public class REICompat implements RecipeLookupPlugin {
 		}
 
 		@Override
-		protected void renderBlurredBackground(GuiGraphicsExtractor guiGraphics) {
-			// NO-OP
-		}
-
-		@Override
 		public void tick() {
 			onClose();
 		}
 	}
-}*/
+}
