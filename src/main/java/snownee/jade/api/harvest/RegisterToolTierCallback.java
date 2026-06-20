@@ -14,9 +14,9 @@ import snownee.jade.api.callback.CallbackContainer;
  * Registers ordered harvest tool tiers for a single tool type.
  * <p>
  * Call {@link #event(Identifier)} with the target type id, then register a callback. Jade executes tier callbacks when
- * that tool type is registered. Buckets for tool types that are never registered are not invoked.
+ * that tool type is materialized for harvest checks. Buckets for tool types that are never materialized are not invoked.
  * <p>
-	 * The callback priority controls ordering when Jade invokes all callbacks during tool type registration. If the tool type
+ * The callback priority controls ordering when Jade invokes all callbacks during tool type materialization. If the tool type
 	 * already exists when this event receives a new callback, Jade immediately invokes only the newly added callback, so its
 	 * priority does not delay or reorder that immediate invocation.
  * <p>

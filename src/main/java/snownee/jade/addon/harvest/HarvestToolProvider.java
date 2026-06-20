@@ -61,6 +61,7 @@ public class HarvestToolProvider implements IBlockComponentProvider, KeyedResour
 	}
 
 	private static void apply() {
+		ToolTypeRegistry.apply();
 		INSTANCE.resultCache.invalidateAll();
 	}
 
@@ -155,6 +156,7 @@ public class HarvestToolProvider implements IBlockComponentProvider, KeyedResour
 	public void setShearableBlocks(Collection<Block> blocks) {
 		if (ToolTypeRegistry.get(JadeIds.JADE("shears")) instanceof ShearsToolHandler handler) {
 			handler.setShearableBlocks(blocks);
+			invalidateCache();
 		}
 	}
 

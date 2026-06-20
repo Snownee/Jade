@@ -39,12 +39,13 @@ public class LootTableMineableCollector {
 			stopwatch = Stopwatch.createStarted();
 		}
 		LootTableMineableCollector collector = new LootTableMineableCollector(lootRegistry, toolItem);
+		ShearsToolHandler shearsHandler = new ShearsToolHandler();
 		List<Block> list = Lists.newArrayList();
 		for (Block block : BuiltInRegistries.BLOCK) {
 			if (block.getLootTable().isEmpty()) {
 				continue;
 			}
-			if (!ShearsToolHandler.getInstance().test(block.defaultBlockState()).isEmpty()) {
+			if (!shearsHandler.test(block.defaultBlockState()).isEmpty()) {
 				continue;
 			}
 			LootTable lootTable = lootRegistry.get(block.getLootTable().get()).map(Holder::value).orElse(null);

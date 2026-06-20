@@ -17,12 +17,6 @@ import snownee.jade.api.JadeIds;
 
 public class ShearsToolHandler extends SimpleToolHandler {
 
-	private static final ShearsToolHandler INSTANCE = new ShearsToolHandler();
-
-	public static ShearsToolHandler getInstance() {
-		return INSTANCE;
-	}
-
 	private final Set<Block> shearableBlocks = Sets.newIdentityHashSet();
 
 	public ShearsToolHandler() {

@@ -298,7 +298,7 @@ public class VanillaPlugin implements IWailaPlugin {
 
 		WailaCommonRegistration.instance().priorities.putUnsafe(JadeIds.MC_ENTITY_ARMOR, -4499);
 
-		ToolTypeRegistry.register(SimpleToolHandler.create(
+		ToolTypeRegistry.register(
 				JadeIds.JADE("pickaxe"),
 				List.of(
 						Items.WOODEN_PICKAXE,
@@ -306,11 +306,11 @@ public class VanillaPlugin implements IWailaPlugin {
 						Items.STONE_PICKAXE,
 						Items.IRON_PICKAXE,
 						Items.DIAMOND_PICKAXE,
-						Items.NETHERITE_PICKAXE)));
-		ToolTypeRegistry.register(SimpleToolHandler.create(
+						Items.NETHERITE_PICKAXE));
+		ToolTypeRegistry.register(
 				JadeIds.JADE("axe"),
-				List.of(Items.WOODEN_AXE, Items.GOLDEN_AXE, Items.STONE_AXE, Items.IRON_AXE, Items.DIAMOND_AXE, Items.NETHERITE_AXE)));
-		ToolTypeRegistry.register(SimpleToolHandler.create(
+				List.of(Items.WOODEN_AXE, Items.GOLDEN_AXE, Items.STONE_AXE, Items.IRON_AXE, Items.DIAMOND_AXE, Items.NETHERITE_AXE));
+		ToolTypeRegistry.register(
 				JadeIds.JADE("shovel"),
 				List.of(
 						Items.WOODEN_SHOVEL,
@@ -318,13 +318,13 @@ public class VanillaPlugin implements IWailaPlugin {
 						Items.STONE_SHOVEL,
 						Items.IRON_SHOVEL,
 						Items.DIAMOND_SHOVEL,
-						Items.NETHERITE_SHOVEL)));
-		ToolTypeRegistry.register(SimpleToolHandler.create(
+						Items.NETHERITE_SHOVEL));
+		ToolTypeRegistry.register(
 				JadeIds.JADE("hoe"),
-				List.of(Items.WOODEN_HOE, Items.GOLDEN_HOE, Items.STONE_HOE, Items.IRON_HOE, Items.DIAMOND_HOE, Items.NETHERITE_HOE)));
-		ToolTypeRegistry.register(SimpleToolHandler.create(JadeIds.JADE("sword"), List.of(Items.WOODEN_SWORD))
+				List.of(Items.WOODEN_HOE, Items.GOLDEN_HOE, Items.STONE_HOE, Items.IRON_HOE, Items.DIAMOND_HOE, Items.NETHERITE_HOE));
+		ToolTypeRegistry.register(JadeIds.JADE("sword"), () -> SimpleToolHandler.create(JadeIds.JADE("sword"), List.of(Items.WOODEN_SWORD))
 				.addExtraBlock(Blocks.BAMBOO)
 				.addExtraBlock(Blocks.BAMBOO_SAPLING));
-		ToolTypeRegistry.register(ShearsToolHandler.getInstance());
+		ToolTypeRegistry.register(JadeIds.JADE("shears"), ShearsToolHandler::new);
 	}
 }
