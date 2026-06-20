@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 
 import com.google.common.base.Suppliers;
@@ -22,11 +23,11 @@ import snownee.jade.addon.harvest.SimpleToolHandler;
 public final class ToolTypeRegistry {
 
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final Map<Identifier, Supplier<? extends MutableToolHandler>> TOOL_TYPES = Maps.newLinkedHashMap();
+	private static final Map<Identifier, @NonNull Supplier<? extends MutableToolHandler>> TOOL_TYPES = Maps.newLinkedHashMap();
 	private static final LoadingCache<Boolean, Map<Identifier, ? extends MutableToolHandler>> TOOL_TYPES_VIEW = CacheBuilder.newBuilder()
 			.build(new CacheLoader<>() {
 				@Override
-				public Map<Identifier, ? extends MutableToolHandler> load(Boolean key) {
+				public @NonNull Map<Identifier, ? extends MutableToolHandler> load(@NonNull Boolean key) {
 					return Maps.transformValues(TOOL_TYPES, Supplier::get);
 				}
 			});
@@ -41,7 +42,12 @@ public final class ToolTypeRegistry {
 			LOGGER.warn("Skipped duplicate harvest tool type registration: {}", type);
 			return false;
 		}
-		TOOL_TYPES.put(type, Suppliers.memoize(supplier::get));
+		TOOL_TYPES.put(
+				type, Suppliers.memoize(() -> {
+					var handler = supplier.get();
+					RegisterToolTierCallback.event(type).call(callback -> callback.register(type, handler));
+					return handler;
+				}));
 		TOOL_TYPES_VIEW.invalidateAll();
 		return true;
 	}
@@ -52,11 +58,7 @@ public final class ToolTypeRegistry {
 
 	public static synchronized boolean register(Identifier type, List<Item> tools, boolean skipInstaBreakingBlock) {
 		Objects.requireNonNull(tools);
-		return register(type, () -> {
-			var handler = SimpleToolHandler.create(type, tools, skipInstaBreakingBlock);
-			RegisterToolTierCallback.event(type).call(callback -> callback.register(type, handler));
-			return handler;
-		});
+		return register(type, () -> SimpleToolHandler.create(type, tools, skipInstaBreakingBlock));
 	}
 
 	@ApiStatus.Internal
@@ -64,7 +66,7 @@ public final class ToolTypeRegistry {
 		return mutableTypes();
 	}
 
-	private static synchronized Map<Identifier, ? extends  MutableToolHandler> mutableTypes() {
+	private static synchronized Map<Identifier, ? extends MutableToolHandler> mutableTypes() {
 		return TOOL_TYPES_VIEW.getUnchecked(true);
 	}
 
