@@ -17,8 +17,8 @@ import snownee.jade.api.callback.CallbackContainer;
  * that tool type is materialized for harvest checks. Buckets for tool types that are never materialized are not invoked.
  * <p>
  * The callback priority controls ordering when Jade invokes all callbacks during tool type materialization. If the tool type
-	 * already exists when this event receives a new callback, Jade immediately invokes only the newly added callback, so its
-	 * priority does not delay or reorder that immediate invocation.
+ * already exists when this event receives a new callback, Jade immediately invokes only the newly added callback, so its
+ * priority does not delay or reorder that immediate invocation.
  * <p>
  * This API is intended for Jade's plugin registration phase. Modifying tiers later at runtime may require cache
  * invalidation and is not recommended.
@@ -42,7 +42,9 @@ public interface RegisterToolTierCallback {
 	}
 
 	/**
-	 * Registers tiers for {@code toolType}.
+	 * Registers {@link ToolTier} entries for {@code toolType}.
+	 * <p>
+	 * Example: {@code handler.add(ToolTier.item(myTierId, myItem));}
 	 */
 	void register(Identifier toolType, MutableToolHandler handler);
 }

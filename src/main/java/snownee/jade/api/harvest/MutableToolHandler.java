@@ -1,6 +1,6 @@
 package snownee.jade.api.harvest;
 
-import net.minecraft.world.item.Item;
+import net.minecraft.resources.Identifier;
 
 /**
  * Mutable harvest tool handler used during Jade's plugin registration phase.
@@ -10,10 +10,10 @@ import net.minecraft.world.item.Item;
  */
 public interface MutableToolHandler extends ToolHandler {
 
-	void add(Item item);
+	void add(ToolTier tier);
 
-	boolean insertBefore(Item target, Item item);
+	boolean insertBefore(Identifier targetTier, ToolTier tier);
 
-	boolean insertAfter(Item target, Item item);
+	boolean insertAfter(Identifier targetTier, ToolTier tier);
 
 }

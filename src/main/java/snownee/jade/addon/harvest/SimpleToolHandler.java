@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -16,18 +17,19 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import snownee.jade.api.harvest.MutableToolHandler;
 import snownee.jade.api.harvest.ToolHandler;
+import snownee.jade.api.harvest.ToolTier;
 
 public class SimpleToolHandler implements ToolHandler, MutableToolHandler {
 
-	protected final List<ItemStack> tools = Lists.newArrayList();
+	protected final List<ToolTier> tiers = Lists.newArrayList();
 	protected final List<Block> extraBlocks = Lists.newArrayListWithExpectedSize(0);
 	private final Identifier uid;
 	private final boolean skipInstaBreakingBlock;
 
-	protected SimpleToolHandler(Identifier uid, List<ItemStack> tools, boolean skipInstaBreakingBlock) {
+	protected SimpleToolHandler(Identifier uid, List<ToolTier> tiers, boolean skipInstaBreakingBlock) {
 		this.uid = uid;
-		Preconditions.checkArgument(!tools.isEmpty(), "tools cannot be empty");
-		this.tools.addAll(tools);
+		Preconditions.checkArgument(!tiers.isEmpty(), "tiers cannot be empty");
+		this.tiers.addAll(tiers);
 		this.skipInstaBreakingBlock = skipInstaBreakingBlock;
 	}
 
@@ -36,68 +38,99 @@ public class SimpleToolHandler implements ToolHandler, MutableToolHandler {
 	}
 
 	public static SimpleToolHandler create(Identifier uid, List<Item> tools, boolean skipInstaBreakingBlock) {
-		return new SimpleToolHandler(uid, Lists.transform(tools, Item::getDefaultInstance), skipInstaBreakingBlock);
+		return new SimpleToolHandler(
+				uid,
+				Lists.transform(tools, item -> ToolTier.item(BuiltInRegistries.ITEM.getKey(item), item)),
+				skipInstaBreakingBlock);
+	}
+
+	public static SimpleToolHandler createTiers(Identifier uid, List<ToolTier> tiers, boolean skipInstaBreakingBlock) {
+		return new SimpleToolHandler(uid, tiers, skipInstaBreakingBlock);
+	}
+
+	public static SimpleToolHandler createStacks(Identifier uid, List<ItemStack> tools, boolean skipInstaBreakingBlock) {
+		return new SimpleToolHandler(
+				uid,
+				Lists.transform(tools, stack -> ToolTier.stack(BuiltInRegistries.ITEM.getKey(stack.getItem()), stack)),
+				skipInstaBreakingBlock);
 	}
 
 	@Override
 	public ItemStack test(BlockState state, Level world, BlockPos pos) {
 		if (extraBlocks.contains(state.getBlock())) {
-			return tools.getFirst();
+			return firstMatchingTool();
 		}
 		if (skipInstaBreakingBlock && !state.requiresCorrectToolForDrops() && state.getDestroySpeed(world, pos) == 0) {
 			return ItemStack.EMPTY;
 		}
-		return test(state);
+		return testTiers(state);
 	}
 
 	protected ItemStack test(BlockState state) {
-		tools:
-		for (ItemStack toolItem : tools) {
-			Tool tool = toolItem.get(DataComponents.TOOL);
-			if (tool != null) {
-				for (Tool.Rule rule : tool.rules()) {
-					if (rule.correctForDrops().isPresent() && state.is(rule.blocks())) {
-						if (rule.correctForDrops().get()) {
-							return toolItem;
-						}
-						continue tools;
-					}
-				}
-				if (tool.getMiningSpeed(state) > tool.defaultMiningSpeed()) {
+		return testTiers(state);
+	}
+
+	protected ItemStack firstMatchingTool() {
+		for (ToolTier tier : tiers) {
+			for (ItemStack toolItem : tier.getTools()) {
+				if (tier.matches(toolItem)) {
 					return toolItem;
 				}
-			}
-			if (toolItem.isCorrectToolForDrops(state)) {
-				return toolItem;
 			}
 		}
 		return ItemStack.EMPTY;
 	}
 
+	protected ItemStack testTiers(BlockState state) {
+		for (ToolTier tier : tiers) {
+			for (ItemStack toolItem : tier.getTools()) {
+				if (isEffectiveTool(toolItem, state) && tier.matches(toolItem)) {
+					return toolItem;
+				}
+			}
+		}
+		return ItemStack.EMPTY;
+	}
+
+	protected boolean isEffectiveTool(ItemStack toolItem, BlockState state) {
+		Tool tool = toolItem.get(DataComponents.TOOL);
+		if (tool != null) {
+			for (Tool.Rule rule : tool.rules()) {
+				if (rule.correctForDrops().isPresent() && state.is(rule.blocks())) {
+					return rule.correctForDrops().get();
+				}
+			}
+			if (tool.getMiningSpeed(state) > tool.defaultMiningSpeed()) {
+				return true;
+			}
+		}
+		return toolItem.isCorrectToolForDrops(state);
+	}
+
 	@Override
 	public List<ItemStack> getTools() {
-		return tools;
+		return tiers.stream().flatMap(tier -> tier.getTools().stream()).toList();
 	}
 
 	@Override
-	public void add(Item item) {
-		tools.add(item.getDefaultInstance());
+	public void add(ToolTier tier) {
+		tiers.add(tier);
 	}
 
 	@Override
-	public boolean insertBefore(Item target, Item item) {
-		return insert(target, item, 0);
+	public boolean insertBefore(Identifier targetTier, ToolTier tier) {
+		return insert(targetTier, tier, 0);
 	}
 
 	@Override
-	public boolean insertAfter(Item target, Item item) {
-		return insert(target, item, 1);
+	public boolean insertAfter(Identifier targetTier, ToolTier tier) {
+		return insert(targetTier, tier, 1);
 	}
 
-	private boolean insert(Item target, Item item, int offset) {
-		for (int i = 0; i < tools.size(); i++) {
-			if (tools.get(i).is(target)) {
-				tools.add(i + offset, item.getDefaultInstance());
+	private boolean insert(Identifier targetTier, ToolTier tier, int offset) {
+		for (int i = 0; i < tiers.size(); i++) {
+			if (tiers.get(i).getUid().equals(targetTier)) {
+				tiers.add(i + offset, tier);
 				return true;
 			}
 		}

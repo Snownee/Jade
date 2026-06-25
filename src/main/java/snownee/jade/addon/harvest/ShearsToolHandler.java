@@ -14,19 +14,20 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import snownee.jade.api.JadeIds;
+import snownee.jade.api.harvest.ToolTier;
 
 public class ShearsToolHandler extends SimpleToolHandler {
 
 	private final Set<Block> shearableBlocks = Sets.newIdentityHashSet();
 
 	public ShearsToolHandler() {
-		super(JadeIds.JADE("shears"), List.of(Items.SHEARS.getDefaultInstance()), true);
+		super(JadeIds.JADE("shears"), List.of(ToolTier.stack(JadeIds.JADE("shears"), Items.SHEARS.getDefaultInstance())), true);
 	}
 
 	@Override
 	public ItemStack test(BlockState state, Level world, BlockPos pos) {
 		if (state.is(Blocks.TRIPWIRE) || shearableBlocks.contains(state.getBlock())) {
-			return tools.getFirst();
+			return firstMatchingTool();
 		}
 		return super.test(state, world, pos);
 	}
