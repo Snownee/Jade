@@ -55,7 +55,7 @@ public class BlockLootTableProvider implements StreamServerDataProvider<BlockAcc
 		public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 			Pair<Identifier, Long> pair = decodeFromData(accessor).orElse(null);
 			if (pair != null) {
-				tooltip.add(Component.translatable("jade.lootTable", pair.getFirst()));
+				tooltip.add(Component.translatable("jade.lootTable", pair.getFirst().toString()));
 				tooltip.add(Component.translatable("jade.lootTableSeed", pair.getSecond()));
 			}
 		}
