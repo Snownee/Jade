@@ -8,9 +8,12 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
+
+import org.jspecify.annotations.Nullable;
 
 import com.google.common.base.Preconditions;
 import com.google.common.cache.Cache;
@@ -57,18 +60,21 @@ public class JadeLanguages implements WordCutter.TokenClassifier {
 			"container.chest",
 			"entity.minecraft.chest_boat");
 	private Map<String, String> cleanTranslations = Map.of();
-	private final Cache<String, ComponentContents> cleanTranslationCache = CacheBuilder.newBuilder().maximumSize(100).build();
+	private final Cache<String, Optional<ComponentContents>> cleanTranslationCache = CacheBuilder.newBuilder().maximumSize(100).build();
 
 	public Component toCleanTranslation(Component text) {
 		if (text.getContents() instanceof TranslatableContents contents && contents.getArgs().length == 0) {
 			String key = contents.getKey();
 			try {
-				ComponentContents clean = cleanTranslationCache.get(
+				Optional<ComponentContents> clean = cleanTranslationCache.get(
 						key,
-						() -> new PlainTextContents.LiteralContents(getCleanTranslation(key)));
-				return MutableComponent.create(clean).withStyle(text.getStyle());
-			} catch (ExecutionException e) {
-				return text;
+						() -> Optional.ofNullable(getCleanTranslation(key)).map(PlainTextContents.LiteralContents::new));
+				if (clean.isPresent()) {
+					MutableComponent cleanText = MutableComponent.create(clean.get()).withStyle(text.getStyle());
+					text.getSiblings().stream().map(this::toCleanTranslation).forEach(cleanText::append);
+					return cleanText;
+				}
+			} catch (ExecutionException _) {
 			}
 		}
 		return text;
@@ -79,6 +85,7 @@ public class JadeLanguages implements WordCutter.TokenClassifier {
 		tokenCache.invalidateAll();
 		nameClasses = Map.of();
 		nameClassCache.invalidateAll();
+		cleanTranslationCache.invalidateAll();
 		try {
 			JsonObject jsonObject = JsonConfig.GSON.fromJson(I18n.get("jade.metadata"), JsonObject.class);
 			Metadata metadata = Metadata.CODEC.parse(JsonOps.INSTANCE, jsonObject).getOrThrow();
@@ -120,9 +127,8 @@ public class JadeLanguages implements WordCutter.TokenClassifier {
 		}
 	}
 
-	public String getCleanTranslation(String key) {
-		String s = cleanTranslations.get(key);
-		return s != null ? s : I18n.get(key);
+	public @Nullable String getCleanTranslation(String key) {
+		return cleanTranslations.get(key);
 	}
 
 	private static boolean hasHackyPack() {
