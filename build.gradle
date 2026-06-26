@@ -111,7 +111,7 @@ configurations {
 }
 
 dependencies {
-    compileOnly "mezz.jei:jei-26.1-pre-3-common-api:${jei_version}"
+    compileOnly "mezz.jei:jei-26.1.2-common-api:${jei_version}"
 }
 
 tasks.withType(JavaCompile).configureEach {

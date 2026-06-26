@@ -19,8 +19,8 @@ import snownee.jade.api.JadeIds;
 public class JEICompat implements IModPlugin, RecipeLookupPlugin {
 
 	public static final Identifier ID = JadeIds.JADE("main");
-	private static IJeiRuntime runtime;
-	private static IJeiHelpers helpers;
+	private static @Nullable IJeiRuntime runtime;
+	private static @Nullable IJeiHelpers helpers;
 
 	@Override
 	public Identifier getPluginUid() {
