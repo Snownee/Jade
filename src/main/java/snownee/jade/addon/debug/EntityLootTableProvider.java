@@ -46,7 +46,7 @@ public class EntityLootTableProvider implements StreamServerDataProvider<EntityA
 			//noinspection SimplifyOptionalCallChains
 			Identifier lootTable = decodeFromData(accessor).orElse(null);
 			if (lootTable != null) {
-				tooltip.add(Component.translatable("jade.lootTable", lootTable));
+				tooltip.add(Component.translatable("jade.lootTable", lootTable.toString()));
 			}
 		}
 
