@@ -22,9 +22,9 @@ public class KeybindOptionButton extends OptionButton {
 					owner.resetMappingAndUpdateButtons();
 				}).size(100, 20).createNarration(supplier -> {
 			if (this.keybind.isUnbound()) {
-				return Component.translatable("narrator.controls.unbound", title);
+				return Component.translatable("narrator.controls.unbound", title());
 			}
-			return Component.translatable("narrator.controls.bound", title, supplier.get());
+			return Component.translatable("narrator.controls.bound", title(), supplier.get());
 		}).build();
 		addWidget(button, 0);
 	}
