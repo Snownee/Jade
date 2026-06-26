@@ -25,6 +25,7 @@ repositories {
     // jei
     maven { url "https://maven.blamejared.com/" }
     maven { url "https://modmaven.dev" }
+    maven { url "https://maven.shedaniel.me/" }
     flatDir { dir 'libs' }
 }
 
@@ -111,7 +112,9 @@ configurations {
 }
 
 dependencies {
-    compileOnly "mezz.jei:jei-26.1-pre-3-common-api:${jei_version}"
+    compileOnly "mezz.jei:jei-26.2-common-api:${jei_version}"
+
+    api "me.shedaniel:RoughlyEnoughItems-neoforge:${project.rei_version}"
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -162,12 +165,7 @@ publishMods {
     file = jar.archiveFile
     additionalFiles.from(sourcesJar.archiveFile)
     changelog = file('CHANGELOG.md').exists() ? file('CHANGELOG.md').text : ''
-    type = switch (release_type) {
-        case 'release' -> STABLE
-        case 'beta' -> BETA
-        case 'alpha' -> ALPHA
-        default -> throw new GradleException("Unknown release type: $release_type")
-    }
+    type = ['release': STABLE, 'beta': BETA, 'alpha': ALPHA][release_type]
     modLoaders.add("neoforge")
     displayName = "[NeoForge ${supported_version}] ${mod_version}"
     version = realVersion
