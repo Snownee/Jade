@@ -29,7 +29,7 @@ public class ExampleComponentProvider implements IBlockComponentProvider {
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		tooltip.add(Button.builder(
-				CommonComponents.GUI_DONE, $ -> {
+				CommonComponents.GUI_DONE, _ -> {
 					Jade.LOGGER.info("Button clicked in ExampleComponentProvider");
 				}).build());
 		tooltip.add(new LayoutWithPadding(JadeUI.item(new ItemStack(Items.DIAMOND)), 2, 2, 2, 2));
