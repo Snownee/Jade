@@ -228,6 +228,15 @@ public final class JadeUI {
 		return JadeUIInternal.sprite(sprite, width, height);
 	}
 
+	/**
+	 * Creates a horizontally tiled sprite element.
+	 *
+	 * @param renderPipeline render pipeline
+	 * @param sprite sprite identifier
+	 * @param width width
+	 * @param height height
+	 * @return sprite element
+	 */
 	public static ResizeableElement horizontalTiledSprite(
 			RenderPipeline renderPipeline,
 			Identifier sprite,
@@ -236,18 +245,43 @@ public final class JadeUI {
 		return JadeUIInternal.horizontalTiledSprite(renderPipeline, sprite, width, height);
 	}
 
+	/**
+	 * Creates a vertically tiled sprite element.
+	 *
+	 * @param renderPipeline render pipeline
+	 * @param sprite sprite identifier
+	 * @param width width
+	 * @param height height
+	 * @return sprite element
+	 */
 	public static ResizeableElement verticalTiledSprite(RenderPipeline renderPipeline, Identifier sprite, int width, int height) {
 		return JadeUIInternal.verticalTiledSprite(renderPipeline, sprite, width, height);
 	}
 
+	/**
+	 * Visits an element and all of its children recursively.
+	 *
+	 * @param layoutElement root element
+	 * @param consumer visitor callback
+	 */
 	public static void visitChildrenRecursive(LayoutElement layoutElement, Consumer<LayoutElement> consumer) {
 		JadeUIInternal.visitChildrenRecursive(layoutElement, consumer);
 	}
 
+	/**
+	 * Returns whether Jade UI is currently pinned.
+	 *
+	 * @return {@code true} if pinned
+	 */
 	public static boolean isPinned() {
 		return JadeUIInternal.isPinned();
 	}
 
+	/**
+	 * Returns whether the control key is pressed.
+	 *
+	 * @return {@code true} if control is down
+	 */
 	public static boolean hasControlDown() {
 		if (ON_OSX) {
 			return InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), 343) ||
@@ -257,16 +291,32 @@ public final class JadeUI {
 				InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), 345);
 	}
 
+	/**
+	 * Returns whether the shift key is pressed.
+	 *
+	 * @return {@code true} if shift is down
+	 */
 	public static boolean hasShiftDown() {
 		return InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), 340) ||
 				InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), 344);
 	}
 
+	/**
+	 * Returns whether the alt key is pressed.
+	 *
+	 * @return {@code true} if alt is down
+	 */
 	public static boolean hasAltDown() {
 		return InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), 342) ||
 				InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), 346);
 	}
 
+	/**
+	 * Returns whether a translation exists for the given key.
+	 *
+	 * @param key translation key
+	 * @return {@code true} if the key has a translation
+	 */
 	public static boolean hasTranslation(String key) {
 		return Language.getInstance().has(key);
 	}
