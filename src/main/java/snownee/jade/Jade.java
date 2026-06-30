@@ -100,7 +100,7 @@ public class Jade {
 				if (CommonProxy.isPhysicallyClient()) {
 					plugin.registerClient(WailaClientRegistration.instance());
 				}
-			} catch (Throwable ignored) {
+			} catch (Throwable _) {
 			}
 		}
 
@@ -112,7 +112,12 @@ public class Jade {
 		}
 		WailaCommonRegistration.instance().priorities.sort(extraKeys);
 		WailaCommonRegistration.instance().loadComplete();
-		CommonProxy.registerTagsUpdatedListener((provider, bl) -> WailaCommonRegistration.instance().reloadOperations(provider));
+		CommonProxy.registerTagsUpdatedListener((provider, client) -> {
+			WailaCommonRegistration.instance().reloadOperations(provider);
+			if (!client) {
+				LootTableMineableCollector.onTagsUpdated(provider);
+			}
+		});
 		if (CommonProxy.isPhysicallyClient()) {
 			WailaClientRegistration.instance().loadComplete();
 
@@ -132,8 +137,6 @@ public class Jade {
 				config.save();
 			}
 			JadeClient.refreshKeyState();
-		} else {
-			CommonProxy.registerTagsUpdatedListener(LootTableMineableCollector::onTagsUpdated);
 		}
 	}
 
