@@ -11,43 +11,104 @@ import snownee.jade.JadeInternals;
 import snownee.jade.api.SimpleStringRepresentable;
 import snownee.jade.api.theme.Theme;
 
+/**
+ * Access to Jade's global client configuration.
+ */
 @NonExtendable
 public interface IWailaConfig {
 
+	/**
+	 * Returns the active configuration instance.
+	 *
+	 * @return the current config
+	 */
 	static IWailaConfig get() {
 		return JadeInternals.getWailaConfig();
 	}
 
+	/**
+	 * Returns the general settings section.
+	 *
+	 * @return general settings
+	 */
 	General general();
 
+	/**
+	 * Returns the overlay settings section.
+	 *
+	 * @return overlay settings
+	 */
 	Overlay overlay();
 
+	/**
+	 * Returns the formatting settings section.
+	 *
+	 * @return formatting settings
+	 */
 	Formatting formatting();
 
+	/**
+	 * Returns the accessibility settings section.
+	 *
+	 * @return accessibility settings
+	 */
 	Accessibility accessibility();
 
+	/**
+	 * Returns the plugin configuration view.
+	 *
+	 * @return plugin configuration
+	 */
 	IPluginConfig plugin();
 
+	/**
+	 * Persists the current configuration state.
+	 */
 	void save();
 
+	/**
+	 * Invalidates cached config state.
+	 */
 	void invalidate();
 
+	/**
+	 * Returns the configuration name.
+	 *
+	 * @return the profile name
+	 */
 	String getName();
 
+	/**
+	 * Updates the configuration name.
+	 *
+	 * @param name new profile name
+	 */
 	void setName(String name);
 
+	/**
+	 * Controls icon placement inside the overlay.
+	 */
 	enum IconMode implements SimpleStringRepresentable {
 		TOP, CENTERED, INLINE, HIDE
 	}
 
+	/**
+	 * Controls the text-to-speech activation mode.
+	 */
 	enum TTSMode implements SimpleStringRepresentable {
 		TOGGLE, PRESS
 	}
 
+	/**
+	 * Controls how much of the overlay remains visible.
+	 */
 	enum DisplayMode implements SimpleStringRepresentable {
 		HOLD_KEY, TOGGLE, LITE
 	}
 
+	/**
+	 * Controls which fluid clipping mode Jade uses.
+	 */
 	enum FluidMode implements SimpleStringRepresentable {
 		NONE(ClipContext.Fluid.NONE),
 		ANY(ClipContext.Fluid.ANY),
@@ -60,14 +121,23 @@ public interface IWailaConfig {
 		}
 	}
 
+	/**
+	 * Controls how Jade interacts with the boss bar.
+	 */
 	enum BossBarOverlapMode implements SimpleStringRepresentable {
 		NO_OPERATION, HIDE_BOSS_BAR, HIDE_TOOLTIP, PUSH_DOWN
 	}
 
+	/**
+	 * Controls which perspective the overlay should follow.
+	 */
 	enum PerspectiveMode implements SimpleStringRepresentable {
 		CAMERA, EYE
 	}
 
+	/**
+	 * Controls how storage handlers are rendered.
+	 */
 	enum HandlerDisplayStyle implements SimpleStringRepresentable {
 		PROGRESS_BAR, ICON, PLAIN_TEXT
 	}

@@ -16,6 +16,11 @@ import it.unimi.dsi.fastutil.ints.IntReferenceImmutablePair;
 import it.unimi.dsi.fastutil.ints.IntReferencePair;
 import it.unimi.dsi.fastutil.objects.ObjectRBTreeSet;
 
+/**
+ * Priority-ordered callback storage.
+ *
+ * @param <T> callback type
+ */
 public class CallbackContainer<T> {
 	private final SortedSet<IntReferencePair<T>> callbacks = new ObjectRBTreeSet<>(
 			Comparator.<IntReferencePair<T>>comparingInt(IntReferencePair::firstInt)
@@ -27,20 +32,41 @@ public class CallbackContainer<T> {
 		}
 	});
 
+	/**
+	 * Adds a callback with default priority.
+	 *
+	 * @param callback callback to add
+	 */
 	public void add(T callback) {
 		add(0, callback);
 	}
 
+	/**
+	 * Adds a callback with the given priority.
+	 *
+	 * @param priority callback priority
+	 * @param callback callback to add
+	 */
 	public void add(int priority, T callback) {
 		Objects.requireNonNull(callback);
 		callbacks.add(IntReferenceImmutablePair.of(priority, callback));
 		callbacksView.invalidateAll();
 	}
 
+	/**
+	 * Returns the current callback collection.
+	 *
+	 * @return callbacks in priority order
+	 */
 	public Collection<T> callbacks() {
 		return callbacksView.getUnchecked(Boolean.TRUE);
 	}
 
+	/**
+	 * Invokes every callback in priority order.
+	 *
+	 * @param consumer consumer to run
+	 */
 	public void call(Consumer<T> consumer) {
 		for (T callback : callbacks()) {
 			consumer.accept(callback);

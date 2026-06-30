@@ -2,6 +2,9 @@ package snownee.jade.api;
 
 import net.minecraft.resources.Identifier;
 
+/**
+ * Shared identifier constants used across Jade's built-in providers and configuration keys.
+ */
 public interface JadeIds {
 
 	Identifier ROOT = MC("root");
@@ -103,14 +106,32 @@ public interface JadeIds {
 	Identifier ACCESS_HELD_ITEM = ACCESS("held_item");
 	Identifier ACCESS_NPC_DESCRIPTION = ACCESS("npc_description");
 
+	/**
+	 * Creates an identifier in the Jade namespace.
+	 *
+	 * @param path identifier path
+	 * @return the namespaced identifier
+	 */
 	static Identifier JADE(String path) {
 		return Identifier.fromNamespaceAndPath("jade", path);
 	}
 
+	/**
+	 * Creates an identifier in the Jade access namespace.
+	 *
+	 * @param path identifier path
+	 * @return the namespaced identifier
+	 */
 	static Identifier ACCESS(String path) {
 		return Identifier.fromNamespaceAndPath("jade_access", path);
 	}
 
+	/**
+	 * Returns whether the identifier belongs to the Jade access namespace.
+	 *
+	 * @param id identifier to check
+	 * @return {@code true} if the identifier is an access identifier
+	 */
 	static boolean isAccess(Identifier id) {
 		return id.getNamespace().equals("jade_access");
 	}

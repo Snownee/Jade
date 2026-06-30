@@ -7,46 +7,41 @@ import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.Element;
 
 /**
- * Callback class interface used to provide Block/BlockEntity tooltip information to Waila.<br>
- * All methods in this interface shouldn't to be called by the implementing mod. An instance of the class is to be
- * registered to Waila via the {@link IWailaClientRegistration} instance provided in the original registration callback method
- * (cf. {@link IWailaClientRegistration} documentation for more information).
+ * Client-side tooltip provider for blocks and entities.
  *
- * @author ProfMobius
+ * @param <T> accessor type handled by this provider
  */
 public interface IComponentProvider<T extends Accessor<?>> extends IToggleableProvider {
 
 	/**
-	 * Callback used to override the default Waila lookup system.</br>
-	 * Will only be called if the implementing class is registered via {@link IWailaClientRegistration#registerBlockIcon}.</br>
+	 * Allows the provider to replace the default target icon.
 	 * <p>
-	 * This method is only called on the client side. If you require data from the server, you should also implement
-	 * {@link IServerDataProvider#appendServerData(CompoundTag, Accessor)}
-	 * and add the data to the {@link CompoundTag} there, which can then be read back using {@link Accessor#getServerData()}.
-	 * If you rely on the client knowing the data you need, you are not guaranteed to have the proper values.
+	 * This callback only runs on the client and only for providers registered with
+	 * {@link IWailaClientRegistration#registerBlockIcon(IComponentProvider, Class)} or
+	 * {@link IWailaClientRegistration#registerEntityIcon(IComponentProvider, Class)}.
 	 *
-	 * @param accessor    Contains most of the relevant information about the current environment.
-	 * @param config      Current configuration of Waila.
-	 * @param currentIcon Current icon to show
-	 * @return {@code null} if override is not required, an {@link Element} otherwise.
+	 * <p>If the icon depends on server-only information, synchronize it through
+	 * {@link IServerDataProvider#appendServerData(CompoundTag, Accessor)} first.
+	 *
+	 * @param accessor accessor describing the current target and context
+	 * @param config current plugin configuration
+	 * @param currentIcon icon that Jade would otherwise render
+	 * @return a replacement icon, or {@code null} to keep the current icon
 	 */
 	default @Nullable Element getIcon(T accessor, IPluginConfig config, @Nullable Element currentIcon) {
 		return null;
 	}
 
 	/**
-	 * Callback used to add render-able elements to the tooltip and modify existing elements to the tooltip.</br>
-	 * Will only be called if the implementing class is registered via {@link IWailaClientRegistration#registerBlockComponent(IComponentProvider, Class)}.</br>
+	 * Appends or modifies rendered tooltip elements.
 	 * <p>
-	 * This method is only called on the client side. If you require data from the server, you should also implement
-	 * {@link IServerDataProvider#appendServerData(CompoundTag, Accessor)}
-	 * and add the data to the {@link CompoundTag} there, which can then be read back using {@link Accessor#getServerData()}.
-	 * If you rely on the client knowing the data you need, you are not guaranteed to have the proper values.
+	 * This callback only runs on the client and only for providers registered with
+	 * {@link IWailaClientRegistration#registerBlockComponent(IComponentProvider, Class)} or
+	 * {@link IWailaClientRegistration#registerEntityComponent(IComponentProvider, Class)}.
 	 *
-	 * @param tooltip  Current list of tooltip lines (might have been processed by other providers and might be processed
-	 *                 by other providers).
-	 * @param accessor Contains most of the relevant information about the current environment.
-	 * @param config   Current configuration of Waila.
+	 * @param tooltip mutable tooltip container shared with other providers
+	 * @param accessor accessor describing the current target and context
+	 * @param config current plugin configuration
 	 */
 	void appendTooltip(ITooltip tooltip, T accessor, IPluginConfig config);
 

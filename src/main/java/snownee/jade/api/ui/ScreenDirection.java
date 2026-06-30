@@ -2,6 +2,9 @@ package snownee.jade.api.ui;
 
 import java.util.List;
 
+/**
+ * Cardinal screen directions used for tooltip layout.
+ */
 public enum ScreenDirection {
 	UP, DOWN, LEFT, RIGHT;
 
