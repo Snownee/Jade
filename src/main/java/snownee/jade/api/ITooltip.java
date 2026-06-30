@@ -16,17 +16,22 @@ import snownee.jade.api.ui.JadeUI;
 import snownee.jade.api.ui.ScreenDirection;
 
 /**
- * Tooltip that you can append text and other render-able stuffs to.
- *
- * @author Snownee
+ * Mutable tooltip container used by Jade to assemble text and layout elements.
+ * <p>
+ * Addons can append text, icons, and custom layout elements, then tag and replace sections later in the pipeline.
  */
 @NonExtendable
 public interface ITooltip extends NarrationSupplier {
 
+	/**
+	 * Removes every element from this tooltip.
+	 */
 	void clear();
 
 	/**
-	 * Returns tooltip's number of lines
+	 * Returns the number of lines currently in the tooltip.
+	 *
+	 * @return the tooltip line count
 	 */
 	int size();
 
@@ -35,14 +40,19 @@ public interface ITooltip extends NarrationSupplier {
 	}
 
 	/**
-	 * Add a text to a new line
+	 * Appends a text component on a new line.
+	 *
+	 * @param component the text to add
 	 */
 	default void add(Component component) {
 		add(component, null);
 	}
 
 	/**
-	 * Add a tagged text to a new line
+	 * Appends a tagged text component on a new line.
+	 *
+	 * @param component the text to add
+	 * @param tag optional identifier used for later replacement or removal
 	 */
 	default void add(Component component, @Nullable Identifier tag) {
 		add(size(), component, tag);
@@ -61,7 +71,9 @@ public interface ITooltip extends NarrationSupplier {
 	}
 
 	/**
-	 * Add a render-able element to a new line
+	 * Appends a renderable element on a new line.
+	 *
+	 * @param element the element to add
 	 */
 	default void add(LayoutElement element) {
 		add(size(), element);
@@ -86,25 +98,30 @@ public interface ITooltip extends NarrationSupplier {
 	void add(int index, LayoutElement element);
 
 	/**
-	 * Append a text to the last line
+	 * Appends a text component to the last line.
 	 * <p>
-	 * IMPORTANT: DO NOT use this to concat texts
+	 * Use this only to combine separate tooltip elements on the same line, not to build a single long string.
+	 *
+	 * @param component the text to append
 	 */
 	default void append(Component component) {
 		append(component, null);
 	}
 
 	/**
-	 * Append a tagged text to the last line
-	 * <p>
-	 * IMPORTANT: DO NOT use this to concat texts
+	 * Appends a tagged text component to the last line.
+	 *
+	 * @param component the text to append
+	 * @param tag optional identifier used for later replacement or removal
 	 */
 	default void append(Component component, @Nullable Identifier tag) {
 		append(JadeUI.text(component).tag(tag));
 	}
 
 	/**
-	 * Append a render-able element to the last line
+	 * Appends a renderable element to the last line.
+	 *
+	 * @param element the element to append
 	 */
 	default void append(LayoutElement element) {
 		append(size() - 1, element);
@@ -122,33 +139,77 @@ public interface ITooltip extends NarrationSupplier {
 	void append(int index, LayoutElement element);
 
 	/**
-	 * Clear all elements that are tagged with this tag
+	 * Removes every element tagged with the given identifier.
 	 *
-	 * @return true if any element is removed
+	 * @param tag the tag to remove
+	 * @return {@code true} if at least one element was removed
+	 *
 	 */
 	boolean remove(Identifier tag);
 
 	/**
-	 * Replace all elements that are tagged with this tag at the position of the first found element
+	 * Replaces every element tagged with the given identifier at the position of the first matching element.
 	 *
-	 * @return true if any element is replaced
+	 * @param tag the tag to replace
+	 * @param elements replacement lines
+	 * @return {@code true} if at least one element was replaced
+	 *
 	 */
 	boolean replace(Identifier tag, UnaryOperator<List<List<LayoutElement>>> elements);
 
+	/**
+	 * Replaces every element tagged with the given identifier using a single text component.
+	 *
+	 * @param tag the tag to replace
+	 * @param component replacement text
+	 * @return {@code true} if at least one element was replaced
+	 */
 	boolean replace(Identifier tag, Component component);
 
 	/**
-	 * Get all elements that are tagged with this tag
+	 * Returns all elements tagged with the given identifier.
+	 *
+	 * @param tag the tag to query
+	 * @return the tagged elements, in tooltip order
 	 */
 	List<LayoutElement> get(Identifier tag);
 
+	/**
+	 * Sets the margin for one side of a line.
+	 *
+	 * @param index the line index
+	 * @param side the side to adjust
+	 * @param margin the margin in pixels
+	 */
 	void setLineMargin(int index, ScreenDirection side, int margin);
 
+	/**
+	 * Applies additional layout settings to a line.
+	 *
+	 * @param index the line index
+	 * @param settings settings transformer
+	 */
 	void setLineSettings(int index, UnaryOperator<LayoutSettings> settings);
 
+	/**
+	 * Returns the narration text for this tooltip.
+	 *
+	 * @return the narration string
+	 */
 	String getNarration();
 
+	/**
+	 * Returns the rendered string for the elements tagged with the given identifier.
+	 *
+	 * @param tag the tag to query
+	 * @return the rendered text for the tagged elements
+	 */
 	String getString(Identifier tag);
 
+	/**
+	 * Returns the current icon element, if any.
+	 *
+	 * @return the tooltip icon or {@code null}
+	 */
 	@Nullable Element getIcon();
 }

@@ -12,6 +12,9 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.FormattedCharSequence;
 
+/**
+ * Component wrapper that provides a dedicated narration string.
+ */
 public class NarratableComponent implements Component {
 	private final Component component;
 	private final @Nullable Supplier<String> narration;

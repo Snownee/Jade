@@ -7,6 +7,9 @@ import org.jspecify.annotations.Nullable;
 
 import net.minecraft.client.input.MouseButtonEvent;
 
+/**
+ * Mutable animation state used while showing or hiding the tooltip overlay.
+ */
 public class TooltipAnimation {
 	public final Rect2f expectedRect = new Rect2f();
 	public final Rect2f rect = new Rect2f();

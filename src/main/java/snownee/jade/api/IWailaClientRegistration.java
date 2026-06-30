@@ -34,25 +34,66 @@ import snownee.jade.api.view.IClientExtensionProvider;
 import snownee.jade.api.view.ItemView;
 import snownee.jade.api.view.ProgressView;
 
+/**
+ * Client-side registration entry point for Jade integrations.
+ */
 @NonExtendable
 public interface IWailaClientRegistration extends PlatformWailaClientRegistration {
 
 	/**
-	 * Register a namespaced config key to be accessed within data providers.
+	 * Registers a boolean plugin config key.
 	 *
-	 * @param key          the namespaced key
-	 * @param defaultValue the default value
+	 * @param key configuration key
+	 * @param defaultValue default value
 	 */
 	void addConfig(Identifier key, boolean defaultValue);
 
+	/**
+	 * Registers an enum plugin config key.
+	 *
+	 * @param key configuration key
+	 * @param defaultValue default value
+	 * @param <T> enum type
+	 */
 	<T extends Enum<T>> void addConfig(Identifier key, T defaultValue);
 
+	/**
+	 * Registers a string plugin config key.
+	 *
+	 * @param key configuration key
+	 * @param defaultValue default value
+	 * @param validator value validator
+	 */
 	void addConfig(Identifier key, String defaultValue, Predicate<String> validator);
 
+	/**
+	 * Registers an integer plugin config key.
+	 *
+	 * @param key configuration key
+	 * @param defaultValue default value
+	 * @param min minimum accepted value
+	 * @param max maximum accepted value
+	 * @param slider whether the UI should render a slider
+	 */
 	void addConfig(Identifier key, int defaultValue, int min, int max, boolean slider);
 
+	/**
+	 * Registers a floating-point plugin config key.
+	 *
+	 * @param key configuration key
+	 * @param defaultValue default value
+	 * @param min minimum accepted value
+	 * @param max maximum accepted value
+	 * @param slider whether the UI should render a slider
+	 */
 	void addConfig(Identifier key, float defaultValue, float min, float max, boolean slider);
 
+	/**
+	 * Registers a listener for config changes.
+	 *
+	 * @param key configuration key
+	 * @param listener callback invoked when the key changes
+	 */
 	void addConfigListener(Identifier key, Consumer<Identifier> listener);
 
 	@ApiStatus.Experimental
@@ -68,6 +109,12 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 	 * @param provider   The data provider instance
 	 * @param blockClass The highest level class to apply to
 	 */
+	/**
+	 * Registers a block icon provider.
+	 *
+	 * @param provider icon provider
+	 * @param blockClass highest-level block class to match
+	 */
 	void registerBlockIcon(IComponentProvider<BlockAccessor> provider, Class<? extends Block> blockClass);
 
 	/**
@@ -76,6 +123,12 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 	 *
 	 * @param provider   The data provider instance
 	 * @param blockClass The highest level class to apply to
+	 */
+	/**
+	 * Registers a block tooltip provider.
+	 *
+	 * @param provider tooltip provider
+	 * @param blockClass highest-level block class to match
 	 */
 	void registerBlockComponent(IComponentProvider<BlockAccessor> provider, Class<? extends Block> blockClass);
 
@@ -86,6 +139,12 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 	 * @param provider    The data provider instance
 	 * @param entityClass The highest level class to apply to
 	 */
+	/**
+	 * Registers an entity icon provider.
+	 *
+	 * @param provider icon provider
+	 * @param entityClass highest-level entity class to match
+	 */
 	void registerEntityIcon(IComponentProvider<EntityAccessor> provider, Class<? extends Entity> entityClass);
 
 	/**
@@ -95,30 +154,80 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 	 * @param provider    The data provider instance
 	 * @param entityClass The highest level class to apply to
 	 */
+	/**
+	 * Registers an entity tooltip provider.
+	 *
+	 * @param provider tooltip provider
+	 * @param entityClass highest-level entity class to match
+	 */
 	void registerEntityComponent(IComponentProvider<EntityAccessor> provider, Class<? extends Entity> entityClass);
 
+	/**
+	 * Creates an empty accessor builder.
+	 *
+	 * @return empty accessor builder
+	 */
 	EmptyAccessor.Builder emptyAccessor();
 
+	/**
+	 * Creates a block accessor builder.
+	 *
+	 * @return block accessor builder
+	 */
 	BlockAccessor.Builder blockAccessor();
 
+	/**
+	 * Creates an entity accessor builder.
+	 *
+	 * @return entity accessor builder
+	 */
 	EntityAccessor.Builder entityAccessor();
 
 	default void addAfterRenderCallback(JadeAfterRenderCallback callback) {
 		addAfterRenderCallback(0, callback);
 	}
 
+	/**
+	 * Returns the known config keys in a namespace.
+	 *
+	 * @param namespace namespace to query
+	 * @return registered keys
+	 */
 	Set<Identifier> getConfigKeys(String namespace);
 
+	/**
+	 * Returns every registered config key.
+	 *
+	 * @return all config keys
+	 */
 	Set<Identifier> getConfigKeys();
 
+	/**
+	 * Returns whether a config key exists.
+	 *
+	 * @param key configuration key
+	 * @return {@code true} if the key is registered
+	 */
 	boolean hasConfig(Identifier key);
 
+	/**
+	 * Registers a callback that runs after the overlay renders.
+	 *
+	 * @param priority callback priority
+	 * @param callback render callback
+	 */
 	void addAfterRenderCallback(int priority, JadeAfterRenderCallback callback);
 
 	default void addBeforeRenderCallback(JadeBeforeRenderCallback callback) {
 		addBeforeRenderCallback(0, callback);
 	}
 
+	/**
+	 * Registers a callback that runs before the overlay renders.
+	 *
+	 * @param priority callback priority
+	 * @param callback render callback
+	 */
 	void addBeforeRenderCallback(int priority, JadeBeforeRenderCallback callback);
 
 	default void addRayTraceCallback(JadeRayTraceCallback callback) {

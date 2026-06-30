@@ -14,6 +14,9 @@ import snownee.jade.api.ui.BoxElement;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.overlay.OverlayRenderer;
 
+/**
+ * Renders the little "sneaky details" indicator used by themed tooltips.
+ */
 public interface SneakyDetails {
 	SneakyDetails DEFAULT = new Simple(JadeIds.JADE("details_arrow"), 7, 5, 0, 0, "breath", 1F, 12F);
 	Codec<SneakyDetails> CODEC = Codec.STRING.dispatch(SneakyDetails::type, SneakyDetails::codec);

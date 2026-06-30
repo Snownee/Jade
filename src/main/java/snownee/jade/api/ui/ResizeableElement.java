@@ -6,6 +6,9 @@ import com.google.common.base.Preconditions;
 
 import snownee.jade.gui.ResizeableLayout;
 
+/**
+ * Base element type whose size and layout flex can be adjusted.
+ */
 public abstract class ResizeableElement extends Element implements ResizeableLayout {
 	private int flexGrow;
 

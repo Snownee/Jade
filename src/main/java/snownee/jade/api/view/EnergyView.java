@@ -10,18 +10,46 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import snownee.jade.api.ui.IDisplayHelper;
 
+/**
+ * Client-side representation of a stored energy value.
+ */
 public class EnergyView {
 
+	/**
+	 * Current value formatted for display.
+	 */
 	public String current;
+	/**
+	 * Maximum value formatted for display.
+	 */
 	public String max;
+	/**
+	 * Current fill ratio.
+	 */
 	public float ratio;
+	/**
+	 * Optional override text.
+	 */
 	public @Nullable Component overrideText;
 
+	/**
+	 * Creates an energy view from formatted strings.
+	 *
+	 * @param current current value text
+	 * @param max maximum value text
+	 */
 	public EnergyView(String current, String max) {
 		this.current = Objects.requireNonNull(current);
 		this.max = Objects.requireNonNull(max);
 	}
 
+	/**
+	 * Builds an energy view from raw numeric data.
+	 *
+	 * @param data serialized energy data
+	 * @param unit display unit, such as {@code FE}
+	 * @return energy view, or {@code null} if capacity is not positive
+	 */
 	@Nullable
 	public static EnergyView read(Data data, String unit) {
 		if (data.capacity <= 0) {
@@ -34,6 +62,9 @@ public class EnergyView {
 		return energyView;
 	}
 
+	/**
+	 * Serialized energy data.
+	 */
 	public record Data(long current, long capacity) {
 		public static final StreamCodec<ByteBuf, Data> STREAM_CODEC = StreamCodec.composite(
 				ByteBufCodecs.LONG,

@@ -9,6 +9,9 @@ import net.minecraft.resources.Identifier;
 import snownee.jade.JadeInternals;
 import snownee.jade.api.ui.TextElement;
 
+/**
+ * Access to Jade's theme registry and theme-aware text helpers.
+ */
 public interface IThemeHelper {
 	static IThemeHelper get() {
 		return JadeInternals.getThemeHelper();
