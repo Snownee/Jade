@@ -17,8 +17,9 @@ import it.unimi.dsi.fastutil.ints.IntReferencePair;
 import it.unimi.dsi.fastutil.objects.ObjectRBTreeSet;
 
 public class CallbackContainer<T> {
-
-	private final SortedSet<IntReferencePair<T>> callbacks = new ObjectRBTreeSet<>(Comparator.comparing(IntReferencePair::firstInt));
+	private final SortedSet<IntReferencePair<T>> callbacks = new ObjectRBTreeSet<>(
+			Comparator.<IntReferencePair<T>>comparingInt(IntReferencePair::firstInt)
+					.thenComparingInt(p -> System.identityHashCode(p.second())));
 	private final LoadingCache<Boolean, Collection<T>> callbacksView = CacheBuilder.newBuilder().build(new CacheLoader<>() {
 		@Override
 		public Collection<T> load(Boolean key) {

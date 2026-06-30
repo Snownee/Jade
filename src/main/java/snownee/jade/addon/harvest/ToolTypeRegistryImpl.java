@@ -40,7 +40,7 @@ public final class ToolTypeRegistryImpl implements ToolTypeRegistry {
 		Objects.requireNonNull(id);
 		if (pendingMap.containsKey(id)) {
 			Jade.LOGGER.warn("Skipped duplicate harvest tool type registration: {}", id);
-			return type;
+			return pendingMap.get(id);
 		}
 		pendingMap.put(id, type);
 		CallbackContainer<ToolTierAddedCallback> callbacks = pendingCallbacks.remove(id);
@@ -89,7 +89,11 @@ public final class ToolTypeRegistryImpl implements ToolTypeRegistry {
 		clear();
 		ToolTypeRegistryImpl registry = new ToolTypeRegistryImpl();
 		for (Consumer<ToolTypeRegistry> plugin : WailaClientRegistration.instance().harvestPlugins) {
-			plugin.accept(registry);
+			try {
+				plugin.accept(registry);
+			} catch (Throwable t) {
+				Jade.LOGGER.error("Failed to apply harvest plugin {}", plugin, t);
+			}
 		}
 		TOOL_TYPES = ImmutableMap.copyOf(registry.pendingMap);
 	}
