@@ -14,12 +14,22 @@ import net.minecraft.world.item.component.Tool;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
+/**
+ * Default implementation of {@link ToolTier}.
+ */
 public class SimpleToolTier implements ToolTier {
 	private final Identifier uid;
 	private final ToolResult success;
 	private final List<Block> extraBlocks = Lists.newArrayListWithExpectedSize(0);
 	private final Predicate<BlockState> predicate;
 
+	/**
+	 * Creates a simple tool tier.
+	 *
+	 * @param uid tier identifier
+	 * @param tool display stack
+	 * @param predicate matching predicate
+	 */
 	public SimpleToolTier(Identifier uid, ItemStack tool, Predicate<BlockState> predicate) {
 		Objects.requireNonNull(uid);
 		Objects.requireNonNull(tool);
@@ -52,6 +62,12 @@ public class SimpleToolTier implements ToolTier {
 		return this;
 	}
 
+	/**
+	 * Returns a predicate that uses the tool's native mining rules.
+	 *
+	 * @param toolItem tool stack
+	 * @return matching predicate
+	 */
 	public static Predicate<BlockState> isEffectiveTool(ItemStack toolItem) {
 		Tool tool = toolItem.get(DataComponents.TOOL);
 		if (tool == null) {

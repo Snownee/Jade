@@ -7,6 +7,9 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 
 // Modified from: https://github.com/silentsoft/csscolor4j/blob/main/src/main/java/org/silentsoft/csscolor4j/Color.java
+/**
+ * Utility color parser and converter used by Jade's style codecs.
+ */
 public class Color {
 
 	public static final Codec<Integer> CODEC = Codec.STRING.comapFlatMap(

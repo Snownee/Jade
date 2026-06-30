@@ -16,12 +16,30 @@ import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
 import snownee.jade.JadeInternals;
 
+/**
+ * Abstraction over platform-specific rendering helpers used by Jade UI elements.
+ */
 public interface IDisplayHelper {
 
+	/**
+	 * Returns the active helper instance.
+	 *
+	 * @return display helper
+	 */
 	static IDisplayHelper get() {
 		return JadeInternals.getDisplayHelper();
 	}
 
+	/**
+	 * Draws an item stack.
+	 *
+	 * @param graphics graphics context
+	 * @param x x position
+	 * @param y y position
+	 * @param stack item stack
+	 * @param scale render scale
+	 * @param text optional overlay text
+	 */
 	void drawItem(GuiGraphicsExtractor graphics, float x, float y, ItemStack stack, float scale, @Nullable String text);
 
 	default void drawBorder(GuiGraphicsExtractor graphics, ScreenRectangle rectangle, int width, int color, boolean corner) {

@@ -12,14 +12,21 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
 
 /**
- * Class to get information of entity target and context.
+ * Accessor describing the entity currently under the Jade crosshair.
  */
 public interface EntityAccessor extends Accessor<EntityHitResult> {
 
+	/**
+	 * Returns the resolved entity.
+	 *
+	 * @return the target entity
+	 */
 	Entity getEntity();
 
 	/**
-	 * For part entity like ender dragon's, getEntity() will return the parent entity.
+	 * Returns the raw entity that was hit before any part-to-parent resolution.
+	 *
+	 * @return the raw target entity
 	 */
 	Entity getRawEntity();
 
@@ -40,16 +47,40 @@ public interface EntityAccessor extends Accessor<EntityHitResult> {
 
 		Builder showDetails(boolean showDetails);
 
+		/**
+		 * Sets the hit result supplier.
+		 *
+		 * @param hit supplier for the entity hit result
+		 * @return this builder
+		 */
 		default Builder hit(EntityHitResult hit) {
 			return hit(() -> hit);
 		}
 
+		/**
+		 * Sets the hit result supplier.
+		 *
+		 * @param hit supplier for the entity hit result
+		 * @return this builder
+		 */
 		Builder hit(Supplier<EntityHitResult> hit);
 
+		/**
+		 * Sets the entity supplier.
+		 *
+		 * @param entity supplier for the entity
+		 * @return this builder
+		 */
 		default Builder entity(Entity entity) {
 			return entity(() -> entity);
 		}
 
+		/**
+		 * Sets the entity supplier.
+		 *
+		 * @param entity supplier for the entity
+		 * @return this builder
+		 */
 		Builder entity(Supplier<Entity> entity);
 
 		Builder from(EntityAccessor accessor);

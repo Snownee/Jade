@@ -5,6 +5,9 @@ import org.jspecify.annotations.Nullable;
 import snownee.jade.impl.Tooltip;
 import snownee.jade.impl.ui.StyledElement;
 
+/**
+ * Container element that wraps an inner tooltip.
+ */
 public abstract class BoxElement extends ResizeableElement implements StyledElement {
 	public abstract Tooltip getTooltip();
 

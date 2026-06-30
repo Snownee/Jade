@@ -4,6 +4,9 @@ import org.jetbrains.annotations.Contract;
 
 import com.mojang.brigadier.Message;
 
+/**
+ * Base element for text-rendering components.
+ */
 public abstract class TextElement extends ResizeableElement implements Message {
 	@Contract("_ -> this")
 	public abstract TextElement scale(float scale);

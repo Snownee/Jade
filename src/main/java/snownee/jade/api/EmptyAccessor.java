@@ -8,6 +8,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 
+/**
+ * Accessor used when Jade needs context without a specific target.
+ */
 public interface EmptyAccessor extends Accessor<BlockHitResult> {
 
 	@Override
@@ -29,6 +32,12 @@ public interface EmptyAccessor extends Accessor<BlockHitResult> {
 
 		Builder hit(BlockHitResult hit);
 
+		/**
+		 * Copies values from another empty accessor.
+		 *
+		 * @param accessor source accessor
+		 * @return this builder
+		 */
 		Builder from(EmptyAccessor accessor);
 
 		default Builder requireVerification() {

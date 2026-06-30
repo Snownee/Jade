@@ -7,6 +7,9 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ByIdMap;
 
+/**
+ * Severity or presentation mode for a tooltip section.
+ */
 public enum MessageType {
 	NORMAL, INFO, TITLE, SUCCESS, WARNING, DANGER, FAILURE;
 
