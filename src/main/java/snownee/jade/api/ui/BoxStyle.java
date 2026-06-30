@@ -18,6 +18,9 @@ import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.impl.ui.StyledElement;
 import snownee.jade.util.JadeCodecs;
 
+/**
+ * Rendering style for tooltip boxes and framed UI elements.
+ */
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class BoxStyle {
 	private static final int[] DEFAULT_PADDING = new int[]{3, 3, 3, 3};

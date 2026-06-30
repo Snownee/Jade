@@ -18,25 +18,58 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 
 /**
- * Class to get information of block target and context.
+ * Accessor describing the block currently under the Jade crosshair.
  */
 public interface BlockAccessor extends Accessor<BlockHitResult> {
 
+	/**
+	 * Returns the resolved block.
+	 *
+	 * @return the target block
+	 */
 	Block getBlock();
 
+	/**
+	 * Returns the target block state.
+	 *
+	 * @return the current block state
+	 */
 	BlockState getBlockState();
 
+	/**
+	 * Returns the target block entity, if present.
+	 *
+	 * @return the block entity or {@code null}
+	 */
 	@Nullable
 	BlockEntity getBlockEntity();
 
+	/**
+	 * Returns the block entity cast to a specific subtype.
+	 *
+	 * @param <T> block entity subtype
+	 * @return the block entity
+	 * @throws NullPointerException if the target has no block entity
+	 * @throws ClassCastException if the block entity is not of the requested type
+	 */
 	default <T extends BlockEntity> T typedBlockEntity() {
 		@SuppressWarnings("unchecked")
 		T blockEntity = (T) getBlockEntity();
 		return Objects.requireNonNull(blockEntity);
 	}
 
+	/**
+	 * Returns the block position.
+	 *
+	 * @return the target position
+	 */
 	BlockPos getPosition();
 
+	/**
+	 * Returns the side that was hit.
+	 *
+	 * @return the hit face
+	 */
 	Direction getSide();
 
 	@Override
@@ -60,10 +93,22 @@ public interface BlockAccessor extends Accessor<BlockHitResult> {
 
 		Builder blockState(BlockState state);
 
+		/**
+		 * Sets the target block entity using a fixed instance.
+		 *
+		 * @param blockEntity the block entity or {@code null}
+		 * @return this builder
+		 */
 		default Builder blockEntity(@Nullable BlockEntity blockEntity) {
 			return blockEntity(() -> blockEntity);
 		}
 
+		/**
+		 * Sets the target block entity supplier.
+		 *
+		 * @param blockEntity supplier for the block entity
+		 * @return this builder
+		 */
 		Builder blockEntity(Supplier<@Nullable BlockEntity> blockEntity);
 
 		Builder serversideRep(ItemStack stack);

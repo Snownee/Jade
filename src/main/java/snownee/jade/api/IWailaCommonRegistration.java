@@ -15,37 +15,83 @@ import snownee.jade.api.view.FluidView;
 import snownee.jade.api.view.IServerExtensionProvider;
 import snownee.jade.api.view.ProgressView;
 
+/**
+ * Common registration entry point for server-side Jade integrations.
+ */
 @NonExtendable
 public interface IWailaCommonRegistration {
 
 	/**
-	 * Register an {@link IServerDataProvider<BlockAccessor>} instance for data syncing purposes.
+	 * Registers a block data provider.
 	 *
-	 * @param dataProvider            The data provider instance
-	 * @param blockOrBlockEntityClass The highest level class to apply to
+	 * @param dataProvider provider that writes synchronized block data
+	 * @param blockOrBlockEntityClass highest-level block or block entity class to match
 	 */
 	void registerBlockDataProvider(IServerDataProvider<BlockAccessor> dataProvider, Class<?> blockOrBlockEntityClass);
 
 	/**
-	 * Register an {@link IServerDataProvider<EntityAccessor>} instance for data syncing purposes.
+	 * Registers an entity data provider.
 	 *
-	 * @param dataProvider The data provider instance
-	 * @param entityClass  The highest level class to apply to
+	 * @param dataProvider provider that writes synchronized entity data
+	 * @param entityClass highest-level entity class to match
 	 */
 	void registerEntityDataProvider(IServerDataProvider<EntityAccessor> dataProvider, Class<? extends Entity> entityClass);
 
+	/**
+	 * Returns the block operation repository.
+	 *
+	 * @return block operation repository
+	 */
 	TargetOperationRepository<Block, BlockState> blockOperations();
 
+	/**
+	 * Returns the entity-type operation repository.
+	 *
+	 * @return entity-type operation repository
+	 */
 	TargetOperationRepository<EntityType<?>, Entity> entityTypeOperations();
 
+	/**
+	 * Returns the mob-effect operation repository.
+	 *
+	 * @return mob-effect operation repository
+	 */
 	TargetOperationRepository<MobEffect, MobEffectInstance> mobEffectOperations();
 
+	/**
+	 * Registers a storage extension provider for item stacks.
+	 *
+	 * @param provider storage provider
+	 * @param clazz target class to match
+	 * @param <T> target type
+	 */
 	<T> void registerItemStorage(IServerExtensionProvider<ItemStack> provider, Class<? extends T> clazz);
 
+	/**
+	 * Registers a storage extension provider for fluids.
+	 *
+	 * @param provider storage provider
+	 * @param clazz target class to match
+	 * @param <T> target type
+	 */
 	<T> void registerFluidStorage(IServerExtensionProvider<FluidView.Data> provider, Class<? extends T> clazz);
 
+	/**
+	 * Registers a storage extension provider for energy.
+	 *
+	 * @param provider storage provider
+	 * @param clazz target class to match
+	 * @param <T> target type
+	 */
 	<T> void registerEnergyStorage(IServerExtensionProvider<EnergyView.Data> provider, Class<? extends T> clazz);
 
+	/**
+	 * Registers a storage extension provider for progress values.
+	 *
+	 * @param provider storage provider
+	 * @param clazz target class to match
+	 * @param <T> target type
+	 */
 	<T> void registerProgress(IServerExtensionProvider<ProgressView.Data> provider, Class<? extends T> clazz);
 
 }

@@ -4,6 +4,9 @@ import com.google.common.base.Objects;
 
 import net.minecraft.client.gui.layouts.LayoutElement;
 
+/**
+ * Mutable floating-point rectangle used by Jade's layout helpers.
+ */
 public class Rect2f {
 	private float xPos;
 	private float yPos;

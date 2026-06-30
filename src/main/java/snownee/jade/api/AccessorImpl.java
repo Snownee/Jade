@@ -20,7 +20,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.HitResult;
 
 /**
- * A generic class to get basic information of target and context.
+ * Base implementation for Jade accessors.
+ *
+ * @param <T> hit result type handled by this accessor
  */
 public abstract class AccessorImpl<T extends HitResult> implements Accessor<T> {
 
@@ -34,6 +36,16 @@ public abstract class AccessorImpl<T extends HitResult> implements Accessor<T> {
 	protected boolean verify;
 	private @Nullable RegistryFriendlyByteBuf buffer;
 
+	/**
+	 * Creates a new accessor implementation.
+	 *
+	 * @param level current level
+	 * @param player current player
+	 * @param serverData synchronized server data, or {@code null}
+	 * @param hit supplier for the target hit result
+	 * @param serverConnected whether the dedicated server has Jade installed
+	 * @param showDetails whether detailed target data should be shown
+	 */
 	public AccessorImpl(
 			Level level,
 			Player player,
@@ -128,6 +140,9 @@ public abstract class AccessorImpl<T extends HitResult> implements Accessor<T> {
 	@Override
 	public abstract ItemStack getPickedResult();
 
+	/**
+	 * Marks this accessor as needing verification.
+	 */
 	public void requireVerification() {
 		verify = true;
 	}
@@ -147,6 +162,11 @@ public abstract class AccessorImpl<T extends HitResult> implements Accessor<T> {
 		return serversideRep;
 	}
 
+	/**
+	 * Sets the server-side representation shown for this accessor.
+	 *
+	 * @param serversideRep replacement item stack
+	 */
 	public void setServersideRep(ItemStack serversideRep) {
 		this.serversideRep = serversideRep;
 	}
