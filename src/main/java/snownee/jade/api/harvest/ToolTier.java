@@ -31,15 +31,15 @@ public interface ToolTier extends IJadeProvider {
 		return of(uid, stack, SimpleToolTier.isEffectiveTool(stack));
 	}
 
-	static ToolTier alwaysPass(Item item) {
-		return alwaysPass(BuiltInRegistries.ITEM.getKey(item), item);
+	static ToolTier alwaysFail(Item item) {
+		return alwaysFail(BuiltInRegistries.ITEM.getKey(item), item);
 	}
 
-	static ToolTier alwaysPass(Identifier uid, Item item) {
-		return alwaysPass(uid, item.getDefaultInstance());
+	static ToolTier alwaysFail(Identifier uid, Item item) {
+		return alwaysFail(uid, item.getDefaultInstance());
 	}
 
-	static ToolTier alwaysPass(Identifier uid, ItemStack stack) {
+	static ToolTier alwaysFail(Identifier uid, ItemStack stack) {
 		return of(uid, stack, _ -> false);
 	}
 

@@ -37,7 +37,7 @@ public class SimpleToolType implements ToolType {
 	@Override
 	public ToolResult test(BlockState state, Level level, BlockPos pos) {
 		if (skipInstaBreakingBlock && !state.requiresCorrectToolForDrops() && state.getDestroySpeed(level, pos) == 0) {
-			return ToolResult.pass();
+			return ToolResult.fail();
 		}
 		for (ToolTier tier : tiers) {
 			ToolResult result = tier.isCorrectTool(state);
@@ -45,7 +45,7 @@ public class SimpleToolType implements ToolType {
 				return result;
 			}
 		}
-		return ToolResult.pass();
+		return ToolResult.fail();
 	}
 
 	@Override

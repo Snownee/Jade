@@ -4,9 +4,9 @@ import com.google.common.base.Preconditions;
 
 import net.minecraft.world.item.ItemStack;
 
-public sealed interface ToolResult permits ToolResult.Pass, ToolResult.Success {
-	static ToolResult pass() {
-		return Pass.INSTANCE;
+public sealed interface ToolResult permits ToolResult.Fail, ToolResult.Success {
+	static ToolResult fail() {
+		return Fail.INSTANCE;
 	}
 
 	static ToolResult of(ItemStack stack) {
@@ -20,8 +20,8 @@ public sealed interface ToolResult permits ToolResult.Pass, ToolResult.Success {
 		return getClass() == Success.class;
 	}
 
-	record Pass() implements ToolResult {
-		static final Pass INSTANCE = new Pass();
+	record Fail() implements ToolResult {
+		static final Fail INSTANCE = new Fail();
 
 		@Override
 		public ItemStack displayStack() {

@@ -36,7 +36,7 @@ public class SimpleToolTier implements ToolTier {
 
 	@Override
 	public ToolResult isCorrectTool(BlockState state) {
-		return extraBlocks.contains(state.getBlock()) || predicate.test(state) ? success : ToolResult.pass();
+		return extraBlocks.contains(state.getBlock()) || predicate.test(state) ? success : ToolResult.fail();
 	}
 
 	@Override
