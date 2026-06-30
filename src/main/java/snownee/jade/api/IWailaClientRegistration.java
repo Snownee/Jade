@@ -26,6 +26,7 @@ import snownee.jade.api.callback.JadeBeforeTooltipCollectCallback;
 import snownee.jade.api.callback.JadeItemModNameCallback;
 import snownee.jade.api.callback.JadeRayTraceCallback;
 import snownee.jade.api.callback.JadeTooltipCollectedCallback;
+import snownee.jade.api.harvest.ToolTypeRegistry;
 import snownee.jade.api.platform.PlatformWailaClientRegistration;
 import snownee.jade.api.view.EnergyView;
 import snownee.jade.api.view.FluidView;
@@ -181,4 +182,6 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 	void addVariantType(DataComponentType<?> type, boolean isVariant);
 
 	void reloadIgnoreLists();
+
+	void addHarvestPlugin(Consumer<ToolTypeRegistry> plugin);
 }

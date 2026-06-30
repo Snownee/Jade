@@ -1,9 +1,12 @@
 package snownee.jade.test;
 
+import java.util.List;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.animal.sheep.Sheep;
 import net.minecraft.world.entity.monster.cubemob.Slime;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.AbstractFurnaceBlock;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
@@ -14,7 +17,9 @@ import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IWailaClientRegistration;
 import snownee.jade.api.IWailaCommonRegistration;
 import snownee.jade.api.IWailaPlugin;
+import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IWailaConfig;
+import snownee.jade.api.harvest.ToolTier;
 import snownee.jade.api.view.HideThingsExtensionProvider;
 
 public class ExamplePlugin implements IWailaPlugin {
@@ -73,6 +78,23 @@ public class ExamplePlugin implements IWailaPlugin {
 		registration.registerFluidStorageClient(ExampleFluidStorageProvider.INSTANCE);
 		registration.registerEnergyStorageClient(ExampleEnergyStorageProvider.INSTANCE);
 		registration.registerProgressClient(ExampleProgressProvider.INSTANCE);
+
+		// expected behavior: shows copper pickaxe on stone
+		registration.addHarvestPlugin(registry -> {
+			registry.insertTierBefore(
+					JadeIds.JADE("pickaxe"),
+					Identifier.withDefaultNamespace("test_pickaxe"),
+					ToolTier.item(Items.COPPER_PICKAXE));
+			registry.type(Identifier.parse("aaa"));
+			registry.type(Identifier.parse("bbb")).addTier(ToolTier.alwaysFail(Items.DIAMOND)
+					.addExtraBlocks(List.of(Blocks.CRYING_OBSIDIAN)));
+		});
+		registration.addHarvestPlugin(registry -> {
+			registry.insertTierBefore(
+					JadeIds.JADE("pickaxe"),
+					Identifier.withDefaultNamespace("wooden_pickaxe"),
+					ToolTier.item(Identifier.withDefaultNamespace("test_pickaxe"), Items.DIAMOND_PICKAXE));
+		});
 	}
 
 }

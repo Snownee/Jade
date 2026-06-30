@@ -1,17 +1,14 @@
 package snownee.jade.addon.harvest;
 
+import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -30,6 +27,8 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.harvest.ToolResult;
+import snownee.jade.api.harvest.ToolType;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.JadeUI;
@@ -40,39 +39,29 @@ import snownee.jade.util.KeyedResourceManagerReloadListener;
 public class HarvestToolProvider implements IBlockComponentProvider, KeyedResourceManagerReloadListener {
 	public static final HarvestToolProvider INSTANCE = new HarvestToolProvider();
 
-	public static final Map<Identifier, ToolHandler> TOOL_HANDLERS = Maps.newLinkedHashMap();
-	private static final List<Supplier<ToolHandler>> PENDING_TOOL_HANDLERS = Lists.newArrayList();
 	private static final Component CHECK = Component.literal("✔");
 	private static final Component X = Component.literal("✕");
-	private final Cache<BlockState, ImmutableList<ItemStack>> resultCache = CacheBuilder.newBuilder().expireAfterAccess(
-			5,
-			TimeUnit.MINUTES).build();
+	private final Cache<BlockState, ImmutableList<ItemStack>> resultCache = CacheBuilder.newBuilder()
+			.expireAfterAccess(Duration.ofMinutes(5))
+			.build();
 
 	static {
 		CommonProxy.registerTagsUpdatedListener((_, _) -> apply());
 	}
 
-	public static ImmutableList<ItemStack> getTool(BlockState state, Level world, BlockPos pos) {
+	public static ImmutableList<ItemStack> getTool(BlockState state, Level level, BlockPos pos) {
 		ImmutableList.Builder<ItemStack> tools = ImmutableList.builder();
-		for (ToolHandler handler : TOOL_HANDLERS.values()) {
-			ItemStack tool = handler.test(state, world, pos);
-			if (!tool.isEmpty()) {
-				tools.add(tool);
+		for (ToolType handler : ToolTypeRegistryImpl.registeredTypes().values()) {
+			ToolResult result = handler.test(state, level, pos);
+			if (result.isSuccess()) {
+				tools.add(result.displayStack());
 			}
 		}
 		return tools.build();
 	}
 
-	public static synchronized void registerHandler(Supplier<ToolHandler> handler) {
-		PENDING_TOOL_HANDLERS.add(handler);
-	}
-
 	private static void apply() {
-		TOOL_HANDLERS.clear();
-		for (Supplier<ToolHandler> supplier : PENDING_TOOL_HANDLERS) {
-			ToolHandler handler = supplier.get();
-			TOOL_HANDLERS.put(handler.getUid(), handler);
-		}
+		ToolTypeRegistryImpl.apply();
 		INSTANCE.resultCache.invalidateAll();
 	}
 
@@ -165,9 +154,8 @@ public class HarvestToolProvider implements IBlockComponentProvider, KeyedResour
 	}
 
 	public void setShearableBlocks(Collection<Block> blocks) {
-		if (TOOL_HANDLERS.get(JadeIds.JADE("shears")) instanceof ShearsToolHandler handler) {
-			handler.setShearableBlocks(blocks);
-		}
+		ToolTypeRegistryImpl.DEFAULT_SHEARS_TIER.get().replaceExtraBlocks(blocks);
+		invalidateCache();
 	}
 
 	@Override

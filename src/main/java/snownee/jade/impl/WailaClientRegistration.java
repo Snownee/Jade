@@ -12,13 +12,13 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jspecify.annotations.Nullable;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
@@ -50,6 +50,7 @@ import snownee.jade.api.IComponentProvider;
 import snownee.jade.api.IToggleableProvider;
 import snownee.jade.api.IWailaClientRegistration;
 import snownee.jade.api.JadeIds;
+import snownee.jade.api.callback.CallbackContainer;
 import snownee.jade.api.callback.JadeAfterRenderCallback;
 import snownee.jade.api.callback.JadeBeforeRenderCallback;
 import snownee.jade.api.callback.JadeBeforeTooltipCollectCallback;
@@ -58,6 +59,7 @@ import snownee.jade.api.callback.JadeRayTraceCallback;
 import snownee.jade.api.callback.JadeTooltipCollectedCallback;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
+import snownee.jade.api.harvest.ToolTypeRegistry;
 import snownee.jade.api.platform.CustomEnchantPower;
 import snownee.jade.api.view.EnergyView;
 import snownee.jade.api.view.FluidView;
@@ -106,6 +108,8 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	public final Set<Identifier> clientFeatures = Sets.newHashSet();
 
 	public final Map<Class<Accessor<?>>, AccessorClientHandler<Accessor<?>>> accessorHandlers = Maps.newIdentityHashMap();
+
+	public final List<Consumer<ToolTypeRegistry>> harvestPlugins = Lists.newArrayList();
 
 	WailaClientRegistration() {
 		blockIconProviders = new HierarchyLookup<>(Block.class);
@@ -344,13 +348,6 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 		blockIconProviders.loadComplete(priorities);
 		entityComponentProviders.loadComplete(priorities);
 		entityIconProviders.loadComplete(priorities);
-		Stream.of(
-				afterRenderCallback,
-				beforeRenderCallback,
-				rayTraceCallback,
-				tooltipCollectedCallback,
-				itemModNameCallback,
-				beforeTooltipCollectCallback).forEach(CallbackContainer::sort);
 	}
 
 	@Override
@@ -535,6 +532,11 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 		if (connection != null) {
 			WailaCommonRegistration.instance().reloadOperations(connection.registryAccess());
 		}
+	}
+
+	@Override
+	public void addHarvestPlugin(Consumer<ToolTypeRegistry> plugin) {
+		harvestPlugins.add(Objects.requireNonNull(plugin));
 	}
 
 	@Override
