@@ -32,6 +32,9 @@ import snownee.jade.gui.JadeLinearLayout;
 import snownee.jade.impl.ui.JadeUIInternal;
 import snownee.jade.overlay.DisplayHelper;
 
+/**
+ * Base class for renderable Jade UI elements.
+ */
 public abstract class Element implements Renderable, LayoutElement, NarrationSupplier, GuiEventListener, CopyBehavior {
 
 	protected @Nullable Identifier tag;

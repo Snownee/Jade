@@ -23,6 +23,9 @@ import snownee.jade.api.ui.Element;
 import snownee.jade.impl.Tooltip;
 import snownee.jade.impl.ui.BoxElementImpl;
 
+/**
+ * Complete visual theme description used by Jade's renderer.
+ */
 public class Theme {
 
 	public @Nullable Identifier id;

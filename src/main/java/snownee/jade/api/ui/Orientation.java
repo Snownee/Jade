@@ -4,6 +4,9 @@ import net.minecraft.client.gui.layouts.LayoutElement;
 import snownee.jade.gui.JadeLinearLayout;
 import snownee.jade.gui.ResizeableLayout;
 
+/**
+ * Primary layout orientation for Jade UI containers.
+ */
 public enum Orientation {
 	HORIZONTAL, VERTICAL;
 

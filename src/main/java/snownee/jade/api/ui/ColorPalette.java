@@ -3,6 +3,9 @@ package snownee.jade.api.ui;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+/**
+ * Semantic text color palette used by Jade themes.
+ */
 public record ColorPalette(int normal, int info, int title, int success, int warning, int danger, int failure) {
 	public static final ColorPalette DEFAULT = new ColorPalette(
 			0xFFA0A0A0,

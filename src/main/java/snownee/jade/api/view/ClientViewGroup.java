@@ -16,20 +16,55 @@ import snownee.jade.api.ui.JadeUI;
 import snownee.jade.api.ui.MessageType;
 import snownee.jade.impl.ui.HorizontalLineElement;
 
+/**
+ * Client-side rendering state derived from a {@link ViewGroup}.
+ *
+ * @param <T> contained client view type
+ */
 public class ClientViewGroup<T> {
 
+	/**
+	 * Contained client views.
+	 */
 	public final List<T> views;
+	/**
+	 * Optional group title.
+	 */
 	@Nullable
 	public Component title;
+	/**
+	 * Message severity for this group.
+	 */
 	public MessageType messageType = MessageType.NORMAL;
+	/**
+	 * Progress value copied from the server payload.
+	 */
 	public float boxProgress;
+	/**
+	 * Optional additional group data.
+	 */
 	@Nullable
 	public CompoundTag extraData;
 
+	/**
+	 * Creates a new client group.
+	 *
+	 * @param views contained client views
+	 */
 	public ClientViewGroup(List<T> views) {
 		this.views = views;
 	}
 
+	/**
+	 * Maps server groups to client groups.
+	 *
+	 * @param groups server groups
+	 * @param itemFactory mapper for individual views
+	 * @param clientGroupDecorator optional client-side customization hook
+	 * @param <IN> server view type
+	 * @param <OUT> client view type
+	 * @return mapped client groups
+	 */
 	public static <IN, OUT> List<ClientViewGroup<OUT>> map(
 			List<ViewGroup<IN>> groups,
 			Function<IN, @Nullable OUT> itemFactory,
@@ -49,6 +84,11 @@ public class ClientViewGroup<T> {
 		}).toList();
 	}
 
+	/**
+	 * Renders this group into a tooltip.
+	 *
+	 * @param tooltip tooltip to write to
+	 */
 	public static <T> void tooltip(
 			ITooltip tooltip,
 			List<ClientViewGroup<T>> groups,
@@ -70,10 +110,20 @@ public class ClientViewGroup<T> {
 		}
 	}
 
+	/**
+	 * Returns whether this group should render a header.
+	 *
+	 * @return {@code true} if a title or progress is present
+	 */
 	public boolean shouldRenderGroup() {
 		return title != null || boxProgress > 0;
 	}
 
+	/**
+	 * Renders the group header into the tooltip.
+	 *
+	 * @param tooltip tooltip to modify
+	 */
 	public void renderHeader(ITooltip tooltip) {
 		if (title != null) {
 			tooltip.add(new HorizontalLineElement());
