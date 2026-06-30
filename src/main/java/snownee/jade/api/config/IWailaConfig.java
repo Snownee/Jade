@@ -145,11 +145,6 @@ public interface IWailaConfig {
 	@NonExtendable
 	interface General {
 
-		/**
-		 * Sets whether tooltips should be displayed at all.
-		 *
-		 * @param displayTooltip {@code true} to display tooltips
-		 */
 		void setDisplayTooltip(boolean displayTooltip);
 
 		boolean getDisplayEntities();

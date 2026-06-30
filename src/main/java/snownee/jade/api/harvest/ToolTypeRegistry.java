@@ -6,11 +6,11 @@ import net.minecraft.resources.Identifier;
 import snownee.jade.api.callback.CallbackContainer;
 
 /**
- * Mutable registry used to define Jade's built-in tool types and tiers.
+ * Mutable registry used to define Jade's tool types and tiers.
  */
 public interface ToolTypeRegistry {
 	/**
-	 * Registers or returns an existing tool type.
+	 * Registers a tool type for the given tool type.
 	 *
 	 * @param type tool type
 	 * @return the registered tool type
@@ -18,7 +18,7 @@ public interface ToolTypeRegistry {
 	ToolType type(ToolType type);
 
 	/**
-	 * Creates or returns a tool type for the given identifier.
+	 * Registers a tool type for the given identifier.
 	 *
 	 * @param id tool type identifier
 	 * @return the registered tool type
@@ -26,7 +26,7 @@ public interface ToolTypeRegistry {
 	ToolType type(Identifier id);
 
 	/**
-	 * Creates or returns a tool type for the given identifier.
+	 * Registers a tool type for the given identifier.
 	 *
 	 * @param id tool type identifier
 	 * @param skipInstaBreakingBlock whether instant-break blocks should be skipped

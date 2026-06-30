@@ -7,7 +7,7 @@ import org.jspecify.annotations.Nullable;
 import net.minecraft.resources.Identifier;
 
 /**
- * Wraps an exception with the Jade namespace that triggered it.
+ * Wraps an exception with the Minecraft namespace that triggered it.
  */
 public class TraceableException extends RuntimeException {
 	@Serial

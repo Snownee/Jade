@@ -43,7 +43,7 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 	/**
 	 * Registers a boolean plugin config key.
 	 *
-	 * @param key configuration key
+	 * @param key          configuration key
 	 * @param defaultValue default value
 	 */
 	void addConfig(Identifier key, boolean defaultValue);
@@ -51,47 +51,47 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 	/**
 	 * Registers an enum plugin config key.
 	 *
-	 * @param key configuration key
+	 * @param key          configuration key
 	 * @param defaultValue default value
-	 * @param <T> enum type
+	 * @param <T>          enum type
 	 */
 	<T extends Enum<T>> void addConfig(Identifier key, T defaultValue);
 
 	/**
 	 * Registers a string plugin config key.
 	 *
-	 * @param key configuration key
+	 * @param key          configuration key
 	 * @param defaultValue default value
-	 * @param validator value validator
+	 * @param validator    value validator
 	 */
 	void addConfig(Identifier key, String defaultValue, Predicate<String> validator);
 
 	/**
 	 * Registers an integer plugin config key.
 	 *
-	 * @param key configuration key
+	 * @param key          configuration key
 	 * @param defaultValue default value
-	 * @param min minimum accepted value
-	 * @param max maximum accepted value
-	 * @param slider whether the UI should render a slider
+	 * @param min          minimum accepted value
+	 * @param max          maximum accepted value
+	 * @param slider       whether the UI should render a slider
 	 */
 	void addConfig(Identifier key, int defaultValue, int min, int max, boolean slider);
 
 	/**
 	 * Registers a floating-point plugin config key.
 	 *
-	 * @param key configuration key
+	 * @param key          configuration key
 	 * @param defaultValue default value
-	 * @param min minimum accepted value
-	 * @param max maximum accepted value
-	 * @param slider whether the UI should render a slider
+	 * @param min          minimum accepted value
+	 * @param max          maximum accepted value
+	 * @param slider       whether the UI should render a slider
 	 */
 	void addConfig(Identifier key, float defaultValue, float min, float max, boolean slider);
 
 	/**
 	 * Registers a listener for config changes.
 	 *
-	 * @param key configuration key
+	 * @param key      configuration key
 	 * @param listener callback invoked when the key changes
 	 */
 	void addConfigListener(Identifier key, Consumer<Identifier> listener);
@@ -109,57 +109,12 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 	 * @param provider   The data provider instance
 	 * @param blockClass The highest level class to apply to
 	 */
-	/**
-	 * Registers a block icon provider.
-	 *
-	 * @param provider icon provider
-	 * @param blockClass highest-level block class to match
-	 */
 	void registerBlockIcon(IComponentProvider<BlockAccessor> provider, Class<? extends Block> blockClass);
 
-	/**
-	 * Register an {@link IJadeProvider} instance for appending information to
-	 * the tooltip.
-	 *
-	 * @param provider   The data provider instance
-	 * @param blockClass The highest level class to apply to
-	 */
-	/**
-	 * Registers a block tooltip provider.
-	 *
-	 * @param provider tooltip provider
-	 * @param blockClass highest-level block class to match
-	 */
 	void registerBlockComponent(IComponentProvider<BlockAccessor> provider, Class<? extends Block> blockClass);
 
-	/**
-	 * Register an {@link IEntityComponentProvider} instance to allow overriding the icon for a entity via the
-	 * {@link IComponentProvider#getIcon(Accessor, snownee.jade.api.config.IPluginConfig, snownee.jade.api.ui.Element)} method.
-	 *
-	 * @param provider    The data provider instance
-	 * @param entityClass The highest level class to apply to
-	 */
-	/**
-	 * Registers an entity icon provider.
-	 *
-	 * @param provider icon provider
-	 * @param entityClass highest-level entity class to match
-	 */
 	void registerEntityIcon(IComponentProvider<EntityAccessor> provider, Class<? extends Entity> entityClass);
 
-	/**
-	 * Register an {@link IEntityComponentProvider} instance for appending {@link net.minecraft.network.chat.Component}
-	 * to the tooltip.
-	 *
-	 * @param provider    The data provider instance
-	 * @param entityClass The highest level class to apply to
-	 */
-	/**
-	 * Registers an entity tooltip provider.
-	 *
-	 * @param provider tooltip provider
-	 * @param entityClass highest-level entity class to match
-	 */
 	void registerEntityComponent(IComponentProvider<EntityAccessor> provider, Class<? extends Entity> entityClass);
 
 	/**

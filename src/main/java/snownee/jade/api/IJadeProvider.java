@@ -7,11 +7,6 @@ import net.minecraft.resources.Identifier;
  * <p>
  * Implementations provide a stable identifier used for registration, configuration, and ordering.
  */
-/**
- * Legacy root interface for all Jade API providers.
- * <p>
- * Use {@link #getUid()} to identify registrations and {@link #getDefaultPriority()} to influence tooltip ordering.
- */
 public interface IJadeProvider {
 
 	/**
@@ -24,9 +19,9 @@ public interface IJadeProvider {
 	Identifier getUid();
 
 	/**
-	 * Returns the default tooltip priority for this provider.
+	 * Returns the default tooltip priority for this provider. Unavailable if the registry does not support priorities.
 	 * <p>
-	 * Lower values render earlier. Values greater than {@code 5000} prevent the content from being collapsed in lite mode.
+	 * Lower values run earlier. Values greater than {@code 5000} prevent the content from being collapsed in lite mode.
 	 *
 	 * @return the default tooltip priority
 	 */
