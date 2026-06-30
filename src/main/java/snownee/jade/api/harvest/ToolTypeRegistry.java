@@ -12,7 +12,11 @@ public interface ToolTypeRegistry {
 
 	ToolType type(Identifier id, boolean skipInstaBreakingBlock);
 
-	@Nullable ToolType get(Identifier id);
+	@Nullable ToolType get(Identifier typeId);
+
+	void insertTierAfter(Identifier typeId, Identifier targetTier, ToolTier tier);
+
+	void insertTierBefore(Identifier typeId, Identifier targetTier, ToolTier tier);
 
 	CallbackContainer<ToolTierAddedCallback> tierAddedCallback(Identifier typeId);
 

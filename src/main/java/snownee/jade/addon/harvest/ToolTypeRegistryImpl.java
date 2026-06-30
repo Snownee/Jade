@@ -63,8 +63,34 @@ public final class ToolTypeRegistryImpl implements ToolTypeRegistry {
 	}
 
 	@Override
-	public @Nullable ToolType get(Identifier id) {
-		return pendingMap.get(id);
+	public @Nullable ToolType get(Identifier typeId) {
+		return pendingMap.get(typeId);
+	}
+
+	@Override
+	public void insertTierAfter(Identifier typeId, Identifier targetTier, ToolTier tier) {
+		ToolType type = get(typeId);
+		if (type == null || !type.insertTierAfter(targetTier, tier)) {
+			CallbackContainer<ToolTierAddedCallback> callbacks = tierAddedCallback(typeId);
+			callbacks.add((t, tierId, t2) -> {
+				if (tierId.equals(targetTier)) {
+					t.insertTierAfter(targetTier, tier);
+				}
+			});
+		}
+	}
+
+	@Override
+	public void insertTierBefore(Identifier typeId, Identifier targetTier, ToolTier tier) {
+		ToolType type = get(typeId);
+		if (type == null || !type.insertTierBefore(targetTier, tier)) {
+			CallbackContainer<ToolTierAddedCallback> callbacks = tierAddedCallback(typeId);
+			callbacks.add((t, tierId, t2) -> {
+				if (tierId.equals(targetTier)) {
+					t.insertTierBefore(targetTier, tier);
+				}
+			});
+		}
 	}
 
 	@Override
@@ -95,6 +121,7 @@ public final class ToolTypeRegistryImpl implements ToolTypeRegistry {
 				Jade.LOGGER.error("Failed to apply harvest plugin {}", plugin, t);
 			}
 		}
+		registry.pendingMap.entrySet().removeIf(entry -> entry.getValue().tiers().isEmpty());
 		TOOL_TYPES = ImmutableMap.copyOf(registry.pendingMap);
 	}
 

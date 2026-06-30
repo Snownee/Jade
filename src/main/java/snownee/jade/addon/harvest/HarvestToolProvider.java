@@ -1,9 +1,9 @@
 package snownee.jade.addon.harvest;
 
+import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -41,9 +41,9 @@ public class HarvestToolProvider implements IBlockComponentProvider, KeyedResour
 
 	private static final Component CHECK = Component.literal("✔");
 	private static final Component X = Component.literal("✕");
-	private final Cache<BlockState, ImmutableList<ItemStack>> resultCache = CacheBuilder.newBuilder().expireAfterAccess(
-			5,
-			TimeUnit.MINUTES).build();
+	private final Cache<BlockState, ImmutableList<ItemStack>> resultCache = CacheBuilder.newBuilder()
+			.expireAfterAccess(Duration.ofMinutes(5))
+			.build();
 
 	static {
 		CommonProxy.registerTagsUpdatedListener((_, _) -> apply());
