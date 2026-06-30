@@ -1,68 +1,51 @@
 package snownee.jade.api.harvest;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.function.Predicate;
 
-import com.google.common.base.Preconditions;
-
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-
-import org.jspecify.annotations.NonNull;
-
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import snownee.jade.api.IJadeProvider;
 
 public interface ToolTier extends IJadeProvider {
 
-	List<ItemStack> getTools();
-
-	boolean matches(ItemStack stack);
-
-	static ToolTier of(Identifier uid, List<ItemStack> tools, Predicate<ItemStack> predicate) {
-		Objects.requireNonNull(uid);
-		Objects.requireNonNull(tools);
-		Objects.requireNonNull(predicate);
-		Preconditions.checkArgument(!tools.isEmpty(), "tools cannot be empty");
-		return new SimpleToolTier(uid, List.copyOf(tools), predicate);
+	static ToolTier of(Identifier uid, ItemStack tool, Predicate<BlockState> predicate) {
+		Objects.requireNonNull(tool);
+		return new SimpleToolTier(uid, tool, predicate);
 	}
 
-	static ToolTier of(Identifier uid, ItemStack tool, Predicate<ItemStack> predicate) {
-		Objects.requireNonNull(tool);
-		return of(uid, List.of(tool), predicate);
+	static ToolTier item(Item item) {
+		return item(BuiltInRegistries.ITEM.getKey(item), item);
 	}
 
 	static ToolTier item(Identifier uid, Item item) {
-		Objects.requireNonNull(item);
-		return stack(uid, item.getDefaultInstance());
+		return item(uid, item.getDefaultInstance());
 	}
 
-	static ToolTier stack(Identifier uid, ItemStack stack) {
-		return of(uid, stack, _ -> true);
-	}
-}
-
-record SimpleToolTier(Identifier uid, List<ItemStack> tools, Predicate<ItemStack> predicate) implements ToolTier {
-	SimpleToolTier {
-		Objects.requireNonNull(uid);
-		Objects.requireNonNull(tools);
-		Objects.requireNonNull(predicate);
-		Preconditions.checkArgument(!tools.isEmpty(), "tools cannot be empty");
+	static ToolTier item(Identifier uid, ItemStack stack) {
+		return of(uid, stack, SimpleToolTier.isEffectiveTool(stack));
 	}
 
-	@Override
-	public @NonNull Identifier getUid() {
-		return uid;
+	static ToolTier alwaysPass(Item item) {
+		return alwaysPass(BuiltInRegistries.ITEM.getKey(item), item);
 	}
 
-	@Override
-	public List<ItemStack> getTools() {
-		return tools;
+	static ToolTier alwaysPass(Identifier uid, Item item) {
+		return alwaysPass(uid, item.getDefaultInstance());
 	}
 
-	@Override
-	public boolean matches(ItemStack stack) {
-		return predicate.test(stack);
+	static ToolTier alwaysPass(Identifier uid, ItemStack stack) {
+		return of(uid, stack, _ -> false);
 	}
+
+	ToolResult isCorrectTool(BlockState state);
+
+	ToolTier addExtraBlocks(Collection<? extends Block> blocks);
+
+	ToolTier replaceExtraBlocks(Collection<? extends Block> blocks);
 }

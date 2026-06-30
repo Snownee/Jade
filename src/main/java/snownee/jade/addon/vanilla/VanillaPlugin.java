@@ -68,14 +68,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import snownee.jade.JadeClient;
 import snownee.jade.addon.harvest.HarvestToolProvider;
-import snownee.jade.addon.harvest.ShearsToolHandler;
-import snownee.jade.addon.harvest.SimpleToolHandler;
 import snownee.jade.api.IWailaClientRegistration;
 import snownee.jade.api.IWailaCommonRegistration;
 import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.WailaPlugin;
-import snownee.jade.api.harvest.ToolTypeRegistry;
+import snownee.jade.api.harvest.ToolTier;
 import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.overlay.DatapackBlockManager;
 import snownee.jade.util.CommonProxy;
@@ -298,33 +296,40 @@ public class VanillaPlugin implements IWailaPlugin {
 
 		WailaCommonRegistration.instance().priorities.putUnsafe(JadeIds.MC_ENTITY_ARMOR, -4499);
 
-		ToolTypeRegistry.register(
-				JadeIds.JADE("pickaxe"),
-				List.of(
-						Items.WOODEN_PICKAXE,
-						Items.GOLDEN_PICKAXE,
-						Items.STONE_PICKAXE,
-						Items.IRON_PICKAXE,
-						Items.DIAMOND_PICKAXE,
-						Items.NETHERITE_PICKAXE));
-		ToolTypeRegistry.register(
-				JadeIds.JADE("axe"),
-				List.of(Items.WOODEN_AXE, Items.GOLDEN_AXE, Items.STONE_AXE, Items.IRON_AXE, Items.DIAMOND_AXE, Items.NETHERITE_AXE));
-		ToolTypeRegistry.register(
-				JadeIds.JADE("shovel"),
-				List.of(
-						Items.WOODEN_SHOVEL,
-						Items.GOLDEN_SHOVEL,
-						Items.STONE_SHOVEL,
-						Items.IRON_SHOVEL,
-						Items.DIAMOND_SHOVEL,
-						Items.NETHERITE_SHOVEL));
-		ToolTypeRegistry.register(
-				JadeIds.JADE("hoe"),
-				List.of(Items.WOODEN_HOE, Items.GOLDEN_HOE, Items.STONE_HOE, Items.IRON_HOE, Items.DIAMOND_HOE, Items.NETHERITE_HOE));
-		ToolTypeRegistry.register(JadeIds.JADE("sword"), () -> SimpleToolHandler.create(JadeIds.JADE("sword"), List.of(Items.WOODEN_SWORD))
-				.addExtraBlock(Blocks.BAMBOO)
-				.addExtraBlock(Blocks.BAMBOO_SAPLING));
-		ToolTypeRegistry.register(JadeIds.JADE("shears"), ShearsToolHandler::new);
+		registration.addHarvestPlugin(registry -> {
+			registry.type(JadeIds.JADE("pickaxe"))
+					.addTier(ToolTier.item(Items.WOODEN_PICKAXE))
+					.addTier(ToolTier.item(Items.GOLDEN_PICKAXE))
+					.addTier(ToolTier.item(Items.STONE_PICKAXE))
+					.addTier(ToolTier.item(Items.IRON_PICKAXE))
+					.addTier(ToolTier.item(Items.DIAMOND_PICKAXE))
+					.addTier(ToolTier.item(Items.NETHERITE_PICKAXE));
+			registry.type(JadeIds.JADE("axe"))
+					.addTier(ToolTier.item(Items.WOODEN_AXE))
+					.addTier(ToolTier.item(Items.GOLDEN_AXE))
+					.addTier(ToolTier.item(Items.STONE_AXE))
+					.addTier(ToolTier.item(Items.IRON_AXE))
+					.addTier(ToolTier.item(Items.DIAMOND_AXE))
+					.addTier(ToolTier.item(Items.NETHERITE_AXE));
+			registry.type(JadeIds.JADE("shovel"))
+					.addTier(ToolTier.item(Items.WOODEN_SHOVEL))
+					.addTier(ToolTier.item(Items.GOLDEN_SHOVEL))
+					.addTier(ToolTier.item(Items.STONE_SHOVEL))
+					.addTier(ToolTier.item(Items.IRON_SHOVEL))
+					.addTier(ToolTier.item(Items.DIAMOND_SHOVEL))
+					.addTier(ToolTier.item(Items.NETHERITE_SHOVEL));
+			registry.type(JadeIds.JADE("hoe"))
+					.addTier(ToolTier.item(Items.WOODEN_HOE))
+					.addTier(ToolTier.item(Items.GOLDEN_HOE))
+					.addTier(ToolTier.item(Items.STONE_HOE))
+					.addTier(ToolTier.item(Items.IRON_HOE))
+					.addTier(ToolTier.item(Items.DIAMOND_HOE))
+					.addTier(ToolTier.item(Items.NETHERITE_HOE));
+			registry.type(JadeIds.JADE("sword"))
+					.addTier(ToolTier.item(Items.WOODEN_SWORD)
+							.addExtraBlocks(List.of(Blocks.BAMBOO, Blocks.BAMBOO_SAPLING)));
+			registry.type(JadeIds.JADE("shears"))
+					.addTier(registry.defaultShearsTier());
+		});
 	}
 }

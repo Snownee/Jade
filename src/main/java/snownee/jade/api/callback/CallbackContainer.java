@@ -26,6 +26,10 @@ public class CallbackContainer<T> {
 		}
 	});
 
+	public void add(T callback) {
+		add(0, callback);
+	}
+
 	public void add(int priority, T callback) {
 		Objects.requireNonNull(callback);
 		callbacks.add(IntReferenceImmutablePair.of(priority, callback));

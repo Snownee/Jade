@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.jspecify.annotations.Nullable;
 
 import com.google.common.base.Stopwatch;
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableList;
 
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
@@ -15,6 +15,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.AlternativesEntry;
@@ -39,13 +40,9 @@ public class LootTableMineableCollector {
 			stopwatch = Stopwatch.createStarted();
 		}
 		LootTableMineableCollector collector = new LootTableMineableCollector(lootRegistry, toolItem);
-		ShearsToolHandler shearsHandler = new ShearsToolHandler();
-		List<Block> list = Lists.newArrayList();
+		ImmutableList.Builder<Block> list = ImmutableList.builder();
 		for (Block block : BuiltInRegistries.BLOCK) {
 			if (block.getLootTable().isEmpty()) {
-				continue;
-			}
-			if (!shearsHandler.test(block.defaultBlockState()).isEmpty()) {
 				continue;
 			}
 			LootTable lootTable = lootRegistry.get(block.getLootTable().get()).map(Holder::value).orElse(null);
@@ -57,7 +54,8 @@ public class LootTableMineableCollector {
 		if (stopwatch != null) {
 			Jade.LOGGER.info("LootTableMineableCollector took {}", stopwatch.stop());
 		}
-		return list;
+		list.add(Blocks.TRIPWIRE);
+		return list.build();
 	}
 
 	private boolean doLootTable(@Nullable LootTable lootTable) {
@@ -99,7 +97,7 @@ public class LootTableMineableCollector {
 		return false;
 	}
 
-	public static void onTagsUpdated(HolderLookup.Provider lookupProvider, boolean client) {
+	public static void onTagsUpdated(HolderLookup.Provider lookupProvider) {
 		//TODO execute on a thread?
 		try {
 			shearableBlocks = LootTableMineableCollector.execute(

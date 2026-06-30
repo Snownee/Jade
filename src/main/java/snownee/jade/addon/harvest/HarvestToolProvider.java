@@ -27,8 +27,8 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IPluginConfig;
-import snownee.jade.api.harvest.ToolHandler;
-import snownee.jade.api.harvest.ToolTypeRegistry;
+import snownee.jade.api.harvest.ToolResult;
+import snownee.jade.api.harvest.ToolType;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.JadeUI;
@@ -49,19 +49,19 @@ public class HarvestToolProvider implements IBlockComponentProvider, KeyedResour
 		CommonProxy.registerTagsUpdatedListener((_, _) -> apply());
 	}
 
-	public static ImmutableList<ItemStack> getTool(BlockState state, Level world, BlockPos pos) {
+	public static ImmutableList<ItemStack> getTool(BlockState state, Level level, BlockPos pos) {
 		ImmutableList.Builder<ItemStack> tools = ImmutableList.builder();
-		for (ToolHandler handler : ToolTypeRegistry.registeredTypes().values()) {
-			ItemStack tool = handler.test(state, world, pos);
-			if (!tool.isEmpty()) {
-				tools.add(tool);
+		for (ToolType handler : ToolTypeRegistryImpl.registeredTypes().values()) {
+			ToolResult result = handler.test(state, level, pos);
+			if (result.isSuccess()) {
+				tools.add(result.displayStack());
 			}
 		}
 		return tools.build();
 	}
 
 	private static void apply() {
-		ToolTypeRegistry.apply();
+		ToolTypeRegistryImpl.apply();
 		INSTANCE.resultCache.invalidateAll();
 	}
 
@@ -154,10 +154,8 @@ public class HarvestToolProvider implements IBlockComponentProvider, KeyedResour
 	}
 
 	public void setShearableBlocks(Collection<Block> blocks) {
-		if (ToolTypeRegistry.get(JadeIds.JADE("shears")) instanceof ShearsToolHandler handler) {
-			handler.setShearableBlocks(blocks);
-			invalidateCache();
-		}
+		ToolTypeRegistryImpl.DEFAULT_SHEARS_TIER.get().replaceExtraBlocks(blocks);
+		invalidateCache();
 	}
 
 	@Override
