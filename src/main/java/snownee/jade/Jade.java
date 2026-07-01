@@ -16,9 +16,13 @@ import com.google.common.collect.Sets;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.players.NameAndId;
 import net.minecraft.util.ExtraCodecs;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.gamerules.GameRule;
 import net.minecraft.world.level.gamerules.GameRuleCategory;
 import net.minecraft.world.level.gamerules.GameRules;
@@ -268,7 +272,12 @@ public class Jade {
 		MAX_POSITION_DEVIATION = GameRules.registerInteger("jade:max_position_deviation", GameRuleCategory.MISC, 21, 0, 1000);
 	}
 
-	public static int maxPositionDeviation(ServerPlayer player) {
-		return player.level().getGameRules().get(Objects.requireNonNull(MAX_POSITION_DEVIATION));
+	public static boolean isOutOfReach(ServerPlayer player, BlockPos pos, double baseReach) {
+		ServerLevel level = player.level();
+		if (level.getServer().isSingleplayerOwner(new NameAndId(player.getGameProfile()))) {
+			return false;
+		}
+		double maxDistance = Mth.square(baseReach + level.getGameRules().get(Objects.requireNonNull(MAX_POSITION_DEVIATION)));
+		return pos.distSqr(player.blockPosition()) > maxDistance;
 	}
 }
