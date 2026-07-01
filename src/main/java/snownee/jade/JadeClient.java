@@ -42,6 +42,7 @@ import snownee.jade.addon.universal.ItemStorageProvider;
 import snownee.jade.addon.vanilla.VanillaPlugin;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.BlockAccessor;
+import snownee.jade.api.IBreakingProgressProvider.BreakingProgress;
 import snownee.jade.api.IWailaClientRegistration;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.JadeKeys;
@@ -345,32 +346,35 @@ public final class JadeClient {
 			progressAlpha = 0;
 			return;
 		}
-		Minecraft mc = Minecraft.getInstance();
-		MultiPlayerGameMode playerController = mc.gameMode;
-		if (playerController == null || mc.level == null || mc.player == null) {
-			return;
+		BreakingProgress breakingProgress = null;
+		for (var provider : WailaClientRegistration.instance().breakingProgressProviders.callbacks()) {
+			breakingProgress = provider.getBreakingProgress(accessor);
+			if (breakingProgress != null) {
+				break;
+			}
 		}
-		BlockPos pos = playerController.destroyBlockPos;
-		BlockState state = mc.level.getBlockState(pos);
-		if (playerController.isDestroying()) {
-			canHarvest = CommonProxy.isCorrectToolForDrops(state, mc.player, mc.level, pos);
+		if (breakingProgress == null) {
+			breakingProgress = getVanillaBreakingProgress();
+		}
+		boolean isBreaking = breakingProgress != null;
+		if (isBreaking) {
+			canHarvest = breakingProgress.canHarvest();
 		} else if (progressAlpha == 0) {
 			return;
 		}
+		Minecraft mc = Minecraft.getInstance();
 		Theme theme = IThemeHelper.get().theme();
 		ColorPalette colors = theme.tooltipStyle.boxProgressColors;
 		int color = canHarvest ? colors.title() : colors.failure();
 		float top = root.getY() + root.getHeight();
 		float width = root.getWidth();
-		progressAlpha += mc.getDeltaTracker().getGameTimeDeltaTicks() * (playerController.isDestroying() ? 0.1F : -0.1F);
-		if (playerController.isDestroying()) {
+		progressAlpha += mc.getDeltaTracker().getGameTimeDeltaTicks() * (isBreaking ? 0.1F : -0.1F);
+		if (isBreaking) {
 			progressAlpha = Math.min(progressAlpha, 0.6F);
-			float progress = state.getDestroyProgress(mc.player, mc.player.level(), pos);
-			if (playerController.destroyProgress + progress >= 1) {
+			if (breakingProgress.progress() >= 1) {
 				progressAlpha = savedProgress = 1;
 			} else {
-				progress = playerController.destroyProgress + mc.getDeltaTracker().getGameTimeDeltaPartialTick(false) * progress;
-				savedProgress = Mth.clamp(progress, 0, 1);
+				savedProgress = Mth.clamp(breakingProgress.progress(), 0, 1);
 			}
 		} else {
 			progressAlpha = Math.max(progressAlpha, 0);
@@ -385,6 +389,27 @@ public final class JadeClient {
 		float offset3 = theme.tooltipStyle.boxProgressOffset(ScreenDirection.LEFT);
 		width += offset1 - offset3;
 		DisplayHelper.fill(graphics, offset3, top - 1 + offset0, offset3 + width * savedProgress, top + offset2, color);
+	}
+
+	@Nullable
+	private static BreakingProgress getVanillaBreakingProgress() {
+		Minecraft mc = Minecraft.getInstance();
+		MultiPlayerGameMode playerController = mc.gameMode;
+		if (playerController == null || mc.level == null || mc.player == null || !playerController.isDestroying()) {
+			return null;
+		}
+		BlockPos pos = playerController.destroyBlockPos;
+		BlockState state = mc.level.getBlockState(pos);
+		boolean canHarvest = CommonProxy.isCorrectToolForDrops(state, mc.player, mc.level, pos);
+		float progressPerTick = state.getDestroyProgress(mc.player, mc.player.level(), pos);
+		float progress;
+		if (playerController.destroyProgress + progressPerTick >= 1) {
+			progress = 1;
+		} else {
+			progress = playerController.destroyProgress +
+					mc.getDeltaTracker().getGameTimeDeltaPartialTick(false) * progressPerTick;
+		}
+		return new BreakingProgress(progress, canHarvest);
 	}
 
 	public static MutableComponent format(String s, Object... objects) {

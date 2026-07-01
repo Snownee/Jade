@@ -96,6 +96,26 @@ public interface IWailaClientRegistration extends PlatformWailaClientRegistratio
 	 */
 	void registerEntityComponent(IComponentProvider<EntityAccessor> provider, Class<? extends Entity> entityClass);
 
+	/**
+	 * Registers a custom source for the breaking progress bar.
+	 * <p>
+	 * Providers are queried in ascending priority order. The first provider returning a non-null result handles the
+	 * bar for that frame. If no provider handles it, Jade falls back to vanilla block-breaking progress.
+	 *
+	 * @param provider the breaking progress provider
+	 */
+	default void registerBreakingProgressProvider(IBreakingProgressProvider provider) {
+		registerBreakingProgressProvider(0, provider);
+	}
+
+	/**
+	 * Registers a custom source for the breaking progress bar.
+	 *
+	 * @param priority lower values are queried first
+	 * @param provider the breaking progress provider
+	 */
+	void registerBreakingProgressProvider(int priority, IBreakingProgressProvider provider);
+
 	EmptyAccessor.Builder emptyAccessor();
 
 	BlockAccessor.Builder blockAccessor();

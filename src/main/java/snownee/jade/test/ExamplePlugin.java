@@ -40,6 +40,7 @@ public class ExamplePlugin implements IWailaPlugin {
 	@Override
 	public void registerClient(IWailaClientRegistration registration) {
 		registration.registerBlockComponent(ExampleComponentProvider.INSTANCE, AbstractFurnaceBlock.class);
+		registration.registerBreakingProgressProvider(ExampleBreakingProgressProvider.INSTANCE);
 		registration.addConfig(UID_TEST_STR_CFG, "", $ -> Identifier.tryParse($) != null);
 		registration.addConfigListener(UID_TEST_STR_CFG, $ -> Jade.LOGGER.info("Changed: $: " + IWailaConfig.get().plugin().getString($)));
 		registration.addConfig(UID_TEST_FLOAT_CFG, 0F, 0F, 100F, false);

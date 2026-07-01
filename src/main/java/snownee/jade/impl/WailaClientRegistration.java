@@ -47,6 +47,7 @@ import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EmptyAccessor;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IComponentProvider;
+import snownee.jade.api.IBreakingProgressProvider;
 import snownee.jade.api.IToggleableProvider;
 import snownee.jade.api.IWailaClientRegistration;
 import snownee.jade.api.JadeIds;
@@ -93,6 +94,7 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	public final CallbackContainer<JadeTooltipCollectedCallback> tooltipCollectedCallback = new CallbackContainer<>();
 	public final CallbackContainer<JadeItemModNameCallback> itemModNameCallback = new CallbackContainer<>();
 	public final CallbackContainer<JadeBeforeTooltipCollectCallback> beforeTooltipCollectCallback = new CallbackContainer<>();
+	public final CallbackContainer<IBreakingProgressProvider> breakingProgressProviders = new CallbackContainer<>();
 
 	public final Map<Identifier, ConfigEntry<?>> configEntries = Maps.newHashMap();
 	public final Multimap<Identifier, Component> configCategoryOverrides = ArrayListMultimap.create();
@@ -145,6 +147,12 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	public void registerEntityComponent(IComponentProvider<EntityAccessor> provider, Class<? extends Entity> entityClass) {
 		entityComponentProviders.register(entityClass, provider);
 		tryAddConfig(provider);
+	}
+
+	@Override
+	public void registerBreakingProgressProvider(int priority, IBreakingProgressProvider provider) {
+		Objects.requireNonNull(provider);
+		breakingProgressProviders.add(priority, provider);
 	}
 
 	public List<IComponentProvider<BlockAccessor>> getBlockProviders(
@@ -350,7 +358,8 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 				rayTraceCallback,
 				tooltipCollectedCallback,
 				itemModNameCallback,
-				beforeTooltipCollectCallback).forEach(CallbackContainer::sort);
+				beforeTooltipCollectCallback,
+				breakingProgressProviders).forEach(CallbackContainer::sort);
 	}
 
 	@Override
