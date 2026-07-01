@@ -16,9 +16,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -73,9 +71,7 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 			tag.putInt("z", pos.getZ());
 			tag.putString("BlockId", CommonProxy.getId(accessor.getBlock()).toString());
 
-			ServerLevel world = player.level();
-			double maxDistance = Mth.square(player.blockInteractionRange() + Jade.maxPositionDeviation(player));
-			if (pos.distSqr(player.blockPosition()) > maxDistance || !world.isLoaded(pos)) {
+			if (!player.level().isLoaded(pos) || Jade.isOutOfReach(player, pos, player.blockInteractionRange())) {
 				responseSender.accept(tag);
 				return;
 			}
