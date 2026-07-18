@@ -295,6 +295,7 @@ public class VanillaPlugin implements IWailaPlugin {
 					.addTier(ToolTier.item(Items.WOODEN_PICKAXE))
 					.addTier(ToolTier.item(Items.GOLDEN_PICKAXE))
 					.addTier(ToolTier.item(Items.STONE_PICKAXE))
+					.addTier(ToolTier.item(Items.COPPER_PICKAXE))
 					.addTier(ToolTier.item(Items.IRON_PICKAXE))
 					.addTier(ToolTier.item(Items.DIAMOND_PICKAXE))
 					.addTier(ToolTier.item(Items.NETHERITE_PICKAXE));
@@ -302,6 +303,7 @@ public class VanillaPlugin implements IWailaPlugin {
 					.addTier(ToolTier.item(Items.WOODEN_AXE))
 					.addTier(ToolTier.item(Items.GOLDEN_AXE))
 					.addTier(ToolTier.item(Items.STONE_AXE))
+					.addTier(ToolTier.item(Items.COPPER_AXE))
 					.addTier(ToolTier.item(Items.IRON_AXE))
 					.addTier(ToolTier.item(Items.DIAMOND_AXE))
 					.addTier(ToolTier.item(Items.NETHERITE_AXE));
@@ -309,6 +311,7 @@ public class VanillaPlugin implements IWailaPlugin {
 					.addTier(ToolTier.item(Items.WOODEN_SHOVEL))
 					.addTier(ToolTier.item(Items.GOLDEN_SHOVEL))
 					.addTier(ToolTier.item(Items.STONE_SHOVEL))
+					.addTier(ToolTier.item(Items.COPPER_SHOVEL))
 					.addTier(ToolTier.item(Items.IRON_SHOVEL))
 					.addTier(ToolTier.item(Items.DIAMOND_SHOVEL))
 					.addTier(ToolTier.item(Items.NETHERITE_SHOVEL));
@@ -316,14 +319,12 @@ public class VanillaPlugin implements IWailaPlugin {
 					.addTier(ToolTier.item(Items.WOODEN_HOE))
 					.addTier(ToolTier.item(Items.GOLDEN_HOE))
 					.addTier(ToolTier.item(Items.STONE_HOE))
+					.addTier(ToolTier.item(Items.COPPER_HOE))
 					.addTier(ToolTier.item(Items.IRON_HOE))
 					.addTier(ToolTier.item(Items.DIAMOND_HOE))
 					.addTier(ToolTier.item(Items.NETHERITE_HOE));
-			registry.type(JadeIds.JADE("sword"))
-					.addTier(ToolTier.item(Items.WOODEN_SWORD)
-							.addExtraBlocks(List.of(Blocks.BAMBOO, Blocks.BAMBOO_SAPLING)));
-			registry.type(JadeIds.JADE("shears"))
-					.addTier(registry.defaultShearsTier());
+			registry.type(JadeIds.JADE("sword")).addTier(ToolTier.item(Items.WOODEN_SWORD));
+			registry.type(JadeIds.JADE("shears"), false).addTier(registry.defaultShearsTier());
 		});
 	}
 }
