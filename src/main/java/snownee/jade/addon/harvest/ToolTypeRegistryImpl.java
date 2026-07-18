@@ -26,7 +26,7 @@ import snownee.jade.impl.WailaClientRegistration;
 public final class ToolTypeRegistryImpl implements ToolTypeRegistry {
 
 	private static ImmutableMap<Identifier, ToolType> TOOL_TYPES = ImmutableMap.of();
-	public static final Supplier<ToolTier> DEFAULT_SHEARS_TIER = Suppliers.memoize(() -> ToolTier.alwaysFail(Items.SHEARS));
+	public static final Supplier<ToolTier> DEFAULT_SHEARS_TIER = Suppliers.memoize(() -> ToolTier.item(Items.SHEARS));
 	private final Map<Identifier, ToolType> pendingMap = Maps.newLinkedHashMap();
 	private final Map<Identifier, CallbackContainer<ToolTierAddedCallback>> pendingCallbacks = Maps.newHashMap();
 
