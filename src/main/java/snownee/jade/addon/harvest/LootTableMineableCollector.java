@@ -1,7 +1,6 @@
 package snownee.jade.addon.harvest;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.jspecify.annotations.Nullable;
 
@@ -87,12 +86,13 @@ public class LootTableMineableCollector {
 				}
 			}
 		} else if (entry instanceof NestedLootTable nestedLootTable) {
-			Optional<LootTable> lootTable = nestedLootTable.contents.map(
-					$ -> lootRegistry.get($).map(Holder::value),
-					Optional::of);
-			return doLootTable(lootTable.orElse(null));
-		} else {
-			return CommonProxy.isCorrectConditions(entry.conditions, toolItem);
+			for (Holder<LootTable> child : nestedLootTable.value) {
+				if (doLootTable(child.value())) {
+					return true;
+				}
+			}
+		} else if (entry.condition.isPresent()) {
+			return CommonProxy.isCorrectConditions(entry.condition.get().value(), toolItem);
 		}
 		return false;
 	}

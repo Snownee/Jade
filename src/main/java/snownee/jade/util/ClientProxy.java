@@ -12,8 +12,6 @@ import java.util.function.Predicate;
 import org.jspecify.annotations.Nullable;
 
 import com.google.common.base.Strings;
-import com.google.common.base.Suppliers;
-import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.brigadier.CommandDispatcher;
 
 import net.fabricmc.api.ClientModInitializer;
@@ -55,7 +53,6 @@ import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
@@ -92,7 +89,6 @@ import snownee.jade.gui.PreviewOptionsScreen;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.ui.FluidStackElement;
-import snownee.jade.mixin.KeyAccess;
 import snownee.jade.network.ClientHandshakePacket;
 import snownee.jade.network.ClientPayloadContext;
 import snownee.jade.network.ReceiveDataPacket;
@@ -168,7 +164,7 @@ public final class ClientProxy implements ClientModInitializer {
 	}
 
 	public static KeyMapping registerKeyBinding(String desc, int defaultKey) {
-		KeyMapping key = new KeyMapping("key.jade." + desc, InputConstants.Type.KEYSYM, defaultKey, JadeClient.keyMappingCategory);
+		KeyMapping key = new KeyMapping("key.jade." + desc, defaultKey, JadeClient.keyMappingCategory);
 		KeyMappingHelper.registerKeyMapping(key);
 		return key;
 	}
@@ -361,11 +357,6 @@ public final class ClientProxy implements ClientModInitializer {
 					ShowOverlayPacket.handle(payload, ClientPayloadContext.of(context.client()));
 				});
 
-		//noinspection ConstantValue
-		for (int i = InputConstants.KEY_NUMPAD0; i <= InputConstants.KEY_NUMPAD9; i++) {
-			InputConstants.Key key = InputConstants.Type.KEYSYM.getOrCreate(i);
-			((KeyAccess) (Object) key).setDisplayName(Suppliers.memoize(() -> Component.translatable(key.getName())));
-		}
 		JadeClient.init();
 		ResourceLoader.get(PackType.SERVER_DATA).registerReloadListener(
 				HarvestToolProvider.INSTANCE.getUid(),

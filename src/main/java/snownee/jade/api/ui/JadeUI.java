@@ -4,15 +4,13 @@ import java.util.function.Consumer;
 
 import org.jspecify.annotations.Nullable;
 
-import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.Util;
 import net.minecraft.world.item.ItemStack;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.fluid.JadeFluidObject;
@@ -23,7 +21,6 @@ import snownee.jade.impl.ui.JadeUIInternal;
  * Static factory and utility methods for Jade UI elements.
  */
 public final class JadeUI {
-	private static final boolean ON_OSX = Util.getPlatform() == Util.OS.OSX;
 
 	/**
 	 * Returns whether the given element is empty.
@@ -70,7 +67,7 @@ public final class JadeUI {
 	 * Creates an item element.
 	 *
 	 * @param itemStack item to render
-	 * @param scale render scale
+	 * @param scale     render scale
 	 * @return item element
 	 */
 	public static Element item(ItemStack itemStack, float scale) {
@@ -81,8 +78,8 @@ public final class JadeUI {
 	 * Creates an item element with optional stack text.
 	 *
 	 * @param itemStack item to render
-	 * @param scale render scale
-	 * @param text optional overlay text
+	 * @param scale     render scale
+	 * @param text      optional overlay text
 	 * @return item element
 	 */
 	public static Element item(ItemStack itemStack, float scale, @Nullable String text) {
@@ -132,8 +129,8 @@ public final class JadeUI {
 	/**
 	 * Creates a progress element with explicit size.
 	 *
-	 * @param view progress view
-	 * @param width width
+	 * @param view   progress view
+	 * @param width  width
 	 * @param height height
 	 * @return progress element
 	 */
@@ -144,13 +141,13 @@ public final class JadeUI {
 	/**
 	 * Creates a configurable progress element.
 	 *
-	 * @param progress progress value
-	 * @param baseSprite base sprite
+	 * @param progress       progress value
+	 * @param baseSprite     base sprite
 	 * @param progressSprite fill sprite
-	 * @param width width
-	 * @param height height
-	 * @param text optional label
-	 * @param style optional style
+	 * @param width          width
+	 * @param height         height
+	 * @param text           optional label
+	 * @param style          optional style
 	 * @return progress element
 	 */
 	public static ResizeableElement progress(
@@ -167,7 +164,7 @@ public final class JadeUI {
 	/**
 	 * Creates a nested tooltip box.
 	 *
-	 * @param tooltip nested tooltip
+	 * @param tooltip  nested tooltip
 	 * @param boxStyle box style
 	 * @return box element
 	 */
@@ -207,9 +204,9 @@ public final class JadeUI {
 	 * Creates a sprite element.
 	 *
 	 * @param renderPipeline render pipeline
-	 * @param sprite sprite identifier
-	 * @param width width
-	 * @param height height
+	 * @param sprite         sprite identifier
+	 * @param width          width
+	 * @param height         height
 	 * @return sprite element
 	 */
 	public static ResizeableElement sprite(RenderPipeline renderPipeline, Identifier sprite, int width, int height) {
@@ -220,7 +217,7 @@ public final class JadeUI {
 	 * Creates a sprite element.
 	 *
 	 * @param sprite sprite identifier
-	 * @param width width
+	 * @param width  width
 	 * @param height height
 	 * @return sprite element
 	 */
@@ -232,9 +229,9 @@ public final class JadeUI {
 	 * Creates a horizontally tiled sprite element.
 	 *
 	 * @param renderPipeline render pipeline
-	 * @param sprite sprite identifier
-	 * @param width width
-	 * @param height height
+	 * @param sprite         sprite identifier
+	 * @param width          width
+	 * @param height         height
 	 * @return sprite element
 	 */
 	public static ResizeableElement horizontalTiledSprite(
@@ -249,9 +246,9 @@ public final class JadeUI {
 	 * Creates a vertically tiled sprite element.
 	 *
 	 * @param renderPipeline render pipeline
-	 * @param sprite sprite identifier
-	 * @param width width
-	 * @param height height
+	 * @param sprite         sprite identifier
+	 * @param width          width
+	 * @param height         height
 	 * @return sprite element
 	 */
 	public static ResizeableElement verticalTiledSprite(RenderPipeline renderPipeline, Identifier sprite, int width, int height) {
@@ -262,7 +259,7 @@ public final class JadeUI {
 	 * Visits an element and all of its children recursively.
 	 *
 	 * @param layoutElement root element
-	 * @param consumer visitor callback
+	 * @param consumer      visitor callback
 	 */
 	public static void visitChildrenRecursive(LayoutElement layoutElement, Consumer<LayoutElement> consumer) {
 		JadeUIInternal.visitChildrenRecursive(layoutElement, consumer);
@@ -283,12 +280,7 @@ public final class JadeUI {
 	 * @return {@code true} if control is down
 	 */
 	public static boolean hasControlDown() {
-		if (ON_OSX) {
-			return InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), 343) ||
-					InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), 347);
-		}
-		return InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), 341) ||
-				InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), 345);
+		return Minecraft.getInstance().hasControlDown();
 	}
 
 	/**
@@ -297,8 +289,7 @@ public final class JadeUI {
 	 * @return {@code true} if shift is down
 	 */
 	public static boolean hasShiftDown() {
-		return InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), 340) ||
-				InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), 344);
+		return Minecraft.getInstance().hasShiftDown();
 	}
 
 	/**
@@ -307,8 +298,7 @@ public final class JadeUI {
 	 * @return {@code true} if alt is down
 	 */
 	public static boolean hasAltDown() {
-		return InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), 342) ||
-				InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), 346);
+		return Minecraft.getInstance().hasAltDown();
 	}
 
 	/**

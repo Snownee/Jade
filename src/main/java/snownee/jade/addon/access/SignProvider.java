@@ -3,6 +3,7 @@ package snownee.jade.addon.access;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
+import net.minecraft.world.level.block.entity.SignTextSlot;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.ITooltip;
@@ -15,10 +16,10 @@ public class SignProvider implements IBlockComponentProvider {
 		if (!(accessor.getBlockEntity() instanceof SignBlockEntity be)) {
 			return;
 		}
-		boolean front = be.isFacingFrontText(accessor.getPlayer());
-		tooltip.add(Component.translatable("jade.access.sign." + (front ? "front" : "back")));
+		SignTextSlot slot = be.getSlotPlayerIsFacing(accessor.getPlayer());
+		tooltip.add(Component.translatable("jade.access.sign." + (slot == SignTextSlot.FRONT ? "front" : "back")));
 		int i = 0;
-		for (Component message : (front ? be.getFrontText() : be.getBackText()).getMessages(true)) {
+		for (Component message : be.getText(slot).getMessages(true)) {
 			++i;
 			if (accessor.showDetails()) {
 				tooltip.add(Component.translatable("jade.access.sign.line" + i, message));

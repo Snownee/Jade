@@ -4,7 +4,7 @@ import java.text.Format;
 
 import org.jspecify.annotations.Nullable;
 
-import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
@@ -34,11 +34,11 @@ public interface IDisplayHelper {
 	 * Draws an item stack.
 	 *
 	 * @param graphics graphics context
-	 * @param x x position
-	 * @param y y position
-	 * @param stack item stack
-	 * @param scale render scale
-	 * @param text optional overlay text
+	 * @param x        x position
+	 * @param y        y position
+	 * @param stack    item stack
+	 * @param scale    render scale
+	 * @param text     optional overlay text
 	 */
 	void drawItem(GuiGraphicsExtractor graphics, float x, float y, ItemStack stack, float scale, @Nullable String text);
 

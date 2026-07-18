@@ -62,7 +62,9 @@ public class GuiGraphicsExtractorMixin implements JadeGuiGraphics {
 		jade$itemTooltipContext = ItemStack.EMPTY;
 	}
 
-	@Inject(method = "setTooltipForNextFrameInternal", at = @At("HEAD"))
+	@Inject(
+			method = "setTooltipForNextFrameInternal(Lnet/minecraft/client/gui/Font;Ljava/util/List;IILnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;Lnet/minecraft/resources/Identifier;ZZ)V",
+			at = @At("HEAD"))
 	private void jade$appendModName(
 			Font font,
 			List<ClientTooltipComponent> lines,
@@ -71,6 +73,7 @@ public class GuiGraphicsExtractorMixin implements JadeGuiGraphics {
 			ClientTooltipPositioner positioner,
 			@Nullable Identifier style,
 			boolean replaceExisting,
+			boolean extraSpaceAfterFirstLine,
 			CallbackInfo ci) {
 		ItemStack itemStack = jade$itemTooltipContext;
 		if (itemStack.isEmpty() && minecraft.gui.screen() instanceof AbstractContainerScreen<?> screen && screen.hoveredSlot != null &&

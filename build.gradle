@@ -52,7 +52,7 @@ dependencies {
         exclude(group: "net.fabricmc.fabric-api")
     }
 
-    implementation "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
+//    implementation "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
 }
 
 loom {

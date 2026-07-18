@@ -13,9 +13,9 @@ import org.joml.Matrix3x2f;
 import org.jspecify.annotations.Nullable;
 
 import com.google.common.base.Suppliers;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.textures.GpuSampler;
-import com.mojang.blaze3d.textures.GpuTextureView;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.textures.GpuSampler;
+import com.mojang.renderpearl.api.textures.GpuTextureView;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -553,7 +553,8 @@ public class DisplayHelper implements IDisplayHelper {
 			GuiGraphicsExtractor graphics,
 			RenderPipeline renderPipeline,
 			GpuTextureView gpuTextureView,
-			GpuSampler sampler, float x0,
+			GpuSampler sampler,
+			float x0,
 			float y0,
 			float x1,
 			float y1,

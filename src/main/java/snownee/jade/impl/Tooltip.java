@@ -17,6 +17,7 @@ import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.narration.NarrationSupplier;
 import net.minecraft.client.gui.narration.NarrationThunk;
+import net.minecraft.client.gui.narration.NarrationTrigger;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import snownee.jade.api.ITooltip;
@@ -198,6 +199,11 @@ public class Tooltip implements ITooltip {
 			@Override
 			public NarrationElementOutput nest() {
 				return this;
+			}
+
+			@Override
+			public NarrationTrigger narrationTrigger() {
+				return NarrationTrigger.SYSTEM;
 			}
 		};
 		for (Line line : lines) {

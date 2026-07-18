@@ -279,7 +279,6 @@ public final class CommonProxy implements ModInitializer {
 	@Nullable
 	public static Storage<ItemVariant> findItemHandler(Accessor<?> accessor) {
 		if (accessor instanceof BlockAccessor blockAccessor) {
-			//noinspection DataFlowIssue
 			return ItemStorage.SIDED.find(
 					blockAccessor.getLevel(),
 					blockAccessor.getPosition(),
@@ -306,7 +305,6 @@ public final class CommonProxy implements ModInitializer {
 	public static List<ViewGroup<FluidView.Data>> wrapFluidStorage(Accessor<?> accessor) {
 		if (accessor instanceof BlockAccessor blockAccessor) {
 			try {
-				//noinspection DataFlowIssue
 				var storage = FluidStorage.SIDED.find(
 						accessor.getLevel(),
 						blockAccessor.getPosition(),
@@ -327,7 +325,6 @@ public final class CommonProxy implements ModInitializer {
 	public static List<ViewGroup<EnergyView.Data>> wrapEnergyStorage(Accessor<?> accessor) {
 		if (hasTechRebornEnergy && accessor instanceof BlockAccessor blockAccessor) {
 			try {
-				//noinspection DataFlowIssue
 				var storage = TechRebornEnergyCompat.getSided().find(
 						accessor.getLevel(),
 						blockAccessor.getPosition(),
@@ -455,7 +452,6 @@ public final class CommonProxy implements ModInitializer {
 			if (blockAccessor.getBlockEntity() == null) {
 				return blockAccessor.getBlock() instanceof WorldlyContainerHolder;
 			}
-			//noinspection DataFlowIssue
 			return ItemStorage.SIDED.find(
 					accessor.getLevel(),
 					blockAccessor.getPosition(),
@@ -468,7 +464,6 @@ public final class CommonProxy implements ModInitializer {
 
 	public static boolean hasDefaultFluidStorage(Accessor<?> accessor) {
 		if (accessor instanceof BlockAccessor blockAccessor) {
-			//noinspection DataFlowIssue
 			return FluidStorage.SIDED.find(
 					accessor.getLevel(),
 					blockAccessor.getPosition(),
@@ -481,7 +476,6 @@ public final class CommonProxy implements ModInitializer {
 
 	public static boolean hasDefaultEnergyStorage(Accessor<?> accessor) {
 		if (hasTechRebornEnergy && accessor instanceof BlockAccessor blockAccessor) {
-			//noinspection DataFlowIssue
 			return TechRebornEnergyCompat.getSided().find(
 					accessor.getLevel(),
 					blockAccessor.getPosition(),
@@ -504,17 +498,13 @@ public final class CommonProxy implements ModInitializer {
 		CommonLifecycleEvents.TAGS_LOADED.register(listener::accept);
 	}
 
-	public static boolean isCorrectConditions(List<LootItemCondition> conditions, ItemStack toolItem) {
-		if (conditions.size() != 1) {
-			return false;
-		}
-		LootItemCondition condition = conditions.getFirst();
+	public static boolean isCorrectConditions(LootItemCondition condition, ItemStack toolItem) {
 		if (condition instanceof MatchTool(Optional<ItemPredicate> predicate)) {
 			ItemPredicate itemPredicate = predicate.orElse(null);
 			return itemPredicate != null && itemPredicate.test(toolItem);
 		} else if (condition instanceof AnyOfCondition anyOfCondition) {
-			for (LootItemCondition child : anyOfCondition.terms) {
-				if (isCorrectConditions(List.of(child), toolItem)) {
+			for (Holder<LootItemCondition> child : anyOfCondition.terms) {
+				if (isCorrectConditions(child.value(), toolItem)) {
 					return true;
 				}
 			}

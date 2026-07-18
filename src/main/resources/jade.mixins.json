@@ -14,7 +14,6 @@
 		"CreativeModeInventoryScreenMixin",
 		"FogRendererMixin",
 		"GuiGraphicsExtractorMixin",
-		"KeyAccess",
 		"LanguageManagerMixin",
 		"PreparedTextBuilderMixin",
 		"key_extension.KeyBindsListMixin",

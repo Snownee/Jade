@@ -66,10 +66,10 @@ accessible method net/minecraft/world/level/block/FireBlock getBurnOdds (Lnet/mi
 accessible method net/minecraft/world/level/block/FireBlock getIgniteOdds (Lnet/minecraft/world/level/block/state/BlockState;)I
 
 accessible field net/minecraft/world/level/storage/loot/LootTable pools Ljava/util/List;
-accessible field net/minecraft/world/level/storage/loot/entries/NestedLootTable contents Lcom/mojang/datafixers/util/Either;
-accessible field net/minecraft/world/level/storage/loot/predicates/CompositeLootItemCondition terms Ljava/util/List;
+accessible field net/minecraft/world/level/storage/loot/entries/NestedLootTable value Lnet/minecraft/core/HolderSet;
+accessible field net/minecraft/world/level/storage/loot/predicates/CompositeLootItemCondition terms Lnet/minecraft/core/HolderSet;
 accessible field net/minecraft/world/level/storage/loot/entries/CompositeEntryBase children Ljava/util/List;
-accessible field net/minecraft/world/level/storage/loot/entries/LootPoolEntryContainer conditions Ljava/util/List;
+accessible field net/minecraft/world/level/storage/loot/entries/LootPoolEntryContainer condition Ljava/util/Optional;
 accessible field net/minecraft/world/level/storage/loot/LootPool entries Ljava/util/List;
 
 accessible method net/minecraft/client/gui/components/WidgetTooltipHolder createTooltipPositioner (Lnet/minecraft/client/gui/navigation/ScreenRectangle;ZZ)Lnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;
@@ -84,7 +84,6 @@ accessible method net/minecraft/client/gui/GuiGraphicsExtractor itemBar (Lnet/mi
 accessible field net/minecraft/client/gui/GuiGraphicsExtractor guiRenderState Lnet/minecraft/client/renderer/state/gui/GuiRenderState;
 accessible field net/minecraft/client/gui/GuiGraphicsExtractor scissorStack Lnet/minecraft/client/gui/GuiGraphicsExtractor$ScissorStack;
 accessible method net/minecraft/client/gui/GuiGraphicsExtractor$ScissorStack peek ()Lnet/minecraft/client/gui/navigation/ScreenRectangle;
-accessible method net/minecraft/client/gui/GuiGraphicsExtractor blitSprite (Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/client/renderer/texture/TextureAtlasSprite;IIIIIIIII)V
 accessible field net/minecraft/client/gui/GuiGraphicsExtractor deferredTooltip Ljava/lang/Runnable;
 accessible field net/minecraft/client/gui/GuiGraphicsExtractor guiSprites Lnet/minecraft/client/renderer/texture/TextureAtlas;
 accessible field net/minecraft/client/gui/GuiGraphicsExtractor hoveredTextStyle Lnet/minecraft/network/chat/Style;

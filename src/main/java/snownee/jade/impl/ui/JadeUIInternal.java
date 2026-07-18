@@ -7,7 +7,7 @@ import java.util.function.Predicate;
 import org.jspecify.annotations.Nullable;
 
 import com.google.common.collect.Sets;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.layouts.Layout;
