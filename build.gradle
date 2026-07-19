@@ -17,6 +17,7 @@ repositories {
     maven { url "https://maven.shedaniel.me/" }
     maven { url "https://maven.terraformersmc.com/releases/" }
     maven { url "https://maven.blamejared.com/" }
+    maven { url "https://maven.cassian.cc/" }
     maven {
         url "https://cursemaven.com"
         content {
@@ -53,6 +54,8 @@ dependencies {
     }
 
     implementation "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
+
+    compileOnly "cc.cassian.rrv:reliable-recipe-viewer-fabric:${project.rrv_version}"
 }
 
 loom {
