@@ -1,7 +1,7 @@
 plugins {
     id 'fabric-loom' version '1.10-SNAPSHOT'
     id 'maven-publish'
-    id "me.shedaniel.unified-publishing" version "0.1.+"
+    id "me.modmuss50.mod-publish-plugin" version "2.+"
 }
 
 sourceCompatibility = JavaVersion.VERSION_21
@@ -140,38 +140,28 @@ publishing {
     }
 }
 
-unifiedPublishing {
-    project {
-        displayName = "[Fabric $project.supported_version] $project.mod_version"
-        version = realVersion // Optional, Inferred from project by default
-        changelog = file("CHANGELOG.md").exists() ? file("CHANGELOG.md").text : "" // Optional, in markdown format
-        releaseType = project.release_type // Optional, use "release", "beta" or "alpha"
-        gameVersions = [project.archive_minecraft_version]
-        gameLoaders = ["fabric", "quilt"]
+publishMods {
+    file = tasks.remapJar.archiveFile
+    changelog = file('CHANGELOG.md').exists() ? file('CHANGELOG.md').text : ''
+    type = ['release': STABLE, 'beta': BETA, 'alpha': ALPHA][release_type]
+    modLoaders.add("fabric")
+    modLoaders.add("quilt")
+    displayName = "[Fabric ${supported_version}] ${mod_version}"
+    version = realVersion
 
-        mainPublication tasks.remapJar // Declares the publicated jar
-        secondaryPublications.builtBy(tasks.apiJar)
+    curseforge {
+        projectId = "324717"
+        client = true
+        server = true
+        accessToken = providers.environmentVariable("CURSE_TOKEN")
+        minecraftVersions.add(project.archive_minecraft_version)
+        optional("jei")
+    }
 
-        if (System.getenv("CURSE_TOKEN") != null) {
-            curseforge {
-                token = System.getenv("CURSE_TOKEN")
-                id = "324717"
-
-                relations { // Optional, Inferred from the relations above by default
-                    optional "jei"
-                }
-            }
-        }
-
-        if (System.getenv("MODRINTH_TOKEN") != null) {
-            modrinth {
-                token = System.getenv("MODRINTH_TOKEN")
-                id = "nvQzSEkH"
-
-                relations { // Optional, Inferred from the relations above by default
-                    optional "jei"
-                }
-            }
-        }
+    modrinth {
+        projectId = "nvQzSEkH"
+        accessToken = providers.environmentVariable("MODRINTH_TOKEN")
+        minecraftVersions.add(project.archive_minecraft_version)
+        optional("jei")
     }
 }
