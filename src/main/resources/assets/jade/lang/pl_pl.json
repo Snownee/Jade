@@ -23,6 +23,8 @@
   "config.jade.display_tooltip_desc": "Zbieraj dane i pokazuj etykietę",
   "config.jade.display_fluids": "Wyświetlaj ciecze",
   "config.jade.display_fluids_desc": "Staraj się pokazywać ciecze",
+  "config.jade.display_fluids_fallback": "Zapasowe",
+  "config.jade.display_fluids_fallback_desc": "Pokazuj ciecz tylko wtedy, gdy nie ma innego celu.",
   "config.jade.display_mode": "Tryb wyświetl",
   "config.jade.display_mode_toggle": "Przełącz",
   "config.jade.display_mode_toggle_desc": "Włącz i wyłącz przyciskiem „wyświetl”",

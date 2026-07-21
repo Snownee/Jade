@@ -86,7 +86,13 @@ public class WailaConfigScreen extends BaseOptionsScreen {
 		options.choices("display_bosses", general.getDisplayBosses(), general::setDisplayBosses).parent(entry);
 		entry = options.choices("display_blocks", general.getDisplayBlocks(), general::setDisplayBlocks);
 		editBlocklist(entry, "hide-blocks", () -> WailaClientRegistration.createBlockBlocklist().get());
-		options.choices("display_fluids", general.getDisplayFluids(), general::setDisplayFluids).parent(entry);
+		options.choices("display_fluids", general.getDisplayFluids(), general::setDisplayFluids, builder -> {
+			builder.withTooltip(mode -> {
+				String key = "display_fluids_" + mode.name().toLowerCase(Locale.ENGLISH) + "_desc";
+				key = OptionsList.Entry.makeKey(key);
+				return I18n.exists(key) ? Tooltip.create(Component.translatable(key)) : null;
+			});
+		}).parent(entry);
 		options.choices("display_mode", general.getDisplayMode(), general::setDisplayMode, builder -> {
 			builder.withTooltip(mode -> {
 				String key = "display_mode_" + mode.name().toLowerCase(Locale.ENGLISH) + "_desc";

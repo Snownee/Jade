@@ -58,6 +58,8 @@
   "config.jade.display_fluids_source_only": "Somente Origem",
   "config.jade.display_fluids_any": "Qualquer",
   "config.jade.display_fluids_none": "Nenhum",
+  "config.jade.display_fluids_fallback": "Alternativa",
+  "config.jade.display_fluids_fallback_desc": "Exibir fluido apenas quando não houver outro alvo.",
   "config.jade.display_mode": "Modo de exibição",
   "config.jade.display_mode_desc": "O comportamento da dica de ferramenta na situação usual e como a tecla [Mostrar detalhes] funciona.",
   "config.jade.display_mode_extra_msg": "alternar,segurar,leve",

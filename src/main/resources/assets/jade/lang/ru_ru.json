@@ -58,6 +58,8 @@
 	"config.jade.display_fluids_source_only": "Только источник",
 	"config.jade.display_fluids_any": "Любые",
 	"config.jade.display_fluids_none": "Никакие",
+	"config.jade.display_fluids_fallback": "Запасной вариант",
+	"config.jade.display_fluids_fallback_desc": "Показывать жидкость только тогда, когда нет другой цели.",
 	"config.jade.display_mode": "Отобразить режим",
 	"config.jade.display_mode_desc": "The behavior of the tooltip in the usual situation and how the [Show Details] key works.",
 	"config.jade.display_mode_extra_msg": "toggle,hold,lite",
