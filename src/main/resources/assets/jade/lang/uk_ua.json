@@ -36,6 +36,8 @@
   "config.jade.display_fluids_source_only": "Тільки джерело",
   "config.jade.display_fluids_any": "Будь-які",
   "config.jade.display_fluids_none": "Ніякі",
+  "config.jade.display_fluids_fallback": "Запасний варіант",
+  "config.jade.display_fluids_fallback_desc": "Показує рідину тільки тоді, коли немає інших цілей.",
   "config.jade.display_mode": "Режим відображення",
   "config.jade.display_mode_toggle": "Перемикання",
   "config.jade.display_mode_toggle_desc": "Натискати клавішу \"Показати оверлей\" для перемикання оверлею",

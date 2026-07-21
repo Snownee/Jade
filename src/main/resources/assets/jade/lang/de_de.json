@@ -28,6 +28,8 @@
   "config.jade.display_fluids_source_only": "Nur Quelle",
   "config.jade.display_fluids_any": "Beliebig",
   "config.jade.display_fluids_none": "Keine",
+  "config.jade.display_fluids_fallback": "Ausweichlösung",
+  "config.jade.display_fluids_fallback_desc": "Flüssigkeit nur anzeigen, wenn es kein anderes Ziel gibt.",
   "config.jade.display_mode": "Modus anzeigen",
   "config.jade.display_mode_toggle": "Umschalten",
   "config.jade.display_mode_toggle_desc": "Zugewiesene Tasten schalten es ein und aus",

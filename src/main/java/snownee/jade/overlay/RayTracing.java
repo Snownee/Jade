@@ -27,6 +27,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import snownee.jade.Jade;
 import snownee.jade.api.Accessor;
+import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.impl.ObjectDataCenter;
 import snownee.jade.impl.WailaClientRegistration;
@@ -154,8 +155,9 @@ public class RayTracing {
 
 		BlockState eyeBlock = world.getBlockState(BlockPos.containing(eyePosition));
 		ClipContext.Fluid fluidView = ClipContext.Fluid.NONE;
+		IWailaConfig.FluidMode fluidMode = Jade.CONFIG.get().getGeneral().getDisplayFluids();
 		if (eyeBlock.getFluidState().isEmpty()) {
-			fluidView = Jade.CONFIG.get().getGeneral().getDisplayFluids().ctx;
+			fluidView = fluidMode.ctx;
 		}
 		ClipContext context = new ClipContext(cameraPosition, traceEnd, ClipContext.Block.OUTLINE, fluidView, entity);
 
@@ -175,13 +177,25 @@ public class RayTracing {
 			// weird, we didn't hit a block in our way. try the vanilla result
 			blockResult = hit;
 		}
+		CollisionContext collisionContext = CollisionContext.of(entity);
 		if (blockResult.getType() == Type.BLOCK) {
-			CollisionContext collisionContext = CollisionContext.of(entity);
+			BlockState state = wrapBlock(world, blockResult, collisionContext);
+			if (WailaClientRegistration.INSTANCE.shouldHide(state)) {
+				blockResult = null;
+			}
+		} else if (blockResult.getType() == Type.MISS) {
+			blockResult = null;
+		}
+		if (blockResult == null && fluidMode == IWailaConfig.FluidMode.FALLBACK) {
+			context = new ClipContext(cameraPosition, traceEnd, ClipContext.Block.OUTLINE, ClipContext.Fluid.ANY, entity);
+			blockResult = world.clip(context);
 			BlockState state = wrapBlock(world, blockResult, collisionContext);
 			if (WailaClientRegistration.INSTANCE.shouldHide(state)) {
 				return null;
 			}
+			return blockResult;
 		}
+
 		return blockResult;
 	}
 

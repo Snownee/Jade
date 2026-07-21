@@ -28,6 +28,8 @@
   "config.jade.display_fluids_source_only": "Source Only",
   "config.jade.display_fluids_any": "Qualunque",
   "config.jade.display_fluids_none": "Nessuno",
+  "config.jade.display_fluids_fallback": "Ripiego",
+  "config.jade.display_fluids_fallback_desc": "Mostra i fluidi solo quando non c'è altro bersaglio.",
   "config.jade.display_mode": "Modalità di visualizzazione",
   "config.jade.hide_from_debug": "Nascondi dal debug",
   "config.jade.hide_from_debug_desc": "Nascondi il tooltip mentre il menu di debug è aperto",
