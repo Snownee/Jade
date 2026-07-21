@@ -1,7 +1,7 @@
 plugins {
     id 'net.fabricmc.fabric-loom' version "${loom_version}"
     id 'maven-publish'
-    id "me.modmuss50.mod-publish-plugin" version "1.1.0"
+    id "me.modmuss50.mod-publish-plugin" version "2.+"
 }
 
 version = "mc${archive_minecraft_version}-Fabric-${mod_version}"
@@ -123,6 +123,8 @@ publishMods {
 
     curseforge {
         projectId = "324717"
+        client = true
+        server = true
         accessToken = providers.environmentVariable("CURSE_TOKEN")
         minecraftVersions.add(minecraft_version)
         minecraftVersions.add("26.1")
