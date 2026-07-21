@@ -58,6 +58,8 @@
 	"config.jade.display_fluids_source_only": "仅显示源块",
 	"config.jade.display_fluids_any": "显示所有",
 	"config.jade.display_fluids_none": "不显示",
+	"config.jade.display_fluids_fallback": "备选项",
+	"config.jade.display_fluids_fallback_desc": "只在没有其他目标时才显示流体。",
 	"config.jade.display_mode": "显示模式",
 	"config.jade.display_mode_desc": "信息框的正常显示方式以及按下[显示细节]键的显示方式。",
 	"config.jade.display_mode_extra_msg": "toggle,hold,lite",

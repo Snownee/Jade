@@ -40,6 +40,8 @@
 	"config.jade.display_fluids_source_only": "僅液體來源",
 	"config.jade.display_fluids_any": "任何",
 	"config.jade.display_fluids_none": "無",
+	"config.jade.display_fluids_fallback": "後備",
+	"config.jade.display_fluids_fallback_desc": "只在沒有其他目標時顯示流體。",
 	"config.jade.display_mode": "顯示模式",
 	"config.jade.display_mode_toggle": "切換",
 	"config.jade.display_mode_toggle_desc": "顯示按鍵綁定會切換開和關",

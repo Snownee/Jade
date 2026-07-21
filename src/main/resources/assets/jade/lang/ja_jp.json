@@ -54,6 +54,8 @@
 	"config.jade.display_fluids_source_only": "ソースのみ",
 	"config.jade.display_fluids_any": "全て",
 	"config.jade.display_fluids_none": "無し",
+	"config.jade.display_fluids_fallback": "フォールバック",
+	"config.jade.display_fluids_fallback_desc": "他のターゲットがない場合にのみ流体を表示します。",
 	"config.jade.display_mode": "表示モード",
 	"config.jade.display_mode_extra_msg": "切替、保持、ライト",
 	"config.jade.display_mode_toggle": "切替",
