@@ -181,7 +181,7 @@ public class WailaConfig implements IWailaConfig {
 		private boolean hideFromTabList = true;
 		private boolean enableTextToSpeech = false;
 		private TTSMode ttsMode = TTSMode.PRESS;
-		private FluidMode fluidMode = FluidMode.ANY;
+		private FluidMode fluidMode = FluidMode.FALLBACK;
 		private float reachDistance = 0;
 		@Expose
 		private boolean debug = false;
