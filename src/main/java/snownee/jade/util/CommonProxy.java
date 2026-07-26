@@ -525,9 +525,8 @@ public final class CommonProxy {
 	}
 
 	public static void registerTagsUpdatedListener(BiConsumer<HolderLookup.Provider, Boolean> listener) {
-		HolderLookup.Provider provider = VanillaRegistries.createLookup();
 		NeoForge.EVENT_BUS.addListener((DefaultDataComponentsBoundEvent event) -> listener.accept(
-				provider,
+				VanillaRegistries.createLookup(),
 				event.getUpdateCause() == DefaultDataComponentsBoundEvent.UpdateCause.CLIENT_PACKET_RECEIVED));
 	}
 
