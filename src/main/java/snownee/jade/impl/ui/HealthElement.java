@@ -5,7 +5,6 @@ import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.Hud;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -69,20 +68,21 @@ public class HealthElement extends Element {
 
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
-		float health = this.health * 0.5F;
-		float lastHealth = health;
+		float health = Math.round(this.health);
+		float hearts = health * 0.5F;
+		float lastHearts = hearts;
 		float lastAbsorption = absorption;
 		boolean blink = false;
 		if (track == null && getTag() != null) {
 			track = JadeClient.tickHandler().progressTracker.getOrCreate(
 					getTag(),
 					HealthTrackInfo.class,
-					() -> new HealthTrackInfo(this.health, absorption));
+					() -> new HealthTrackInfo(health, absorption));
 		}
 		if (track != null) {
-			track.setHealth(this.health, absorption);
+			track.setHealth(health, absorption);
 			track.update(Minecraft.getInstance().getDeltaTracker().getRealtimeDeltaTicks());
-			lastHealth = track.getLastHealth() * 0.5F;
+			lastHearts = track.getLastHealth() * 0.5F;
 			lastAbsorption = track.getLastAbsorption();
 			blink = track.isBlinking();
 		}
@@ -98,26 +98,26 @@ public class HealthElement extends Element {
 			helper.blitSprite(graphics, RenderPipelines.GUI_TEXTURED, containerSprite, xPos, yPos, 9, 9);
 
 			boolean renderAbsorb = i > Mth.ceil(maxHealth * 0.5F);
-			Hud.HeartType curHeart = heartType;
-			float curHealth = health;
-			float curLastHealth = lastHealth;
+			Hud.HeartType curHeartType = heartType;
+			float curHearts = hearts;
+			float curLastHearts = lastHearts;
 			if (renderAbsorb) {
-				curHeart = Hud.HeartType.ABSORBING;
-				curHealth = (Mth.ceil(maxHealth) + absorption) * 0.5F;
-				curLastHealth = (Mth.ceil(maxHealth) + lastAbsorption) * 0.5F;
+				curHeartType = Hud.HeartType.ABSORBING;
+				curHearts = (Mth.ceil(maxHealth) + absorption) * 0.5F;
+				curLastHearts = (Mth.ceil(maxHealth) + lastAbsorption) * 0.5F;
 			}
-			if (i <= Mth.floor(curHealth)) { // Full heart
-				helper.blitSprite(graphics, RenderPipelines.GUI_TEXTURED, curHeart.getSprite(false, false, false), xPos, yPos, 9, 9);
+			if (i <= Mth.floor(curHearts)) { // Full heart
+				helper.blitSprite(graphics, RenderPipelines.GUI_TEXTURED, curHeartType.getSprite(false, false, false), xPos, yPos, 9, 9);
 			}
 
-			if (i > curHealth) {
-				if (i <= Mth.floor(curLastHealth)) { // Full heart (last + blink)
-					helper.blitSprite(graphics, RenderPipelines.GUI_TEXTURED, curHeart.getSprite(false, false, true), xPos, yPos, 9, 9);
-				} else if ((i > curLastHealth) && (i < curLastHealth + 1)) { // Half heart (blink)
-					helper.blitSprite(graphics, RenderPipelines.GUI_TEXTURED, curHeart.getSprite(false, true, true), xPos, yPos, 9, 9);
+			if (i > curHearts) {
+				if (i <= Mth.floor(curLastHearts)) { // Full heart (last + blink)
+					helper.blitSprite(graphics, RenderPipelines.GUI_TEXTURED, curHeartType.getSprite(false, false, true), xPos, yPos, 9, 9);
+				} else if ((i > curLastHearts) && (i < curLastHearts + 1)) { // Half heart (blink)
+					helper.blitSprite(graphics, RenderPipelines.GUI_TEXTURED, curHeartType.getSprite(false, true, true), xPos, yPos, 9, 9);
 				}
-				if (i < curHealth + 1) { // Half heart
-					helper.blitSprite(graphics, RenderPipelines.GUI_TEXTURED, curHeart.getSprite(false, true, false), xPos, yPos, 9, 9);
+				if (i < curHearts + 1) { // Half heart
+					helper.blitSprite(graphics, RenderPipelines.GUI_TEXTURED, curHeartType.getSprite(false, true, false), xPos, yPos, 9, 9);
 				}
 			}
 
