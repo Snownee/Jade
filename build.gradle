@@ -13,16 +13,10 @@ base {
 }
 
 repositories {
-    maven { url "https://maven.parchmentmc.org" }
     maven { url "https://maven.shedaniel.me/" }
     maven { url "https://maven.terraformersmc.com/releases/" }
     maven { url "https://maven.blamejared.com/" }
-    maven {
-        url "https://cursemaven.com"
-        content {
-            includeGroup "curse.maven"
-        }
-    }
+//    maven { url "https://maven.cassian.cc/" } // Reliable Recipe Viewer
     flatDir { dir 'libs' }
     // Add repositories to retrieve artifacts from in here.
     // You should only use this when depending on other mods because
@@ -53,6 +47,8 @@ dependencies {
     }
 
 //    implementation "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
+
+//    compileOnly "cc.cassian.rrv:reliable-recipe-viewer-fabric:${project.rrv_version}"
 }
 
 loom {
@@ -98,11 +94,12 @@ jar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     exclude '/snownee/jade/test'
     exclude '/com' // com.terraformersmc.modmenu
+    exclude '/cc' // cc.cassian.rrv
     exclude '/dummy' // dummy.com.terraformersmc.modmenu
     exclude '**/*.bat'
     exclude '**/*.py'
     from("LICENSE") {
-        rename { "${it}_${project.archivesBaseName}" }
+        rename { "${it}_${project.archives_base_name}" }
     }
 }
 
