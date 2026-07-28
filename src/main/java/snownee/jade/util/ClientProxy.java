@@ -379,6 +379,9 @@ public final class ClientProxy {
 		if (CommonProxy.isModLoaded("jei")) {
 			JadeClient.addRecipeLookupPlugin("snownee.jade.compat.JEICompat");
 		}
+		if (CommonProxy.isModLoaded("rrv")) {
+			JadeClient.addRecipeLookupPlugin("snownee.jade.compat.RRVCompat");
+		}
 	}
 
 	public static void sendPacket(CustomPacketPayload payload) {

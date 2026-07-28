@@ -26,6 +26,7 @@ repositories {
     maven { url "https://maven.blamejared.com/" }
     maven { url "https://modmaven.dev" }
     maven { url "https://maven.shedaniel.me/" }
+//    maven { url "https://maven.cassian.cc/" } // Reliable Recipe Viewer
     flatDir { dir 'libs' }
 }
 
@@ -114,6 +115,7 @@ configurations {
 dependencies {
     compileOnly "mezz.jei:jei-26.1.2-common-api:${jei_version}"
     api "me.shedaniel:RoughlyEnoughItems-neoforge:${rei_version}"
+//    compileOnly "cc.cassian.rrv:reliable-recipe-viewer-neoforge:${project.rrv_version}"
 }
 
 tasks.withType(JavaCompile).configureEach {
