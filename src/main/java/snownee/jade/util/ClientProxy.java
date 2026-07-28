@@ -383,5 +383,8 @@ public final class ClientProxy implements ClientModInitializer {
 		if (CommonProxy.isModLoaded("jei")) {
 			JadeClient.addRecipeLookupPlugin("snownee.jade.compat.JEICompat");
 		}
+		if (CommonProxy.isModLoaded("rrv")) {
+			JadeClient.addRecipeLookupPlugin("snownee.jade.compat.RRVCompat");
+		}
 	}
 }
