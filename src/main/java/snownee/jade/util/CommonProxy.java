@@ -396,7 +396,7 @@ public final class CommonProxy {
 	public static List<ViewGroup<CompoundTag>> wrapFluidStorage(Accessor<?> accessor) {
 		IFluidHandler fluidHandler = getDefaultStorage(accessor, Capabilities.FluidHandler.BLOCK, Capabilities.FluidHandler.ENTITY);
 		if (fluidHandler != null) {
-			return JadeForgeUtils.fromFluidHandler(fluidHandler);
+			return JadeForgeUtils.fromFluidHandler(fluidHandler, accessor.nbtOps());
 		}
 		return null;
 	}

@@ -4,9 +4,12 @@ import java.util.Objects;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.mojang.serialization.DynamicOps;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.material.Fluids;
 import snownee.jade.api.fluid.JadeFluidObject;
@@ -33,13 +36,19 @@ public class FluidView {
 		Objects.requireNonNull(overlay);
 	}
 
+	@Deprecated
 	@Nullable
 	public static FluidView readDefault(CompoundTag tag) {
+		return readDefault(tag, NbtOps.INSTANCE);
+	}
+
+	@Nullable
+	public static FluidView readDefault(CompoundTag tag, DynamicOps<Tag> ops) {
 		long capacity = tag.getLong("capacity");
 		if (capacity <= 0) {
 			return null;
 		}
-		JadeFluidObject fluidObject = JadeFluidObject.CODEC.parse(NbtOps.INSTANCE, tag.get("fluid")).result().orElse(null);
+		JadeFluidObject fluidObject = JadeFluidObject.CODEC.parse(ops, tag.get("fluid")).result().orElse(null);
 		if (fluidObject == null) {
 			return null;
 		}
@@ -58,12 +67,17 @@ public class FluidView {
 		return fluidView;
 	}
 
+	@Deprecated
 	public static CompoundTag writeDefault(JadeFluidObject fluidObject, long capacity) {
+		return writeDefault(fluidObject, capacity, NbtOps.INSTANCE);
+	}
+
+	public static CompoundTag writeDefault(JadeFluidObject fluidObject, long capacity, DynamicOps<Tag> ops) {
 		CompoundTag tag = new CompoundTag();
 		if (capacity <= 0) {
 			return tag;
 		}
-		tag.put("fluid", JadeFluidObject.CODEC.encodeStart(NbtOps.INSTANCE, fluidObject).result().orElseThrow());
+		tag.put("fluid", JadeFluidObject.CODEC.encodeStart(ops, fluidObject).result().orElseThrow());
 		tag.putLong("capacity", capacity);
 		return tag;
 	}

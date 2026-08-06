@@ -10,8 +10,11 @@ import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.Lists;
 import com.google.common.math.LongMath;
+import com.mojang.serialization.DynamicOps;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -53,7 +56,12 @@ public class JadeForgeUtils {
 		return JadeFluidObject.of(fluidStack.getFluid(), fluidStack.getAmount(), fluidStack.getComponentsPatch());
 	}
 
+	@Deprecated
 	public static List<ViewGroup<CompoundTag>> fromFluidHandler(IFluidHandler fluidHandler) {
+		return fromFluidHandler(fluidHandler, NbtOps.INSTANCE);
+	}
+
+	public static List<ViewGroup<CompoundTag>> fromFluidHandler(IFluidHandler fluidHandler, DynamicOps<Tag> ops) {
 		FluidCollectingResult result = fromFluidHandlerStream(fluidHandler);
 		if (result.tanks == 0) {
 			return List.of();
@@ -77,7 +85,7 @@ public class JadeForgeUtils {
 			list.add(new Tuple<>(JadeFluidObject.empty(), result.emptyCapacity));
 		}
 		ViewGroup<CompoundTag> group = new ViewGroup<>(list.stream()
-				.map(tuple -> FluidView.writeDefault(tuple.getA(), tuple.getB()))
+				.map(tuple -> FluidView.writeDefault(tuple.getA(), tuple.getB(), ops))
 				.toList());
 		if (remaining > 0) {
 			group.getExtraData().putInt("+", remaining);
