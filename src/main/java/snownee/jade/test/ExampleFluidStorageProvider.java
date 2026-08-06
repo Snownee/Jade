@@ -2,7 +2,10 @@ package snownee.jade.test;
 
 import java.util.List;
 
+import com.mojang.serialization.DynamicOps;
+
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluids;
@@ -26,21 +29,23 @@ public enum ExampleFluidStorageProvider
 
 	@Override
 	public List<ClientViewGroup<FluidView>> getClientGroups(Accessor<?> accessor, List<ViewGroup<CompoundTag>> groups) {
-		return ClientViewGroup.map(groups, FluidView::readDefault, (group, clientGroup) -> {
-			if (group.id != null) {
-				clientGroup.title = Component.literal(group.id);
-			}
-			clientGroup.messageType = MessageType.SUCCESS;
-		});
+		return ClientViewGroup.map(
+				groups, $ -> FluidView.readDefault($, accessor.nbtOps()), (group, clientGroup) -> {
+					if (group.id != null) {
+						clientGroup.title = Component.literal(group.id);
+					}
+					clientGroup.messageType = MessageType.SUCCESS;
+				});
 	}
 
 	@Override
 	public List<ViewGroup<CompoundTag>> getGroups(Accessor<?> accessor) {
-		var tank1 = new ViewGroup<>(List.of(FluidView.writeDefault(JadeFluidObject.of(Fluids.LAVA, 1000), 2000)));
+		DynamicOps<Tag> ops = accessor.nbtOps();
+		var tank1 = new ViewGroup<>(List.of(FluidView.writeDefault(JadeFluidObject.of(Fluids.LAVA, 1000), 2000, ops)));
 		tank1.id = "1";
 		var tank2 = new ViewGroup<>(List.of(
-				FluidView.writeDefault(JadeFluidObject.of(Fluids.WATER, 500), 2000),
-				FluidView.writeDefault(JadeFluidObject.empty(), 2000)));
+				FluidView.writeDefault(JadeFluidObject.of(Fluids.WATER, 500), 2000, ops),
+				FluidView.writeDefault(JadeFluidObject.empty(), 2000, ops)));
 		// tank2.id = "2";
 		return List.of(tank1, tank2, tank2, tank2, tank2);
 	}

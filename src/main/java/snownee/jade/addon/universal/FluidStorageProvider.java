@@ -181,7 +181,7 @@ public abstract class FluidStorageProvider<T extends Accessor<?>> implements ICo
 
 		@Override
 		public List<ClientViewGroup<FluidView>> getClientGroups(Accessor<?> accessor, List<ViewGroup<CompoundTag>> groups) {
-			return ClientViewGroup.map(groups, FluidView::readDefault, null);
+			return ClientViewGroup.map(groups, $ -> FluidView.readDefault($, accessor.nbtOps()), null);
 		}
 
 		@Nullable

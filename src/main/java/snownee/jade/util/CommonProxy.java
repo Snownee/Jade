@@ -338,7 +338,7 @@ public final class CommonProxy implements ModInitializer {
 						blockAccessor.getBlockEntity(),
 						null);
 				if (storage != null) {
-					return JadeFabricUtils.fromFluidStorage(storage);
+					return JadeFabricUtils.fromFluidStorage(storage, accessor.nbtOps());
 				}
 			} catch (Throwable e) {
 				WailaExceptionHandler.handleErr(e, null, null);
