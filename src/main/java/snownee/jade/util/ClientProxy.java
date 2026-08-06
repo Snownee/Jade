@@ -124,11 +124,19 @@ public final class ClientProxy implements ClientModInitializer {
 	}
 
 	private static void onEntityJoin(Entity entity, ClientLevel level) {
-		DatapackBlockManager.onEntityJoin(entity);
+		try {
+			DatapackBlockManager.onEntityJoin(entity);
+		} catch (Throwable e) {
+			WailaExceptionHandler.handleErr(e, null, null);
+		}
 	}
 
 	private static void onEntityLeave(Entity entity, ClientLevel level) {
-		DatapackBlockManager.onEntityLeave(entity);
+		try {
+			DatapackBlockManager.onEntityLeave(entity);
+		} catch (Throwable e) {
+			WailaExceptionHandler.handleErr(e, null, null);
+		}
 	}
 
 	private static void onTooltip(ItemStack stack, Item.TooltipContext tooltipContext, TooltipFlag tooltipType, List<Component> lines) {
@@ -322,15 +330,18 @@ public final class ClientProxy implements ClientModInitializer {
 			}
 		});
 
-		ClientPlayNetworking.registerGlobalReceiver(ReceiveDataPacket.TYPE, (payload, context) -> {
-			ReceiveDataPacket.handle(payload, context.client()::execute);
-		});
-		ClientPlayNetworking.registerGlobalReceiver(ServerPingPacket.TYPE, (payload, context) -> {
-			ServerPingPacket.handle(payload, context.client()::execute);
-		});
-		ClientPlayNetworking.registerGlobalReceiver(ShowOverlayPacket.TYPE, (payload, context) -> {
-			ShowOverlayPacket.handle(payload, context.client()::execute);
-		});
+		ClientPlayNetworking.registerGlobalReceiver(
+				ReceiveDataPacket.TYPE, (payload, context) -> {
+					ReceiveDataPacket.handle(payload, context.client()::execute);
+				});
+		ClientPlayNetworking.registerGlobalReceiver(
+				ServerPingPacket.TYPE, (payload, context) -> {
+					ServerPingPacket.handle(payload, context.client()::execute);
+				});
+		ClientPlayNetworking.registerGlobalReceiver(
+				ShowOverlayPacket.TYPE, (payload, context) -> {
+					ShowOverlayPacket.handle(payload, context.client()::execute);
+				});
 
 		for (int i = 320; i < 330; i++) {
 			InputConstants.Key key = InputConstants.Type.KEYSYM.getOrCreate(i);
