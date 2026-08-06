@@ -129,11 +129,19 @@ public final class ClientProxy implements ClientModInitializer {
 	}
 
 	private static void onEntityJoin(Entity entity, ClientLevel level) {
-		DatapackBlockManager.onEntityJoin(entity);
+		try {
+			DatapackBlockManager.onEntityJoin(entity);
+		} catch (Throwable e) {
+			WailaExceptionHandler.handleErr(e, null, null);
+		}
 	}
 
 	private static void onEntityLeave(Entity entity, ClientLevel level) {
-		DatapackBlockManager.onEntityLeave(entity);
+		try {
+			DatapackBlockManager.onEntityLeave(entity);
+		} catch (Throwable e) {
+			WailaExceptionHandler.handleErr(e, null, null);
+		}
 	}
 
 	public static void onRenderTick(GuiGraphicsExtractor guiGraphics, float tickDelta) {
