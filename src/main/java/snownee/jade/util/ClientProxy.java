@@ -171,11 +171,19 @@ public final class ClientProxy {
 	}
 
 	private static void onEntityJoin(EntityJoinLevelEvent event) {
-		DatapackBlockManager.onEntityJoin(event.getEntity());
+		try {
+			DatapackBlockManager.onEntityJoin(event.getEntity());
+		} catch (Throwable e) {
+			WailaExceptionHandler.handleErr(e, null, null);
+		}
 	}
 
 	private static void onEntityLeave(EntityLeaveLevelEvent event) {
-		DatapackBlockManager.onEntityLeave(event.getEntity());
+		try {
+			DatapackBlockManager.onEntityLeave(event.getEntity());
+		} catch (Throwable e) {
+			WailaExceptionHandler.handleErr(e, null, null);
+		}
 	}
 
 	private static void onTooltip(ItemTooltipEvent event) {
