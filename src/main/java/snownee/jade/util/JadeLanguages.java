@@ -58,7 +58,9 @@ public class JadeLanguages implements WordCutter.TokenClassifier {
 			"container.inventory",
 			"container.crafting",
 			"container.chest",
-			"entity.minecraft.chest_boat");
+			"entity.minecraft.chest_boat",
+			"event.minecraft.raid",
+			"entity.minecraft.ender_dragon");
 	private Map<String, String> cleanTranslations = Map.of();
 	private final Cache<String, Optional<ComponentContents>> cleanTranslationCache = CacheBuilder.newBuilder().maximumSize(100).build();
 
