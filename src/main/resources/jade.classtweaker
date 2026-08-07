@@ -116,3 +116,6 @@ accessible method net/minecraft/world/level/gamerules/GameRules registerInteger 
 
 accessible field net/minecraft/locale/Language GSON Lcom/google/gson/Gson;
 accessible field net/minecraft/locale/Language UNSUPPORTED_FORMAT_PATTERN Ljava/util/regex/Pattern;
+
+accessible class net/minecraft/core/component/Removed
+accessible field net/minecraft/core/component/DataComponentPatch map Lit/unimi/dsi/fastutil/objects/Reference2ObjectMap;

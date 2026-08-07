@@ -1,6 +1,5 @@
 package snownee.jade.util;
 
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -10,6 +9,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.component.Removed;
 import net.minecraft.core.component.TypedDataComponent;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.NbtOps;
@@ -35,15 +35,15 @@ public class ComponentHolders {
 
 	private static String serializeComponents(DataComponentPatch components, HolderLookup.Provider provider) {
 		DynamicOps<Tag> dynamicOps = provider.createSerializationContext(NbtOps.INSTANCE);
-		return components.entrySet().stream().flatMap((entry) -> {
+		return components.map.entrySet().stream().flatMap((entry) -> {
 			DataComponentType<?> dataComponentType = entry.getKey();
 			Identifier Identifier = BuiltInRegistries.DATA_COMPONENT_TYPE.getKey(dataComponentType);
 			if (Identifier == null) {
 				return Stream.empty();
 			} else {
-				Optional<?> optional = entry.getValue();
-				if (optional.isPresent()) {
-					TypedDataComponent<?> typedDataComponent = TypedDataComponent.createUnchecked(dataComponentType, optional.get());
+				Object value = entry.getValue();
+				if (Removed.isNotRemoved(value)) {
+					TypedDataComponent<?> typedDataComponent = TypedDataComponent.createUnchecked(dataComponentType, value);
 					return typedDataComponent.encodeValue(dynamicOps).result().stream().map((tag) -> {
 						String var10000 = Identifier.toString();
 						return var10000 + "=" + tag;
