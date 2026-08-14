@@ -50,7 +50,7 @@ public interface BlockAccessor extends Accessor<BlockHitResult> {
 	 * @param <T> block entity subtype
 	 * @return the block entity
 	 * @throws NullPointerException if the target has no block entity
-	 * @throws ClassCastException if the block entity is not of the requested type
+	 * @throws ClassCastException   if the block entity is not of the requested type
 	 */
 	default <T extends BlockEntity> T typedBlockEntity() {
 		@SuppressWarnings("unchecked")
@@ -109,7 +109,7 @@ public interface BlockAccessor extends Accessor<BlockHitResult> {
 		 * @param blockEntity supplier for the block entity
 		 * @return this builder
 		 */
-		Builder blockEntity(Supplier<@Nullable BlockEntity> blockEntity);
+		Builder blockEntity(@Nullable Supplier<@Nullable BlockEntity> blockEntity);
 
 		Builder serversideRep(ItemStack stack);
 

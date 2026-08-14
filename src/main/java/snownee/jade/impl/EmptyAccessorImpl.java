@@ -4,8 +4,6 @@ import java.util.Objects;
 
 import org.jspecify.annotations.Nullable;
 
-import com.google.common.base.Suppliers;
-
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -26,7 +24,7 @@ public class EmptyAccessorImpl extends AccessorImpl<BlockHitResult> implements E
 				Objects.requireNonNull(builder.level),
 				Objects.requireNonNull(builder.player),
 				builder.serverData,
-				Suppliers.ofInstance(Objects.requireNonNull(builder.hit)),
+				() -> Objects.requireNonNull(builder.hit),
 				builder.connected,
 				builder.showDetails);
 	}

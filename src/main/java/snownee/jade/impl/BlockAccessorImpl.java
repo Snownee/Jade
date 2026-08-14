@@ -40,15 +40,14 @@ import snownee.jade.util.WailaExceptionHandler;
 public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements BlockAccessor {
 
 	private final BlockState blockState;
-	@Nullable
-	private final Supplier<BlockEntity> blockEntity;
+	private final @Nullable Supplier<@Nullable BlockEntity> blockEntity;
 
 	private BlockAccessorImpl(Builder builder) {
 		super(
 				Objects.requireNonNull(builder.level),
 				Objects.requireNonNull(builder.player),
 				builder.serverData,
-				Suppliers.ofInstance(Objects.requireNonNull(builder.hit)),
+				() -> Objects.requireNonNull(builder.hit),
 				builder.connected,
 				builder.showDetails);
 		blockState = builder.blockState;
@@ -201,7 +200,7 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 		}
 
 		@Override
-		public Builder blockEntity(@Nullable Supplier<BlockEntity> blockEntity) {
+		public Builder blockEntity(@Nullable Supplier<@Nullable BlockEntity> blockEntity) {
 			this.blockEntity = blockEntity;
 			return this;
 		}
@@ -266,7 +265,7 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 
 		@SuppressWarnings("DataFlowIssue")
 		public @Nullable BlockAccessor unpack(ServerPlayer player) {
-			Supplier<BlockEntity> blockEntity = null;
+			Supplier<@Nullable BlockEntity> blockEntity = null;
 			BlockState blockState = player.level().getBlockState(hit.getBlockPos());
 			if (blockState.hasBlockEntity()) {
 				blockEntity = Suppliers.memoize(() -> player.level().getBlockEntity(hit.getBlockPos()));
