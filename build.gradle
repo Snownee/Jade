@@ -110,12 +110,7 @@ publishMods {
     file = jar.archiveFile
     additionalFiles.from(sourcesJar.archiveFile)
     changelog = file('CHANGELOG.md').exists() ? file('CHANGELOG.md').text : ''
-    type = switch (release_type) {
-        case 'release' -> STABLE
-        case 'beta' -> BETA
-        case 'alpha' -> ALPHA
-        default -> throw new GradleException("Unknown release type: $release_type")
-    }
+    type = ['release': STABLE, 'beta': BETA, 'alpha': ALPHA][release_type]
     modLoaders.add("fabric")
     modLoaders.add("quilt")
     displayName = "[Fabric ${supported_version}] ${mod_version}"
