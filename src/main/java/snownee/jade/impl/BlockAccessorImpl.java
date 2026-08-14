@@ -59,22 +59,23 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 	public static void handleRequest(RequestBlockPacket message, ServerPayloadContext context, Consumer<CompoundTag> responseSender) {
 		ServerPlayer player = context.player();
 		context.execute(() -> {
+			BlockPos pos = message.data().hit().getBlockPos();
+			CompoundTag tag = message.data().data();
+			tag.putInt("x", pos.getX());
+			tag.putInt("y", pos.getY());
+			tag.putInt("z", pos.getZ());
+
+			if (Jade.isOutOfReach(player, pos, player.blockInteractionRange()) || !player.level().isLoaded(pos)) {
+				responseSender.accept(tag);
+				return;
+			}
+
 			BlockAccessor accessor = message.data().unpack(player);
 			if (accessor == null) {
 				return;
 			}
 
-			BlockPos pos = accessor.getPosition();
-			CompoundTag tag = accessor.getServerData();
-			tag.putInt("x", pos.getX());
-			tag.putInt("y", pos.getY());
-			tag.putInt("z", pos.getZ());
 			tag.putString("BlockId", CommonProxy.getId(accessor.getBlock()).toString());
-
-			if (!player.level().isLoaded(pos) || Jade.isOutOfReach(player, pos, player.blockInteractionRange())) {
-				responseSender.accept(tag);
-				return;
-			}
 
 			List<IServerDataProvider<BlockAccessor>> providers = WailaCommonRegistration.instance()
 					.blockDataProvidersOf(accessor.getBlockState(), accessor.getBlockEntity(), true);
