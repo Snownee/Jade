@@ -14,7 +14,6 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -60,8 +59,7 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 			CompoundTag tag = accessor.getServerData();
 			tag.putInt("EntityId", entity.getId());
 
-			double maxDistance = Mth.square(player.entityInteractionRange() + Jade.maxPositionDeviation(player));
-			if (player.distanceToSqr(entity) > maxDistance) {
+			if (Jade.isOutOfReach(player, entity.blockPosition(), player.entityInteractionRange())) {
 				responseSender.accept(tag);
 				return;
 			}

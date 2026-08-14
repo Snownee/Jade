@@ -16,9 +16,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -42,15 +40,14 @@ import snownee.jade.util.WailaExceptionHandler;
 public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements BlockAccessor {
 
 	private final BlockState blockState;
-	@Nullable
-	private final Supplier<BlockEntity> blockEntity;
+	private final @Nullable Supplier<@Nullable BlockEntity> blockEntity;
 
 	private BlockAccessorImpl(Builder builder) {
 		super(
 				Objects.requireNonNull(builder.level),
 				Objects.requireNonNull(builder.player),
 				builder.serverData,
-				Suppliers.ofInstance(Objects.requireNonNull(builder.hit)),
+				() -> Objects.requireNonNull(builder.hit),
 				builder.connected,
 				builder.showDetails);
 		blockState = builder.blockState;
@@ -61,24 +58,23 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 	public static void handleRequest(RequestBlockPacket message, ServerPayloadContext context, Consumer<CompoundTag> responseSender) {
 		ServerPlayer player = context.player();
 		context.execute(() -> {
+			BlockPos pos = message.data().hit().getBlockPos();
+			CompoundTag tag = message.data().data();
+			tag.putInt("x", pos.getX());
+			tag.putInt("y", pos.getY());
+			tag.putInt("z", pos.getZ());
+
+			if (Jade.isOutOfReach(player, pos, player.blockInteractionRange()) || !player.level().isLoaded(pos)) {
+				responseSender.accept(tag);
+				return;
+			}
+
 			BlockAccessor accessor = message.data().unpack(player);
 			if (accessor == null) {
 				return;
 			}
 
-			BlockPos pos = accessor.getPosition();
-			CompoundTag tag = accessor.getServerData();
-			tag.putInt("x", pos.getX());
-			tag.putInt("y", pos.getY());
-			tag.putInt("z", pos.getZ());
 			tag.putString("BlockId", CommonProxy.getId(accessor.getBlock()).toString());
-
-			ServerLevel world = player.level();
-			double maxDistance = Mth.square(player.blockInteractionRange() + Jade.maxPositionDeviation(player));
-			if (pos.distSqr(player.blockPosition()) > maxDistance || !world.isLoaded(pos)) {
-				responseSender.accept(tag);
-				return;
-			}
 
 			List<IServerDataProvider<BlockAccessor>> providers = WailaCommonRegistration.instance()
 					.blockDataProvidersOf(accessor.getBlockState(), accessor.getBlockEntity(), true);
@@ -204,7 +200,7 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 		}
 
 		@Override
-		public Builder blockEntity(@Nullable Supplier<BlockEntity> blockEntity) {
+		public Builder blockEntity(@Nullable Supplier<@Nullable BlockEntity> blockEntity) {
 			this.blockEntity = blockEntity;
 			return this;
 		}
@@ -269,7 +265,7 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 
 		@SuppressWarnings("DataFlowIssue")
 		public @Nullable BlockAccessor unpack(ServerPlayer player) {
-			Supplier<BlockEntity> blockEntity = null;
+			Supplier<@Nullable BlockEntity> blockEntity = null;
 			BlockState blockState = player.level().getBlockState(hit.getBlockPos());
 			if (blockState.hasBlockEntity()) {
 				blockEntity = Suppliers.memoize(() -> player.level().getBlockEntity(hit.getBlockPos()));
