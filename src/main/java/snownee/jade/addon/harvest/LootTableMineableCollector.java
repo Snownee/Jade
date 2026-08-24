@@ -72,6 +72,12 @@ public class LootTableMineableCollector {
 	}
 
 	private boolean doLootPool(LootPool lootPool) {
+		if (lootPool.entries.isEmpty()) {
+			return false;
+		}
+		if (lootPool.condition.isPresent() && CommonProxy.isCorrectConditions(lootPool.condition.get().value(), toolItem)) {
+			return true;
+		}
 		for (LootPoolEntryContainer entry : lootPool.entries) {
 			if (doLootPoolEntry(entry)) {
 				return true;
