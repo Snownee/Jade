@@ -12,6 +12,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.Mth;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
@@ -98,7 +99,7 @@ public class EnergyStorageProvider<T extends Accessor<?>> implements StreamServe
 								}
 								case PROGRESS_BAR -> {
 									ProgressView progressView = new ProgressView(
-											ProgressView.Part.of(view.ratio, PROGRESS_OVERLAY),
+											ProgressView.Part.of(Mth.clamp(view.ratio, 0, 1), PROGRESS_OVERLAY),
 											text,
 											JadeUI.progressStyle(),
 											BoxStyle.nestedBox());
