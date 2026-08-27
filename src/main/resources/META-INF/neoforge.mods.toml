@@ -9,7 +9,7 @@ displayName = "Jade"
 authors = "Snownee"
 displayURL = "https://www.curseforge.com/minecraft/mc-mods/jade"
 description = "Minecraft mod shows what you are looking at. (Hwyla fork)"
-logoFile = "icon.png"
+iconFile = "icon.png"
 credits = "TehNut, ProfMobius, kalkafox"
 
 [[mixins]]
