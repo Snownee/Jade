@@ -4,11 +4,13 @@
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
 		"AbstractHorseAccess",
+		"CanItemPerformAbilityAccess",
 		"CompoundTagMixin",
 		"EntityAccess",
 		"LivingEntityMixin",
 		"MobEffectInstanceMixin",
 		"NbtIoMixin",
+		"ReloadableServerResourcesMixin",
 		"ServerPlayerMixin"
 	],
 	"client": [

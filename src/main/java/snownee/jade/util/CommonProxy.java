@@ -28,7 +28,6 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.registries.VanillaRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
@@ -74,13 +73,14 @@ import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.EntityCapability;
+import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.TranslatableEnum;
 import net.neoforged.neoforge.entity.PartEntity;
-import net.neoforged.neoforge.event.DefaultDataComponentsBoundEvent;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.TagsUpdatedEvent;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
@@ -101,6 +101,7 @@ import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.TraceableException;
 import snownee.jade.api.WailaPlugin;
+import snownee.jade.api.callback.CallbackContainer;
 import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.view.EnergyView;
 import snownee.jade.api.view.FluidView;
@@ -109,6 +110,7 @@ import snownee.jade.api.view.ViewGroup;
 import snownee.jade.command.JadeServerCommand;
 import snownee.jade.impl.lookup.WrappedHierarchyLookup;
 import snownee.jade.mixin.AbstractHorseAccess;
+import snownee.jade.mixin.CanItemPerformAbilityAccess;
 import snownee.jade.network.ClientHandshakePacket;
 import snownee.jade.network.ReceiveDataPacket;
 import snownee.jade.network.RequestBlockPacket;
@@ -118,6 +120,8 @@ import snownee.jade.network.ShowOverlayPacket;
 
 @Mod(Jade.ID)
 public final class CommonProxy {
+
+	private static final CallbackContainer<BiConsumer<HolderLookup.Provider, Boolean>> componentsBoundListeners = new CallbackContainer<>();
 
 	public static File getConfigDirectory() {
 		return FMLPaths.CONFIGDIR.get().toFile();
@@ -523,9 +527,12 @@ public final class CommonProxy {
 	}
 
 	public static void registerTagsUpdatedListener(BiConsumer<HolderLookup.Provider, Boolean> listener) {
-		NeoForge.EVENT_BUS.addListener((DefaultDataComponentsBoundEvent event) -> listener.accept(
-				VanillaRegistries.createLookup(),
-				event.getUpdateCause() == DefaultDataComponentsBoundEvent.UpdateCause.CLIENT_PACKET_RECEIVED));
+		NeoForge.EVENT_BUS.addListener((TagsUpdatedEvent.ClientPacketReceived event) -> listener.accept(event.getRegistries(), true));
+		componentsBoundListeners.add(listener);
+	}
+
+	public static void callComponentsBoundListeners(HolderLookup.Provider provider) {
+		componentsBoundListeners.call(listener -> listener.accept(provider, false));
 	}
 
 	public static boolean isCorrectConditions(List<LootItemCondition> conditions, ItemStack toolItem) {
@@ -542,6 +549,8 @@ public final class CommonProxy {
 					return true;
 				}
 			}
+		} else if (condition instanceof CanItemPerformAbilityAccess canItemPerformAbility) {
+			return canItemPerformAbility.getAbility() == ItemAbilities.SHEARS_DIG;
 		}
 		return false;
 	}
