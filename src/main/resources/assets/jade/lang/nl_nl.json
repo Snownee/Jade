@@ -1,7 +1,7 @@
 {
 	"modmenu.nameTranslation.jade": "Jade",
 	"modmenu.descriptionTranslation.jade": "Laat zien waar u naar kijkt.",
-	"fml.menu.mods.info.description.jade": "Laat zien waar u naar kijkt.",
+	"neoforge.screen.mods.info.description.jade": "Laat zien waar u naar kijkt.",
 	"tooltip.jade.crop_growth": "Groei: %s",
 	"tooltip.jade.crop_mature": "Volwassen",
 	"tooltip.jade.empty": "Leeg",

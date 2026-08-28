@@ -1,6 +1,8 @@
 modLoader = "javafml"
 loaderVersion = "*"
 license = "CC-BY-NC-SA-4.0"
+licenseURL = "https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en"
+issueTrackerURL = "https://github.com/Snownee/Jade/issues?q=is%3Aissue"
 
 [[mods]]
 modId = "jade"
@@ -9,7 +11,7 @@ displayName = "Jade"
 authors = "Snownee"
 displayURL = "https://www.curseforge.com/minecraft/mc-mods/jade"
 description = "Minecraft mod shows what you are looking at. (Hwyla fork)"
-logoFile = "icon.png"
+iconFile = "icon.png"
 credits = "TehNut, ProfMobius, kalkafox"
 
 [[mixins]]
