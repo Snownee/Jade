@@ -1,13 +1,9 @@
 package snownee.jade.compat;
 
-import java.util.List;
-
 import org.jspecify.annotations.Nullable;
 
 import me.shedaniel.rei.api.client.view.ViewSearchBuilder;
-import me.shedaniel.rei.api.common.entry.EntryStack;
-import me.shedaniel.rei.api.common.entry.type.VanillaEntryTypes;
-import me.shedaniel.rei.impl.display.DisplaySpec;
+import me.shedaniel.rei.api.common.util.EntryStacks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
@@ -20,12 +16,11 @@ public class REICompat implements RecipeLookupPlugin {
 	public RecipeLookupResult lookup(ItemStack itemStack, @Nullable Identifier specialId, boolean uses) {
 		ViewSearchBuilder builder = ViewSearchBuilder.builder();
 		if (uses) {
-			builder.addUsagesFor(EntryStack.of(VanillaEntryTypes.ITEM, itemStack));
+			builder.addUsagesFor(EntryStacks.of(itemStack));
 		} else {
-			builder.addRecipesFor(EntryStack.of(VanillaEntryTypes.ITEM, itemStack));
+			builder.addRecipesFor(EntryStacks.of(itemStack));
 		}
-		List<DisplaySpec> list = builder.streamDisplays().toList();
-		if (list.isEmpty()) {
+		if (builder.getCategories().isEmpty()) {
 			return RecipeLookupResult.FAIL;
 		}
 		return new RecipeLookupResult(

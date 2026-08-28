@@ -114,7 +114,7 @@ configurations {
 dependencies {
     compileOnly "mezz.jei:jei-26.2-common-api:${jei_version}"
 
-    api "me.shedaniel:RoughlyEnoughItems-neoforge:${project.rei_version}"
+//    api "me.shedaniel:RoughlyEnoughItems-neoforge:${project.rei_version}"
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -140,6 +140,7 @@ jar {
     exclude '/snownee/jade/test'
     exclude '/com' // com.terraformersmc.modmenu
     exclude '/dummy' // dummy.com.terraformersmc.modmenu
+    exclude '/me/shedaniel/rei' // me.shedaniel.rei (placeholder)
     exclude("/assets/${project.mod_id}/lang/en_us.existing.json")
     manifest {
         attributes([
