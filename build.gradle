@@ -179,4 +179,10 @@ publishMods {
         minecraftVersions.add(minecraft_version)
         optional("jei")
     }
+    modrinth {
+        projectId = "nvQzSEkH"
+        accessToken = providers.environmentVariable("MODRINTH_TOKEN")
+        minecraftVersions.add(minecraft_version)
+        optional("jei")
+    }
 }
