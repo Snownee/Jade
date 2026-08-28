@@ -1,8 +1,7 @@
 package me.shedaniel.rei.api.client.view;
 
-import java.util.Set;
+import java.util.stream.Stream;
 
-import me.shedaniel.rei.api.common.category.CategoryIdentifier;
 import me.shedaniel.rei.api.common.entry.EntryStack;
 
 public interface ViewSearchBuilder {
@@ -14,7 +13,7 @@ public interface ViewSearchBuilder {
 
 	<T> ViewSearchBuilder addUsagesFor(EntryStack<T> stack);
 
-	Set<CategoryIdentifier<?>> getCategories();
+	Stream<?> streamDisplays();
 
 	default boolean open() {
 		return false;

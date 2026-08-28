@@ -20,7 +20,7 @@ public class REICompat implements RecipeLookupPlugin {
 		} else {
 			builder.addRecipesFor(EntryStacks.of(itemStack));
 		}
-		if (builder.getCategories().isEmpty()) {
+		if (builder.streamDisplays().toList().isEmpty()) {
 			return RecipeLookupResult.FAIL;
 		}
 		return new RecipeLookupResult(
