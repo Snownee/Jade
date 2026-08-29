@@ -96,6 +96,7 @@ jar {
     exclude '/com' // com.terraformersmc.modmenu
     exclude '/cc' // cc.cassian.rrv
     exclude '/dummy' // dummy.com.terraformersmc.modmenu
+    exclude '/me/shedaniel/rei' // me.shedaniel.rei
     exclude '**/*.bat'
     exclude '**/*.py'
     from("LICENSE") {

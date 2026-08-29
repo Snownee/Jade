@@ -1,7 +1,7 @@
 {
 	"modmenu.nameTranslation.jade": "Jade",
 	"modmenu.descriptionTranslation.jade": "Baktığınız şey hakkında bilgi gösterir.",
-	"fml.menu.mods.info.description.jade": "Baktığınız şey hakkında bilgi gösterir.",
+	"neoforge.screen.mods.info.description.jade": "Baktığınız şey hakkında bilgi gösterir.",
 	"tooltip.jade.crop_growth": "Büyüme: %s",
 	"tooltip.jade.crop_mature": "Yetişkin",
 	"tooltip.jade.empty": "Boş",

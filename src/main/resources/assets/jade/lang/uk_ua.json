@@ -1,7 +1,7 @@
 {
 	"modmenu.nameTranslation.jade": "Jade",
 	"modmenu.descriptionTranslation.jade": "Показує інформацію про те, на що ви дивитеся.",
-	"fml.menu.mods.info.description.jade": "Показує інформацію про те, на що ви дивитеся.",
+	"neoforge.screen.mods.info.description.jade": "Показує інформацію про те, на що ви дивитеся.",
 	"tooltip.jade.crop_growth": "Ріст: %s",
 	"tooltip.jade.crop_mature": "Зрілий",
 	"tooltip.jade.empty": "Порожньо",
