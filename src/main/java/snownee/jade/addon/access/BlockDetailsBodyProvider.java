@@ -15,7 +15,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.block.DecoratedPotBlock;
 import net.minecraft.world.level.block.FlowerBedBlock;
-import net.minecraft.world.level.block.RedStoneWireBlock;
+import net.minecraft.world.level.block.RedstoneWireBlock;
 import net.minecraft.world.level.block.SmallDripleafBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -34,9 +34,9 @@ public class BlockDetailsBodyProvider implements IBlockComponentProvider {
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		BlockState blockState = accessor.getBlockState();
 		Block block = blockState.getBlock();
-		if (block instanceof RedStoneWireBlock) {
+		if (block instanceof RedstoneWireBlock) {
 			List<Component> list = Lists.newArrayListWithExpectedSize(4);
-			for (Map.Entry<Direction, EnumProperty<RedstoneSide>> entry : RedStoneWireBlock.PROPERTY_BY_DIRECTION.entrySet()) {
+			for (Map.Entry<Direction, EnumProperty<RedstoneSide>> entry : RedstoneWireBlock.PROPERTY_BY_DIRECTION.entrySet()) {
 				RedstoneSide side = blockState.getValue(entry.getValue());
 				if (side != RedstoneSide.NONE) {
 					list.add(BlockFaceProvider.directionName(entry.getKey()));

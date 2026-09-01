@@ -5,7 +5,6 @@ import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -123,7 +122,7 @@ public class EmptyAccessorImpl extends AccessorImpl<BlockHitResult> implements E
 		public static final StreamCodec<RegistryFriendlyByteBuf, SyncData> STREAM_CODEC = StreamCodec.composite(
 				ByteBufCodecs.BOOL,
 				SyncData::showDetails,
-				StreamCodec.of(FriendlyByteBuf::writeBlockHitResult, FriendlyByteBuf::readBlockHitResult),
+				BlockHitResult.STREAM_CODEC,
 				SyncData::hit,
 				ByteBufCodecs.COMPOUND_TAG,
 				SyncData::data,
