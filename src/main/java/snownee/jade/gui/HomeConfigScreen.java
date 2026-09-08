@@ -1,5 +1,6 @@
 package snownee.jade.gui;
 
+import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
@@ -165,7 +166,7 @@ public class HomeConfigScreen extends Screen {
 				10,
 				title,
 				hoveredTitle,
-				b -> ConfirmLinkScreen.confirmLinkNow(this, "https://www.curseforge.com/members/snownee_/projects"),
+				b -> ConfirmLinkScreen.confirmLinkNow(this, URI.create("https://www.curseforge.com/members/snownee_/projects")),
 				this::triggerAuthorButton,
 				$ -> narration.copy()));
 		if (showTranslators) {

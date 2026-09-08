@@ -6,6 +6,8 @@ import java.util.Objects;
 
 import org.jspecify.annotations.Nullable;
 
+import com.mojang.blaze3d.Blaze3D;
+
 import it.unimi.dsi.fastutil.floats.FloatUnaryOperator;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
@@ -77,7 +79,7 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 							if (!file.exists()) {
 								defaultFactory.run();
 							}
-							Util.getPlatform().openFile(file);
+							Blaze3D.openPath(file.toPath());
 						}).size(20, 20).tooltip(Tooltip.create(tooltip)).createNarration($ -> tooltip).build(), 80);
 		return entry;
 	}
