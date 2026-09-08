@@ -37,6 +37,7 @@ import snownee.jade.gui.config.value.CycleOptionValue;
 import snownee.jade.gui.config.value.OptionValue;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.theme.ThemeHelper;
+import snownee.jade.test.OptionsNavTest;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
 import snownee.jade.util.ModIdentification;
@@ -251,6 +252,10 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 							reset,
 							Component.translatable("gui.cancel")));
 				}).size(100, 20)));
+
+		if (CommonProxy.isDevEnv()) {
+			OptionsNavTest.addManyEntries(options);
+		}
 
 		return options;
 	}
