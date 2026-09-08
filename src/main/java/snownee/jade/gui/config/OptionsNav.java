@@ -1,15 +1,20 @@
 package snownee.jade.gui.config;
 
+import java.util.List;
+
 import org.joml.Vector2i;
 import org.jspecify.annotations.Nullable;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.components.ObjectSelectionList;
+import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetTooltipHolder;
 import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.client.gui.narration.NarratedElementType;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.gui.navigation.ScreenDirection;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
@@ -17,11 +22,10 @@ import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositione
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import snownee.jade.api.JadeIds;
 
-public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
+public class OptionsNav extends SmoothScrollableList<OptionsNav.Entry> {
 	private static final Identifier NAVBAR_BACKGROUND = JadeIds.JADE("navbar_background");
 	private static final Identifier INWORLD_NAVBAR_BACKGROUND = JadeIds.JADE("inworld_navbar_background");
 	private final OptionsList options;
@@ -66,6 +70,12 @@ public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
 		// NO-OP
 	}
 
+	@Override
+	public void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+		tickSmoothScroll();
+		super.extractWidgetRenderState(guiGraphics, mouseX, mouseY, partialTicks);
+	}
+
 	public void addEntry(OptionsList.Title entry) {
 		super.addEntry(new Entry(this, entry));
 	}
@@ -106,7 +116,26 @@ public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
 				}
 			}
 		}
-		return super.nextFocusPath(event);
+		if (getItemCount() == 0) {
+			return null;
+		}
+		if (isFocused() && event instanceof FocusNavigationEvent.ArrowNavigation arrowNavigation) {
+			Entry entry = nextEntry(arrowNavigation.direction());
+			if (entry != null) {
+				return ComponentPath.path(this, ComponentPath.leaf(entry));
+			}
+			setFocused(null);
+			setSelected(null);
+			return null;
+		}
+		if (!isFocused()) {
+			Entry entry = getSelected();
+			if (entry == null) {
+				entry = nextEntry(event.getVerticalDirectionForInitialFocus());
+			}
+			return entry == null ? null : ComponentPath.path(this, ComponentPath.leaf(entry));
+		}
+		return null;
 	}
 
 	@Override
@@ -124,7 +153,7 @@ public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
 		return null;
 	}
 
-	public static class Entry extends ObjectSelectionList.Entry<Entry> {
+	public static class Entry extends ContainerObjectSelectionList.Entry<Entry> {
 
 		private final OptionsList.Title title;
 		private final OptionsNav parent;
@@ -207,8 +236,24 @@ public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
 		}
 
 		@Override
-		public Component getNarration() {
-			return title.narration;
+		public List<? extends GuiEventListener> children() {
+			return List.of();
+		}
+
+		@Override
+		public List<? extends NarratableEntry> narratables() {
+			return List.of(new NarratableEntry() {
+
+				@Override
+				public NarrationPriority narrationPriority() {
+					return NarrationPriority.HOVERED;
+				}
+
+				@Override
+				public void updateNarration(NarrationElementOutput narrationElementOutput) {
+					narrationElementOutput.add(NarratedElementType.TITLE, title.narration);
+				}
+			});
 		}
 
 		public void onPress() {

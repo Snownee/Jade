@@ -48,7 +48,6 @@ import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.Mth;
 import net.minecraft.util.StringUtil;
 import net.minecraft.util.Util;
 import snownee.jade.Jade;
@@ -60,10 +59,8 @@ import snownee.jade.gui.config.value.CycleOptionValue;
 import snownee.jade.gui.config.value.InputOptionValue;
 import snownee.jade.gui.config.value.OptionValue;
 import snownee.jade.gui.config.value.SliderOptionValue;
-import snownee.jade.util.ClientProxy;
-import snownee.jade.util.SmoothChasingValue;
 
-public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry> {
+public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 
 	public static final Component OPTION_ON = CommonComponents.OPTION_ON.copy().withColor(0xFFB9F6CA);
 	public static final Component OPTION_OFF = CommonComponents.OPTION_OFF.copy().withColor(0xFFFF8A80);
@@ -74,7 +71,6 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 	public @Nullable OptionValue<?> invalidEntry;
 	public @Nullable KeyMapping selectedKey;
 	private final BaseOptionsScreen owner;
-	private final SmoothChasingValue smoothScroll;
 	private @Nullable Entry defaultParent;
 
 	public OptionsList(
@@ -90,7 +86,6 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 		setX(x);
 		this.owner = owner;
 		this.diskWriter = diskWriter;
-		smoothScroll = new SmoothChasingValue().withSpeed(0.6F);
 	}
 
 	public OptionsList(BaseOptionsScreen owner, Minecraft client, int x, int y, int width, int height, int entryHeight) {
@@ -113,32 +108,6 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 	@Override
 	protected int scrollBarX() {
 		return owner.width - 6;
-	}
-
-	@Override
-	public void setScrollAmount(double scroll) {
-		if (ClientProxy.metadata.hasSmoothScroll()) {
-			super.setScrollAmount(scroll);
-		} else {
-			smoothScroll.target(Mth.clamp((float) scroll, 0, maxScrollAmount()));
-		}
-	}
-
-	public void forceSetScrollAmount(double scroll) {
-		smoothScroll.start((float) scroll);
-		super.setScrollAmount(scroll);
-	}
-
-	@Override
-	protected double scrollRate() {
-		return defaultEntryHeight * (!ClientProxy.metadata.hasFastScroll() && JadeUI.hasControlDown() ? 9 : 3);
-	}
-
-	@Override
-	public boolean mouseDragged(MouseButtonEvent mouseButtonEvent, double d, double e) {
-		smoothScroll.value = smoothScroll.getTarget();
-		super.setScrollAmount(smoothScroll.value);
-		return super.mouseDragged(mouseButtonEvent, d, e);
 	}
 
 	@Nullable
@@ -184,11 +153,7 @@ public class OptionsList extends ContainerObjectSelectionList<OptionsList.Entry>
 
 	@Override
 	public void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
-		float deltaTicks = Minecraft.getInstance().getDeltaTracker().getRealtimeDeltaTicks();
-		smoothScroll.tick(deltaTicks);
-		if (!ClientProxy.metadata.hasSmoothScroll() && smoothScroll.isMoving()) {
-			super.setScrollAmount(Math.round(smoothScroll.value));
-		}
+		tickSmoothScroll();
 		hovered = null;
 		if (!PreviewOptionsScreen.isAdjustingPosition()) {
 			InputType lastInputType = minecraft.getLastInputType();
