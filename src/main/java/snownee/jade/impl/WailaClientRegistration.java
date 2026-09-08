@@ -60,7 +60,6 @@ import snownee.jade.api.callback.JadeTooltipCollectedCallback;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.harvest.ToolTypeRegistry;
-import snownee.jade.api.platform.CustomEnchantPower;
 import snownee.jade.api.view.EnergyView;
 import snownee.jade.api.view.FluidView;
 import snownee.jade.api.view.IClientExtensionProvider;
@@ -99,7 +98,6 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	public final Map<Identifier, ConfigEntry<?>> configEntries = Maps.newHashMap();
 	public final Multimap<Identifier, Component> configCategoryOverrides = ArrayListMultimap.create();
 
-	public final Map<Block, CustomEnchantPower> customEnchantPowers = Maps.newHashMap();
 	public final Map<Identifier, IClientExtensionProvider<ItemStack, ItemView>> itemStorageProviders = Maps.newHashMap();
 	public final Map<Identifier, IClientExtensionProvider<FluidView.Data, FluidView>> fluidStorageProviders = Maps.newHashMap();
 	public final Map<Identifier, IClientExtensionProvider<EnergyView.Data, EnergyView>> energyStorageProviders = Maps.newHashMap();
@@ -417,11 +415,6 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 				.serverConnected(isServerConnected())
 				.serverData(getServerData())
 				.showDetails(isShowDetailsPressed());
-	}
-
-	@Override
-	public void registerCustomEnchantPower(Block block, CustomEnchantPower customEnchantPower) {
-		customEnchantPowers.put(block, customEnchantPower);
 	}
 
 	@Override

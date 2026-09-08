@@ -281,10 +281,10 @@ public final class ClientProxy implements ClientModInitializer {
 	}
 
 	public static float getEnchantPowerBonus(BlockState state, Level world, BlockPos pos) {
-		if (WailaClientRegistration.instance().customEnchantPowers.containsKey(state.getBlock())) {
-			return WailaClientRegistration.instance().customEnchantPowers.get(state.getBlock()).getEnchantPowerBonus(state, world, pos);
+		if (!state.is(BlockTags.ENCHANTMENT_POWER_PROVIDER)) {
+			return 0;
 		}
-		return state.is(BlockTags.ENCHANTMENT_POWER_PROVIDER) ? 1 : 0;
+		return state.getBlock().getProvidedEnchantmentPower(state, world, pos);
 	}
 
 	public static void sendPacket(CustomPacketPayload payload) {

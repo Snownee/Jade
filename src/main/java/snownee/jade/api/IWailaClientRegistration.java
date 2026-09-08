@@ -27,7 +27,6 @@ import snownee.jade.api.callback.JadeItemModNameCallback;
 import snownee.jade.api.callback.JadeRayTraceCallback;
 import snownee.jade.api.callback.JadeTooltipCollectedCallback;
 import snownee.jade.api.harvest.ToolTypeRegistry;
-import snownee.jade.api.platform.PlatformWailaClientRegistration;
 import snownee.jade.api.view.EnergyView;
 import snownee.jade.api.view.FluidView;
 import snownee.jade.api.view.IClientExtensionProvider;
@@ -38,7 +37,7 @@ import snownee.jade.api.view.ProgressView;
  * Client-side registration entry point for Jade integrations.
  */
 @NonExtendable
-public interface IWailaClientRegistration extends PlatformWailaClientRegistration {
+public interface IWailaClientRegistration {
 
 	/**
 	 * Registers a boolean plugin config key.
