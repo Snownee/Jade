@@ -20,6 +20,7 @@ import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.harvest.ToolTier;
+import snownee.jade.api.harvest.ToolType;
 import snownee.jade.api.view.HideThingsExtensionProvider;
 
 public class ExamplePlugin implements IWailaPlugin {
@@ -94,6 +95,39 @@ public class ExamplePlugin implements IWailaPlugin {
 					JadeIds.JADE("pickaxe"),
 					Identifier.withDefaultNamespace("wooden_pickaxe"),
 					ToolTier.item(Identifier.withDefaultNamespace("test_pickaxe"), Items.DIAMOND_PICKAXE));
+		});
+		// expected behavior: removal returns true only for existing tiers, and tier-removed callbacks fire
+		registration.addHarvestPlugin(registry -> {
+			ToolType type = registry.type(Identifier.parse("debug:removal_test"));
+			ToolTier tier = ToolTier.item(Items.IRON_PICKAXE);
+			type.addTier(tier);
+			type.tierRemovedCallbacks().add((t, tierId, removed) ->
+					Jade.LOGGER.info("Tier removed from {}: {}", t.getUid(), tierId));
+			boolean byInstance = type.removeTier(tier);
+			boolean again = type.removeTier(tier);
+			type.addTier(ToolTier.item(Items.STONE_PICKAXE));
+			boolean byUid = type.removeTier(Identifier.withDefaultNamespace("stone_pickaxe"));
+			boolean missing = type.removeTier(Identifier.withDefaultNamespace("stone_pickaxe"));
+			Jade.LOGGER.info("removal_test: byInstance={}, again={}, byUid={}, missing={}", byInstance, again, byUid, missing);
+		});
+		// expected behavior: removes every axe tier, so the jade:axe tool type is dropped entirely
+		registration.addHarvestPlugin(registry -> {
+			registry.modifyType(
+					JadeIds.JADE("axe"), axe -> {
+						for (ToolTier tier : List.copyOf(axe.tiers())) {
+							axe.removeTier(tier);
+						}
+						axe.tierAddedCallbacks().add((t, tierId, tier) -> t.removeTier(tierId));
+					});
+		});
+		// expected behavior: the action runs when the type is registered by a later plugin
+		registration.addHarvestPlugin(registry -> {
+			registry.modifyType(
+					Identifier.parse("debug:delayed"), type ->
+							Jade.LOGGER.info("delayed type appeared with {} tiers", type.tiers().size()));
+		});
+		registration.addHarvestPlugin(registry -> {
+			registry.type(Identifier.parse("debug:delayed")).addTier(ToolTier.item(Items.IRON_PICKAXE));
 		});
 	}
 
