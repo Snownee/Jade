@@ -190,7 +190,7 @@ public class OptionsNav extends ObjectSelectionList<OptionsNav.Entry> {
 
 		@Override
 		public boolean mouseClicked(MouseButtonEvent event, boolean bl) {
-			if (event.button() == 0) {
+			if (parent.isValidClickButton(event.buttonInfo())) {
 				onPress();
 				return true;
 			}

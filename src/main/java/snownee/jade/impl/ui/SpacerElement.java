@@ -4,6 +4,8 @@ import java.util.function.Predicate;
 
 import org.jspecify.annotations.Nullable;
 
+import com.mojang.blaze3d.platform.InputConstants;
+
 import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Renderable;
@@ -111,7 +113,7 @@ public class SpacerElement extends ResizeableElement {
 
 	@Override
 	public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean bl) {
-		if (mouseButtonEvent.button() == 0 && onClick != null && isMouseOver(mouseButtonEvent.x(), mouseButtonEvent.y())) {
+		if (mouseButtonEvent.button() == InputConstants.MOUSE_BUTTON_LEFT && onClick != null && isMouseOver(mouseButtonEvent.x(), mouseButtonEvent.y())) {
 			//noinspection unchecked
 			return ((Predicate<LayoutElement>) onClick).test(wrapped);
 		}
