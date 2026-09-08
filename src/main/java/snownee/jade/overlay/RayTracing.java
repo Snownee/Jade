@@ -65,15 +65,16 @@ public class RayTracing {
 	@Nullable
 	public static EntityHitResult getEntityHitResult(
 			Level worldIn,
-			Entity projectile,
+			Entity except,
 			Vec3 startVec,
 			Vec3 endVec,
 			AABB boundingBox,
 			Predicate<Entity> filter) {
 		double d0 = Double.MAX_VALUE;
 		Entity entity = null;
+		Vec3 hitLocation = startVec;
 
-		for (Entity entity1 : worldIn.getEntities(projectile, boundingBox, filter)) {
+		for (Entity entity1 : worldIn.getEntities(except, boundingBox, filter)) {
 			AABB axisalignedbb = entity1.getBoundingBox();
 			if (axisalignedbb.getSize() < 0.3) {
 				axisalignedbb = axisalignedbb.inflate(0.3);
@@ -88,11 +89,12 @@ public class RayTracing {
 				if (d1 < d0) {
 					entity = entity1;
 					d0 = d1;
+					hitLocation = optional.get();
 				}
 			}
 		}
 
-		return entity == null ? null : new EntityHitResult(entity);
+		return entity == null ? null : new EntityHitResult(entity, hitLocation);
 	}
 
 	public static boolean isEmptyElement(IElement element) {
