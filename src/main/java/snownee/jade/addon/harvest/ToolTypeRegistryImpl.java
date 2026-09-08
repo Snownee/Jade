@@ -29,6 +29,7 @@ public final class ToolTypeRegistryImpl implements ToolTypeRegistry {
 	public static final Supplier<ToolTier> DEFAULT_SHEARS_TIER = Suppliers.memoize(() -> ToolTier.item(Items.SHEARS));
 	private final Map<Identifier, ToolType> pendingMap = Maps.newLinkedHashMap();
 	private final Map<Identifier, CallbackContainer<ToolTierAddedCallback>> pendingCallbacks = Maps.newHashMap();
+	private final Map<Identifier, CallbackContainer<Consumer<ToolType>>> pendingTypeCallbacks = Maps.newHashMap();
 
 	private ToolTypeRegistryImpl() {
 	}
@@ -49,6 +50,10 @@ public final class ToolTypeRegistryImpl implements ToolTypeRegistry {
 				type.tierAddedCallbacks().add(callback);
 			}
 		}
+		CallbackContainer<Consumer<ToolType>> typeCallbacks = pendingTypeCallbacks.remove(id);
+		if (typeCallbacks != null) {
+			typeCallbacks.call($ -> $.accept(type));
+		}
 		return type;
 	}
 
@@ -65,6 +70,16 @@ public final class ToolTypeRegistryImpl implements ToolTypeRegistry {
 	@Override
 	public @Nullable ToolType get(Identifier typeId) {
 		return pendingMap.get(typeId);
+	}
+
+	@Override
+	public void modifyType(Identifier typeId, Consumer<ToolType> action) {
+		ToolType type = get(typeId);
+		if (type != null) {
+			action.accept(type);
+			return;
+		}
+		pendingTypeCallbacks.computeIfAbsent(typeId, _ -> new CallbackContainer<>()).add(action);
 	}
 
 	@Override

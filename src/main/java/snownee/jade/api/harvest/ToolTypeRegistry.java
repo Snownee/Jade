@@ -1,5 +1,7 @@
 package snownee.jade.api.harvest;
 
+import java.util.function.Consumer;
+
 import org.jspecify.annotations.Nullable;
 
 import net.minecraft.resources.Identifier;
@@ -41,6 +43,15 @@ public interface ToolTypeRegistry {
 	 * @return the tool type or {@code null}
 	 */
 	@Nullable ToolType get(Identifier typeId);
+
+	/**
+	 * Runs the given action once the tool type becomes registered.
+	 * If the tool type is already registered, the action runs immediately.
+	 *
+	 * @param typeId tool type identifier
+	 * @param action action to run with the registered tool type
+	 */
+	void modifyType(Identifier typeId, Consumer<ToolType> action);
 
 	/**
 	 * Inserts a tier after an existing tier.
