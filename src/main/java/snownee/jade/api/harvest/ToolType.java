@@ -42,12 +42,28 @@ public interface ToolType extends IJadeProvider {
 	CallbackContainer<ToolTierAddedCallback> tierAddedCallbacks();
 
 	/**
+	 * Returns the callback container that fires when a tier is removed.
+	 *
+	 * @return tier-removed callbacks
+	 */
+	CallbackContainer<ToolTierRemovedCallback> tierRemovedCallbacks();
+
+	/**
 	 * Notifies listeners that a tier was added.
 	 *
 	 * @param tier added tier
 	 */
 	default void onTierAdded(ToolTier tier) {
 		tierAddedCallbacks().call($ -> $.onAdded(this, tier.getUid(), tier));
+	}
+
+	/**
+	 * Notifies listeners that a tier was removed.
+	 *
+	 * @param tier removed tier
+	 */
+	default void onTierRemoved(ToolTier tier) {
+		tierRemovedCallbacks().call($ -> $.onRemoved(this, tier.getUid(), tier));
 	}
 
 	/**
@@ -114,6 +130,33 @@ public interface ToolType extends IJadeProvider {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Removes the tier with the given identifier.
+	 *
+	 * @param tierId tier identifier
+	 * @return {@code true} if a tier was removed
+	 */
+	default boolean removeTier(Identifier tierId) {
+		List<ToolTier> tiers = tiers();
+		List<ToolTier> removed = tiers.stream().filter(tier -> tier.getUid().equals(tierId)).toList();
+		if (removed.isEmpty()) {
+			return false;
+		}
+		tiers.removeAll(removed);
+		removed.forEach(this::onTierRemoved);
+		return true;
+	}
+
+	/**
+	 * Removes the tier with the same identifier as the given tier.
+	 *
+	 * @param tier tier to remove
+	 * @return {@code true} if a tier was removed
+	 */
+	default boolean removeTier(ToolTier tier) {
+		return removeTier(tier.getUid());
 	}
 
 	/**

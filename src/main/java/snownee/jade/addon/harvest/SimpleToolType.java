@@ -12,6 +12,7 @@ import snownee.jade.api.callback.CallbackContainer;
 import snownee.jade.api.harvest.ToolResult;
 import snownee.jade.api.harvest.ToolTier;
 import snownee.jade.api.harvest.ToolTierAddedCallback;
+import snownee.jade.api.harvest.ToolTierRemovedCallback;
 import snownee.jade.api.harvest.ToolType;
 
 public class SimpleToolType implements ToolType {
@@ -19,7 +20,8 @@ public class SimpleToolType implements ToolType {
 	private final Identifier uid;
 	protected final List<ToolTier> tiers = Lists.newArrayList();
 	protected final boolean skipInstaBreakingBlock;
-	private final CallbackContainer<ToolTierAddedCallback> callbacks = new CallbackContainer<>();
+	private final CallbackContainer<ToolTierAddedCallback> addedCallbacks = new CallbackContainer<>();
+	private final CallbackContainer<ToolTierRemovedCallback> removedCallbacks = new CallbackContainer<>();
 
 	protected SimpleToolType(Identifier uid, boolean skipInstaBreakingBlock) {
 		this.uid = uid;
@@ -55,7 +57,12 @@ public class SimpleToolType implements ToolType {
 
 	@Override
 	public CallbackContainer<ToolTierAddedCallback> tierAddedCallbacks() {
-		return callbacks;
+		return addedCallbacks;
+	}
+
+	@Override
+	public CallbackContainer<ToolTierRemovedCallback> tierRemovedCallbacks() {
+		return removedCallbacks;
 	}
 
 	@Override
