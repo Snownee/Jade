@@ -1,5 +1,7 @@
 package snownee.jade.addon.vanilla;
 
+import org.jspecify.annotations.Nullable;
+
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -21,8 +23,16 @@ public class BeehiveProvider implements StreamServerDataProvider<BlockAccessor, 
 	public static final BeehiveProvider INSTANCE = new BeehiveProvider();
 
 	@Override
+	public boolean shouldRequestData(BlockAccessor accessor) {
+		return accessor.getBlockEntity() instanceof BeehiveBlockEntity;
+	}
+
+	@Override
+	@Nullable
 	public Byte streamData(BlockAccessor accessor) {
-		BeehiveBlockEntity beehive = accessor.typedBlockEntity();
+		if (!(accessor.getBlockEntity() instanceof BeehiveBlockEntity beehive)) {
+			return null;
+		}
 		int bees = beehive.getOccupantCount();
 		return (byte) (beehive.isFull() ? bees : -bees);
 	}

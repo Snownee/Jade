@@ -1,5 +1,7 @@
 package snownee.jade.addon.vanilla;
 
+import org.jspecify.annotations.Nullable;
+
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
@@ -21,12 +23,16 @@ public class LecternProvider implements StreamServerDataProvider<BlockAccessor, 
 
 	@Override
 	public boolean shouldRequestData(BlockAccessor accessor) {
-		return accessor.getBlockState().getValue(LecternBlock.HAS_BOOK);
+		return accessor.getBlockState().getValue(LecternBlock.HAS_BOOK) && accessor.getBlockEntity() instanceof LecternBlockEntity;
 	}
 
 	@Override
+	@Nullable
 	public ItemStack streamData(BlockAccessor accessor) {
-		return accessor.<LecternBlockEntity>typedBlockEntity().getBook();
+		if (!(accessor.getBlockEntity() instanceof LecternBlockEntity lectern)) {
+			return null;
+		}
+		return lectern.getBook();
 	}
 
 	@Override
