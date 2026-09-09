@@ -24,7 +24,9 @@ import net.minecraft.client.gui.layouts.Layout;
 import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.client.gui.layouts.LayoutSettings;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
+import snownee.jade.JadeClient;
 import snownee.jade.JadeInternals;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.JadeIds;
@@ -49,6 +51,8 @@ import snownee.jade.gui.PreviewOptionsScreen;
 import snownee.jade.gui.ResizeableLayout;
 import snownee.jade.impl.Tooltip;
 import snownee.jade.overlay.DisplayHelper;
+import snownee.jade.track.BoxProgressFadeTrackInfo;
+import snownee.jade.track.ProgressTracker;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.ToFloatFunction;
 import snownee.jade.util.WailaExceptionHandler;
@@ -66,6 +70,7 @@ public class BoxElementImpl extends BoxElement implements ContainerEventHandler 
 	private @Nullable BoxProgress pendingProgress;
 	private @Nullable BoxProgress fadeProgress;
 	private float fadeAlpha;
+	private @Nullable BoxProgressFadeTrackInfo fadeTrack;
 
 	public BoxElementImpl(Tooltip tooltip, BoxStyle style) {
 		this.tooltip = Objects.requireNonNull(tooltip);
@@ -237,7 +242,7 @@ public class BoxElementImpl extends BoxElement implements ContainerEventHandler 
 
 	@Override
 	public void clearBoxProgress() {
-		providers.removeIf(entry -> entry.priority() == STATIC_PROGRESS_PRIORITY);
+		providers.removeIf(entry -> entry.provider() instanceof StaticBoxProgressProvider);
 	}
 
 	@Override
@@ -269,23 +274,64 @@ public class BoxElementImpl extends BoxElement implements ContainerEventHandler 
 			fadeProgress = current;
 			fadeAlpha = current.alpha();
 			pendingProgress = current;
-		} else if (fadeProgress != null) {
-			fadeAlpha -= Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaTicks() * 0.1F;
-			if (fadeAlpha <= 0) {
-				fadeAlpha = 0;
-				fadeProgress = null;
-				pendingProgress = null;
-			} else {
-				pendingProgress = new BoxProgress(fadeProgress.progress(), fadeProgress.type(), fadeProgress.color(), fadeAlpha);
+			BoxProgressFadeTrackInfo track = getFadeTrack(true);
+			if (track != null) {
+				track.progress = fadeProgress;
+				track.alpha = fadeAlpha;
+				track.touch();
 			}
-		} else {
-			pendingProgress = null;
+			return;
 		}
+		BoxProgressFadeTrackInfo track = getFadeTrack(false);
+		if (track != null && fadeProgress == null) {
+			fadeProgress = track.progress;
+			fadeAlpha = track.alpha;
+		}
+		if (fadeProgress == null) {
+			pendingProgress = null;
+			return;
+		}
+		fadeAlpha -= Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaTicks() * 0.1F;
+		if (fadeAlpha <= 0) {
+			fadeAlpha = 0;
+			fadeProgress = null;
+			pendingProgress = null;
+		} else {
+			pendingProgress = new BoxProgress(fadeProgress.progress(), fadeProgress.type(), fadeProgress.color(), fadeAlpha);
+		}
+		if (track != null) {
+			track.progress = fadeProgress;
+			track.alpha = fadeAlpha;
+			if (fadeProgress != null) {
+				track.touch();
+			}
+		}
+	}
+
+	private @Nullable BoxProgressFadeTrackInfo getFadeTrack(boolean create) {
+		if (fadeTrack != null) {
+			return fadeTrack;
+		}
+		Identifier tag = getTag();
+		if (tag == null) {
+			return null;
+		}
+		ProgressTracker tracker = JadeClient.tickHandler().progressTracker;
+		fadeTrack = tracker.get(tag, BoxProgressFadeTrackInfo.class);
+		if (fadeTrack == null && create) {
+			fadeTrack = tracker.getOrCreate(tag, BoxProgressFadeTrackInfo.class, BoxProgressFadeTrackInfo::new);
+		}
+		return fadeTrack;
 	}
 
 	private void drawBoxProgressBar(GuiGraphicsExtractor graphics, BoxProgress progress) {
 		int baseColor = progress.color() != null ? progress.color() : style.boxProgressColors.get(progress.type());
-		int color = Overlay.applyAlpha(baseColor, progress.alpha());
+		float boxAlpha = IDisplayHelper.get().backgroundOpacity();
+		if (JadeIds.ROOT.equals(getTag())) {
+			boxAlpha *= IWailaConfig.get().overlay().getAlpha();
+		}
+		int color = Overlay.applyAlpha(baseColor, progress.alpha() * boxAlpha);
+		float x = getX();
 		float top = getY() + getHeight();
 		float width = getWidth();
 		float offset0 = style.boxProgressOffset(ScreenDirection.UP);
@@ -295,9 +341,9 @@ public class BoxElementImpl extends BoxElement implements ContainerEventHandler 
 		width += offset1 - offset3;
 		DisplayHelper.fill(
 				graphics,
-				offset3,
+				x + offset3,
 				top - 1 + offset0,
-				offset3 + width * Mth.clamp(progress.progress(), 0, 1),
+				x + offset3 + width * Mth.clamp(progress.progress(), 0, 1),
 				top + offset2,
 				color);
 	}
@@ -364,7 +410,8 @@ public class BoxElementImpl extends BoxElement implements ContainerEventHandler 
 			long deltaTime = System.currentTimeMillis() - animation.startTime;
 			long durationMillis = duration.toMillis();
 			float progress = (float) deltaTime / durationMillis;
-			animation.alpha = Mth.clamp(progress, 0.55F, animation.showHideAlpha);
+			//noinspection MathClampMigration
+			animation.alpha = Math.min(animation.showHideAlpha, Math.max(progress, 0.55F));
 			chase(animation, Rect2f::getX, src::setX, progress);
 			chase(animation, Rect2f::getY, src::setY, progress);
 			chase(
