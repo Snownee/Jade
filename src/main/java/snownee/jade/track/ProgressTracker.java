@@ -3,6 +3,8 @@ package snownee.jade.track;
 import java.util.List;
 import java.util.function.Supplier;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 
@@ -29,6 +31,16 @@ public class ProgressTracker {
 		return info;
 	}
 
+	@Nullable
+	public <T extends TrackInfo> T get(Identifier tag, Class<T> type) {
+		for (TrackInfo o : map.get(tag)) {
+			if (type.isInstance(o)) {
+				return type.cast(o);
+			}
+		}
+		return null;
+	}
+
 	public void tick() {
 		if (map.isEmpty()) {
 			return;
@@ -45,7 +57,7 @@ public class ProgressTracker {
 	}
 
 	public void clear() {
-		map.clear();
+		map.values().removeIf(info -> !info.persistent);
 	}
 
 }

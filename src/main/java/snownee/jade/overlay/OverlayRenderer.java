@@ -192,6 +192,8 @@ public class OverlayRenderer {
 					return;
 				}
 			}
+
+			root.beforeRender(tickHandler.state.accessor(), partialTicks);
 		}
 
 		boolean renderDebug = IWailaConfig.get().general().isDebug() && JadeUI.hasControlDown();
