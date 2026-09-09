@@ -251,8 +251,11 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 							Component.translatable("gui.cancel")));
 				}).size(100, 20)));
 
-		if (CommonProxy.isDevEnv()) {
-			OptionsNavTest.addManyEntries(options);
+		try {
+			if (CommonProxy.isDevEnv()) {
+				OptionsNavTest.addManyEntries(options);
+			}
+		} catch (Throwable _) {
 		}
 
 		return options;

@@ -117,3 +117,5 @@ accessible method net/minecraft/world/level/gamerules/GameRules registerInteger 
 
 accessible field net/minecraft/locale/Language GSON Lcom/google/gson/Gson;
 accessible field net/minecraft/locale/Language UNSUPPORTED_FORMAT_PATTERN Ljava/util/regex/Pattern;
+
+accessible field net/minecraft/client/gui/components/AbstractScrollArea scrolling Z
