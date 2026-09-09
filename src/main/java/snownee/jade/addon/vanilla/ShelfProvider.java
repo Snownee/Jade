@@ -50,7 +50,7 @@ public class ShelfProvider implements StreamServerDataProvider<BlockAccessor, It
 				!accessor.getBlockState().getValue(ChiseledBookShelfBlock.SLOT_OCCUPIED_PROPERTIES.get(i))) {
 			return false;
 		}
-		return true;
+		return accessor.getBlockEntity() instanceof ListBackedContainer;
 	}
 
 	@Override
@@ -60,7 +60,10 @@ public class ShelfProvider implements StreamServerDataProvider<BlockAccessor, It
 		if (slot == -1) {
 			return null;
 		}
-		return ((ListBackedContainer) accessor.typedBlockEntity()).getItem(slot);
+		if (!(accessor.getBlockEntity() instanceof ListBackedContainer container)) {
+			return null;
+		}
+		return container.getItem(slot);
 	}
 
 	@Override

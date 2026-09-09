@@ -24,7 +24,10 @@ public class CommandBlockProvider implements StreamServerDataProvider<BlockAcces
 		if (!accessor.getPlayer().canUseGameMasterBlocks()) {
 			return null;
 		}
-		String command = accessor.<CommandBlockEntity>typedBlockEntity().getCommandBlock().getCommand();
+		if (!(accessor.getBlockEntity() instanceof CommandBlockEntity commandBlockEntity)) {
+			return null;
+		}
+		String command = commandBlockEntity.getCommandBlock().getCommand();
 		if (command.length() > 40) {
 			command = command.substring(0, 37) + "...";
 		}
@@ -38,7 +41,7 @@ public class CommandBlockProvider implements StreamServerDataProvider<BlockAcces
 
 	@Override
 	public boolean shouldRequestData(BlockAccessor accessor) {
-		return accessor.getPlayer().canUseGameMasterBlocks();
+		return accessor.getPlayer().canUseGameMasterBlocks() && accessor.getBlockEntity() instanceof CommandBlockEntity;
 	}
 
 	@Override

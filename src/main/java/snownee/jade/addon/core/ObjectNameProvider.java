@@ -188,7 +188,7 @@ public abstract class ObjectNameProvider implements IToggleableProvider {
 			} else if (nameable.hasCustomName()) {
 				return nameable.getDisplayName();
 			}
-			return accessor.typedBlockEntity().components().get(DataComponents.ITEM_NAME);
+			return accessor.getBlockEntity().components().get(DataComponents.ITEM_NAME);
 		}
 
 		@Override

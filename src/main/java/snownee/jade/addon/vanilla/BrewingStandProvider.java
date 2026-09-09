@@ -1,6 +1,8 @@
 package snownee.jade.addon.vanilla;
 
 import io.netty.buffer.ByteBuf;
+import org.jspecify.annotations.Nullable;
+
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -22,8 +24,16 @@ public class BrewingStandProvider implements StreamServerDataProvider<BlockAcces
 	public static final BrewingStandProvider INSTANCE = new BrewingStandProvider();
 
 	@Override
+	public boolean shouldRequestData(BlockAccessor accessor) {
+		return accessor.getBlockEntity() instanceof BrewingStandBlockEntity;
+	}
+
+	@Override
+	@Nullable
 	public Data streamData(BlockAccessor accessor) {
-		BrewingStandBlockEntity brewingStand = accessor.typedBlockEntity();
+		if (!(accessor.getBlockEntity() instanceof BrewingStandBlockEntity brewingStand)) {
+			return null;
+		}
 		return new Data(brewingStand.fuel, brewingStand.brewTime);
 	}
 

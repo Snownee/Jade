@@ -2,6 +2,8 @@ package snownee.jade.addon.vanilla;
 
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -20,8 +22,16 @@ public class FurnaceProvider implements StreamServerDataProvider<BlockAccessor, 
 	public static final FurnaceProvider INSTANCE = new FurnaceProvider();
 
 	@Override
+	public boolean shouldRequestData(BlockAccessor accessor) {
+		return accessor.getBlockEntity() instanceof AbstractFurnaceBlockEntity;
+	}
+
+	@Override
+	@Nullable
 	public Data streamData(BlockAccessor accessor) {
-		AbstractFurnaceBlockEntity furnace = accessor.typedBlockEntity();
+		if (!(accessor.getBlockEntity() instanceof AbstractFurnaceBlockEntity furnace)) {
+			return null;
+		}
 		return new Data(
 				furnace.cookingTimer,
 				furnace.cookingTotalTime,
