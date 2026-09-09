@@ -119,3 +119,5 @@ accessible field net/minecraft/locale/Language UNSUPPORTED_FORMAT_PATTERN Ljava/
 
 accessible class net/minecraft/core/component/Removed
 accessible field net/minecraft/core/component/DataComponentPatch map Lit/unimi/dsi/fastutil/objects/Reference2ObjectMap;
+
+accessible field net/minecraft/client/gui/components/AbstractScrollArea scrolling Z
