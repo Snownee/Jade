@@ -22,8 +22,15 @@ public class MobSpawnerCooldownProvider implements StreamServerDataProvider<Bloc
 	public static final MobSpawnerCooldownProvider INSTANCE = new MobSpawnerCooldownProvider();
 
 	@Override
+	public boolean shouldRequestData(BlockAccessor accessor) {
+		return accessor.getBlockEntity() instanceof TrialSpawnerBlockEntity;
+	}
+
+	@Override
 	public @Nullable Integer streamData(BlockAccessor accessor) {
-		TrialSpawnerBlockEntity spawner = accessor.typedBlockEntity();
+		if (!(accessor.getBlockEntity() instanceof TrialSpawnerBlockEntity spawner)) {
+			return null;
+		}
 		TrialSpawnerStateData spawnerData = spawner.getTrialSpawner().getStateData();
 		ServerLevel level = ((ServerLevel) accessor.getLevel());
 		if (spawner.getTrialSpawner().canSpawnInLevel(level) && level.getGameTime() < spawnerData.cooldownEndsAt) {

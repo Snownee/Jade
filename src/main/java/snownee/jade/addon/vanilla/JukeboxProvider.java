@@ -2,6 +2,8 @@ package snownee.jade.addon.vanilla;
 
 import java.util.Optional;
 
+import org.jspecify.annotations.Nullable;
+
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -24,12 +26,16 @@ public class JukeboxProvider implements StreamServerDataProvider<BlockAccessor, 
 
 	@Override
 	public boolean shouldRequestData(BlockAccessor accessor) {
-		return accessor.getBlockState().getValue(JukeboxBlock.HAS_RECORD);
+		return accessor.getBlockState().getValue(JukeboxBlock.HAS_RECORD) && accessor.getBlockEntity() instanceof JukeboxBlockEntity;
 	}
 
 	@Override
+	@Nullable
 	public ItemStack streamData(BlockAccessor accessor) {
-		return accessor.<JukeboxBlockEntity>typedBlockEntity().getTheItem();
+		if (!(accessor.getBlockEntity() instanceof JukeboxBlockEntity jukebox)) {
+			return null;
+		}
+		return jukebox.getTheItem();
 	}
 
 	@Override
