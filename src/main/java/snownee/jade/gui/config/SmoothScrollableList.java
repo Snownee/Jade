@@ -37,10 +37,16 @@ public abstract class SmoothScrollableList<E extends ContainerObjectSelectionLis
 	}
 
 	@Override
-	public boolean mouseDragged(MouseButtonEvent mouseButtonEvent, double d, double e) {
+	public boolean mouseDragged(MouseButtonEvent event, double dx, double dy) {
+		if (!scrolling) {
+			E entry = getEntryAtPosition(event.x(), event.y());
+			if (entry == null || !entry.isDragging()) {
+				smoothScroll.target(Mth.clamp((float) (scrollAmount() - dy), 0, maxScrollAmount()));
+			}
+		}
 		smoothScroll.value = smoothScroll.getTarget();
 		super.setScrollAmount(smoothScroll.value);
-		return super.mouseDragged(mouseButtonEvent, d, e);
+		return super.mouseDragged(event, dx, dy);
 	}
 
 	protected void tickSmoothScroll() {
