@@ -26,7 +26,7 @@ public enum BreakingProgressProvider implements IBoxProgressProvider {
 	private float progressAlpha;
 
 	public static void register(IWailaClientRegistration registration) {
-		registration.addTooltipCollectedCallback((root, accessor) -> root.addProgressProvider(0, INSTANCE));
+		registration.addTooltipCollectedCallback((root, accessor) -> root.addProgressProvider(100, INSTANCE));
 	}
 
 	@Override
