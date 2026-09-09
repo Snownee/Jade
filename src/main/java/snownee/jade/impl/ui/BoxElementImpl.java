@@ -1,6 +1,8 @@
 package snownee.jade.impl.ui;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -22,13 +24,18 @@ import net.minecraft.client.gui.layouts.Layout;
 import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.client.gui.layouts.LayoutSettings;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 import snownee.jade.JadeInternals;
+import snownee.jade.api.Accessor;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IWailaConfig;
+import snownee.jade.api.config.IWailaConfig.Overlay;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.BoxElement;
+import snownee.jade.api.ui.BoxProgress;
 import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.Element;
+import snownee.jade.api.ui.IBoxProgressProvider;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.JadeUI;
 import snownee.jade.api.ui.MessageType;
@@ -41,7 +48,7 @@ import snownee.jade.gui.LayoutWithPadding;
 import snownee.jade.gui.PreviewOptionsScreen;
 import snownee.jade.gui.ResizeableLayout;
 import snownee.jade.impl.Tooltip;
-import snownee.jade.track.ProgressTrackInfo;
+import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.ToFloatFunction;
 import snownee.jade.util.WailaExceptionHandler;
@@ -54,9 +61,11 @@ public class BoxElementImpl extends BoxElement implements ContainerEventHandler 
 	private @Nullable List<AbstractWidget> widgets;
 	private @Nullable List<GuiEventListener> eventListeners;
 	private @Nullable Element icon;
-	private float boxProgress;
-	private @Nullable MessageType boxProgressType;
-	private @Nullable ProgressTrackInfo track;
+	private static final int STATIC_PROGRESS_PRIORITY = Integer.MAX_VALUE;
+	private final List<PrioritizedProvider> providers = new ArrayList<>();
+	private @Nullable BoxProgress pendingProgress;
+	private @Nullable BoxProgress fadeProgress;
+	private float fadeAlpha;
 
 	public BoxElementImpl(Tooltip tooltip, BoxStyle style) {
 		this.tooltip = Objects.requireNonNull(tooltip);
@@ -189,6 +198,10 @@ public class BoxElementImpl extends BoxElement implements ContainerEventHandler 
 		}
 		graphics.disableScissor();
 
+		if (pendingProgress != null) {
+			drawBoxProgressBar(graphics, pendingProgress);
+		}
+
 		if (root && tooltip.sneakyDetails) {
 			IThemeHelper.get().theme().sneakyDetails.render(graphics, partialTicks, this);
 		}
@@ -210,115 +223,6 @@ public class BoxElementImpl extends BoxElement implements ContainerEventHandler 
 				});
 	}
 
-	//	@Override
-//	public void render(GuiGraphicsExtractor guiGraphics, final float x, final float y, final float maxX, final float maxY) {
-//		if (tooltip.isEmpty()) {
-//			return;
-//		}
-//		guiGraphics.pose().pushMatrix();
-//		guiGraphics.pose().translate(x, y);
-//
-//		// render background
-//		float alpha = IDisplayHelper.get().opacity();
-//		if (JadeIds.ROOT.equals(getTag())) {
-//			alpha *= IWailaConfig.get().overlay().getAlpha();
-//		}
-//		if (alpha > 0) {
-//			style.render(guiGraphics, this, 0, 0, maxX - x, maxY - y, alpha);
-//		}
-//
-//		int borderWidth = style.borderWidth();
-//		// render box progress
-//		if (boxProgressType != null) {
-//			float left = style.boxProgressOffset(ScreenDirection.LEFT) + borderWidth;
-//			float width = maxX - x - left;
-//			float top = maxY - y - 1 + style.boxProgressOffset(ScreenDirection.UP) + borderWidth;
-//			float height = 1 + style.boxProgressOffset(ScreenDirection.DOWN);
-//			float progress = boxProgress;
-//			if (track == null && tag != null) {
-//				track = WailaTickHandler.instance().progressTracker.getOrCreate(
-//						tag, ProgressTrackInfo.class, () -> {
-//							return new ProgressTrackInfo(false, boxProgress, 0);
-//						});
-//			}
-//			if (track != null) {
-//				track.setProgress(progress);
-//				track.update(Minecraft.getInstance().getDeltaTracker().getRealtimeDeltaTicks());
-//				progress = track.getSmoothProgress();
-//			}
-//			((DisplayHelper) IDisplayHelper.get()).drawGradientProgress(
-//					guiGraphics,
-//					left,
-//					top,
-//					width,
-//					height,
-//					progress,
-//					style.boxProgressColors.get(boxProgressType));
-//		}
-//
-//		float contentLeft = padding(ScreenDirection.LEFT) + borderWidth;
-//		float contentTop = padding(ScreenDirection.UP) + borderWidth;
-//
-//		// render icon
-//		if (icon != null) {
-//			Vec2 iconSize = icon.getCachedSize();
-//			Vec2 offset = icon.getTranslation();
-//			float offsetY = offset.y;
-//			float min = contentTop + padding(ScreenDirection.DOWN) + iconSize.y;
-//			IWailaConfig.IconMode iconMode = IWailaConfig.get().overlay().getIconMode();
-//			if (iconMode == IWailaConfig.IconMode.TOP && min < getCachedSize().y) {
-//				offsetY += contentTop;
-//			} else {
-//				offsetY += (size.y - iconSize.y) / 2;
-//			}
-//			float offsetX = contentLeft + offset.x;
-//			icon.render(guiGraphics, offsetX, offsetY, offsetX + iconSize.x, offsetY + iconSize.y);
-//			contentLeft += iconSize.x + 3;
-//		}
-//
-//		// render elements
-//		{
-//			boolean fancy = Minecraft.getInstance().options.graphicsMode().get() != GraphicsStatus.FAST;
-//			if (fancy) {
-//				guiGraphics.enableScissor(0, 0, (int) (maxX - x), (int) (maxY - y));
-//			}
-//			float lineTop = contentTop;
-//			int lineCount = tooltip.lines.size();
-//			Tooltip.Line line = tooltip.lines.getFirst();
-//			for (int i = 0; i < lineCount; i++) {
-//				Vec2 lineSize = line.size();
-//				line.render(guiGraphics, contentLeft, lineTop, maxX - x - padding(ScreenDirection.RIGHT), lineTop + lineSize.y);
-//				if (i < lineCount - 1) {
-//					int marginBottom = line.marginBottom;
-//					line = tooltip.lines.get(i + 1);
-//					lineTop += lineSize.y + calculateMargin(marginBottom, line.marginTop);
-//				}
-//			}
-//			if (fancy) {
-//				guiGraphics.disableScissor();
-//			}
-//		}
-//
-//		// render down arrow
-//		if (tooltip.sneakyDetails) {
-//			float arrowTop = (OverlayRenderer.ticks / 5) % 8 - 2;
-//			if (arrowTop <= 4) {
-//				alpha = 1 - Math.abs(arrowTop) / 2;
-//				if (alpha > 0.016) {
-//					guiGraphics.pose().pushMatrix();
-//					arrowTop += size.y - 6;
-//					float arrowLeft = contentLeft + (contentSize.x - DisplayHelper.font().width("▾") + 1) / 2f;
-//					guiGraphics.pose().translate(arrowLeft, arrowTop);
-//					int color = Overlay.applyAlpha(IThemeHelper.get().theme().text.colors().info(), alpha);
-//					DisplayHelper.INSTANCE.drawText(guiGraphics, "▾", 0, 0, color);
-//					guiGraphics.pose().popMatrix();
-//				}
-//			}
-//		}
-//
-//		guiGraphics.pose().popMatrix();
-//	}
-
 	@Override
 	public Tooltip getTooltip() {
 		return tooltip;
@@ -326,19 +230,79 @@ public class BoxElementImpl extends BoxElement implements ContainerEventHandler 
 
 	@Override
 	public void setBoxProgress(MessageType type, float progress) {
-		boxProgress = progress;
-		boxProgressType = type;
-	}
-
-	@Override
-	public float getBoxProgress() {
-		return boxProgressType == null ? Float.NaN : boxProgress;
+		providers.removeIf(entry -> entry.priority() == STATIC_PROGRESS_PRIORITY);
+		providers.add(new PrioritizedProvider(STATIC_PROGRESS_PRIORITY, new StaticBoxProgressProvider(progress, type)));
+		providers.sort(Comparator.comparingInt(PrioritizedProvider::priority));
 	}
 
 	@Override
 	public void clearBoxProgress() {
-		boxProgress = 0;
-		boxProgressType = null;
+		providers.removeIf(entry -> entry.priority() == STATIC_PROGRESS_PRIORITY);
+	}
+
+	@Override
+	public void addProgressProvider(int priority, IBoxProgressProvider provider) {
+		Objects.requireNonNull(provider);
+		providers.add(new PrioritizedProvider(priority, provider));
+		providers.sort(Comparator.comparingInt(PrioritizedProvider::priority));
+	}
+
+	public void beforeRender(Accessor<?> accessor, float partialTicks) {
+		computeBoxProgress(accessor, partialTicks);
+		for (Renderable renderable : renderables) {
+			if (renderable instanceof BoxElementImpl box) {
+				box.beforeRender(accessor, partialTicks);
+			}
+		}
+	}
+
+	private void computeBoxProgress(Accessor<?> accessor, float partialTicks) {
+		BoxProgress current = null;
+		for (PrioritizedProvider entry : providers) {
+			BoxProgress progress = entry.provider().getProgress(this, accessor, partialTicks);
+			if (progress != null) {
+				current = progress;
+				break;
+			}
+		}
+		if (current != null) {
+			fadeProgress = current;
+			fadeAlpha = current.alpha();
+			pendingProgress = current;
+		} else if (fadeProgress != null) {
+			fadeAlpha -= Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaTicks() * 0.1F;
+			if (fadeAlpha <= 0) {
+				fadeAlpha = 0;
+				fadeProgress = null;
+				pendingProgress = null;
+			} else {
+				pendingProgress = new BoxProgress(fadeProgress.progress(), fadeProgress.type(), fadeProgress.color(), fadeAlpha);
+			}
+		} else {
+			pendingProgress = null;
+		}
+	}
+
+	private void drawBoxProgressBar(GuiGraphicsExtractor graphics, BoxProgress progress) {
+		int baseColor = progress.color() != null ? progress.color() : style.boxProgressColors.get(progress.type());
+		int color = Overlay.applyAlpha(baseColor, progress.alpha());
+		float top = getY() + getHeight();
+		float width = getWidth();
+		float offset0 = style.boxProgressOffset(ScreenDirection.UP);
+		float offset1 = style.boxProgressOffset(ScreenDirection.RIGHT);
+		float offset2 = style.boxProgressOffset(ScreenDirection.DOWN);
+		float offset3 = style.boxProgressOffset(ScreenDirection.LEFT);
+		width += offset1 - offset3;
+		DisplayHelper.fill(
+				graphics,
+				offset3,
+				top - 1 + offset0,
+				offset3 + width * Mth.clamp(progress.progress(), 0, 1),
+				top + offset2,
+				color);
+	}
+
+	private record PrioritizedProvider(int priority, IBoxProgressProvider provider) {
 	}
 
 	@Override
@@ -400,7 +364,7 @@ public class BoxElementImpl extends BoxElement implements ContainerEventHandler 
 			long deltaTime = System.currentTimeMillis() - animation.startTime;
 			long durationMillis = duration.toMillis();
 			float progress = (float) deltaTime / durationMillis;
-			animation.alpha = Math.min(animation.showHideAlpha, Math.max(progress, 0.55F));
+			animation.alpha = Mth.clamp(progress, 0.55F, animation.showHideAlpha);
 			chase(animation, Rect2f::getX, src::setX, progress);
 			chase(animation, Rect2f::getY, src::setY, progress);
 			chase(
