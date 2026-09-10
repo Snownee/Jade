@@ -4,7 +4,6 @@ import java.util.Objects;
 
 import net.minecraft.client.KeyMapping;
 import snownee.jade.JadeClient;
-import snownee.jade.util.ClientProxy;
 
 /**
  * Accessors for Jade's client key mappings.
@@ -16,7 +15,7 @@ public interface JadeKeys {
 	 * @return {@code true} if recipe viewer keys are available
 	 */
 	static boolean hasRecipeViewerKeys() {
-		return ClientProxy.shouldRegisterRecipeViewerKeys();
+		return true;
 	}
 
 	/**

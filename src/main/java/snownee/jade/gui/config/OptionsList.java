@@ -300,8 +300,8 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 		return add(new CycleOptionValue<>(optionName, CycleButton.builder(nameProvider, getter.get()).withValues(values), getter, setter));
 	}
 
-	public void keybind(KeyMapping keybind) {
-		add(new KeybindOptionButton(this, keybind));
+	public KeybindOptionButton keybind(KeyMapping keybind) {
+		return add(new KeybindOptionButton(this, keybind));
 	}
 
 	public void removed() {
@@ -569,6 +569,16 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 
 		public List<Component> getDescription() {
 			return description;
+		}
+
+		public Entry appendDescription(Component description) {
+			if (this.description.isEmpty()) {
+				this.description = Lists.newArrayList(description);
+			} else {
+				this.description.add(description);
+			}
+			addMessage(description.getString());
+			return this;
 		}
 
 		public List<Component> getDescriptionOnShift() {
