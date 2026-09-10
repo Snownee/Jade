@@ -14,6 +14,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -28,6 +29,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.ContainerEntity;
 import net.minecraft.world.inventory.PlayerEnderChestContainer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.EnderChestBlockEntity;
@@ -66,7 +68,27 @@ public class ItemStorageProvider<T extends Accessor<?>> implements IServerDataPr
 			120,
 			TimeUnit.SECONDS).build();
 	private static final StreamCodec<RegistryFriendlyByteBuf, Map.Entry<Identifier, List<ViewGroup<ItemStack>>>> STREAM_CODEC = ViewGroup.listCodec(
-			ItemStack.OPTIONAL_STREAM_CODEC);
+			ItemStack.OPTIONAL_STREAM_CODEC.map(
+					stack -> {
+						if (stack.count() < 99 || !stack.has(DataComponents.CUSTOM_DATA)) {
+							return stack;
+						}
+						int count = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).tag.getIntOr("__JadeCount", 99);
+						stack.setCount(count);
+						return stack;
+					},
+					stack -> {
+						int count = stack.count();
+						if (count <= 99) {
+							return stack;
+						}
+						stack = stack.copyWithCount(99);
+						CustomData data = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).update($ -> $.putInt(
+								"__JadeCount",
+								count));
+						stack.set(DataComponents.CUSTOM_DATA, data);
+						return stack;
+					}));
 
 	public static final ItemStorageProvider<BlockAccessor> BLOCK = new ItemStorageProvider<>();
 	public static final ItemStorageProvider<EntityAccessor> ENTITY = new ItemStorageProvider<>();
