@@ -6,6 +6,7 @@ import java.util.Objects;
 
 import org.jspecify.annotations.Nullable;
 
+import com.google.common.collect.Lists;
 import com.mojang.blaze3d.Blaze3D;
 
 import it.unimi.dsi.fastutil.floats.FloatUnaryOperator;
@@ -20,6 +21,7 @@ import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
@@ -46,6 +48,17 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 
 	private @Nullable CycleOptionValue<Identifier> styleEntry;
 	private @Nullable OptionValue<Float> opacityEntry;
+
+	private static Component recipeLookupMods() {
+		List<Component> names = Lists.newArrayList();
+		for (String name : JadeClient.availableRecipeLookupPlugins) {
+			names.add(Component.literal(name).withStyle(ChatFormatting.WHITE));
+		}
+		for (String name : JadeClient.failedRecipeLookupPlugins) {
+			names.add(Component.literal(name).withStyle(ChatFormatting.GRAY));
+		}
+		return ComponentUtils.formatList(names, Component.literal(ComponentUtils.DEFAULT_SEPARATOR_TEXT));
+	}
 
 	public WailaConfigScreen(@Nullable Screen parent) {
 		super(parent, Component.translatable("gui.jade.jade_settings"));
@@ -198,10 +211,12 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 		options.keybind(JadeKeys.openConfig());
 		options.keybind(JadeKeys.showOverlay());
 		options.keybind(JadeKeys.toggleLiquid());
-		if (JadeKeys.hasRecipeViewerKeys()) {
-			options.keybind(JadeKeys.showRecipes());
-			options.keybind(JadeKeys.showUses());
-		}
+		options.keybind(JadeKeys.showRecipes())
+			.appendDescription(Component.translatable("gui.jade.show_recipes.desc"))
+			.appendDescription(Component.translatable("gui.jade.recipe_lookup_mods", recipeLookupMods()));
+		options.keybind(JadeKeys.showUses())
+			.appendDescription(Component.translatable("gui.jade.show_uses.desc"))
+			.appendDescription(Component.translatable("gui.jade.recipe_lookup_mods", recipeLookupMods()));
 		options.keybind(JadeKeys.narrate());
 		options.keybind(JadeKeys.showDetails());
 

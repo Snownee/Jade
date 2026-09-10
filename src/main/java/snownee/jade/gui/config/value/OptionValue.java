@@ -6,8 +6,6 @@ import java.util.function.Supplier;
 
 import org.jspecify.annotations.Nullable;
 
-import com.google.common.collect.Lists;
-
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -54,15 +52,6 @@ public abstract class OptionValue<T> extends OptionsList.Entry {
 
 	public void save() {
 		setter.accept(value);
-	}
-
-	public void appendDescription(Component description) {
-		if (this.description.isEmpty()) {
-			this.description = Lists.newArrayList(description);
-		} else {
-			this.description.add(description);
-		}
-		addMessage(description.getString());
 	}
 
 	@Override

@@ -65,6 +65,8 @@ public final class JadeClient {
 	public static final KeyMapping[] profiles = new KeyMapping[4];
 	public static final KeyMapping.Category keyMappingCategory = KeyMapping.Category.register(JadeIds.JADE("main"));
 	public static final List<RecipeLookupPlugin> recipeLookupPlugins = Lists.newArrayList();
+	public static final List<String> availableRecipeLookupPlugins = Lists.newArrayList();
+	public static final List<String> failedRecipeLookupPlugins = Lists.newArrayList();
 	private static final WailaTickHandler tickHandler = new WailaTickHandler();
 	public static @Nullable KeyMapping openConfig;
 	public static @Nullable KeyMapping showOverlay;
@@ -82,10 +84,8 @@ public final class JadeClient {
 		openConfig = ClientProxy.registerKeyBinding("config", InputConstants.KEY_NUMPAD0);
 		showOverlay = ClientProxy.registerKeyBinding("show_overlay", InputConstants.KEY_NUMPAD1);
 		toggleLiquid = ClientProxy.registerKeyBinding("toggle_liquid", InputConstants.KEY_NUMPAD2);
-		if (JadeKeys.hasRecipeViewerKeys()) {
-			showRecipes = ClientProxy.registerKeyBinding("show_recipes", InputConstants.KEY_NUMPAD3);
-			showUses = ClientProxy.registerKeyBinding("show_uses", InputConstants.KEY_NUMPAD4);
-		}
+		showRecipes = ClientProxy.registerKeyBinding("show_recipes", InputConstants.KEY_NUMPAD3);
+		showUses = ClientProxy.registerKeyBinding("show_uses", InputConstants.KEY_NUMPAD4);
 		narrate = ClientProxy.registerKeyBinding("narrate", InputConstants.KEY_NUMPAD5);
 		showDetails = ClientProxy.registerKeyBinding("show_details", InputConstants.KEY_LSHIFT);
 		for (int i = 0; i < 4; i++) {
@@ -164,14 +164,12 @@ public final class JadeClient {
 			}
 		}
 
-		if (JadeKeys.hasRecipeViewerKeys()) {
-			while (JadeKeys.showUses().consumeClick()) {
-				lookupRecipes(true);
-			}
+		while (JadeKeys.showUses().consumeClick()) {
+			lookupRecipes(true);
+		}
 
-			while (JadeKeys.showRecipes().consumeClick()) {
-				lookupRecipes(false);
-			}
+		while (JadeKeys.showRecipes().consumeClick()) {
+			lookupRecipes(false);
 		}
 	}
 
@@ -362,13 +360,19 @@ public final class JadeClient {
 		}
 	}
 
-	public static void addRecipeLookupPlugin(String clazz) {
+	public static void addRecipeLookupPlugin(String dependency, String name, String clazz) {
+		if (!dependency.isEmpty() && !CommonProxy.isModLoaded(dependency)) {
+			failedRecipeLookupPlugins.add(name);
+			return;
+		}
 		try {
 			recipeLookupPlugins.add((RecipeLookupPlugin) Class.forName(clazz).getDeclaredConstructor().newInstance());
+			availableRecipeLookupPlugins.add(name);
 		} catch (Throwable e) {
 			if (CommonProxy.isDevEnv()) {
 				Jade.LOGGER.warn("Failed to load recipe lookup plugin: {}", clazz, e);
 			}
+			failedRecipeLookupPlugins.add(name);
 		}
 	}
 }
