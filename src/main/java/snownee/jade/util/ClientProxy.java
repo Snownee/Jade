@@ -88,7 +88,6 @@ import snownee.jade.api.view.ClientViewGroup;
 import snownee.jade.api.view.IClientExtensionProvider;
 import snownee.jade.api.view.ViewGroup;
 import snownee.jade.command.JadeClientCommand;
-import snownee.jade.compat.PolydexCompat;
 import snownee.jade.gui.HomeConfigScreen;
 import snownee.jade.gui.PreviewOptionsScreen;
 import snownee.jade.impl.ObjectDataCenter;
@@ -372,16 +371,10 @@ public final class ClientProxy {
 			((KeyAccess) (Object) key).setDisplayName(Suppliers.memoize(() -> Component.translatable(key.getName())));
 		}
 		JadeClient.init();
-		JadeClient.recipeLookupPlugins.add(new PolydexCompat());
-		if (CommonProxy.isModLoaded("roughlyenoughitems")) {
-			JadeClient.addRecipeLookupPlugin("snownee.jade.compat.REICompat");
-		}
-		if (CommonProxy.isModLoaded("jei")) {
-			JadeClient.addRecipeLookupPlugin("snownee.jade.compat.JEICompat");
-		}
-		if (CommonProxy.isModLoaded("rrv")) {
-			JadeClient.addRecipeLookupPlugin("snownee.jade.compat.RRVCompat");
-		}
+		JadeClient.addRecipeLookupPlugin("roughlyenoughitems", "REI", "snownee.jade.compat.REICompat");
+		JadeClient.addRecipeLookupPlugin("jei", "JEI", "snownee.jade.compat.JEICompat");
+		JadeClient.addRecipeLookupPlugin("rrv", "RRV", "snownee.jade.compat.RRVCompat");
+		JadeClient.addRecipeLookupPlugin("", "Polydex", "snownee.jade.compat.PolydexCompat");
 	}
 
 	public static void sendPacket(CustomPacketPayload payload) {
