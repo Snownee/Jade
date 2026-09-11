@@ -22,12 +22,6 @@ import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.harvest.ToolTier;
 import snownee.jade.api.view.HideThingsExtensionProvider;
 
-<<<<<<<HEAD
-=======
-		>>>>>>>9
-
-a5e6a77(Add harvest tool registration API(#772))
-
 public class ExamplePlugin implements IWailaPlugin {
 
 	public static final Identifier UID_TEST_FUEL = Identifier.parse("debug:furnace_fuel");
