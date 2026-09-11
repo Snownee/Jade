@@ -82,8 +82,16 @@ public abstract class AccessorImpl<T extends HitResult> implements Accessor<T> {
 		return buffer;
 	}
 
+	private static final ThreadLocal<Boolean> IN_JADE_DECODE = ThreadLocal.withInitial(() -> Boolean.FALSE);
+
+	public static boolean jade$isInJadeDecode() {
+		//noinspection PointlessBooleanExpression
+		return IN_JADE_DECODE.get() == Boolean.TRUE;
+	}
+
 	@Override
 	public <D> Optional<D> decodeFromNbt(StreamDecoder<RegistryFriendlyByteBuf, D> codec, Tag tag) {
+		IN_JADE_DECODE.set(Boolean.TRUE);
 		try {
 			RegistryFriendlyByteBuf buffer = buffer();
 			buffer.writeBytes(((ByteArrayTag) tag).getAsByteArray());
@@ -92,6 +100,7 @@ public abstract class AccessorImpl<T extends HitResult> implements Accessor<T> {
 		} catch (Exception e) {
 			return Optional.empty();
 		} finally {
+			IN_JADE_DECODE.set(Boolean.FALSE);
 			if (buffer != null) {
 				buffer.clear();
 			}
