@@ -132,13 +132,7 @@ public class RayTracing {
 		} else {
 			traceEnd = mc.hitResult.getLocation().subtract(traceStart);
 			lookVector = startFromEye ? entity.getViewVector(partialTick) : traceEnd.normalize();
-			// when it comes to a block hit, we only need to find entities that closer than the block
-			if (mc.hitResult.getType() == Type.BLOCK && traceEnd.lengthSqr() < entityReach * entityReach) {
-				traceEnd = startFromEye ? traceStart.add(lookVector.scale(traceEnd.length() + 1e-5)) : mc.hitResult.getLocation().add(
-						lookVector.scale(1e-5));
-			} else {
-				traceEnd = traceStart.add(lookVector.scale(entityReach));
-			}
+			traceEnd = traceStart.add(lookVector.scale(entityReach));
 		}
 
 		Level world = entity.level();
@@ -162,14 +156,9 @@ public class RayTracing {
 		BlockHitResult blockResult = world.clip(context);
 		hitLocation = blockResult.getLocation();
 		if (entityResult != null) {
-			if (blockResult.getType() == Type.BLOCK) {
-				double entityDist = entityResult.getLocation().distanceToSqr(traceStart);
-				double blockDist = blockResult.getLocation().distanceToSqr(traceStart);
-				if (entityDist < blockDist) {
-					target = entityResult;
-					return;
-				}
-			} else {
+			ClipContext occlusionContext = new ClipContext(traceStart, entityResult.getLocation(), ClipContext.Block.COLLIDER, fluidView, collisionContext);
+			BlockHitResult occluder = world.clip(occlusionContext);
+			if (occluder.getType() != Type.BLOCK || occluder.getLocation().distanceToSqr(traceStart) >= entityResult.getLocation().distanceToSqr(traceStart)) {
 				target = entityResult;
 				return;
 			}
