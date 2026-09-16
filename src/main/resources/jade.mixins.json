@@ -7,7 +7,9 @@
 		"EntityAccess",
 		"LivingEntityMixin",
 		"MobEffectInstanceMixin",
-		"ServerPlayerMixin"
+		"ServerPlayerMixin",
+		"forge.CanItemPerformAbilityAccess",
+		"forge.ReloadableServerResourcesMixin"
 	],
 	"client": [
 		"BossHealthOverlayMixin",
