@@ -44,6 +44,9 @@ public class UniversalPlugin implements IWailaPlugin {
 		registration.addConfig(JadeIds.UNIVERSAL_ENERGY_STORAGE_STYLE, IWailaConfig.HandlerDisplayStyle.PROGRESS_BAR);
 		registration.addConfig(JadeIds.UNIVERSAL_FLUID_STORAGE_DETAILED, false);
 		registration.addConfig(JadeIds.UNIVERSAL_FLUID_STORAGE_STYLE, IWailaConfig.HandlerDisplayStyle.PROGRESS_BAR);
+		registration.addConfig(
+				JadeIds.UNIVERSAL_FLUID_STORAGE_POTION_EFFECTS,
+				FluidStorageProvider.PotionEffectDisplay.DETAILED);
 
 		registration.registerItemStorageClient(HideThingsExtensionProvider.instance());
 		registration.registerFluidStorageClient(HideThingsExtensionProvider.instance());
