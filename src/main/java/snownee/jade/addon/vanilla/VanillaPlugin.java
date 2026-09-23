@@ -208,7 +208,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.addRayTraceCallback(-1000, JadeClient::limitMobEffectFog);
 		registration.addRayTraceCallback(-10, JadeClient::builtInOverrides);
 		registration.addRayTraceCallback(5000, DatapackBlockManager::override);
-		registration.addAfterRenderCallback(100, JadeClient::drawBreakingProgress);
+		BreakingProgressProvider.register(registration);
 
 		registration.markAsClientFeature(JadeIds.MC_EFFECTIVE_TOOL);
 		registration.markAsClientFeature(JadeIds.MC_HARVEST_TOOL_NEW_LINE);

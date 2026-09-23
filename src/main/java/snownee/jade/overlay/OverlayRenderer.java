@@ -193,6 +193,8 @@ public class OverlayRenderer {
 			matrixStack.scale(scale, scale, 1.0F);
 		}
 
+		root.beforeRender(ObjectDataCenter.get(), mc.getTimer().getGameTimeDeltaPartialTick(false));
+
 		RenderSystem.enableBlend();
 		{
 			float maxWidth = rect.rect.getWidth();

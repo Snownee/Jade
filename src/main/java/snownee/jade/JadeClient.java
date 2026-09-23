@@ -13,12 +13,10 @@ import com.mojang.blaze3d.platform.InputConstants;
 
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.toasts.SystemToast;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
-import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.renderer.FogRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.resources.language.I18n;
@@ -27,7 +25,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -45,25 +42,15 @@ import snownee.jade.addon.vanilla.VanillaPlugin;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IWailaClientRegistration;
-import snownee.jade.api.JadeIds;
 import snownee.jade.api.TraceableException;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.IWailaConfig.DisplayMode;
-import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
 import snownee.jade.api.config.IWailaConfig.TTSMode;
-import snownee.jade.api.theme.IThemeHelper;
-import snownee.jade.api.theme.Theme;
-import snownee.jade.api.ui.BoxStyle;
-import snownee.jade.api.ui.ColorPalette;
-import snownee.jade.api.ui.IBoxElement;
-import snownee.jade.api.ui.ScreenDirection;
-import snownee.jade.api.ui.TooltipRect;
 import snownee.jade.gui.HomeConfigScreen;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.config.PluginConfig;
 import snownee.jade.impl.config.WailaConfig;
 import snownee.jade.impl.config.WailaConfig.ConfigGeneral;
-import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.overlay.WailaTickHandler;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.CommonProxy;
@@ -86,9 +73,6 @@ public final class JadeClient {
 			.expireAfterAccess(1, TimeUnit.SECONDS)
 			.build();
 	private static boolean translationChecked;
-	private static float savedProgress;
-	private static float progressAlpha;
-	private static boolean canHarvest;
 
 	public static void init() {
 		openConfig = ClientProxy.registerKeyBinding("config", InputConstants.KEY_NUMPAD0);
@@ -268,61 +252,6 @@ public final class JadeClient {
 			return null;
 		}
 		return accessor;
-	}
-
-	public static void drawBreakingProgress(IBoxElement rootElement, TooltipRect rect, GuiGraphics guiGraphics, Accessor<?> accessor) {
-		if (!PluginConfig.INSTANCE.get(JadeIds.MC_BREAKING_PROGRESS)) {
-			progressAlpha = 0;
-			return;
-		}
-		if (!Float.isNaN(rootElement.getBoxProgress())) {
-			progressAlpha = 0;
-			return;
-		}
-		Minecraft mc = Minecraft.getInstance();
-		MultiPlayerGameMode playerController = mc.gameMode;
-		if (playerController == null || mc.level == null || mc.player == null) {
-			return;
-		}
-		BlockPos pos = playerController.destroyBlockPos;
-		BlockState state = mc.level.getBlockState(pos);
-		if (playerController.isDestroying()) {
-			canHarvest = CommonProxy.isCorrectToolForDrops(state, mc.player, mc.level, pos);
-		} else if (progressAlpha == 0) {
-			return;
-		}
-		Theme theme = IThemeHelper.get().theme();
-		ColorPalette colors = theme.tooltipStyle.boxProgressColors;
-		int color = canHarvest ? colors.normal() : colors.failure();
-		float top = rootElement.getCachedSize().y;
-		float width = rootElement.getCachedSize().x;
-		boolean roundCorner = !IWailaConfig.get().getOverlay().getSquare();
-		if (roundCorner && theme.tooltipStyle instanceof BoxStyle.GradientBorder) {
-			top += 1;
-		}
-		progressAlpha += mc.getTimer().getGameTimeDeltaTicks() * (playerController.isDestroying() ? 0.1F : -0.1F);
-		if (playerController.isDestroying()) {
-			progressAlpha = Math.min(progressAlpha, 0.6F);
-			float progress = state.getDestroyProgress(mc.player, mc.player.level(), pos);
-			if (playerController.destroyProgress + progress >= 1) {
-				progressAlpha = savedProgress = 1;
-			} else {
-				progress = playerController.destroyProgress + mc.getTimer().getGameTimeDeltaPartialTick(false) * progress;
-				savedProgress = Mth.clamp(progress, 0, 1);
-			}
-		} else {
-			progressAlpha = Math.max(progressAlpha, 0);
-		}
-		if (progressAlpha == 0) {
-			return;
-		}
-		color = IConfigOverlay.applyAlpha(color, progressAlpha);
-		float offset0 = theme.tooltipStyle.boxProgressOffset(ScreenDirection.UP);
-		float offset1 = theme.tooltipStyle.boxProgressOffset(ScreenDirection.RIGHT);
-		float offset2 = theme.tooltipStyle.boxProgressOffset(ScreenDirection.DOWN);
-		float offset3 = theme.tooltipStyle.boxProgressOffset(ScreenDirection.LEFT);
-		width += offset1 - offset3;
-		DisplayHelper.fill(guiGraphics, offset3, top - 1 + offset0, offset3 + width * savedProgress, top + offset2, color);
 	}
 
 	public static MutableComponent format(String s, Object... objects) {
