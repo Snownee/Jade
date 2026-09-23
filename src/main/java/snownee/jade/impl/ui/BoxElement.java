@@ -1,6 +1,9 @@
 package snownee.jade.impl.ui;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.IntConsumer;
 import java.util.function.ToIntFunction;
@@ -16,18 +19,22 @@ import net.minecraft.client.gui.GuiSpriteManager;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.metadata.gui.GuiSpriteScaling;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.Jade;
+import snownee.jade.api.Accessor;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.IWailaConfig.IConfigOverlay;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.theme.Theme;
+import snownee.jade.api.ui.BoxProgress;
 import snownee.jade.api.ui.BoxStyle;
 import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.IBoxElement;
+import snownee.jade.api.ui.IBoxProgressProvider;
 import snownee.jade.api.ui.IDisplayHelper;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElementHelper;
@@ -39,17 +46,21 @@ import snownee.jade.impl.Tooltip;
 import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.overlay.OverlayRenderer;
 import snownee.jade.overlay.WailaTickHandler;
-import snownee.jade.track.ProgressTrackInfo;
+import snownee.jade.track.BoxProgressFadeTrackInfo;
+import snownee.jade.track.ProgressTracker;
 import snownee.jade.util.ClientProxy;
 
 public class BoxElement extends Element implements IBoxElement {
+	private static final int STATIC_PROGRESS_PRIORITY = Integer.MAX_VALUE;
 	private final Tooltip tooltip;
 	private final BoxStyle style;
 	private int[] padding;
 	private IElement icon;
-	private float boxProgress;
-	private MessageType boxProgressType;
-	private ProgressTrackInfo track;
+	private final List<PrioritizedProvider> providers = new ArrayList<>();
+	private BoxProgress pendingProgress;
+	private BoxProgress fadeProgress;
+	private float fadeAlpha;
+	private BoxProgressFadeTrackInfo fadeTrack;
 	private Vec2 contentSize = Vec2.ZERO;
 
 	public BoxElement(Tooltip tooltip, BoxStyle style) {
@@ -148,31 +159,8 @@ public class BoxElement extends Element implements IBoxElement {
 		}
 
 		// render box progress
-		if (boxProgressType != null) {
-			float left = style.boxProgressOffset(ScreenDirection.LEFT);
-			float width = maxX - x - left;
-			float top = maxY - y - 1 + style.boxProgressOffset(ScreenDirection.UP) + style.borderWidth();
-			float height = 1 + style.boxProgressOffset(ScreenDirection.DOWN);
-			float progress = boxProgress;
-			if (track == null && tag != null) {
-				track = WailaTickHandler.instance().progressTracker.getOrCreate(
-						tag, ProgressTrackInfo.class, () -> {
-							return new ProgressTrackInfo(false, boxProgress, 0);
-						});
-			}
-			if (track != null) {
-				track.setProgress(progress);
-				track.update(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks());
-				progress = track.getSmoothProgress();
-			}
-			((DisplayHelper) IDisplayHelper.get()).drawGradientProgress(
-					guiGraphics,
-					left,
-					top,
-					width,
-					height,
-					progress,
-					style.boxProgressColors.get(boxProgressType));
+		if (pendingProgress != null) {
+			drawBoxProgressBar(guiGraphics, x, y, maxX, maxY, pendingProgress);
 		}
 
 		float contentLeft = padding(ScreenDirection.LEFT);
@@ -245,19 +233,119 @@ public class BoxElement extends Element implements IBoxElement {
 
 	@Override
 	public void setBoxProgress(MessageType type, float progress) {
-		boxProgress = progress;
-		boxProgressType = type;
+		providers.removeIf(entry -> entry.priority() == STATIC_PROGRESS_PRIORITY);
+		providers.add(new PrioritizedProvider(STATIC_PROGRESS_PRIORITY, new StaticBoxProgressProvider(progress, type)));
+		providers.sort(Comparator.comparingInt(PrioritizedProvider::priority));
 	}
 
 	@Override
 	public float getBoxProgress() {
-		return boxProgressType == null ? Float.NaN : boxProgress;
+		return pendingProgress == null ? Float.NaN : pendingProgress.progress();
 	}
 
 	@Override
 	public void clearBoxProgress() {
-		boxProgress = 0;
-		boxProgressType = null;
+		providers.removeIf(entry -> entry.provider() instanceof StaticBoxProgressProvider);
+	}
+
+	@Override
+	public void addProgressProvider(int priority, IBoxProgressProvider provider) {
+		Objects.requireNonNull(provider);
+		providers.add(new PrioritizedProvider(priority, provider));
+		providers.sort(Comparator.comparingInt(PrioritizedProvider::priority));
+	}
+
+	@Override
+	public void beforeRender(@Nullable Accessor<?> accessor, float partialTicks) {
+		computeBoxProgress(accessor, partialTicks);
+		for (Tooltip.Line line : tooltip.lines) {
+			for (IElement element : line.sortedElements()) {
+				element.beforeRender(accessor, partialTicks);
+			}
+		}
+	}
+
+	private void computeBoxProgress(@Nullable Accessor<?> accessor, float partialTicks) {
+		BoxProgress current = null;
+		for (PrioritizedProvider entry : providers) {
+			BoxProgress progress = entry.provider().getProgress(this, accessor, partialTicks);
+			if (progress != null) {
+				current = progress;
+				break;
+			}
+		}
+		if (current != null) {
+			fadeProgress = current;
+			fadeAlpha = current.alpha();
+			pendingProgress = current;
+			BoxProgressFadeTrackInfo track = getFadeTrack(true);
+			if (track != null) {
+				track.progress = fadeProgress;
+				track.alpha = fadeAlpha;
+				track.touch();
+			}
+			return;
+		}
+		BoxProgressFadeTrackInfo track = getFadeTrack(false);
+		if (track != null && fadeProgress == null) {
+			fadeProgress = track.progress;
+			fadeAlpha = track.alpha;
+		}
+		if (fadeProgress == null) {
+			pendingProgress = null;
+			return;
+		}
+		fadeAlpha -= Minecraft.getInstance().getTimer().getGameTimeDeltaTicks() * 0.1F;
+		if (fadeAlpha <= 0) {
+			fadeAlpha = 0;
+			fadeProgress = null;
+			pendingProgress = null;
+		} else {
+			pendingProgress = new BoxProgress(fadeProgress.progress(), fadeProgress.type(), fadeProgress.color(), fadeAlpha);
+		}
+		if (track != null) {
+			track.progress = fadeProgress;
+			track.alpha = fadeAlpha;
+			if (fadeProgress != null) {
+				track.touch();
+			}
+		}
+	}
+
+	private BoxProgressFadeTrackInfo getFadeTrack(boolean create) {
+		if (fadeTrack != null) {
+			return fadeTrack;
+		}
+		ResourceLocation tag = getTag();
+		if (tag == null) {
+			return null;
+		}
+		ProgressTracker tracker = WailaTickHandler.instance().progressTracker;
+		fadeTrack = tracker.get(tag, BoxProgressFadeTrackInfo.class);
+		if (fadeTrack == null && create) {
+			fadeTrack = tracker.getOrCreate(tag, BoxProgressFadeTrackInfo.class, BoxProgressFadeTrackInfo::new);
+		}
+		return fadeTrack;
+	}
+
+	private void drawBoxProgressBar(GuiGraphics guiGraphics, float x, float y, float maxX, float maxY, BoxProgress progress) {
+		int baseColor = progress.color() != null ? progress.color() : style.boxProgressColors.get(progress.type());
+		int color = IConfigOverlay.applyAlpha(baseColor, progress.alpha());
+		float left = style.boxProgressOffset(ScreenDirection.LEFT);
+		float width = maxX - x - left;
+		float top = maxY - y - 1 + style.boxProgressOffset(ScreenDirection.UP) + style.borderWidth();
+		float height = 1 + style.boxProgressOffset(ScreenDirection.DOWN);
+		((DisplayHelper) IDisplayHelper.get()).drawGradientProgress(
+				guiGraphics,
+				left,
+				top,
+				width,
+				height,
+				Mth.clamp(progress.progress(), 0, 1),
+				color);
+	}
+
+	private record PrioritizedProvider(int priority, IBoxProgressProvider provider) {
 	}
 
 	@Override

@@ -15,6 +15,19 @@ public interface IBoxElement extends IElement, StyledElement {
 
 	void clearBoxProgress();
 
+	/**
+	 * Attaches a progress bar provider. Providers are queried every frame in ascending priority order; the first
+	 * non-null result wins.
+	 *
+	 * @param priority lower values are queried first
+	 * @param provider per-frame progress bar provider
+	 */
+	void addProgressProvider(int priority, IBoxProgressProvider provider);
+
+	default void addProgressProvider(IBoxProgressProvider provider) {
+		addProgressProvider(0, provider);
+	}
+
 	void setIcon(@Nullable IElement icon);
 
 	int padding(ScreenDirection direction);

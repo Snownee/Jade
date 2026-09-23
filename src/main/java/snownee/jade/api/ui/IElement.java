@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec2;
+import snownee.jade.api.Accessor;
 
 /**
  * A basic render-able element to be drawn in Jade's tooltip.
@@ -12,6 +13,15 @@ import net.minecraft.world.phys.Vec2;
  * @author Snownee
  */
 public interface IElement {
+
+	/**
+	 * Called once per render frame before {@link #render} to update any per-frame state.
+	 *
+	 * @param accessor the target currently displayed by Jade
+	 * @param partialTicks partial tick, for interpolating values
+	 */
+	default void beforeRender(@Nullable Accessor<?> accessor, float partialTicks) {
+	}
 
 	/**
 	 * Force a size that this element reserve
