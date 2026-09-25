@@ -61,6 +61,41 @@ processResources {
     filesMatching("fabric.mod.json") {
         expand "version": realVersion
     }
+
+    doLast {
+        if (!gradle.taskGraph.allTasks.any { it.name == 'jar' }) {
+            return
+        }
+        final char QUOTE = '"' as char
+        final char BACKSLASH = '\\' as char
+        def minify = { String text ->
+            def sb = new StringBuilder(text.length())
+            boolean inString = false
+            boolean escaped = false
+            for (int i = 0; i < text.length(); i++) {
+                char c = text.charAt(i)
+                if (inString) {
+                    sb.append(c)
+                    if (escaped) escaped = false
+                    else if (c == BACKSLASH) escaped = true
+                    else if (c == QUOTE) inString = false
+                } else if (c == QUOTE) {
+                    inString = true
+                    sb.append(c)
+                } else if (!Character.isWhitespace(c)) {
+                    sb.append(c)
+                }
+            }
+            sb.toString()
+        }
+        fileTree(sourceSets.main.output.resourcesDir) { include '**/*.json' }.each { File f ->
+            def text = f.getText('UTF-8')
+            def minified = minify(text)
+            if (minified != text) {
+                f.setText(minified, 'UTF-8')
+            }
+        }
+    }
 }
 
 tasks.withType(JavaCompile).configureEach {
