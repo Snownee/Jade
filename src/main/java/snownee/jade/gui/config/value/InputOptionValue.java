@@ -16,8 +16,8 @@ public class InputOptionValue<T> extends OptionValue<T> {
 	private final EditBox textField;
 	private final Predicate<String> validator;
 
-	public InputOptionValue(Runnable responder, String optionName, Supplier<T> getter, Consumer<T> setter, Predicate<String> validator) {
-		super(optionName, getter, setter);
+	public InputOptionValue(Runnable responder, String namespace, String optionName, Supplier<T> getter, Consumer<T> setter, Predicate<String> validator) {
+		super(namespace, optionName, getter, setter);
 		this.validator = validator;
 		textField = new EditBox(font, 0, 0, 98, 18, title());
 		updateValue();

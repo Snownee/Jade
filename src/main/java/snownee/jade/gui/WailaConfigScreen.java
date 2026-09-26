@@ -62,6 +62,7 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 
 	public WailaConfigScreen(@Nullable Screen parent) {
 		super(parent, Component.translatable("gui.jade.jade_settings"));
+		diskWriter = () -> IWailaConfig.get().save();
 		saver = () -> {
 			IWailaConfig.get().save();
 			JadeClient.refreshKeyState();
@@ -100,6 +101,7 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 
 	@Override
 	public OptionsList createOptions(OptionsList options) {
+		JadeClient.registerBuiltInVariables(options.builtInVariables());
 		IWailaConfig.General general = IWailaConfig.get().general();
 		options.title("general");
 		if (CommonProxy.isDevEnv()) {
@@ -134,9 +136,9 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 
 		IWailaConfig.Overlay overlay = IWailaConfig.get().overlay();
 		options.title("overlay");
-		Component adjust = Component.translatable(OptionsList.Entry.makeKey("overlay_pos.adjust"));
+		Component adjust = options.makeTitle("overlay_pos.adjust");
 		options.add(new OptionButton(
-				Component.translatable(OptionsList.Entry.makeKey("overlay_pos")),
+				options.makeTitle("overlay_pos"),
 				Button.builder(adjust, w -> startAdjustingPosition()).size(100, 20)));
 		CycleButton.ValueListSupplier<Identifier> valuesSupplier = new CycleButton.ValueListSupplier<>() {
 			@Override
@@ -154,6 +156,7 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 			}
 		};
 		var themeEntry = options.add(new CycleOptionValue<>(
+				options.namespace(),
 				"overlay_theme",
 				CycleButton.builder(
 								id -> Component.translatable(Util.makeDescriptionId("jade.theme", id)),
@@ -178,6 +181,7 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 					Objects.requireNonNull(styleEntry).updateValue();
 				}));
 		styleEntry = options.add(new CycleOptionValue<>(
+				options.namespace(),
 				"theme_style",
 				CycleButton.builder(id -> Component.translatable(ThemeHelper.INSTANCE.getTheme(id).styleName), overlay.getTheme().fullId())
 						.withValues(valuesSupplier),
@@ -231,15 +235,15 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 		OptionsList.Title dangerZone = options.title("danger_zone");
 		dangerZone.setTitle(dangerZone.title().copy().withStyle(ChatFormatting.RED));
 		options.add(new OptionButton(
-				"reload_plugins", Button.builder(
-				OptionsList.Entry.makeTitle("reload_plugins.button"), w -> {
+				options.namespace(), "reload_plugins", Button.builder(
+				options.makeTitle("reload_plugins.button"), w -> {
 					w.active = false;
 					Jade.loadPlugins();
 					w.active = true;
 					Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.PLAYER_LEVELUP, 1.0f));
 				}).size(100, 20).build()));
 		Component reset = Component.translatable("controls.reset").withStyle(ChatFormatting.RED);
-		Component title = Component.translatable(OptionsList.Entry.makeKey("reset_settings")).withStyle(ChatFormatting.RED);
+		Component title = options.makeTitle("reset_settings").withStyle(ChatFormatting.RED);
 		options.add(new OptionButton(
 				title, Button.builder(
 				reset, w -> {
@@ -263,7 +267,7 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 								options().setScrollAmount(options().maxScrollAmount());
 							},
 							title,
-							Component.translatable(OptionsList.Entry.makeKey("reset_settings.confirm")),
+							options.makeTitle("reset_settings.confirm"),
 							reset,
 							Component.translatable("gui.cancel")));
 				}).size(100, 20)));

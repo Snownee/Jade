@@ -15,6 +15,7 @@ import net.minecraft.network.chat.Component;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
 import snownee.jade.api.JadeKeys;
+import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.ui.JadeUI;
 import snownee.jade.gui.config.NotUglyEditBox;
 import snownee.jade.gui.config.OptionsList;
@@ -28,6 +29,7 @@ public class ProfileConfigScreen extends BaseOptionsScreen {
 
 	public ProfileConfigScreen(Screen parent) {
 		super(parent, Component.translatable("gui.jade.profile_settings"));
+		diskWriter = () -> IWailaConfig.get().save();
 		saver = () -> {
 			for (OptionsList.Entry entry : options().children()) {
 				if (entry instanceof ProfileEntry profileEntry) {

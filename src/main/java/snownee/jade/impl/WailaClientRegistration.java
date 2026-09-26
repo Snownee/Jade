@@ -285,7 +285,7 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 			if (!Jade.ID.equals(namespace) && modName.isPresent()) {
 				categoryMap.put(modName.get(), entry);
 			} else {
-				categoryMap.put(I18n.get(OptionsList.Entry.makeKey("plugin_" + namespace)), entry);
+				categoryMap.put(I18n.get(OptionsList.Entry.makeKey(Jade.ID, "plugin_" + namespace)), entry);
 			}
 		});
 
@@ -301,8 +301,8 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	}
 
 	private static ToIntFunction<Category> specialOrder() {
-		String core = I18n.get(OptionsList.Entry.makeKey("plugin_" + Jade.ID));
-		String debug = I18n.get(OptionsList.Entry.makeKey("plugin_" + Jade.ID + ".debug"));
+		String core = I18n.get(OptionsList.Entry.makeKey(Jade.ID, "plugin_" + Jade.ID));
+		String debug = I18n.get(OptionsList.Entry.makeKey(Jade.ID, "plugin_" + Jade.ID + ".debug"));
 		// core is always the first, debug is always the last
 		return category -> {
 			String title = category.title().getString();
