@@ -8,8 +8,8 @@ import net.minecraft.network.chat.Component;
 
 public class OptionButton extends OptionsList.Entry {
 
-	public OptionButton(String titleKey, @Nullable Button button) {
-		this(makeTitle(titleKey), button);
+	public OptionButton(String namespace, String titleKey, @Nullable Button button) {
+		this(makeTitle(namespace, titleKey), button);
 	}
 
 	public OptionButton(Component title, @Nullable Button button) {

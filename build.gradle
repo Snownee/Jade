@@ -46,6 +46,8 @@ dependencies {
         exclude(group: "net.fabricmc.fabric-api")
     }
 
+    implementation("com.terraformersmc:modmenu:${project.modmenu_version}")
+
 //    implementation "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
 
 //    compileOnly "cc.cassian.rrv:reliable-recipe-viewer-fabric:${project.rrv_version}"

@@ -50,11 +50,9 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.StringUtil;
 import net.minecraft.util.Util;
-import snownee.jade.Jade;
 import snownee.jade.api.ui.JadeUI;
 import snownee.jade.gui.BaseOptionsScreen;
 import snownee.jade.gui.PreviewOptionsScreen;
-import snownee.jade.gui.WailaConfigScreen;
 import snownee.jade.gui.config.value.CycleOptionValue;
 import snownee.jade.gui.config.value.InputOptionValue;
 import snownee.jade.gui.config.value.OptionValue;
@@ -62,16 +60,39 @@ import snownee.jade.gui.config.value.SliderOptionValue;
 
 public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 
+	public static final String DEFAULT_NAMESPACE = "jade";
 	public static final Component OPTION_ON = CommonComponents.OPTION_ON.copy().withColor(0xFFB9F6CA);
 	public static final Component OPTION_OFF = CommonComponents.OPTION_OFF.copy().withColor(0xFFFF8A80);
 	public final Set<OptionsList.Entry> forcePreview = Sets.newIdentityHashSet();
 	protected final List<Entry> entries = Lists.newArrayList();
+	private final BuiltInVariables builtInVariables = new BuiltInVariables();
 	private final @Nullable Runnable diskWriter;
 	public @Nullable Title currentTitle;
 	public @Nullable OptionValue<?> invalidEntry;
 	public @Nullable KeyMapping selectedKey;
 	private final BaseOptionsScreen owner;
 	private @Nullable Entry defaultParent;
+	private String namespace = DEFAULT_NAMESPACE;
+
+	public String namespace() {
+		return namespace;
+	}
+
+	public void setNamespace(String namespace) {
+		this.namespace = namespace;
+	}
+
+	public String makeKey(String key) {
+		return Entry.makeKey(namespace, key);
+	}
+
+	public MutableComponent makeTitle(String key) {
+		return Entry.makeTitle(namespace, key);
+	}
+
+	public BuiltInVariables builtInVariables() {
+		return builtInVariables;
+	}
 
 	public OptionsList(
 			BaseOptionsScreen owner,
@@ -218,7 +239,7 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 	}
 
 	public Title title(String string) {
-		return add(new Title(string));
+		return add(new Title(namespace, string));
 	}
 
 	public OptionValue<Float> slider(String optionName, Supplier<Float> getter, Consumer<Float> setter) {
@@ -232,11 +253,11 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 			float min,
 			float max,
 			FloatUnaryOperator aligner) {
-		return add(new SliderOptionValue(optionName, getter, setter, min, max, aligner));
+		return add(new SliderOptionValue(namespace, optionName, getter, setter, min, max, aligner));
 	}
 
 	public <T> OptionValue<T> input(String optionName, Supplier<T> getter, Consumer<T> setter, Predicate<String> validator) {
-		return add(new InputOptionValue<>(this::updateSaveState, optionName, getter, setter, validator));
+		return add(new InputOptionValue<>(this::updateSaveState, namespace, optionName, getter, setter, validator));
 	}
 
 	public <T> OptionValue<T> input(String optionName, Supplier<T> getter, Consumer<T> setter) {
@@ -256,7 +277,7 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 		if (builderConsumer != null) {
 			builderConsumer.accept(builder);
 		}
-		return add(new CycleOptionValue<>(optionName, builder, getter, setter));
+		return add(new CycleOptionValue<>(namespace, optionName, builder, getter, setter));
 	}
 
 	public <T extends Enum<T>> OptionValue<T> choices(String optionName, Supplier<T> getter, Consumer<T> setter) {
@@ -275,20 +296,20 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 					return switch (name) {
 						case "on" -> OPTION_ON;
 						case "off" -> OPTION_OFF;
-						default -> Entry.makeTitle(optionName + "_" + name);
+						default -> Entry.makeTitle(namespace, optionName + "_" + name);
 					};
 				}, getter.get()).withValues(values);
 		builder.withTooltip(v -> {
-			String key = OptionsList.Entry.makeKey(optionName + "_" + v.name().toLowerCase(Locale.ENGLISH) + "_desc");
+			String key = makeKey(optionName + "_" + v.name().toLowerCase(Locale.ENGLISH) + "_desc");
 			if (!JadeUI.hasTranslation(key)) {
 				return null;
 			}
-			return Tooltip.create(WailaConfigScreen.processBuiltInVariables(Component.translatable(key)));
+			return Tooltip.create(builtInVariables.process(Component.translatable(key)));
 		});
 		if (builderConsumer != null) {
 			builderConsumer.accept(builder);
 		}
-		return add(new CycleOptionValue<>(optionName, builder, getter, setter));
+		return add(new CycleOptionValue<>(namespace, optionName, builder, getter, setter));
 	}
 
 	public <T> OptionValue<T> choices(
@@ -297,7 +318,7 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 			List<T> values,
 			Consumer<T> setter,
 			Function<T, Component> nameProvider) {
-		return add(new CycleOptionValue<>(optionName, CycleButton.builder(nameProvider, getter.get()).withValues(values), getter, setter));
+		return add(new CycleOptionValue<>(namespace, optionName, CycleButton.builder(nameProvider, getter.get()).withValues(values), getter, setter));
 	}
 
 	public KeybindOptionButton keybind(KeyMapping keybind) {
@@ -348,7 +369,7 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 			}
 		}
 		if (matches.isEmpty()) {
-			addEntry(new Title(Component.translatable("gui.jade.no_results").withStyle(ChatFormatting.GRAY)));
+			addEntry(new Title(namespace, Component.translatable("gui.jade.no_results").withStyle(ChatFormatting.GRAY)));
 		}
 	}
 
@@ -452,6 +473,7 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 		private final List<AbstractWidget> rawWidgets = Lists.newArrayList();
 		protected final List<EntryWidget> widgets = Lists.newArrayList();
 		protected List<Component> description = List.of();
+		protected final String namespace;
 		private @Nullable Entry parent;
 		private List<Entry> children = List.of();
 		protected AbstractStringWidget title;
@@ -459,27 +481,36 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 		private @Nullable AbstractWidget mainWidget;
 		private final List<Consumer<Entry>> resizeListeners = Lists.newArrayList();
 
-		public Entry(AbstractStringWidget title) {
+		public Entry(String namespace, AbstractStringWidget title) {
+			this.namespace = namespace;
 			this.title = title;
 			font = title.getFont();
 			addWidget(new EntryWidget(title, getTextX(), getTextY(), false));
 			addMessage(title.getMessage().getString());
 		}
 
-		public Entry(Component component) {
-			StringWidget widget = new StringWidget(component, Minecraft.getInstance().font);
-			this(widget);
+		public Entry(AbstractStringWidget title) {
+			this(DEFAULT_NAMESPACE, title);
+		}
+
+		public Entry(String namespace, Component component) {
+			this(namespace, new StringWidget(component, Minecraft.getInstance().font));
+			StringWidget widget = (StringWidget) title;
 			addResizeListener($ -> {
 				widget.setMaxWidth($.getContentWidth() - $.getTextX() - 110, StringWidget.TextOverflow.SCROLLING);
 			});
 		}
 
-		public static MutableComponent makeTitle(String key) {
-			return Component.translatable(makeKey(key));
+		public Entry(Component component) {
+			this(DEFAULT_NAMESPACE, component);
 		}
 
-		public static String makeKey(String key) {
-			return Util.makeDescriptionId("config", Identifier.fromNamespaceAndPath(Jade.ID, key));
+		public static MutableComponent makeTitle(String namespace, String key) {
+			return Component.translatable(makeKey(namespace, key));
+		}
+
+		public static String makeKey(String namespace, String key) {
+			return Util.makeDescriptionId("config", Identifier.fromNamespaceAndPath(namespace, key));
 		}
 
 		@Override
@@ -627,7 +658,7 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 		}
 
 		public void addMessageKey(String key) {
-			key = makeKey(key + "_extra_msg");
+			key = makeKey(namespace, key + "_extra_msg");
 			if (JadeUI.hasTranslation(key)) {
 				addMessage(I18n.get(key));
 			}
@@ -669,10 +700,10 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 
 		public Component narration;
 
-		public Title(String key) {
-			this(makeTitle(key));
+		public Title(String namespace, String key) {
+			this(namespace, makeTitle(namespace, key));
 			addMessageKey(key);
-			key = makeKey(key + "_desc");
+			key = makeKey(namespace, key + "_desc");
 			if (JadeUI.hasTranslation(key)) {
 				description = List.of(Component.translatable(key));
 				addMessage(description.getFirst().getString());
@@ -680,9 +711,17 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 			narration = Component.translatable("narration.jade.category", title());
 		}
 
-		public Title(Component title) {
-			super(new StringWidget(title, Minecraft.getInstance().font));
+		public Title(String key) {
+			this(DEFAULT_NAMESPACE, key);
+		}
+
+		public Title(String namespace, Component title) {
+			super(namespace, new StringWidget(title, Minecraft.getInstance().font));
 			narration = title;
+		}
+
+		public Title(Component title) {
+			this(DEFAULT_NAMESPACE, title);
 		}
 
 		@Override

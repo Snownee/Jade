@@ -11,6 +11,7 @@ import com.google.common.collect.Lists;
 import com.ibm.icu.text.MessageFormat;
 import com.mojang.blaze3d.platform.InputConstants;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.toasts.SystemToast;
@@ -50,6 +51,7 @@ import snownee.jade.api.ui.JadeUI;
 import snownee.jade.compat.RecipeLookupPlugin;
 import snownee.jade.compat.RecipeLookupResult;
 import snownee.jade.gui.HomeConfigScreen;
+import snownee.jade.gui.config.BuiltInVariables;
 import snownee.jade.impl.WailaClientRegistration;
 import snownee.jade.impl.theme.ThemeHelper;
 import snownee.jade.key_extension.KeyMappingEx;
@@ -95,6 +97,25 @@ public final class JadeClient {
 		ClientProxy.registerReloadListener(ModIdentification.INSTANCE);
 		ClientProxy.registerReloadListener(HarvestToolProvider.INSTANCE);
 		ClientProxy.registerReloadListener(ThemeHelper.INSTANCE);
+	}
+
+	public static void registerBuiltInVariables(BuiltInVariables variables) {
+		variables.register("SHOW_DETAILS", () -> {
+			List<Component> objects = Lists.newArrayListWithExpectedSize(3);
+			objects.add(Component.translatable("key.jade.show_details"));
+			if (!JadeKeys.showDetails().isUnbound()) {
+				objects.add(JadeKeys.showDetails().getTranslatedKeyMessage().copy().withStyle(ChatFormatting.AQUA));
+			}
+			return Component.translatable("config.jade.key_name_n_bind_" + (objects.size() - 1), objects.toArray());
+		});
+		variables.register("SHOW_OVERLAY", () -> {
+			List<Component> objects = Lists.newArrayListWithExpectedSize(3);
+			objects.add(Component.translatable(JadeKeys.showOverlay().getName()));
+			if (!JadeKeys.showOverlay().isUnbound()) {
+				objects.add(JadeKeys.showOverlay().getTranslatedKeyMessage().copy().withStyle(ChatFormatting.AQUA));
+			}
+			return Component.translatable("config.jade.key_name_n_bind_" + (objects.size() - 1), objects.toArray());
+		});
 	}
 
 	public static WailaTickHandler tickHandler() {

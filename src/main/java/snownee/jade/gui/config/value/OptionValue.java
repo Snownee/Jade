@@ -28,13 +28,13 @@ public abstract class OptionValue<T> extends OptionsList.Entry {
 	protected int indent;
 	private Component rawTitle;
 
-	public OptionValue(String optionName, Supplier<T> getter, Consumer<T> setter) {
-		super(makeTitle(optionName));
+	public OptionValue(String namespace, String optionName, Supplier<T> getter, Consumer<T> setter) {
+		super(namespace, makeTitle(namespace, optionName));
 		this.getter = getter;
 		this.setter = setter;
 		rawTitle = title();
 		addMessageKey(optionName);
-		String key = makeKey(optionName + "_desc");
+		String key = makeKey(namespace, optionName + "_desc");
 		if (JadeUI.hasTranslation(key)) {
 			appendDescription(Component.translatable(key));
 		}

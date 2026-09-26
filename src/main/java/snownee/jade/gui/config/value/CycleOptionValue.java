@@ -9,8 +9,8 @@ public class CycleOptionValue<T> extends OptionValue<T> {
 
 	public final CycleButton<T> button;
 
-	public CycleOptionValue(String optionName, CycleButton.Builder<T> cycleBtn, Supplier<T> getter, Consumer<T> setter) {
-		super(optionName, getter, setter);
+	public CycleOptionValue(String namespace, String optionName, CycleButton.Builder<T> cycleBtn, Supplier<T> getter, Consumer<T> setter) {
+		super(namespace, optionName, getter, setter);
 		this.button = cycleBtn.displayOnlyValue().create(
 				0, 0, 100, 20, title(), (btn, v) -> {
 					this.value = v;

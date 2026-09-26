@@ -20,13 +20,14 @@ public class SliderOptionValue extends OptionValue<Float> {
 	private FloatUnaryOperator aligner;
 
 	public SliderOptionValue(
+			String namespace,
 			String optionName,
 			Supplier<Float> getter,
 			Consumer<Float> setter,
 			float min,
 			float max,
 			FloatUnaryOperator aligner) {
-		super(optionName, getter, setter);
+		super(namespace, optionName, getter, setter);
 		value = getter.get();
 		this.min = min;
 		this.max = max;

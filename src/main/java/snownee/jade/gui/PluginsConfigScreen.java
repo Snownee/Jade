@@ -11,6 +11,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import snownee.jade.JadeClient;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.gui.config.OptionsList;
@@ -24,7 +25,8 @@ public class PluginsConfigScreen extends PreviewOptionsScreen {
 
 	public PluginsConfigScreen(@Nullable Screen parent) {
 		super(parent, Component.translatable("gui.jade.plugin_settings"));
-		saver = IWailaConfig.get()::save;
+		diskWriter = () -> IWailaConfig.get().save();
+		saver = () -> IWailaConfig.get().save();
 		canceller = IWailaConfig.get()::invalidate;
 	}
 
@@ -39,6 +41,7 @@ public class PluginsConfigScreen extends PreviewOptionsScreen {
 
 	@Override
 	public OptionsList createOptions(OptionsList options) {
+		JadeClient.registerBuiltInVariables(options.builtInVariables());
 		boolean noteServerFeature = Objects.requireNonNull(minecraft).level == null || IWailaConfig.get().general().isDebug() ||
 				!WailaClientRegistration.instance().isServerConnected();
 		BiConsumer<Identifier, Object> setter = (key, value) -> {

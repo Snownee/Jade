@@ -3,13 +3,11 @@ package snownee.jade.gui;
 import java.util.List;
 import java.util.Objects;
 
-import org.apache.commons.lang3.StringUtils;
 import org.jspecify.annotations.Nullable;
 
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.InputConstants;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -25,12 +23,9 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
 import snownee.jade.api.JadeIds;
-import snownee.jade.api.JadeKeys;
-import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.ui.JadeUI;
 import snownee.jade.gui.config.BelowOrAboveListEntryTooltipPositioner;
 import snownee.jade.gui.config.NotUglyEditBox;
@@ -44,6 +39,7 @@ public abstract class BaseOptionsScreen extends Screen {
 	protected final @Nullable Screen parent;
 	public @Nullable Button saveButton;
 	protected @Nullable Runnable saver;
+	protected @Nullable Runnable diskWriter;
 	protected @Nullable Runnable canceller;
 	protected @Nullable OptionsList options;
 	protected @Nullable OptionsNav optionsNav;
@@ -63,7 +59,7 @@ public abstract class BaseOptionsScreen extends Screen {
 		if (options != null) {
 			options.removed();
 		}
-		options = createOptions(new OptionsList(this, minecraft, 120, 0, width - 120, height - 32, 26, IWailaConfig.get()::save));
+		options = createOptions(new OptionsList(this, minecraft, 120, 0, width - 120, height - 32, 26, diskWriter));
 		options.setX(120);
 		optionsNav = new OptionsNav(options, 120, height - 32 - 18, 18, 18);
 		searchBox = new NotUglyEditBox(font, 0, 0, 120, 18, searchBox, Component.translatable("gui.jade.search")) {
@@ -142,7 +138,7 @@ public abstract class BaseOptionsScreen extends Screen {
 					descs.addAll(entry.getDescriptionOnShift());
 				}
 				if (!descs.isEmpty()) {
-					descs.replaceAll(BaseOptionsScreen::processBuiltInVariables);
+					descs.replaceAll(options().builtInVariables()::process);
 					setTooltipForNextFrame(guiGraphics, descs, mouseX, mouseY, entry);
 				}
 			}
@@ -158,51 +154,6 @@ public abstract class BaseOptionsScreen extends Screen {
 		Font font = DisplayHelper.font();
 		List<FormattedCharSequence> list = descs.stream().flatMap($ -> font.split($, 255).stream()).toList();
 		guiGraphics.setTooltipForNextFrame(font, list, new BelowOrAboveListEntryTooltipPositioner(options(), entry), mouseX, mouseY, false);
-	}
-
-	public static Component processBuiltInVariables(Component component) {
-		if (component.getString().contains("${SHOW_DETAILS}")) {
-			List<Component> objects = Lists.newArrayListWithExpectedSize(3);
-			objects.add(Component.translatable("key.jade.show_details"));
-			if (!JadeKeys.showDetails().isUnbound()) {
-				objects.add(JadeKeys.showDetails().getTranslatedKeyMessage().copy().withStyle(ChatFormatting.AQUA));
-			}
-			Component keyName = Component.translatable("config.jade.key_name_n_bind_" + (objects.size() - 1), objects.toArray());
-			component = replaceVariables(component, "${SHOW_DETAILS}", keyName);
-		}
-		if (component.getString().contains("${SHOW_OVERLAY}")) {
-			List<Component> objects = Lists.newArrayListWithExpectedSize(3);
-			objects.add(Component.translatable(JadeKeys.showOverlay().getName()));
-			if (!JadeKeys.showOverlay().isUnbound()) {
-				objects.add(JadeKeys.showOverlay().getTranslatedKeyMessage().copy().withStyle(ChatFormatting.AQUA));
-			}
-			Component keyName = Component.translatable("config.jade.key_name_n_bind_" + (objects.size() - 1), objects.toArray());
-			component = replaceVariables(component, "${SHOW_OVERLAY}", keyName);
-		}
-		return component;
-	}
-
-	private static Component replaceVariables(Component component, String source, Component replacement) {
-		MutableComponent newComponent = Component.empty().withStyle(component.getStyle());
-		for (Component part : component.toFlatList()) {
-			String partString = part.getString();
-			if (partString.contains(source)) {
-				boolean first = true;
-				for (String s : StringUtils.splitByWholeSeparatorPreserveAllTokens(partString, source)) {
-					if (first) {
-						first = false;
-					} else {
-						newComponent.append(replacement);
-					}
-					if (!s.isEmpty()) {
-						newComponent.append(Component.literal(s));
-					}
-				}
-			} else {
-				newComponent.append(part);
-			}
-		}
-		return newComponent;
 	}
 
 	public abstract OptionsList createOptions(OptionsList optionsList);
