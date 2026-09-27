@@ -20,6 +20,7 @@ import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
+import snownee.jade.api.config.ConfigIcon;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.Element;
@@ -82,6 +83,11 @@ public class CropProgressProvider implements IBlockComponentProvider {
 	@Override
 	public Identifier getUid() {
 		return JadeIds.MC_CROP_PROGRESS;
+	}
+
+	@Override
+	public ConfigIcon getConfigIcon() {
+		return ConfigIcon.item(Items.WHEAT);
 	}
 
 }

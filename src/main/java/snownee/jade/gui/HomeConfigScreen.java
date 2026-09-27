@@ -17,9 +17,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
-import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
@@ -33,10 +31,12 @@ import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringDecomposer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import snownee.jade.Jade;
-import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.impl.WailaClientRegistration;
+import snownee.jade.util.ItemStacks;
 import snownee.jade.util.ModIdentification;
 import snownee.jade.util.SmoothChasingValue;
 
@@ -44,6 +44,7 @@ public class HomeConfigScreen extends Screen {
 
 	private final RandomSource random = RandomSource.create(42);
 	private final @Nullable Screen parent;
+	private final ItemStack profileIcon = ItemStacks.of(Items.PAPER);
 	private final SmoothChasingValue titleY;
 	private final List<TextParticle> particles = Lists.newArrayList();
 	private final List<TextParticle> pendingParticles = Lists.newArrayList();
@@ -60,15 +61,17 @@ public class HomeConfigScreen extends Screen {
 		this.parent = parent;
 		titleY = new SmoothChasingValue().start(8).target(32).withSpeed(0.1F);
 
-		LocalDate now = LocalDate.now();
-		int month = now.getMonthValue();
-		int day = now.getDayOfMonth();
-		if (month == 12 && day >= 24 && day <= 26) {
-			festival = 1;
-		} else if (month == 6 && (day == 1 || day == 28)) {
-			festival = 2;
-		} else if (month <= 2 && isLunarNewYear(now)) {
-			festival = 99;
+		if (!WailaClientRegistration.instance().maybeLowVisionUser()) {
+			LocalDate now = LocalDate.now();
+			int month = now.getMonthValue();
+			int day = now.getDayOfMonth();
+			if (month == 12 && day >= 24 && day <= 26) {
+				festival = 1;
+			} else if (month == 6 && (day == 1 || day == 28)) {
+				festival = 2;
+			} else if (month <= 2 && isLunarNewYear(now)) {
+				festival = 99;
+			}
 		}
 	}
 
@@ -126,21 +129,21 @@ public class HomeConfigScreen extends Screen {
 					visitedChildScreen();
 					minecraft.gui.setScreen(new PluginsConfigScreen(HomeConfigScreen.this));
 				}).bounds(width / 2 + 5, height / 2 - 10, maxWidth, 20).build());
-		ImageButton profileButton = new ImageButton(
+		Button profileButton = new Button(
 				width / 2 + 10 + maxWidth,
 				height / 2 - 10,
 				20,
 				20,
-				new WidgetSprites(JadeIds.JADE("profiles")),
+				profileSettings,
 				_ -> {
 					visitedChildScreen();
 					minecraft.gui.setScreen(new ProfileConfigScreen(HomeConfigScreen.this));
 				},
-				profileSettings) {
+				Button.DEFAULT_NARRATION) {
 			@Override
 			public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
 				extractDefaultSprite(graphics);
-				super.extractContents(graphics, mouseX, mouseY, a);
+				graphics.fakeItem(profileIcon, getX() + 2, getY() + 2);
 			}
 		};
 		profileButton.setTooltip(Tooltip.create(profileSettings));

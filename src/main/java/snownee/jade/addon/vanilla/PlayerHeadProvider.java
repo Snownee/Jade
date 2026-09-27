@@ -11,6 +11,7 @@ import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
+import snownee.jade.api.config.ConfigIcon;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.util.ClientProxy;
@@ -46,6 +47,11 @@ public class PlayerHeadProvider implements IBlockComponentProvider {
 	@Override
 	public Identifier getUid() {
 		return JadeIds.MC_PLAYER_HEAD;
+	}
+
+	@Override
+	public ConfigIcon getConfigIcon() {
+		return ConfigIcon.item(Items.PLAYER_HEAD);
 	}
 
 }

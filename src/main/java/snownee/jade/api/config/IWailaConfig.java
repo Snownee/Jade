@@ -293,6 +293,10 @@ public interface IWailaConfig {
 
 		void setEnableAccessibilityPlugin(boolean showAccessibilityPlugins);
 
+		boolean getAlwaysListMode();
+
+		void setAlwaysListMode(boolean alwaysListMode);
+
 		boolean getFlipMainHand();
 
 		void setFlipMainHand(boolean overlaySquare);

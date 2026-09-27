@@ -2,6 +2,7 @@ package snownee.jade.addon.debug;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.FireBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -9,6 +10,7 @@ import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
+import snownee.jade.api.config.ConfigIcon;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
 
@@ -40,6 +42,11 @@ public class BlockPropertiesProvider implements IBlockComponentProvider {
 	@Override
 	public Identifier getUid() {
 		return JadeIds.DEBUG_BLOCK_PROPERTIES;
+	}
+
+	@Override
+	public ConfigIcon getConfigIcon() {
+		return ConfigIcon.item(Items.COMPARATOR);
 	}
 
 	@Override

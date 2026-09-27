@@ -1,6 +1,7 @@
 package snownee.jade.addon.access;
 
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.BarrelBlock;
 import net.minecraft.world.level.block.BaseRailBlock;
 import net.minecraft.world.level.block.Block;
@@ -19,6 +20,7 @@ import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
+import snownee.jade.api.config.ConfigIcon;
 import snownee.jade.api.config.IPluginConfig;
 
 public class BlockDetailsProvider implements IBlockComponentProvider {
@@ -95,6 +97,11 @@ public class BlockDetailsProvider implements IBlockComponentProvider {
 	@Override
 	public Identifier getUid() {
 		return JadeIds.ACCESS_BLOCK_DETAILS;
+	}
+
+	@Override
+	public ConfigIcon getConfigIcon() {
+		return ConfigIcon.item(Items.BOOK);
 	}
 
 	@Override

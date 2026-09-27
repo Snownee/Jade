@@ -17,7 +17,6 @@ import snownee.jade.JadeClient;
 import snownee.jade.api.JadeKeys;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.ui.JadeUI;
-import snownee.jade.gui.config.NotUglyEditBox;
 import snownee.jade.gui.config.OptionsList;
 import snownee.jade.gui.config.value.OptionValue;
 import snownee.jade.impl.config.WailaConfig;

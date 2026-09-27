@@ -18,6 +18,7 @@ import snownee.jade.api.IWailaClientRegistration;
 import snownee.jade.api.IWailaCommonRegistration;
 import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.JadeIds;
+import snownee.jade.api.config.ConfigIcon;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.harvest.ToolTier;
 import snownee.jade.api.harvest.ToolType;
@@ -45,11 +46,14 @@ public class ExamplePlugin implements IWailaPlugin {
 
 	@Override
 	public void registerClient(IWailaClientRegistration registration) {
-		registration.registerBlockComponent(ExampleComponentProvider.INSTANCE, AbstractFurnaceBlock.class);
-		registration.addConfig(UID_TEST_STR_CFG, "", $ -> Identifier.tryParse($) != null);
-		registration.addConfigListener(UID_TEST_STR_CFG, $ -> Jade.LOGGER.info("Changed: $: " + IWailaConfig.get().plugin().getString($)));
-		registration.addConfig(UID_TEST_FLOAT_CFG, 0F, 0F, 100F, false);
-
+		if (IWailaConfig.get().general().isDebug()) {
+			registration.registerBlockComponent(ExampleComponentProvider.INSTANCE, AbstractFurnaceBlock.class);
+			registration.addConfig(UID_TEST_STR_CFG, ConfigIcon.none(), "", $ -> Identifier.tryParse($) != null);
+			registration.addConfigListener(
+					UID_TEST_STR_CFG,
+					$ -> Jade.LOGGER.info("Changed: $: {}", IWailaConfig.get().plugin().getString($)));
+			registration.addConfig(UID_TEST_FLOAT_CFG, ConfigIcon.none(), 0F, 0F, 100F, false);
+		}
 		registration.addRayTraceCallback((hitResult, accessor, originalAccessor) -> {
 			if (IWailaConfig.get().general().isDebug() && accessor instanceof BlockAccessor blockAccessor) {
 				if (blockAccessor.getBlock() == Blocks.GRASS_BLOCK) {

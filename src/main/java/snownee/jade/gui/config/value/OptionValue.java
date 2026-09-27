@@ -26,6 +26,7 @@ public abstract class OptionValue<T> extends OptionsList.Entry {
 	protected @Nullable Identifier id;
 	protected T value;
 	protected int indent;
+	protected boolean inlineWidget;
 	private Component rawTitle;
 
 	public OptionValue(String namespace, String optionName, Supplier<T> getter, Consumer<T> setter) {
@@ -56,7 +57,15 @@ public abstract class OptionValue<T> extends OptionsList.Entry {
 
 	@Override
 	public int getTextX() {
+		if (isCardMode()) {
+			return super.getTextX();
+		}
 		return indent + 10;
+	}
+
+	@Override
+	public boolean isInlineWidget() {
+		return inlineWidget;
 	}
 
 	@Override
@@ -83,6 +92,10 @@ public abstract class OptionValue<T> extends OptionsList.Entry {
 	public abstract void setValue(T value);
 
 	public abstract void updateValue();
+
+	public void setIndent(int indent) {
+		this.indent = indent;
+	}
 
 	public void setId(Identifier id) {
 		this.id = id;

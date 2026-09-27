@@ -7,12 +7,14 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.CommandBlockEntity;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.StreamServerDataProvider;
+import snownee.jade.api.config.ConfigIcon;
 import snownee.jade.api.config.IPluginConfig;
 
 public class CommandBlockProvider implements StreamServerDataProvider<BlockAccessor, String> {
@@ -64,6 +66,11 @@ public class CommandBlockProvider implements StreamServerDataProvider<BlockAcces
 		@Override
 		public Identifier getUid() {
 			return JadeIds.MC_COMMAND_BLOCK;
+		}
+
+		@Override
+		public ConfigIcon getConfigIcon() {
+			return ConfigIcon.item(Items.COMMAND_BLOCK);
 		}
 	}
 }

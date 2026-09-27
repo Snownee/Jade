@@ -148,6 +148,7 @@ public class Jade {
 				WailaConfig config = defaultFactory.get();
 				config.setName("@jade.profile_preset.accessibility");
 				config.accessibility().setEnableAccessibilityPlugin(true);
+				config.accessibility().setAlwaysListMode(true);
 				config.overlay().setAnimation(false);
 				config.overlay().setAlpha(1);
 				config.plugin().set(JadeIds.CORE_BLOCK_FACE, true);

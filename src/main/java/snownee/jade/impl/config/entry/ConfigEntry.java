@@ -7,9 +7,11 @@ import java.util.function.Consumer;
 
 import org.jspecify.annotations.Nullable;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
 import net.minecraft.resources.Identifier;
+import snownee.jade.api.config.ConfigIcon;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.gui.config.OptionsList;
 import snownee.jade.gui.config.value.OptionValue;
@@ -20,6 +22,7 @@ public abstract class ConfigEntry<T> {
 	private final T defaultValue;
 	private @Nullable T syncedValue;
 	private List<Consumer<Identifier>> listeners = List.of();
+	private ConfigIcon icon = ConfigIcon.none();
 
 	public ConfigEntry(Identifier id, T defaultValue) {
 		this.id = id;
@@ -36,6 +39,18 @@ public abstract class ConfigEntry<T> {
 
 	public T syncedValue() {
 		return Objects.requireNonNull(syncedValue);
+	}
+
+	public ConfigIcon icon() {
+		return icon;
+	}
+
+	public void setIcon(ConfigIcon icon) {
+		Preconditions.checkArgument(
+				icon.isNone() || IPluginConfig.isPrimaryKey(id),
+				"Only primary config key can have an icon: %s",
+				id);
+		this.icon = icon;
 	}
 
 	public boolean isSynced() {

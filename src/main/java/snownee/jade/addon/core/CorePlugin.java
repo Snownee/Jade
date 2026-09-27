@@ -1,6 +1,7 @@
 package snownee.jade.addon.core;
 
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -17,6 +18,7 @@ import snownee.jade.api.IWailaCommonRegistration;
 import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.WailaPlugin;
+import snownee.jade.api.config.ConfigIcon;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.config.TargetOperationRepository;
 import snownee.jade.impl.BlockAccessorClientHandler;
@@ -40,11 +42,11 @@ public class CorePlugin implements IWailaPlugin {
 		registration.registerAccessorHandler(BlockAccessor.class, new BlockAccessorClientHandler());
 		registration.registerAccessorHandler(EntityAccessor.class, new EntityAccessorClientHandler());
 
-		registration.addConfig(JadeIds.CORE_DISTANCE, false);
-		registration.addConfig(JadeIds.CORE_COORDINATES, false);
-		registration.addConfig(JadeIds.CORE_REL_COORDINATES, false);
-		registration.addConfig(JadeIds.CORE_MOD_NAME, ModNameProvider.Mode.ON);
-		registration.addConfig(JadeIds.CORE_TRANSLATE_MOD_NAME, true);
+		registration.addConfig(JadeIds.CORE_DISTANCE, ConfigIcon.item(Items.SPYGLASS), false);
+		registration.addConfig(JadeIds.CORE_COORDINATES, ConfigIcon.item(Items.COMPASS), false);
+		registration.addConfig(JadeIds.CORE_REL_COORDINATES, ConfigIcon.none(), false);
+		registration.addConfig(JadeIds.CORE_MOD_NAME, ConfigIcon.item(Items.NAME_TAG), ModNameProvider.Mode.ON);
+		registration.addConfig(JadeIds.CORE_TRANSLATE_MOD_NAME, ConfigIcon.none(), true);
 		registration.addConfigListener(
 				JadeIds.CORE_TRANSLATE_MOD_NAME,
 				$ -> ModIdentification.setTranslated(IWailaConfig.get().plugin().get($)));

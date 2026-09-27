@@ -158,6 +158,7 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 		var themeEntry = options.add(new CycleOptionValue<>(
 				options.namespace(),
 				"overlay_theme",
+				false,
 				CycleButton.builder(
 								id -> Component.translatable(Util.makeDescriptionId("jade.theme", id)),
 								overlay.getTheme().mainId())
@@ -183,6 +184,7 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 		styleEntry = options.add(new CycleOptionValue<>(
 				options.namespace(),
 				"theme_style",
+				false,
 				CycleButton.builder(id -> Component.translatable(ThemeHelper.INSTANCE.getTheme(id).styleName), overlay.getTheme().fullId())
 						.withValues(valuesSupplier),
 				() -> Objects.requireNonNull(overlay.getTheme().id),
@@ -229,6 +231,7 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 		options.choices("accessibility_plugin", accessibility::getEnableAccessibilityPlugin, accessibility::setEnableAccessibilityPlugin);
 		options.choices("tts_mode", accessibility::getTTSMode, accessibility::setTTSMode);
 		options.choices("narrate_keys", accessibility::getNarrateKeys, accessibility::setNarrateKeys);
+		options.choices("always_list_mode", accessibility::getAlwaysListMode, accessibility::setAlwaysListMode);
 		options.slider("text_background_opacity", accessibility::getTextBackgroundOpacity, accessibility::setTextBackgroundOpacity);
 		options.choices("flip_main_hand", accessibility::getFlipMainHand, accessibility::setFlipMainHand);
 
@@ -273,7 +276,7 @@ public class WailaConfigScreen extends PreviewOptionsScreen {
 				}).size(100, 20)));
 
 		try {
-			if (CommonProxy.isDevEnv()) {
+			if (general.isDebug()) {
 				OptionsNavTest.addManyEntries(options);
 			}
 		} catch (Throwable _) {

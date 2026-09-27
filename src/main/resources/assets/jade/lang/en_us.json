@@ -376,6 +376,8 @@
 	"config.jade.plugin_minecraft.pet_armor_show_damageable": "Show Damageable",
 	"config.jade.accessibility_plugin": "Accessibility Plugin",
 	"config.jade.accessibility_plugin_desc": "Enable accessibility features for displaying and narrating more details. You can then control more details in the Plugin Settings.",
+	"config.jade.always_list_mode": "Always Use List Mode",
+	"config.jade.always_list_mode_desc": "Always open the plugin config screen in list mode instead of card mode.",
 	"config.jade.plugin_jade_access": "Accessibility",
 	"config.jade.plugin_jade_access.sign": "Sign Content",
 	"jade.access.sign.front": "Front:",

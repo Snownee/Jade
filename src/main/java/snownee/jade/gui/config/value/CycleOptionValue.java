@@ -9,14 +9,18 @@ public class CycleOptionValue<T> extends OptionValue<T> {
 
 	public final CycleButton<T> button;
 
-	public CycleOptionValue(String namespace, String optionName, CycleButton.Builder<T> cycleBtn, Supplier<T> getter, Consumer<T> setter) {
+	public CycleOptionValue(String namespace, String optionName, boolean inline, CycleButton.Builder<T> cycleBtn, Supplier<T> getter, Consumer<T> setter) {
 		super(namespace, optionName, getter, setter);
+		this.inlineWidget = inline;
+		if (inline) {
+			setTitleMaxRows(2);
+		}
 		this.button = cycleBtn.displayOnlyValue().create(
 				0, 0, 100, 20, title(), (btn, v) -> {
 					this.value = v;
 					save();
 				});
-		updateValue();
+		button.setValue(value = getter.get());
 		addWidget(button, 0);
 	}
 

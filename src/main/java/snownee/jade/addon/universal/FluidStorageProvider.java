@@ -20,6 +20,7 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.StreamServerDataProvider;
 import snownee.jade.api.TooltipPosition;
+import snownee.jade.api.config.ConfigIcon;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.theme.IThemeHelper;
@@ -49,6 +50,11 @@ public class FluidStorageProvider<T extends Accessor<?>> implements StreamServer
 	public static class Client<T extends Accessor<?>> extends FluidStorageProvider<T> implements IComponentProvider<T> {
 		public static final Client<BlockAccessor> BLOCK = new Client<>();
 		public static final Client<EntityAccessor> ENTITY = new Client<>();
+
+		@Override
+		public ConfigIcon getConfigIcon() {
+			return ConfigIcon.item(Items.WATER_BUCKET);
+		}
 
 		@Override
 		public void appendTooltip(ITooltip tooltip, T accessor, IPluginConfig config) {

@@ -26,6 +26,7 @@ import snownee.jade.api.callback.JadeBeforeTooltipCollectCallback;
 import snownee.jade.api.callback.JadeItemModNameCallback;
 import snownee.jade.api.callback.JadeRayTraceCallback;
 import snownee.jade.api.callback.JadeTooltipCollectedCallback;
+import snownee.jade.api.config.ConfigIcon;
 import snownee.jade.api.harvest.ToolTypeRegistry;
 import snownee.jade.api.view.EnergyView;
 import snownee.jade.api.view.FluidView;
@@ -44,8 +45,21 @@ public interface IWailaClientRegistration {
 	 *
 	 * @param key          configuration key
 	 * @param defaultValue default value
+	 * @deprecated use {@link #addConfig(Identifier, ConfigIcon, boolean)} instead
 	 */
-	void addConfig(Identifier key, boolean defaultValue);
+	@Deprecated
+	default void addConfig(Identifier key, boolean defaultValue) {
+		addConfig(key, ConfigIcon.none(), defaultValue);
+	}
+
+	/**
+	 * Registers a boolean plugin config key with an icon.
+	 *
+	 * @param key          configuration key
+	 * @param icon         entry icon
+	 * @param defaultValue default value
+	 */
+	void addConfig(Identifier key, ConfigIcon icon, boolean defaultValue);
 
 	/**
 	 * Registers an enum plugin config key.
@@ -53,8 +67,22 @@ public interface IWailaClientRegistration {
 	 * @param key          configuration key
 	 * @param defaultValue default value
 	 * @param <T>          enum type
+	 * @deprecated use {@link #addConfig(Identifier, ConfigIcon, Enum)} instead
 	 */
-	<T extends Enum<T>> void addConfig(Identifier key, T defaultValue);
+	@Deprecated
+	default <T extends Enum<T>> void addConfig(Identifier key, T defaultValue) {
+		addConfig(key, ConfigIcon.none(), defaultValue);
+	}
+
+	/**
+	 * Registers an enum plugin config key with an icon.
+	 *
+	 * @param key          configuration key
+	 * @param icon         entry icon
+	 * @param defaultValue default value
+	 * @param <T>          enum type
+	 */
+	<T extends Enum<T>> void addConfig(Identifier key, ConfigIcon icon, T defaultValue);
 
 	/**
 	 * Registers a string plugin config key.
@@ -62,8 +90,22 @@ public interface IWailaClientRegistration {
 	 * @param key          configuration key
 	 * @param defaultValue default value
 	 * @param validator    value validator
+	 * @deprecated use {@link #addConfig(Identifier, ConfigIcon, String, Predicate)} instead
 	 */
-	void addConfig(Identifier key, String defaultValue, Predicate<String> validator);
+	@Deprecated
+	default void addConfig(Identifier key, String defaultValue, Predicate<String> validator) {
+		addConfig(key, ConfigIcon.none(), defaultValue, validator);
+	}
+
+	/**
+	 * Registers a string plugin config key with an icon.
+	 *
+	 * @param key          configuration key
+	 * @param icon         entry icon
+	 * @param defaultValue default value
+	 * @param validator    value validator
+	 */
+	void addConfig(Identifier key, ConfigIcon icon, String defaultValue, Predicate<String> validator);
 
 	/**
 	 * Registers an integer plugin config key.
@@ -73,8 +115,24 @@ public interface IWailaClientRegistration {
 	 * @param min          minimum accepted value
 	 * @param max          maximum accepted value
 	 * @param slider       whether the UI should render a slider
+	 * @deprecated use {@link #addConfig(Identifier, ConfigIcon, int, int, int, boolean)} instead
 	 */
-	void addConfig(Identifier key, int defaultValue, int min, int max, boolean slider);
+	@Deprecated
+	default void addConfig(Identifier key, int defaultValue, int min, int max, boolean slider) {
+		addConfig(key, ConfigIcon.none(), defaultValue, min, max, slider);
+	}
+
+	/**
+	 * Registers an integer plugin config key with an icon.
+	 *
+	 * @param key          configuration key
+	 * @param icon         entry icon
+	 * @param defaultValue default value
+	 * @param min          minimum accepted value
+	 * @param max          maximum accepted value
+	 * @param slider       whether the UI should render a slider
+	 */
+	void addConfig(Identifier key, ConfigIcon icon, int defaultValue, int min, int max, boolean slider);
 
 	/**
 	 * Registers a floating-point plugin config key.
@@ -84,8 +142,24 @@ public interface IWailaClientRegistration {
 	 * @param min          minimum accepted value
 	 * @param max          maximum accepted value
 	 * @param slider       whether the UI should render a slider
+	 * @deprecated use {@link #addConfig(Identifier, ConfigIcon, float, float, float, boolean)} instead
 	 */
-	void addConfig(Identifier key, float defaultValue, float min, float max, boolean slider);
+	@Deprecated
+	default void addConfig(Identifier key, float defaultValue, float min, float max, boolean slider) {
+		addConfig(key, ConfigIcon.none(), defaultValue, min, max, slider);
+	}
+
+	/**
+	 * Registers a floating-point plugin config key with an icon.
+	 *
+	 * @param key          configuration key
+	 * @param icon         entry icon
+	 * @param defaultValue default value
+	 * @param min          minimum accepted value
+	 * @param max          maximum accepted value
+	 * @param slider       whether the UI should render a slider
+	 */
+	void addConfig(Identifier key, ConfigIcon icon, float defaultValue, float min, float max, boolean slider);
 
 	/**
 	 * Registers a listener for config changes.
@@ -112,6 +186,15 @@ public interface IWailaClientRegistration {
 	 */
 	@ApiStatus.Experimental
 	void setConfigCategoryOverride(Identifier key, List<Component> override);
+
+	/**
+	 * Sets the icon displayed for a primary plugin config entry.
+	 *
+	 * @param key  primary config key
+	 * @param icon icon to display, either a sprite or an item
+	 */
+	@ApiStatus.Experimental
+	void setConfigIcon(Identifier key, ConfigIcon icon);
 
 	/**
 	 * Register an {@link IComponentProvider} instance to allow overriding the icon for a block via the
