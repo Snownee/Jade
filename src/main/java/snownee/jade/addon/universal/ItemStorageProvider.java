@@ -29,6 +29,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.ContainerEntity;
 import net.minecraft.world.inventory.PlayerEnderChestContainer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
@@ -41,6 +42,7 @@ import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.TooltipPosition;
+import snownee.jade.api.config.ConfigIcon;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.ui.Element;
@@ -98,6 +100,11 @@ public class ItemStorageProvider<T extends Accessor<?>> implements IServerDataPr
 	public static class Client<T extends Accessor<?>> extends ItemStorageProvider<T> implements IComponentProvider<T> {
 		public static final Client<BlockAccessor> BLOCK = new Client<>();
 		public static final Client<EntityAccessor> ENTITY = new Client<>();
+
+		@Override
+		public ConfigIcon getConfigIcon() {
+			return ConfigIcon.item(Items.CHEST);
+		}
 
 		@Override
 		public void appendTooltip(ITooltip tooltip, T accessor, IPluginConfig config) {

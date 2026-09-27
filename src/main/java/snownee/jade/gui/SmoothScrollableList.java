@@ -1,4 +1,4 @@
-package snownee.jade.gui.config;
+package snownee.jade.gui;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;

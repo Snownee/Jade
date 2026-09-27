@@ -8,6 +8,7 @@ import snownee.jade.api.IWailaCommonRegistration;
 import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.WailaPlugin;
+import snownee.jade.api.config.ConfigIcon;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.view.HideThingsExtensionProvider;
 
@@ -36,15 +37,15 @@ public class UniversalPlugin implements IWailaPlugin {
 
 	@Override
 	public void registerClient(IWailaClientRegistration registration) {
-		registration.addConfig(JadeIds.UNIVERSAL_ITEM_STORAGE_DETAILED_AMOUNT, 54, 0, 54, false);
-		registration.addConfig(JadeIds.UNIVERSAL_ITEM_STORAGE_NORMAL_AMOUNT, 9, 0, 54, false);
-		registration.addConfig(JadeIds.UNIVERSAL_ITEM_STORAGE_SHOW_NAME_AMOUNT, 5, 0, 9, true);
-		registration.addConfig(JadeIds.UNIVERSAL_ITEM_STORAGE_ITEMS_PER_LINE, 9, 3, 27, true);
-		registration.addConfig(JadeIds.UNIVERSAL_ITEM_STORAGE_SORT, false);
-		registration.addConfig(JadeIds.UNIVERSAL_ENERGY_STORAGE_DETAILED, false);
-		registration.addConfig(JadeIds.UNIVERSAL_ENERGY_STORAGE_STYLE, IWailaConfig.HandlerDisplayStyle.PROGRESS_BAR);
-		registration.addConfig(JadeIds.UNIVERSAL_FLUID_STORAGE_DETAILED, false);
-		registration.addConfig(JadeIds.UNIVERSAL_FLUID_STORAGE_STYLE, IWailaConfig.HandlerDisplayStyle.PROGRESS_BAR);
+		registration.addConfig(JadeIds.UNIVERSAL_ITEM_STORAGE_DETAILED_AMOUNT, ConfigIcon.none(), 54, 0, 54, false);
+		registration.addConfig(JadeIds.UNIVERSAL_ITEM_STORAGE_NORMAL_AMOUNT, ConfigIcon.none(), 9, 0, 54, false);
+		registration.addConfig(JadeIds.UNIVERSAL_ITEM_STORAGE_SHOW_NAME_AMOUNT, ConfigIcon.none(), 5, 0, 9, true);
+		registration.addConfig(JadeIds.UNIVERSAL_ITEM_STORAGE_ITEMS_PER_LINE, ConfigIcon.none(), 9, 3, 27, true);
+		registration.addConfig(JadeIds.UNIVERSAL_ITEM_STORAGE_SORT, ConfigIcon.none(), false);
+		registration.addConfig(JadeIds.UNIVERSAL_ENERGY_STORAGE_DETAILED, ConfigIcon.none(), false);
+		registration.addConfig(JadeIds.UNIVERSAL_ENERGY_STORAGE_STYLE, ConfigIcon.none(), IWailaConfig.HandlerDisplayStyle.PROGRESS_BAR);
+		registration.addConfig(JadeIds.UNIVERSAL_FLUID_STORAGE_DETAILED, ConfigIcon.none(), false);
+		registration.addConfig(JadeIds.UNIVERSAL_FLUID_STORAGE_STYLE, ConfigIcon.none(), IWailaConfig.HandlerDisplayStyle.PROGRESS_BAR);
 
 		registration.registerItemStorageClient(HideThingsExtensionProvider.instance());
 		registration.registerFluidStorageClient(HideThingsExtensionProvider.instance());

@@ -7,11 +7,13 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.permissions.Permissions;
+import net.minecraft.world.item.Items;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.StreamServerDataProvider;
+import snownee.jade.api.config.ConfigIcon;
 import snownee.jade.api.config.IPluginConfig;
 
 public class EntityLootTableProvider implements StreamServerDataProvider<EntityAccessor, Identifier> {
@@ -59,5 +61,9 @@ public class EntityLootTableProvider implements StreamServerDataProvider<EntityA
 	@Override
 	public Identifier getUid() {
 		return JadeIds.DEBUG_LOOT_TABLE;
+	}
+
+	public ConfigIcon getConfigIcon() {
+		return ConfigIcon.item(Items.CHEST);
 	}
 }

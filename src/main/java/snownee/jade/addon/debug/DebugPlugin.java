@@ -2,6 +2,7 @@ package snownee.jade.addon.debug;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import snownee.jade.api.IWailaClientRegistration;
@@ -9,13 +10,14 @@ import snownee.jade.api.IWailaCommonRegistration;
 import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.WailaPlugin;
+import snownee.jade.api.config.ConfigIcon;
 
 @WailaPlugin
 public class DebugPlugin implements IWailaPlugin {
 	@Override
 	public void registerClient(IWailaClientRegistration registration) {
-		registration.addConfig(JadeIds.DEBUG_REGISTRY_NAME, RegistryNameProvider.Mode.OFF);
-		registration.addConfig(JadeIds.DEBUG_SPECIAL_REGISTRY_NAME, false);
+		registration.addConfig(JadeIds.DEBUG_REGISTRY_NAME, ConfigIcon.item(Items.NAME_TAG), RegistryNameProvider.Mode.OFF);
+		registration.addConfig(JadeIds.DEBUG_SPECIAL_REGISTRY_NAME, ConfigIcon.none(), false);
 
 		registration.registerBlockComponent(BlockPropertiesProvider.INSTANCE, Block.class);
 		registration.registerBlockComponent(BlockStatesProvider.INSTANCE, Block.class);

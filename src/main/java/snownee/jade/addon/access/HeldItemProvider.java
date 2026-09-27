@@ -3,10 +3,12 @@ package snownee.jade.addon.access;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.Items;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
+import snownee.jade.api.config.ConfigIcon;
 import snownee.jade.api.config.IPluginConfig;
 
 public class HeldItemProvider implements IEntityComponentProvider {
@@ -24,5 +26,10 @@ public class HeldItemProvider implements IEntityComponentProvider {
 	@Override
 	public Identifier getUid() {
 		return JadeIds.ACCESS_HELD_ITEM;
+	}
+
+	@Override
+	public ConfigIcon getConfigIcon() {
+		return ConfigIcon.item(Items.DIAMOND_SWORD);
 	}
 }

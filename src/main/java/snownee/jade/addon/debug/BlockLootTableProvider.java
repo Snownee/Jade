@@ -10,12 +10,14 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.permissions.Permissions;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.RandomizableContainer;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.StreamServerDataProvider;
+import snownee.jade.api.config.ConfigIcon;
 import snownee.jade.api.config.IPluginConfig;
 
 public class BlockLootTableProvider implements StreamServerDataProvider<BlockAccessor, Pair<Identifier, Long>> {
@@ -69,5 +71,9 @@ public class BlockLootTableProvider implements StreamServerDataProvider<BlockAcc
 	@Override
 	public Identifier getUid() {
 		return JadeIds.DEBUG_LOOT_TABLE;
+	}
+
+	public ConfigIcon getConfigIcon() {
+		return ConfigIcon.item(Items.CHEST);
 	}
 }

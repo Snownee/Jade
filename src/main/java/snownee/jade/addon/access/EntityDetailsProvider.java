@@ -6,6 +6,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.TriState;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.bee.Bee;
@@ -22,6 +23,7 @@ import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
+import snownee.jade.api.config.ConfigIcon;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.util.CommonProxy;
@@ -95,6 +97,11 @@ public class EntityDetailsProvider implements IEntityComponentProvider {
 	@Override
 	public Identifier getUid() {
 		return JadeIds.ACCESS_ENTITY_DETAILS;
+	}
+
+	@Override
+	public ConfigIcon getConfigIcon() {
+		return ConfigIcon.item(Items.BOOK);
 	}
 
 	@Override

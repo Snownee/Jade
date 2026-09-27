@@ -14,12 +14,14 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.TraceableException;
+import snownee.jade.api.config.ConfigIcon;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.overlay.DisplayHelper;
 import snownee.jade.util.ModIdentification;
@@ -67,6 +69,11 @@ public class ItemTooltipProvider implements IEntityComponentProvider {
 	@Override
 	public Identifier getUid() {
 		return JadeIds.MC_ITEM_TOOLTIP;
+	}
+
+	@Override
+	public ConfigIcon getConfigIcon() {
+		return ConfigIcon.item(Items.PAPER);
 	}
 
 }

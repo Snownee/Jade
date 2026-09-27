@@ -41,6 +41,9 @@ public class PluginsConfigScreen extends PreviewOptionsScreen {
 
 	@Override
 	public OptionsList createOptions(OptionsList options) {
+		options.setDisplayMode(IWailaConfig.get().accessibility().getAlwaysListMode() ?
+				OptionsList.DisplayMode.LIST :
+				OptionsList.DisplayMode.CARD);
 		JadeClient.registerBuiltInVariables(options.builtInVariables());
 		boolean noteServerFeature = Objects.requireNonNull(minecraft).level == null || IWailaConfig.get().general().isDebug() ||
 				!WailaClientRegistration.instance().isServerConnected();
@@ -59,6 +62,7 @@ public class PluginsConfigScreen extends PreviewOptionsScreen {
 								IWailaConfig.get().plugin(),
 								setter);
 						option.setId(entry.id());
+						option.setIcon(entry.icon());
 						if (entry.isSynced()) {
 							option.setDisabled(true);
 							option.appendDescription(Component.translatable("gui.jade.forced_plugin_config")
@@ -67,8 +71,10 @@ public class PluginsConfigScreen extends PreviewOptionsScreen {
 							option.setServerFeature();
 						}
 						if (!IPluginConfig.isPrimaryKey(entry.id())) {
-							if (lastPrimary.get() != null) {
-								option.parent(Objects.requireNonNull(lastPrimary.get()));
+							OptionsList.Entry primary = lastPrimary.get();
+							if (primary != null) {
+								option.setSecondary(true);
+								option.parent(primary);
 							}
 						} else {
 							lastPrimary.setValue(option);

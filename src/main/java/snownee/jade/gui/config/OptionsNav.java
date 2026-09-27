@@ -24,6 +24,7 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import snownee.jade.api.JadeIds;
+import snownee.jade.gui.SmoothScrollableList;
 
 public class OptionsNav extends SmoothScrollableList<OptionsNav.Entry> {
 	private static final Identifier NAVBAR_BACKGROUND = JadeIds.JADE("navbar_background");

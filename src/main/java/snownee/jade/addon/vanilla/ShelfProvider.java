@@ -14,6 +14,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.block.ChiseledBookShelfBlock;
@@ -26,6 +27,7 @@ import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.StreamServerDataProvider;
+import snownee.jade.api.config.ConfigIcon;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.Element;
 import snownee.jade.api.ui.IDisplayHelper;
@@ -121,6 +123,11 @@ public class ShelfProvider implements StreamServerDataProvider<BlockAccessor, It
 		@Override
 		public Identifier getUid() {
 			return JadeIds.MC_SHELF;
+		}
+
+		@Override
+		public ConfigIcon getConfigIcon() {
+			return ConfigIcon.item(Items.CHISELED_BOOKSHELF);
 		}
 	}
 }

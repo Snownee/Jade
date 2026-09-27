@@ -8,6 +8,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.vehicle.minecart.MinecartSpawner;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
@@ -21,6 +22,7 @@ import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.IToggleableProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
+import snownee.jade.api.config.ConfigIcon;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
 
@@ -69,6 +71,11 @@ public abstract class MobSpawnerProvider implements IToggleableProvider {
 	@Override
 	public Identifier getUid() {
 		return JadeIds.MC_MOB_SPAWNER;
+	}
+
+	@Override
+	public ConfigIcon getConfigIcon() {
+		return ConfigIcon.item(Items.SPAWNER);
 	}
 
 	@Override

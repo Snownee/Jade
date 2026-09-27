@@ -7,10 +7,12 @@ import net.minecraft.world.entity.monster.zombie.ZombieVillager;
 import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.npc.villager.VillagerData;
 import net.minecraft.world.entity.npc.villager.VillagerProfession;
+import net.minecraft.world.item.Items;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
+import snownee.jade.api.config.ConfigIcon;
 import snownee.jade.api.config.IPluginConfig;
 
 // @MerchantScreen / Villager.getTypeName
@@ -42,6 +44,11 @@ public class VillagerProfessionProvider implements IEntityComponentProvider {
 	@Override
 	public Identifier getUid() {
 		return JadeIds.MC_VILLAGER_PROFESSION;
+	}
+
+	@Override
+	public ConfigIcon getConfigIcon() {
+		return ConfigIcon.item(Items.EMERALD);
 	}
 
 }

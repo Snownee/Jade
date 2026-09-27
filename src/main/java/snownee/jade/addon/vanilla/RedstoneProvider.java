@@ -10,6 +10,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CalibratedSculkSensorBlock;
@@ -25,6 +26,7 @@ import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.StreamServerDataProvider;
+import snownee.jade.api.config.ConfigIcon;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
 
@@ -100,6 +102,11 @@ public class RedstoneProvider implements StreamServerDataProvider<BlockAccessor,
 		@Override
 		public Identifier getUid() {
 			return JadeIds.MC_REDSTONE;
+		}
+
+		@Override
+		public ConfigIcon getConfigIcon() {
+			return ConfigIcon.item(Items.REDSTONE);
 		}
 	}
 }

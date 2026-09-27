@@ -3,10 +3,12 @@ package snownee.jade.addon.vanilla;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
+import snownee.jade.api.config.ConfigIcon;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.IDisplayHelper;
 
@@ -25,5 +27,10 @@ public class ItemFrameProvider implements IEntityComponentProvider {
 	@Override
 	public Identifier getUid() {
 		return JadeIds.MC_ITEM_FRAME;
+	}
+
+	@Override
+	public ConfigIcon getConfigIcon() {
+		return ConfigIcon.item(Items.ITEM_FRAME);
 	}
 }

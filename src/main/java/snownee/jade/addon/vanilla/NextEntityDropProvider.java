@@ -10,12 +10,14 @@ import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.animal.armadillo.Armadillo;
 import net.minecraft.world.entity.animal.chicken.Chicken;
 import net.minecraft.world.entity.animal.sniffer.Sniffer;
+import net.minecraft.world.item.Items;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
+import snownee.jade.api.config.ConfigIcon;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
 
@@ -67,6 +69,11 @@ public class NextEntityDropProvider implements IServerDataProvider<EntityAccesso
 		@Override
 		public Identifier getUid() {
 			return JadeIds.MC_NEXT_ENTITY_DROP;
+		}
+
+		@Override
+		public ConfigIcon getConfigIcon() {
+			return ConfigIcon.item(Items.EGG);
 		}
 
 		public static void appendSeconds(ITooltip tooltip, Accessor<?> accessor, String tagKey, String translationKey) {

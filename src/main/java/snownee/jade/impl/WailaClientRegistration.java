@@ -57,6 +57,7 @@ import snownee.jade.api.callback.JadeBeforeTooltipCollectCallback;
 import snownee.jade.api.callback.JadeItemModNameCallback;
 import snownee.jade.api.callback.JadeRayTraceCallback;
 import snownee.jade.api.callback.JadeTooltipCollectedCallback;
+import snownee.jade.api.config.ConfigIcon;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.harvest.ToolTypeRegistry;
@@ -183,31 +184,41 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 	}
 
 	@Override
-	public void addConfig(Identifier key, boolean defaultValue) {
-		addConfig(new BooleanConfigEntry(key, defaultValue));
+	public void addConfig(Identifier key, ConfigIcon icon, boolean defaultValue) {
+		BooleanConfigEntry entry = new BooleanConfigEntry(key, defaultValue);
+		entry.setIcon(icon);
+		addConfig(entry);
 	}
 
 	@Override
-	public <T extends Enum<T>> void addConfig(Identifier key, T defaultValue) {
+	public <T extends Enum<T>> void addConfig(Identifier key, ConfigIcon icon, T defaultValue) {
 		Objects.requireNonNull(defaultValue);
-		addConfig(new EnumConfigEntry<>(key, defaultValue));
+		EnumConfigEntry<T> entry = new EnumConfigEntry<>(key, defaultValue);
+		entry.setIcon(icon);
+		addConfig(entry);
 	}
 
 	@Override
-	public void addConfig(Identifier key, String defaultValue, Predicate<String> validator) {
+	public void addConfig(Identifier key, ConfigIcon icon, String defaultValue, Predicate<String> validator) {
 		Objects.requireNonNull(defaultValue);
 		Objects.requireNonNull(validator);
-		addConfig(new StringConfigEntry(key, defaultValue, validator));
+		StringConfigEntry entry = new StringConfigEntry(key, defaultValue, validator);
+		entry.setIcon(icon);
+		addConfig(entry);
 	}
 
 	@Override
-	public void addConfig(Identifier key, int defaultValue, int min, int max, boolean slider) {
-		addConfig(new IntConfigEntry(key, defaultValue, min, max, slider));
+	public void addConfig(Identifier key, ConfigIcon icon, int defaultValue, int min, int max, boolean slider) {
+		IntConfigEntry entry = new IntConfigEntry(key, defaultValue, min, max, slider);
+		entry.setIcon(icon);
+		addConfig(entry);
 	}
 
 	@Override
-	public void addConfig(Identifier key, float defaultValue, float min, float max, boolean slider) {
-		addConfig(new FloatConfigEntry(key, defaultValue, min, max, slider));
+	public void addConfig(Identifier key, ConfigIcon icon, float defaultValue, float min, float max, boolean slider) {
+		FloatConfigEntry entry = new FloatConfigEntry(key, defaultValue, min, max, slider);
+		entry.setIcon(icon);
+		addConfig(entry);
 	}
 
 	@Override
@@ -232,9 +243,16 @@ public class WailaClientRegistration implements IWailaClientRegistration {
 		}
 	}
 
+	@Override
+	public void setConfigIcon(Identifier key, ConfigIcon icon) {
+		Objects.requireNonNull(icon);
+		Preconditions.checkArgument(hasConfig(key), "Unknown config key: %s", key);
+		Objects.requireNonNull(getConfigEntry(key)).setIcon(icon);
+	}
+
 	private void tryAddConfig(IToggleableProvider provider) {
 		if (!provider.isRequired() && !hasConfig(provider.getUid())) {
-			addConfig(provider.getUid(), provider.enabledByDefault());
+			addConfig(provider.getUid(), provider.getConfigIcon(), provider.enabledByDefault());
 		}
 	}
 

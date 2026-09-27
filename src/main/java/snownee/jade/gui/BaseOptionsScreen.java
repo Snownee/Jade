@@ -28,7 +28,6 @@ import net.minecraft.util.FormattedCharSequence;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.ui.JadeUI;
 import snownee.jade.gui.config.BelowOrAboveListEntryTooltipPositioner;
-import snownee.jade.gui.config.NotUglyEditBox;
 import snownee.jade.gui.config.OptionsList;
 import snownee.jade.gui.config.OptionsNav;
 import snownee.jade.gui.config.value.OptionValue;

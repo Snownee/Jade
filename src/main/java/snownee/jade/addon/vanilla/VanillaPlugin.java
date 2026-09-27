@@ -73,6 +73,7 @@ import snownee.jade.api.IWailaCommonRegistration;
 import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.WailaPlugin;
+import snownee.jade.api.config.ConfigIcon;
 import snownee.jade.api.harvest.ToolTier;
 import snownee.jade.impl.WailaCommonRegistration;
 import snownee.jade.overlay.DatapackBlockManager;
@@ -153,20 +154,20 @@ public class VanillaPlugin implements IWailaPlugin {
 
 	@Override
 	public void registerClient(IWailaClientRegistration registration) {
-		registration.addConfig(JadeIds.MC_EFFECTIVE_TOOL, true);
-		registration.addConfig(JadeIds.MC_HARVEST_TOOL_NEW_LINE, false);
-		registration.addConfig(JadeIds.MC_SHOW_UNBREAKABLE, false);
-		registration.addConfig(JadeIds.MC_HARVEST_TOOL_CREATIVE, false);
-		registration.addConfig(JadeIds.MC_BREAKING_PROGRESS, true);
-		registration.addConfig(JadeIds.MC_ENTITY_HEALTH, true);
-		registration.addConfig(JadeIds.MC_ENTITY_ARMOR, true);
+		registration.addConfig(JadeIds.MC_EFFECTIVE_TOOL, ConfigIcon.none(), true);
+		registration.addConfig(JadeIds.MC_HARVEST_TOOL_NEW_LINE, ConfigIcon.none(), false);
+		registration.addConfig(JadeIds.MC_SHOW_UNBREAKABLE, ConfigIcon.none(), false);
+		registration.addConfig(JadeIds.MC_HARVEST_TOOL_CREATIVE, ConfigIcon.none(), false);
+		registration.addConfig(JadeIds.MC_BREAKING_PROGRESS, ConfigIcon.item(Items.IRON_PICKAXE), true);
+		registration.addConfig(JadeIds.MC_ENTITY_HEALTH, ConfigIcon.item(Items.GOLDEN_APPLE), true);
+		registration.addConfig(JadeIds.MC_ENTITY_ARMOR, ConfigIcon.item(Items.IRON_CHESTPLATE), true);
 
-		registration.addConfig(JadeIds.MC_ENTITY_ARMOR_MAX_FOR_RENDER, 20, 0, 200, false);
-		registration.addConfig(JadeIds.MC_ENTITY_HEALTH_MAX_FOR_RENDER, 40, 0, 200, false);
-		registration.addConfig(JadeIds.MC_ENTITY_HEALTH_ICONS_PER_LINE, 10, 5, 40, false);
-		registration.addConfig(JadeIds.MC_ENTITY_HEALTH_SHOW_FRACTIONS, false);
-		registration.addConfig(JadeIds.MC_PET_ARMOR, PetArmorProvider.Mode.SHOW_DAMAGEABLE);
-		registration.addConfig(JadeIds.MC_POTION_EFFECTS_LIMIT, 7, 1, 99, false);
+		registration.addConfig(JadeIds.MC_ENTITY_ARMOR_MAX_FOR_RENDER, ConfigIcon.none(), 20, 0, 200, false);
+		registration.addConfig(JadeIds.MC_ENTITY_HEALTH_MAX_FOR_RENDER, ConfigIcon.none(), 40, 0, 200, false);
+		registration.addConfig(JadeIds.MC_ENTITY_HEALTH_ICONS_PER_LINE, ConfigIcon.none(), 10, 5, 40, false);
+		registration.addConfig(JadeIds.MC_ENTITY_HEALTH_SHOW_FRACTIONS, ConfigIcon.none(), false);
+		registration.addConfig(JadeIds.MC_PET_ARMOR, ConfigIcon.item(Items.WOLF_ARMOR), PetArmorProvider.Mode.SHOW_DAMAGEABLE);
+		registration.addConfig(JadeIds.MC_POTION_EFFECTS_LIMIT, ConfigIcon.none(), 7, 1, 99, false);
 
 		registration.registerBlockComponent(BrewingStandProvider.Client.INSTANCE, BrewingStandBlock.class);
 		registration.registerEntityComponent(HorseStatsProvider.INSTANCE, AbstractHorse.class);

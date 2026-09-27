@@ -372,6 +372,8 @@
 	"config.jade.plugin_minecraft.pet_armor_show_damageable": "显示会损坏的",
 	"config.jade.accessibility_plugin": "辅助功能插件",
 	"config.jade.accessibility_plugin_desc": "启用辅助功能以显示和复述更多细节。然后你可以在插件设置中控制更多细节。",
+	"config.jade.always_list_mode": "始终使用列表模式",
+	"config.jade.always_list_mode_desc": "始终以列表模式而非卡片模式打开插件配置界面。",
 	"config.jade.plugin_jade_access": "辅助功能",
 	"config.jade.plugin_jade_access.sign": "告示牌内容",
 	"jade.access.sign.front": "前面：",

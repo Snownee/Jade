@@ -24,6 +24,7 @@ import snownee.jade.api.IJadeProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.StreamServerDataProvider;
+import snownee.jade.api.config.ConfigIcon;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.api.ui.Element;
@@ -43,6 +44,11 @@ public class WaxedProvider implements IJadeProvider {
 
 	public static class BlockComponent extends WaxedProvider implements IBlockComponentProvider {
 		public static final BlockComponent INSTANCE = new BlockComponent();
+
+		@Override
+		public ConfigIcon getConfigIcon() {
+			return ConfigIcon.item(Items.HONEYCOMB);
+		}
 
 		public static Element waxedIcon(Element icon, boolean waxed) {
 			if (waxed) {
@@ -75,6 +81,11 @@ public class WaxedProvider implements IJadeProvider {
 
 	public static class EntityComponent extends WaxedProvider implements IEntityComponentProvider {
 		public static final EntityComponent INSTANCE = new EntityComponent();
+
+		@Override
+		public ConfigIcon getConfigIcon() {
+			return ConfigIcon.item(Items.HONEYCOMB);
+		}
 
 		@Override
 		public Element getIcon(EntityAccessor accessor, IPluginConfig config, @Nullable Element currentIcon) {

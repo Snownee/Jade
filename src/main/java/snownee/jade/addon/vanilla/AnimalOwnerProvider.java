@@ -14,12 +14,14 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityReference;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.OwnableEntity;
+import net.minecraft.world.item.Items;
 import snownee.jade.addon.core.ObjectNameProvider;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.StreamServerDataProvider;
+import snownee.jade.api.config.ConfigIcon;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.PlayerNameLookup;
@@ -90,6 +92,11 @@ public class AnimalOwnerProvider implements StreamServerDataProvider<EntityAcces
 		@Override
 		public Identifier getUid() {
 			return JadeIds.MC_ANIMAL_OWNER;
+		}
+
+		@Override
+		public ConfigIcon getConfigIcon() {
+			return ConfigIcon.item(Items.LEAD);
 		}
 	}
 

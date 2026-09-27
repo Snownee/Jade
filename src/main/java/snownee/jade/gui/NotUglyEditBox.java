@@ -1,4 +1,4 @@
-package snownee.jade.gui.config;
+package snownee.jade.gui;
 
 import org.jspecify.annotations.Nullable;
 
@@ -70,26 +70,35 @@ public class NotUglyEditBox extends EditBox {
 				bgAlpha = backgroundMode == BackgroundMode.VISIBLE ? 1.0F : 0.0F;
 			}
 			if (bgAlpha > 0F) {
-				Identifier Identifier = background.get(this.isActive(), this.isFocused());
+				Identifier sprite = background.get(this.isActive(), this.isFocused());
 				guiGraphics.blitSprite(
 						RenderPipelines.GUI_TEXTURED,
-						Identifier,
+						sprite,
 						this.getX(),
 						this.getY(),
 						this.getWidth(),
 						this.getHeight(),
-						ARGB.white(bgAlpha));
+						ARGB.white(bgAlpha * getAlpha()));
 
 				if (isEditable() && !getValue().isEmpty()) {
 					if (alwaysRenderCross || isHovered) {
 						isMouseOverCross = isHovered && i > getRight() - 12;
 						int c = isMouseOverCross ? textColor : textColorUneditable;
-						guiGraphics.text(font, "×", getX() + width - 10, textY + 1, c);
+						guiGraphics.text(font, "×", getX() + width - 10, textY + 1, ARGB.multiplyAlpha(c, getAlpha()));
 					}
 				}
 			}
 		}
+		float alpha = getAlpha();
+		int oldTextColor = textColor;
+		int oldTextColorUneditable = textColorUneditable;
+		if (alpha < 1F) {
+			textColor = ARGB.multiplyAlpha(textColor, alpha);
+			textColorUneditable = ARGB.multiplyAlpha(textColorUneditable, alpha);
+		}
 		super.extractWidgetRenderState(guiGraphics, i, j, f);
+		textColor = oldTextColor;
+		textColorUneditable = oldTextColorUneditable;
 		if (isMouseOverCross) {
 			guiGraphics.requestCursor(CursorTypes.POINTING_HAND);
 		}

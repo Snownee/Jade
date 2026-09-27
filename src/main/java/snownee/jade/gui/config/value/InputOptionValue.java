@@ -5,21 +5,24 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.TextColor;
+import snownee.jade.gui.NotUglyEditBox;
 
 public class InputOptionValue<T> extends OptionValue<T> {
 
 	public static final Predicate<String> INTEGER = s -> s.matches("[-+]?[0-9]+");
 	public static final Predicate<String> FLOAT = s -> s.matches("[-+]?([0-9]*[.,][0-9]+|[0-9]+)");
 
-	private final EditBox textField;
+	private final NotUglyEditBox textField;
 	private final Predicate<String> validator;
 
 	public InputOptionValue(Runnable responder, String namespace, String optionName, Supplier<T> getter, Consumer<T> setter, Predicate<String> validator) {
 		super(namespace, optionName, getter, setter);
 		this.validator = validator;
-		textField = new EditBox(font, 0, 0, 98, 18, title());
+		textField = new NotUglyEditBox(font, 0, 0, 98, 18, title());
+		textField.fixedTextX = 4;
+		textField.fixedTextY = 5;
+		textField.fixedInnerWidth = textField.getWidth() - 8;
 		updateValue();
 		textField.setResponder(s -> {
 			if (this.validator.test(s)) {

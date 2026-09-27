@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -33,10 +34,12 @@ import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
+import net.minecraft.client.gui.navigation.ScreenAxis;
 import net.minecraft.client.gui.navigation.ScreenDirection;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.Screen;
@@ -44,23 +47,48 @@ import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.StringUtil;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Util;
+import net.minecraft.world.item.ItemStack;
+import snownee.jade.api.config.ConfigIcon;
 import snownee.jade.api.ui.JadeUI;
 import snownee.jade.gui.BaseOptionsScreen;
 import snownee.jade.gui.PreviewOptionsScreen;
+import snownee.jade.gui.JadeMultiLineTextWidget;
+import snownee.jade.gui.SmoothScrollableList;
+import snownee.jade.gui.config.value.BooleanOptionValue;
 import snownee.jade.gui.config.value.CycleOptionValue;
 import snownee.jade.gui.config.value.InputOptionValue;
 import snownee.jade.gui.config.value.OptionValue;
 import snownee.jade.gui.config.value.SliderOptionValue;
+import snownee.jade.util.ItemStacks;
 
 public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 
+	public enum DisplayMode {
+		LIST,
+		CARD
+	}
+
 	public static final String DEFAULT_NAMESPACE = "jade";
+	public static final int CARD_GAP = 8;
+	public static final int CARD_HEIGHT = 42;
+	public static final int CARD_HEIGHT_TALL = 46;
+	public static final int CARD_BLEED = 3;
+	public static final int CARD_SHADOW = 4;
+	public static final int CARD_ICON_SIZE = 16;
+	public static final int CARD_ARROW_WIDTH = 15;
+	public static final int CARD_ARROW_HEIGHT = 15;
+	public static final int CARD_WIDGET_WIDTH = 29;
+	public static final int MIN_CARD_WIDTH = 168;
+	public static final int MAX_CARDS_PER_ROW = 3;
 	public static final Component OPTION_ON = CommonComponents.OPTION_ON.copy().withColor(0xFFB9F6CA);
 	public static final Component OPTION_OFF = CommonComponents.OPTION_OFF.copy().withColor(0xFFFF8A80);
 	public final Set<OptionsList.Entry> forcePreview = Sets.newIdentityHashSet();
@@ -73,6 +101,9 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 	private final BaseOptionsScreen owner;
 	private @Nullable Entry defaultParent;
 	private String namespace = DEFAULT_NAMESPACE;
+	private DisplayMode displayMode = DisplayMode.LIST;
+	private int cardContentHeight;
+	private final SecondaryPopup popup = new SecondaryPopup(this);
 
 	public String namespace() {
 		return namespace;
@@ -92,6 +123,29 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 
 	public BuiltInVariables builtInVariables() {
 		return builtInVariables;
+	}
+
+	public DisplayMode displayMode() {
+		return displayMode;
+	}
+
+	public void setDisplayMode(DisplayMode displayMode) {
+		if (displayMode == DisplayMode.CARD && cardsPerRow() <= 1) {
+			displayMode = DisplayMode.LIST;
+		}
+		if (this.displayMode == displayMode) {
+			return;
+		}
+		this.displayMode = displayMode;
+		layoutCards();
+	}
+
+	public int cardsPerRow() {
+		return Math.max(1, Math.min(MAX_CARDS_PER_ROW, cardRowWidth() / MIN_CARD_WIDTH));
+	}
+
+	private int cardRowWidth() {
+		return Math.min(width - 16, 900);
 	}
 
 	public OptionsList(
@@ -122,7 +176,141 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 
 	@Override
 	public int getRowWidth() {
+		if (displayMode == DisplayMode.CARD) {
+			return cardRowWidth();
+		}
 		return Math.min(width, 300);
+	}
+
+	@Override
+	protected int contentHeight() {
+		if (displayMode == DisplayMode.CARD) {
+			return cardContentHeight;
+		}
+		return super.contentHeight();
+	}
+
+	@Override
+	protected int addEntry(Entry entry) {
+		int index = super.addEntry(entry);
+		layoutCards();
+		return index;
+	}
+
+	@Override
+	public void setScrollAmount(double scroll) {
+		super.setScrollAmount(scroll);
+		layoutCards();
+	}
+
+	@Override
+	public void forceSetScrollAmount(double scroll) {
+		super.forceSetScrollAmount(scroll);
+		layoutCards();
+	}
+
+	@Override
+	public void updateSizeAndPosition(int width, int height, int x, int y) {
+		super.updateSizeAndPosition(width, height, x, y);
+		layoutCards();
+	}
+
+	void layoutCards() {
+		if (displayMode != DisplayMode.CARD) {
+			return;
+		}
+		int rowLeft = getRowLeft();
+		int rowWidth = getRowWidth();
+		int cardsPerRow = cardsPerRow();
+		int cardWidth = (rowWidth - CARD_GAP * (cardsPerRow - 1)) / cardsPerRow;
+		int contentTop = getY() + 2 + CARD_BLEED - (int) scrollAmount();
+		int y = contentTop;
+		List<Entry> row = Lists.newArrayListWithCapacity(cardsPerRow);
+		for (Entry entry : children()) {
+			if (entry.isSecondary()) {
+				continue;
+			}
+			if (entry instanceof Title) {
+				if (!row.isEmpty()) {
+					y = placeCardRow(row, rowLeft, cardWidth, y);
+					row.clear();
+				}
+				entry.setCardMode(false);
+				entry.setX(rowLeft);
+				entry.setWidth(rowWidth);
+				entry.setHeight(defaultEntryHeight);
+				entry.setY(y);
+				y += defaultEntryHeight + CARD_GAP;
+				continue;
+			}
+			entry.setCardMode(true);
+			row.add(entry);
+			if (row.size() >= cardsPerRow) {
+				y = placeCardRow(row, rowLeft, cardWidth, y);
+				row.clear();
+			}
+		}
+		if (!row.isEmpty()) {
+			y = placeCardRow(row, rowLeft, cardWidth, y);
+		}
+		layoutSecondaryPopup(rowLeft, rowWidth);
+		cardContentHeight = y - contentTop + 4;
+	}
+
+	private void layoutSecondaryPopup(int rowLeft, int rowWidth) {
+		Entry popupEntry = popup.effectiveEntry();
+		List<Entry> options = popupEntry == null ? List.of() : popupEntry.secondaryOptions();
+		for (Entry entry : children()) {
+			if (entry.isSecondary() && !options.contains(entry)) {
+				entry.setY(-100000);
+				entry.setHeight(0);
+			}
+		}
+		popup.setBounds(0, 0, 0, 0);
+		if (popupEntry == null || options.isEmpty()) {
+			return;
+		}
+		int padX = 0;
+		int padY = 3;
+		int panelWidth = Math.min(rowWidth, Math.max(popupEntry.getWidth(), 220));
+		int panelX = Math.min(popupEntry.getX(), rowLeft + rowWidth - panelWidth);
+		panelX = Math.max(panelX, rowLeft);
+		int panelY = popupEntry.getY() + popupEntry.getHeight() + CARD_BLEED * 2;
+		int panelHeight = padY * 2 + options.size() * defaultEntryHeight;
+		int bottom = getBottom();
+		if (panelY + panelHeight > bottom) {
+			panelY = Math.max(getY(), bottom - panelHeight);
+		}
+		popup.setBounds(panelX, panelY, panelWidth, panelHeight);
+		int itemY = panelY + padY + popup.slideOffset();
+		for (Entry option : options) {
+			option.setCardMode(false);
+			option.setPopupMode(true);
+			option.applyPopupWidgets();
+			if (option instanceof OptionValue<?> value) {
+				value.setIndent(0);
+			}
+			option.setX(panelX + padX);
+			option.setWidth(panelWidth - padX * 2);
+			option.setHeight(defaultEntryHeight);
+			option.setY(itemY);
+			itemY += defaultEntryHeight;
+		}
+	}
+
+	private int placeCardRow(List<Entry> row, int rowLeft, int cardWidth, int y) {
+		int height = 0;
+		for (Entry entry : row) {
+			height = Math.max(height, entry.cardHeight());
+		}
+		for (int i = 0; i < row.size(); i++) {
+			Entry entry = row.get(i);
+			entry.setX(rowLeft + i * (cardWidth + CARD_GAP));
+			entry.setWidth(cardWidth);
+			entry.setHeight(height);
+			entry.setY(y);
+		}
+		return y + height + CARD_GAP;
 	}
 
 	//TODO: check if it is still needed
@@ -134,6 +322,23 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 	@Nullable
 	@Override
 	public ComponentPath nextFocusPath(FocusNavigationEvent event) {
+		if (event instanceof FocusNavigationEvent.TabNavigation tabNavigation) {
+			return nextTabFocusPath(tabNavigation);
+		}
+		if (event instanceof FocusNavigationEvent.ArrowNavigation arrowNavigation && displayMode == DisplayMode.CARD) {
+			Entry anchor = cardAnchor();
+			if (anchor != null) {
+				ComponentPath cardPath = nextCardFocusPath(anchor, arrowNavigation.direction());
+				if (cardPath != null) {
+					return cardPath;
+				}
+				if (arrowNavigation.direction() == ScreenDirection.LEFT) {
+					OptionsNav.Entry navEntry = owner.optionsNav().getCurrentEntry();
+					return navEntry == null ? null : ComponentPath.path(navEntry, owner.optionsNav());
+				}
+				return null;
+			}
+		}
 		ComponentPath componentPath = super.nextFocusPath(event);
 		OptionsNav.Entry navEntry = owner.optionsNav().getCurrentEntry();
 		if (componentPath != null) {
@@ -144,6 +349,117 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 			return ComponentPath.path(navEntry, owner.optionsNav());
 		}
 		return null;
+	}
+
+	@Nullable
+	private ComponentPath nextTabFocusPath(FocusNavigationEvent.TabNavigation tabNavigation) {
+		boolean forward = tabNavigation.forward();
+		List<Entry> entryOrder = Lists.newArrayList();
+		List<AbstractWidget> widgetOrder = Lists.newArrayList();
+		for (Entry entry : children()) {
+			for (AbstractWidget widget : entry.focusableWidgets()) {
+				entryOrder.add(entry);
+				widgetOrder.add(widget);
+			}
+		}
+		if (entryOrder.isEmpty()) {
+			return null;
+		}
+		Entry focusedEntry = getFocused();
+		GuiEventListener focusedWidget = focusedEntry == null ? null : focusedEntry.getFocused();
+		int current = -1;
+		for (int i = 0; i < entryOrder.size(); i++) {
+			if (entryOrder.get(i) == focusedEntry && widgetOrder.get(i) == focusedWidget) {
+				current = i;
+				break;
+			}
+		}
+		int step = forward ? 1 : -1;
+		int start;
+		if (current >= 0) {
+			start = current + step;
+		} else if (focusedEntry != null) {
+			int index = entryOrder.indexOf(focusedEntry);
+			if (index < 0) {
+				start = forward ? 0 : entryOrder.size() - 1;
+			} else {
+				start = forward ? index : index - 1;
+			}
+		} else {
+			start = forward ? 0 : entryOrder.size() - 1;
+		}
+		if (start < 0 || start >= entryOrder.size()) {
+			return null;
+		}
+		return ComponentPath.path(this, ComponentPath.path(entryOrder.get(start), ComponentPath.leaf(widgetOrder.get(start))));
+	}
+
+	@Nullable
+	private Entry cardAnchor() {
+		Entry focused = getFocused();
+		if (focused == null) {
+			return null;
+		}
+		Entry anchor = focused.isSecondary() ? focused.parent() : focused;
+		return anchor != null && anchor.isCardMode() ? anchor : null;
+	}
+
+	@Nullable
+	private ComponentPath nextCardFocusPath(Entry anchor, ScreenDirection direction) {
+		List<Entry> cards = Lists.newArrayList();
+		for (Entry entry : children()) {
+			if (entry.isCardMode()) {
+				cards.add(entry);
+			}
+		}
+		int index = cards.indexOf(anchor);
+		if (index < 0) {
+			return null;
+		}
+		Entry target;
+		if (direction.getAxis() == ScreenAxis.HORIZONTAL) {
+			index += direction == ScreenDirection.RIGHT ? 1 : -1;
+			if (index < 0 || index >= cards.size()) {
+				return null;
+			}
+			target = cards.get(index);
+		} else {
+			List<List<Entry>> rows = Lists.newArrayList();
+			int lastY = Integer.MIN_VALUE;
+			for (Entry card : cards) {
+				if (rows.isEmpty() || card.getY() != lastY) {
+					rows.add(Lists.newArrayList());
+					lastY = card.getY();
+				}
+				rows.getLast().add(card);
+			}
+			int row = -1;
+			int column = -1;
+			for (int i = 0; i < rows.size(); i++) {
+				int c = rows.get(i).indexOf(anchor);
+				if (c >= 0) {
+					row = i;
+					column = c;
+					break;
+				}
+			}
+			int step = direction == ScreenDirection.DOWN ? 1 : -1;
+			target = null;
+			for (int r = row + step; r >= 0 && r < rows.size(); r += step) {
+				if (column < rows.get(r).size()) {
+					target = rows.get(r).get(column);
+					break;
+				}
+			}
+			if (target == null) {
+				return null;
+			}
+		}
+		List<AbstractWidget> widgets = target.focusableWidgets();
+		if (widgets.isEmpty()) {
+			return null;
+		}
+		return ComponentPath.path(this, ComponentPath.path(target, ComponentPath.leaf(widgets.getFirst())));
 	}
 
 	// public-access it
@@ -165,6 +481,9 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 
 	@Override
 	protected void extractSelection(GuiGraphicsExtractor guiGraphics, Entry entry, int i) {
+		if (displayMode == DisplayMode.CARD) {
+			return;
+		}
 		int outlineX0 = getX();
 		int outlineY0 = entry.getY();
 		int outlineX1 = outlineX0 + getWidth();
@@ -173,14 +492,70 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 	}
 
 	@Override
+	protected void extractListItems(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+		Entry popupEntry = popup.effectiveEntry();
+		if (displayMode != DisplayMode.CARD || popupEntry == null) {
+			super.extractListItems(guiGraphics, mouseX, mouseY, partialTicks);
+			return;
+		}
+		List<Entry> options = popupEntry.secondaryOptions();
+		for (Entry child : children()) {
+			if (options.contains(child)) {
+				continue;
+			}
+			if (child.getY() + child.getHeight() >= getY() && child.getY() <= getBottom()) {
+				extractItem(guiGraphics, mouseX, mouseY, partialTicks, child);
+			}
+		}
+		if (!options.isEmpty() && popup.width() > 0) {
+			int slideOffset = popup.slideOffset();
+			guiGraphics.blitSprite(
+					RenderPipelines.GUI_TEXTURED,
+					Identifier.fromNamespaceAndPath(namespace, "popup_background"),
+					popup.x() - CARD_BLEED,
+					popup.y() - CARD_BLEED + slideOffset,
+					popup.width() + CARD_BLEED * 2,
+					popup.height() + CARD_BLEED * 2,
+					ARGB.white(popup.alpha()));
+			for (Entry child : options) {
+				if (child.getY() + child.getHeight() >= getY() && child.getY() <= getBottom()) {
+					extractItem(guiGraphics, mouseX, mouseY, partialTicks, child);
+				}
+			}
+		}
+	}
+
+	@Override
 	public void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		tickSmoothScroll();
+		layoutCards();
+		popup.commitPending();
+		popup.tick();
+		popup.applyAlpha();
+		InputType lastInputType = minecraft.getLastInputType();
+		Entry expandedEntry = popup.expanded();
+		if (expandedEntry != null && !popup.sticky()) {
+			Entry focused = getFocused();
+			boolean keyboardFocusInside = lastInputType.isKeyboard() && focused != null &&
+					(focused == expandedEntry || focused.parent() == expandedEntry);
+			if (!keyboardFocusInside && !popup.isMouseOver(expandedEntry, mouseX, mouseY)) {
+				popup.collapse();
+			}
+		}
 		hovered = null;
 		if (!PreviewOptionsScreen.isAdjustingPosition()) {
-			InputType lastInputType = minecraft.getLastInputType();
 			mouseY = Math.min(mouseY, getRowRight());
 			if (lastInputType.isMouse() && isMouseOver(mouseX, mouseY)) {
-				hovered = getEntryAtPosition(mouseX, mouseY);
+				if (expandedEntry != null && popup.width() > 0 && popup.isInside(mouseX, mouseY)) {
+					for (Entry option : expandedEntry.secondaryOptions()) {
+						if (option.isMouseOver(mouseX, mouseY)) {
+							hovered = option;
+							break;
+						}
+					}
+				} else {
+					hovered = getEntryAtPosition(mouseX, mouseY);
+				}
 			} else if (lastInputType.isKeyboard() && getFocused() != null) {
 				hovered = getFocused();
 			}
@@ -203,13 +578,14 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 	}
 
 	public void save() {
-		children().stream().filter(e -> e instanceof OptionValue).map(e -> (OptionValue<?>) e).forEach(OptionValue::save);
+		entries.stream().filter(e -> e instanceof OptionValue).map(e -> (OptionValue<?>) e).forEach(OptionValue::save);
 		if (diskWriter != null) {
 			diskWriter.run();
 		}
 	}
 
 	public <T extends Entry> T add(T entry) {
+		entry.setOptionsList(this);
 		entries.add(entry);
 		if (entry instanceof Title) {
 			setDefaultParent(entry);
@@ -277,7 +653,7 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 		if (builderConsumer != null) {
 			builderConsumer.accept(builder);
 		}
-		return add(new CycleOptionValue<>(namespace, optionName, builder, getter, setter));
+		return add(new BooleanOptionValue(namespace, optionName, builder, getter, setter));
 	}
 
 	public <T extends Enum<T>> OptionValue<T> choices(String optionName, Supplier<T> getter, Consumer<T> setter) {
@@ -309,7 +685,7 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 		if (builderConsumer != null) {
 			builderConsumer.accept(builder);
 		}
-		return add(new CycleOptionValue<>(namespace, optionName, builder, getter, setter));
+		return add(new CycleOptionValue<>(namespace, optionName, false, builder, getter, setter));
 	}
 
 	public <T> OptionValue<T> choices(
@@ -318,7 +694,7 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 			List<T> values,
 			Consumer<T> setter,
 			Function<T, Component> nameProvider) {
-		return add(new CycleOptionValue<>(namespace, optionName, CycleButton.builder(nameProvider, getter.get()).withValues(values), getter, setter));
+		return add(new CycleOptionValue<>(namespace, optionName, false, CycleButton.builder(nameProvider, getter.get()).withValues(values), getter, setter));
 	}
 
 	public KeybindOptionButton keybind(KeyMapping keybind) {
@@ -338,6 +714,12 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 
 	public void updateSearch(String search) {
 		clearEntries();
+		popup.reset();
+		if (displayMode == DisplayMode.CARD) {
+			updateSearchCards(search);
+			layoutCards();
+			return;
+		}
 		if (search.isBlank()) {
 			entries.forEach(this::addEntry);
 			return;
@@ -373,6 +755,71 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 		}
 	}
 
+	private void updateSearchCards(String search) {
+		if (search.isBlank()) {
+			for (Entry entry : entries) {
+				if (entry.isSecondary()) {
+					continue;
+				}
+				addEntry(entry);
+				if (entry instanceof Title) {
+					continue;
+				}
+				entry.secondaryOptions().forEach(this::addEntry);
+			}
+			return;
+		}
+		String[] keywords = search.toLowerCase(Locale.ENGLISH).split("\\s+");
+		List<Entry> results = Lists.newArrayList();
+		for (Entry entry : entries) {
+			if (entry.isSecondary() || entry instanceof Title) {
+				continue;
+			}
+			if (matches(entry, keywords) || entry.secondaryOptions().stream().anyMatch($ -> matches($, keywords))) {
+				results.add(entry);
+			}
+		}
+		if (results.isEmpty()) {
+			addEntry(new Title(namespace, Component.translatable("gui.jade.no_results").withStyle(ChatFormatting.GRAY)));
+			return;
+		}
+		Entry lastTitle = null;
+		for (Entry entry : results) {
+			if (entry.parent() instanceof Title title && title != lastTitle) {
+				addEntry(title);
+				lastTitle = title;
+			}
+			addEntry(entry);
+			entry.secondaryOptions().forEach(this::addEntry);
+		}
+		if (results.size() == 1 && !results.getFirst().secondaryOptions().isEmpty()) {
+			popup.expand(results.getFirst(), true);
+		}
+	}
+
+	private static boolean matches(Entry entry, String[] keywords) {
+		List<String> messages = entry.getMessages();
+		for (String keyword : keywords) {
+			boolean found = false;
+			for (String message : messages) {
+				if (message.contains(keyword)) {
+					found = true;
+					break;
+				}
+			}
+			if (!found) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	@Override
+	public boolean mouseDragged(MouseButtonEvent event, double dx, double dy) {
+		popup.clearPendingIfDragged(event.x(), event.y());
+		return super.mouseDragged(event, dx, dy);
+	}
+
 	public void updateSaveState() {
 		invalidEntry = null;
 		for (Entry entry : entries) {
@@ -397,7 +844,11 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 	}
 
 	public void showOnTop(Entry entry) {
-		setScrollAmount(defaultEntryHeight * children().indexOf(entry) + 1);
+		if (displayMode == DisplayMode.CARD) {
+			setScrollAmount(scrollAmount() + entry.getY() - (getY() + 2));
+		} else {
+			setScrollAmount(defaultEntryHeight * children().indexOf(entry) + 1);
+		}
 		if (entry instanceof Title title) {
 			currentTitle = title;
 		}
@@ -434,7 +885,30 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 			resetMappingAndUpdateButtons();
 			return false;
 		}
-		return super.mouseClicked(event, bl);
+		Entry expanded = popup.expanded();
+		if (expanded != null && popup.width() > 0 && popup.isInside(event.x(), event.y())) {
+			for (Entry option : expanded.secondaryOptions()) {
+				if (option.isMouseOver(event.x(), event.y())) {
+					return super.mouseClicked(event, bl);
+				}
+			}
+			return true;
+		}
+		return super.mouseClicked(event, bl) || isMouseOver(event.x(), event.y());
+	}
+
+	@Override
+	public Optional<GuiEventListener> getChildAt(double x, double y) {
+		Entry expanded = popup.expanded();
+		if (expanded != null && popup.width() > 0 && popup.isInside(x, y)) {
+			for (Entry option : expanded.secondaryOptions()) {
+				if (option.isMouseOver(x, y)) {
+					return Optional.of(option);
+				}
+			}
+			return Optional.empty();
+		}
+		return super.getChildAt(x, y);
 	}
 
 	@Override
@@ -443,9 +917,19 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 			return;
 		}
 		selected = entry;
-		if (entry != null && minecraft.getLastInputType().isKeyboard()) {
-			scrollToEntry(entry);
+		if (!minecraft.getLastInputType().isKeyboard() || entry == null) {
+			return;
 		}
+		Entry popupTarget = entry.isSecondary() ? entry.parent() : entry.isExpandable() ? entry : null;
+		if (popupTarget != null) {
+			if (popup.expanded() != popupTarget) {
+				popup.expand(popupTarget, false);
+				layoutCards();
+			}
+		} else if (popup.expanded() != null) {
+			popup.collapse();
+		}
+		scrollToEntry(entry);
 	}
 
 	public static class EntryWidget {
@@ -480,6 +964,13 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 		protected Font font;
 		private @Nullable AbstractWidget mainWidget;
 		private final List<Consumer<Entry>> resizeListeners = Lists.newArrayList();
+		private @Nullable ConfigIcon icon;
+		private @Nullable ItemStack resolvedIcon;
+		private boolean cardMode;
+		private boolean secondary;
+		private boolean popupMode;
+		private boolean popupWidgetsSized;
+		private @Nullable OptionsList optionsList;
 
 		public Entry(String namespace, AbstractStringWidget title) {
 			this.namespace = namespace;
@@ -494,10 +985,10 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 		}
 
 		public Entry(String namespace, Component component) {
-			this(namespace, new StringWidget(component, Minecraft.getInstance().font));
-			StringWidget widget = (StringWidget) title;
+			this(namespace, new JadeMultiLineTextWidget(component, Minecraft.getInstance().font));
+			JadeMultiLineTextWidget widget = (JadeMultiLineTextWidget) title;
 			addResizeListener($ -> {
-				widget.setMaxWidth($.getContentWidth() - $.getTextX() - 110, StringWidget.TextOverflow.SCROLLING);
+				widget.setMaxWidth($.getContentWidth() - $.getTextX() - $.getWidgetZone(), StringWidget.TextOverflow.SCROLLING);
 			});
 		}
 
@@ -511,6 +1002,110 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 
 		public static String makeKey(String namespace, String key) {
 			return Util.makeDescriptionId("config", Identifier.fromNamespaceAndPath(namespace, key));
+		}
+
+		public Entry setIcon(@Nullable Identifier sprite) {
+			return setIcon(sprite == null ? null : ConfigIcon.sprite(sprite));
+		}
+
+		public Entry setIcon(@Nullable ConfigIcon icon) {
+			this.icon = icon == null || icon.isNone() ? null : icon;
+			resolvedIcon = null;
+			return this;
+		}
+
+		public @Nullable ConfigIcon icon() {
+			return icon;
+		}
+
+		private ItemStack resolveIcon(ConfigIcon.Item icon) {
+			if (resolvedIcon == null) {
+				resolvedIcon = ItemStacks.of(icon.item());
+			}
+			return resolvedIcon;
+		}
+
+		public boolean isCardMode() {
+			return cardMode;
+		}
+
+		public void setCardMode(boolean cardMode) {
+			this.cardMode = cardMode;
+		}
+
+		void setOptionsList(OptionsList optionsList) {
+			this.optionsList = optionsList;
+		}
+
+		public boolean isSecondary() {
+			return secondary;
+		}
+
+		public void setSecondary(boolean secondary) {
+			this.secondary = secondary;
+		}
+
+		public void setPopupMode(boolean popupMode) {
+			this.popupMode = popupMode;
+		}
+
+		public void setPopupAlpha(float alpha) {
+			for (EntryWidget widget : widgets) {
+				widget.widget.setAlpha(alpha);
+			}
+		}
+
+		public void applyPopupWidgets() {
+			if (popupWidgetsSized) {
+				return;
+			}
+			popupWidgetsSized = true;
+			for (EntryWidget widget : widgets) {
+				if (widget.widget != title) {
+					widget.widget.setWidth(Math.max(20, widget.widget.getWidth() - 10));
+				}
+			}
+		}
+
+		public List<Entry> secondaryOptions() {
+			return children;
+		}
+
+		public boolean isExpandable() {
+			return !secondary && !(this instanceof Title) && !children.isEmpty();
+		}
+
+		@Override
+		public boolean isMouseOver(double mouseX, double mouseY) {
+			if (cardMode) {
+				return mouseX >= getX() - CARD_BLEED &&
+						mouseX < getX() + getWidth() + CARD_BLEED &&
+						mouseY >= getY() - CARD_BLEED &&
+						mouseY < getY() + getHeight() + CARD_BLEED;
+			}
+			return super.isMouseOver(mouseX, mouseY);
+		}
+
+		@Override
+		public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+			if (cardMode &&
+					isExpandable() &&
+					optionsList != null &&
+					!isOverWidget(event.x(), event.y())) {
+				Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0f));
+				optionsList.popup.setPending(this, event.x(), event.y());
+				return true;
+			}
+			return super.mouseClicked(event, doubleClick);
+		}
+
+		private boolean isOverWidget(double mouseX, double mouseY) {
+			for (AbstractWidget widget : rawWidgets) {
+				if (widget.isMouseOver(mouseX, mouseY)) {
+					return true;
+				}
+			}
+			return false;
 		}
 
 		@Override
@@ -567,22 +1162,99 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 
 		@Override
 		public List<? extends NarratableEntry> narratables() {
-			return children();
+			return rawWidgets.stream().filter(widget -> widget.visible).toList();
 		}
 
 		@Override
 		public void extractContent(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, boolean hovered, float deltaTime) {
+			if (cardMode) {
+				extractCardContent(guiGraphics, mouseX, mouseY, hovered, deltaTime);
+				return;
+			}
 			for (EntryWidget widget : widgets) {
 				AbstractWidget rawWidget = widget.widget;
 				int x;
 				if (widget.floatRight) {
-					x = getContentWidth() - 110 + widget.offsetX;
+					x = getContentWidth() - getWidgetZone() + widget.offsetX;
 				} else {
 					x = widget.offsetX;
 				}
 				rawWidget.setX(getContentX() + x);
 				rawWidget.setY(getContentY() + getContentHeight() / 2 + widget.offsetY);
 				rawWidget.extractRenderState(guiGraphics, mouseX, mouseY, deltaTime);
+			}
+		}
+
+		private void extractCardContent(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, boolean hovered, float deltaTime) {
+			boolean expandable = isExpandable();
+			String backgroundName;
+			if (expandable) {
+				backgroundName = hovered ? "card_background_expandable_hover" : "card_background_expandable";
+			} else {
+				backgroundName = hovered ? "card_background_hover" : "card_background";
+			}
+			guiGraphics.blitSprite(
+					RenderPipelines.GUI_TEXTURED,
+					Identifier.fromNamespaceAndPath(namespace, backgroundName),
+					getX() - CARD_BLEED - CARD_SHADOW,
+					getY() - CARD_BLEED - CARD_SHADOW,
+					getWidth() + (CARD_BLEED + CARD_SHADOW) * 2,
+					getHeight() + (CARD_BLEED + CARD_SHADOW) * 2);
+			int iconX = getContentX() + 4;
+			int iconY;
+			if (isInlineWidget()) {
+				int centerY = getContentYMiddle();
+				iconY = centerY - CARD_ICON_SIZE / 2;
+				for (EntryWidget widget : widgets) {
+					AbstractWidget rawWidget = widget.widget;
+					int x;
+					if (rawWidget == title) {
+						x = getContentX() + getTextX();
+					} else if (widget.floatRight) {
+						x = getContentRight() - rawWidget.getWidth() - 4;
+					} else {
+						x = getContentX() + widget.offsetX;
+					}
+					rawWidget.setX(x);
+					rawWidget.setY(centerY - rawWidget.getHeight() / 2);
+					rawWidget.extractRenderState(guiGraphics, mouseX, mouseY, deltaTime);
+				}
+			} else {
+				iconY = getContentY() + 1;
+				int titleY = getContentY() + 4;
+				int widgetBottom = getContentBottom() - 2;
+				for (EntryWidget widget : widgets) {
+					AbstractWidget rawWidget = widget.widget;
+					if (rawWidget == title) {
+						rawWidget.setX(getContentX() + getTextX());
+						rawWidget.setY(titleY);
+					} else {
+						rawWidget.setWidth(getContentWidth() - 8);
+						rawWidget.setX(getContentX() + 4);
+						rawWidget.setY(widgetBottom - rawWidget.getHeight());
+					}
+					rawWidget.extractRenderState(guiGraphics, mouseX, mouseY, deltaTime);
+				}
+			}
+			if (icon instanceof ConfigIcon.Sprite(Identifier sprite)) {
+				guiGraphics.blitSprite(
+						RenderPipelines.GUI_TEXTURED,
+						sprite,
+						iconX,
+						iconY,
+						CARD_ICON_SIZE,
+						CARD_ICON_SIZE);
+			} else if (icon instanceof ConfigIcon.Item itemIcon) {
+				guiGraphics.fakeItem(resolveIcon(itemIcon), iconX, iconY);
+			}
+			if (expandable) {
+				guiGraphics.blitSprite(
+						RenderPipelines.GUI_TEXTURED,
+						Identifier.fromNamespaceAndPath(namespace, "card_arrow"),
+						getX() + (getWidth() - CARD_ARROW_WIDTH) / 2,
+						getY() + getHeight() + CARD_BLEED - CARD_ARROW_HEIGHT - 2,
+						CARD_ARROW_WIDTH,
+						CARD_ARROW_HEIGHT);
 			}
 		}
 
@@ -617,7 +1289,35 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 		}
 
 		public int getTextX() {
+			if (cardMode) {
+				return icon == null ? 6 : CARD_ICON_SIZE + 10;
+			}
 			return 10;
+		}
+
+		public int getWidgetZone() {
+			if (!cardMode) {
+				AbstractWidget widget = mainWidget();
+				if (popupMode && widget != null) {
+					return widget.getWidth() + 10;
+				}
+				return 110;
+			}
+			return isInlineWidget() ? CARD_WIDGET_WIDTH + 8 : 8;
+		}
+
+		public boolean isInlineWidget() {
+			return false;
+		}
+
+		public void setTitleMaxRows(int maxRows) {
+			if (title instanceof JadeMultiLineTextWidget widget) {
+				widget.setMaxRows(maxRows);
+			}
+		}
+
+		public int cardHeight() {
+			return isInlineWidget() ? CARD_HEIGHT : CARD_HEIGHT_TALL;
 		}
 
 		public int getTextY() {
@@ -670,6 +1370,16 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 
 		public void setTitle(Component title) {
 			this.title.setMessage(title);
+		}
+
+		public List<AbstractWidget> focusableWidgets() {
+			List<AbstractWidget> result = Lists.newArrayListWithCapacity(children().size());
+			for (AbstractWidget widget : children()) {
+				if (widget != title && widget.visible && widget.isActive()) {
+					result.add(widget);
+				}
+			}
+			return result;
 		}
 
 		@Override
