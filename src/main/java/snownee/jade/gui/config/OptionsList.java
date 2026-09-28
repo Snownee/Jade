@@ -47,21 +47,19 @@ import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.util.StringUtil;
 import net.minecraft.util.ARGB;
+import net.minecraft.util.StringUtil;
 import net.minecraft.util.Util;
 import net.minecraft.world.item.ItemStack;
 import snownee.jade.api.config.ConfigIcon;
 import snownee.jade.api.ui.JadeUI;
 import snownee.jade.gui.BaseOptionsScreen;
-import snownee.jade.gui.PreviewOptionsScreen;
 import snownee.jade.gui.JadeMultiLineTextWidget;
+import snownee.jade.gui.PreviewOptionsScreen;
 import snownee.jade.gui.SmoothScrollableList;
 import snownee.jade.gui.config.value.BooleanOptionValue;
 import snownee.jade.gui.config.value.CycleOptionValue;
@@ -694,7 +692,13 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 			List<T> values,
 			Consumer<T> setter,
 			Function<T, Component> nameProvider) {
-		return add(new CycleOptionValue<>(namespace, optionName, false, CycleButton.builder(nameProvider, getter.get()).withValues(values), getter, setter));
+		return add(new CycleOptionValue<>(
+				namespace,
+				optionName,
+				false,
+				CycleButton.builder(nameProvider, getter.get()).withValues(values),
+				getter,
+				setter));
 	}
 
 	public KeybindOptionButton keybind(KeyMapping keybind) {
@@ -1092,7 +1096,6 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 					isExpandable() &&
 					optionsList != null &&
 					!isOverWidget(event.x(), event.y())) {
-				Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0f));
 				optionsList.popup.setPending(this, event.x(), event.y());
 				return true;
 			}

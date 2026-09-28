@@ -2,6 +2,9 @@ package snownee.jade.gui.config;
 
 import org.jspecify.annotations.Nullable;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.util.Util;
 import snownee.jade.api.config.IWailaConfig;
@@ -118,6 +121,7 @@ public class SecondaryPopup {
 	}
 
 	public void toggle(Entry entry) {
+		Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0f));
 		if (expanded == entry) {
 			collapse();
 		} else {
