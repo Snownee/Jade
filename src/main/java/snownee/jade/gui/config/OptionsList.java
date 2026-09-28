@@ -102,6 +102,7 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 	private DisplayMode displayMode = DisplayMode.LIST;
 	private int cardContentHeight;
 	private final SecondaryPopup popup = new SecondaryPopup(this);
+	private @Nullable Entry noResultsEntry;
 
 	public String namespace() {
 		return namespace;
@@ -717,88 +718,86 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 	}
 
 	public void updateSearch(String search) {
+		List<Entry> result = Lists.newArrayList();
+		Entry expandTarget = collectSearch(search, result);
+		if (result.equals(children())) {
+			return;
+		}
 		clearEntries();
 		popup.reset();
-		if (displayMode == DisplayMode.CARD) {
-			updateSearchCards(search);
-			layoutCards();
-			return;
+		for (Entry entry : result) {
+			addEntry(entry);
 		}
-		if (search.isBlank()) {
-			entries.forEach(this::addEntry);
-			return;
+		if (expandTarget != null) {
+			popup.expand(expandTarget, true);
 		}
-		Set<Entry> matches = Sets.newLinkedHashSet();
-		String[] keywords = search.toLowerCase(Locale.ENGLISH).split("\\s+");
-		for (Entry entry : entries) {
-			int bingo = 0;
-			List<String> messages = entry.getMessages();
-			for (String keyword : keywords) {
-				for (String message : messages) {
-					if (message.contains(keyword)) {
-						bingo++;
-						break;
-					}
-				}
-			}
-			if (bingo == keywords.length) {
-				walkChildren(entry, matches::add);
-				while (entry.parent() != null) {
-					entry = Objects.requireNonNull(entry.parent());
-					matches.add(entry);
-				}
-			}
-		}
-		for (Entry entry : entries) {
-			if (matches.contains(entry)) {
-				addEntry(entry);
-			}
-		}
-		if (matches.isEmpty()) {
-			addEntry(new Title(namespace, Component.translatable("gui.jade.no_results").withStyle(ChatFormatting.GRAY)));
-		}
+		layoutCards();
+		forceSetScrollAmount(0);
 	}
 
-	private void updateSearchCards(String search) {
+	private @Nullable Entry collectSearch(String search, List<Entry> result) {
+		boolean card = displayMode == DisplayMode.CARD;
 		if (search.isBlank()) {
 			for (Entry entry : entries) {
-				if (entry.isSecondary()) {
+				if (card && entry.isSecondary()) {
 					continue;
 				}
-				addEntry(entry);
-				if (entry instanceof Title) {
-					continue;
+				result.add(entry);
+				if (card && !(entry instanceof Title)) {
+					result.addAll(entry.secondaryOptions());
 				}
-				entry.secondaryOptions().forEach(this::addEntry);
 			}
-			return;
+			return null;
 		}
 		String[] keywords = search.toLowerCase(Locale.ENGLISH).split("\\s+");
-		List<Entry> results = Lists.newArrayList();
+		if (card) {
+			List<Entry> results = Lists.newArrayList();
+			for (Entry entry : entries) {
+				if (entry.isSecondary() || entry instanceof Title) {
+					continue;
+				}
+				if (matches(entry, keywords) || entry.secondaryOptions().stream().anyMatch($ -> matches($, keywords))) {
+					results.add(entry);
+				}
+			}
+			if (results.isEmpty()) {
+				result.add(noResults());
+				return null;
+			}
+			Entry lastTitle = null;
+			for (Entry entry : results) {
+				if (entry.parent() instanceof Title title && title != lastTitle) {
+					result.add(title);
+					lastTitle = title;
+				}
+				result.add(entry);
+				result.addAll(entry.secondaryOptions());
+			}
+			if (results.size() == 1 && !results.getFirst().secondaryOptions().isEmpty()) {
+				return results.getFirst();
+			}
+			return null;
+		}
+		Set<Entry> matched = Sets.newLinkedHashSet();
 		for (Entry entry : entries) {
-			if (entry.isSecondary() || entry instanceof Title) {
-				continue;
+			if (matches(entry, keywords)) {
+				walkChildren(entry, matched::add);
+				Entry current = entry;
+				while (current.parent() != null) {
+					current = Objects.requireNonNull(current.parent());
+					matched.add(current);
+				}
 			}
-			if (matches(entry, keywords) || entry.secondaryOptions().stream().anyMatch($ -> matches($, keywords))) {
-				results.add(entry);
+		}
+		for (Entry entry : entries) {
+			if (matched.contains(entry)) {
+				result.add(entry);
 			}
 		}
-		if (results.isEmpty()) {
-			addEntry(new Title(namespace, Component.translatable("gui.jade.no_results").withStyle(ChatFormatting.GRAY)));
-			return;
+		if (matched.isEmpty()) {
+			result.add(noResults());
 		}
-		Entry lastTitle = null;
-		for (Entry entry : results) {
-			if (entry.parent() instanceof Title title && title != lastTitle) {
-				addEntry(title);
-				lastTitle = title;
-			}
-			addEntry(entry);
-			entry.secondaryOptions().forEach(this::addEntry);
-		}
-		if (results.size() == 1 && !results.getFirst().secondaryOptions().isEmpty()) {
-			popup.expand(results.getFirst(), true);
-		}
+		return null;
 	}
 
 	private static boolean matches(Entry entry, String[] keywords) {
@@ -816,6 +815,13 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 			}
 		}
 		return true;
+	}
+
+	private Entry noResults() {
+		if (noResultsEntry == null) {
+			noResultsEntry = new Title(namespace, Component.translatable("gui.jade.no_results").withStyle(ChatFormatting.GRAY));
+		}
+		return noResultsEntry;
 	}
 
 	@Override
