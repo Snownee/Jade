@@ -111,6 +111,9 @@ accessible field net/minecraft/world/entity/animal/golem/CopperGolem nextWeather
 accessible field net/minecraft/world/entity/animal/golem/CopperGolem IGNORE_WEATHERING_TICK J
 accessible field net/minecraft/world/entity/monster/zombie/ZombieVillager villagerConversionTime I
 
+accessible field net/minecraft/world/entity/npc/villager/Villager lastRestockGameTime J
+accessible field net/minecraft/world/entity/npc/villager/Villager numberOfRestocksToday I
+
 accessible method net/minecraft/client/gui/components/AbstractStringWidget getFont ()Lnet/minecraft/client/gui/Font;
 
 accessible method net/minecraft/world/level/gamerules/GameRules registerInteger (Ljava/lang/String;Lnet/minecraft/world/level/gamerules/GameRuleCategory;III)Lnet/minecraft/world/level/gamerules/GameRule;

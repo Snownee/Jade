@@ -95,6 +95,7 @@ public interface JadeIds {
 	Identifier MC_TNT_STABILITY = MC("tnt_stability");
 	Identifier MC_TOTAL_ENCHANTMENT_POWER = MC("total_enchantment_power");
 	Identifier MC_VILLAGER_PROFESSION = MC("villager_profession");
+	Identifier MC_VILLAGER_RESTOCK = MC("villager_restock");
 	Identifier MC_WAXED = MC("waxed");
 	Identifier MC_ZOMBIE_VILLAGER = MC("zombie_villager");
 	Identifier ACCESS_SIGN = ACCESS("sign");
