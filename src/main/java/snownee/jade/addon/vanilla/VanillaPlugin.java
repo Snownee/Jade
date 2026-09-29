@@ -141,6 +141,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerEntityDataProvider(MobBreedingProvider.INSTANCE, Animal.class);
 		registration.registerEntityDataProvider(MobBreedingProvider.INSTANCE, Villager.class);
 		registration.registerEntityDataProvider(MobBreedingProvider.INSTANCE, Allay.class);
+		registration.registerEntityDataProvider(VillagerRestockProvider.INSTANCE, Villager.class);
 		registration.registerEntityDataProvider(NextEntityDropProvider.INSTANCE, Chicken.class);
 		registration.registerEntityDataProvider(NextEntityDropProvider.INSTANCE, Armadillo.class);
 		registration.registerEntityDataProvider(NextEntityDropProvider.INSTANCE, Sniffer.class);
@@ -195,6 +196,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.registerBlockIcon(ItemBERProvider.INSTANCE, DecoratedPotBlock.class);
 		registration.registerEntityComponent(VillagerProfessionProvider.INSTANCE, Villager.class);
 		registration.registerEntityComponent(VillagerProfessionProvider.INSTANCE, ZombieVillager.class);
+		registration.registerEntityComponent(VillagerRestockProvider.Client.INSTANCE, Villager.class);
 		registration.registerEntityComponent(ItemTooltipProvider.INSTANCE, ItemEntity.class);
 		registration.registerBlockComponent(FurnaceProvider.Client.INSTANCE, AbstractFurnaceBlock.class);
 		registration.registerEntityComponent(AnimalOwnerProvider.Client.INSTANCE, Entity.class);
@@ -291,6 +293,7 @@ public class VanillaPlugin implements IWailaPlugin {
 		registration.setConfigCategoryOverride(JadeIds.MC_TNT_STABILITY, block);
 		registration.setConfigCategoryOverride(JadeIds.MC_TOTAL_ENCHANTMENT_POWER, block);
 		registration.setConfigCategoryOverride(JadeIds.MC_VILLAGER_PROFESSION, entity);
+		registration.setConfigCategoryOverride(JadeIds.MC_VILLAGER_RESTOCK, entity);
 		registration.setConfigCategoryOverride(JadeIds.MC_WAXED, both);
 		registration.setConfigCategoryOverride(JadeIds.MC_ZOMBIE_VILLAGER, entity);
 		registration.setConfigCategoryOverride(JadeIds.MC_SULFUR_CUBE, entity);
