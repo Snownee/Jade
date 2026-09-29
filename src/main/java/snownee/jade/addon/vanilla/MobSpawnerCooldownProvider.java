@@ -9,7 +9,9 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.entity.TrialSpawnerBlockEntity;
+import net.minecraft.world.level.block.entity.trialspawner.TrialSpawnerState;
 import net.minecraft.world.level.block.entity.trialspawner.TrialSpawnerStateData;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.ITooltip;
@@ -23,12 +25,14 @@ public class MobSpawnerCooldownProvider implements StreamServerDataProvider<Bloc
 
 	@Override
 	public boolean shouldRequestData(BlockAccessor accessor) {
-		return accessor.getBlockEntity() instanceof TrialSpawnerBlockEntity;
+		return accessor.getBlockEntity() instanceof TrialSpawnerBlockEntity &&
+				accessor.getBlockState().getValueOrElse(BlockStateProperties.TRIAL_SPAWNER_STATE, TrialSpawnerState.INACTIVE) ==
+						TrialSpawnerState.COOLDOWN;
 	}
 
 	@Override
 	public @Nullable Integer streamData(BlockAccessor accessor) {
-		if (!(accessor.getBlockEntity() instanceof TrialSpawnerBlockEntity spawner)) {
+		if (!(accessor.getBlockEntity() instanceof TrialSpawnerBlockEntity spawner) || spawner.getState() != TrialSpawnerState.COOLDOWN) {
 			return null;
 		}
 		TrialSpawnerStateData spawnerData = spawner.getTrialSpawner().getStateData();
@@ -57,8 +61,10 @@ public class MobSpawnerCooldownProvider implements StreamServerDataProvider<Bloc
 			if (!config.get(JadeIds.MC_MOB_SPAWNER)) {
 				return;
 			}
-			int cooldown = MobSpawnerCooldownProvider.INSTANCE.decodeFromData(accessor).orElse(0);
-			tooltip.add(Component.translatable("jade.trial_spawner_cd", IThemeHelper.get().seconds(cooldown, accessor.tickRate())));
+			int cooldown = MobSpawnerCooldownProvider.INSTANCE.decodeFromData(accessor).orElse(-1);
+			if (cooldown >= 0) {
+				tooltip.add(Component.translatable("jade.trial_spawner_cd", IThemeHelper.get().seconds(cooldown, accessor.tickRate())));
+			}
 		}
 
 		@Override
