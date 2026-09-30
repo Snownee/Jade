@@ -2,8 +2,11 @@ package snownee.jade.util;
 
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.AtomicMoveNotSupportedException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -89,14 +92,26 @@ public class JsonConfig<T> {
 
 	public void write(File file, T t, boolean invalidate) {
 		mkdirs(file);
+		Path target = file.toPath();
+		Path temp = target.resolveSibling(file.getName() + ".tmp");
 
-		try (FileWriter writer = new FileWriter(file, StandardCharsets.UTF_8)) {
-			writer.write(GSON.toJson(codec.encodeStart(JsonOps.INSTANCE, t).getOrThrow()));
+		try {
+			String json = GSON.toJson(codec.encodeStart(JsonOps.INSTANCE, t).getOrThrow());
+			Files.writeString(temp, json, StandardCharsets.UTF_8);
+			try {
+				Files.move(temp, target, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+			} catch (AtomicMoveNotSupportedException e) {
+				Files.move(temp, target, StandardCopyOption.REPLACE_EXISTING);
+			}
 			if (invalidate) {
 				invalidate();
 			}
 		} catch (Throwable e) {
 			Jade.LOGGER.error("Failed to write config file %s".formatted(file), e);
+			try {
+				Files.deleteIfExists(temp);
+			} catch (Throwable ignored) {
+			}
 		}
 	}
 
@@ -118,7 +133,7 @@ public class JsonConfig<T> {
 	static class CachedSupplier<T> {
 
 		private final Supplier<T> supplier;
-		private @Nullable T value;
+		private volatile @Nullable T value;
 		private @Nullable Consumer<T> onUpdate;
 
 		public CachedSupplier(Supplier<T> supplier) {
@@ -126,16 +141,21 @@ public class JsonConfig<T> {
 		}
 
 		public T get() {
-			if (value == null) {
+			T v = value;
+			if (v == null) {
 				synchronized (this) {
-					T _value = value = supplier.get();
-					Objects.requireNonNull(_value);
-					if (onUpdate != null) {
-						onUpdate.accept(_value);
+					v = value;
+					if (v == null) {
+						v = supplier.get();
+						Objects.requireNonNull(v);
+						if (onUpdate != null) {
+							onUpdate.accept(v);
+						}
+						value = v;
 					}
 				}
 			}
-			return value;
+			return v;
 		}
 
 		public void invalidate() {
