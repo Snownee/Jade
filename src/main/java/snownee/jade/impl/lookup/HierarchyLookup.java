@@ -59,6 +59,11 @@ public class HierarchyLookup<T extends IJadeProvider> implements IHierarchyLooku
 	}
 
 	@Override
+	public void idMapper(IdMapper<T> idMapper) {
+		this.idMapper = idMapper;
+	}
+
+	@Override
 	public void register(Class<?> clazz, T provider) {
 		Preconditions.checkArgument(isClassAcceptable(clazz), "Class %s is not acceptable", clazz);
 		Objects.requireNonNull(provider.getUid());
