@@ -59,7 +59,7 @@ public class EntityAccessorImpl extends AccessorImpl<EntityHitResult> implements
 			CompoundTag tag = accessor.getServerData();
 			tag.putInt("EntityId", entity.getId());
 
-			if (Jade.isOutOfReach(player, entity.blockPosition(), player.entityInteractionRange())) {
+			if (Jade.isOutOfReach(player, entity.blockPosition(), player.entityInteractionRange()) || !Jade.canBeTarget(entity, player)) {
 				responseSender.accept(tag);
 				return;
 			}

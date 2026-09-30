@@ -11,8 +11,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityTypes;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.ClipContext;
@@ -25,9 +23,8 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.HitResult.Type;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import snownee.jade.Jade;
 import snownee.jade.api.config.IWailaConfig;
-import snownee.jade.impl.WailaCommonRegistration;
-import snownee.jade.util.CommonProxy;
 
 public class RayTracing {
 
@@ -188,47 +185,15 @@ public class RayTracing {
 	}
 
 	private boolean canBeTarget(Entity target, Entity viewEntity) {
-		if (target.isRemoved()) {
-			return false;
-		}
-		if (target.isSpectator()) {
-			return false;
-		}
-		if (target == viewEntity.getVehicle()) {
-			return false;
-		}
 		if (target instanceof Projectile projectile && projectile.tickCount <= 10 &&
 				!target.level().tickRateManager().isEntityFrozen(target)) {
 			return false;
 		}
-		if (CommonProxy.isMultipartEntity(target) && !target.isPickable()) {
+		if (viewEntity instanceof Player && Objects.requireNonNull(mc.gameMode).isDestroying() &&
+				target.getType() == EntityTypes.ITEM) {
 			return false;
 		}
-		if (viewEntity instanceof Player player) {
-			if (target.isInvisibleTo(player) && hasNoEquipment(target)) {
-				return false;
-			}
-			if (Objects.requireNonNull(mc.gameMode).isDestroying() && target.getType() == EntityTypes.ITEM) {
-				return false;
-			}
-		} else {
-			if (target.isInvisible() && hasNoEquipment(target)) {
-				return false;
-			}
-		}
-		return !WailaCommonRegistration.instance().entityTypeOperations().shouldHide(target) && entityFilter.test(target);
-	}
-
-	private static boolean hasNoEquipment(Entity entity) {
-		if (!(entity instanceof LivingEntity living)) {
-			return true;
-		}
-		for (EquipmentSlot slot : EquipmentSlot.VALUES) {
-			if (slot.isArmor() && living.hasItemInSlot(slot)) {
-				return false;
-			}
-		}
-		return true;
+		return Jade.canBeTarget(target, viewEntity) && entityFilter.test(target);
 	}
 
 }
