@@ -23,6 +23,10 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.NameAndId;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.gamerules.GameRule;
 import net.minecraft.world.level.gamerules.GameRuleCategory;
 import net.minecraft.world.level.gamerules.GameRules;
@@ -42,7 +46,7 @@ import snownee.jade.util.JsonConfig;
 
 public class Jade {
 	public static final String ID = "jade";
-	public static final String PROTOCOL_VERSION = "9";
+	public static final String PROTOCOL_VERSION = "10";
 	public static final long REQUEST_INTERVAL_NANOS = 50_000_000L;
 	public static final Logger LOGGER = LogUtils.getLogger();
 	public static final Set<String> DISABLED_PLUGINS = Sets.newHashSet();
@@ -289,5 +293,42 @@ public class Jade {
 		}
 		double maxDistance = Mth.square(baseReach + level.getGameRules().get(Objects.requireNonNull(MAX_POSITION_DEVIATION)));
 		return pos.distSqr(player.blockPosition()) > maxDistance;
+	}
+
+	public static boolean canBeTarget(Entity target, Entity viewEntity) {
+		if (target.isRemoved()) {
+			return false;
+		}
+		if (target.isSpectator()) {
+			return false;
+		}
+		if (target == viewEntity.getVehicle()) {
+			return false;
+		}
+		if (CommonProxy.isMultipartEntity(target) && !target.isPickable()) {
+			return false;
+		}
+		if (viewEntity instanceof Player player) {
+			if (target.isInvisibleTo(player) && hasNoEquipment(target)) {
+				return false;
+			}
+		} else {
+			if (target.isInvisible() && hasNoEquipment(target)) {
+				return false;
+			}
+		}
+		return !WailaCommonRegistration.instance().entityTypeOperations().shouldHide(target);
+	}
+
+	private static boolean hasNoEquipment(Entity entity) {
+		if (!(entity instanceof LivingEntity living)) {
+			return true;
+		}
+		for (EquipmentSlot slot : EquipmentSlot.VALUES) {
+			if (slot.isArmor() && living.hasItemInSlot(slot)) {
+				return false;
+			}
+		}
+		return true;
 	}
 }
