@@ -11,6 +11,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.ClipContext;
@@ -31,7 +33,7 @@ public class RayTracing {
 
 	public static final RayTracing INSTANCE = new RayTracing();
 	private final Minecraft mc = Minecraft.getInstance();
-	public Predicate<Entity> entityFilter = entity -> true;
+	public Predicate<Entity> entityFilter = _ -> true;
 	@Nullable
 	private HitResult target;
 	private Vec3 hitLocation = Vec3.ZERO;
@@ -156,9 +158,15 @@ public class RayTracing {
 		BlockHitResult blockResult = world.clip(context);
 		hitLocation = blockResult.getLocation();
 		if (entityResult != null) {
-			ClipContext occlusionContext = new ClipContext(traceStart, entityResult.getLocation(), ClipContext.Block.COLLIDER, fluidView, collisionContext);
+			ClipContext occlusionContext = new ClipContext(
+					traceStart,
+					entityResult.getLocation(),
+					ClipContext.Block.COLLIDER,
+					fluidView,
+					collisionContext);
 			BlockHitResult occluder = world.clip(occlusionContext);
-			if (occluder.getType() != Type.BLOCK || occluder.getLocation().distanceToSqr(traceStart) >= entityResult.getLocation().distanceToSqr(traceStart)) {
+			if (occluder.getType() != Type.BLOCK ||
+					occluder.getLocation().distanceToSqr(traceStart) >= entityResult.getLocation().distanceToSqr(traceStart)) {
 				target = entityResult;
 				return;
 			}
@@ -197,18 +205,30 @@ public class RayTracing {
 			return false;
 		}
 		if (viewEntity instanceof Player player) {
-			if (target.isInvisibleTo(player)) {
+			if (target.isInvisibleTo(player) && hasNoEquipment(target)) {
 				return false;
 			}
 			if (Objects.requireNonNull(mc.gameMode).isDestroying() && target.getType() == EntityTypes.ITEM) {
 				return false;
 			}
 		} else {
-			if (target.isInvisible()) {
+			if (target.isInvisible() && hasNoEquipment(target)) {
 				return false;
 			}
 		}
 		return !WailaCommonRegistration.instance().entityTypeOperations().shouldHide(target) && entityFilter.test(target);
+	}
+
+	private static boolean hasNoEquipment(Entity entity) {
+		if (!(entity instanceof LivingEntity living)) {
+			return true;
+		}
+		for (EquipmentSlot slot : EquipmentSlot.VALUES) {
+			if (slot.isArmor() && living.hasItemInSlot(slot)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 }
