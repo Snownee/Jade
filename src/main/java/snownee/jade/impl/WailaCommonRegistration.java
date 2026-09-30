@@ -108,9 +108,9 @@ public class WailaCommonRegistration implements IWailaCommonRegistration {
 	}
 
 	@Override
-	public void registerBlockDataProvider(IServerDataProvider<BlockAccessor> dataProvider, Class<?> blockOrBlobkEntityClass) {
+	public void registerBlockDataProvider(IServerDataProvider<BlockAccessor> dataProvider, Class<?> blockOrBlockEntityClass) {
 		checkDataProvider(dataProvider);
-		blockDataProviders.register(blockOrBlobkEntityClass, dataProvider);
+		blockDataProviders.register(blockOrBlockEntityClass, dataProvider);
 	}
 
 	@Override
