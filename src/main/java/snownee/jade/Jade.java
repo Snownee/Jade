@@ -37,11 +37,13 @@ import snownee.jade.impl.config.WailaConfig;
 import snownee.jade.test.ExamplePlugin;
 import snownee.jade.util.CommonProxy;
 import snownee.jade.util.JadeCodecs;
+import snownee.jade.util.JadeServerPlayer;
 import snownee.jade.util.JsonConfig;
 
 public class Jade {
 	public static final String ID = "jade";
 	public static final String PROTOCOL_VERSION = "9";
+	public static final long REQUEST_INTERVAL_NANOS = 50_000_000L;
 	public static final Logger LOGGER = LogUtils.getLogger();
 	public static final Set<String> DISABLED_PLUGINS = Sets.newHashSet();
 	private static @Nullable GameRule<Integer> MAX_POSITION_DEVIATION;
@@ -271,6 +273,13 @@ public class Jade {
 
 	public static void registerGameRules() {
 		MAX_POSITION_DEVIATION = GameRules.registerInteger("jade:max_position_deviation", GameRuleCategory.MISC, 21, 0, 1000);
+	}
+
+	public static boolean tryAcquireRequest(ServerPlayer player) {
+		if (player.level().getServer().isSingleplayerOwner(new NameAndId(player.getGameProfile()))) {
+			return true;
+		}
+		return ((JadeServerPlayer) player).jade$tryAcquireRequest();
 	}
 
 	public static boolean isOutOfReach(ServerPlayer player, BlockPos pos, double baseReach) {

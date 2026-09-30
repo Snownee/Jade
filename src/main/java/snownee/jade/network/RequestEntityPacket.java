@@ -8,6 +8,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import snownee.jade.Jade;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.JadeIds;
@@ -29,6 +30,9 @@ public record RequestEntityPacket(
 			RequestEntityPacket::new);
 
 	public static void handle(RequestEntityPacket message, ServerPayloadContext context) {
+		if (!Jade.tryAcquireRequest(context.player())) {
+			return;
+		}
 		EntityAccessorImpl.handleRequest(message, context, tag -> ReceiveDataPacket.send(tag, context));
 	}
 
