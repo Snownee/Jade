@@ -48,14 +48,16 @@ public class EntityAccessorClientHandler implements AccessorClientHandler<Entity
 		if (providers.isEmpty()) {
 			return List.of();
 		}
-		return providers.stream().filter(provider -> {
-			try {
-				return provider.shouldRequestData(accessor);
-			} catch (Exception e) {
-				WailaExceptionHandler.handleErr(e, provider, null);
-				return false;
-			}
-		}).toList();
+		return providers.stream()
+				.filter(provider -> WailaCommonRegistration.instance().entityDataProviders.isMapped(provider))
+				.filter(provider -> {
+					try {
+						return provider.shouldRequestData(accessor);
+					} catch (Exception e) {
+						WailaExceptionHandler.handleErr(e, provider, null);
+						return false;
+					}
+				}).toList();
 	}
 
 	@Override

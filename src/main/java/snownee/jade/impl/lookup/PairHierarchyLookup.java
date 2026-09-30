@@ -69,6 +69,11 @@ public class PairHierarchyLookup<T extends IJadeProvider> implements IHierarchyL
 	}
 
 	@Override
+	public void idMapper(IdMapper<T> idMapper) {
+		this.idMapper = idMapper;
+	}
+
+	@Override
 	public void register(Class<?> clazz, T provider) {
 		if (first.isClassAcceptable(clazz)) {
 			first.register(clazz, provider);

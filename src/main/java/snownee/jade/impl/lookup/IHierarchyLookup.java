@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Stream;
 
 import org.jspecify.annotations.Nullable;
@@ -28,6 +27,12 @@ public interface IHierarchyLookup<T extends IJadeProvider> {
 	void idMapped();
 
 	IdMapper<T> idMapper();
+
+	void idMapper(IdMapper<T> idMapper);
+
+	default boolean isMapped(T provider) {
+		return idMapper().getId(provider) != IdMap.DEFAULT;
+	}
 
 	default List<Identifier> mappedIds() {
 		return Streams.stream(idMapper())
@@ -72,7 +77,7 @@ public interface IHierarchyLookup<T extends IJadeProvider> {
 	}
 
 	default void remapIds(List<Identifier> keys) {
-		IdMapper<T> idMapper = Objects.requireNonNull(idMapper());
+		IdMapper<T> idMapper = new IdMapper<>(keys.size());
 		int i = 0;
 		for (Identifier key : keys) {
 			T object = byKey(key);
@@ -81,5 +86,6 @@ public interface IHierarchyLookup<T extends IJadeProvider> {
 			}
 			i++;
 		}
+		idMapper(idMapper);
 	}
 }
