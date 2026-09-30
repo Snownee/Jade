@@ -5,7 +5,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import net.minecraft.server.Services;
 import net.minecraft.server.players.NameAndId;
@@ -43,12 +43,16 @@ public class PlayerNameLookup {
 			return null;
 		}
 		CompletableFuture.runAsync(
-				() -> services.profileResolver().fetchById(uuid).ifPresentOrElse(
-						profile -> {
-							FETCHED.put(uuid, profile.name());
-							FETCHING.remove(uuid);
-						}, () -> FETCHED.put(uuid, DUMMY_NAME)
-				), Util.backgroundExecutor()
+				() -> {
+					try {
+						services.profileResolver().fetchById(uuid).ifPresentOrElse(
+								profile -> FETCHED.put(uuid, profile.name()),
+								() -> FETCHED.put(uuid, DUMMY_NAME)
+						);
+					} finally {
+						FETCHING.remove(uuid);
+					}
+				}, Util.backgroundExecutor()
 		);
 		return null;
 	}
