@@ -8,6 +8,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import snownee.jade.Jade;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.JadeIds;
@@ -29,6 +30,9 @@ public record RequestBlockPacket(
 			RequestBlockPacket::new);
 
 	public static void handle(RequestBlockPacket message, ServerPayloadContext context) {
+		if (!Jade.tryAcquireRequest(context.player())) {
+			return;
+		}
 		BlockAccessorImpl.handleRequest(message, context, tag -> ReceiveDataPacket.send(tag, context));
 	}
 
