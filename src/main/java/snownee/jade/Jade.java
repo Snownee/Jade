@@ -46,7 +46,7 @@ import snownee.jade.util.JsonConfig;
 
 public class Jade {
 	public static final String ID = "jade";
-	public static final String PROTOCOL_VERSION = "10";
+	public static final String PROTOCOL_VERSION = "9";
 	public static final long REQUEST_INTERVAL_NANOS = 50_000_000L;
 	public static final Logger LOGGER = LogUtils.getLogger();
 	public static final Set<String> DISABLED_PLUGINS = Sets.newHashSet();
