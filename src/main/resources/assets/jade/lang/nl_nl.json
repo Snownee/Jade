@@ -262,7 +262,7 @@
 	"jade.east": "Oost",
 	"jade.west": "West",
 	"config.jade.plugin_minecraft.furnace": "Oven Inhoud",
-	"config.jade.plugin_minecraft.mob_spawner": "Monsterkooi Type",
+	"config.jade.plugin_minecraft.mob_spawner": "Monsterkooi",
 	"config.jade.plugin_minecraft.crop_progress": "Crop Progress",
 	"config.jade.plugin_minecraft.redstone": "Redstone Info",
 	"config.jade.plugin_minecraft.jukebox": "Jukebox Opname",

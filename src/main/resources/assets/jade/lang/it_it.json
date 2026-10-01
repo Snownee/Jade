@@ -351,7 +351,7 @@
 	"jade.unavailable": "Non disponibile",
 	"jade.slim": "Sottile",
 	"config.jade.plugin_minecraft.furnace": "Contenuti fornace",
-	"config.jade.plugin_minecraft.mob_spawner": "Tipo di generatore",
+	"config.jade.plugin_minecraft.mob_spawner": "Generatore di mob",
 	"config.jade.plugin_minecraft.crop_progress": "Progresso coltura",
 	"config.jade.plugin_minecraft.redstone": "Info Redstone",
 	"config.jade.plugin_minecraft.jukebox": "Disco attivo",

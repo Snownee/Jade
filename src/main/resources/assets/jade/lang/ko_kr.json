@@ -267,7 +267,7 @@
 	"jade.east": "동쪽",
 	"jade.west": "서쪽",
 	"config.jade.plugin_minecraft.furnace": "화로 내용물",
-	"config.jade.plugin_minecraft.mob_spawner": "생성기 종류",
+	"config.jade.plugin_minecraft.mob_spawner": "생성기",
 	"config.jade.plugin_minecraft.crop_progress": "작물 진행도",
 	"config.jade.plugin_minecraft.redstone": "레드스톤 정보",
 	"config.jade.plugin_minecraft.jukebox": "재생 중인 음반",

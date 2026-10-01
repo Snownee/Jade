@@ -2,6 +2,8 @@ package snownee.jade.addon.debug;
 
 import java.util.Collection;
 
+import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
@@ -49,7 +51,9 @@ public class BlockStatesProvider implements IBlockComponentProvider {
 
 	@Override
 	public ConfigIcon getConfigIcon() {
-		return ConfigIcon.item(Items.DEBUG_STICK);
+		return ConfigIcon.item(
+				Items.DEBUG_STICK,
+				DataComponentPatch.builder().set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true).build());
 	}
 
 	@Override

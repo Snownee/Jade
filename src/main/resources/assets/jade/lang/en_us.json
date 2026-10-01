@@ -355,7 +355,7 @@
 	"jade.unavailable": "Unavailable",
 	"jade.slim": "Slim",
 	"config.jade.plugin_minecraft.furnace": "Furnace Contents",
-	"config.jade.plugin_minecraft.mob_spawner": "Mob Spawner Type",
+	"config.jade.plugin_minecraft.mob_spawner": "Mob Spawner",
 	"config.jade.plugin_minecraft.crop_progress": "Crop Progress",
 	"config.jade.plugin_minecraft.redstone": "Redstone Info",
 	"config.jade.plugin_minecraft.jukebox": "Jukebox Record",

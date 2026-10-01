@@ -308,7 +308,7 @@
 	"jade.east": "Восток",
 	"jade.west": "Запад",
 	"config.jade.plugin_minecraft.furnace": "Содержимое печи",
-	"config.jade.plugin_minecraft.mob_spawner": "Тип рассадника монстра",
+	"config.jade.plugin_minecraft.mob_spawner": "Рассадник монстра",
 	"config.jade.plugin_minecraft.crop_progress": "Прогресс урожая",
 	"config.jade.plugin_minecraft.redstone": "Информация об редстоуне",
 	"config.jade.plugin_minecraft.jukebox": "Запись проигрывателя",

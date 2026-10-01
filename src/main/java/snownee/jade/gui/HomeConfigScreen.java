@@ -36,7 +36,7 @@ import net.minecraft.world.item.Items;
 import snownee.jade.Jade;
 import snownee.jade.api.config.IWailaConfig;
 import snownee.jade.impl.WailaClientRegistration;
-import snownee.jade.util.ItemStacks;
+import snownee.jade.util.JadeIcons;
 import snownee.jade.util.ModIdentification;
 import snownee.jade.util.SmoothChasingValue;
 
@@ -44,7 +44,7 @@ public class HomeConfigScreen extends Screen {
 
 	private final RandomSource random = RandomSource.create(42);
 	private final @Nullable Screen parent;
-	private final ItemStack profileIcon = ItemStacks.of(Items.PAPER);
+	private final ItemStack profileIcon = JadeIcons.of(Items.PAPER);
 	private final SmoothChasingValue titleY;
 	private final List<TextParticle> particles = Lists.newArrayList();
 	private final List<TextParticle> pendingParticles = Lists.newArrayList();

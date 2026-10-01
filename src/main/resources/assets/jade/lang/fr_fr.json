@@ -348,7 +348,7 @@
 	"jade.unavailable": "Indisponible",
 	"jade.slim": "Mince",
 	"config.jade.plugin_minecraft.furnace": "Contenu du fourneau",
-	"config.jade.plugin_minecraft.mob_spawner": "Type de générateur de créatures",
+	"config.jade.plugin_minecraft.mob_spawner": "Générateur de créatures",
 	"config.jade.plugin_minecraft.crop_progress": "Progression des cultures",
 	"config.jade.plugin_minecraft.redstone": "Informations sur la redstone",
 	"config.jade.plugin_minecraft.jukebox": "Disque du jukebox",
