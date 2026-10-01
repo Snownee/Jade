@@ -316,7 +316,7 @@
 	"jade.east": "Leste",
 	"jade.west": "Oeste",
 	"config.jade.plugin_minecraft.furnace": "Conteúdo da Fornalha",
-	"config.jade.plugin_minecraft.mob_spawner": "Tipo de Gerador de Mobs",
+	"config.jade.plugin_minecraft.mob_spawner": "Gerador de Mobs",
 	"config.jade.plugin_minecraft.crop_progress": "Progresso da Colheita",
 	"config.jade.plugin_minecraft.redstone": "Informações de Redstone",
 	"config.jade.plugin_minecraft.jukebox": "Gravação do Toca-Discos",

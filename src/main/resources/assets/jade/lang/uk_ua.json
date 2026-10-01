@@ -346,7 +346,7 @@
 	"jade.unavailable": "Недоступний",
 	"jade.slim": "Стрункий",
 	"config.jade.plugin_minecraft.furnace": "Уміст печі",
-	"config.jade.plugin_minecraft.mob_spawner": "Тип породжувача мобів",
+	"config.jade.plugin_minecraft.mob_spawner": "Породжувач мобів",
 	"config.jade.plugin_minecraft.crop_progress": "Розвиток урожаю",
 	"config.jade.plugin_minecraft.redstone": "Інформація про редстоун",
 	"config.jade.plugin_minecraft.jukebox": "Запис програвача",

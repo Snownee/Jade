@@ -351,7 +351,7 @@
 	"jade.unavailable": "Niedostępne",
 	"jade.slim": "Cienki",
 	"config.jade.plugin_minecraft.furnace": "Zawartość pieca",
-	"config.jade.plugin_minecraft.mob_spawner": "Rodzaj spawnera",
+	"config.jade.plugin_minecraft.mob_spawner": "Spawner",
 	"config.jade.plugin_minecraft.crop_progress": "Stadium rozwoju plonu",
 	"config.jade.plugin_minecraft.redstone": "Informacje o redstone",
 	"config.jade.plugin_minecraft.jukebox": "Odtwarzana płyta",

@@ -5,6 +5,8 @@ import java.util.function.Predicate;
 
 import org.jspecify.annotations.Nullable;
 
+import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -17,6 +19,8 @@ import net.minecraft.util.StringUtil;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.alchemy.Potions;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
@@ -130,7 +134,9 @@ public class StatusEffectsProvider implements StreamServerDataProvider<EntityAcc
 
 		@Override
 		public ConfigIcon getConfigIcon() {
-			return ConfigIcon.item(Items.POTION);
+			return ConfigIcon.item(
+					Items.POTION,
+					DataComponentPatch.builder().set(DataComponents.POTION_CONTENTS, new PotionContents(Potions.HEALING)).build());
 		}
 	}
 

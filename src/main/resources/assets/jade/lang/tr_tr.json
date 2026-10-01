@@ -339,7 +339,7 @@
 	"jade.unavailable": "Kullanılamıyor",
 	"jade.slim": "İnce",
 	"config.jade.plugin_minecraft.furnace": "Ocak İçeriği",
-	"config.jade.plugin_minecraft.mob_spawner": "Yaratık Çağırıcı Türü",
+	"config.jade.plugin_minecraft.mob_spawner": "Yaratık Çağırıcı",
 	"config.jade.plugin_minecraft.crop_progress": "Ekin İlerlemesi",
 	"config.jade.plugin_minecraft.redstone": "Redstone Bilgisi",
 	"config.jade.plugin_minecraft.jukebox": "Müzik Kutusu Kaydı",

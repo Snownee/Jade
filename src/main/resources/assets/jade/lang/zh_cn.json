@@ -351,7 +351,7 @@
 	"jade.unavailable": "不可用",
 	"jade.slim": "纤细",
 	"config.jade.plugin_minecraft.furnace": "熔炉物品",
-	"config.jade.plugin_minecraft.mob_spawner": "刷怪笼类型",
+	"config.jade.plugin_minecraft.mob_spawner": "刷怪笼",
 	"config.jade.plugin_minecraft.crop_progress": "作物生长进度",
 	"config.jade.plugin_minecraft.redstone": "红石信息",
 	"config.jade.plugin_minecraft.jukebox": "当前唱片",

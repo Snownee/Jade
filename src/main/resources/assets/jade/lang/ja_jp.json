@@ -308,7 +308,7 @@
 	"jade.east": "東",
 	"jade.west": "西",
 	"config.jade.plugin_minecraft.furnace": "かまどの内容",
-	"config.jade.plugin_minecraft.mob_spawner": "Mobスポナーのタイプ",
+	"config.jade.plugin_minecraft.mob_spawner": "Mobスポナー",
 	"config.jade.plugin_minecraft.crop_progress": "作物の生長度",
 	"config.jade.plugin_minecraft.redstone": "レッドストーンの情報",
 	"config.jade.plugin_minecraft.jukebox": "ジュークボックスのレコード",

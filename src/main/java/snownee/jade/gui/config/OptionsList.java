@@ -54,8 +54,8 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.StringUtil;
 import net.minecraft.util.Util;
-import net.minecraft.world.item.ItemStack;
 import snownee.jade.api.config.ConfigIcon;
+import snownee.jade.api.config.ConfigIconRenderer;
 import snownee.jade.api.ui.JadeUI;
 import snownee.jade.gui.BaseOptionsScreen;
 import snownee.jade.gui.JadeMultiLineTextWidget;
@@ -66,7 +66,7 @@ import snownee.jade.gui.config.value.CycleOptionValue;
 import snownee.jade.gui.config.value.InputOptionValue;
 import snownee.jade.gui.config.value.OptionValue;
 import snownee.jade.gui.config.value.SliderOptionValue;
-import snownee.jade.util.ItemStacks;
+import snownee.jade.util.JadeIcons;
 
 public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 
@@ -974,8 +974,7 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 		protected Font font;
 		private @Nullable AbstractWidget mainWidget;
 		private final List<Consumer<Entry>> resizeListeners = Lists.newArrayList();
-		private @Nullable ConfigIcon icon;
-		private @Nullable ItemStack resolvedIcon;
+		private @Nullable ConfigIconRenderer icon;
 		private boolean cardMode;
 		private boolean secondary;
 		private boolean popupMode;
@@ -1019,20 +1018,12 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 		}
 
 		public Entry setIcon(@Nullable ConfigIcon icon) {
-			this.icon = icon == null || icon.isNone() ? null : icon;
-			resolvedIcon = null;
+			this.icon = icon == null || icon.isNone() ? null : ConfigIconRenderer.of(icon);
 			return this;
 		}
 
-		public @Nullable ConfigIcon icon() {
+		public @Nullable ConfigIconRenderer icon() {
 			return icon;
-		}
-
-		private ItemStack resolveIcon(ConfigIcon.Item icon) {
-			if (resolvedIcon == null) {
-				resolvedIcon = ItemStacks.of(icon.item());
-			}
-			return resolvedIcon;
 		}
 
 		public boolean isCardMode() {
@@ -1245,17 +1236,7 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 					rawWidget.extractRenderState(guiGraphics, mouseX, mouseY, deltaTime);
 				}
 			}
-			if (icon instanceof ConfigIcon.Sprite(Identifier sprite)) {
-				guiGraphics.blitSprite(
-						RenderPipelines.GUI_TEXTURED,
-						sprite,
-						iconX,
-						iconY,
-						CARD_ICON_SIZE,
-						CARD_ICON_SIZE);
-			} else if (icon instanceof ConfigIcon.Item itemIcon) {
-				guiGraphics.fakeItem(resolveIcon(itemIcon), iconX, iconY);
-			}
+			JadeIcons.render(guiGraphics, icon, iconX, iconY, CARD_ICON_SIZE);
 			if (expandable) {
 				guiGraphics.blitSprite(
 						RenderPipelines.GUI_TEXTURED,
