@@ -42,7 +42,9 @@ import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -173,6 +175,10 @@ public final class CommonProxy implements ModInitializer {
 			}
 		}
 		return Identifier.DEFAULT_NAMESPACE;
+	}
+
+	public static boolean hasComponent(DataComponentMap.Builder builder, DataComponentType<?> type) {
+		return builder.contains(type);
 	}
 
 	public static boolean isPhysicallyClient() {
