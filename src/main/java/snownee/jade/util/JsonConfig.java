@@ -148,10 +148,13 @@ public class JsonConfig<T> {
 					if (v == null) {
 						v = supplier.get();
 						Objects.requireNonNull(v);
+						// Publish the value before onUpdate runs. onUpdate (WailaConfig::fixData)
+						// may re-enter get() through a config listener, and would otherwise
+						// re-run the supplier recursively until the stack overflows.
+						value = v;
 						if (onUpdate != null) {
 							onUpdate.accept(v);
 						}
-						value = v;
 					}
 				}
 			}
