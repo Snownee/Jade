@@ -25,6 +25,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -190,6 +192,10 @@ public final class CommonProxy {
 			}
 		}
 		return Identifier.DEFAULT_NAMESPACE;
+	}
+
+	public static boolean hasComponent(DataComponentMap.Builder builder, DataComponentType<?> type) {
+		return builder.has(type);
 	}
 
 	public static boolean isPhysicallyClient() {

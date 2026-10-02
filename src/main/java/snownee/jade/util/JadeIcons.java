@@ -50,7 +50,7 @@ public final class JadeIcons {
 		Identifier model = BuiltInRegistries.ITEM.getKey(item.value());
 		DataComponentMap.Builder builder = DataComponentMap.builder();
 		builder.addAll(template.components().split().added());
-		if (!builder.contains(DataComponents.ITEM_MODEL)) {
+		if (!CommonProxy.hasComponent(builder, DataComponents.ITEM_MODEL)) {
 			builder.set(DataComponents.ITEM_MODEL, model);
 		}
 		return new ItemStack(new Holder.Direct<>(item.value(), builder.build()), template.count());
