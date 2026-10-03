@@ -9,8 +9,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
 import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.overlay.DisplayHelper;
+import snownee.jade.util.ClientProxy;
 import snownee.jade.util.ComponentHolders;
 
 public class FluidStackElement extends ProgressOverlayElement {
@@ -24,6 +26,9 @@ public class FluidStackElement extends ProgressOverlayElement {
 
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+		if (fluid.isEmpty()) {
+			return;
+		}
 		if (floatingRect == null) {
 			DisplayHelper.INSTANCE.drawFluid(graphics, getX(), getY(), fluid, width, height, JadeFluidObject.bucketVolume());
 		} else {
@@ -35,6 +40,11 @@ public class FluidStackElement extends ProgressOverlayElement {
 					floatingRect.getWidth(),
 					floatingRect.getHeight(),
 					JadeFluidObject.bucketVolume());
+		}
+		if (mouseX != -1 && getRectangle().containsPoint(mouseX, mouseY)) {
+			setHoverEffect(
+					graphics,
+					fluid.getTooltip(Item.TooltipContext.of(Minecraft.getInstance().level), null, ClientProxy.getTooltipFlag()));
 		}
 	}
 

@@ -2,6 +2,8 @@ package snownee.jade.api.fluid;
 
 import java.util.Objects;
 
+import org.jspecify.annotations.Nullable;
+
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -12,8 +14,12 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import snownee.jade.util.CommonProxy;
@@ -115,7 +121,7 @@ public class JadeFluidObject implements TypedInstance<Fluid> {
 	 * @param amount amount in millibuckets
 	 * @param components attached data components
 	 */
-	private JadeFluidObject(Holder<Fluid> type, long amount, DataComponentPatch components) {
+	public JadeFluidObject(Holder<Fluid> type, long amount, DataComponentPatch components) {
 		this.type = type;
 		this.amount = amount;
 		this.components = components;
@@ -167,6 +173,10 @@ public class JadeFluidObject implements TypedInstance<Fluid> {
 	 */
 	public Component getDisplayName() {
 		return CommonProxy.getFluidName(this);
+	}
+
+	public HoverEvent getTooltip(Item.TooltipContext context, @Nullable Player player, TooltipFlag flag) {
+		return CommonProxy.getFluidTooltip(this, context, player, flag);
 	}
 
 	/**

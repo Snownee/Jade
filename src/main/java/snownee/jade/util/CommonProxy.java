@@ -1,6 +1,7 @@
 package snownee.jade.util;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -23,6 +24,7 @@ import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.context.PacketContext;
 import net.fabricmc.fabric.api.tag.convention.v2.ConventionalEntityTypeTags;
+import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
@@ -48,6 +50,8 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentUtils;
+import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -67,9 +71,12 @@ import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragonPart;
 import net.minecraft.world.entity.decoration.painting.PaintingVariant;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
@@ -412,6 +419,27 @@ public final class CommonProxy implements ModInitializer {
 		Fluid fluid = fluidObject.typeHolder().value();
 		DataComponentPatch components = fluidObject.getComponents();
 		return FluidVariantAttributes.getName(FluidVariant.of(fluid, components));
+	}
+
+	public static HoverEvent getFluidTooltip(
+			JadeFluidObject fluid,
+			Item.TooltipContext context,
+			@Nullable Player player,
+			TooltipFlag flag) {
+		//DEBUG CODE:
+//		DataComponentPatch components = DataComponentPatch.builder().set(
+//				DataComponents.POTION_CONTENTS,
+//				new PotionContents(Potions.STRONG_LEAPING)).build();
+//		fluid = new JadeFluidObject(fluid.typeHolder(), fluid.getAmount(), components);
+
+		FluidVariant variant = FluidVariant.of(fluid.typeHolder().value(), fluid.getComponents());
+		List<Component> lines = FluidVariantRendering.getTooltip(variant, flag);
+		@SuppressWarnings("deprecation")
+		ItemStack itemStack = new ItemStack(Items.BARRIER.builtInRegistryHolder(), 1, fluid.getComponents());
+		List<Component> detailLines = new ArrayList<>();
+		itemStack.addDetailsToTooltip(context, TooltipDisplay.DEFAULT, player, TooltipFlag.NORMAL, detailLines::add);
+		lines.addAll(1, detailLines);
+		return new HoverEvent.ShowText(ComponentUtils.formatList(lines, Component.literal("\n")));
 	}
 
 	public static boolean isMultipartEntity(Entity target) {

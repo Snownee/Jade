@@ -63,6 +63,7 @@ import net.minecraft.util.StringUtil;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -318,6 +319,12 @@ public final class ClientProxy implements ClientModInitializer {
 
 	public static void runWithContext(Minecraft client, Runnable runnable) {
 		PacketContext.runWithContext(Objects.requireNonNull(client.player), runnable);
+	}
+
+	public static TooltipFlag getTooltipFlag() {
+		return Minecraft.getInstance().options.advancedItemTooltips ?
+				TooltipFlag.Default.ADVANCED :
+				TooltipFlag.Default.NORMAL;
 	}
 
 	@Override
