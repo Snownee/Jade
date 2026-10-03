@@ -31,6 +31,8 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentUtils;
+import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -48,9 +50,12 @@ import net.minecraft.world.entity.animal.cow.MushroomCow;
 import net.minecraft.world.entity.animal.sheep.Sheep;
 import net.minecraft.world.entity.decoration.painting.PaintingVariant;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
@@ -80,6 +85,7 @@ import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.TranslatableEnum;
+import net.neoforged.neoforge.common.tooltip.ItemTooltipHandler;
 import net.neoforged.neoforge.entity.PartEntity;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
@@ -427,6 +433,26 @@ public final class CommonProxy {
 
 	public static Component getFluidName(JadeFluidObject fluid) {
 		return toFluidStack(fluid).getHoverName();
+	}
+
+	public static HoverEvent getFluidTooltip(
+			JadeFluidObject fluid,
+			Item.TooltipContext context,
+			@Nullable Player player,
+			TooltipFlag flag) {
+		//DEBUG CODE:
+//		DataComponentPatch components = DataComponentPatch.builder().set(
+//				DataComponents.POTION_CONTENTS,
+//				new PotionContents(Potions.STRONG_LEAPING)).build();
+//		fluid = new JadeFluidObject(fluid.typeHolder(), fluid.getAmount(), components);
+
+		List<Component> lines = toFluidStack(fluid).getTooltipLines(context, player, flag);
+		@SuppressWarnings("deprecation")
+		ItemStack itemStack = new ItemStack(Items.BARRIER.builtInRegistryHolder(), 1, fluid.getComponents());
+		List<Component> detailLines = Lists.newArrayList();
+		ItemTooltipHandler.addDetailsToTooltipMiddle(itemStack, context, TooltipDisplay.DEFAULT, player, flag, detailLines::add);
+		lines.addAll(1, detailLines);
+		return new HoverEvent.ShowText(ComponentUtils.formatList(lines, Component.literal("\n")));
 	}
 
 	public static FluidStack toFluidStack(JadeFluidObject fluid) {

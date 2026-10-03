@@ -88,6 +88,8 @@ public class ProgressElement extends ResizeableElement implements StyledElement 
 			progress = Math.min(progress + partProgress, 1F);
 			start = renderPart(
 					graphics,
+					mouseX,
+					mouseY,
 					partialTicks,
 					part,
 					partProgress,
@@ -119,6 +121,8 @@ public class ProgressElement extends ResizeableElement implements StyledElement 
 
 	private float renderPart(
 			GuiGraphicsExtractor graphics,
+			int mouseX,
+			int mouseY,
 			float partialTicks,
 			ProgressView.Part part,
 			float partProgress,
@@ -142,13 +146,14 @@ public class ProgressElement extends ResizeableElement implements StyledElement 
 		if (isLast && view.style.foreground() == null && overlay instanceof ProgressOverlayElement element &&
 				element.canUseFloatingRect(graphics)) {
 			element.setFloatingRect(x + start, y, partWidth, height);
-			element.extractRenderState(graphics, -1, -1, partialTicks);
+			resizeElement(element, x + (int) start, y, roundedPartWidth, height);
+			element.extractRenderState(graphics, mouseX, mouseY, partialTicks);
 			element.setFloatingRect(null);
 //			graphics.disableScissor();
 			return start + partWidth;
 		} else {
 			resizeElement(overlay, x + (int) start, y, roundedPartWidth, height);
-			overlay.extractRenderState(graphics, -1, -1, partialTicks);
+			overlay.extractRenderState(graphics, mouseX, mouseY, partialTicks);
 //			graphics.disableScissor();
 			return start + roundedPartWidth;
 		}

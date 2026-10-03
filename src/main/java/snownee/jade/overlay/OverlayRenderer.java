@@ -10,6 +10,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.util.Mth;
 import net.minecraft.util.profiling.Profiler;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
@@ -33,6 +34,7 @@ import snownee.jade.impl.config.WailaConfig.General;
 import snownee.jade.impl.ui.BoxElementImpl;
 import snownee.jade.util.ClientProxy;
 import snownee.jade.util.JadeGuiGraphics;
+import snownee.jade.util.JadeIcons;
 import snownee.jade.util.ModIdentification;
 
 public class OverlayRenderer {
@@ -125,7 +127,7 @@ public class OverlayRenderer {
 			tooltip.add(IThemeHelper.get().title(Blocks.GRASS_BLOCK.getName()));
 			tooltip.add(IThemeHelper.get().modNameElement(ModIdentification.getModName(Blocks.GRASS_BLOCK)));
 			Theme theme = IThemeHelper.get().theme();
-//			tooltip.setIcon(theme.modifyIcon(JadeUI.item(new ItemStack(Blocks.GRASS_BLOCK))));
+			tooltip.setIcon(theme.modifyIcon(JadeUI.item(JadeIcons.of(Items.GRASS_BLOCK))));
 			root = new BoxElementImpl(tooltip, theme.tooltipStyle);
 			root.tag(JadeIds.ROOT);
 			root.updateExpectedRect(animation);

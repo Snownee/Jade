@@ -42,6 +42,7 @@ import net.minecraft.server.Services;
 import net.minecraft.util.StringUtil;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -52,6 +53,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.neoforge.client.ClientTooltipFlag;
 import net.neoforged.neoforge.client.ItemDecoratorHandler;
 import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
@@ -393,5 +395,11 @@ public final class ClientProxy {
 
 	public static void runWithContext(Minecraft client, Runnable runnable) {
 		client.execute(runnable);
+	}
+
+	public static TooltipFlag getTooltipFlag() {
+		return ClientTooltipFlag.of(Minecraft.getInstance().options.advancedItemTooltips ?
+				TooltipFlag.Default.ADVANCED :
+				TooltipFlag.Default.NORMAL);
 	}
 }
