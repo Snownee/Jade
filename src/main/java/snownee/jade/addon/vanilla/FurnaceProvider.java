@@ -25,14 +25,14 @@ public enum FurnaceProvider implements IBlockComponentProvider, StreamServerData
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
 		Data data = decodeFromData(accessor).orElse(null);
-		if (data == null) {
+		if (data == null || data.inventory.stream().allMatch(ItemStack::isEmpty)) {
 			return;
 		}
 		IElementHelper helper = IElementHelper.get();
 		tooltip.add(helper.item(data.inventory.get(0)));
 		tooltip.append(helper.item(data.inventory.get(1)));
 		tooltip.append(helper.spacer(4, 0));
-		tooltip.append(helper.progress((float) data.progress / data.total).translate(new Vec2(-2, 0)));
+		tooltip.append(helper.progress(data.total == 0 ? 0F : (float) data.progress / data.total).translate(new Vec2(-2, 0)));
 		tooltip.append(helper.item(data.inventory.get(2)));
 	}
 
