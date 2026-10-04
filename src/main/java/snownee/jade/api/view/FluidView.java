@@ -7,10 +7,12 @@ import org.jetbrains.annotations.Nullable;
 import com.mojang.serialization.DynamicOps;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.level.material.Fluids;
 import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.ui.IElement;
@@ -30,6 +32,13 @@ public class FluidView {
 	public Component fluidName;
 	@Nullable
 	public Component overrideText;
+	/**
+	 * Potion contents carried by the fluid, or {@code null} if it has no potion effects.
+	 * Extracted from the fluid's {@link DataComponents#POTION_CONTENTS} component;
+	 * renderers decide whether and how to display it.
+	 */
+	@Nullable
+	public PotionContents potionContents;
 
 	public FluidView(IElement overlay) {
 		this.overlay = overlay;
@@ -55,6 +64,12 @@ public class FluidView {
 		long amount = fluidObject.getAmount();
 		FluidView fluidView = new FluidView(IElementHelper.get().fluid(fluidObject));
 		fluidView.fluidName = CommonProxy.getFluidName(fluidObject);
+		// DataComponentPatch.get returns a nullable Optional: null when the patch has no
+		// entry for the type at all, otherwise an Optional holding (or explicitly removing) it.
+		var potionContents = fluidObject.getComponents().get(DataComponents.POTION_CONTENTS);
+		fluidView.potionContents = potionContents != null
+				? potionContents.filter(PotionContents::hasEffects).orElse(null)
+				: null;
 		fluidView.current = FluidTextHelper.getUnicodeMillibuckets(amount, true);
 		fluidView.max = FluidTextHelper.getUnicodeMillibuckets(capacity, true);
 		fluidView.ratio = (float) ((double) amount / capacity);

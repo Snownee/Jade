@@ -31,6 +31,7 @@ public interface JadeIds {
 	ResourceLocation UNIVERSAL_FLUID_STORAGE_DEFAULT = MC("fluid_storage.default");
 	ResourceLocation UNIVERSAL_FLUID_STORAGE_DETAILED = MC("fluid_storage.detailed");
 	ResourceLocation UNIVERSAL_FLUID_STORAGE_STYLE = MC("fluid_storage.style");
+	ResourceLocation UNIVERSAL_FLUID_STORAGE_POTION_EFFECTS = MC("fluid_storage.potion_effects");
 	ResourceLocation UNIVERSAL_ENERGY_STORAGE = MC("energy_storage");
 	ResourceLocation UNIVERSAL_ENERGY_STORAGE_DEFAULT = MC("energy_storage.default");
 	ResourceLocation UNIVERSAL_ENERGY_STORAGE_DETAILED = MC("energy_storage.detailed");
