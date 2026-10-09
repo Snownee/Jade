@@ -186,21 +186,23 @@ public final class JadeClient {
 		}
 
 		while (JadeKeys.showUses().consumeClick()) {
-			lookupRecipes(true);
+			lookupRecipes(true, getLookupItemStack());
 		}
 
 		while (JadeKeys.showRecipes().consumeClick()) {
-			lookupRecipes(false);
+			lookupRecipes(false, getLookupItemStack());
 		}
 	}
 
-	public static void lookupRecipes(boolean uses) {
-		if (recipeLookupPlugins.isEmpty() || tickHandler.state == null) {
-			return;
+	private static ItemStack getLookupItemStack() {
+		if (tickHandler.state == null) {
+			return ItemStack.EMPTY;
 		}
-		Accessor<?> accessor = tickHandler.state.accessor();
-		ItemStack itemStack = accessor.getPickedResult();
-		if (itemStack.isEmpty()) {
+		return tickHandler.state.accessor().getPickedResult();
+	}
+
+	public static void lookupRecipes(boolean uses, ItemStack itemStack) {
+		if (recipeLookupPlugins.isEmpty() || itemStack.isEmpty()) {
 			return;
 		}
 		Identifier specialId = ModIdentification.getSpecialId(itemStack).orElse(null);
