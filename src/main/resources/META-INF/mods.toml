@@ -1,0 +1,30 @@
+modLoader = "javafml"
+loaderVersion = "*"
+license = "CC-BY-NC-SA-4.0"
+
+[[mods]]
+modId = "jade"
+version = "${version}"
+displayName = "Jade"
+authors = "Snownee"
+displayURL = "https://www.curseforge.com/minecraft/mc-mods/jade"
+description = "Minecraft mod shows what you are looking at. (Hwyla fork)"
+logoFile = "icon.png"
+credits = "TehNut, ProfMobius, kalkafox"
+
+[[mixins]]
+config = "jade.mixins.json"
+
+[[dependencies.jade]]
+    modId = "minecraft"
+    mandatory = true
+    versionRange = "[26.2]"
+    ordering = "NONE"
+    side = "BOTH"
+
+[[dependencies.jade]]
+    modId = "forge"
+    mandatory = true
+    versionRange = "[0,)"
+    ordering = "NONE"
+    side = "BOTH"

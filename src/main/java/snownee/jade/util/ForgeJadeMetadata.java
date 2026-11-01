@@ -5,15 +5,16 @@ import java.util.Map;
 import com.electronwill.nightconfig.core.AbstractConfig;
 import com.google.common.collect.ImmutableList;
 
-import net.neoforged.fml.ModList;
-import net.neoforged.neoforgespi.language.IModInfo;
+import net.minecraftforge.fml.ModList;
+import net.minecraftforge.forgespi.language.IModInfo;
 import snownee.jade.Jade;
 
 public class ForgeJadeMetadata extends JadeMetadata {
 
 	public ForgeJadeMetadata() {
 		ImmutableList.Builder<String> disableModNameBuilder = ImmutableList.builder();
-		for (IModInfo container : ModList.get().getMods()) {
+		// ModList is fully static on Forge 26.x; there is no ModList.get().
+		for (IModInfo container : ModList.getMods()) {
 			String modId = container.getModId();
 			try {
 				Object raw = container.getModProperties().get(Jade.ID);

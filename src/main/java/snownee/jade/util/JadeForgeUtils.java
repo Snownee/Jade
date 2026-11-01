@@ -13,26 +13,37 @@ import com.google.common.math.LongMath;
 import com.mojang.datafixers.util.Pair;
 
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.transfer.ResourceHandler;
-import net.neoforged.neoforge.transfer.fluid.FluidResource;
-import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.items.IItemHandler;
 import snownee.jade.addon.universal.ItemIterator;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.view.FluidView;
 import snownee.jade.api.view.ViewGroup;
 
+/**
+ * NeoForge exposes inventories and tanks through its transfer API
+ * ({@code ResourceHandler<ItemResource>} / {@code ResourceHandler<FluidResource>}), which Forge
+ * 26.2 does not have. The equivalents here are the capability interfaces Forge has always used,
+ * {@link IItemHandler} and {@link IFluidHandler}; the shape of the code is otherwise unchanged.
+ */
 public class JadeForgeUtils {
 
 	private JadeForgeUtils() {
 	}
 
-	public static JadeFluidObject fromFluidResource(FluidResource resource, long amount) {
-		return JadeFluidObject.of(resource.getFluid(), amount, resource.getComponentsPatch());
+	/**
+	 * Forge's FluidStack carries its variant data as an NBT tag rather than a DataComponentPatch,
+	 * so the component-aware overload of {@link JadeFluidObject#of} cannot be used. Fluids that
+	 * differ only by NBT therefore render as the same fluid in the tooltip.
+	 */
+	public static JadeFluidObject fromFluidStack(FluidStack stack) {
+		return JadeFluidObject.of(stack.getFluid(), stack.getAmount());
 	}
 
-	public static List<ViewGroup<FluidView.Data>> fromFluidHandler(ResourceHandler<FluidResource> storage) {
-		if (storage.size() == 0) {
+	public static List<ViewGroup<FluidView.Data>> fromFluidHandler(IFluidHandler storage) {
+		if (storage.getTanks() == 0) {
 			return List.of();
 		}
 		FluidCollectingResult result = fromFluidHandlerStream(storage);
@@ -66,12 +77,12 @@ public class JadeForgeUtils {
 		return List.of(group);
 	}
 
-	public static FluidCollectingResult fromFluidHandlerStream(ResourceHandler<FluidResource> fluidHandler) {
+	public static FluidCollectingResult fromFluidHandlerStream(IFluidHandler fluidHandler) {
 		FluidCollectingResult result = new FluidCollectingResult();
-		for (int i = 0; i < fluidHandler.size(); i++) {
-			if (fluidHandler.getCapacityAsLong(i, FluidResource.EMPTY) > 0) {
+		for (int i = 0; i < fluidHandler.getTanks(); i++) {
+			if (fluidHandler.getTankCapacity(i) > 0) {
 				result.tanks++;
-				if (fluidHandler.getResource(i).isEmpty()) {
+				if (fluidHandler.getFluidInTank(i).isEmpty()) {
 					result.emptyTanks++;
 				}
 			}
@@ -79,17 +90,17 @@ public class JadeForgeUtils {
 		if (result.tanks == 0) {
 			result.stream = Stream.empty();
 		} else {
-			result.stream = IntStream.range(0, fluidHandler.size()).mapToObj(i -> {
-				long capacity = fluidHandler.getCapacityAsLong(i, FluidResource.EMPTY);
+			result.stream = IntStream.range(0, fluidHandler.getTanks()).mapToObj(i -> {
+				long capacity = fluidHandler.getTankCapacity(i);
 				if (capacity <= 0) {
 					return null;
 				}
-				FluidResource resource = fluidHandler.getResource(i);
-				if (resource.isEmpty()) {
+				FluidStack stack = fluidHandler.getFluidInTank(i);
+				if (stack.isEmpty()) {
 					result.emptyCapacity = LongMath.saturatedAdd(result.emptyCapacity, capacity);
 					return null;
 				}
-				return new Pair<>(fromFluidResource(resource, fluidHandler.getAmountAsLong(i)), capacity);
+				return new Pair<>(fromFluidStack(stack), capacity);
 			}).filter(Objects::nonNull);
 		}
 		return result;
@@ -102,25 +113,25 @@ public class JadeForgeUtils {
 		public int emptyTanks;
 	}
 
-	public static ItemIterator<? extends ResourceHandler<ItemResource>> fromItemHandler(
-			ResourceHandler<ItemResource> storage,
+	public static ItemIterator<? extends IItemHandler> fromItemHandler(
+			IItemHandler storage,
 			int fromIndex) {
 		return fromItemHandler(storage, fromIndex, CommonProxy::findItemHandler);
 	}
 
-	public static ItemIterator<? extends ResourceHandler<ItemResource>> fromItemHandler(
-			ResourceHandler<ItemResource> storage,
+	public static ItemIterator<? extends IItemHandler> fromItemHandler(
+			IItemHandler storage,
 			int fromIndex,
-			Function<Accessor<?>, @Nullable ResourceHandler<ItemResource>> containerFinder) {
+			Function<Accessor<?>, @Nullable IItemHandler> containerFinder) {
 		return new ItemIterator.SlottedItemIterator<>(containerFinder, fromIndex) {
 			@Override
-			protected int getSlotCount(ResourceHandler<ItemResource> container) {
-				return container.size();
+			protected int getSlotCount(IItemHandler container) {
+				return container.getSlots();
 			}
 
 			@Override
-			protected ItemStack getItemInSlot(ResourceHandler<ItemResource> container, int slot) {
-				return container.getResource(slot).toStack(container.getAmountAsInt(slot));
+			protected ItemStack getItemInSlot(IItemHandler container, int slot) {
+				return container.getStackInSlot(slot);
 			}
 		};
 	}

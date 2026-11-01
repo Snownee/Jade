@@ -62,36 +62,40 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.MatchTool;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.ModList;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
-import net.neoforged.fml.i18n.MavenVersionTranslator;
-import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.fml.loading.FMLLoader;
-import net.neoforged.fml.loading.FMLPaths;
-import net.neoforged.neoforge.capabilities.BlockCapability;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.capabilities.EntityCapability;
-import net.neoforged.neoforge.common.ItemAbilities;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.common.TranslatableEnum;
-import net.neoforged.neoforge.entity.PartEntity;
-import net.neoforged.neoforge.event.EventHooks;
-import net.neoforged.neoforge.event.RegisterCommandsEvent;
-import net.neoforged.neoforge.event.TagsUpdatedEvent;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
-import net.neoforged.neoforge.registries.RegisterEvent;
-import net.neoforged.neoforge.transfer.ResourceHandler;
-import net.neoforged.neoforge.transfer.energy.EnergyHandler;
-import net.neoforged.neoforge.transfer.fluid.FluidResource;
-import net.neoforged.neoforge.transfer.item.ItemResource;
-import net.neoforged.neoforgespi.language.IModFileInfo;
-import net.neoforged.neoforgespi.language.ModFileScanData;
+import net.minecraftforge.eventbus.api.bus.BusGroup;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraftforge.network.ChannelBuilder;
+import net.minecraftforge.network.PacketDistributor;
+import net.minecraftforge.network.Channel;
+import net.minecraftforge.network.NetworkProtocol;
+import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLLoader;
+import net.minecraftforge.fml.loading.LoadingModList;
+import net.minecraftforge.fml.loading.FMLPaths;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.common.ForgeHooks;
+import net.minecraftforge.common.Tags;
+import net.minecraftforge.event.ForgeEventFactory;
+import net.minecraftforge.entity.PartEntity;
+import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidType;
+import net.minecraftforge.registries.RegisterEvent;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.energy.IEnergyStorage;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.forgespi.language.IModFileInfo;
+import org.objectweb.asm.Type;
+import net.minecraftforge.forgespi.language.ModFileScanData;
+import net.minecraftforge.common.ToolActions;
+import net.minecraftforge.common.loot.CanToolPerformAction;
+import net.minecraftforge.event.TagsUpdatedEvent;
 import snownee.jade.Jade;
 import snownee.jade.addon.universal.ItemCollector;
 import snownee.jade.addon.universal.ItemIterator;
@@ -111,7 +115,6 @@ import snownee.jade.api.view.ViewGroup;
 import snownee.jade.command.JadeServerCommand;
 import snownee.jade.impl.lookup.WrappedHierarchyLookup;
 import snownee.jade.mixin.AbstractHorseAccess;
-import snownee.jade.mixin.CanItemPerformAbilityAccess;
 import snownee.jade.network.ClientHandshakePacket;
 import snownee.jade.network.ReceiveDataPacket;
 import snownee.jade.network.RequestBlockPacket;
@@ -130,7 +133,9 @@ public final class CommonProxy {
 	}
 
 	public static boolean isCorrectToolForDrops(BlockState state, Player player, Level level, BlockPos pos) {
-		return EventHooks.doPlayerHarvestCheck(player, state, level, pos);
+		// Forge's hook takes the vanilla result rather than the level+pos, and the correct-tool check
+		// is what vanilla would have answered.
+		return ForgeEventFactory.doPlayerHarvestCheck(player, state, ForgeHooks.isCorrectToolForDrops(state, player));
 	}
 
 	public static String getModIdFromItem(ItemStack stack) {
@@ -138,7 +143,8 @@ public final class CommonProxy {
 		if (isPhysicallyClient() && Minecraft.getInstance().level != null) {
 			registries = Minecraft.getInstance().level.registryAccess();
 		}
-		String modid = stack.getItem().getCreatorModId(registries, stack);
+		// Forge's IForgeItem takes only the stack; NeoForge threads a registry provider through.
+		String modid = stack.getItem().getCreatorModId(stack);
 		if (modid != null && !Identifier.DEFAULT_NAMESPACE.equals(modid)) {
 			return modid;
 		}
@@ -193,7 +199,7 @@ public final class CommonProxy {
 	}
 
 	public static boolean isPhysicallyClient() {
-		return FMLEnvironment.getDist().isClient();
+		return FMLLoader.getDist().isClient();
 	}
 
 	public static ItemCollector<?> createItemCollector(Accessor<?> accessor, Cache<Object, ItemCollector<?>> containerCache) {
@@ -282,9 +288,9 @@ public final class CommonProxy {
 			return ItemStorageProvider.containerCache.get(
 					storage,
 					() -> new ItemCollector<>(JadeForgeUtils.fromItemHandler(
-							(ResourceHandler<@NonNull ItemResource>) storage,
+							(IItemHandler) storage,
 							0,
-							(Function<Accessor<?>, @Nullable ResourceHandler<@NonNull ItemResource>>) (Object) storageFinder))).update(
+							(Function<Accessor<?>, @Nullable IItemHandler>) (Object) storageFinder))).update(
 					accessor
 			);
 		} catch (Exception e) {
@@ -293,18 +299,8 @@ public final class CommonProxy {
 	}
 
 	@Nullable
-	public static ResourceHandler<ItemResource> findItemHandler(Accessor<?> accessor) {
-		if (accessor instanceof BlockAccessor blockAccessor) {
-			return accessor.getLevel().getCapability(
-					Capabilities.Item.BLOCK,
-					blockAccessor.getPosition(),
-					blockAccessor.getBlockState(),
-					blockAccessor.getBlockEntity(),
-					null);
-		} else if (accessor instanceof EntityAccessor entityAccessor) {
-			return entityAccessor.getEntity().getCapability(Capabilities.Item.ENTITY);
-		}
-		return null;
+	public static IItemHandler findItemHandler(Accessor<?> accessor) {
+		return getDefaultStorage(accessor, ForgeCapabilities.ITEM_HANDLER);
 	}
 
 	@Nullable
@@ -321,7 +317,7 @@ public final class CommonProxy {
 
 	@Nullable
 	public static List<ViewGroup<FluidView.Data>> wrapFluidStorage(Accessor<?> accessor) {
-		ResourceHandler<FluidResource> fluidHandler = getDefaultStorage(accessor, Capabilities.Fluid.BLOCK, Capabilities.Fluid.ENTITY);
+		IFluidHandler fluidHandler = getDefaultStorage(accessor, ForgeCapabilities.FLUID_HANDLER);
 		if (fluidHandler != null) {
 			return JadeForgeUtils.fromFluidHandler(fluidHandler);
 		}
@@ -330,9 +326,9 @@ public final class CommonProxy {
 
 	@Nullable
 	public static List<ViewGroup<EnergyView.Data>> wrapEnergyStorage(Accessor<?> accessor) {
-		EnergyHandler energyStorage = getDefaultStorage(accessor, Capabilities.Energy.BLOCK, Capabilities.Energy.ENTITY);
+		IEnergyStorage energyStorage = getDefaultStorage(accessor, ForgeCapabilities.ENERGY);
 		if (energyStorage != null) {
-			var group = new ViewGroup<>(List.of(new EnergyView.Data(energyStorage.getAmountAsLong(), energyStorage.getCapacityAsLong())));
+			var group = new ViewGroup<>(List.of(new EnergyView.Data(energyStorage.getEnergyStored(), energyStorage.getMaxEnergyStored())));
 			group.getExtraData().putString("Unit", "FE");
 			return List.of(group);
 		}
@@ -340,7 +336,7 @@ public final class CommonProxy {
 	}
 
 	public static boolean isDevEnv() {
-		return !FMLEnvironment.isProduction();
+		return !FMLLoader.isProduction();
 	}
 
 	public static Identifier getId(Block block) {
@@ -369,7 +365,10 @@ public final class CommonProxy {
 	}
 
 	public static ItemStack getBlockPickedResult(BlockState state, Player player, BlockHitResult hitResult) {
-		return state.getCloneItemStack(hitResult.getBlockPos(), player.level(), true, player);
+		// NeoForge adds a Player-aware overload; Forge only has vanilla's (LevelReader, BlockPos,
+		// boolean), so blocks that would customise the picked stack per player fall back to the
+		// standard result.
+		return state.getCloneItemStack(player.level(), hitResult.getBlockPos(), true);
 	}
 
 	public static ItemStack getEntityPickedResult(Entity entity, Player player, EntityHitResult hitResult) {
@@ -378,19 +377,21 @@ public final class CommonProxy {
 
 	public static boolean isModLoaded(String modid) {
 		try {
-			ModList modList = ModList.get();
-			if (modList == null) {
-				return FMLLoader.getCurrent().getLoadingModList().getModFileById(modid) != null;
-			}
-			return modList.isLoaded(modid);
+			return ModList.isLoaded(modid);
 		} catch (Throwable e) {
-			return false;
+			// ModList is not built yet during early loading; the loading list still answers.
+			try {
+				return LoadingModList.getModFileById(modid) != null;
+			} catch (Throwable e2) {
+				return false;
+			}
 		}
 	}
 
 	public static Optional<String> getModVersion(String modid) {
-		return ModList.get().getModContainerById(modid).map($ -> MavenVersionTranslator.artifactVersionToString($.getModInfo()
-				.getVersion()));
+		// NeoForge routed this through MavenVersionTranslator; ArtifactVersion.toString() gives the
+		// same string on Forge.
+		return ModList.getModContainerById(modid).map($ -> $.getModInfo().getVersion().toString());
 	}
 
 	public static void loadComplete() {
@@ -401,14 +402,17 @@ public final class CommonProxy {
 		List<Entrypoint> entrypoints = Lists.newArrayList();
 		Set<IModFileInfo> modFiles = Sets.newIdentityHashSet();
 		Set<String> classNames = Sets.newHashSet();
-		for (ModContainer container : ModList.get().getSortedMods()) {
+		for (ModContainer container : ModList.getLoadedMods()) {
 			IModFileInfo owningFile = container.getModInfo().getOwningFile();
 			if (owningFile == null || !modFiles.add(owningFile)) {
 				continue;
 			}
 			owningFile.getFile()
 					.getScanResult()
-					.getAnnotatedBy(WailaPlugin.class, ElementType.TYPE)
+					.getAnnotations()
+					.stream()
+					.filter($ -> $.targetType() == ElementType.TYPE &&
+							$.annotationType().equals(Type.getType(WailaPlugin.class)))
 					.map($ -> new Entrypoint(container, $))
 					.forEach(entrypoint -> {
 						if (classNames.add(entrypoint.className())) {
@@ -420,7 +424,7 @@ public final class CommonProxy {
 	}
 
 	public static Component getFluidName(JadeFluidObject fluid) {
-		return toFluidStack(fluid).getHoverName();
+		return toFluidStack(fluid).getDisplayName();
 	}
 
 	public static FluidStack toFluidStack(JadeFluidObject fluid) {
@@ -431,7 +435,9 @@ public final class CommonProxy {
 			if (amount > Integer.MAX_VALUE) {
 				amount = Integer.MAX_VALUE;
 			}
-			return new FluidStack(fluid.typeHolder(), (int) amount, fluid.getComponents());
+			// Forge's FluidStack takes the fluid itself and carries variant data as NBT, so the
+			// component patch is dropped here (see JadeForgeUtils for the same trade-off).
+			return new FluidStack(fluid.typeHolder().value(), (int) amount);
 		}
 	}
 
@@ -476,30 +482,29 @@ public final class CommonProxy {
 		return parts[index];
 	}
 
+	/**
+	 * NeoForge resolves capabilities from the level, which lets a mod attach one to a block that has
+	 * no block entity. Forge 26.2 resolves them from the capability provider itself, so a block
+	 * without a block entity cannot expose an inventory, tank or energy buffer here — such blocks
+	 * simply show nothing rather than showing wrong data.
+	 */
 	@Nullable
-	public static <T> T getDefaultStorage(
-			Accessor<?> accessor,
-			BlockCapability<T, ?> blockCapability,
-			EntityCapability<T, ?> entityCapability) {
+	public static <T> T getDefaultStorage(Accessor<?> accessor, Capability<T> capability) {
 		if (accessor instanceof BlockAccessor blockAccessor) {
-			return accessor.getLevel().getCapability(
-					blockCapability,
-					blockAccessor.getPosition(),
-					blockAccessor.getBlockState(),
-					blockAccessor.getBlockEntity(),
-					null);
+			BlockEntity blockEntity = blockAccessor.getBlockEntity();
+			if (blockEntity == null) {
+				return null;
+			}
+			return blockEntity.getCapability(capability, null).orElse(null);
 		} else if (accessor instanceof EntityAccessor entityAccessor) {
-			return entityAccessor.getEntity().getCapability(entityCapability, null);
+			return entityAccessor.getEntity().getCapability(capability, null).orElse(null);
 		}
 		return null;
 	}
 
-	public static <T> boolean hasDefaultStorage(
-			Accessor<?> accessor,
-			BlockCapability<T, ?> blockCapability,
-			EntityCapability<T, ?> entityCapability) {
+	public static <T> boolean hasDefaultStorage(Accessor<?> accessor, Capability<T> capability) {
 		if (accessor instanceof BlockAccessor || accessor instanceof EntityAccessor) {
-			return getDefaultStorage(accessor, blockCapability, entityCapability) != null;
+			return getDefaultStorage(accessor, capability) != null;
 		}
 		return true;
 	}
@@ -509,15 +514,15 @@ public final class CommonProxy {
 				blockAccessor.getBlock() instanceof WorldlyContainerHolder) {
 			return true;
 		}
-		return hasDefaultStorage(accessor, Capabilities.Item.BLOCK, Capabilities.Item.ENTITY);
+		return hasDefaultStorage(accessor, ForgeCapabilities.ITEM_HANDLER);
 	}
 
 	public static boolean hasDefaultFluidStorage(Accessor<?> accessor) {
-		return hasDefaultStorage(accessor, Capabilities.Fluid.BLOCK, Capabilities.Fluid.ENTITY);
+		return hasDefaultStorage(accessor, ForgeCapabilities.FLUID_HANDLER);
 	}
 
 	public static boolean hasDefaultEnergyStorage(Accessor<?> accessor) {
-		return hasDefaultStorage(accessor, Capabilities.Energy.BLOCK, Capabilities.Energy.ENTITY);
+		return hasDefaultStorage(accessor, ForgeCapabilities.ENERGY);
 	}
 
 	public static long bucketVolume() {
@@ -529,7 +534,11 @@ public final class CommonProxy {
 	}
 
 	public static void registerTagsUpdatedListener(BiConsumer<HolderLookup.Provider, Boolean> listener) {
-		NeoForge.EVENT_BUS.addListener((TagsUpdatedEvent.ClientPacketReceived event) -> listener.accept(event.getRegistries(), true));
+		TagsUpdatedEvent.BUS.addListener(event -> {
+			if (event.getUpdateCause() == TagsUpdatedEvent.UpdateCause.CLIENT_PACKET_RECEIVED) {
+				listener.accept(event.getRegistryAccess(), true);
+			}
+		});
 		componentsBoundListeners.add(listener);
 	}
 
@@ -551,8 +560,8 @@ public final class CommonProxy {
 					return true;
 				}
 			}
-		} else if (condition instanceof CanItemPerformAbilityAccess canItemPerformAbility) {
-			return canItemPerformAbility.getAbility() == ItemAbilities.SHEARS_DIG;
+		} else if (condition instanceof CanToolPerformAction canToolPerformAction) {
+			return canToolPerformAction.action() == ToolActions.SHEARS_DIG;
 		}
 		return false;
 	}
@@ -575,47 +584,58 @@ public final class CommonProxy {
 		return null;
 	}
 
-	public CommonProxy(IEventBus modBus) {
-		modBus.addListener(FMLLoadCompleteEvent.class, event -> event.enqueueWork(CommonProxy::loadComplete));
-		modBus.addListener(
-				RegisterPayloadHandlersEvent.class, event -> {
-					event.registrar(Jade.ID)
-							.versioned(Jade.PROTOCOL_VERSION)
-							.optional()
-							.playToClient(
-									ReceiveDataPacket.TYPE,
-									ReceiveDataPacket.CODEC,
-									(payload, context) -> ReceiveDataPacket.handle(payload, context::enqueueWork))
-							.playToServer(
-									RequestEntityPacket.TYPE,
-									RequestEntityPacket.CODEC,
-									(payload, context) -> RequestEntityPacket.handle(payload, () -> (ServerPlayer) context.player()))
-							.playToServer(
-									RequestBlockPacket.TYPE,
-									RequestBlockPacket.CODEC,
-									(payload, context) -> RequestBlockPacket.handle(payload, () -> (ServerPlayer) context.player()))
-							.playToServer(
-									ClientHandshakePacket.TYPE,
-									ClientHandshakePacket.CODEC,
-									(payload, context) -> ClientHandshakePacket.handle(payload, () -> (ServerPlayer) context.player()))
-							.playToClient(
-									ServerHandshakePacket.TYPE,
-									ServerHandshakePacket.CODEC,
-									(payload, context) -> ServerHandshakePacket.handle(payload, context::enqueueWork))
-							.playToClient(
-									ShowOverlayPacket.TYPE,
-									ShowOverlayPacket.CODEC,
-									(payload, context) -> ShowOverlayPacket.handle(payload, context::enqueueWork));
-				});
-		modBus.addListener(
-				RegisterEvent.class, event -> {
-					if (event.getRegistryKey() == Registries.GAME_RULE) {
-						Jade.registerGameRules();
-					}
-				});
-		NeoForge.EVENT_BUS.addListener(CommonProxy::registerServerCommand);
+	// The payload codecs live in this channel, not in vanilla's custom-payload registry, so every
+	// send has to go through it. Wrapping a payload in a vanilla Clientbound/ServerboundCustomPayload
+	// packet and pushing it straight onto the connection makes the encoder fail.
+	static Channel<CustomPacketPayload> CHANNEL;
+
+	public CommonProxy(FMLJavaModLoadingContext loadingContext) {
+		// named loadingContext: the packet handler lambdas below already bind a 'context'
+		BusGroup modBusGroup = loadingContext.getModBusGroup();
+		FMLLoadCompleteEvent.getBus(modBusGroup).addListener(event -> event.enqueueWork(CommonProxy::loadComplete));
+		// NeoForge registers payloads through RegisterPayloadHandlersEvent and a fluent registrar.
+		// Forge 26.2 builds a named channel instead: the payload types keep their own ids, but the
+		// channel itself needs one, hence "jade:main".
+		CHANNEL = ChannelBuilder.named(Identifier.fromNamespaceAndPath(Jade.ID, "main"))
+				.networkProtocolVersion(Integer.parseInt(Jade.PROTOCOL_VERSION))
+				.optional()
+				.payloadChannel()
+				.protocol(NetworkProtocol.PLAY)
+				.clientbound()
+				.addMain(
+						ReceiveDataPacket.TYPE,
+						ReceiveDataPacket.CODEC.<RegistryFriendlyByteBuf>mapStream(buf -> buf),
+						(payload, context) -> ReceiveDataPacket.handle(payload, context::enqueueWork))
+				.addMain(
+						ServerHandshakePacket.TYPE,
+						ServerHandshakePacket.CODEC,
+						(payload, context) -> ServerHandshakePacket.handle(payload, context::enqueueWork))
+				.addMain(
+						ShowOverlayPacket.TYPE,
+						ShowOverlayPacket.CODEC,
+						(payload, context) -> ShowOverlayPacket.handle(payload, context::enqueueWork))
+				.serverbound()
+				.addMain(
+						RequestEntityPacket.TYPE,
+						RequestEntityPacket.CODEC,
+						(payload, context) -> RequestEntityPacket.handle(payload, context::getSender))
+				.addMain(
+						RequestBlockPacket.TYPE,
+						RequestBlockPacket.CODEC,
+						(payload, context) -> RequestBlockPacket.handle(payload, context::getSender))
+				.addMain(
+						ClientHandshakePacket.TYPE,
+						ClientHandshakePacket.CODEC,
+						(payload, context) -> ClientHandshakePacket.handle(payload, context::getSender))
+				.build();
+		RegisterEvent.getBus(modBusGroup).addListener(event -> {
+			if (event.getRegistryKey() == Registries.GAME_RULE) {
+				Jade.registerGameRules();
+			}
+		});
+		RegisterCommandsEvent.BUS.addListener(CommonProxy::registerServerCommand);
 		if (isPhysicallyClient()) {
-			ClientProxy.init(modBus);
+			ClientProxy.init(modBusGroup);
 		}
 	}
 
@@ -624,7 +644,7 @@ public final class CommonProxy {
 	}
 
 	public static void sendPacket(ServerPlayer player, CustomPacketPayload payload) {
-		player.connection.send(payload);
+		CHANNEL.send(payload, PacketDistributor.PLAYER.with(player));
 	}
 
 	@SuppressWarnings("deprecation")
@@ -642,9 +662,8 @@ public final class CommonProxy {
 
 	@Nullable
 	public static Either<String, Component> getTranslatableName(@Nullable Object object) {
-		if (object instanceof TranslatableEnum translatableEnum) {
-			return Either.right(translatableEnum.getTranslatedName());
-		}
+		// TranslatableEnum is a NeoForge interface with no Forge counterpart. Enum values that
+		// relied on it fall back to their raw name in the config screen.
 		return null;
 	}
 

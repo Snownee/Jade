@@ -108,11 +108,17 @@ public class JadeCodecs {
 					if (f != (int) f) {
 						buf.writeByte(3);
 						ByteBufCodecs.FLOAT.encode(buf, f);
+						// return: without it a non-integral value was also written a second time in
+						// its integer form, leaving bytes the decoder never reads.
+						return;
 					}
 					int i = n.intValue();
 					if (i <= Byte.MAX_VALUE - 20 && i >= 0) {
 						buf.writeByte(i + 20);
 					} else {
+						// the decoder switches on a leading tag byte, so an int outside the packed
+						// range has to announce itself as tag 2 before its VarInt.
+						buf.writeByte(2);
 						ByteBufCodecs.VAR_INT.encode(buf, i);
 					}
 				}

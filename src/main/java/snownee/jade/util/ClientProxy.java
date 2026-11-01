@@ -50,30 +50,28 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.ModList;
-import net.neoforged.fml.ModLoadingContext;
-import net.neoforged.neoforge.client.ItemDecoratorHandler;
-import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
-import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent;
-import net.neoforged.neoforge.client.event.InputEvent;
-import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
-import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
-import net.neoforged.neoforge.client.event.RenderGuiEvent;
-import net.neoforged.neoforge.client.event.RenderTooltipEvent;
-import net.neoforged.neoforge.client.event.ScreenEvent;
-import net.neoforged.neoforge.client.fluid.FluidTintSource;
-import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
-import net.neoforged.neoforge.client.settings.KeyConflictContext;
-import net.neoforged.neoforge.client.settings.KeyModifier;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
-import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
-import net.neoforged.neoforgespi.language.IModInfo;
+import net.minecraft.client.color.block.BlockTintSource;
+import net.minecraftforge.client.ItemDecoratorHandler;
+import net.minecraftforge.client.event.AddGuiOverlayLayersEvent;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
+import net.minecraftforge.client.event.CustomizeGuiOverlayEvent;
+import net.minecraftforge.client.event.InputEvent;
+import net.minecraftforge.client.event.RegisterClientCommandsEvent;
+import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
+import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
+import net.minecraftforge.client.event.RenderTooltipEvent;
+import net.minecraftforge.client.event.ScreenEvent;
+import net.minecraftforge.client.settings.KeyConflictContext;
+import net.minecraftforge.client.settings.KeyModifier;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.EntityLeaveLevelEvent;
+import net.minecraftforge.eventbus.api.bus.BusGroup;
+import net.minecraftforge.eventbus.api.listener.Priority;
+import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.fml.ModList;
+import net.minecraftforge.forgespi.language.IModInfo;
 import snownee.jade.Jade;
 import snownee.jade.JadeClient;
 import snownee.jade.api.Accessor;
@@ -114,7 +112,7 @@ public final class ClientProxy {
 				return Optional.of(I18n.get(modMenuKey));
 			}
 		}
-		return ModList.get().getModContainerById(namespace)
+		return ModList.getModContainerById(namespace)
 				.map(ModContainer::getModInfo)
 				.map(IModInfo::getDisplayName)
 				.filter(Predicate.not(Strings::isNullOrEmpty));
@@ -164,7 +162,7 @@ public final class ClientProxy {
 		}
 	}
 
-	private static void onClientTick(ClientTickEvent.Post event) {
+	private static void onClientTick(TickEvent.ClientTickEvent.Post event) {
 		try {
 			JadeClient.tickHandler().tickClient();
 		} catch (Throwable e) {
@@ -193,12 +191,16 @@ public final class ClientProxy {
 	}
 
 	public static KeyMapping registerKeyBinding(String desc, int defaultKey) {
+		// Forge keeps the input type and key code separate, and takes a sort order, where NeoForge
+		// passed a resolved InputConstants.Key.
 		KeyMapping key = new KeyMapping(
 				"key.jade." + desc,
 				KeyConflictContext.IN_GAME,
 				KeyModifier.NONE,
-				InputConstants.Type.KEYSYM.getOrCreate(defaultKey),
-				JadeClient.keyMappingCategory);
+				InputConstants.Type.KEYSYM,
+				defaultKey,
+				JadeClient.keyMappingCategory,
+				0);
 		keys.add(key);
 		return key;
 	}
@@ -216,11 +218,14 @@ public final class ClientProxy {
 		listeners.add(listener);
 	}
 
-	private static void drawBossBarPre(CustomizeGuiOverlayEvent.BossEventProgress event) {
+	// EventBus 7 cancels through the listener's return value rather than a method on the event,
+	// so this returns true to cancel and false to let the bar draw.
+	private static boolean drawBossBarPre(CustomizeGuiOverlayEvent.BossEventProgress event) {
 		IWailaConfig.BossBarOverlapMode mode = Jade.config().general().getBossBarOverlapMode();
 		if (mode == IWailaConfig.BossBarOverlapMode.HIDE_BOSS_BAR && OverlayRenderer.shown) {
-			event.setCanceled(true);
+			return true;
 		}
+		return false;
 	}
 
 	public static void drawBossBarPost(LerpingBossEvent bossEvent, int bottom) {
@@ -269,7 +274,7 @@ public final class ClientProxy {
 		Fluid type = fluid.typeHolder().value();
 		FluidModel model = Minecraft.getInstance().getModelManager().getFluidStateModelSet().get(type.defaultFluidState());
 		TextureAtlasSprite sprite = model.stillMaterial().sprite();
-		FluidTintSource tintSource = model.fluidTintSource();
+		BlockTintSource tintSource = model.tintSource();
 		int fluidColor = tintSource == null ? -1 : tintSource.colorAsTerrainParticle(
 				type.defaultFluidState().createLegacyBlock(),
 				Objects.requireNonNull(Minecraft.getInstance().level),
@@ -320,51 +325,55 @@ public final class ClientProxy {
 		return state.is(BlockTags.ENCHANTMENT_POWER_PROVIDER) ? 1 : 0;
 	}
 
-	public static void init(IEventBus modBus) {
-		NeoForge.EVENT_BUS.addListener(ClientProxy::onEntityJoin);
-		NeoForge.EVENT_BUS.addListener(ClientProxy::onEntityLeave);
-		NeoForge.EVENT_BUS.addListener(EventPriority.LOWEST, ClientProxy::onTooltip);
-		NeoForge.EVENT_BUS.addListener(ClientProxy::onClientTick);
-		NeoForge.EVENT_BUS.addListener(ClientProxy::onPlayerJoin);
-		NeoForge.EVENT_BUS.addListener(ClientProxy::onPlayerLeave);
-		NeoForge.EVENT_BUS.addListener(ClientProxy::registerCommands);
-		NeoForge.EVENT_BUS.addListener(ClientProxy::onKeyPressed);
-		NeoForge.EVENT_BUS.addListener(ClientProxy::onGui);
-		NeoForge.EVENT_BUS.addListener(EventPriority.HIGHEST, ClientProxy::drawBossBarPre);
-		NeoForge.EVENT_BUS.addListener(EventPriority.LOWEST, true, ClientProxy::drawBossBarPostInternal);
-		NeoForge.EVENT_BUS.addListener(
-				RenderGuiEvent.Post.class, event -> {
+	// EventBus 7 has no single game bus to register against: every event type carries its own
+	// static BUS, and the mod-bus events are reached through the mod's BusGroup.
+	public static void init(BusGroup modBusGroup) {
+		EntityJoinLevelEvent.BUS.addListener(ClientProxy::onEntityJoin);
+		EntityLeaveLevelEvent.BUS.addListener(ClientProxy::onEntityLeave);
+		RenderTooltipEvent.GatherComponents.BUS.addListener(Priority.LOWEST, ClientProxy::onTooltip);
+		TickEvent.ClientTickEvent.Post.BUS.addListener(ClientProxy::onClientTick);
+		ClientPlayerNetworkEvent.LoggingIn.BUS.addListener(ClientProxy::onPlayerJoin);
+		ClientPlayerNetworkEvent.LoggingOut.BUS.addListener(ClientProxy::onPlayerLeave);
+		RegisterClientCommandsEvent.BUS.addListener(ClientProxy::registerCommands);
+		InputEvent.Key.BUS.addListener(ClientProxy::onKeyPressed);
+		ScreenEvent.Init.Pre.BUS.addListener(ClientProxy::onGui);
+		CustomizeGuiOverlayEvent.BossEventProgress.BUS.addListener(Priority.HIGHEST, ClientProxy::drawBossBarPre);
+		CustomizeGuiOverlayEvent.BossEventProgress.BUS.addListener(Priority.LOWEST, ClientProxy::drawBossBarPostInternal);
+
+		// Forge 26.2 dropped RenderGuiEvent in favour of a HUD layer stack, so the overlay is added
+		// as a layer instead of drawn from a post-render event.
+		AddGuiOverlayLayersEvent.BUS.addListener(event -> event.getLayeredDraw().add(
+				Identifier.fromNamespaceAndPath(Jade.ID, "overlay"),
+				(guiGraphics, deltaTracker) -> {
 					if (Minecraft.getInstance().gui.screen() == null) {
-						onRenderTick(event.getGuiGraphics(), event.getPartialTick().getRealtimeDeltaTicks());
+						onRenderTick(guiGraphics, deltaTracker.getRealtimeDeltaTicks());
 					}
-				});
-		NeoForge.EVENT_BUS.addListener(
-				ScreenEvent.Render.Pre.class, event -> {
-					Minecraft mc = Minecraft.getInstance();
-					Screen screen = event.getScreen();
-					if (shouldShowBeforeGui(mc, screen) && !shouldShowAfterGui(mc, screen)) {
-						onRenderTick(event.getGuiGraphics(), event.getPartialTick());
-					}
-				});
-		NeoForge.EVENT_BUS.addListener(
-				ScreenEvent.Render.Post.class, event -> {
-					if (shouldShowAfterGui(Minecraft.getInstance(), event.getScreen())) {
-						onRenderTick(event.getGuiGraphics(), event.getPartialTick());
-					}
-				});
-		modBus.addListener(
-				AddClientReloadListenersEvent.class, event -> {
-					listeners.forEach($ -> event.addListener($.getUid(), $));
-					listeners.clear();
-				});
-		modBus.addListener(
-				RegisterKeyMappingsEvent.class, event -> {
-					keys.forEach(event::register);
-					keys.clear();
-				});
-		ModLoadingContext.get().registerExtensionPoint(
-				IConfigScreenFactory.class,
-				() -> (modContainer, screen) -> new HomeConfigScreen(screen));
+				}));
+
+		ScreenEvent.Render.Pre.BUS.addListener(event -> {
+			Minecraft mc = Minecraft.getInstance();
+			Screen screen = event.getScreen();
+			if (shouldShowBeforeGui(mc, screen) && !shouldShowAfterGui(mc, screen)) {
+				onRenderTick(event.getGuiGraphics(), event.getPartialTick());
+			}
+		});
+		ScreenEvent.Render.Post.BUS.addListener(event -> {
+			if (shouldShowAfterGui(Minecraft.getInstance(), event.getScreen())) {
+				onRenderTick(event.getGuiGraphics(), event.getPartialTick());
+			}
+		});
+
+		RegisterClientReloadListenersEvent.BUS.addListener(event -> {
+			listeners.forEach($ -> event.registerReloadListener($));
+			listeners.clear();
+		});
+		RegisterKeyMappingsEvent.BUS.addListener(event -> {
+			keys.forEach(event::register);
+			keys.clear();
+		});
+
+		// Forge 26.2 registers the config screen directly rather than through an extension point.
+		MinecraftForge.registerConfigScreen((minecraft, screen) -> new HomeConfigScreen(screen));
 
 		//noinspection ConstantValue
 		for (int i = InputConstants.KEY_NUMPAD0; i <= InputConstants.KEY_NUMPAD9; i++) {
@@ -382,7 +391,9 @@ public final class ClientProxy {
 	}
 
 	public static void sendPacket(CustomPacketPayload payload) {
-		Objects.requireNonNull(Minecraft.getInstance().getConnection()).send(payload);
+		// Must go through the channel: it owns the codecs for Jade's payloads. Sending a vanilla
+		// custom-payload packet directly fails to encode.
+		CommonProxy.CHANNEL.send(payload, Objects.requireNonNull(Minecraft.getInstance().getConnection()).getConnection());
 	}
 
 	public static boolean shouldFetchFromServer(@Nullable UUID uuid) {
