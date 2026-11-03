@@ -13,17 +13,16 @@ import org.joml.Matrix3x2f;
 import org.jspecify.annotations.Nullable;
 
 import com.google.common.base.Suppliers;
-import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import com.mojang.renderpearl.api.textures.GpuSampler;
 import com.mojang.renderpearl.api.textures.GpuTextureView;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.client.gui.render.TextureSetup;
-import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureHandle;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
@@ -89,12 +88,12 @@ public class DisplayHelper implements IDisplayHelper {
 	}
 
 	public static void fill(GuiGraphicsExtractor graphics, float minX, float minY, float maxX, float maxY, int color) {
-		fill(graphics, RenderPipelines.GUI, minX, minY, maxX, maxY, color);
+		fill(graphics, GuiPipeline.DEFAULT, minX, minY, maxX, maxY, color);
 	}
 
 	public static void fill(
 			GuiGraphicsExtractor graphics,
-			RenderPipeline renderPipeline,
+			GuiPipeline renderPipeline,
 			float minX,
 			float minY,
 			float maxX,
@@ -177,7 +176,7 @@ public class DisplayHelper implements IDisplayHelper {
 						color = Overlay.applyAlpha(color, opacity());
 						blitTiledSprite(
 								graphics,
-								RenderPipelines.GUI_TEXTURED,
+								GuiPipeline.TEXTURED,
 								sprite,
 								xPosition,
 								yPosition,
@@ -196,7 +195,7 @@ public class DisplayHelper implements IDisplayHelper {
 
 	public void blitSprite(
 			GuiGraphicsExtractor graphics,
-			RenderPipeline renderPipeline,
+			GuiPipeline renderPipeline,
 			TextureAtlasSprite textureAtlasSprite,
 			float spriteWidth,
 			float spriteHeight,
@@ -308,7 +307,7 @@ public class DisplayHelper implements IDisplayHelper {
 
 	@Override
 	public MutableComponent stripColor(Component component) {
-		if (component.getSiblings().isEmpty() && component.visit(s -> {
+		if (component.getSiblings().isEmpty() && component.visitUnbounded(s -> {
 			if (STRIP_COLOR.matcher(s).find()) {
 				return Optional.of(s);
 			}
@@ -317,7 +316,7 @@ public class DisplayHelper implements IDisplayHelper {
 			return component.copy().withStyle(component.getStyle().withColor((TextColor) null));
 		}
 		MutableComponent mutableComponent = Component.empty();
-		component.visit(
+		component.visitUnbounded(
 				(style, string) -> {
 					if (!string.isEmpty()) {
 						MutableComponent literal = Component.literal(STRIP_COLOR.matcher(string).replaceAll(""));
@@ -332,7 +331,7 @@ public class DisplayHelper implements IDisplayHelper {
 	@Override
 	public void blitSprite(
 			GuiGraphicsExtractor graphics,
-			RenderPipeline renderPipeline,
+			GuiPipeline renderPipeline,
 			Identifier sprite,
 			int i,
 			int j,
@@ -345,7 +344,7 @@ public class DisplayHelper implements IDisplayHelper {
 	@Override
 	public void blitSprite(
 			GuiGraphicsExtractor graphics,
-			RenderPipeline renderPipeline,
+			GuiPipeline renderPipeline,
 			Identifier sprite,
 			int i,
 			int j,
@@ -360,7 +359,7 @@ public class DisplayHelper implements IDisplayHelper {
 	@Override
 	public void blitSprite(
 			GuiGraphicsExtractor graphics,
-			RenderPipeline renderPipeline,
+			GuiPipeline renderPipeline,
 			Identifier sprite,
 			int spriteWidth,
 			int spriteHeight,
@@ -377,7 +376,7 @@ public class DisplayHelper implements IDisplayHelper {
 	@Override
 	public void blitSprite(
 			GuiGraphicsExtractor graphics,
-			RenderPipeline renderPipeline,
+			GuiPipeline renderPipeline,
 			Identifier sprite,
 			int spriteWidth,
 			int spriteHeight,
@@ -395,7 +394,7 @@ public class DisplayHelper implements IDisplayHelper {
 
 	public void blitTiledSprite(
 			GuiGraphicsExtractor graphics,
-			RenderPipeline renderPipeline,
+			GuiPipeline renderPipeline,
 			TextureAtlasSprite textureAtlasSprite,
 			float x,
 			float y,
@@ -441,7 +440,7 @@ public class DisplayHelper implements IDisplayHelper {
 
 	public void blit(
 			GuiGraphicsExtractor graphics,
-			RenderPipeline renderPipeline,
+			GuiPipeline renderPipeline,
 			Identifier Identifier,
 			int i,
 			int j,
@@ -457,7 +456,7 @@ public class DisplayHelper implements IDisplayHelper {
 
 	public void blit(
 			GuiGraphicsExtractor graphics,
-			RenderPipeline renderPipeline,
+			GuiPipeline renderPipeline,
 			Identifier Identifier,
 			int i,
 			int j,
@@ -472,7 +471,7 @@ public class DisplayHelper implements IDisplayHelper {
 
 	public void blit(
 			GuiGraphicsExtractor graphics,
-			RenderPipeline renderPipeline,
+			GuiPipeline renderPipeline,
 			Identifier Identifier,
 			int i,
 			int j,
@@ -489,7 +488,7 @@ public class DisplayHelper implements IDisplayHelper {
 
 	public void blit(
 			GuiGraphicsExtractor graphics,
-			RenderPipeline renderPipeline,
+			GuiPipeline renderPipeline,
 			Identifier Identifier,
 			int i,
 			int j,
@@ -529,12 +528,12 @@ public class DisplayHelper implements IDisplayHelper {
 			float g,
 			float h,
 			float m) {
-		this.innerBlit(graphics, RenderPipelines.GUI_TEXTURED, Identifier, i, k, j, l, f, g, h, m, -1);
+		this.innerBlit(graphics, GuiPipeline.TEXTURED, Identifier, i, k, j, l, f, g, h, m, -1);
 	}
 
 	private void innerBlit(
 			GuiGraphicsExtractor graphics,
-			RenderPipeline renderPipeline,
+			GuiPipeline renderPipeline,
 			Identifier sprite,
 			float x0,
 			float x1,
@@ -545,13 +544,13 @@ public class DisplayHelper implements IDisplayHelper {
 			float u1,
 			float v1,
 			int color) {
-		AbstractTexture texture = Minecraft.getInstance().getTextureManager().getTexture(sprite);
-		this.submitBlit(graphics, renderPipeline, texture.getTextureView(), texture.getSampler(), x0, y0, x1, y1, u0, v0, u1, v1, color);
+		TextureHandle texture = Minecraft.getInstance().getTextureManager().getTexture(sprite);
+		this.submitBlit(graphics, renderPipeline, texture.textureView(), texture.sampler(), x0, y0, x1, y1, u0, v0, u1, v1, color);
 	}
 
 	private void submitBlit(
 			GuiGraphicsExtractor graphics,
-			RenderPipeline renderPipeline,
+			GuiPipeline renderPipeline,
 			GpuTextureView gpuTextureView,
 			GpuSampler sampler,
 			float x0,
@@ -599,7 +598,7 @@ public class DisplayHelper implements IDisplayHelper {
 
 	public void blitSprite(
 			GuiGraphicsExtractor graphics,
-			RenderPipeline renderPipeline,
+			GuiPipeline renderPipeline,
 			Identifier sprite,
 			int spriteWidth,
 			int spriteHeight,

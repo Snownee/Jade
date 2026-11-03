@@ -1,12 +1,9 @@
 package snownee.jade.mixin;
 
-import org.joml.Vector4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import com.llamalad7.mixinextras.sugar.Local;
 
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
@@ -24,8 +21,9 @@ public class FogRendererMixin {
 			DeltaTracker deltaTracker,
 			float darkenWorldAmount,
 			ClientLevel level,
-			CallbackInfoReturnable<Vector4f> cir,
-			@Local(name = "fog") FogData fog) {
+			boolean shouldCreateBossFog,
+			CallbackInfoReturnable<FogData> cir) {
+		FogData fog = cir.getReturnValue();
 		JadeClient.renderDistanceStart = fog.renderDistanceStart;
 		JadeClient.renderDistanceEnd = fog.renderDistanceEnd;
 	}

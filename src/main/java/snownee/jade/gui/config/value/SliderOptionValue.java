@@ -58,7 +58,7 @@ public class SliderOptionValue extends OptionValue<Float> {
 		}
 
 		public static double fromScaled(float f, float min, float max) {
-			return Mth.clamp((f - min) / (max - min), 0, 1);
+			return Math.clamp((f - min) / (max - min), 0F, 1F);
 		}
 
 		public float toScaled() {

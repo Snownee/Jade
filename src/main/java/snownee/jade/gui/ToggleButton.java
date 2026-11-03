@@ -4,9 +4,9 @@ import java.util.List;
 
 import net.minecraft.client.OptionInstance;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -27,7 +27,6 @@ public class ToggleButton extends CycleButton<Boolean> {
 			int index,
 			boolean value,
 			Component message,
-			Component name,
 			CycleButton.OnValueChange<Boolean> onValueChange,
 			OptionInstance.TooltipSupplier<Boolean> tooltipSupplier) {
 		super(
@@ -36,7 +35,6 @@ public class ToggleButton extends CycleButton<Boolean> {
 				WIDTH,
 				HEIGHT,
 				message,
-				name,
 				index,
 				value,
 				() -> value,
@@ -60,7 +58,7 @@ public class ToggleButton extends CycleButton<Boolean> {
 			boolean value,
 			CycleButton.OnValueChange<Boolean> onValueChange,
 			OptionInstance.TooltipSupplier<Boolean> tooltipSupplier) {
-		return new ToggleButton(x, y, VALUES.indexOf(value), value, CommonComponents.optionNameValue(name, stringify(value)), name, onValueChange, tooltipSupplier);
+		return new ToggleButton(x, y, VALUES.indexOf(value), value, CommonComponents.optionNameValue(name, stringify(value)), onValueChange, tooltipSupplier);
 	}
 
 	private static Component stringify(boolean value) {
@@ -73,8 +71,8 @@ public class ToggleButton extends CycleButton<Boolean> {
 	}
 
 	@Override
-	protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
-		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, currentSprite(), getX(), getY(), WIDTH, HEIGHT);
+	protected void extractContents(GuiGraphicsExtractor graphics) {
+		graphics.blitSprite(GuiPipeline.TEXTURED, currentSprite(), getX(), getY(), WIDTH, HEIGHT);
 	}
 
 	@Override

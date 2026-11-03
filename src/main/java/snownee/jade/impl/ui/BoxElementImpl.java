@@ -195,7 +195,11 @@ public class BoxElementImpl extends BoxElement implements ContainerEventHandler 
 		graphics.enableScissor(getX(), getY(), getX() + getWidth(), getY() + getHeight());
 		for (Renderable renderable : renderables) {
 			try {
-				renderable.extractRenderState(graphics, mouseX, mouseY, partialTicks);
+				if (renderable instanceof Element element) {
+					element.extractRenderState(graphics, mouseX, mouseY, partialTicks);
+				} else {
+					renderable.extractRenderState(graphics);
+				}
 			} catch (Exception e) {
 				WailaExceptionHandler.handleErr(e, null, null);
 				IDisplayHelper.get().drawBorder(graphics, ((LayoutElement) renderable).getRectangle(), 1, 0x88FF0000, true);
@@ -343,7 +347,7 @@ public class BoxElementImpl extends BoxElement implements ContainerEventHandler 
 				graphics,
 				x + offset3,
 				top - 1 + offset0,
-				x + offset3 + width * Mth.clamp(progress.progress(), 0, 1),
+				x + offset3 + width * Math.clamp(progress.progress(), 0F, 1F),
 				top + offset2,
 				color);
 	}

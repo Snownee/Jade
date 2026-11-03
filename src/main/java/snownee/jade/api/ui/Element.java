@@ -139,6 +139,10 @@ public abstract class Element implements Renderable, LayoutElement, NarrationSup
 	}
 
 	@Override
+	public final void extractRenderState(GuiGraphicsExtractor graphics) {
+		extractRenderState(graphics, graphics.mouseX(), graphics.mouseY(), graphics.partialTicks());
+	}
+
 	public abstract void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks);
 
 	@Override

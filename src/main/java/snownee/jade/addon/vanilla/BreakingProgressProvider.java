@@ -50,7 +50,7 @@ public enum BreakingProgressProvider implements IBoxProgressProvider {
 			progressAlpha = progress = 1;
 		} else {
 			progress = playerController.destroyProgress + mc.getDeltaTracker().getGameTimeDeltaPartialTick(false) * progress;
-			progress = Mth.clamp(progress, 0, 1);
+			progress = Math.clamp(progress, 0F, 1F);
 		}
 		return new BoxProgress(progress, canHarvest ? MessageType.TITLE : MessageType.FAILURE, null, progressAlpha);
 	}

@@ -18,6 +18,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.inventory.SlotWidget;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTextTooltip;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
@@ -76,9 +77,11 @@ public class GuiGraphicsExtractorMixin implements JadeGuiGraphics {
 			boolean extraSpaceAfterFirstLine,
 			CallbackInfo ci) {
 		ItemStack itemStack = jade$itemTooltipContext;
-		if (itemStack.isEmpty() && minecraft.gui.screen() instanceof AbstractContainerScreen<?> screen && screen.hoveredSlot != null &&
-				screen.hoveredSlot.hasItem()) {
-			itemStack = screen.hoveredSlot.getItem();
+		if (itemStack.isEmpty() && minecraft.gui.screen() instanceof AbstractContainerScreen<?> screen) {
+			SlotWidget hoveredSlot = screen.getHoveredSlot();
+			if (hoveredSlot != null && hoveredSlot.slot().hasItem()) {
+				itemStack = hoveredSlot.slot().getItem();
+			}
 		}
 		try {
 			Component name = JadeClient.appendModName(itemStack);

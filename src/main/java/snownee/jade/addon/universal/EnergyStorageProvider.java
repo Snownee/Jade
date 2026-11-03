@@ -7,7 +7,7 @@ import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
@@ -51,7 +51,7 @@ public class EnergyStorageProvider<T extends Accessor<?>> implements StreamServe
 		public static final Client<BlockAccessor> BLOCK = new Client<>();
 		public static final Client<EntityAccessor> ENTITY = new Client<>();
 		private static final Element PROGRESS_OVERLAY = JadeUI.horizontalTiledSprite(
-				RenderPipelines.GUI_TEXTURED,
+				GuiPipeline.TEXTURED,
 				JadeIds.JADE("energy_progress"),
 				16,
 				16);
@@ -106,7 +106,7 @@ public class EnergyStorageProvider<T extends Accessor<?>> implements StreamServe
 								}
 								case PROGRESS_BAR -> {
 									ProgressView progressView = new ProgressView(
-											ProgressView.Part.of(Mth.clamp(view.ratio, 0, 1), PROGRESS_OVERLAY),
+											ProgressView.Part.of(Math.clamp(view.ratio, 0F, 1F), PROGRESS_OVERLAY),
 											text,
 											JadeUI.progressStyle(),
 											BoxStyle.nestedBox());

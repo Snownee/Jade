@@ -22,7 +22,7 @@ public abstract class SmoothScrollableList<E extends ContainerObjectSelectionLis
 		if (ClientProxy.metadata.hasSmoothScroll()) {
 			super.setScrollAmount(scroll);
 		} else {
-			smoothScroll.target(Mth.clamp((float) scroll, 0, maxScrollAmount()));
+			smoothScroll.target(Math.clamp((float) scroll, 0F, (float) maxScrollAmount()));
 		}
 	}
 
@@ -41,7 +41,7 @@ public abstract class SmoothScrollableList<E extends ContainerObjectSelectionLis
 		if (!scrolling) {
 			E entry = getEntryAtPosition(event.x(), event.y());
 			if (entry == null || !entry.isDragging()) {
-				smoothScroll.target(Mth.clamp((float) (scrollAmount() - dy), 0, maxScrollAmount()));
+				smoothScroll.target(Math.clamp((float) (scrollAmount() - dy), 0F, (float) maxScrollAmount()));
 			}
 		}
 		smoothScroll.value = smoothScroll.getTarget();

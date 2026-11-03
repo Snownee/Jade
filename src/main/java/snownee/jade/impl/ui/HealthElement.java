@@ -6,8 +6,8 @@ import org.jspecify.annotations.Nullable;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.client.gui.Hud;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
@@ -95,7 +95,7 @@ public class HealthElement extends Element {
 		for (int i = iconCount; i > 0; --i) {
 			int xPos = getX() + xOffset;
 			int yPos = getY() + yOffset;
-			helper.blitSprite(graphics, RenderPipelines.GUI_TEXTURED, containerSprite, xPos, yPos, 9, 9);
+			helper.blitSprite(graphics, GuiPipeline.TEXTURED, containerSprite, xPos, yPos, 9, 9);
 
 			boolean renderAbsorb = i > Mth.ceil(maxHealth * 0.5F);
 			Hud.HeartType curHeartType = heartType;
@@ -107,17 +107,17 @@ public class HealthElement extends Element {
 				curLastHearts = (Mth.ceil(maxHealth) + lastAbsorption) * 0.5F;
 			}
 			if (i <= Mth.floor(curHearts)) { // Full heart
-				helper.blitSprite(graphics, RenderPipelines.GUI_TEXTURED, curHeartType.getSprite(false, false, false), xPos, yPos, 9, 9);
+				helper.blitSprite(graphics, GuiPipeline.TEXTURED, curHeartType.getSprite(false, false, false), xPos, yPos, 9, 9);
 			}
 
 			if (i > curHearts) {
 				if (i <= Mth.floor(curLastHearts)) { // Full heart (last + blink)
-					helper.blitSprite(graphics, RenderPipelines.GUI_TEXTURED, curHeartType.getSprite(false, false, true), xPos, yPos, 9, 9);
+					helper.blitSprite(graphics, GuiPipeline.TEXTURED, curHeartType.getSprite(false, false, true), xPos, yPos, 9, 9);
 				} else if ((i > curLastHearts) && (i < curLastHearts + 1)) { // Half heart (blink)
-					helper.blitSprite(graphics, RenderPipelines.GUI_TEXTURED, curHeartType.getSprite(false, true, true), xPos, yPos, 9, 9);
+					helper.blitSprite(graphics, GuiPipeline.TEXTURED, curHeartType.getSprite(false, true, true), xPos, yPos, 9, 9);
 				}
 				if (i < curHearts + 1) { // Half heart
-					helper.blitSprite(graphics, RenderPipelines.GUI_TEXTURED, curHeartType.getSprite(false, true, false), xPos, yPos, 9, 9);
+					helper.blitSprite(graphics, GuiPipeline.TEXTURED, curHeartType.getSprite(false, true, false), xPos, yPos, 9, 9);
 				}
 			}
 

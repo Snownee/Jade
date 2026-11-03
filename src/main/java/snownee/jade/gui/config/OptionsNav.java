@@ -8,6 +8,7 @@ import org.jspecify.annotations.Nullable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetTooltipHolder;
@@ -21,7 +22,6 @@ import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import snownee.jade.api.JadeIds;
 import snownee.jade.gui.SmoothScrollableList;
@@ -38,8 +38,8 @@ public class OptionsNav extends SmoothScrollableList<OptionsNav.Entry> {
 	}
 
 	@Override
-	protected void extractListItems(GuiGraphicsExtractor guiGraphics, int i, int j, float f) {
-		super.extractListItems(guiGraphics, i, j, f);
+	protected void extractListItems(GuiGraphicsExtractor guiGraphics) {
+		super.extractListItems(guiGraphics);
 		if (children().isEmpty()) {
 			return;
 		}
@@ -58,7 +58,7 @@ public class OptionsNav extends SmoothScrollableList<OptionsNav.Entry> {
 	@Override
 	protected void extractListBackground(GuiGraphicsExtractor guiGraphics) {
 		Identifier Identifier = minecraft.level == null ? NAVBAR_BACKGROUND : INWORLD_NAVBAR_BACKGROUND;
-		guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, Identifier, getX(), getY(), getWidth(), getHeight());
+		guiGraphics.blitSprite(GuiPipeline.TEXTURED, Identifier, getX(), getY(), getWidth(), getHeight());
 	}
 
 	@Override
@@ -72,9 +72,9 @@ public class OptionsNav extends SmoothScrollableList<OptionsNav.Entry> {
 	}
 
 	@Override
-	public void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+	public void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics) {
 		tickSmoothScroll();
-		super.extractWidgetRenderState(guiGraphics, mouseX, mouseY, partialTicks);
+		super.extractWidgetRenderState(guiGraphics);
 	}
 
 	public void addEntry(OptionsList.Title entry) {
@@ -184,7 +184,9 @@ public class OptionsNav extends SmoothScrollableList<OptionsNav.Entry> {
 		}
 
 		@Override
-		public void extractContent(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, boolean hovered, float deltaTime) {
+		public void extractContent(GuiGraphicsExtractor guiGraphics, boolean hovered) {
+			int mouseX = guiGraphics.mouseX();
+			int mouseY = guiGraphics.mouseY();
 			guiGraphics.text(
 					title.font,
 					title.title().getString(),

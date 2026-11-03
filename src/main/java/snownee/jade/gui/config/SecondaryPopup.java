@@ -163,11 +163,11 @@ public class SecondaryPopup {
 		float step = (now - fadeTime) / fadeMs;
 		fadeTime = now;
 		if (expanded != null) {
-			alpha = Mth.clamp(alpha + step, 0, 1);
-			slide = Mth.clamp(slide + step, 0, 1);
+			alpha = Math.clamp(alpha + step, 0F, 1F);
+			slide = Math.clamp(slide + step, 0F, 1F);
 			fading = null;
 		} else if (fading != null) {
-			alpha = Mth.clamp(alpha - step, 0, 1);
+			alpha = Math.clamp(alpha - step, 0F, 1F);
 			if (alpha <= 0) {
 				fading = null;
 				list.layoutCards();

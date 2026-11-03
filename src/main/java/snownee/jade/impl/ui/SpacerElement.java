@@ -51,8 +51,10 @@ public class SpacerElement extends ResizeableElement {
 
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
-		if (wrapped instanceof Renderable renderable) {
-			renderable.extractRenderState(graphics, mouseX, mouseY, partialTicks);
+		if (wrapped instanceof Element element) {
+			element.extractRenderState(graphics, mouseX, mouseY, partialTicks);
+		} else if (wrapped instanceof Renderable renderable) {
+			renderable.extractRenderState(graphics);
 		}
 	}
 

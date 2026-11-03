@@ -6,7 +6,7 @@ import org.jspecify.annotations.Nullable;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import snownee.jade.JadeClient;
@@ -106,7 +106,7 @@ public class ProgressElement extends ResizeableElement implements StyledElement 
 		if (progress > 0 && view.style.foreground() != null) {
 			DisplayHelper.INSTANCE.blitSprite(
 					graphics,
-					RenderPipelines.GUI_TEXTURED,
+					GuiPipeline.TEXTURED,
 					Objects.requireNonNull(view.style.foreground()),
 					freeX,
 					freeY,

@@ -35,12 +35,11 @@ accessible field net/minecraft/client/gui/font/glyphs/BakedSheetGlyph up F
 accessible field net/minecraft/client/gui/font/glyphs/BakedSheetGlyph down F
 accessible class net/minecraft/client/gui/font/providers/BitmapProvider$Glyph
 
-accessible field net/minecraft/client/gui/components/CycleButton onValueChange Lnet/minecraft/client/gui/components/CycleButton$OnValueChange;
-accessible method net/minecraft/client/gui/components/CycleButton <init> (IIIILnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/Component;ILjava/lang/Object;Ljava/util/function/Supplier;Lnet/minecraft/client/gui/components/CycleButton$ValueListSupplier;Ljava/util/function/Function;Ljava/util/function/Function;Lnet/minecraft/client/gui/components/CycleButton$OnValueChange;Lnet/minecraft/client/OptionInstance$TooltipSupplier;Lnet/minecraft/client/gui/components/CycleButton$DisplayState;Lnet/minecraft/client/gui/components/CycleButton$SpriteSupplier;)V
+accessible field net/minecraft/client/gui/components/AbstractCycleButton onValueChange Lnet/minecraft/client/gui/components/AbstractCycleButton$OnValueChange;
+accessible method net/minecraft/client/gui/components/CycleButton <init> (IIIILnet/minecraft/network/chat/Component;ILjava/lang/Object;Ljava/util/function/Supplier;Lnet/minecraft/client/gui/components/AbstractCycleButton$ValueListSupplier;Ljava/util/function/Function;Ljava/util/function/Function;Lnet/minecraft/client/gui/components/AbstractCycleButton$OnValueChange;Lnet/minecraft/client/OptionInstance$TooltipSupplier;Lnet/minecraft/client/gui/components/CycleButton$DisplayState;Lnet/minecraft/client/gui/components/CycleButton$SpriteSupplier;)V
 accessible field net/minecraft/client/gui/components/Button DEFAULT_NARRATION Lnet/minecraft/client/gui/components/Button$CreateNarration;
 
-accessible field net/minecraft/client/gui/screens/inventory/CreativeModeInventoryScreen selectedTab Lnet/minecraft/world/item/CreativeModeTab;
-accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen hoveredSlot Lnet/minecraft/world/inventory/Slot;
+accessible method net/minecraft/client/gui/screens/inventory/AbstractContainerScreen getHoveredSlot ()Lnet/minecraft/client/gui/components/inventory/SlotWidget;
 
 accessible field net/minecraft/client/gui/components/EditBox SPRITES Lnet/minecraft/client/gui/components/WidgetSprites;
 accessible method net/minecraft/client/gui/components/EditBox updateTextPosition ()V
@@ -88,6 +87,7 @@ accessible method net/minecraft/client/gui/GuiGraphicsExtractor$ScissorStack pee
 accessible field net/minecraft/client/gui/GuiGraphicsExtractor deferredTooltip Ljava/lang/Runnable;
 accessible field net/minecraft/client/gui/GuiGraphicsExtractor guiSprites Lnet/minecraft/client/renderer/texture/TextureAtlas;
 accessible field net/minecraft/client/gui/GuiGraphicsExtractor hoveredTextStyle Lnet/minecraft/network/chat/Style;
+accessible field net/minecraft/client/gui/screens/Screen INWORLD_FOOTER_SEPARATOR Lnet/minecraft/resources/Identifier;
 
 accessible method net/minecraft/client/gui/screens/inventory/tooltip/TooltipRenderUtil getBackgroundSprite (Lnet/minecraft/resources/Identifier;)Lnet/minecraft/resources/Identifier;
 accessible method net/minecraft/client/gui/screens/inventory/tooltip/TooltipRenderUtil getFrameSprite (Lnet/minecraft/resources/Identifier;)Lnet/minecraft/resources/Identifier;

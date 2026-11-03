@@ -4,9 +4,8 @@ import java.text.Format;
 
 import org.jspecify.annotations.Nullable;
 
-import com.mojang.renderpearl.api.pipeline.RenderPipeline;
-
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
@@ -60,11 +59,11 @@ public interface IDisplayHelper {
 
 	MutableComponent stripColor(Component component);
 
-	void blitSprite(GuiGraphicsExtractor graphics, RenderPipeline renderPipeline, Identifier Identifier, int i, int j, int k, int l);
+	void blitSprite(GuiGraphicsExtractor graphics, GuiPipeline renderPipeline, Identifier Identifier, int i, int j, int k, int l);
 
 	void blitSprite(
 			GuiGraphicsExtractor graphics,
-			RenderPipeline renderPipeline,
+			GuiPipeline renderPipeline,
 			Identifier Identifier,
 			int i,
 			int j,
@@ -74,7 +73,7 @@ public interface IDisplayHelper {
 
 	void blitSprite(
 			GuiGraphicsExtractor graphics,
-			RenderPipeline renderPipeline,
+			GuiPipeline renderPipeline,
 			Identifier Identifier,
 			int spriteWidth,
 			int spriteHeight,
@@ -87,7 +86,7 @@ public interface IDisplayHelper {
 
 	void blitSprite(
 			GuiGraphicsExtractor graphics,
-			RenderPipeline renderPipeline,
+			GuiPipeline renderPipeline,
 			Identifier Identifier,
 			int spriteWidth,
 			int spriteHeight,

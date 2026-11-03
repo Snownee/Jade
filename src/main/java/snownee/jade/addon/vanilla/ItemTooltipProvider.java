@@ -9,6 +9,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -59,7 +60,7 @@ public class ItemTooltipProvider implements IEntityComponentProvider {
 			}
 			int width = font.width(text);
 			if (width > maxWidth) {
-				tooltip.add(Component.literal(font.substrByWidth(text, maxWidth - 5).getString() + ".."));
+				tooltip.add(Component.literal(font.substrByWidth(text, maxWidth - 5).getString(FormattedText.DEFAULT_MAX_ITERATION) + ".."));
 			} else {
 				tooltip.add(text);
 			}

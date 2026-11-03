@@ -6,12 +6,12 @@ import com.mojang.blaze3d.platform.cursor.CursorTypes;
 
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
@@ -55,7 +55,7 @@ public class NotUglyEditBox extends EditBox {
 	}
 
 	@Override
-	public void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics, int i, int j, float f) {
+	public void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics) {
 		if (isVisible()) {
 			float bgAlpha;
 			if (this.backgroundMode == BackgroundMode.HOVERING) {
@@ -72,7 +72,7 @@ public class NotUglyEditBox extends EditBox {
 			if (bgAlpha > 0F) {
 				Identifier sprite = background.get(this.isActive(), this.isFocused());
 				guiGraphics.blitSprite(
-						RenderPipelines.GUI_TEXTURED,
+						GuiPipeline.TEXTURED,
 						sprite,
 						this.getX(),
 						this.getY(),
@@ -82,7 +82,7 @@ public class NotUglyEditBox extends EditBox {
 
 				if (isEditable() && !getValue().isEmpty()) {
 					if (alwaysRenderCross || isHovered) {
-						isMouseOverCross = isHovered && i > getRight() - 12;
+						isMouseOverCross = isHovered && guiGraphics.mouseX() > getRight() - 12;
 						int c = isMouseOverCross ? textColor : textColorUneditable;
 						guiGraphics.text(font, "×", getX() + width - 10, textY + 1, ARGB.multiplyAlpha(c, getAlpha()));
 					}
@@ -96,7 +96,7 @@ public class NotUglyEditBox extends EditBox {
 			textColor = ARGB.multiplyAlpha(textColor, alpha);
 			textColorUneditable = ARGB.multiplyAlpha(textColorUneditable, alpha);
 		}
-		super.extractWidgetRenderState(guiGraphics, i, j, f);
+		super.extractWidgetRenderState(guiGraphics);
 		textColor = oldTextColor;
 		textColorUneditable = oldTextColorUneditable;
 		if (isMouseOverCross) {

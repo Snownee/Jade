@@ -27,6 +27,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.client.gui.components.AbstractStringWidget;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
@@ -45,7 +46,6 @@ import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -475,7 +475,7 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 	@Override
 	protected void extractListSeparators(GuiGraphicsExtractor guiGraphics) {
 		Identifier Identifier2 = this.minecraft.level == null ? Screen.FOOTER_SEPARATOR : Screen.INWORLD_FOOTER_SEPARATOR;
-		guiGraphics.blit(RenderPipelines.GUI_TEXTURED, Identifier2, 0, this.getBottom(), 0.0F, 0.0F, owner.width, 2, 32, 2);
+		guiGraphics.blit(GuiPipeline.TEXTURED, Identifier2, 0, this.getBottom(), 0.0F, 0.0F, owner.width, 2, 32, 2);
 	}
 
 	@Override
@@ -491,10 +491,10 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 	}
 
 	@Override
-	protected void extractListItems(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+	protected void extractListItems(GuiGraphicsExtractor guiGraphics) {
 		Entry popupEntry = popup.effectiveEntry();
 		if (displayMode != DisplayMode.CARD || popupEntry == null) {
-			super.extractListItems(guiGraphics, mouseX, mouseY, partialTicks);
+			super.extractListItems(guiGraphics);
 			return;
 		}
 		List<Entry> options = popupEntry.secondaryOptions();
@@ -503,13 +503,13 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 				continue;
 			}
 			if (child.getY() + child.getHeight() >= getY() && child.getY() <= getBottom()) {
-				extractItem(guiGraphics, mouseX, mouseY, partialTicks, child);
+				extractItem(guiGraphics, child);
 			}
 		}
 		if (!options.isEmpty() && popup.width() > 0) {
 			int slideOffset = popup.slideOffset();
 			guiGraphics.blitSprite(
-					RenderPipelines.GUI_TEXTURED,
+					GuiPipeline.TEXTURED,
 					Identifier.fromNamespaceAndPath(namespace, "popup_background"),
 					popup.x() - CARD_BLEED,
 					popup.y() - CARD_BLEED + slideOffset,
@@ -518,14 +518,16 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 					ARGB.white(popup.alpha()));
 			for (Entry child : options) {
 				if (child.getY() + child.getHeight() >= getY() && child.getY() <= getBottom()) {
-					extractItem(guiGraphics, mouseX, mouseY, partialTicks, child);
+					extractItem(guiGraphics, child);
 				}
 			}
 		}
 	}
 
 	@Override
-	public void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+	public void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics) {
+		int mouseX = guiGraphics.mouseX();
+		int mouseY = guiGraphics.mouseY();
 		tickSmoothScroll();
 		layoutCards();
 		popup.commitPending();
@@ -570,10 +572,10 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 		}
 
 		enableScissor(guiGraphics);
-		extractListItems(guiGraphics, mouseX, mouseY, partialTicks);
+		extractListItems(guiGraphics);
 		guiGraphics.disableScissor();
 		extractListSeparators(guiGraphics);
-		extractScrollbar(guiGraphics, mouseX, mouseY);
+		extractScrollbar(guiGraphics);
 	}
 
 	public void save() {
@@ -1162,13 +1164,13 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 
 		@Override
 		public List<? extends NarratableEntry> narratables() {
-			return rawWidgets.stream().filter(widget -> widget.visible).toList();
+			return rawWidgets.stream().filter(AbstractWidget::isVisible).toList();
 		}
 
 		@Override
-		public void extractContent(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, boolean hovered, float deltaTime) {
+		public void extractContent(GuiGraphicsExtractor guiGraphics, boolean hovered) {
 			if (cardMode) {
-				extractCardContent(guiGraphics, mouseX, mouseY, hovered, deltaTime);
+				extractCardContent(guiGraphics, hovered);
 				return;
 			}
 			for (EntryWidget widget : widgets) {
@@ -1181,11 +1183,11 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 				}
 				rawWidget.setX(getContentX() + x);
 				rawWidget.setY(getContentY() + getContentHeight() / 2 + widget.offsetY);
-				rawWidget.extractRenderState(guiGraphics, mouseX, mouseY, deltaTime);
+				rawWidget.extractRenderState(guiGraphics);
 			}
 		}
 
-		private void extractCardContent(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, boolean hovered, float deltaTime) {
+		private void extractCardContent(GuiGraphicsExtractor guiGraphics, boolean hovered) {
 			boolean expandable = isExpandable();
 			String backgroundName;
 			if (expandable) {
@@ -1194,7 +1196,7 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 				backgroundName = hovered ? "card_background_hover" : "card_background";
 			}
 			guiGraphics.blitSprite(
-					RenderPipelines.GUI_TEXTURED,
+					GuiPipeline.TEXTURED,
 					Identifier.fromNamespaceAndPath(namespace, backgroundName),
 					getX() - CARD_BLEED - CARD_SHADOW,
 					getY() - CARD_BLEED - CARD_SHADOW,
@@ -1217,7 +1219,7 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 					}
 					rawWidget.setX(x);
 					rawWidget.setY(centerY - rawWidget.getHeight() / 2);
-					rawWidget.extractRenderState(guiGraphics, mouseX, mouseY, deltaTime);
+					rawWidget.extractRenderState(guiGraphics);
 				}
 			} else {
 				iconY = getContentY() + 1;
@@ -1233,13 +1235,13 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 						rawWidget.setX(getContentX() + 4);
 						rawWidget.setY(widgetBottom - rawWidget.getHeight());
 					}
-					rawWidget.extractRenderState(guiGraphics, mouseX, mouseY, deltaTime);
+					rawWidget.extractRenderState(guiGraphics);
 				}
 			}
 			JadeIcons.render(guiGraphics, icon, iconX, iconY, CARD_ICON_SIZE);
 			if (expandable) {
 				guiGraphics.blitSprite(
-						RenderPipelines.GUI_TEXTURED,
+						GuiPipeline.TEXTURED,
 						Identifier.fromNamespaceAndPath(namespace, "card_arrow"),
 						getX() + (getWidth() - CARD_ARROW_WIDTH) / 2,
 						getY() + getHeight() + CARD_BLEED - CARD_ARROW_HEIGHT - 2,
@@ -1365,7 +1367,7 @@ public class OptionsList extends SmoothScrollableList<OptionsList.Entry> {
 		public List<AbstractWidget> focusableWidgets() {
 			List<AbstractWidget> result = Lists.newArrayListWithCapacity(children().size());
 			for (AbstractWidget widget : children()) {
-				if (widget != title && widget.visible && widget.isActive()) {
+				if (widget != title && widget.isVisible() && widget.isActive()) {
 					result.add(widget);
 				}
 			}

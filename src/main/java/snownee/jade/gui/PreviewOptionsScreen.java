@@ -118,8 +118,8 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 			dragOffsetY = event.y() - centerY;
 		} else {
 			minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0f));
-			int xIndex = Mth.clamp((int) (event.x() / (width / 3D)), 0, 2);
-			int yIndex = Mth.clamp((int) (event.y() / (height / 3D)), 0, 2);
+			int xIndex = Math.clamp((int) (event.x() / (width / 3D)), 0, 2);
+			int yIndex = Math.clamp((int) (event.y() / (height / 3D)), 0, 2);
 			if (xIndex == 1 && yIndex == 1) {
 				adjustingPosition = false;
 				adjustDragging = false;
@@ -221,9 +221,11 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 	}
 
 	@Override
-	public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+	public void extractRenderState(GuiGraphicsExtractor guiGraphics) {
+		int mouseX = guiGraphics.mouseX();
+		int mouseY = guiGraphics.mouseY();
 		if (adjustingPosition) {
-			super.extractRenderState(guiGraphics, Integer.MAX_VALUE, Integer.MAX_VALUE, partialTicks);
+			guiGraphics.extractWithoutMouse(() -> extractScreen(guiGraphics));
 			guiGraphics.fill(0, 0, width, height, 0x80808080);
 
 			MutableComponent text = Component.translatable("config.jade.overlay_pos.exit");
@@ -256,8 +258,12 @@ public abstract class PreviewOptionsScreen extends BaseOptionsScreen {
 						0xFF0000FF);
 			}
 		} else {
-			super.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
+			super.extractRenderState(guiGraphics);
 		}
+	}
+
+	private void extractScreen(GuiGraphicsExtractor guiGraphics) {
+		super.extractRenderState(guiGraphics);
 	}
 
 	public void startAdjustingPosition() {

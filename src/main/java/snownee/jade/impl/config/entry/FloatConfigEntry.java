@@ -51,7 +51,7 @@ public class FloatConfigEntry extends ConfigEntry<Float> {
 			return options.input(
 					optionName,
 					() -> config.getFloat(id),
-					f -> setter.accept(id, Mth.clamp(f, min, max)),
+					f -> setter.accept(id, Math.clamp(f, min, max)),
 					InputOptionValue.FLOAT.and($ -> isValidValue(Float.valueOf($.replace(",", ".")))));
 		}
 	}

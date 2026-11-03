@@ -153,7 +153,7 @@ public class OverlayRenderer {
 			root = lingerTooltip;
 			float speed = general.isDebug() ? 0.1F : 0.6F;
 			animation.showHideAlpha += (show ? speed : -speed) * delta;
-			animation.showHideAlpha = Mth.clamp(animation.showHideAlpha, 0, 1);
+			animation.showHideAlpha = Math.clamp(animation.showHideAlpha, 0F, 1F);
 		} else {
 			animation.showHideAlpha = show ? 1 : 0;
 		}
@@ -241,7 +241,7 @@ public class OverlayRenderer {
 		}
 
 		matrixStack.popMatrix();
-		graphics.extractDeferredElements(mouseX, mouseY, partialTicks);
+		graphics.extractDeferredElements();
 
 		if (IWailaConfig.get().accessibility().shouldEnableTextToSpeech()) {
 			tickHandler.narrate(root, true);

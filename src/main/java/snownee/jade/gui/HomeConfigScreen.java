@@ -141,7 +141,7 @@ public class HomeConfigScreen extends Screen {
 				},
 				Button.DEFAULT_NARRATION) {
 			@Override
-			public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+			public void extractContents(GuiGraphicsExtractor graphics) {
 				extractDefaultSprite(graphics);
 				graphics.fakeItem(profileIcon, getX() + 2, getY() + 2);
 			}
@@ -221,7 +221,9 @@ public class HomeConfigScreen extends Screen {
 	}
 
 	@Override
-	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+	public void extractRenderState(GuiGraphicsExtractor graphics) {
+		int mouseX = graphics.mouseX();
+		int mouseY = graphics.mouseY();
 		Objects.requireNonNull(minecraft);
 		float deltaTicks = Minecraft.getInstance().getDeltaTracker().getRealtimeDeltaTicks();
 		ticks += deltaTicks;
@@ -258,7 +260,7 @@ public class HomeConfigScreen extends Screen {
 				particles.add(particle);
 			}
 		}
-		super.extractRenderState(graphics, mouseX, mouseY, partialTicks);
+		super.extractRenderState(graphics);
 		int left = width / 2 - 105;
 		int top = height / 4 - 20;
 		graphics.pose().pushMatrix();
@@ -372,7 +374,7 @@ public class HomeConfigScreen extends Screen {
 		float glint1 = (ticks - y / 5F) % 90 / 45 * width;
 		float glint2 = mouseX;
 		float glint1Strength = 1;
-		float glint2Strength = 1 - Mth.clamp(Math.abs(mouseY - y) / 20F, 0, 1);
+		float glint2Strength = 1 - Math.clamp(Math.abs(mouseY - y) / 20F, 0F, 1F);
 
 		MutableComponent component = Component.empty();
 		MutableInt curX = new MutableInt();
@@ -384,9 +386,9 @@ public class HomeConfigScreen extends Screen {
 					curX.add(width);
 					curXVal += width / 2;
 					float dist = Math.abs(curXVal - glint1);
-					float localGlint1 = 0.65F + Mth.clamp(1 - dist / 20, 0, 1) * 0.35F * glint1Strength;
+					float localGlint1 = 0.65F + Math.clamp(1 - dist / 20, 0F, 1F) * 0.35F * glint1Strength;
 					dist = Math.abs(curXVal - glint2);
-					float localGlint2 = 0.65F + Mth.clamp(1 - dist / 20, 0, 1) * 0.35F * glint2Strength;
+					float localGlint2 = 0.65F + Math.clamp(1 - dist / 20, 0F, 1F) * 0.35F * glint2Strength;
 					float colorMul = Math.max(localGlint1, localGlint2);
 					int originalColor = style.getColor() == null ? 0xAAAAAA : style.getColor().getValue();
 					component.append(Component.literal(s).withStyle(style).withColor(ARGB.scaleRGB(originalColor, colorMul)));
@@ -461,7 +463,7 @@ public class HomeConfigScreen extends Screen {
 			int color = this.color;
 			if (festival == 1) {
 				graphics.pose().rotate(age / 50);
-				float alpha = Mth.clamp((Math.abs(mouseX - x) + Math.abs(mouseY - y)) / 50F, 0.25F, 1);
+				float alpha = Math.clamp((Math.abs(mouseX - x) + Math.abs(mouseY - y)) / 50F, 0.25F, 1F);
 				color = IWailaConfig.Overlay.applyAlpha(color, alpha);
 			} else if (fade != 1) {
 				color = IWailaConfig.Overlay.applyAlpha(color, fade);

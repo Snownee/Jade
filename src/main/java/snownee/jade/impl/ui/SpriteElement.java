@@ -2,11 +2,9 @@ package snownee.jade.impl.ui;
 
 import org.jspecify.annotations.Nullable;
 
-import com.mojang.renderpearl.api.pipeline.RenderPipeline;
-
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.metadata.gui.GuiMetadataSection;
 import net.minecraft.client.resources.metadata.gui.GuiSpriteScaling;
@@ -21,7 +19,7 @@ import snownee.jade.overlay.DisplayHelper;
 
 public class SpriteElement extends ProgressOverlayElement {
 
-	private final RenderPipeline renderPipeline;
+	private final GuiPipeline renderPipeline;
 	private final Identifier sprite;
 	public @Nullable Orientation tiledOrientation;
 	private final int oWidth;
@@ -31,10 +29,10 @@ public class SpriteElement extends ProgressOverlayElement {
 	private @Nullable Identifier mappedSprite;
 
 	public SpriteElement(Identifier sprite, int width, int height) {
-		this(RenderPipelines.GUI_TEXTURED, sprite, width, height);
+		this(GuiPipeline.TEXTURED, sprite, width, height);
 	}
 
-	public SpriteElement(RenderPipeline renderPipeline, Identifier sprite, int width, int height) {
+	public SpriteElement(GuiPipeline renderPipeline, Identifier sprite, int width, int height) {
 		this.renderPipeline = renderPipeline;
 		this.sprite = sprite;
 		oWidth = this.width = width;

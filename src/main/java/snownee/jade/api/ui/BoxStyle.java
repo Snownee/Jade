@@ -9,8 +9,8 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.client.gui.screens.inventory.tooltip.TooltipRenderUtil;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import snownee.jade.api.JadeIds;
@@ -145,7 +145,7 @@ public class BoxStyle {
 			roundedW = roundedW + 9 + 9;
 			roundedH = roundedH + 9 + 9;
 			guiGraphics.blitSprite(
-					RenderPipelines.GUI_TEXTURED,
+					GuiPipeline.TEXTURED,
 					TooltipRenderUtil.getBackgroundSprite(texture),
 					roundedX,
 					roundedY,
@@ -153,7 +153,7 @@ public class BoxStyle {
 					roundedH,
 					col);
 			guiGraphics.blitSprite(
-					RenderPipelines.GUI_TEXTURED,
+					GuiPipeline.TEXTURED,
 					TooltipRenderUtil.getFrameSprite(texture),
 					roundedX,
 					roundedY,
@@ -162,7 +162,7 @@ public class BoxStyle {
 					col);
 		} else {
 			guiGraphics.blitSprite(
-					RenderPipelines.GUI_TEXTURED,
+					GuiPipeline.TEXTURED,
 					texture,
 					roundedX,
 					roundedY,

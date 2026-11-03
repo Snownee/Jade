@@ -43,8 +43,9 @@ public class CreditButton extends Button {
 	}
 
 	@Override
-	protected void extractContents(GuiGraphicsExtractor guiGraphics, int i, int j, float partialTicks) {
-		boolean hovered = isHoveredOrFocused();
+	protected void extractContents(GuiGraphicsExtractor guiGraphics) {
+		float partialTicks = guiGraphics.partialTicks();
+		boolean hovered = isHovered() || isFocused();
 		if (!oldHovered && hovered) {
 			progress.target(1);
 		} else if (!hovered) {

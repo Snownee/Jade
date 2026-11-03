@@ -1,7 +1,7 @@
 package snownee.jade.api.config;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
@@ -40,7 +40,7 @@ public interface ConfigIconRenderer {
 	record Sprite(Identifier sprite) implements ConfigIconRenderer {
 		@Override
 		public void render(GuiGraphicsExtractor guiGraphics, int x, int y, int size) {
-			guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, x, y, size, size);
+			guiGraphics.blitSprite(GuiPipeline.TEXTURED, sprite, x, y, size, size);
 		}
 	}
 

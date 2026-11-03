@@ -4,9 +4,8 @@ import java.util.function.Consumer;
 
 import org.jspecify.annotations.Nullable;
 
-import com.mojang.renderpearl.api.pipeline.RenderPipeline;
-
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
@@ -209,7 +208,7 @@ public final class JadeUI {
 	 * @param height         height
 	 * @return sprite element
 	 */
-	public static ResizeableElement sprite(RenderPipeline renderPipeline, Identifier sprite, int width, int height) {
+	public static ResizeableElement sprite(GuiPipeline renderPipeline, Identifier sprite, int width, int height) {
 		return JadeUIInternal.sprite(renderPipeline, sprite, width, height);
 	}
 
@@ -235,7 +234,7 @@ public final class JadeUI {
 	 * @return sprite element
 	 */
 	public static ResizeableElement horizontalTiledSprite(
-			RenderPipeline renderPipeline,
+			GuiPipeline renderPipeline,
 			Identifier sprite,
 			int width,
 			int height) {
@@ -251,7 +250,7 @@ public final class JadeUI {
 	 * @param height         height
 	 * @return sprite element
 	 */
-	public static ResizeableElement verticalTiledSprite(RenderPipeline renderPipeline, Identifier sprite, int width, int height) {
+	public static ResizeableElement verticalTiledSprite(GuiPipeline renderPipeline, Identifier sprite, int width, int height) {
 		return JadeUIInternal.verticalTiledSprite(renderPipeline, sprite, width, height);
 	}
 

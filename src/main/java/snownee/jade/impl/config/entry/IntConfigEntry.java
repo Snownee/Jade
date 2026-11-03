@@ -50,7 +50,7 @@ public class IntConfigEntry extends ConfigEntry<Integer> {
 			return options.input(
 					optionName,
 					() -> config.getInt(id),
-					i -> setter.accept(id, Mth.clamp(i, min, max)),
+					i -> setter.accept(id, Math.clamp(i, min, max)),
 					InputOptionValue.INTEGER.and($ -> isValidValue(Integer.valueOf($))));
 		}
 	}

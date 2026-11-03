@@ -23,7 +23,7 @@ public class PinScreen extends Screen {
 	}
 
 	@Override
-	public void extractBackground(GuiGraphicsExtractor guiGraphics, int i, int j, float f) {
+	public void extractBackground(GuiGraphicsExtractor guiGraphics) {
 		// No background rendering needed
 	}
 

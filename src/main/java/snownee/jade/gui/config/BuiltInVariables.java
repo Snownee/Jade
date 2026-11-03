@@ -1,6 +1,9 @@
 package snownee.jade.gui.config;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.apache.commons.lang3.StringUtils;
@@ -9,6 +12,7 @@ import com.google.common.collect.Maps;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 
 /**
  * Registry of {@code ${NAME}} placeholders that can appear in option titles and descriptions.
@@ -37,7 +41,12 @@ public final class BuiltInVariables {
 
 	private static Component replace(Component component, String source, Component replacement) {
 		MutableComponent newComponent = Component.empty().withStyle(component.getStyle());
-		for (Component part : component.toFlatList()) {
+		List<Component> parts = new ArrayList<>();
+		component.visitUnbounded((style, contents) -> {
+			parts.add(Component.literal(contents).withStyle(style));
+			return Optional.empty();
+		}, Style.EMPTY);
+		for (Component part : parts) {
 			String partString = part.getString();
 			if (partString.contains(source)) {
 				boolean first = true;

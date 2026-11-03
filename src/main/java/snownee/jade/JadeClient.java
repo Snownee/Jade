@@ -24,9 +24,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -258,11 +256,9 @@ public final class JadeClient {
 		if (itemStack.isEmpty()) {
 			return null;
 		}
-		if (Minecraft.getInstance().gui.screen() instanceof CreativeModeInventoryScreen screen && screen.hoveredSlot != null) {
-			if (screen.hoveredSlot.container instanceof Inventory ||
-					CreativeModeInventoryScreen.selectedTab.getType() != CreativeModeTab.Type.CATEGORY) {
-				return null;
-			}
+		if (Minecraft.getInstance().gui.screen() instanceof CreativeModeInventoryScreen) {
+			// Creative inventory tooltips are handled by CreativeModeInventoryScreenMixin
+			return null;
 		}
 		String name;
 		try {

@@ -5,7 +5,7 @@ import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
@@ -61,14 +61,14 @@ public class ArmorElement extends Element {
 		int xOffset = (iconCount - 1) % iconsPerLine * 8;
 		int yOffset = lineCount * 4 - 4;
 		for (int i = iconCount; i > 0; --i) {
-			helper.blitSprite(graphics, RenderPipelines.GUI_TEXTURED, EMPTY_ARMOR, x + xOffset, y + yOffset, 9, 9);
+			helper.blitSprite(graphics, GuiPipeline.TEXTURED, EMPTY_ARMOR, x + xOffset, y + yOffset, 9, 9);
 
 			if (i <= Mth.floor(armor)) {
-				helper.blitSprite(graphics, RenderPipelines.GUI_TEXTURED, ARMOR, x + xOffset, y + yOffset, 9, 9);
+				helper.blitSprite(graphics, GuiPipeline.TEXTURED, ARMOR, x + xOffset, y + yOffset, 9, 9);
 			}
 
 			if ((i > armor) && (i < armor + 1)) {
-				helper.blitSprite(graphics, RenderPipelines.GUI_TEXTURED, HALF_ARMOR, x + xOffset, y + yOffset, 9, 9);
+				helper.blitSprite(graphics, GuiPipeline.TEXTURED, HALF_ARMOR, x + xOffset, y + yOffset, 9, 9);
 			}
 
 			xOffset -= 8;

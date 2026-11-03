@@ -124,8 +124,10 @@ public abstract class BaseOptionsScreen extends Screen {
 	}
 
 	@Override
-	public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
-		super.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
+	public void extractRenderState(GuiGraphicsExtractor guiGraphics) {
+		super.extractRenderState(guiGraphics);
+		int mouseX = guiGraphics.mouseX();
+		int mouseY = guiGraphics.mouseY();
 
 		OptionsList.Entry entry = options().isMouseOver(mouseX, mouseY) ? options().getEntryAt(mouseX, mouseY) : null;
 		if ((guiGraphics.hoveredTextStyle == null || guiGraphics.hoveredTextStyle.getHoverEvent() == null) && entry != null) {

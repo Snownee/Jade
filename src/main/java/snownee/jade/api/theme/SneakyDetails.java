@@ -5,7 +5,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.ExtraCodecs;
@@ -70,7 +70,7 @@ public interface SneakyDetails {
 			}
 			graphics.pose().pushMatrix();
 			graphics.pose().translate(x, y);
-			IDisplayHelper.get().blitSprite(graphics, RenderPipelines.GUI_TEXTURED, sprite, 0, 0, width, height, ARGB.white(alpha));
+			IDisplayHelper.get().blitSprite(graphics, GuiPipeline.TEXTURED, sprite, 0, 0, width, height, ARGB.white(alpha));
 			graphics.pose().popMatrix();
 		}
 

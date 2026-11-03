@@ -64,7 +64,7 @@ public class NarratableComponent implements Component {
 		if (text instanceof Component component) {
 			return component;
 		}
-		return Component.literal(text.getString());
+		return Component.literal(text.getString(FormattedText.DEFAULT_MAX_ITERATION));
 	}
 
 	public static Component attach(Component component, Component narratable) {

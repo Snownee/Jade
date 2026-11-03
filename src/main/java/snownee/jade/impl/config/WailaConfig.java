@@ -359,7 +359,7 @@ public class WailaConfig implements IWailaConfig {
 
 		@Override
 		public void setExtendedReach(float extendedReach) {
-			this.extendedReach = Mth.clamp(extendedReach, 0, 20);
+			this.extendedReach = Math.clamp(extendedReach, 0, 20);
 		}
 
 		@Override
@@ -499,22 +499,22 @@ public class WailaConfig implements IWailaConfig {
 
 		@Override
 		public float getOverlayPosX() {
-			return Mth.clamp(overlayPosX, 0.0F, 1.0F);
+			return Math.clamp(overlayPosX, 0.0F, 1.0F);
 		}
 
 		@Override
 		public void setOverlayPosX(float overlayPosX) {
-			this.overlayPosX = Mth.clamp(overlayPosX, 0.0F, 1.0F);
+			this.overlayPosX = Math.clamp(overlayPosX, 0.0F, 1.0F);
 		}
 
 		@Override
 		public float getOverlayPosY() {
-			return Mth.clamp(overlayPosY, 0.0F, 1.0F);
+			return Math.clamp(overlayPosY, 0.0F, 1.0F);
 		}
 
 		@Override
 		public void setOverlayPosY(float overlayPosY) {
-			this.overlayPosY = Mth.clamp(overlayPosY, 0.0F, 1.0F);
+			this.overlayPosY = Math.clamp(overlayPosY, 0.0F, 1.0F);
 		}
 
 		@Override
@@ -524,27 +524,27 @@ public class WailaConfig implements IWailaConfig {
 
 		@Override
 		public void setOverlayScale(float overlayScale) {
-			this.overlayScale = Mth.clamp(overlayScale, 0.2F, 2.0F);
+			this.overlayScale = Math.clamp(overlayScale, 0.2F, 2.0F);
 		}
 
 		@Override
 		public float getAnchorX() {
-			return Mth.clamp(overlayAnchorX, 0.0F, 1.0F);
+			return Math.clamp(overlayAnchorX, 0.0F, 1.0F);
 		}
 
 		@Override
 		public void setAnchorX(float overlayAnchorX) {
-			this.overlayAnchorX = Mth.clamp(overlayAnchorX, 0.0F, 1.0F);
+			this.overlayAnchorX = Math.clamp(overlayAnchorX, 0.0F, 1.0F);
 		}
 
 		@Override
 		public float getAnchorY() {
-			return Mth.clamp(overlayAnchorY, 0.0F, 1.0F);
+			return Math.clamp(overlayAnchorY, 0.0F, 1.0F);
 		}
 
 		@Override
 		public void setAnchorY(float overlayAnchorY) {
-			this.overlayAnchorY = Mth.clamp(overlayAnchorY, 0.0F, 1.0F);
+			this.overlayAnchorY = Math.clamp(overlayAnchorY, 0.0F, 1.0F);
 		}
 
 		@Override
@@ -559,7 +559,7 @@ public class WailaConfig implements IWailaConfig {
 
 		@Override
 		public void setAlpha(float alpha) {
-			this.alpha = Mth.clamp(alpha, 0, 1);
+			this.alpha = Math.clamp(alpha, 0F, 1F);
 		}
 
 		@Override

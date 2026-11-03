@@ -21,15 +21,15 @@ public class BooleanOptionValue extends CycleOptionValue<Boolean> {
 			this.value = v;
 			save();
 		});
-		toggle.visible = false;
+		toggle.setVisible(false);
 		addWidget(toggle, 0);
 	}
 
 	@Override
 	public void setCardMode(boolean cardMode) {
 		super.setCardMode(cardMode);
-		button.visible = !cardMode;
-		toggle.visible = cardMode;
+		button.setVisible(!cardMode);
+		toggle.setVisible(cardMode);
 	}
 
 	@Override

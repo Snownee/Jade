@@ -7,9 +7,9 @@ import java.util.function.Predicate;
 import org.jspecify.annotations.Nullable;
 
 import com.google.common.collect.Sets;
-import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.client.gui.layouts.Layout;
 import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.network.chat.Component;
@@ -106,7 +106,7 @@ public class JadeUIInternal {
 		return new SimpleProgressStyle();
 	}
 
-	public static ResizeableElement sprite(RenderPipeline renderPipeline, Identifier sprite, int width, int height) {
+	public static ResizeableElement sprite(GuiPipeline renderPipeline, Identifier sprite, int width, int height) {
 		return new SpriteElement(renderPipeline, sprite, width, height);
 	}
 
@@ -157,7 +157,7 @@ public class JadeUIInternal {
 	}
 
 	public static ResizeableElement horizontalTiledSprite(
-			RenderPipeline renderPipeline,
+			GuiPipeline renderPipeline,
 			Identifier sprite,
 			int width,
 			int height) {
@@ -166,7 +166,7 @@ public class JadeUIInternal {
 		return element;
 	}
 
-	public static ResizeableElement verticalTiledSprite(RenderPipeline renderPipeline, Identifier sprite, int width, int height) {
+	public static ResizeableElement verticalTiledSprite(GuiPipeline renderPipeline, Identifier sprite, int width, int height) {
 		SpriteElement element = (SpriteElement) sprite(renderPipeline, sprite, width, height);
 		element.tiledOrientation = Orientation.VERTICAL;
 		return element;

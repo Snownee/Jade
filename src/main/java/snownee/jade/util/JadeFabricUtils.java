@@ -124,7 +124,7 @@ public final class JadeFabricUtils {
 				@Override
 				protected ItemStack getItemInSlot(SlottedStorage<ItemVariant> container, int slot) {
 					SingleSlotStorage<ItemVariant> slotStorage = container.getSlot(slot);
-					return slotStorage.getResource().toStack((int) Mth.clamp(slotStorage.getAmount(), 0, Integer.MAX_VALUE));
+					return slotStorage.getResource().toStack((int) Math.clamp(slotStorage.getAmount(), 0, Integer.MAX_VALUE));
 				}
 
 				@Override
@@ -137,7 +137,7 @@ public final class JadeFabricUtils {
 				@Override
 				protected Stream<ItemStack> populateRaw(Storage<ItemVariant> container) {
 					return Streams.stream(container.nonEmptyIterator()).map($ -> $.getResource()
-							.toStack((int) Mth.clamp($.getAmount(), 0, Integer.MAX_VALUE)));
+							.toStack((int) Math.clamp($.getAmount(), 0, Integer.MAX_VALUE)));
 				}
 
 				@Override

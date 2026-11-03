@@ -4,15 +4,14 @@ import org.joml.Matrix3x2f;
 import org.jspecify.annotations.Nullable;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.renderpearl.api.pipeline.RenderPipeline;
-
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.render.TextureSetup;
 import net.minecraft.client.renderer.state.gui.GuiElementRenderState;
 import net.minecraft.util.Mth;
 
 public record FloatBlitRenderState(
-		RenderPipeline pipeline,
+		GuiPipeline pipeline,
 		TextureSetup textureSetup,
 		Matrix3x2f pose,
 		float x0,
@@ -28,7 +27,7 @@ public record FloatBlitRenderState(
 		@Nullable ScreenRectangle bounds
 ) implements GuiElementRenderState {
 	public FloatBlitRenderState(
-			RenderPipeline pipeline,
+			GuiPipeline pipeline,
 			TextureSetup textureSetup,
 			Matrix3x2f pose,
 			float x0,

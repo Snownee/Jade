@@ -338,19 +338,19 @@ public final class ClientProxy implements ClientModInitializer {
 		ScreenEvents.AFTER_INIT.register((Minecraft client, Screen screen, int scaledWidth, int scaledHeight) -> onGui(screen));
 		ClientCommandRegistrationCallback.EVENT.register(ClientProxy::registerClientCommand);
 		HudElementRegistry.addLast(
-				JadeIds.UI_MAIN, (guiGraphics, deltaTracker) -> {
+				JadeIds.UI_MAIN, guiGraphics -> {
 					if (Minecraft.getInstance().gui.screen() == null) {
-						onRenderTick(guiGraphics, deltaTracker.getRealtimeDeltaTicks());
+						onRenderTick(guiGraphics, guiGraphics.deltaTracker().getRealtimeDeltaTicks());
 					}
 				});
 		ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
 			if (shouldShowAfterGui(client, screen)) {
-				ScreenEvents.afterExtract(screen).register((screen1, guiGraphics, mouseX, mouseY, tickDelta) -> {
-					onRenderTick(guiGraphics, tickDelta);
+				ScreenEvents.afterExtract(screen).register((screen1, guiGraphics) -> {
+					onRenderTick(guiGraphics, guiGraphics.partialTicks());
 				});
 			} else if (shouldShowBeforeGui(client, screen)) {
-				ScreenEvents.beforeExtract(screen).register((screen1, guiGraphics, mouseX, mouseY, tickDelta) -> {
-					onRenderTick(guiGraphics, tickDelta);
+				ScreenEvents.beforeExtract(screen).register((screen1, guiGraphics) -> {
+					onRenderTick(guiGraphics, guiGraphics.partialTicks());
 				});
 			}
 		});

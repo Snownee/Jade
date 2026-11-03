@@ -35,7 +35,7 @@ class StaticBoxProgressProvider implements IBoxProgressProvider {
 		if (tag == null) {
 			return new BoxProgress(progress, type);
 		}
-		List<ProgressView.Part> parts = List.of(ProgressView.Part.of(0, Mth.clamp(progress, 0, 1)));
+		List<ProgressView.Part> parts = List.of(ProgressView.Part.of(0, Math.clamp(progress, 0F, 1F)));
 		if (track == null) {
 			track = JadeClient.tickHandler().progressTracker.getOrCreate(
 					tag, ProgressTrackInfo.class, () -> new ProgressTrackInfo(parts, false, box.getWidth()));
