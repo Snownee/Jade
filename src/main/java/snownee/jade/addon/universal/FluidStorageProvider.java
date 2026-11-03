@@ -9,9 +9,12 @@ import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionContents;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.EntityAccessor;
@@ -19,6 +22,7 @@ import snownee.jade.api.IComponentProvider;
 import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
+import snownee.jade.api.SimpleStringRepresentable;
 import snownee.jade.api.TooltipPosition;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.config.IWailaConfig;
@@ -91,6 +95,8 @@ public abstract class FluidStorageProvider<T extends Accessor<?>> implements ICo
 					if (renderGroup) {
 						group.renderHeader(theTooltip);
 					}
+					PotionEffectDisplay potionEffects = config.getEnum(JadeIds.UNIVERSAL_FLUID_STORAGE_POTION_EFFECTS);
+					float tickRate = accessor.getLevel().tickRateManager().tickrate();
 					for (var view : group.views) {
 						Component text;
 						IWailaConfig.HandlerDisplayStyle style = config.getEnum(JadeIds.UNIVERSAL_FLUID_STORAGE_STYLE);
@@ -125,6 +131,10 @@ public abstract class FluidStorageProvider<T extends Accessor<?>> implements ICo
 								theTooltip.add(helper.progress(view.ratio, text, progressStyle, BoxStyle.getNestedBox(), true));
 							}
 						}
+						if (view.potionContents != null && (potionEffects == PotionEffectDisplay.ON
+								|| potionEffects == PotionEffectDisplay.DETAILED && accessor.showDetails())) {
+							appendPotionEffects(theTooltip, view.potionContents, tickRate);
+						}
 					}
 					if (group.extraData != null && group.extraData.contains("+")) {
 						int extra = group.extraData.getInt("+");
@@ -133,6 +143,25 @@ public abstract class FluidStorageProvider<T extends Accessor<?>> implements ICo
 						}
 					}
 				});
+	}
+
+	private static void appendPotionEffects(ITooltip tooltip, PotionContents contents, float tickRate) {
+		IThemeHelper theme = IThemeHelper.get();
+		for (MobEffectInstance effect : contents.getAllEffects()) {
+			MutableComponent line = Component.translatable(effect.getDescriptionId());
+			if (effect.getAmplifier() > 0) {
+				line = Component.translatable(
+						"potion.withAmplifier", line, Component.translatable("potion.potency." + effect.getAmplifier()));
+			}
+			if (!effect.endsWithin(20)) {
+				line = Component.translatable("potion.withDuration", line, theme.seconds(effect.getDuration(), tickRate));
+			}
+			tooltip.add(switch (effect.getEffect().value().getCategory()) {
+				case BENEFICIAL -> theme.success(line);
+				case HARMFUL -> theme.danger(line);
+				case NEUTRAL -> theme.info(line);
+			});
+		}
 	}
 
 	public static void putData(Accessor<?> accessor) {
@@ -173,6 +202,10 @@ public abstract class FluidStorageProvider<T extends Accessor<?>> implements ICo
 			return false;
 		}
 		return WailaCommonRegistration.instance().fluidStorageProviders.hitsAny(accessor, IServerExtensionProvider::shouldRequestData);
+	}
+
+	public enum PotionEffectDisplay implements SimpleStringRepresentable {
+		OFF, DETAILED, ON
 	}
 
 	public enum Extension implements IServerExtensionProvider<CompoundTag>, IClientExtensionProvider<CompoundTag, FluidView> {
