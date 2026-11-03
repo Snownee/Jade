@@ -3,7 +3,7 @@
 	"modmenu.descriptionTranslation.jade": "당신이 보고 있는 것에 대한 정보를 보여줍니다.",
 	"neoforge.screen.mods.info.description.jade": "당신이 보고 있는 것에 대한 정보를 보여줍니다.",
 	"tooltip.jade.crop_growth": "성장: %s",
-	"tooltip.jade.crop_mature": "100%",
+	"tooltip.jade.crop_mature": "100%%",
 	"tooltip.jade.empty": "비어있음",
 	"tooltip.jade.delay": "지연: %s",
 	"tooltip.jade.mode": "모드: %s",
