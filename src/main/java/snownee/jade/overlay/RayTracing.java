@@ -85,6 +85,7 @@ public class RayTracing {
 			Entity targetEntity = ((EntityHitResult) mc.hitResult).getEntity();
 			if (canBeTarget(targetEntity, viewEntity)) {
 				target = mc.hitResult;
+				hitLocation = target.getLocation();
 				return;
 			}
 		}
