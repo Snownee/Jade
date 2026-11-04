@@ -136,11 +136,10 @@ public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements B
 		if (!verify) {
 			return true;
 		}
-		int x = data.getIntOr("x", 0);
-		int y = data.getIntOr("y", 0);
-		int z = data.getIntOr("z", 0);
 		BlockPos hitPos = getPosition();
-		return x == hitPos.getX() && y == hitPos.getY() && z == hitPos.getZ();
+		return data.getInt("x").filter(x -> x == hitPos.getX()).isPresent() &&
+				data.getInt("y").filter(y -> y == hitPos.getY()).isPresent() &&
+				data.getInt("z").filter(z -> z == hitPos.getZ()).isPresent();
 	}
 
 	public static class Builder implements BlockAccessor.Builder {
