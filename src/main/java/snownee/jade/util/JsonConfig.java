@@ -36,6 +36,7 @@ public class JsonConfig<T> {
 	private final File file;
 	private final Codec<T> codec;
 	private final CachedSupplier<T> configGetter;
+	private boolean preserveOrig;
 
 	public JsonConfig(String fileName, Codec<@Nullable T> codec, @Nullable Consumer<T> onUpdate, Supplier<T> defaultFactory) {
 		this.file = new File(CommonProxy.getConfigDirectory(), fileName + (fileName.endsWith(".json") ? "" : ".json"));
@@ -57,9 +58,11 @@ public class JsonConfig<T> {
 				Jade.LOGGER.error("Failed to read config file %s".formatted(file), e);
 				if (file.length() > 0) {
 					try {
-						//noinspection ResultOfMethodCallIgnored
-						file.renameTo(new File(file.getPath() + ".invalid"));
-					} catch (Exception ignored) {
+						Files.move(file.toPath(), file.toPath().resolveSibling(file.getName() + ".invalid"));
+					} catch (Exception backupError) {
+						Jade.LOGGER.error("Failed to back up config file {}; preserving original", file, backupError);
+						preserveOrig = true;
+						return defaultFactory.get();
 					}
 				}
 				T def = defaultFactory.get();
@@ -91,6 +94,10 @@ public class JsonConfig<T> {
 	}
 
 	public void write(File file, T t, boolean invalidate) {
+		if (preserveOrig && this.file.equals(file)) {
+			Jade.LOGGER.error("Cannot save config file {}; the original could not be backed up", file);
+			return;
+		}
 		mkdirs(file);
 		Path target = file.toPath();
 		Path temp = target.resolveSibling(file.getName() + ".tmp");
