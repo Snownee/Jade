@@ -57,9 +57,12 @@ public class JsonConfig<T> {
 				Jade.LOGGER.error("Failed to read config file %s".formatted(file), e);
 				if (file.length() > 0) {
 					try {
-						//noinspection ResultOfMethodCallIgnored
-						file.renameTo(new File(file.getPath() + ".invalid"));
-					} catch (Exception ignored) {
+						Files.move(
+								file.toPath(),
+								file.toPath().resolveSibling(file.getName() + ".invalid"),
+								StandardCopyOption.REPLACE_EXISTING);
+					} catch (Exception backupError) {
+						Jade.LOGGER.error("Failed to back up config file %s".formatted(file), backupError);
 					}
 				}
 				T def = defaultFactory.get();
