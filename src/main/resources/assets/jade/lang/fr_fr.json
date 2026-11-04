@@ -270,7 +270,7 @@
 	"config.jade.plugin_minecraft.next_entity_drop_extra_msg": "œuf,écaille,sniffer",
 	"jade.nextEgg": "Prochain œuf : %s",
 	"jade.nextScute": "Prochaine écaille : %s",
-	"jade.nextSniff": "Temps de recharge de fouille : %s : %s",
+	"jade.nextSniff": "Temps de recharge de fouille : %s",
 	"config.jade.plugin_minecraft.breaking_progress": "Progression du minage",
 	"config.jade.plugin_minecraft.command_block": "Bloc de commande",
 	"config.jade.plugin_minecraft.harvest_tool": "Outil de récolte",
